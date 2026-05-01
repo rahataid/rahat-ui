@@ -29,10 +29,10 @@ export const useCambodiaBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{row?.original?.projectData?.gender}</div>,
     },
     {
-      accessorKey: 'healthWorker',
-      header: 'Health Worker',
+      accessorKey: 'communityHealthWorker',
+      header: 'Community Health Worker',
       cell: ({ row }) => {
-        return <div>{row?.original?.healthWorker?.name || '-'}</div>;
+        return <div>{row?.original?.communityHealthWorker?.name || '-'}</div>;
       },
     },
 
@@ -69,7 +69,7 @@ export const useCambodiaBeneficiaryTableColumns = () => {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
+                  `/projects/el-village-doctor/${id}/villagers/${row.original.uuid}`,
                 )
               }
             />

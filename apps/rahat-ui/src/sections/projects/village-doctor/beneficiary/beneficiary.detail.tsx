@@ -40,7 +40,7 @@ export default function BeneficiaryDetail() {
         <HeaderWithBack
           title="Beneficiary details"
           subtitle="Here is the detailed view of selected beneficiary"
-          path={`/projects/el-cambodia/${id}/beneficiary`}
+          path={`/projects/el-village-doctor/${id}/villagers`}
         />
         {/* <div className="flex space-x-3">
           <div className="flex bg-secondary rounded-full w-10 h-10 justify-center items-center hover:cursor-pointer">

@@ -95,7 +95,7 @@ export const useCambodiaVendorsTableColumns = () => {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/el-cambodia/${id}/vendors/${row.original.vendorId}`,
+                  `/projects/el-village-doctor/${id}/vendors/${row.original.vendorId}`,
                 )
               }
             />

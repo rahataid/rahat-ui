@@ -93,7 +93,7 @@ export default function VendorsDetail() {
         <HeaderWithBack
           title={data?.data?.User?.name}
           subtitle="Here is the detailed view of selected vendor"
-          path={`/projects/el-cambodia/${id}/vendors`}
+          path={`/projects/el-village-doctor/${id}/vendors`}
         />
         {/* <DialogComponent
           trigger={

@@ -58,7 +58,7 @@ export default function CommisionSchemeUpdateView() {
       projectUUID: id,
     };
     create.mutateAsync(payload);
-    router.push(`/projects/el-cambodia/${id}/commission`);
+    router.push(`/projects/el-village-doctor/${id}/commission`);
   };
 
   return (
@@ -69,7 +69,7 @@ export default function CommisionSchemeUpdateView() {
             <HeaderWithBack
               title="Update Commission Scheme"
               subtitle="Update the commission token"
-              path={`/projects/el-cambodia/${id}/commission`}
+              path={`/projects/el-village-doctor/${id}/commission`}
             />
             <div className="border rounded-md p-4">
               <h1 className="text-lg font-medium mb-4">Commission Scheme</h1>

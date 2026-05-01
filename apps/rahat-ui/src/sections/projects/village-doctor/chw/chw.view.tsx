@@ -108,9 +108,9 @@ export default function CHWView() {
       visionCenter: item.vendor.name,
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'HealthWorkers');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'CommunityHealthWorkers');
 
-    XLSX.writeFile(workbook, 'HealthWorkers.xlsx');
+    XLSX.writeFile(workbook, 'CommunityHealthWorkers.xlsx');
   };
   const currentYear = new Date().getFullYear();
   const START_YEAR = 2025;
@@ -160,9 +160,11 @@ export default function CHWView() {
     <>
       <div className="p-4 bg-white ">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">Health Workers</h1>
+          <h1 className="font-semibold text-2xl mb-">
+            Community Health Workers
+          </h1>
           <p className="text-muted-foreground">
-            Track all the health workers here.
+            Track all the community health workers here.
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">

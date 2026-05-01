@@ -55,7 +55,7 @@ export default function ExcelUploader() {
         <HeaderWithBack
           title="Upload Beneficiaries"
           subtitle="select beneficiary file to update (Excel file)"
-          path={`/projects/el-cambodia/${id}/beneficiary`}
+          path={`/projects/el-village-doctor/${id}/villagers`}
         />
       </div>
 

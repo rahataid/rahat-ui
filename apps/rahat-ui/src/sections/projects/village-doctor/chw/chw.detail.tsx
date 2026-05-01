@@ -33,8 +33,8 @@ export default function ChwDetail() {
       <div className="flex space-x-3 mb-10">
         <HeaderWithBack
           title={data?.data?.name}
-          subtitle="Here is the detailed view of selected health worker"
-          path={`/projects/el-cambodia/${id}/chw`}
+          subtitle="Here is the detailed view of selected community health worker"
+          path={`/projects/el-village-doctor/${id}/chw`}
         />
       </div>
 

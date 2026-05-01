@@ -97,7 +97,7 @@ export default function AddSMSView() {
             <HeaderWithBack
               title="Add SMS"
               subtitle="Create a new SMS text"
-              path={`/projects/el-cambodia/${id}/communication`}
+              path={`/projects/el-village-doctor/${id}/communication`}
             />
             <div className="border rounded-md p-4 mb-4 flex flex-col space-y-4">
               <FormField
@@ -167,7 +167,7 @@ export default function AddSMSView() {
                 type="button"
                 variant="secondary"
                 onClick={() =>
-                  router.push(`/projects/el-cambodia/${id}/communication`)
+                  router.push(`/projects/el-village-doctor/${id}/communication`)
                 }
               >
                 Cancel

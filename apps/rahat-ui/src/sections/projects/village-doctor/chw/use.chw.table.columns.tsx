@@ -39,9 +39,9 @@ export const useCambodiaChwTableColumns = () => {
     // },
 
     {
-      accessorKey: 'vision center',
+      accessorKey: 'optical eye center',
       accessorFn: (row) => row.vendor,
-      header: 'Vision Center',
+      header: 'Optical Eye Center',
       cell: ({ row }) => <div> {row?.original?.vendor?.name} </div>,
     },
 
@@ -58,7 +58,7 @@ export const useCambodiaChwTableColumns = () => {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/el-cambodia/${id}/chw/${row.original.uuid}`,
+                  `/projects/el-village-doctor/${id}/chw/${row.original.uuid}`,
                 )
               }
             />

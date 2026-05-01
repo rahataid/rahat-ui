@@ -85,7 +85,7 @@ export default function AddBeneficiaryForm() {
 
   useEffect(() => {
     if (addBeneficiary.isSuccess) {
-      router.push(`/projects/el-kenya/${id}/beneficiary`);
+      router.push(`/projects/el-village-doctor/${id}/villagers`);
     }
   }, [addBeneficiary.isSuccess, id, router]);
 
@@ -95,12 +95,10 @@ export default function AddBeneficiaryForm() {
         <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
           <div className="h-[calc(100vh-165px)] m-4">
             <div className="flex space-x-3 mb-10">
-              <Back path="/projects/el-kenya/${id}/beneficiary" />
+              <Back path={`/projects/el-village-doctor/${id}/villagers`} />
               <div>
-                <h1 className="text-2xl font-semibold ">Add Beneficiary</h1>
-                <p className=" text-muted-foreground">
-                  Create a new beneficiary
-                </p>
+                <h1 className="text-2xl font-semibold ">Add Villager</h1>
+                <p className=" text-muted-foreground">Create a new villager</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mb-4 border rounded shadow-md p-4">
@@ -110,11 +108,11 @@ export default function AddBeneficiaryForm() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Beneficiary Name</FormLabel>
+                      <FormLabel>Villager Name</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter beneficiary name"
+                          placeholder="Enter villager name"
                           {...field}
                         />
                       </FormControl>
@@ -197,7 +195,7 @@ export default function AddBeneficiaryForm() {
             <Button
               type="button"
               onClick={() =>
-                router.push('/projects/el-kenya/${id}/beneficiary')
+                router.push(`/projects/el-village-doctor/${id}/villagers`)
               }
             >
               Cancel
@@ -208,7 +206,7 @@ export default function AddBeneficiaryForm() {
                 Please wait
               </Button>
             ) : (
-              <Button>Create Beneficiary</Button>
+              <Button>Create Villager</Button>
             )}
           </div>
         </form>

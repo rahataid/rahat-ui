@@ -118,7 +118,9 @@ export default function CommissionPayoutView() {
               variant="outline"
               className="border-primary text-primary"
               onClick={() =>
-                router.push(`/projects/el-cambodia/${id}/commission/update`)
+                router.push(
+                  `/projects/el-village-doctor/${id}/commission/update`,
+                )
               }
             >
               Update Scheme

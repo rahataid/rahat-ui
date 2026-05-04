@@ -35,7 +35,7 @@ export default function Treasury() {
   const { data: tokenDetails, isPending } = useGetTokenDetails(
     projectId as UUID,
   );
-  const { data: transferHistory } = useGetTransferList(
+  const { data: transferHistory, isPending: isTransferHistoryPending } = useGetTransferList(
     projectId as UUID,
     pagination,
   );

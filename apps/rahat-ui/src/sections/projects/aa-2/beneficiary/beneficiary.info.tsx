@@ -86,29 +86,27 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
       <div className="p-4 border rounded-xl shadow-sm w-full max-w-2xl bg-white">
         {/* Title */}
-        {tokenData?.assignedToken || tokenData?.redemmedToken ? (
+        {isPending ? (
           <>
-            <h2 className="text-lg font-semibold mb-4">Token Benefits</h2>
-            {/* Token Cards */}
-            {isPending ? (
-              <>
-                <div className="animate-pulse flex gap-4 mb-6">
-                  <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
-                    <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
-                    <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
-                  </div>
+            <div className="animate-pulse flex gap-4 mb-6">
+              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+              </div>
 
-                  <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
-                    <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
-                    <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
-                  </div>
-                </div>
-                <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
-                  <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
-                  <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
-                </div>
-              </>
-            ) : (
+              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+              </div>
+            </div>
+            <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+              <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+            </div>
+          </>
+        ) : (
+          <>
+            {tokenData?.assignedToken || tokenData?.redemmedToken ? (
               <>
                 <div className="flex gap-4 mb-6">
                   <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
@@ -132,9 +130,9 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
                   </div>
                 </div>
               </>
-            )}
+            ) : null}
           </>
-        ) : null}
+        )}
 
         <InkindDetails />
       </div>

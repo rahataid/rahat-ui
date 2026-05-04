@@ -1,5 +1,10 @@
 'use client';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useEffect } from 'react';
 import { useFundAssignmentStore } from './store';
@@ -514,7 +519,7 @@ export const useGetTokenDetails = (projectUUID: UUID) => {
 };
 
 export const useGetTransferList = (projectUUID: UUID, payload: Pagination) => {
-  const q = useProjectAction();
+  const q = useProjectAction(['aa.transferList']);
 
   const query = useQuery({
     queryKey: ['aa.transferList', projectUUID, payload],
@@ -528,6 +533,8 @@ export const useGetTransferList = (projectUUID: UUID, payload: Pagination) => {
       });
       return mutate.response;
     },
+    enabled: !!projectUUID,
+    placeholderData: keepPreviousData,
   });
   return query;
 };

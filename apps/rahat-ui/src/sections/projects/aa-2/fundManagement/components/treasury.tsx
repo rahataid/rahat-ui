@@ -35,12 +35,9 @@ export default function Treasury() {
   const { data: tokenDetails, isPending } = useGetTokenDetails(
     projectId as UUID,
   );
-  const { data: transferHistory, isPending: isTransferHistoryPending } = useGetTransferList(
-    projectId as UUID,
-    pagination,
-  );
 
-  console.log('Transfer History:', transferHistory);
+  const { data: transferHistory, isFetching: isTransferHistoryFetching } =
+    useGetTransferList(projectId as UUID, pagination);
 
   const columns = useTokenTransactionHistory();
   const table = useReactTable({
@@ -130,18 +127,9 @@ export default function Treasury() {
             table={table}
             tableHeight="h-[calc(100vh-420px)]"
             message="No token transfers have been made yet."
+            loading={isTransferHistoryFetching}
           />
           <CustomPagination
-            meta={
-              transferHistory?.meta || {
-                total: 0,
-                currentPage: 0,
-                lastPage: 0,
-                perPage: 10,
-                prev: null,
-                next: null,
-              }
-            }
             handleNextPage={setNextPage}
             handlePrevPage={setPrevPage}
             handlePageSizeChange={setPerPage}
@@ -149,6 +137,16 @@ export default function Treasury() {
             perPage={pagination.perPage}
             setPagination={setPagination}
             total={transferHistory?.meta?.total}
+            meta={
+              transferHistory?.meta || {
+                total: 0,
+                currentPage: 1,
+                lastPage: 1,
+                perPage: 10,
+                prev: null,
+                next: null,
+              }
+            }
           />
         </div>
       )}

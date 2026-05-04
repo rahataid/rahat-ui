@@ -12,6 +12,7 @@ import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 import { NewCommunicationQueryProvider } from '@rahat-ui/query';
+import { AbilityProvider } from '../context/AbilityContext';
 
 export const metadata = {
   icons: {
@@ -31,24 +32,26 @@ export default function RootLayout({
         <Wagmi>
           <QueryProvider>
             <RSQueryProvider>
-              <NewCommunicationQueryProvider>
-                <CommunicationQueryProvider>
-                  <ServiceProvider>
-                    <SecondPanelProvider>
-                      <ThemeProvider
-                        attribute="class"
-                        defaultTheme="light"
-                        // enableSystem
-                        // disableTransitionOnChange
-                      >
-                        <main className={GeistSans.className}>{children}</main>
-                        <ToastContainer />
-                        <Toaster />
-                      </ThemeProvider>
-                    </SecondPanelProvider>
-                  </ServiceProvider>
-                </CommunicationQueryProvider>
-              </NewCommunicationQueryProvider>
+              <AbilityProvider>
+                <NewCommunicationQueryProvider>
+                  <CommunicationQueryProvider>
+                    <ServiceProvider>
+                      <SecondPanelProvider>
+                        <ThemeProvider
+                          attribute="class"
+                          defaultTheme="light"
+                          // enableSystem
+                          // disableTransitionOnChange
+                        >
+                          <main className={GeistSans.className}>{children}</main>
+                          <ToastContainer />
+                          <Toaster />
+                        </ThemeProvider>
+                      </SecondPanelProvider>
+                    </ServiceProvider>
+                  </CommunicationQueryProvider>
+                </NewCommunicationQueryProvider>
+              </AbilityProvider>
             </RSQueryProvider>
           </QueryProvider>
         </Wagmi>

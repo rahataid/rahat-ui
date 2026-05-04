@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { useAbility } from 'apps/rahat-ui/src/context/AbilityContext';
+import { useAbility } from 'apps/rahat-ui/src/context/AbilityContext.old';
 
 export default function FundManagementView() {
   const router = useRouter();

@@ -2,7 +2,7 @@
 
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import Auth from 'apps/rahat-ui/src/components/Auth';
-import { useAbility } from 'apps/rahat-ui/src/context/AbilityContext';
+import { useAbility } from 'apps/rahat-ui/src/context/AbilityContext.old';
 import { AAAssignFundsView } from 'apps/rahat-ui/src/sections/projects/aa-2';
 
 const AddFundManagement = () => {

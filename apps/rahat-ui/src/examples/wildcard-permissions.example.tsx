@@ -3,7 +3,7 @@
 import React from 'react';
 import { buildAbilityFor, Permission } from '../types/permissions';
 import { Auth } from '../components/Auth';
-import { useAbility } from '../context/AbilityContext';
+import { useAbility } from '../context/AbilityContext.old';
 
 /**
  * WILDCARD PERMISSIONS DEMO

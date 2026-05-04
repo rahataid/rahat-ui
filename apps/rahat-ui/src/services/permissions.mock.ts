@@ -101,7 +101,7 @@ const projectSpecificPermissions: Record<string, Permission[]> = {
 
   // Project B - User can only READ funds, no create
   '2ff33d0f-c5cc-4c95-ab3b-77403c9b5d0d': [
-    { action: 'manage', subject: 'FundManagement', inverted: false }, // ❌ NO CREATE
+    { action: 'read', subject: 'FundManagement', inverted: false }, // ❌ NO CREATE
     { action: 'read', subject: 'Beneficiary', inverted: false },
     { action: 'update', subject: 'Beneficiary', inverted: false },
     { action: 'create', subject: 'Vendor', inverted: false },
@@ -116,78 +116,65 @@ const projectSpecificPermissions: Record<string, Permission[]> = {
 };
 
 /**
- * Mock API: Fetch project-specific permissions for a user
- * In real implementation, this would be: GET /users/{userId}/projects/{projectId}/permissions
+ * API: Fetch project-specific permissions for a user
+ * Calls: GET /v1/users/{userId}/xrefId/{projectId}/permissions
  */
 export async function fetchProjectPermissions(
   userId: string,
   projectId: string,
 ): Promise<{ data: { permissions: Permission[] } }> {
-  // Simulate API delay
-  await delay(500);
+  try {
+    // Get base URL from environment or fallback to localhost
+    const baseURL =
+      process.env.NEXT_PUBLIC_API_HOST_URL || 'http://localhost:4400';
+    const apiUrl = `${baseURL}/v1/users/${userId}/xrefId/${projectId}/permissions`;
 
-  let permissions: Permission[];
+    console.log(`[API] Fetching permissions from: ${apiUrl}`);
 
-  // FIRST: Check for exact project match (project-specific permissions)
-  if (projectSpecificPermissions[projectId]) {
-    permissions = projectSpecificPermissions[projectId];
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies if needed for auth
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch permissions: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    // Map API response to Permission format for CASL
+    // Extract only the fields needed: action, subject, inverted, conditions
+    const permissions: Permission[] = result.data.map((item: any) => ({
+      action: item.action,
+      subject: item.subject,
+      inverted: item.inverted,
+      conditions: item.conditions || undefined,
+    }));
+
     console.log(
-      `[MOCK API] ✅ Project-specific permissions for "${projectId}"`,
+      `[API] ✅ Fetched ${permissions.length} permissions for user ${userId} in project ${projectId}`,
       permissions,
     );
+
+    return {
+      data: {
+        permissions,
+      },
+    };
+  } catch (error) {
+    console.error('[API] ❌ Error fetching permissions:', error);
+
+    // Return empty permissions on error to prevent app crash
+    // You might want to handle this differently based on your error handling strategy
+    return {
+      data: {
+        permissions: [],
+      },
+    };
   }
-  // SECOND: Fall back to role-based patterns (for backward compatibility)
-  // Use project ID or user ID to determine role (for testing)
-  else if (
-    projectId.includes('super-admin') ||
-    userId.includes('super-admin')
-  ) {
-    permissions = mockRolePermissions.superAdmin;
-    console.log(
-      `[MOCK API] 🔥 Using super admin permissions (manage all) for "${projectId}"`,
-      permissions,
-    );
-  } else if (
-    projectId.includes('fund-manager') ||
-    userId.includes('fund-manager')
-  ) {
-    permissions = mockRolePermissions.fundManager;
-    console.log(
-      `[MOCK API] ✨ Using fund manager permissions (manage FundManagement) for "${projectId}"`,
-      permissions,
-    );
-  } else if (projectId.includes('admin')) {
-    permissions = mockRolePermissions.admin;
-    console.log(
-      `[MOCK API] 📋 Using admin role permissions for "${projectId}"`,
-      permissions,
-    );
-  } else if (projectId.includes('manager')) {
-    permissions = mockRolePermissions.manager;
-    console.log(
-      `[MOCK API] 📋 Using manager role permissions for "${projectId}"`,
-      permissions,
-    );
-  } else if (projectId.includes('vendor')) {
-    permissions = mockRolePermissions.vendor;
-    console.log(
-      `[MOCK API] 📋 Using vendor role permissions for "${projectId}"`,
-      permissions,
-    );
-  } else {
-    // Default to viewer permissions
-    permissions = mockRolePermissions.viewer;
-    console.log(
-      `[MOCK API] 📋 Using default viewer permissions for "${projectId}"`,
-      permissions,
-    );
-  }
-
-  return {
-    data: {
-      permissions,
-    },
-  };
 }
 
 /**

@@ -46,6 +46,8 @@ export const TAGS = {
   },
   ALL_NOTIFICATIONS: 'all_notifications',
   VERFIY_MANUAL_PAYOUT: 'verify_manual_payout',
+  GET_PROJECT_PERMISSIONS: 'get_project_permissions',
+  GET_GLOBAL_PERMISSIONS: 'get_global_permissions',
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',

@@ -14,6 +14,7 @@ import { CommunicationQueryProvider } from '@rumsan/communication-query/provider
 import { NewCommunicationQueryProvider } from '@rahat-ui/query';
 import { AbilityProvider } from '../context/AbilityContext';
 
+
 export const metadata = {
   icons: {
     icon: '/svg/rahat-logo.png',
@@ -43,7 +44,9 @@ export default function RootLayout({
                           // enableSystem
                           // disableTransitionOnChange
                         >
-                          <main className={GeistSans.className}>{children}</main>
+                          <main className={GeistSans.className}>
+                            {children}
+                          </main>
                           <ToastContainer />
                           <Toaster />
                         </ThemeProvider>

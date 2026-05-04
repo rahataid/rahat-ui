@@ -1,9 +1,9 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { UseQueryResult } from '@tanstack/react-query';
 import { Permission } from '../types/permissions';
 import {
-  fetchProjectPermissions,
-  fetchGlobalPermissions,
-} from '../services/permissions.mock';
+  useProjectPermissions as useProjectPermissionsQuery,
+  useGlobalPermissions as useGlobalPermissionsQuery,
+} from '@rahat-ui/query';
 
 interface PermissionsResponse {
   data: {
@@ -19,20 +19,7 @@ export function useProjectPermissions(
   userId: string | undefined,
   projectId: string | undefined,
 ): UseQueryResult<PermissionsResponse, Error> {
-  return useQuery({
-    queryKey: ['permissions', 'project', userId, projectId],
-    queryFn: () => {
-      if (!userId || !projectId) {
-        throw new Error('userId and projectId are required');
-      }
-      return fetchProjectPermissions(userId, projectId);
-    },
-    enabled: !!userId && !!projectId, // Only run if both exist
-    staleTime: 15 * 60 * 1000, // 15 minutes - consider data fresh for this long
-    refetchInterval: 15 * 60 * 1000, // Auto-refetch every 15 minutes in background
-    refetchOnWindowFocus: false, // Don't refetch on window focus (optional)
-    retry: 2, // Retry failed requests twice
-  });
+  return useProjectPermissionsQuery(userId, projectId);
 }
 
 /**
@@ -42,18 +29,5 @@ export function useProjectPermissions(
 export function useGlobalPermissions(
   userId: string | undefined,
 ): UseQueryResult<PermissionsResponse, Error> {
-  return useQuery({
-    queryKey: ['permissions', 'global', userId],
-    queryFn: () => {
-      if (!userId) {
-        throw new Error('userId is required');
-      }
-      return fetchGlobalPermissions(userId);
-    },
-    enabled: !!userId, // Only run if userId exists
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    refetchInterval: 15 * 60 * 1000, // Auto-refetch every 15 minutes in background
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+  return useGlobalPermissionsQuery(userId);
 }

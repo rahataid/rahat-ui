@@ -20,7 +20,7 @@ export interface Permission {
   action: string;
   subject: string;
   inverted: boolean;
-  conditions?: any;
+  conditions?: unknown;
 }
 
 // Define the ability type

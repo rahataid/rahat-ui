@@ -40,7 +40,12 @@ export const useTokenTransactionHistory = () => {
         });
         return (
           <div className="flex items-center gap-2">
-            <a href={txnUrl || '#'} target="_blank" rel="noopener noreferrer">
+            <a
+              href={txnUrl || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className=" text-blue-500 hover:underline cursor-pointer"
+            >
               <TruncatedCell
                 text={row.original?.transactionHash}
                 maxLength={15}

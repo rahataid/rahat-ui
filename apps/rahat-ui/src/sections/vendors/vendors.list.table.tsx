@@ -36,19 +36,20 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
-import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import TooltipWrapper from '../../components/tooltip.wrapper';
 import SelectComponent from '../projects/el-kenya/select.component';
+import { Project } from '@rahataid/sdk/project/project.types';
 
 export type IVendor = {
   id: string;
-  projectName: string;
+  name: string;
+  projectName: Array<{ Project: { id: string; uuid: string; name: string } }>;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
   walletAddress: `0x${string}`;
@@ -65,7 +66,7 @@ type IProps = {
   setSelectedProject: (id: UUID) => void;
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
-  selectedRow: any;
+  selectedRow: IVendor | null;
 };
 
 export default function VendorsTable({
@@ -76,19 +77,28 @@ export default function VendorsTable({
   projectModal,
   selectedRow,
 }: IProps) {
-  const projectList = useProjectList({});
+  const projectList = useProjectList({ page: 1, perPage: 1000 });
+
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
-  const projectNames =
-    (projectList?.data?.data?.length > 0 &&
-      projectList?.data?.data?.map((project: any) => project?.name)) ||
-    [];
+  const vendorNameFilter =
+    (table.getColumn('name')?.getFilterValue() as string) || '';
+  const statusFilter =
+    (table.getColumn('status')?.getFilterValue() as string) || '';
+  const projectFilter =
+    (table.getColumn('projectName')?.getFilterValue() as string) || '';
+  const projectNames: string[] =
+    (projectList?.data?.data && projectList.data.data.length > 0
+      ? projectList.data.data
+          .map((project: Project) => project?.name)
+          .filter((name): name is string => Boolean(name))
+      : []) || [];
 
   return (
     <div className="border rounded shadow p-3">
       <div className="flex items-center mb-2 space-x-2">
         <Input
           placeholder="Search Vendors"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={vendorNameFilter}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
@@ -97,26 +107,24 @@ export default function VendorsTable({
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('status')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            const nextStatusFilter: string =
+              !event || event === 'All' ? '' : event;
+            table.getColumn('status')?.setFilterValue(nextStatusFilter);
           }}
           name="Status"
-          options={['All', 'Assigned', 'Not Assigned']}
-          value={(table.getColumn('status')?.getFilterValue() as string) || ''}
+          options={['All', 'Assigned', 'Pending']}
+          value={statusFilter || 'All'}
         />
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('projectName')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            const nextProjectFilter: string =
+              !event || event === 'All' ? '' : event;
+            table.getColumn('projectName')?.setFilterValue(nextProjectFilter);
           }}
           name="Project Name"
           options={['All', ...projectNames]}
-          value={
-            (table.getColumn('projectName')?.getFilterValue() as string) || ''
-          }
+          value={projectFilter || 'All'}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -223,14 +231,30 @@ export default function VendorsTable({
               <SelectContent>
                 {projectList.data?.data.length ? (
                   projectList.data?.data.map((project: any) => {
+                    const assignedProjects = Array.isArray(
+                      selectedRow?.projectName,
+                    )
+                      ? selectedRow.projectName
+                      : [];
+                    const isAssigned = assignedProjects.some(
+                      (projectDetail) =>
+                        projectDetail.Project?.uuid === project.uuid,
+                    );
+
                     return (
-                      <SelectItem
-                        disabled={selectedRow?.projectName === project.name} //TODO FROM ID
+                      <TooltipWrapper
                         key={project.id}
-                        value={project.uuid}
+                        tip="Project Already Assigned"
+                        disable={!isAssigned}
                       >
-                        {project.name}
-                      </SelectItem>
+                        <SelectItem
+                          disabled={isAssigned}
+                          className="data-[disabled]:pointer-events-auto data-[disabled]:cursor-not-allowed"
+                          value={project.uuid}
+                        >
+                          {project.name}
+                        </SelectItem>
+                      </TooltipWrapper>
                     );
                   })
                 ) : (

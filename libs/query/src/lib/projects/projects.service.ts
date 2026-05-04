@@ -235,6 +235,7 @@ export const useBulkAssignBenToProject = () => {
 
 export const useAssignVendorToProject = () => {
   const q = useProjectAction();
+  const queryClient = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -266,6 +267,7 @@ export const useAssignVendorToProject = () => {
         title: 'Vendor Assigned Successfully',
         icon: 'success',
       });
+      queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -805,6 +807,61 @@ export const useBeneficiaryRedeemInfoInkind = (payload: {
   });
   return query;
 };
+export const useTokenDetails = (payload: {
+  projectUUID: UUID;
+  beneficiaryUUID: UUID;
+}) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getTokenDetails',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.getTokenDetails',
+          payload: {
+            uuid: beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
+};
+export const useInkindDetails = (payload: {
+  projectUUID: UUID;
+  beneficiaryUUID: UUID;
+}) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getInkindDetails',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.inKindsDetails',
+          payload: {
+            beneficiaryUuid: beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {

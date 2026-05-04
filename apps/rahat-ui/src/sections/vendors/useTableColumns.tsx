@@ -40,6 +40,11 @@ export const useTableColumns = (handleAssignClick: any) => {
     {
       accessorKey: 'status',
       header: 'Status',
+      filterFn: (row, _columnId, filterValue) => {
+        if (!filterValue) return true;
+        const status = row.getValue('status') as string;
+        return status === filterValue;
+      },
       cell: ({ row }) => (
         <Badge className="capitalize">{row.getValue('status')}</Badge>
       ),
@@ -47,6 +52,12 @@ export const useTableColumns = (handleAssignClick: any) => {
     {
       accessorKey: 'projectName',
       header: 'Project Name',
+      filterFn: (row, _columnId, filterValue) => {
+        if (!filterValue) return true;
+        const projects = row.getValue('projectName');
+        if (!Array.isArray(projects)) return false;
+        return projects.some((item) => item?.Project?.name === filterValue);
+      },
       cell: ({ row }) => {
         const projects = row.getValue('projectName');
         const [showAll, setShowAll] = useState(false);

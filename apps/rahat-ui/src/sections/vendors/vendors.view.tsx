@@ -33,8 +33,8 @@ function VendorsView() {
   );
 
   const statusFilter =
-    (columnFilters.find((filter) => filter.id === 'status')
-      ?.value as string) || '';
+    (columnFilters.find((filter) => filter.id === 'status')?.value as string) ||
+    '';
   const projectFilter =
     (columnFilters.find((filter) => filter.id === 'projectName')
       ?.value as string) || '';
@@ -108,7 +108,7 @@ function VendorsView() {
       <div className="p-4">
         <div className="mb-4">
           <h1 className="font-semibold text-2xl text-label">Vendors</h1>
-          <p className="text-sub-label">Here is the list of all the vendors</p>
+          <p className="text-sub-label">Here is the list of all the vendorss</p>
         </div>
         <VendorsTable
           table={table}

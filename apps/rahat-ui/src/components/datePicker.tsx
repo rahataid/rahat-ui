@@ -20,6 +20,8 @@ type DatePickerType = {
   handleDateChange: any;
   className?: string;
   selectedDate?: Date;
+  minDate?: Date;
+  maxDate?: Date;
 };
 
 export function DatePicker({
@@ -28,6 +30,8 @@ export function DatePicker({
   type,
   className,
   selectedDate,
+  minDate,
+  maxDate,
 }: DatePickerType) {
   const [date, setDate] = useState<Date | undefined>(selectedDate);
 
@@ -58,6 +62,10 @@ export function DatePicker({
             handleDateChange(date, type);
             setDate(date);
           }}
+          disabled={[
+            ...(minDate ? [{ before: minDate }] : []),
+            ...(maxDate ? [{ after: maxDate }] : []),
+          ]}
           initialFocus
         />
       </PopoverContent>

@@ -1,18 +1,15 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { ChevronDown, Plus, Settings2 } from 'lucide-react';
-
+import { ChevronDown, Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   TableBody,
@@ -30,7 +27,6 @@ import CreateGroupModal from './components/createGroupModal';
 import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
-import AddButton from '../projects/components/add.btn';
 import { useRouter } from 'next/navigation';
 
 type IProps = {
@@ -126,63 +122,16 @@ export default function ListView({
             handleDateChange={handleDateChange}
             type="start"
             selectedDate={filters?.startDate}
+            maxDate={filters?.endDate}
           />
           <DatePicker
             placeholder="Pick End Date"
             handleDateChange={handleDateChange}
             type="end"
             selectedDate={filters?.endDate}
+            minDate={filters?.startDate}
           />
 
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                {selectedProject ? selectedProject.name : 'Select Project'}
-                <ChevronDown className="mr-2 h-4 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {selectFilterProjectItems.map((project: any) => (
-                <DropdownMenuItem
-                  key={project.name}
-                  textValue={project.value}
-                  onSelect={() => handleSelectProject(project)}
-                >
-                  {project.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
           <Button
             variant={'default'}
             type="button"

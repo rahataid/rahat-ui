@@ -1,120 +1,161 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import React from 'react';
-import { Copy, CopyCheck, Store, User, Users } from 'lucide-react';
+import { Copy, CopyCheck, Store, User } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
 import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { mapStatus } from '@rahat-ui/query';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
+function formatDetailDate(value: string): string {
+  if (!value || value === '-') return '-';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+}
+
 export default function BeneficiaryDetail() {
-  const { id, benId } = useParams() as { id: UUID; benId: UUID };
+  const { id } = useParams() as { id: UUID; benId: UUID };
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
   const searchParams = useSearchParams();
   const phone = decodeURIComponent(searchParams.get('phone') || '');
-  const type = searchParams.get('type');
-  const age = searchParams.get('age');
-  const name = searchParams.get('name');
   const consent = searchParams.get('consent');
+  const name = searchParams.get('name');
   const walletAddress = searchParams.get('walletAddress') || '';
   const gender = searchParams.get('gender') || '';
   const voucherType = searchParams.get('voucherType') || '';
   const voucherStatus = searchParams.get('voucherStatus') || '';
-  const glassesStatus = searchParams.get('glassesStatus') || '';
   const eyeCheckupStatus = searchParams.get('eyeCheckupStatus') || '';
-  const location = searchParams.get('location') || '-';
-  const createdAt = searchParams.get('createdAt') || '-';
+  const age = searchParams.get('age');
+  const createdAtRaw = searchParams.get('createdAt') || '-';
 
-  const clickToCopy = (walletAddress: string) => {
-    navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(walletAddress);
+  const clickToCopy = (addr: string) => {
+    navigator.clipboard.writeText(addr);
+    setWalletAddressCopied(addr);
   };
 
   return (
-    <div className="h-[calc(100vh-95px)] m-4">
-      <div className="flex justify-between items-center">
+    <div className="min-h-[calc(100vh-95px)] p-4">
+      <div className="mb-6">
         <HeaderWithBack
           title="Consumer details"
-          subtitle="Here is the detailed view of selected consumer"
-          path={`/projects/sms-voucher/${id}/beneficiary`}
+          subtitle="Profile and voucher status for this consumer"
+          path={`/projects/el-wom/${id}/beneficiary`}
         />
-        {/* Buttons remain unchanged */}
       </div>
 
-      {/* Mobile Responsive Grid */}
-      <div className="p-5 rounded-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
-        {/* Consumer Info */}
-        <div className="flex flex-col gap-2 shadow border rounded-sm p-5">
-          <div className="flex items-center gap-4">
-            <div className="rounded-full h-8 w-8 flex items-center justify-center">
-              <User className="shadow-xl" size={24} />
+      <div className="grid gap-4 lg:grid-cols-2 max-w-6xl">
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-2">
+            <div className="flex items-start gap-4">
+              <div className="rounded-full bg-muted p-3">
+                <User className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <div className="space-y-1 min-w-0 flex-1">
+                <CardTitle className="text-xl truncate">{phone || '—'}</CardTitle>
+                <CardDescription>
+                  Onboarded {formatDetailDate(createdAtRaw)}
+                </CardDescription>
+              </div>
             </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <p className="font-medium">{phone}</p>
-              <div
-                className="flex items-center space-x-2 cursor-pointer"
+              <p className="text-sm text-muted-foreground mb-1">Wallet</p>
+              <button
+                type="button"
+                className="flex items-center gap-2 text-left hover:text-primary transition-colors"
                 onClick={() => clickToCopy(walletAddress)}
               >
-                <p className="text-muted-foreground">
-                  {truncateEthAddress(walletAddress)}
-                </p>
+                <span className="font-mono text-sm">
+                  {walletAddress
+                    ? truncateEthAddress(walletAddress)
+                    : '—'}
+                </span>
                 {walletAddressCopied === walletAddress ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
+                  <CopyCheck size={16} strokeWidth={1.5} />
                 ) : (
-                  <Copy
-                    className="text-slate-500"
-                    size={15}
-                    strokeWidth={1.5}
-                  />
+                  <Copy className="text-muted-foreground" size={16} strokeWidth={1.5} />
                 )}
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <div>
+                <span className="text-muted-foreground">Age</span>
+                <p className="font-medium">{age || '—'}</p>
               </div>
-              <div className="flex gap-2 font-medium text-muted-foreground">
-                <p>{age || 0}</p>
-                <p>.</p>
-                <p>{gender}</p>
+              <div>
+                <span className="text-muted-foreground">Gender</span>
+                <p className="font-medium">{gender || '—'}</p>
               </div>
             </div>
-          </div>
-          <div className="flex gap-2 text-muted-foreground">
-            <Store />
-            <p>Vendor Name: {name}</p>
-          </div>
-          <p className="text-muted-foreground">Onboarded Time: {createdAt}</p>
-        </div>
 
-        {/* Voucher Usage */}
-        <div className="shadow border rounded-sm p-5 flex flex-col justify-between">
-          <p className="font-medium">Voucher Usage</p>
-          <p className="font-medium">
-            <Badge>{mapStatus(eyeCheckupStatus)}</Badge>
-          </p>
-        </div>
+            <div className="flex items-start gap-2 pt-2 border-t">
+              <Store className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+              <div>
+                <p className="text-sm text-muted-foreground">Vendor</p>
+                <p className="font-medium">{name || '—'}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Voucher Status */}
-        <div className="shadow border rounded-sm p-5 flex flex-col justify-between">
-          <p className="font-medium">Voucher Status</p>
-          <p className="font-medium">
-            <Badge>{mapStatus(voucherStatus)}</Badge>
-          </p>
-        </div>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Voucher usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Badge variant="secondary" className="text-sm">
+              {mapStatus(eyeCheckupStatus) || '—'}
+            </Badge>
+          </CardContent>
+        </Card>
 
-        {/* Glass Type */}
-        <div className="shadow border rounded-sm p-5 flex flex-col justify-between">
-          <p className="font-medium">Glass Type</p>
-          <p className="font-medium">
-            <Badge>{mapStatus(voucherType)}</Badge>
-          </p>
-        </div>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Voucher status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Badge variant="secondary" className="text-sm">
+              {mapStatus(voucherStatus) || '—'}
+            </Badge>
+          </CardContent>
+        </Card>
 
-        {/* Consent Status */}
-        <div className="shadow border rounded-sm p-5 flex flex-col justify-between">
-          <p className="font-medium">Consent Status</p>
-          <p className="font-medium">
-            <Badge>{mapStatus(consent || '-')}</Badge>
-          </p>
-        </div>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Glass type</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Badge variant="secondary" className="text-sm">
+              {mapStatus(voucherType) || '—'}
+            </Badge>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Consent</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Badge variant="secondary" className="text-sm">
+              {mapStatus(consent || '-') || '—'}
+            </Badge>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

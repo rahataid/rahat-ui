@@ -2,7 +2,6 @@ import { mapStatus } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronDown, ChevronRight, Eye } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
 
 export function getDynamicColor(status: string) {
   if (status === 'LENSES') {
@@ -38,12 +37,10 @@ interface BeneficiaryTableProps {
 export const useElkenyaBeneficiaryTableColumns = ({
   handleViewClick,
 }: BeneficiaryTableProps) => {
-  const { id } = useParams();
-  const router = useRouter();
-
   const columns: ColumnDef<any>[] = [
     {
       id: 'expander',
+      enableHiding: false,
       header: () => null,
       cell: ({ row }) => {
         const Icon = row.getIsExpanded() ? ChevronDown : ChevronRight;

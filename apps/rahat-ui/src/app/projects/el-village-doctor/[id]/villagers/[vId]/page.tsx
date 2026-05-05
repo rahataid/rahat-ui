@@ -1,9 +1,9 @@
 'use client';
 
-import { ELCambodiaBeneficiaryDetailView } from 'apps/rahat-ui/src/sections/projects/cambodia/beneficiary';
+import { ELVillageDoctorVillagerDetailView } from 'apps/rahat-ui/src/sections/projects/village-doctor/beneficiary';
 
 const Page = () => {
-  return <ELCambodiaBeneficiaryDetailView />;
+  return <ELVillageDoctorVillagerDetailView />;
 };
 
 export default Page;

@@ -3,12 +3,12 @@ import React from 'react';
 import { useProject } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { CambodiaProjectView } from 'apps/rahat-ui/src/sections/projects/cambodia';
+import { VillageDoctorProjectView } from 'apps/rahat-ui/src/sections/projects/village-doctor';
 
 const Page = () => {
   const { id } = useParams();
   useProject(id as UUID);
-  return <CambodiaProjectView />;
+  return <VillageDoctorProjectView />;
 };
 
 export default Page;

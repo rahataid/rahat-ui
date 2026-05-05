@@ -1,21 +1,18 @@
 'use client';
 
 import * as React from 'react';
+import '../el-village-doctor.css';
 import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';
-
-import { ProjectTypes } from '@rahataid/sdk/enums';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
+  CambodiaSubgraphProvider,
   PROJECT_SETTINGS_KEYS,
-  useAAProjectSettingsDatasource,
-  useAAProjectSettingsHazardType,
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
-import { CambodiaSubgraphProvider } from '@rahat-ui/query';
 import { cacheExchange, Client, fetchExchange } from '@urql/core';
 
 export default function ProjectLayoutRoot({
@@ -52,7 +49,12 @@ export default function ProjectLayoutRoot({
       }
     >
       <ProjectLayout projectType={'el-village-doctor'}>
-        {renderChildren()}
+        <div
+          className="h-full min-h-0 flex-1 antialiased [--tw-prose-body:var(--muted-foreground)]"
+          data-village-doctor="true"
+        >
+          {renderChildren()}
+        </div>
       </ProjectLayout>
     </CambodiaSubgraphProvider>
   );

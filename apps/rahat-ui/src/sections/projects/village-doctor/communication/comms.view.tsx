@@ -12,9 +12,19 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import getIcon from 'apps/rahat-ui/src/utils/getIcon';
-import { UUID } from 'crypto';
-import { Download } from 'lucide-react';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/components/card';
+import {
+  CircleCheck,
+  CircleX,
+  Download,
+  MessageSquareText,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import SelectComponent from '../select.component';
@@ -24,6 +34,7 @@ import { useTableColumns } from './use.table.columns';
 import { DateRange } from 'react-day-picker';
 import * as XLSX from 'xlsx';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { UUID } from 'crypto';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -44,7 +55,7 @@ export default function CommunicationView() {
     projectUUID: id,
   }) as any;
 
-  const { data, isLoading, isFetching } = useCambodiaCommsList({
+  const { data, isFetching } = useCambodiaCommsList({
     projectUUID: id,
     page: pagination.page,
     perPage: pagination.perPage,
@@ -84,18 +95,18 @@ export default function CommunicationView() {
 
   const cardData = [
     {
-      title: 'Total Message Sent',
-      icon: 'MessageSquareText',
+      title: 'Total Messages Sent',
+      Icon: MessageSquareText,
       total: broadStatusCount?.data?.total || 0,
     },
     {
-      title: 'Message Delivery Successful',
-      icon: 'CircleCheck',
+      title: 'Delivered Successfully',
+      Icon: CircleCheck,
       total: broadStatusCount?.data?.success || 0,
     },
     {
-      title: 'Message Delivery Failed',
-      icon: 'MessageSquareText',
+      title: 'Delivery Failed',
+      Icon: CircleX,
       total: broadStatusCount?.data?.fail || 0,
     },
   ];
@@ -155,10 +166,6 @@ export default function CommunicationView() {
     }
   };
 
-  const address = tableData
-    ?.filter((item: any) => item.status === 'FAIL')
-    .map((add) => add.address);
-
   const handleDownload = async () => {
     const rowsToDownload = filteredData?.data || [];
     const workbook = XLSX.utils.book_new();
@@ -182,78 +189,94 @@ export default function CommunicationView() {
   };
 
   return (
-    <>
-      <div className="p-4">
-        <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">Communication</h1>
-        </div>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {cardData?.map((item, index) => {
-            const Icon = getIcon(item.icon);
-            return (
-              <div key={index} className="rounded-md border bg-card p-4 shadow">
-                <div className="flex justify-between items-center">
-                  <h1 className="text-base font-medium mb-1">{item.title}</h1>
-                  <Icon />
-                </div>
-                <p className="text-primary font-semibold text-xl">
-                  {item.total}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="rounded border bg-card p-4">
-          <div className="flex justify-end items-center space-x-2 mb-2">
-            <DateRangePicker
-              placeholder="Pick a date range"
-              handleDateChange={handleDateChange}
-              type="range"
-              className="w-full"
-              handleClearDate={handleClearDate}
-            />
-
-            <SelectComponent
-              className="w-1/2"
-              name="Status"
-              options={['ALL', 'SUCCESS', 'FAIL']}
-              onChange={(value) =>
-                handleFilterChange({
-                  target: { name: 'status', value },
-                })
-              }
-              // value={table.getColumn('sendTo')?.getFilterValue() as string}
-            />
-
-            <Button
-              variant="outline"
-              className="text-muted-foreground w-1/4"
-              onClick={handleDownload}
-              disabled={
-                Object.keys(filters).length === 0 ||
-                filters.status === undefined
-              }
-            >
-              <Download className="w-4 h-4 mr-3" /> Download Report
-            </Button>
-          </div>
-          <CambodiaTable
-            table={table}
-            tableHeight="h-[calc(100vh-376px)]"
-            loading={isFetching}
-          />
+    <div className="flex h-full min-h-0 flex-col bg-background">
+      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            Communication
+          </h1>
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Broadcast status, delivery outcomes, and message history at a glance.
+          </p>
         </div>
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={(data?.response?.meta as any) || { total: 0, currentPage: 0 }}
-        perPage={pagination?.perPage}
-        total={0}
-      />
-    </>
+
+      <div className="flex-1 space-y-6 overflow-auto p-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {cardData?.map((item, index) => (
+            <DataCard
+              key={index}
+              title={item.title}
+              Icon={item.Icon}
+              number={String(item.total)}
+              className="rounded-lg border border-border"
+            />
+          ))}
+        </div>
+
+        <Card className="flex flex-col overflow-hidden">
+          <CardHeader className="border-b border-border px-5 py-4">
+            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+              Filters & export
+            </div>
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+              <div className="w-full xl:max-w-md">
+                <DateRangePicker
+                  placeholder="Pick a date range"
+                  handleDateChange={handleDateChange}
+                  type="range"
+                  className="w-full"
+                  handleClearDate={handleClearDate}
+                />
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <SelectComponent
+                  className="w-full sm:w-[200px]"
+                  name="Status"
+                  options={['ALL', 'SUCCESS', 'FAIL']}
+                  onChange={(value) =>
+                    handleFilterChange({
+                      target: { name: 'status', value },
+                    })
+                  }
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-muted-foreground"
+                  onClick={handleDownload}
+                  disabled={
+                    Object.keys(filters).length === 0 ||
+                    filters.status === undefined
+                  }
+                >
+                  <Download className="mr-2 h-4 w-4 shrink-0" /> Download Report
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <CambodiaTable
+              table={table}
+              tableHeight="h-[calc(100vh-560px)]"
+              loading={isFetching}
+            />
+            <CustomPagination
+              currentPage={pagination.page}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              meta={(data?.response?.meta as any) || {
+                total: 0,
+                currentPage: 0,
+              }}
+              perPage={pagination?.perPage}
+              total={data?.response?.meta?.total ?? 0}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

@@ -5,6 +5,7 @@ import { ProjectType } from './nav-items.types';
 import { ProjectNav } from './project-header';
 import { useProjectHeaderItems } from './useProjectHeaderItems';
 import { useProjectNavItems } from './useProjectNavItems';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import { SidebarProvider } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { ProjectSidebar } from 'apps/rahat-ui/src/sidebar-components/project-sidebar';
 import { useParams, useRouter } from 'next/navigation';
@@ -48,7 +49,13 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
             items={item.children}
           />
         ))}
-        <div className="w-full h-full">
+        <div
+          className={cn(
+            'flex min-h-0 min-w-0 flex-1 flex-col',
+            projectType === 'el-village-doctor' &&
+              'bg-gradient-to-br from-muted/45 via-background to-muted/20',
+          )}
+        >
           <ProjectNav component={headerNav} />
           {children}
         </div>

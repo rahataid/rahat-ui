@@ -1,9 +1,11 @@
 'use client';
-import {
-  useCambodiaBeneficiary,
-  useCambodiaBeneficiaryTransactions,
-} from '@rahat-ui/query';
+import { useCambodiaBeneficiary } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/components/card';
 import {
   Tooltip,
   TooltipContent,
@@ -15,14 +17,25 @@ import { formatDT } from 'apps/rahat-ui/src/utils';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
-import HeaderWithBack from '../../components/header.with.back';
 import TransactionHistoryView from './transaction.history.view';
+import { villageDoctorDisplayName } from './use.beneficiary.table.columns';
+import {
+  VillageDoctorDetailChrome,
+  VillageDoctorField,
+  VillageDoctorSectionHeading,
+} from '../page-shell';
+
 export default function BeneficiaryDetail() {
-  const { id, benId } = useParams();
-  const { data, isLoading } = useCambodiaBeneficiary({
-    projectUUID: id,
+  const params = useParams() as { id?: string; benId?: string; vId?: string };
+  const benId = params.vId ?? params.benId;
+
+  const { data } = useCambodiaBeneficiary({
+    projectUUID: params.id,
     uuid: benId,
   }) as any;
+
+  console.log(data?.data, 'hello lishu');
+
   const [copyAction, setCopyAction] = useState<boolean>(false);
   const clickToCopy = (name: string) => {
     navigator.clipboard.writeText(name);
@@ -32,86 +45,85 @@ export default function BeneficiaryDetail() {
     }, 2000);
   };
 
-  console.log('Benef===>', data);
+  const vdLine = villageDoctorDisplayName(data?.data);
 
   return (
-    <div className="h-[calc(100vh-95px)] m-4">
-      <div className="flex justify-between items-center">
-        <HeaderWithBack
-          title="Beneficiary details"
-          subtitle="Here is the detailed view of selected beneficiary"
-          path={`/projects/el-village-doctor/${id}/villagers`}
-        />
-        {/* <div className="flex space-x-3">
-          <div className="flex bg-secondary rounded-full w-10 h-10 justify-center items-center hover:cursor-pointer">
-            <Edit2 color="skyBlue" size={20} />
-          </div>
+    <VillageDoctorDetailChrome
+      title="Villager details"
+      subtitle="Identifiers, onboarding data, and on-chain wallet for this villager record."
+      backHref={`/projects/el-village-doctor/${params.id}/villagers`}
+    >
+      <Card className="border-border/80 shadow-sm">
+        <CardHeader className="border-b border-border/60 pb-4">
+          <VillageDoctorSectionHeading
+            title="Profile"
+            description="Personally identifiable fields as captured for the program."
+          />
+        </CardHeader>
+        <CardContent className="pt-6">
+          <dl className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <VillageDoctorField label="Villager name">
+              {data?.data?.piiData?.name ?? '—'}
+            </VillageDoctorField>
+            <VillageDoctorField label="Gender">
+              {data?.data?.gender ?? '—'}
+            </VillageDoctorField>
+            <VillageDoctorField label="Phone number">
+              {data?.data?.piiData?.phone ?? '—'}
+            </VillageDoctorField>
+            <VillageDoctorField label="Record created">
+              {data?.data?.createdAt ? formatDT(data?.data?.createdAt) : '—'}
+            </VillageDoctorField>
+            <VillageDoctorField label="Wallet address">
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex cursor-pointer items-center gap-2 text-left"
+                      onClick={() =>
+                        clickToCopy(data?.data?.walletAddress ?? '')
+                      }
+                    >
+                      <span>{truncateEthAddress(data?.data?.walletAddress)}</span>
+                      {copyAction ? (
+                        <CopyCheck size={18} strokeWidth={1.5} />
+                      ) : (
+                        <Copy size={18} strokeWidth={1.5} />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p className="text-xs font-medium">
+                      {copyAction ? 'Copied' : 'Click to copy'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </VillageDoctorField>
+            <VillageDoctorField label="Villager type">
+              <Badge variant="secondary" className="font-medium">
+                {data?.data?.type ?? 'UNKNOWN'}
+              </Badge>
+            </VillageDoctorField>
+            <VillageDoctorField label="Referred by (Village Doctor)">
+              {vdLine === '-' ? '—' : vdLine}
+            </VillageDoctorField>
+          </dl>
+        </CardContent>
+      </Card>
 
-          <div className="flex bg-secondary rounded-full w-10 h-10 justify-center items-center hover:cursor-pointer">
-            <Trash2 color="red" size={20} />
-          </div>
-        </div> */}
-      </div>
-      <div className="p-5 rounded-md border grid grid-cols-4 gap-5 mb-5">
-        <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
-          <p className="font-medium">{data?.data?.piiData?.name ?? '-'}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{data?.data?.gender ?? '-'}</p>
-        </div>
-
-        <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{data?.data?.piiData?.phone ?? '-'}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">
-            Beneficiary Data Upload Date
-          </h1>
-          <p className="font-medium">
-            {/* {data?.data?.createdAt.toLocaleString()} */}
-            {data?.data?.createdAt ? formatDT(data?.data?.createdAt) : '-'}
-          </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex gap-3 cursor-pointer"
-                onClick={() => clickToCopy(data?.data?.walletAddress)}
-              >
-                <p>{truncateEthAddress(data?.data?.walletAddress)}</p>
-                {copyAction ? (
-                  <CopyCheck size={20} strokeWidth={1.5} />
-                ) : (
-                  <Copy size={20} strokeWidth={1.5} />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary" side="bottom">
-                <p className="text-xs font-medium">
-                  {copyAction ? 'copied' : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
-
-          <Badge variant="secondary">{data?.data?.type ?? 'UNKNOWN'}</Badge>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Referred By</h1>
-          <p className="font-medium">{data?.data?.healthWorker?.name ?? '-'}</p>
-        </div>
-      </div>
-      <div className="">
-        <h1 className="text-2xl mb-5">Transactions</h1>
-        <TransactionHistoryView walletAddress={data?.data?.walletAddress} />
-      </div>
-    </div>
+      <Card className="border-border/80 shadow-sm">
+        <CardHeader className="border-b border-border/60 pb-4">
+          <VillageDoctorSectionHeading
+            title="Transactions"
+            description="On-chain activity tied to this villager wallet."
+          />
+        </CardHeader>
+        <CardContent className="pt-6">
+          <TransactionHistoryView walletAddress={data?.data?.walletAddress} />
+        </CardContent>
+      </Card>
+    </VillageDoctorDetailChrome>
   );
 }

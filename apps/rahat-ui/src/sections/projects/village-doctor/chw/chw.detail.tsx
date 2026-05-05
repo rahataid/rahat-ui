@@ -1,5 +1,13 @@
 'use client';
-import { useCambodiaHealthWorkerByUUIDStats, useCHWGet } from '@rahat-ui/query';
+import {
+  useCambodiaHealthWorkerByUUIDStats,
+  useCHWGet,
+} from '@rahat-ui/query';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/components/card';
 import {
   Tooltip,
   TooltipContent,
@@ -7,11 +15,16 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { CoinsIcon, Copy, CopyCheck, Ticket, Users2Icon } from 'lucide-react';
+import { Copy, CopyCheck, ShoppingBag, UserCheck, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import HeaderWithBack from '../../components/header.with.back';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import {
+  VillageDoctorDetailChrome,
+  VillageDoctorField,
+  VillageDoctorSectionHeading,
+} from '../page-shell';
+
 export default function ChwDetail() {
   const { id, chwId } = useParams();
   const { data } = useCHWGet({ projectUUID: id, uuid: chwId as string });
@@ -28,101 +41,81 @@ export default function ChwDetail() {
       setCopyAction(false);
     }, 2000);
   };
+
   return (
-    <div className="h-[calc(100vh-95px)] m-4">
-      <div className="flex space-x-3 mb-10">
-        <HeaderWithBack
-          title={data?.data?.name}
-          subtitle="Here is the detailed view of selected village doctor"
-          path={`/projects/el-village-doctor/${id}/chw`}
+    <VillageDoctorDetailChrome
+      title={data?.data?.name}
+      subtitle="Referral performance and identity for this Village Doctor."
+      backHref={`/projects/el-village-doctor/${id}/chw`}
+    >
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <DataCard
+          title="Successful referrals"
+          number={String(stats?.data?.sales ?? '—')}
+          Icon={UserCheck}
+          className="rounded-xl border-border/80 shadow-sm"
+        />
+        <DataCard
+          title="Villagers referred"
+          number={String(stats?.data?.leads ?? '—')}
+          Icon={Users}
+          className="rounded-xl border-border/80 shadow-sm"
+        />
+        <DataCard
+          title="Eye checkups"
+          number={String(stats?.data?.leads_converted ?? '—')}
+          Icon={ShoppingBag}
+          className="rounded-xl border-border/80 shadow-sm"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
-        <DataCard
-          title="Sales by CHW"
-          number={stats?.data?.sales}
-          Icon={CoinsIcon}
-          className="rounded-lg border-solid "
-        />
-        <DataCard
-          title="Villagers Referred"
-          number={stats?.data?.leads}
-          Icon={Users2Icon}
-          className="rounded-lg border-solid"
-        />
-        <DataCard
-          title="Eye Checkup in VC"
-          number={stats?.data?.leads_converted}
-          Icon={Ticket}
-          className="rounded-lg border-solid "
-        />
-      </div>
-
-      <div className="p-5 rounded-md border grid grid-cols-4 gap-5">
-        <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex gap-3 cursor-pointer"
-                onClick={() => clickToCopy(data?.data?.walletAddress)}
-              >
-                <p>{truncateEthAddress(data?.data?.walletAddress)}</p>
-                {copyAction ? (
-                  <CopyCheck size={20} strokeWidth={1.5} />
-                ) : (
-                  <Copy size={20} strokeWidth={1.5} />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary" side="bottom">
-                <p className="text-xs font-medium">
-                  {copyAction ? 'copied' : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{data?.data?.phone}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">UserName</h1>
-          <p className="font-medium">{data?.data?.koboUsername}</p>
-        </div>
-
-        {/* <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
-          <p className="font-medium">
-            <Badge>-</Badge>
-          </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Eye Checkup Status</h1>
-          <p className="font-medium">
-            <Badge>-</Badge>
-          </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Glasses Status</h1>
-          <p className="font-medium">
-            <Badge>-</Badge>
-          </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Voucher Type</h1>
-          <p className="font-medium">
-            <Badge>-</Badge>
-          </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Voucher Status</h1>
-          <p className="font-medium">
-            <Badge>-</Badge>
-          </p>
-        </div> */}
-      </div>
-    </div>
+      <Card className="border-border/80 shadow-sm">
+        <CardHeader className="border-b border-border/60 pb-4">
+          <VillageDoctorSectionHeading
+            title="Account"
+            description="Wallet and data-collection identifiers."
+          />
+        </CardHeader>
+        <CardContent className="pt-6">
+          <dl className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <VillageDoctorField label="Wallet address">
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex cursor-pointer items-center gap-2 text-left"
+                      onClick={() =>
+                        clickToCopy(data?.data?.walletAddress ?? '')
+                      }
+                    >
+                      <span>
+                        {truncateEthAddress(data?.data?.walletAddress)}
+                      </span>
+                      {copyAction ? (
+                        <CopyCheck size={18} strokeWidth={1.5} />
+                      ) : (
+                        <Copy size={18} strokeWidth={1.5} />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p className="text-xs font-medium">
+                      {copyAction ? 'Copied' : 'Click to copy'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </VillageDoctorField>
+            <VillageDoctorField label="Phone number">
+              {data?.data?.phone ?? '—'}
+            </VillageDoctorField>
+            <VillageDoctorField label="Kobo username">
+              {data?.data?.koboUsername ?? '—'}
+            </VillageDoctorField>
+          </dl>
+        </CardContent>
+      </Card>
+    </VillageDoctorDetailChrome>
   );
 }

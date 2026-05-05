@@ -13,10 +13,8 @@ export default function CommisionView() {
   const { data, isFetching } = useCambodiaCommisionCurrent({
     projectUUID: id as string,
   });
-  console.log(data);
-  const current = false;
   return (
-    <div>
+    <div className="flex min-h-full flex-col bg-background">
       {isFetching ? (
         <div className="flex items-center justify-center mt-4">
           <div className="text-center">

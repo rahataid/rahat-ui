@@ -10,19 +10,21 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/components/card';
 import { UUID } from 'crypto';
+import { SlidersHorizontal } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React from 'react';
-import HeaderWithBack from '../../components/header.with.back';
 import SearchInput from '../../components/search.input';
-import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
-import {
-  useCambodiaBeneficiaryTableColumns,
-  useDiscardedCambodiaBeneficiaryTableColumns,
-} from './use.beneficiary.table.columns';
+import { useDiscardedCambodiaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { VillageDoctorDetailChrome } from '../page-shell';
 
 export default function DiscardedBeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -38,7 +40,6 @@ export default function DiscardedBeneficiaryView() {
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    resetSelectedListItems,
   } = usePagination();
 
   const debouncedSearch = useDebounce(filters, 500);
@@ -81,21 +82,21 @@ export default function DiscardedBeneficiaryView() {
     },
   });
   return (
-    <>
-      <div className="p-4 bg-white ">
-        <div className="flex justify-between items-center mb-4">
-          <HeaderWithBack
-            title="Discarded Villagers"
-            subtitle="Here is the list of all discarded villagers"
-            path={`/projects/el-village-doctor/${id}/villagers`}
-          />
-        </div>
-
-        <div className="rounded-lg border bg-card p-4 ">
-          <div className="flex justify-between space-x-2 mb-2">
+    <VillageDoctorDetailChrome
+      title="Discarded villagers"
+      subtitle="Records removed from active reporting. Use search to investigate specific entries."
+      backHref={`/projects/el-village-doctor/${id}/villagers`}
+    >
+      <Card className="overflow-hidden border-border/80 shadow-sm">
+        <CardHeader className="border-b border-border/60 px-5 py-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+            Filters
+          </div>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <SearchInput
               name="name"
-              className="w-[100%]"
+              className="w-full lg:max-w-md"
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ??
                 filters?.name
@@ -103,18 +104,29 @@ export default function DiscardedBeneficiaryView() {
               onSearch={(event) => handleFilterChange(event)}
             />
           </div>
-          <CambodiaTable table={table} loading={isLoading} />
-        </div>
-      </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={(data?.response?.meta as any) || { total: 0, currentPage: 0 }}
-        perPage={pagination?.perPage}
-        total={data?.response?.meta?.total || 0}
-      />
-    </>
+        </CardHeader>
+        <CardContent className="space-y-0 p-0">
+          <CambodiaTable
+            table={table}
+            loading={isLoading}
+            tableHeight="h-[calc(100vh-420px)]"
+          />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            meta={
+              (data?.response?.meta as any) || {
+                total: 0,
+                currentPage: 0,
+              }
+            }
+            perPage={pagination?.perPage}
+            total={data?.response?.meta?.total || 0}
+          />
+        </CardContent>
+      </Card>
+    </VillageDoctorDetailChrome>
   );
 }

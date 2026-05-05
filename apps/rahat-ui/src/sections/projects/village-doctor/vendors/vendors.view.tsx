@@ -17,6 +17,12 @@ import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CambodiaTable from '../table.component';
 import { useCambodiaVendorsTableColumns } from './use.vendors.table.columns';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/components/card';
+import { SlidersHorizontal } from 'lucide-react';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
@@ -76,40 +82,53 @@ export default function VendorsView() {
   };
 
   return (
-    <>
-      <div className="p-4">
-        <div className="mb-4">
-          <h1 className="font-semibold text-2xl">Optical Eye Center</h1>
-          <p className="text-muted-foreground text-base">
-            Track all the optical eye center reports here.
+    <div className="flex h-full min-h-0 flex-col bg-background">
+      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            Eye Partners
+          </h1>
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Manage Eye Partner profiles, assignments, and performance for this
+            program.
           </p>
         </div>
-        <div className="rounded border bg-card p-4">
-          <div className="flex justify-between space-x-2 mb-2">
+      </div>
+
+      <div className="flex-1 space-y-6 overflow-auto p-6">
+        <Card className="flex flex-col overflow-hidden">
+          <CardHeader className="border-b border-border px-5 py-4">
+            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+              Search
+            </div>
             <SearchInput
               name="name"
-              className="w-full"
+              className="w-full lg:max-w-sm"
               value={table.getColumn('name')?.getFilterValue() as string}
               onSearch={(event) => handleFilterChange(event)}
             />
-          </div>
-          <CambodiaTable
-            table={table}
-            tableHeight="h-[calc(100vh-340px)]"
-            loading={isLoading}
-          />
-        </div>
-
-        <Pagination
-          pageIndex={table.getState().pagination.pageIndex}
-          pageCount={table.getPageCount()}
-          setPageSize={table.setPageSize}
-          canPreviousPage={table.getCanPreviousPage()}
-          previousPage={table.previousPage}
-          canNextPage={table.getCanNextPage()}
-          nextPage={table.nextPage}
-        />
+          </CardHeader>
+          <CardContent className="space-y-0 p-0">
+            <CambodiaTable
+              table={table}
+              tableHeight="h-[calc(100vh-420px)]"
+              loading={isLoading}
+            />
+            <div className="border-t border-border/70 bg-muted/15 px-3 py-2">
+              <Pagination
+                pageIndex={table.getState().pagination.pageIndex}
+                pageCount={table.getPageCount()}
+                setPageSize={table.setPageSize}
+                canPreviousPage={table.getCanPreviousPage()}
+                previousPage={table.previousPage}
+                canNextPage={table.getCanNextPage()}
+                nextPage={table.nextPage}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }

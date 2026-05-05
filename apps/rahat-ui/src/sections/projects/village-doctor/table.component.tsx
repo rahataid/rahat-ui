@@ -8,8 +8,8 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { CircleEllipsisIcon } from 'lucide-react';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 
 type IProps = {
   table: Table<any>;
@@ -17,63 +17,91 @@ type IProps = {
   loading?: boolean;
 };
 
-export default function CambodiaTable({ table, tableHeight, loading }: IProps) {
+export default function CambodiaTable({
+  table,
+  tableHeight,
+  loading,
+}: IProps) {
   return (
-    <TableComponent>
-      <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
-        <TableHeader className="sticky top-0 bg-card z-0">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+    <div className="overflow-hidden rounded-b-none border-x border-b border-border/80 bg-card shadow-[inset_0_1px_0_0_hsl(var(--border)/0.5)]">
+      <TableComponent>
+        <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
+          <TableHeader className="sticky top-0 z-10 bg-muted/95 backdrop-blur-sm supports-[backdrop-filter]:bg-muted/80">
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
+                key={headerGroup.id}
+                className="border-border/60 hover:bg-transparent"
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={table.getAllColumns().length}
-                className="h-24 text-center"
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center mt-4">
-                    <div className="text-center">
-                      <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
-                      <Label className="text-base">Loading ...</Label>
-                    </div>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-48"
+                >
+                  <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                    <Loader2
+                      className="h-8 w-8 animate-spin text-primary/70"
+                      strokeWidth={1.75}
+                      aria-hidden
+                    />
+                    <span className="text-sm font-medium">Loading records…</span>
                   </div>
-                ) : (
-                  'No result found'
-                )}
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </ScrollArea>
-    </TableComponent>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row, index) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className={cn(
+                    'border-border/50 transition-colors',
+                    index % 2 === 0 ? 'bg-card' : 'bg-muted/[0.15]',
+                  )}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="tabular-nums text-sm">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-32 text-center"
+                >
+                  <p className="text-sm font-medium text-muted-foreground">
+                    No results match your filters.
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground/90">
+                    Try adjusting search or date range.
+                  </p>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </ScrollArea>
+      </TableComponent>
+    </div>
   );
 }

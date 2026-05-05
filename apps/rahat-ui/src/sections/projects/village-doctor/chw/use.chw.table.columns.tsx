@@ -17,11 +17,11 @@ export const useCambodiaChwTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('koboUsername')}</div>,
     },
 
-    {
-      accessorKey: 'Sales',
-      header: 'Sales',
-      cell: ({ row }) => <div> {row?.original?._count?.SALE} </div>,
-    },
+    // {
+    //   accessorKey: 'Sales',
+    //   header: 'Sales',
+    //   cell: ({ row }) => <div> {row?.original?._count?.SALE} </div>,
+    // },
     {
       accessorKey: 'villagers referred',
       header: 'Villagers Referred',
@@ -41,7 +41,7 @@ export const useCambodiaChwTableColumns = () => {
     {
       accessorKey: 'optical eye center',
       accessorFn: (row) => row.vendor,
-      header: 'Optical Eye Center',
+      header: 'Eye Partner',
       cell: ({ row }) => <div> {row?.original?.vendor?.name} </div>,
     },
 

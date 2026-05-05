@@ -33,7 +33,7 @@ export const useConversionListTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Beneficiary Name',
+      header: 'Villager Name',
       cell: ({ row }) => <div>{row?.original?.pii?.name ?? '-'}</div>,
     },
     {

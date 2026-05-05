@@ -76,15 +76,18 @@ export default function ProjectDetail() {
           </>
         )}
 
-      <div className="flex flex-row mt-4 mb-4 justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-semibold text-[18px] mb-2">Data Overview</h1>
-          <p className="text-muted-foreground text-base">
-            This section provides the visualization of the system data
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            Data overview
+          </h2>
+          <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Visualize referrals, disbursements, and program activity across the
+            selected period.
           </p>
         </div>
 
-        <div>
+        <div className="flex flex-shrink-0 flex-wrap gap-2 sm:justify-end">
           <DropdownComponent
             transformedData={transformedMonthData}
             title={'Months'}
@@ -99,7 +102,7 @@ export default function ProjectDetail() {
           />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {lineChartReport?.data?.map((item) => {
           return (
             <CambodiaLineCharts

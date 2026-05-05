@@ -30,6 +30,7 @@ import {
   CollapsibleTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/collapsible';
 import { cn } from '@rahat-ui/shadcn/src';
+import { toast } from 'react-toastify';
 
 function buildConsumerDetailQuery(rowData: any): string {
   const p = new URLSearchParams();
@@ -145,12 +146,20 @@ export default function BeneficiaryView() {
   });
 
   const handleDownload = () => {
+    if (!meta?.total) {
+      toast.error('No data to download.');
+      return;
+    }
     setEnabled(true);
   };
 
   useEffect(() => {
-    if (enabled && isSuccess && referralExportData?.data) {
-      generateExcel(referralExportData.data, 'BeneficiaryReferral', 10);
+    if (enabled && isSuccess) {
+      if (!referralExportData?.data?.length) {
+        toast.error('No data to download.');
+      } else {
+        generateExcel(referralExportData.data, 'BeneficiaryReferral', 10);
+      }
       setEnabled(false);
     }
   }, [enabled, isSuccess, referralExportData?.data]);

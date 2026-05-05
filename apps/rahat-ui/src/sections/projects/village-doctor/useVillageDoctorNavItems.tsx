@@ -29,7 +29,7 @@ export const useNavItems = () => {
           icon: <Users size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Optical Eye Center',
+          title: 'Optical Eye Partner',
           path: `/projects/el-village-doctor/${id}/vendors`,
           subtitle: 20,
           icon: <Hospital size={18} strokeWidth={1.5} />,
@@ -47,7 +47,7 @@ export const useNavItems = () => {
         //   icon: <Coins size={18} strokeWidth={1.5} />,
         // },
         {
-          title: 'Community Health Worker',
+          title: 'Village Doctor',
           path: `/projects/el-village-doctor/${id}/chw`,
           subtitle: 20,
           icon: <Users size={18} strokeWidth={1.5} />,

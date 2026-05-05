@@ -11,28 +11,28 @@ export const useCambodiaBeneficiaryTableColumns = () => {
       header: 'Name',
       cell: ({ row }) => <div>{row?.original?.piiData?.name}</div>,
     },
-    {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => {
-        return <div>{row?.original?.type || 'UNKNOWN'}</div>;
-      },
-    },
+    // {
+    //   accessorKey: 'type',
+    //   header: 'Type',
+    //   cell: ({ row }) => {
+    //     return <div>{row?.original?.type || 'UNKNOWN'}</div>;
+    //   },
+    // },
     {
       accessorKey: 'phone',
       header: 'Phone',
       cell: ({ row }) => <div>{row?.original?.piiData?.phone}</div>,
     },
+    // {
+    //   accessorKey: 'gender',
+    //   header: 'Gender',
+    //   cell: ({ row }) => <div>{row?.original?.projectData?.gender}</div>,
+    // },
     {
-      accessorKey: 'gender',
-      header: 'Gender',
-      cell: ({ row }) => <div>{row?.original?.projectData?.gender}</div>,
-    },
-    {
-      accessorKey: 'communityHealthWorker',
-      header: 'Community Health Worker',
+      accessorKey: 'villageDoctor',
+      header: 'Village Doctor',
       cell: ({ row }) => {
-        return <div>{row?.original?.communityHealthWorker?.name || '-'}</div>;
+        return <div>{row?.original?.villageDoctor?.name || '-'}</div>;
       },
     },
 

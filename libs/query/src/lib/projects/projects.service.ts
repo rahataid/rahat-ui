@@ -718,6 +718,58 @@ export const useListConsentConsumer = (
   };
 };
 
+export const useExportBeneficiaryReferral = (
+  payload: GetConsumerData,
+  enabled?: boolean,
+) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const EXPORT_BENEFICIARY_REFERRAL = 'rpProject.beneficiary.exportReferral';
+
+  const query = useQuery({
+    queryKey: [EXPORT_BENEFICIARY_REFERRAL, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: EXPORT_BENEFICIARY_REFERRAL,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              referredAt: new Date(row?.createdAt).toLocaleString() || '',
+              referrerWalletAddress: row?.Referrer?.walletAddress?.toString() || '',
+              referrerPhone:
+                row?.Referrer?.phone || row?.Referrer?.extras?.phone || '',
+              refereeWalletAddress: row?.Referral?.walletAddress?.toString() || '',
+              refereePhone: row?.Referral?.phone || row?.Referral?.extras?.phone || '',
+              refereeGender: row?.Referral?.gender || row?.Referral?.extras?.gender || '',
+              voucherStatus: mapStatus(row?.Referral?.voucherStatus),
+              voucherUsage: mapStatus(row?.Referral?.eyeCheckupStatus),
+              glassPurchaseType: mapStatus(row?.Referral?.voucherType),
+              consent: row?.Referral?.extras?.consent,
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {

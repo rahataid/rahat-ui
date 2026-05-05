@@ -1,5 +1,5 @@
 import {
-  useListConsentConsumer,
+  useExportBeneficiaryReferral,
   usePagination,
   useProjectBeneficiaries,
 } from '@rahat-ui/query';
@@ -99,7 +99,7 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const { data: consumerData, isSuccess } = useListConsentConsumer(
+  const { data: referralExportData, isSuccess } = useExportBeneficiaryReferral(
     {
       projectUUID: id,
       ...filters,
@@ -149,11 +149,11 @@ export default function BeneficiaryView() {
   };
 
   useEffect(() => {
-    if (enabled && isSuccess && consumerData?.data) {
-      generateExcel(consumerData.data, 'Consumer', 9);
+    if (enabled && isSuccess && referralExportData?.data) {
+      generateExcel(referralExportData.data, 'BeneficiaryReferral', 10);
       setEnabled(false);
     }
-  }, [enabled, isSuccess, consumerData?.data]);
+  }, [enabled, isSuccess, referralExportData?.data]);
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
     const wb = XLSX.utils.book_new();
@@ -247,7 +247,7 @@ export default function BeneficiaryView() {
               table.getColumn('phone')?.setFilterValue(event.target.value)
             }
           />
-          {/* <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <ViewColumns table={table} />
             <Button
               type="button"
@@ -259,7 +259,7 @@ export default function BeneficiaryView() {
               <CloudDownload size={18} className="mr-1" />
               {enabled ? 'Downloading...' : 'Download'}
             </Button>
-          </div> */}
+          </div>
         </div>
 
         <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>

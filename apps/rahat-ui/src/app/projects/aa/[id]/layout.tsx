@@ -8,6 +8,7 @@ import {
   useEntities,
   useProjectChainSettings,
   useProjectContractSettings,
+  useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 import { ProjectTypes } from '@rahataid/sdk/enums';
@@ -26,19 +27,44 @@ export default function ProjectLayoutRoot({
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;
-  useAAProjectSettingsDatasource(uuid);
-  useProjectContractSettings(uuid);
-  useAAProjectSettingsHazardType(uuid);
-  useProjectSubgraphSettings(uuid);
-  useAAProjectSettingsContract(uuid);
-  // useAAProjectSettingsDatasource(uuid);
-  // useProjectContractSettings(uuid);
-  // useAAProjectSettingsHazardType(uuid);
-  // useProjectSubgraphSettings(uuid);
+  const { isLoading: isDatasourceLoading } =
+    useAAProjectSettingsDatasource(uuid);
+  const { isLoading: isContractLoading } = useProjectContractSettings(uuid);
+  const { isLoading: isHazardLoading } = useAAProjectSettingsHazardType(uuid);
+  const { isLoading: isSubgraphLoading } = useProjectSubgraphSettings(uuid);
+  const { isLoading: isAAContractLoading } = useAAProjectSettingsContract(uuid);
   useProjectChainSettings(uuid);
+
+  const settings = useProjectSettingsStore((s) => s.settings);
+
+  // Check if critical settings are already in the store (from localStorage)
+  const hasSettingsInStore =
+    !!settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] ||
+    !!settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE];
+
+  const isSettingsLoading =
+    !hasSettingsInStore &&
+    (isDatasourceLoading ||
+      isContractLoading ||
+      isHazardLoading ||
+      isSubgraphLoading ||
+      isAAContractLoading);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);
+
+  if (isSettingsLoading) {
+    return (
+      <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-65px)] gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          <p className="text-sm text-muted-foreground">
+            Loading project settings...
+          </p>
+        </div>
+      </ProjectLayout>
+    );
+  }
 
   return (
     // <GarphQlProvider>

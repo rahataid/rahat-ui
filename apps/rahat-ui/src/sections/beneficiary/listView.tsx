@@ -125,11 +125,13 @@ export default function ListView({
             placeholder="Pick Start Date"
             handleDateChange={handleDateChange}
             type="start"
+            selectedDate={filters?.startDate}
           />
           <DatePicker
             placeholder="Pick End Date"
             handleDateChange={handleDateChange}
             type="end"
+            selectedDate={filters?.endDate}
           />
 
           {/* <DropdownMenu>

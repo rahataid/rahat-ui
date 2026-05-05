@@ -49,3 +49,8 @@ Thumbs.db
 # Next.js
 .next
 .qodo
+
+.claude
+.claude-flow
+CLAUDE.md
+.mcp.json

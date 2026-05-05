@@ -204,8 +204,13 @@ export const useDeleteStakeholders = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       q.reset();
+      // Check if the operation was successful at the business logic level
+      if (data?.data?.isSuccess === false) {
+        return;
+      }
+      // Only show success toast and invalidate queries if truly successful
       qc.invalidateQueries({ queryKey: ['stakeholders'] });
       toast.fire({
         title: 'Stakeholder removed successfully',

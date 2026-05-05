@@ -13,7 +13,7 @@ export const useGetCommunicationLogs = (
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['communicationlogs', uuid, communicationId],
+    queryKey: ['communicationlogs', uuid, communicationId, activityId],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

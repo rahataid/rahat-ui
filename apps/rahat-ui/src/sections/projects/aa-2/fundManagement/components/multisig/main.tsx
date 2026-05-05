@@ -147,7 +147,7 @@ export default function MultiSigWalletView() {
         <Heading
           title="Gnosis Wallet Overview"
           description="Overview of your gnosis wallet"
-          titleStyle="text-2xl"
+          titleStyle="text-lg"
         />
         <MultisigProposeBtn
           projectUUID={projectUUID}

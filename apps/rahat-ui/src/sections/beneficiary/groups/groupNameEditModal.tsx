@@ -70,7 +70,7 @@ export default function GroupNameEditModal({
     };
     await updateBeneficiaryGroup.mutateAsync(payload, {
       onSuccess: () => {
-        window.location.reload();
+        // window.location.reload();
         onOpenChange(false);
       },
     });

@@ -41,6 +41,8 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { ConflictDialog } from './component/conflict-dialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 function StakeholdersView() {
   const router = useRouter();
@@ -60,6 +62,23 @@ function StakeholdersView() {
   } = usePagination();
   const debounceSearch = useDebounce(filters, 500);
   const showStoredPagination = searchParams.get('storePagination') === 'true';
+
+  // Stakeholder conflict dialog state
+  const [conflictGroupNames, setConflictGroupNames] = useState<string[]>([]);
+  const [conflictStakeholderName, setConflictStakeholderName] =
+    useState<string>('');
+  const stakeholderConflictDialog = useBoolean();
+
+  // Handle stakeholder deletion conflicts
+  const handleStakeholderConflict = useCallback(
+    (groupNames: string[], stakeholderName: string) => {
+      setConflictGroupNames(groupNames);
+      setConflictStakeholderName(stakeholderName);
+      stakeholderConflictDialog.onTrue();
+    },
+    [stakeholderConflictDialog],
+  );
+
   useEffect(() => {
     const prevPagination = getPaginationFromLocalStorage(showStoredPagination);
     setPagination(prevPagination);
@@ -72,7 +91,7 @@ function StakeholdersView() {
     stakeholdersMeta: state.stakeholdersMeta,
   }));
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const columns = useProjectStakeholdersTableColumns();
+  const columns = useProjectStakeholdersTableColumns(handleStakeholderConflict);
 
   const table = useReactTable({
     manualPagination: true,
@@ -99,123 +118,132 @@ function StakeholdersView() {
     [filters],
   );
   return (
-    <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-      <TabsContent value="stakeholders">
-        <div>
-          <h1 className="font-bold text-2xl text-label pl-4">Stakeholders</h1>
-        </div>
-      </TabsContent>
-      <TabsContent value="stakeholdersGroup">
-        <div>
-          <h1 className="font-bold text-2xl text-label pl-4">
-            Stakeholders Groups
-          </h1>
-        </div>
-      </TabsContent>
-      <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
-        Track all the stakeholders in the project
-      </p>
-
-      <div className="flex justify-between items-center p-4">
-        <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            id="stakeholders"
-            className="w-full data-[state=active]:bg-white"
-            value="stakeholders"
-          >
-            Stakeholders
-          </TabsTrigger>
-          <TabsTrigger
-            id="stakeholdersGroup"
-            className="w-full data-[state=active]:bg-white"
-            value="stakeholdersGroup"
-          >
-            Stakeholders Groups
-          </TabsTrigger>
-        </TabsList>
-
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-          hasContent={false}
-        >
-          <IconLabelBtn
-            name="Import Stakeholders"
-            Icon={CloudDownload}
-            handleClick={() =>
-              router.push(`/projects/aa/${projectId}/stakeholders/import`)
-            }
-            variant="outline"
-          />
-        </RoleAuth>
-      </div>
-      <TabsContent value="stakeholders">
-        <div className="px-4">
-          <div className="p-4 rounded-sm border">
-            <div className="flex mb-2 gap-2">
-              <SearchInput
-                className="w-full"
-                name="name"
-                onSearch={(e) => handleSearch(e, 'name')}
-                value={filters?.name || ''}
-              />
-              <SearchInput
-                className="w-full"
-                name="municipality"
-                onSearch={(e) => handleSearch(e, 'municipality')}
-                value={filters?.municipality || ''}
-              />
-              <SearchInput
-                className="w-full"
-                name="organization"
-                onSearch={(e) => handleSearch(e, 'organization')}
-                value={filters?.organization || ''}
-              />
-              <SearchInput
-                className="w-full"
-                name="support area"
-                onSearch={(e) => handleSearch(e, 'supportArea')}
-                value={filters?.supportArea || ''}
-              />
-              <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-                hasContent={false}
-              >
-                <AddButton
-                  path={`/projects/aa/${projectId}/stakeholders/add`}
-                  name="Stakeholder"
-                />
-              </RoleAuth>
-            </div>
-            <DemoTable table={table} message="No Stakeholders Available" />
-
-            <CustomPagination
-              meta={
-                stakeholdersMeta || {
-                  total: 0,
-                  currentPage: 0,
-                  lastPage: 0,
-                  perPage: 0,
-                  next: null,
-                  prev: null,
-                }
-              }
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              setPagination={setPagination}
-              total={stakeholdersMeta?.lastPage || 0}
-            />
+    <>
+      <ConflictDialog
+        open={stakeholderConflictDialog.value}
+        onOpenChange={stakeholderConflictDialog.setValue}
+        groupNames={conflictGroupNames}
+        stakeholderName={conflictStakeholderName}
+        conflictType="stakeholder"
+      />
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <TabsContent value="stakeholders">
+          <div>
+            <h1 className="font-bold text-2xl text-label pl-4">Stakeholders</h1>
           </div>
+        </TabsContent>
+        <TabsContent value="stakeholdersGroup">
+          <div>
+            <h1 className="font-bold text-2xl text-label pl-4">
+              Stakeholders Groups
+            </h1>
+          </div>
+        </TabsContent>
+        <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
+          Track all the stakeholders in the project
+        </p>
+
+        <div className="flex justify-between items-center p-4">
+          <TabsList className="border bg-secondary rounded">
+            <TabsTrigger
+              id="stakeholders"
+              className="w-full data-[state=active]:bg-white"
+              value="stakeholders"
+            >
+              Stakeholders
+            </TabsTrigger>
+            <TabsTrigger
+              id="stakeholdersGroup"
+              className="w-full data-[state=active]:bg-white"
+              value="stakeholdersGroup"
+            >
+              Stakeholders Groups
+            </TabsTrigger>
+          </TabsList>
+
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              name="Import Stakeholders"
+              Icon={CloudDownload}
+              handleClick={() =>
+                router.replace(`/projects/aa/${projectId}/stakeholders/import`)
+              }
+              variant="outline"
+            />
+          </RoleAuth>
         </div>
-      </TabsContent>
-      <TabsContent value="stakeholdersGroup">
-        <div className="px-4">
-          <StakeGoldersGroups />
-        </div>
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="stakeholders">
+          <div className="px-4">
+            <div className="p-4 rounded-sm border">
+              <div className="flex mb-2 gap-2">
+                <SearchInput
+                  className="w-full"
+                  name="name"
+                  onSearch={(e) => handleSearch(e, 'name')}
+                  value={filters?.name || ''}
+                />
+                <SearchInput
+                  className="w-full"
+                  name="municipality"
+                  onSearch={(e) => handleSearch(e, 'municipality')}
+                  value={filters?.municipality || ''}
+                />
+                <SearchInput
+                  className="w-full"
+                  name="organization"
+                  onSearch={(e) => handleSearch(e, 'organization')}
+                  value={filters?.organization || ''}
+                />
+                <SearchInput
+                  className="w-full"
+                  name="support area"
+                  onSearch={(e) => handleSearch(e, 'supportArea')}
+                  value={filters?.supportArea || ''}
+                />
+                <RoleAuth
+                  roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+                  hasContent={false}
+                >
+                  <AddButton
+                    path={`/projects/aa/${projectId}/stakeholders/add`}
+                    name="Stakeholder"
+                  />
+                </RoleAuth>
+              </div>
+              <DemoTable table={table} message="No Stakeholders Available" />
+
+              <CustomPagination
+                meta={
+                  stakeholdersMeta || {
+                    total: 0,
+                    currentPage: 0,
+                    lastPage: 0,
+                    perPage: 0,
+                    next: null,
+                    prev: null,
+                  }
+                }
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                setPagination={setPagination}
+                total={stakeholdersMeta?.lastPage || 0}
+              />
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="stakeholdersGroup">
+          <div className="px-4">
+            <StakeGoldersGroups />
+          </div>
+        </TabsContent>
+      </Tabs>
+    </>
   );
 }
 

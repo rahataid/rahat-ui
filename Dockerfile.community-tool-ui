@@ -1,57 +1,137 @@
-FROM node:18-alpine AS base
+# FROM node:18-alpine AS base
 
-# ------- Dependencies -------
+# # ------- Dependencies -------
+# FROM base AS deps
+# RUN apk add --no-cache libc6-compat python3 make g++
+# WORKDIR /app
+
+# # Install pnpm
+# RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# # Copy only what pnpm needs to install deps
+# COPY pnpm-lock.yaml package.json ./
+
+# RUN pnpm install --frozen-lockfile
+
+# # ------- Builder -------
+# FROM base AS builder
+# WORKDIR /app
+
+# RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# COPY --from=deps /app/node_modules ./node_modules
+# COPY . .
+
+# # Build community-tool-ui (increase heap for large Next.js build)
+# ENV NODE_OPTIONS="--max-old-space-size=4096"
+# RUN pnpm nx run community-tool-ui:build
+
+# # ------- Runner -------
+# FROM base AS runner
+# WORKDIR /app
+
+# ENV NODE_ENV=production
+# ENV NEXT_TELEMETRY_DISABLED=1
+
+# RUN addgroup --system --gid 1001 nodejs
+# RUN adduser --system --uid 1001 nextjs
+
+# # Copy the standalone output
+# COPY --from=builder /app/dist/apps/community-tool-ui/.next/standalone ./
+# COPY --from=builder /app/dist/apps/community-tool-ui/.next/static ./dist/apps/community-tool-ui/.next/static
+# COPY --from=builder /app/apps/community-tool-ui/public ./apps/community-tool-ui/public
+
+# # Install sharp for Next.js image optimization
+# RUN cd /tmp && npm init -y && npm install sharp
+# ENV NEXT_SHARP_PATH=/tmp/node_modules/sharp
+
+# # Create cache directory with correct permissions
+# RUN mkdir -p /app/dist/apps/community-tool-ui/.next/cache && chown -R nextjs:nodejs /app/dist/apps/community-tool-ui/.next/cache
+
+# USER nextjs
+
+# EXPOSE 3000
+# ENV PORT=3000
+# ENV HOSTNAME="0.0.0.0"
+
+# CMD ["node", "apps/community-tool-ui/server.js"]
+
+
+#############################################################################################################
+
+# -------- Base --------
+FROM node:18-alpine AS base
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# -------- Dependencies --------
 FROM base AS deps
 RUN apk add --no-cache libc6-compat python3 make g++
-WORKDIR /app
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
-
-# Copy only what pnpm needs to install deps
 COPY pnpm-lock.yaml package.json ./
-
 RUN pnpm install --frozen-lockfile
 
-# ------- Builder -------
+# -------- Builder --------
 FROM base AS builder
 WORKDIR /app
-
-RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build community-tool-ui (increase heap for large Next.js build)
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm nx run community-tool-ui:build
+RUN find dist/apps/community-tool-ui/.next/standalone -name "*.map" -delete
 
-# ------- Runner -------
-FROM base AS runner
+# -------- Sharp (image optimization) --------
+# Build sharp in a separate stage so native bindings match the final runtime arch
+FROM node:18-alpine AS sharp-builder
+RUN npm install --global sharp
+# Install into a clean directory we can copy from
+RUN mkdir /sharp && cd /sharp && npm init -y && npm install sharp
+
+# -------- Runtime prep --------
+FROM node:18-alpine AS prep
+
+# Copy node binary
+RUN cp -p /usr/local/bin/node /node
+
+# Copy all shared libs at their original absolute paths
+RUN ldd /usr/local/bin/node 2>/dev/null | \
+  grep -oE '(/usr)?/lib[^ ]+' | sort -u | \
+  while read lib; do \
+  mkdir -p "/collect$(dirname $lib)"; \
+  cp -pL "$lib" "/collect$(dirname $lib)/"; \
+  done
+
+# Copy CA certs for HTTPS
+RUN mkdir -p /collect/etc/ssl && cp -r /etc/ssl/certs /collect/etc/ssl/certs
+
+# -------- Runner --------
+FROM scratch
+
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+ENV NEXT_SHARP_PATH=/sharp/node_modules/sharp
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Node binary
+COPY --from=prep /node /node
 
-# Copy the standalone output
+# Shared libs + certs at correct absolute paths
+COPY --from=prep /collect/ /
+
+# Sharp for Next.js image optimization
+COPY --from=sharp-builder /sharp /sharp
+
+# Next.js app
 COPY --from=builder /app/dist/apps/community-tool-ui/.next/standalone ./
-COPY --from=builder /app/dist/apps/community-tool-ui/.next/static ./dist/apps/community-tool-ui/.next/static
-COPY --from=builder /app/apps/community-tool-ui/public ./apps/community-tool-ui/public
-
-# Install sharp for Next.js image optimization
-RUN cd /tmp && npm init -y && npm install sharp
-ENV NEXT_SHARP_PATH=/tmp/node_modules/sharp
-
-# Create cache directory with correct permissions
-RUN mkdir -p /app/dist/apps/community-tool-ui/.next/cache && chown -R nextjs:nodejs /app/dist/apps/community-tool-ui/.next/cache
-
-USER nextjs
+COPY --from=builder /app/dist/apps/community-tool-ui/.next/static \
+  ./dist/apps/community-tool-ui/.next/static
+COPY --from=builder /app/apps/community-tool-ui/public \
+  ./apps/community-tool-ui/public
 
 EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "apps/community-tool-ui/server.js"]
+CMD ["/node", "apps/community-tool-ui/server.js"]

@@ -100,7 +100,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   }, [qc, newCommsQueryClient, setNewCommsQueryClient]);
 
   useEffect(() => {
-    if (!queryClient) {
+    if (qc !== queryClient) {
       setQueryClient(qc);
     }
   }, [qc, queryClient, setQueryClient]);

@@ -221,6 +221,17 @@ export default function BeneficiaryView() {
         className="flex-1"
         showSelect={false}
       />
+      <SelectComponent
+        onChange={(e) => setFilters({ ...filters, noOfReferrals: e })}
+        name="No. of Referrals"
+        options={Array.from({ length: 10 }, (_, i) => ({
+          value: String(i + 1),
+          label: String(i + 1),
+        }))}
+        value={filters?.noOfReferrals || ''}
+        className="flex-1"
+        showSelect={false}
+      />
     </div>
   );
 
@@ -242,9 +253,9 @@ export default function BeneficiaryView() {
           <SearchInput
             className="w-full sm:flex-1 min-w-0"
             name="phone number"
-            value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
+            value={filters?.phoneNumber || ''}
             onSearch={(event) =>
-              table.getColumn('phone')?.setFilterValue(event.target.value)
+              setFilters({ ...filters, phoneNumber: event.target.value })
             }
           />
           <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -294,10 +305,12 @@ export default function BeneficiaryView() {
             setFilters={setFilters}
             total={meta?.total || 0}
             labelMapping={{
+              phoneNumber: 'Phone Number',
               consentStatus: 'Consent',
               voucherStatus: 'Voucher Status',
               eyeCheckupStatus: 'Voucher Usage',
               voucherType: 'Glass Type',
+              noOfReferrals: 'No. of Referrals',
             }}
           />
         )}

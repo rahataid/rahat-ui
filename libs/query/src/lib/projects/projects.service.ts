@@ -602,6 +602,8 @@ type GetConsumerData = {
   eyeCheckupStatus?: string;
   voucherType?: string;
   consentStatus?: string;
+  phoneNumber?: string;
+  noOfReferrals?: number | string;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {

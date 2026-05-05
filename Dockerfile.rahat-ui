@@ -1,53 +1,120 @@
-FROM node:20-alpine AS base
+# FROM node:20-alpine AS base
 
-# ------- Dependencies -------
+# # ------- Dependencies -------
+# FROM base AS deps
+# RUN apk add --no-cache libc6-compat python3 make g++
+# WORKDIR /app
+
+# # Install pnpm
+# RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# # Copy only what pnpm needs
+# COPY pnpm-lock.yaml package.json ./
+
+# RUN pnpm install --frozen-lockfile --prod=false
+
+# # ------- Builder -------
+# FROM base AS builder
+# WORKDIR /app
+
+# RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# COPY --from=deps /app/node_modules ./node_modules
+# COPY . .
+
+# # Build rahat-ui
+# ENV NODE_OPTIONS="--max-old-space-size=4096"
+# RUN pnpm nx run rahat-ui:build
+
+# # ------- Runner -------
+# FROM base AS runner
+# WORKDIR /app
+
+# ENV NODE_ENV=production
+# ENV NEXT_TELEMETRY_DISABLED=1
+# ENV NEXT_SHARP_PATH=/app/node_modules/sharp
+
+# RUN addgroup --system --gid 1001 nodejs
+# RUN adduser --system --uid 1001 nextjs
+
+# COPY --from=deps /app/node_modules ./node_modules
+# COPY --from=builder /app/dist/apps/rahat-ui/.next/standalone ./
+# COPY --from=builder /app/dist/apps/rahat-ui/.next/static ./dist/apps/rahat-ui/.next/static
+# COPY --from=builder /app/apps/rahat-ui/public ./apps/rahat-ui/public
+
+# RUN mkdir -p /app/dist/apps/rahat-ui/.next/cache && chown -R nextjs:nodejs /app/dist/apps/rahat-ui/.next/cache
+
+# USER nextjs
+
+# EXPOSE 3000
+# ENV PORT=3000
+# ENV HOSTNAME="0.0.0.0"
+
+# CMD ["node", "apps/rahat-ui/server.js"]
+
+# -------- Base --------
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# -------- Dependencies --------
 FROM base AS deps
 RUN apk add --no-cache libc6-compat python3 make g++
-WORKDIR /app
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
-
-# Copy only what pnpm needs
 COPY pnpm-lock.yaml package.json ./
+RUN pnpm install --frozen-lockfile
 
-RUN pnpm install --frozen-lockfile --prod=false
-
-# ------- Builder -------
+# -------- Builder --------
 FROM base AS builder
 WORKDIR /app
-
-RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build rahat-ui
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm nx run rahat-ui:build
+RUN find dist/apps/rahat-ui/.next/standalone -name "*.map" -delete
 
-# ------- Runner -------
-FROM base AS runner
+# -------- Runtime prep --------
+FROM node:20-alpine AS prep
+WORKDIR /app
+
+# Copy node binary to a known location
+RUN cp -p /usr/local/bin/node /node
+
+# Copy ALL shared libs to their ORIGINAL absolute paths
+# ldd on musl outputs: "\t/lib/ld-musl... (0x...)" or "libfoo => /lib/... (0x...)"
+RUN ldd /usr/local/bin/node 2>/dev/null | \
+  grep -oE '(/usr)?/lib[^ ]+' | sort -u | \
+  while read lib; do \
+  mkdir -p "/collect$(dirname $lib)"; \
+  cp -pL "$lib" "/collect$(dirname $lib)/"; \
+  done
+
+# Copy CA certs
+RUN mkdir -p /collect/etc/ssl && cp -r /etc/ssl/certs /collect/etc/ssl/certs
+
+# -------- Runner --------
+FROM scratch
+
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_SHARP_PATH=/app/node_modules/sharp
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Bring node binary
+COPY --from=prep /node /node
 
-COPY --from=deps /app/node_modules ./node_modules
+# Bring libs at their correct absolute paths
+COPY --from=prep /collect/ /
+
+# Bring app
 COPY --from=builder /app/dist/apps/rahat-ui/.next/standalone ./
-COPY --from=builder /app/dist/apps/rahat-ui/.next/static ./dist/apps/rahat-ui/.next/static
-COPY --from=builder /app/apps/rahat-ui/public ./apps/rahat-ui/public
-
-RUN mkdir -p /app/dist/apps/rahat-ui/.next/cache && chown -R nextjs:nodejs /app/dist/apps/rahat-ui/.next/cache
-
-USER nextjs
+COPY --from=builder /app/dist/apps/rahat-ui/.next/static \
+  ./dist/apps/rahat-ui/.next/static
+COPY --from=builder /app/apps/rahat-ui/public \
+  ./apps/rahat-ui/public
 
 EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "apps/rahat-ui/server.js"]
+CMD ["/node", "apps/rahat-ui/server.js"]

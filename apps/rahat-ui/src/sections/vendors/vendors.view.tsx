@@ -21,9 +21,11 @@ import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
+import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, setPagination } =
+   
     usePagination();
 
   const projectModal = useBoolean();
@@ -108,7 +110,7 @@ function VendorsView() {
       <div className="p-4">
         <div className="mb-4">
           <h1 className="font-semibold text-2xl text-label">Vendors</h1>
-          <p className="text-sub-label">Here is the list of all the vendors</p>
+          <p className="text-sub-label">Here is the list of all the vendorss</p>
         </div>
         <VendorsTable
           table={table}

@@ -96,6 +96,7 @@ const StakeholdersGroupsDetails = () => {
         onOpenChange={conflictDialogOpen.setValue}
         activities={conflictActivities}
         groupName={groupDetails?.name || 'Stakeholder Group'}
+        conflictType="group"
       />
 
       <div className="flex justify-between items-center">

@@ -133,7 +133,7 @@ export default function AssignFundsForm({
       return;
     }
 
-    const selectedGroup = benGroups.data.find(
+    const selectedGroup = benGroups?.data.find(
       (group) => group.uuid === data.beneficiaryGroupId,
     );
 
@@ -151,8 +151,8 @@ export default function AssignFundsForm({
 
   // Recompute total token amount whenever per-beneficiary amount or selected group changes
   useEffect(() => {
-    const selectedGroup = benGroups.data.find(
-      (group) => group.uuid === selectedGroupId,
+    const selectedGroup = benGroups?.data.find(
+      (group) => group?.uuid === selectedGroupId,
     );
     const count = selectedGroup?._count?.groupedBeneficiaries ?? 0;
     const total = tokenPerBenef * count;

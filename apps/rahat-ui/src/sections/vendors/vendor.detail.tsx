@@ -1,10 +1,8 @@
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React from 'react';
-import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
+import { Copy, CopyCheck, Trash2 } from 'lucide-react';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import CoreBtnComponent from '../../components/core.btn';
 import { useGetVendor, useRemoveVendor } from '@rahat-ui/query';
 import {
   AlertDialog,
@@ -83,11 +81,11 @@ export default function VendorDetail() {
             Icon={FolderPlus}
             handleClick={() => { }}
           /> */}
-          <CoreBtnComponent
+          {/* <CoreBtnComponent
             name="Edit"
             Icon={Pencil}
             handleClick={() => router.push(`/vendors/${id}/edit`)}
-          />
+          /> */}
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
               <Button

@@ -21,10 +21,9 @@ import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
-import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, setPagination } =
+  const { pagination, setNextPage, setPrevPage, setPerPage,setPagination } =
    
     usePagination();
 

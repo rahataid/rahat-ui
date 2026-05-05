@@ -21,7 +21,6 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
-import { useEffect, useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 import CreateGroupModal from './components/createGroupModal';
 import { DatePicker } from '../../components/datePicker';
@@ -35,8 +34,6 @@ type IProps = {
   isBulkAssigning: boolean;
   projectModal: any;
   groupModal: any;
-  projects: any;
-  handleFilterProjectSelect: (selectedProject: string) => void;
   filters: Record<string, any>;
   handleCreateGroup: any;
   handleDateChange: any;
@@ -48,47 +45,13 @@ export default function ListView({
   handleBulkAssign,
   isBulkAssigning,
   projectModal,
-  projects,
-  handleFilterProjectSelect,
   filters,
   handleCreateGroup,
   groupModal,
   handleDateChange,
   setFilters,
 }: IProps) {
-  const [selectedProject, setSelectedProject] = useState<null | Record<
-    string,
-    any
-  >>(null);
-
-  const handleSelectProject = (project: Record<string, any>) => {
-    setSelectedProject(project);
-    handleFilterProjectSelect(project.value);
-  };
   const router = useRouter();
-  const selectFilterProjectItems = [
-    {
-      name: 'All',
-      value: undefined,
-    },
-    {
-      name: 'Not Assigned',
-      value: 'NOT_ASSGNED',
-    },
-    ...projects.map((p: any) => ({
-      name: p.name,
-      value: p.uuid,
-    })),
-  ];
-
-  useEffect(() => {
-    if (filters?.projectId) {
-      const project = selectFilterProjectItems.find((p) => {
-        return p.value === filters?.projectId;
-      });
-      setSelectedProject(project);
-    }
-  }, [filters?.projectId, projects]);
 
   return (
     <>

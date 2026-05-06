@@ -1,10 +1,16 @@
 'use client';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { act, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useFundAssignmentStore } from './store';
 import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
+import { Pagination } from '@rumsan/sdk/types';
 
 export type InitiateFundTransfer = {
   from: string;
@@ -489,6 +495,87 @@ export const useCreateAASafeTransaction = () => {
       qc.invalidateQueries({
         queryKey: ['safeOwners'],
         exact: false,
+      });
+    },
+  });
+};
+export const useGetTokenDetails = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['aa.tokenDetails', projectUUID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.tokenDetails',
+          payload: {},
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
+};
+
+export const useGetTransferList = (projectUUID: UUID, payload: Pagination) => {
+  const q = useProjectAction(['aa.transferList']);
+
+  const query = useQuery({
+    queryKey: ['aa.transferList', projectUUID, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.transferList',
+          payload: { ...payload },
+        },
+      });
+      return mutate.response;
+    },
+    enabled: !!projectUUID,
+    placeholderData: keepPreviousData,
+  });
+  return query;
+};
+export const useAddProjectFund = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({ amount }: { amount: string }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.addProjectFund',
+          payload: { amount },
+        },
+      });
+    },
+    onSuccess: ({ data }) => {
+      q.reset();
+      toast.fire({
+        title: 'Fund added successfully.',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aa.tokenDetails', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while adding fund.',
+        icon: 'error',
+        text: errorMessage,
       });
     },
   });

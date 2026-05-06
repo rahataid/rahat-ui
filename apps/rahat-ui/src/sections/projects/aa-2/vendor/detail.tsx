@@ -18,16 +18,25 @@ import RedemptionRequestTable from './tables/redemption.request';
 import VendorsTransactionsHistory from './tables/transactions.history';
 import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
 import { getVendorRedirectRoute } from 'apps/rahat-ui/src/utils/navigation';
-import { useGetVendor } from '@rahat-ui/query';
+import {
+  useGetVendor,
+  PROJECT_SETTINGS_KEYS,
+  useTabConfiguration,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { useMemo } from 'react';
 
 const TabsTriggerStats = [
-  { title: 'Vendor Overview', value: 'vendorOverview' },
-  { title: 'Transaction History', value: 'transactionHistory' },
-  { title: 'Beneficiary List', value: 'beneficiaryList' },
-  { title: 'Redemption Request', value: 'redemptionRequest' },
-  { title: 'In-Kind Beneficiary List', value: 'inKindBeneficiaryList' },
-  { title: 'In-Kind Logs', value: 'inKindLogs' },
+  { title: 'Vendor Overview', value: 'vendorOverview', module: 'all' },
+  { title: 'Transaction History', value: 'transactionHistory', module: 'fund' },
+  { title: 'Beneficiary List', value: 'beneficiaryList', module: 'fund' },
+  { title: 'Redemption Request', value: 'redemptionRequest', module: 'fund' },
+  {
+    title: 'In-Kind Beneficiary List',
+    value: 'inKindBeneficiaryList',
+    module: 'inkind',
+  },
+  { title: 'In-Kind Logs', value: 'inKindLogs', module: 'inkind' },
 ];
 
 export default function Detail() {
@@ -36,6 +45,39 @@ export default function Detail() {
     'tab',
     'vendorOverview',
   );
+
+  // Get nav tabs configuration to check which modules are enabled
+  const { data: navTabsConfig } = useTabConfiguration(
+    id as UUID,
+    PROJECT_SETTINGS_KEYS.PROJECT_NAV_CONFIG,
+  );
+
+  // Check which modules are enabled in the nav configuration
+  const hasFundManagement = useMemo(() => {
+    return navTabsConfig?.value?.navsettings?.some(
+      (tab: { title: string }) => tab.title === 'Fund Management',
+    );
+  }, [navTabsConfig]);
+
+  const hasInkindManagement = useMemo(() => {
+    return navTabsConfig?.value?.navsettings?.some(
+      (tab: { title: string }) => tab.title === 'Inkind Management',
+    );
+  }, [navTabsConfig]);
+
+  // Filter tabs based on enabled modules
+  const visibleTabs = useMemo(() => {
+    return TabsTriggerStats.filter((tab) => {
+      if (tab.module === 'all') return true;
+      if (tab.module === 'fund') return hasFundManagement;
+      if (tab.module === 'inkind') return hasInkindManagement;
+      return false;
+    });
+  }, [hasFundManagement, hasInkindManagement]);
+
+  // Helper to check if tab should be rendered
+  const shouldRenderTab = (tabValue: string) =>
+    visibleTabs.some((tab) => tab.value === tabValue);
 
   const { data: vendorsDetail } = useGetVendor(vendorId as UUID);
   const vendor = vendorsDetail?.data?.find((v: any) => v.projectId === id);
@@ -67,7 +109,7 @@ export default function Detail() {
       />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
-          {TabsTriggerStats.map((tab) => (
+          {visibleTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
@@ -94,23 +136,35 @@ export default function Detail() {
           </div>
         </TabsContent>
 
-        <TabsContent value="transactionHistory">
-          <VendorsTransactionsHistory />
-        </TabsContent>
+        {shouldRenderTab('transactionHistory') && (
+          <TabsContent value="transactionHistory">
+            <VendorsTransactionsHistory />
+          </TabsContent>
+        )}
 
-        <TabsContent value="beneficiaryList">
-          <VendorsBeneficiaryList />
-        </TabsContent>
+        {shouldRenderTab('beneficiaryList') && (
+          <TabsContent value="beneficiaryList">
+            <VendorsBeneficiaryList />
+          </TabsContent>
+        )}
 
-        <TabsContent value="redemptionRequest">
-          <RedemptionRequestTable />
-        </TabsContent>
-        <TabsContent value="inKindBeneficiaryList">
-          <InKindBeneficiaryList />
-        </TabsContent>
-        <TabsContent value="inKindLogs">
-          <InKindLogs />
-        </TabsContent>
+        {shouldRenderTab('redemptionRequest') && (
+          <TabsContent value="redemptionRequest">
+            <RedemptionRequestTable />
+          </TabsContent>
+        )}
+
+        {shouldRenderTab('inKindBeneficiaryList') && (
+          <TabsContent value="inKindBeneficiaryList">
+            <InKindBeneficiaryList />
+          </TabsContent>
+        )}
+
+        {shouldRenderTab('inKindLogs') && (
+          <TabsContent value="inKindLogs">
+            <InKindLogs />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

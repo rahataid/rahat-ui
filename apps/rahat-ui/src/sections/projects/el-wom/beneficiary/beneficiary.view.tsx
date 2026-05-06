@@ -1,5 +1,5 @@
 import {
-  useListConsentConsumer,
+  useExportBeneficiaryReferral,
   usePagination,
   useProjectBeneficiaries,
 } from '@rahat-ui/query';
@@ -30,6 +30,7 @@ import {
   CollapsibleTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/collapsible';
 import { cn } from '@rahat-ui/shadcn/src';
+import { toast } from 'react-toastify';
 
 function buildConsumerDetailQuery(rowData: any): string {
   const p = new URLSearchParams();
@@ -99,7 +100,7 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const { data: consumerData, isSuccess } = useListConsentConsumer(
+  const { data: referralExportData, isSuccess } = useExportBeneficiaryReferral(
     {
       projectUUID: id,
       ...filters,
@@ -145,15 +146,23 @@ export default function BeneficiaryView() {
   });
 
   const handleDownload = () => {
+    if (!meta?.total) {
+      toast.error('No data to download.');
+      return;
+    }
     setEnabled(true);
   };
 
   useEffect(() => {
-    if (enabled && isSuccess && consumerData?.data) {
-      generateExcel(consumerData.data, 'Consumer', 9);
+    if (enabled && isSuccess) {
+      if (!referralExportData?.data?.length) {
+        toast.error('No data to download.');
+      } else {
+        generateExcel(referralExportData.data, 'BeneficiaryReferral', 10);
+      }
       setEnabled(false);
     }
-  }, [enabled, isSuccess, consumerData?.data]);
+  }, [enabled, isSuccess, referralExportData?.data]);
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
     const wb = XLSX.utils.book_new();
@@ -221,6 +230,17 @@ export default function BeneficiaryView() {
         className="flex-1"
         showSelect={false}
       />
+      <SelectComponent
+        onChange={(e) => setFilters({ ...filters, noOfReferrals: e })}
+        name="No. of Referrals"
+        options={Array.from({ length: 10 }, (_, i) => ({
+          value: String(i + 1),
+          label: String(i + 1),
+        }))}
+        value={filters?.noOfReferrals || ''}
+        className="flex-1"
+        showSelect={false}
+      />
     </div>
   );
 
@@ -242,12 +262,12 @@ export default function BeneficiaryView() {
           <SearchInput
             className="w-full sm:flex-1 min-w-0"
             name="phone number"
-            value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
+            value={filters?.phoneNumber || ''}
             onSearch={(event) =>
-              table.getColumn('phone')?.setFilterValue(event.target.value)
+              setFilters({ ...filters, phoneNumber: event.target.value })
             }
           />
-          {/* <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <ViewColumns table={table} />
             <Button
               type="button"
@@ -259,7 +279,7 @@ export default function BeneficiaryView() {
               <CloudDownload size={18} className="mr-1" />
               {enabled ? 'Downloading...' : 'Download'}
             </Button>
-          </div> */}
+          </div>
         </div>
 
         <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
@@ -294,10 +314,12 @@ export default function BeneficiaryView() {
             setFilters={setFilters}
             total={meta?.total || 0}
             labelMapping={{
+              phoneNumber: 'Phone Number',
               consentStatus: 'Consent',
               voucherStatus: 'Voucher Status',
               eyeCheckupStatus: 'Voucher Usage',
               voucherType: 'Glass Type',
+              noOfReferrals: 'No. of Referrals',
             }}
           />
         )}

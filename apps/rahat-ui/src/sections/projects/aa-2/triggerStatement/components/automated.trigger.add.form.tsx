@@ -316,7 +316,7 @@ export default function AddAutomatedTriggerForm({
 
                           {/* for heatwave */}
                           {triggerSource === 'prob_humidity' && (
-                            <SourceSubTypeField label="Humidity Type" />
+                            <SourceSubTypeField label="Measurement Period" />
                           )}
                           {triggerSource === 'temperature_c' && (
                             <SourceSubTypeField label="Temperature Type" />

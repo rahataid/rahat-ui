@@ -105,6 +105,11 @@ export const useElkenyaBeneficiaryTableColumns = ({
       ),
     },
     {
+      accessorKey: 'isImported',
+      header: 'Is Imported',
+      cell: ({ row }) => <div>{row.original.isImported ? 'Yes' : 'No'}</div>,
+    },
+    {
       accessorKey: 'isReferrer',
       header: 'Is Referrer',
       cell: ({ row }) => <div>{row.original.isReferrer ? 'Yes' : 'No'}</div>,

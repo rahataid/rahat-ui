@@ -19,21 +19,25 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { InKindLog } from '../types';
 
 type Txn = {
   title?: string;
   subtitle?: string;
   date?: string;
-  amount?: string;
+  amount?: string | number;
   hash?: string;
   beneficiaryName?: string;
+  type?: 'fsp' | 'cva' | 'inkind';
 };
+
 type Props = {
   loading: boolean;
   transaction: Txn[];
+  inkindTransactions: InKindLog[];
 };
 
-const Transaction = ({ amount, date, hash, title }: Txn) => {
+const Transaction = ({ amount, date, hash, title, type }: Txn) => {
   const { id } = useParams();
   const projectId = id as string;
 
@@ -91,30 +95,40 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
       </div>
       <div>
         <p className="font-semibold text-[14px] leading-[24px]">
-          {amount} {getAssetCode(settings, projectId)}
+          {amount}{' '}
+          {type === 'cva' || type === 'fsp'
+            ? getAssetCode(settings, projectId)
+            : ''}
+          {/* {getAssetCode(settings, projectId)} */}
         </p>
       </div>
     </div>
   );
 };
 
-export default function TransactionCard({ transaction, loading }: Props) {
+export default function TransactionCard({
+  transaction,
+  inkindTransactions,
+  loading,
+}: Props) {
   const [activeTab, setActiveTab] = useState('fsp');
 
+  console.log('inkindTransactions in card', inkindTransactions);
   const fspTransactions =
     transaction?.filter((txn) => txn.title === 'TOKEN_TRANSFER') || [];
   const cvaTransactions =
     transaction?.filter((txn) => txn.title === 'VENDOR_REIMBURSEMENT') || [];
-  const inKindTransactions =
-    transaction?.filter(
-      (txn) =>
-        txn.title !== 'TOKEN_TRANSFER' && txn.title !== 'VENDOR_REIMBURSEMENT',
-    ) || [];
+  // const inKindTransactions =
+  //   transaction?.filter(
+  //     (txn) =>
+  //       txn.title !== 'TOKEN_TRANSFER' && txn.title !== 'VENDOR_REIMBURSEMENT',
+  //   ) || [];
+  // const inKindTransactions = inkindTransactions.length;
 
   const TabsTriggerStats = [
     { value: 'fsp', title: 'FSP', count: fspTransactions.length },
     { value: 'cva', title: 'CVA', count: cvaTransactions.length },
-    { value: 'inkind', title: 'In-kind', count: inKindTransactions.length },
+    { value: 'inkind', title: 'In-kind', count: inkindTransactions.length },
   ];
 
   return (
@@ -145,7 +159,7 @@ export default function TransactionCard({ transaction, loading }: Props) {
             </div>
           ))}
         </div>
-      ) : transaction?.length ? (
+      ) : transaction?.length || inkindTransactions?.length ? (
         // <ScrollArea className=" h-[calc(350px)]">
         //   {transaction?.map((txn) => {
         //     return (
@@ -194,6 +208,7 @@ export default function TransactionCard({ transaction, loading }: Props) {
                       date={txn.date}
                       hash={txn.hash}
                       title={txn.title}
+                      type={'fsp'}
                     />
                   </div>
                 );
@@ -210,6 +225,7 @@ export default function TransactionCard({ transaction, loading }: Props) {
                       date={txn.date}
                       hash={txn.hash}
                       title={txn.title}
+                      type={'cva'}
                     />
                   </div>
                 );
@@ -218,19 +234,20 @@ export default function TransactionCard({ transaction, loading }: Props) {
             </TabsContent>
 
             <TabsContent value="inkind" className="mt-2  p-2 ">
-              {inKindTransactions?.map((txn) => {
+              {inkindTransactions?.map((txn) => {
                 return (
-                  <div className="mb-4 " key={txn.hash}>
+                  <div className="mb-4 " key={txn.txHash}>
                     <Transaction
-                      amount={txn.amount}
-                      date={txn.date}
-                      hash={txn.hash}
-                      title={txn.title}
+                      amount={txn.quantity}
+                      date={txn.redeemedAt}
+                      hash={txn.txHash}
+                      title={txn.groupInkind.inkind.name}
+                      type={'inkind'}
                     />
                   </div>
                 );
               })}
-              {!inKindTransactions.length && <NoResult />}
+              {!inkindTransactions.length && <NoResult />}
             </TabsContent>
           </ScrollArea>
         </Tabs>

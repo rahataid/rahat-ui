@@ -1,6 +1,8 @@
 import {
+  useGetLogsByVendor,
   useGetVendorRedemptionStats,
   useGetVendorStellarStats,
+  useLogsDetailsByVendor,
 } from '@rahat-ui/query/lib/aa';
 import {
   Tabs,
@@ -40,7 +42,7 @@ const TabsTriggerStats = [
 ];
 
 export default function Detail() {
-  const { id, vendorId }: { id: string; vendorId: string } = useParams();
+  const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
     'tab',
     'vendorOverview',
@@ -88,6 +90,17 @@ export default function Detail() {
     take: 10,
   });
 
+  const { data: logsData, isLoading: logsLoading } = useLogsDetailsByVendor({
+    projectUuid: id,
+    vendorId: vendorId,
+    page: 1,
+    perPage: 5,
+    order: 'desc',
+    sort: 'redeemedAt',
+  });
+
+  console.log('vendor inkind logs', logsData);
+
   const { data: redemptionStats, isLoading: redemptionStatsLoading } =
     useGetVendorRedemptionStats({
       projectUUID: id,
@@ -131,7 +144,8 @@ export default function Detail() {
             />
             <TransactionCard
               transaction={data?.data?.transactions}
-              loading={isLoading}
+              inkindTransactions={logsData?.data || []}
+              loading={isLoading || logsLoading}
             />
           </div>
         </TabsContent>

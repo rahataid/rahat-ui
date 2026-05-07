@@ -69,6 +69,33 @@ export const useGetVendorStellarStats = (payload: any) => {
   return query;
 };
 
+export const useGetLogsByVendor = (payload: {
+  projectId: UUID;
+  vendorId: UUID;
+}) => {
+  const q = useProjectAction();
+  const { projectId, vendorId } = payload;
+
+  const query = useQuery({
+    queryKey: ['aaProject.groupInkinds.getLogsByVendor', vendorId],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectId,
+        data: {
+          action: 'aaProject.groupInkinds.getLogsByVendor',
+          payload: { vendorId },
+        },
+      });
+      return mutate.response;
+    },
+  });
+
+  return query;
+};
+
 export const useGetVendorRedemptionStats = (payload: any) => {
   const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
@@ -256,6 +283,8 @@ export const useLogsDetailsByVendor = (payload: {
   page?: number;
   perPage?: number;
   search?: string;
+  sort?: string;
+  order?: string;
 }) => {
   const q = useProjectAction<any[]>();
   const {
@@ -265,6 +294,8 @@ export const useLogsDetailsByVendor = (payload: {
     page = 1,
     perPage = 10,
     search,
+    sort,
+    order,
   } = payload;
 
   const query = useQuery({
@@ -276,6 +307,8 @@ export const useLogsDetailsByVendor = (payload: {
       page,
       perPage,
       search,
+      sort,
+      order,
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
@@ -292,6 +325,8 @@ export const useLogsDetailsByVendor = (payload: {
             page,
             perPage,
             search: search ?? '',
+            sort,
+            order,
           },
         },
       });

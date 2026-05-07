@@ -1,11 +1,11 @@
-name: AA Heatwave Main CI/CD
+name: AA Heatwave NRCS RELEASE CI/CD
 on:
   push:
     branches:
-      - 'aa-heatwave-main'
+      - 'release/v4.0.0.-nrcs'
   pull_request:
     branches:
-      - 'aa-heatwave-main'
+      - 'release/v4.0.0.-nrcs'
   workflow_dispatch:
 
 env:
@@ -73,8 +73,8 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:aa-heatwave-main
-            esatya/rahat-ui:aa-heatwave-main-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/rahat-ui:release-v4.0.0-nrcs
+            esatya/rahat-ui:release-v4.0.0-nrcs-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
       
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}
@@ -103,7 +103,7 @@ jobs:
           secrets: |
             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
             github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
-            github/data/rahat/rahat-ui/main/aa/mcn community-tool-ui | ENV ;
+            github/data/rahat/rahat-ui/main/aa/heatwave community-ui | ENV ;
 
       - name: create environment file
         run: |
@@ -141,8 +141,8 @@ jobs:
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/community-tool-ui:aa-heatwave-main
-            esatya/community-tool-ui:aa-heatwave-main-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/community-tool-ui:release-v4.0.0-nrcs
+            esatya/community-tool-ui:release-v4.0.0-nrcs-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
 
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}

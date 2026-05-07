@@ -2,6 +2,7 @@ import {
   useExportBeneficiaryReferral,
   usePagination,
   useProjectBeneficiaries,
+  useSyncLegacyImported,
 } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -20,7 +21,18 @@ import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
 import ViewColumns from '../../components/view.columns';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ChevronDown, ChevronUp, CloudDownload } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import {
+  ChevronDown,
+  ChevronUp,
+  CloudDownload,
+  MoreVertical,
+} from 'lucide-react';
 import * as XLSX from 'xlsx';
 import SmsVoucherFiltersTags from '../filtersTags';
 import DataTablePagination from '../serverSidePagination';
@@ -107,6 +119,8 @@ export default function BeneficiaryView() {
     },
     enabled,
   );
+  const { mutateAsync: syncLegacyImport, isPending: isSyncingLegacy } =
+    useSyncLegacyImported(id);
 
   const meta = beneficiaries?.response?.meta;
 
@@ -151,6 +165,36 @@ export default function BeneficiaryView() {
       return;
     }
     setEnabled(true);
+  };
+
+  const handleSyncLegacyImport = async () => {
+    const shouldSync = window.confirm(
+      'Sync legacy beneficiaries now? This may take a while based on source data size.',
+    );
+    if (!shouldSync) return;
+
+    try {
+      const result = await syncLegacyImport();
+      if (result?.status === 'completed') {
+        toast.success(
+          `Legacy sync complete. Fetched ${result.fetched || 0}, inserted ${
+            result.inserted || 0
+          }.`,
+        );
+        return;
+      }
+      toast.info(
+        result?.reason
+          ? `Legacy sync skipped: ${result.reason}`
+          : 'Legacy sync skipped.',
+      );
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to sync legacy beneficiaries.';
+      toast.error(message);
+    }
   };
 
   useEffect(() => {
@@ -279,6 +323,26 @@ export default function BeneficiaryView() {
               <CloudDownload size={18} className="mr-1" />
               {enabled ? 'Downloading...' : 'Download'}
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="p-0"
+                  aria-label="More actions"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={handleSyncLegacyImport}
+                  disabled={isSyncingLegacy}
+                >
+                  {isSyncingLegacy ? 'Syncing...' : 'Sync Legacy'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 

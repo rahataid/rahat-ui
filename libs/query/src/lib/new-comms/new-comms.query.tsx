@@ -26,7 +26,7 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
     queryFn: () =>
       newCommunicationService.session.listBroadcasts(sessionId, payload),
 
-    queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', payload],
+    queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', payload, sessionId],
     staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;

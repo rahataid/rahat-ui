@@ -95,11 +95,6 @@ export const useAssignBenToProject = () => {
       projectUUID: UUID;
       beneficiaryUUID: UUID;
     }) => {
-      console.log(
-        'assigning beneficiary to project',
-        beneficiaryUUID,
-        projectUUID,
-      );
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -240,6 +235,7 @@ export const useBulkAssignBenToProject = () => {
 
 export const useAssignVendorToProject = () => {
   const q = useProjectAction();
+  const queryClient = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -271,6 +267,7 @@ export const useAssignVendorToProject = () => {
         title: 'Vendor Assigned Successfully',
         icon: 'success',
       });
+      queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -280,6 +277,24 @@ export const useAssignVendorToProject = () => {
         icon: 'error',
         text: errorMessage,
       });
+    },
+  });
+};
+
+export const useProjectSettingsGet = (uuid: UUID, name: string) => {
+  const q = useProjectAction(['settings.get', name]);
+  return useQuery({
+    queryKey: ['settings.get', uuid, name],
+    enabled: !!uuid && !!name,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: { name },
+        },
+      });
+      return mutate.data;
     },
   });
 };
@@ -410,7 +425,6 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     },
     // initialData: settings?.[uuid],
   });
-
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {
@@ -421,7 +435,6 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
       // setSettings({
       //   [uuid]: {
       //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
@@ -474,7 +487,6 @@ export const useProjectBlockChainSettings = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
       // setSettings({
       //   [uuid]: {
       //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
@@ -518,7 +530,6 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -527,7 +538,6 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
       // setSettings({
       //   [uuid]: {
       //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
@@ -577,7 +587,6 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
     }
   }, [query.data]);
 
@@ -610,7 +619,6 @@ export const useAAProjectSettingsContract = (uuid: UUID) => {
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -619,7 +627,6 @@ export const useAAProjectSettingsContract = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
     }
   }, [query.data]);
 
@@ -764,6 +771,88 @@ export const useBeneficiaryRedeemInfo = (payload: any) => {
           action: 'aaProject.beneficiary.getRedeemInfo',
           payload: {
             beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
+};
+
+export const useBeneficiaryRedeemInfoInkind = (payload: {
+  projectUUID: UUID;
+  beneficiaryUUID: UUID;
+}) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getRedeemInfoInkind',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.getRedeemInfoInkind',
+          payload: {
+            beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
+};
+export const useTokenDetails = (payload: {
+  projectUUID: UUID;
+  beneficiaryUUID: UUID;
+}) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getTokenDetails',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.getTokenDetails',
+          payload: {
+            uuid: beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
+};
+export const useInkindDetails = (payload: {
+  projectUUID: UUID;
+  beneficiaryUUID: UUID;
+}) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getInkindDetails',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.inKindsDetails',
+          payload: {
+            beneficiaryUuid: beneficiaryUUID,
           },
         },
       });

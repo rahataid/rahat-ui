@@ -1,4 +1,5 @@
 export * from './activities';
+export * from './settings';
 export * from './stats';
 export * from './trigger-statements';
 export * from './stakeholders';

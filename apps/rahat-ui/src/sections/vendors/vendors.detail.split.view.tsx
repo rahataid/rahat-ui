@@ -10,9 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import {
-  Trash2,
   Copy,
   CopyCheck,
   X,
@@ -61,6 +59,7 @@ export default function VendorsDetailSplitView({
   const router = useRouter();
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
+  const [showAllProjects, setShowAllProjects] = useState(false);
   const isVendorAssigned = React.useMemo(
     () => vendorsDetail?.status === 'Assigned',
     [vendorsDetail],
@@ -127,13 +126,13 @@ export default function VendorsDetailSplitView({
             handleContinueClick={deleteVendor}
           />
 
-          <TooltipComponent
+          {/* <TooltipComponent
             handleOnClick={() =>
               router.push(`/vendors/${vendorsDetail?.id}/edit`)
             }
             Icon={Pencil}
             tip="Edit"
-          />
+          /> */}
           {vendorsDetail?.projectName === 'N/A' && (
             <TooltipComponent
               handleOnClick={assignVoucher}
@@ -178,14 +177,39 @@ export default function VendorsDetailSplitView({
       <ScrollArea className="h-[calc(100vh-240px)]">
         <div className="p-4 flex flex-col space-y-4">
           <h1 className="font-medium">General</h1>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-start">
             <div className="flex items-center space-x-4">
               <FolderDot size={20} strokeWidth={1.5} />
               <p>Project Name</p>
             </div>
-            <p className="text-muted-foreground text-base">
-              {vendorsDetail?.projectName || '-'}
-            </p>
+            {Array.isArray(vendorsDetail?.projectName) &&
+            vendorsDetail.projectName.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 max-w-[200px] justify-end">
+                {(showAllProjects
+                  ? vendorsDetail.projectName
+                  : vendorsDetail.projectName.slice(0, 2)
+                ).map((item: any, index: number) => (
+                  <Badge
+                    key={item?.Project?.id || index}
+                    className="text-xs px-2 py-0.5 bg-blue-50 text-blue-500 border border-blue-200 rounded-full font-medium"
+                  >
+                    {item?.Project?.name || 'NA'}
+                  </Badge>
+                ))}
+                {vendorsDetail.projectName.length > 2 && (
+                  <Badge
+                    onClick={() => setShowAllProjects((prev) => !prev)}
+                    className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full font-medium cursor-pointer hover:bg-gray-200 transition-colors"
+                  >
+                    {showAllProjects
+                      ? 'Show less'
+                      : `+${vendorsDetail.projectName.length - 2} more`}
+                  </Badge>
+                )}
+              </div>
+            ) : (
+              <span className="text-gray-400 text-sm">NA</span>
+            )}
           </div>
 
           <div className="flex justify-between items-center">

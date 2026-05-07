@@ -13,16 +13,30 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
-export const useProjectStakeholdersTableColumns = () => {
+export const useProjectStakeholdersTableColumns = (
+  onConflict?: (groupNames: string[], stakeholderName: string) => void,
+) => {
   const router = useRouter();
   const { id } = useParams();
   const removeStakeholder = useDeleteStakeholders();
 
-  const handleDelete = async (uuid: string) => {
-    await removeStakeholder.mutateAsync({
-      projectUUID: id as UUID,
-      stakeholderPayload: { uuid },
-    });
+  const handleDelete = async (uuid: string, stakeholderName: string) => {
+    try {
+      const response = await removeStakeholder.mutateAsync({
+        projectUUID: id as UUID,
+        stakeholderPayload: { uuid },
+      });
+
+      // Check if response indicates a conflict
+      if (response?.data?.isSuccess === false && response?.data?.groupNames) {
+        // Show conflict dialog with group names
+        onConflict?.(response.data.groupNames, stakeholderName);
+      }
+      // If successful, the success handler in the mutation will show toast
+    } catch (error) {
+      // Error handler in the mutation will show error toast
+      console.error('Error deleting stakeholder:', error);
+    }
   };
   const columns: ColumnDef<any>[] = [
     {
@@ -121,7 +135,7 @@ export const useProjectStakeholdersTableColumns = () => {
                 dialogTitle="Delete"
                 tip="Delete"
                 handleClick={() => {
-                  handleDelete(row.original.uuid);
+                  handleDelete(row.original.uuid, row.original.name);
                 }}
                 variant="destructive"
                 color="red"

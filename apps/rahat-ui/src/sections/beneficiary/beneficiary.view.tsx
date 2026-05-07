@@ -223,12 +223,12 @@ function BeneficiaryView() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-(--radix-dropdown-menu-trigger-width)">
             <DropdownMenuItem
-              onClick={() => router.push('/community-beneficiary')}
+              onClick={() => router.push('/import-beneficiary')}
             >
               Import from Community Tool
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => router.push('/beneficiary/import')}
+              onClick={() => router.push('/beneficiary-import')}
             >
               Import from Excel Sheet
             </DropdownMenuItem>

@@ -76,7 +76,7 @@ export default function MultiSigWalletView() {
     {
       title: 'Total Balance',
       tip: 'The total amount of available Rahat tokens currently held in the Safe wallet that can be proposed and added to the Project AA Project balance.',
-      content: `${safeOwners?.tokenBalance} RHT` || 'N/A',
+      content: `${safeOwners?.projectBalance} RHT` || 'N/A',
       color: 'green',
       icon: <Banknote strokeWidth={2.5} />,
     },
@@ -147,11 +147,11 @@ export default function MultiSigWalletView() {
         <Heading
           title="Gnosis Wallet Overview"
           description="Overview of your gnosis wallet"
-          titleStyle="text-2xl"
+          titleStyle="text-lg"
         />
         <MultisigProposeBtn
           projectUUID={projectUUID}
-          tokenBalance={safeOwners?.tokenBalance || ''}
+          tokenBalance={safeOwners?.projectBalance || ''}
           isTxPending={safeOwners?.pendingTxCount > 0}
         />
       </div>

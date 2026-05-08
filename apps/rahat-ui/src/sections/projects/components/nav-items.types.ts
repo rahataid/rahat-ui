@@ -24,6 +24,7 @@ export type ProjectType =
   | 'C2C'
   | 'el-kenya'
   | 'el-cambodia'
+  | 'el-village-doctor'
   | 'sms-voucher'
   | 'el-crm';
 

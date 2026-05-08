@@ -9,7 +9,7 @@ RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN pnpm install 
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -34,15 +34,16 @@ WORKDIR /usr/src/app
 # Enable Corepack for pnpm at runtime
 RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
 
-# Use non-root user for production safety
-USER node
-
-# Copy built app and node_modules
+# Copy built app and node_modules (still as root)
 COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 
-# Expose default Next.js port
-EXPOSE 3000
+# Fix ownership — create cache dir and give node user full access
+RUN mkdir -p .next/cache/images && \
+    chown -R node:node /usr/src/app
 
-# Start Next.js in production
+# Switch to non-root user AFTER fixing permissions
+USER node
+
+EXPOSE 3000
 CMD ["node_modules/.bin/next", "start"]

@@ -22,6 +22,9 @@ const CambodiaLineCharts = ({ series, categories, name }: LineChartData) => {
         <LineChart
           series={[{ name: name, data: series }]}
           categories={categories}
+          lineChartOptions={{
+            legend: { show: false },
+          }}
         />
       </div>
     </>

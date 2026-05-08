@@ -222,432 +222,462 @@ export default function TemplatesView() {
         </div>
 
         <div className="flex-1 p-6 space-y-6 overflow-auto">
-        {templates.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-96 text-center">
-            <div className="rounded-full bg-muted p-4 mb-4">
-              <MessageSquare className="h-8 w-8 text-muted-foreground" />
+          {templates.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-96 text-center">
+              <div className="rounded-full bg-muted p-4 mb-4">
+                <MessageSquare className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                No templates yet
+              </h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                Create your first template to get started
+              </p>
+              <Link
+                href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
+              >
+                <Button size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Template
+                </Button>
+              </Link>
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              No templates yet
-            </h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Create your first template to get started
-            </p>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
-            >
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Template
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <>
-            {/* Stats Grid */}
-            <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
-              {statCards.map((stat) => (
-                <Card
-                  key={stat.title}
-                  className="relative overflow-hidden transition-shadow hover:shadow-md"
-                >
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1.5">
-                        <p className="text-sm font-medium text-muted-foreground leading-none">
-                          {stat.title}
-                        </p>
-                        <p
-                          className={`text-3xl font-bold tracking-tight ${stat.color}`}
-                        >
-                          {stat.value}
-                        </p>
+          ) : (
+            <>
+              {/* Stats Grid */}
+              <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+                {statCards.map((stat) => (
+                  <Card
+                    key={stat.title}
+                    className="relative overflow-hidden transition-shadow hover:shadow-md"
+                  >
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1.5">
+                          <p className="text-sm font-medium text-muted-foreground leading-none">
+                            {stat.title}
+                          </p>
+                          <p
+                            className={`text-3xl font-bold tracking-tight ${stat.color}`}
+                          >
+                            {stat.value}
+                          </p>
+                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
+                              <stat.icon
+                                className={`h-5 w-5 ${stat.iconColor}`}
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            <p className="max-w-[220px]">{stat.tooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
-                            <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                          <p className="max-w-[220px]">{stat.tooltip}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
-            {/* Filter Bar + Gallery Card */}
-            <Card className="flex flex-col">
-              {/* Filter Bar */}
-              <div className="border-b border-border px-5 py-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">
-                      Filters
-                    </span>
-                    {activeFilterCount > 0 && (
-                      <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
-                        {activeFilterCount}
+              {/* Filter Bar + Gallery Card */}
+              <Card className="flex flex-col">
+                {/* Filter Bar */}
+                <div className="border-b border-border px-5 py-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">
+                        Filters
                       </span>
+                      {activeFilterCount > 0 && (
+                        <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                          {activeFilterCount}
+                        </span>
+                      )}
+                    </div>
+                    {hasActiveFilters && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={resetFilters}
+                        className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Clear all
+                      </Button>
                     )}
                   </div>
+
+                  <div className="flex flex-wrap items-end gap-3">
+                    {/* Search */}
+                    <div className="flex-1 min-w-[180px] space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Search
+                      </Label>
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Search by name, content, channel"
+                          className="pl-8 h-9 text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Status Filter */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Status
+                      </Label>
+                      <Select
+                        value={statusFilter}
+                        onValueChange={setStatusFilter}
+                      >
+                        <SelectTrigger className="w-[150px] h-9 text-sm">
+                          <SelectValue placeholder="All Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">All Status</SelectItem>
+                          <SelectItem value="APPROVED">Approved</SelectItem>
+                          <SelectItem value="PENDING">Pending</SelectItem>
+                          <SelectItem value="REJECTED">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Channel Filter */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Channel
+                      </Label>
+                      <Select
+                        value={channelFilter}
+                        onValueChange={setChannelFilter}
+                      >
+                        <SelectTrigger className="w-[160px] h-9 text-sm">
+                          <SelectValue placeholder="All Channels" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">All Channels</SelectItem>
+                          {channelOptions.map((channel) => (
+                            <SelectItem key={channel} value={channel}>
+                              {channel}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Type Filter */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Type
+                      </Label>
+                      <Select value={typeFilter} onValueChange={setTypeFilter}>
+                        <SelectTrigger className="w-[140px] h-9 text-sm">
+                          <SelectValue placeholder="All Types" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">All Types</SelectItem>
+                          <SelectItem value="TEXT">Text</SelectItem>
+                          <SelectItem value="MEDIA">Media</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Active Filter Tags */}
                   {hasActiveFilters && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={resetFilters}
-                      className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                      Clear all
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                      <span className="text-xs text-muted-foreground">
+                        Showing {filteredTemplates.length} template
+                        {filteredTemplates.length === 1 ? '' : 's'} for:
+                      </span>
+                      {searchQuery.trim() !== '' && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                          Search: &quot;{searchQuery}&quot;
+                          <button
+                            type="button"
+                            onClick={() => setSearchQuery('')}
+                            className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      )}
+                      {statusFilter !== 'ALL' && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                          Status: {statusFilter}
+                          <button
+                            type="button"
+                            onClick={() => setStatusFilter('ALL')}
+                            className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      )}
+                      {channelFilter !== 'ALL' && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                          Channel: {channelFilter}
+                          <button
+                            type="button"
+                            onClick={() => setChannelFilter('ALL')}
+                            className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      )}
+                      {typeFilter !== 'ALL' && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                          Type: {typeFilter}
+                          <button
+                            type="button"
+                            onClick={() => setTypeFilter('ALL')}
+                            className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-end gap-3">
-                  {/* Search */}
-                  <div className="flex-1 min-w-[180px] space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">
-                      Search
-                    </Label>
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search by name, content, channel"
-                        className="pl-8 h-9 text-sm"
-                      />
+                {/* Template Gallery */}
+                <CardContent className="p-5">
+                  {filteredTemplates.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground" />
+                      <h3 className="text-lg font-semibold text-foreground">
+                        No matching templates
+                      </h3>
+                      <p className="mb-4 mt-1 text-sm text-muted-foreground">
+                        Try changing your search text or clearing filters.
+                      </p>
+                      <Button variant="outline" onClick={resetFilters}>
+                        <X className="mr-2 h-4 w-4" />
+                        Reset Filters
+                      </Button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {filteredTemplates.map((template: any) => {
+                        const channelName =
+                          template?.Transport?.name ||
+                          template?.channel ||
+                          'Unknown';
+                        const mediaItems = template?.media || [];
+                        const primaryMedia = mediaItems[0];
+                        const extraMediaCount = Math.max(
+                          mediaItems.length - 1,
+                          0,
+                        );
 
-                  {/* Status Filter */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">
-                      Status
-                    </Label>
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-[150px] h-9 text-sm">
-                        <SelectValue placeholder="All Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL">All Status</SelectItem>
-                        <SelectItem value="APPROVED">Approved</SelectItem>
-                        <SelectItem value="PENDING">Pending</SelectItem>
-                        <SelectItem value="REJECTED">Rejected</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                        return (
+                          <Card
+                            key={template.cuid || template.id}
+                            className="flex flex-col border-border/80 shadow-sm"
+                          >
+                            <CardHeader className="space-y-3 pb-2">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0 flex-1">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <CardTitle className="truncate text-lg">
+                                        {template.name}
+                                      </CardTitle>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      side="bottom"
+                                      className="max-w-xs break-words"
+                                    >
+                                      <p>{template.name}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  <CardDescription className="mt-1 text-xs">
+                                    Created{' '}
+                                    {new Date(
+                                      template.createdAt,
+                                    ).toLocaleDateString()}
+                                  </CardDescription>
+                                </div>
+                                <Badge variant={getChannelVariant(channelName)}>
+                                  {channelName}
+                                </Badge>
+                              </div>
 
-                  {/* Channel Filter */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">
-                      Channel
-                    </Label>
-                    <Select
-                      value={channelFilter}
-                      onValueChange={setChannelFilter}
-                    >
-                      <SelectTrigger className="w-[160px] h-9 text-sm">
-                        <SelectValue placeholder="All Channels" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL">All Channels</SelectItem>
-                        {channelOptions.map((channel) => (
-                          <SelectItem key={channel} value={channel}>
-                            {channel}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                {template.status === 'REJECTED' ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex cursor-pointer items-center gap-2">
+                                        <Badge
+                                          variant={getStatusVariant(
+                                            template.status,
+                                          )}
+                                        >
+                                          {template.status}
+                                        </Badge>
+                                        <TriangleAlert className="h-4 w-4 text-destructive" />
+                                      </div>
+                                    </TooltipTrigger>
 
-                  {/* Type Filter */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">
-                      Type
-                    </Label>
-                    <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger className="w-[140px] h-9 text-sm">
-                        <SelectValue placeholder="All Types" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL">All Types</SelectItem>
-                        <SelectItem value="TEXT">Text</SelectItem>
-                        <SelectItem value="MEDIA">Media</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Active Filter Tags */}
-                {hasActiveFilters && (
-                  <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
-                    <span className="text-xs text-muted-foreground">
-                      Showing {filteredTemplates.length} template
-                      {filteredTemplates.length === 1 ? '' : 's'} for:
-                    </span>
-                    {searchQuery.trim() !== '' && (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                        Search: &quot;{searchQuery}&quot;
-                        <button
-                          type="button"
-                          onClick={() => setSearchQuery('')}
-                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </span>
-                    )}
-                    {statusFilter !== 'ALL' && (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                        Status: {statusFilter}
-                        <button
-                          type="button"
-                          onClick={() => setStatusFilter('ALL')}
-                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </span>
-                    )}
-                    {channelFilter !== 'ALL' && (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                        Channel: {channelFilter}
-                        <button
-                          type="button"
-                          onClick={() => setChannelFilter('ALL')}
-                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </span>
-                    )}
-                    {typeFilter !== 'ALL' && (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                        Type: {typeFilter}
-                        <button
-                          type="button"
-                          onClick={() => setTypeFilter('ALL')}
-                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Template Gallery */}
-              <CardContent className="p-5">
-                {filteredTemplates.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground" />
-                    <h3 className="text-lg font-semibold text-foreground">
-                      No matching templates
-                    </h3>
-                    <p className="mb-4 mt-1 text-sm text-muted-foreground">
-                      Try changing your search text or clearing filters.
-                    </p>
-                    <Button variant="outline" onClick={resetFilters}>
-                      <X className="mr-2 h-4 w-4" />
-                      Reset Filters
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredTemplates.map((template: any) => {
-                  const channelName =
-                    template?.Transport?.name || template?.channel || 'Unknown';
-                  const mediaItems = template?.media || [];
-                  const primaryMedia = mediaItems[0];
-                  const extraMediaCount = Math.max(mediaItems.length - 1, 0);
-
-                  return (
-                    <Card
-                      key={template.cuid || template.id}
-                      className="flex flex-col border-border/80 shadow-sm"
-                    >
-                      <CardHeader className="space-y-3 pb-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <CardTitle className="truncate text-lg">
-                                  {template.name}
-                                </CardTitle>
-                              </TooltipTrigger>
-                              <TooltipContent side="bottom" className="max-w-xs break-words">
-                                <p>{template.name}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                            <CardDescription className="mt-1 text-xs">
-                              Created{' '}
-                              {new Date(
-                                template.createdAt,
-                              ).toLocaleDateString()}
-                            </CardDescription>
-                          </div>
-                          <Badge variant={getChannelVariant(channelName)}>
-                            {channelName}
-                          </Badge>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          {template.status === 'REJECTED' ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="flex cursor-pointer items-center gap-2">
-                                  <Badge variant={getStatusVariant(template.status)}>
+                                    <TooltipContent className="max-w-xs break-words">
+                                      <p className="text-sm">
+                                        {template?.info}
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ) : (
+                                  <Badge
+                                    variant={getStatusVariant(template.status)}
+                                  >
                                     {template.status}
                                   </Badge>
-                                  <TriangleAlert className="h-4 w-4 text-destructive" />
-                                </div>
-                              </TooltipTrigger>
+                                )}
 
-                              <TooltipContent className="max-w-xs break-words">
-                                <p className="text-sm">{template?.info}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          ) : (
-                            <Badge variant={getStatusVariant(template.status)}>
-                              {template.status}
-                            </Badge>
-                          )}
+                                <Badge variant="outline">
+                                  {template?.type || 'TEXT'}
+                                </Badge>
 
-                          <Badge variant="outline">
-                            {template?.type || 'TEXT'}
-                          </Badge>
-
-                          {template.status === 'APPROVED' && (
-                            <span className="inline-flex items-center gap-1 text-xs text-green-600">
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                              Ready
-                            </span>
-                          )}
-                        </div>
-                      </CardHeader>
-
-                      <CardContent className="flex flex-1 flex-col gap-4">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <p className="line-clamp-3 text-sm text-muted-foreground">
-                              {template.body}
-                            </p>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom" className="max-w-sm break-words">
-                            <p>{template.body}</p>
-                          </TooltipContent>
-                        </Tooltip>
-
-                        {template.type === 'MEDIA' && mediaItems.length > 0 && (
-                          <div className="space-y-2">
-                            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                              Media Preview
-                            </p>
-                            <div className="relative overflow-hidden rounded-lg border bg-muted aspect-video">
-                              {isVideoUrl(primaryMedia) ? (
-                                <>
-                                  <video
-                                    src={primaryMedia}
-                                    className="h-full w-full object-cover"
-                                    muted
-                                    playsInline
-                                  />
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                    <Video className="h-7 w-7 text-white" />
-                                  </div>
-                                </>
-                              ) : (
-                                <img
-                                  src={primaryMedia}
-                                  alt={template.name}
-                                  className="h-full w-full object-cover"
-                                  onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                    const fallback = e.currentTarget
-                                      .nextElementSibling as HTMLElement | null;
-                                    if (fallback)
-                                      fallback.style.display = 'flex';
-                                  }}
-                                />
-                              )}
-                              <div
-                                className="hidden h-full w-full items-center justify-center text-muted-foreground"
-                                aria-hidden="true"
-                              >
-                                <ImageIcon className="h-8 w-8" />
+                                {template.status === 'APPROVED' && (
+                                  <span className="inline-flex items-center gap-1 text-xs text-green-600">
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                    Ready
+                                  </span>
+                                )}
                               </div>
-                            </div>
-                            {extraMediaCount > 0 && (
-                              <p className="text-xs text-muted-foreground">
-                                +{extraMediaCount} more media
-                              </p>
-                            )}
-                          </div>
-                        )}
+                            </CardHeader>
 
-                        {template.lastApprovalCheck && (
-                          <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock3 className="h-3.5 w-3.5" />
-                            Approval Check{' '}
-                            {new Date(
-                              template.lastApprovalCheck,
-                            ).toLocaleString()}
-                          </p>
-                        )}
-
-                        <div className="mt-auto flex items-center justify-end gap-2 border-t pt-3">
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Are you absolutely sure?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will
-                                  permanently delete your template from our
-                                  servers.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(template.cuid)}
+                            <CardContent className="flex flex-1 flex-col gap-4">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <p className="line-clamp-3 text-sm text-muted-foreground">
+                                    {template.body}
+                                  </p>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="bottom"
+                                  className="max-w-sm break-words max-h-80 overflow-auto"
                                 >
-                                  Continue
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-          </>
-        )}
+                                  <p>{template.body}</p>
+                                </TooltipContent>
+                              </Tooltip>
+
+                              {template.type === 'MEDIA' &&
+                                mediaItems.length > 0 && (
+                                  <div className="space-y-2">
+                                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                      Media Preview
+                                    </p>
+                                    <div className="relative overflow-hidden rounded-lg border bg-muted aspect-video">
+                                      {isVideoUrl(primaryMedia) ? (
+                                        <>
+                                          <video
+                                            src={primaryMedia}
+                                            className="h-full w-full object-cover"
+                                            muted
+                                            playsInline
+                                          />
+                                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                            <Video className="h-7 w-7 text-white" />
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <img
+                                          src={primaryMedia}
+                                          alt={template.name}
+                                          className="h-full w-full object-cover"
+                                          onError={(e) => {
+                                            e.currentTarget.style.display =
+                                              'none';
+                                            const fallback = e.currentTarget
+                                              .nextElementSibling as HTMLElement | null;
+                                            if (fallback)
+                                              fallback.style.display = 'flex';
+                                          }}
+                                        />
+                                      )}
+                                      <div
+                                        className="hidden h-full w-full items-center justify-center text-muted-foreground"
+                                        aria-hidden="true"
+                                      >
+                                        <ImageIcon className="h-8 w-8" />
+                                      </div>
+                                    </div>
+                                    {extraMediaCount > 0 && (
+                                      <p className="text-xs text-muted-foreground">
+                                        +{extraMediaCount} more media
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                              {template.lastApprovalCheck && (
+                                <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Clock3 className="h-3.5 w-3.5" />
+                                  Approval Check{' '}
+                                  {new Date(
+                                    template.lastApprovalCheck,
+                                  ).toLocaleString()}
+                                </p>
+                              )}
+
+                              <div className="mt-auto flex items-center justify-end gap-2 border-t pt-3">
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      Delete
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Are you absolutely sure?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action cannot be undone. This will
+                                        permanently delete your template from
+                                        our servers.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Cancel
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() =>
+                                          handleDelete(template.cuid)
+                                        }
+                                      >
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </div>
       </div>
-    </div>
     </TooltipProvider>
   );
 }

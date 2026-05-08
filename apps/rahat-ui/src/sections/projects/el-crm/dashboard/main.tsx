@@ -16,13 +16,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from '@rahat-ui/shadcn/src/components/ui/chart';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+
 import {
   PieChart,
   Pie,
@@ -143,7 +137,12 @@ const COLORS = {
 export default function DashboardView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
-  const [dateRange, setDateRange] = useState<string>('all');
+  const today = new Date();
+  const thisMonth = `${today.getFullYear()}-${String(
+    today.getMonth() + 1,
+  ).padStart(2, '0')}`;
+  const [fromMonth, setFromMonth] = useState<string>('');
+  const [toMonth, setToMonth] = useState<string>(thisMonth);
 
   const { data: stats, isLoading } = useCustomerStats(projectUUID);
 
@@ -191,6 +190,18 @@ export default function DashboardView() {
     getStat(stats, 'RECENT_CAMPAIGNS') || [];
   const recentImports: RecentImport[] = getStat(stats, 'RECENT_IMPORTS') || [];
 
+  // Messages by customer category
+  const msgsToActiveCustomers: number =
+    getStat(stats, 'MESSAGES_TO_ACTIVE_CUSTOMERS') || 0;
+  const msgsToNewlyInactiveCustomers: number =
+    getStat(stats, 'MESSAGES_TO_NEWLY_INACTIVE_CUSTOMERS') || 0;
+  const msgsToInactiveCustomers: number =
+    getStat(stats, 'MESSAGES_TO_INACTIVE_CUSTOMERS') || 0;
+  const totalMsgsByCategory =
+    msgsToActiveCustomers +
+    msgsToNewlyInactiveCustomers +
+    msgsToInactiveCustomers;
+
   // -- Derived Data -----------------------------------------------------------
 
   const activePct = pctOf(activeCustomers, totalCustomers);
@@ -216,24 +227,44 @@ export default function DashboardView() {
     [activeCustomers, newlyInactiveCustomers, inactiveCustomers],
   );
 
-  // Filter customersByMonth based on date range
+  const msgsByCategoryDonutData = useMemo(
+    () => [
+      {
+        name: 'Active',
+        value: msgsToActiveCustomers,
+        fill: COLORS.active,
+      },
+      {
+        name: 'Newly Inactive',
+        value: msgsToNewlyInactiveCustomers,
+        fill: COLORS.newlyInactive,
+      },
+      {
+        name: 'Inactive',
+        value: msgsToInactiveCustomers,
+        fill: COLORS.inactive,
+      },
+    ],
+    [
+      msgsToActiveCustomers,
+      msgsToNewlyInactiveCustomers,
+      msgsToInactiveCustomers,
+    ],
+  );
+
+  // Min/max months available in data (for input constraints)
+  const minMonth = customersByMonth[0]?.month ?? '';
+  const maxMonth = customersByMonth[customersByMonth.length - 1]?.month ?? '';
+
+  // Filter customersByMonth based on from/to month pickers
   const filteredMonthData = useMemo(() => {
     if (!customersByMonth.length) return [];
-    if (dateRange === 'all') return customersByMonth;
-
-    const now = new Date();
-    const cutoff = new Date(now);
-    if (dateRange === '30d') cutoff.setDate(now.getDate() - 30);
-    else if (dateRange === '90d') cutoff.setDate(now.getDate() - 90);
-    else if (dateRange === 'ytd') cutoff.setMonth(0, 1);
-
-    const cutoffKey = `${cutoff.getFullYear()}-${(cutoff.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}`;
-    return customersByMonth.filter(
-      (entry: CustomersByMonthEntry) => entry.month >= cutoffKey,
-    );
-  }, [customersByMonth, dateRange]);
+    return customersByMonth.filter((entry: CustomersByMonthEntry) => {
+      if (fromMonth && entry.month < fromMonth) return false;
+      if (toMonth && entry.month > toMonth) return false;
+      return true;
+    });
+  }, [customersByMonth, fromMonth, toMonth]);
 
   // Delivery gauge data for radial bar
   // value is always 100; the arc length is controlled by endAngle
@@ -387,8 +418,8 @@ export default function DashboardView() {
               ))}
             </div>
 
-            {/* ── SECTION 2: Distribution + Delivery (equal split) ── */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            {/* ── SECTION 2: Distribution + Messages by Category + Delivery ── */}
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {/* Customer Category Distribution Donut */}
               <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
                 <CardHeader className="pb-2">
@@ -479,6 +510,113 @@ export default function DashboardView() {
                   </ChartContainer>
                   <div className="flex justify-center gap-6 mt-2 text-sm">
                     {categoryDonutData.map((item) => (
+                      <div key={item.name} className="flex items-center gap-2">
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: item.fill }}
+                        />
+                        <span className="text-muted-foreground text-xs font-medium">
+                          {item.name}
+                        </span>
+                        <span className="text-foreground text-xs font-semibold tabular-nums">
+                          {item.value.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Messages by Customer Category Donut */}
+              <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="rounded-lg p-2 bg-violet-500/10">
+                      <Send className="h-4 w-4 text-violet-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base font-semibold">
+                        Messages by Category
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Messages sent per customer status
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={{
+                      Active: { label: 'Active', color: COLORS.active },
+                      'Newly Inactive': {
+                        label: 'Newly Inactive',
+                        color: COLORS.newlyInactive,
+                      },
+                      Inactive: {
+                        label: 'Inactive',
+                        color: COLORS.inactive,
+                      },
+                    }}
+                    className="h-[200px] mx-auto"
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={msgsByCategoryDonutData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={55}
+                          outerRadius={80}
+                          paddingAngle={3}
+                          dataKey="value"
+                          nameKey="name"
+                          strokeWidth={0}
+                        >
+                          {msgsByCategoryDonutData.map((entry, index) => (
+                            <Cell key={`msg-cat-${index}`} fill={entry.fill} />
+                          ))}
+                          <Label
+                            content={({ viewBox }) => {
+                              if (
+                                viewBox &&
+                                'cx' in viewBox &&
+                                'cy' in viewBox
+                              ) {
+                                return (
+                                  <text
+                                    x={viewBox.cx}
+                                    y={viewBox.cy}
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                  >
+                                    <tspan
+                                      x={viewBox.cx}
+                                      y={(viewBox.cy || 0) - 6}
+                                      className="fill-foreground text-xl font-bold"
+                                    >
+                                      {formatNumber(totalMsgsByCategory)}
+                                    </tspan>
+                                    <tspan
+                                      x={viewBox.cx}
+                                      y={(viewBox.cy || 0) + 14}
+                                      className="fill-muted-foreground text-xs"
+                                    >
+                                      Total
+                                    </tspan>
+                                  </text>
+                                );
+                              }
+                            }}
+                          />
+                        </Pie>
+                        <ChartTooltip
+                          content={<ChartTooltipContent nameKey="name" />}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
+                  <div className="flex justify-center gap-6 mt-2 text-sm">
+                    {msgsByCategoryDonutData.map((item) => (
                       <div key={item.name} className="flex items-center gap-2">
                         <span
                           className="h-2.5 w-2.5 rounded-full"
@@ -605,17 +743,34 @@ export default function DashboardView() {
                       </CardDescription>
                     </div>
                   </div>
-                  <Select value={dateRange} onValueChange={setDateRange}>
-                    <SelectTrigger className="w-[140px] h-8 shrink-0">
-                      <SelectValue placeholder="Time range" />
-                    </SelectTrigger>
-                    <SelectContent align="end">
-                      <SelectItem value="30d">Last 30 days</SelectItem>
-                      <SelectItem value="90d">Last quarter</SelectItem>
-                      <SelectItem value="ytd">Year to date</SelectItem>
-                      <SelectItem value="all">All time</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        From
+                      </span>
+                      <input
+                        type="month"
+                        value={fromMonth}
+                        min={minMonth || undefined}
+                        max={toMonth || maxMonth || undefined}
+                        onChange={(e) => setFromMonth(e.target.value)}
+                        className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        To
+                      </span>
+                      <input
+                        type="month"
+                        value={toMonth}
+                        min={fromMonth || minMonth || undefined}
+                        max={maxMonth || undefined}
+                        onChange={(e) => setToMonth(e.target.value)}
+                        className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      />
+                    </div>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>

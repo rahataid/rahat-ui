@@ -1,0 +1,17 @@
+/**
+ * Scoped visual refinements for EL Village Doctor project routes only.
+ * Imported from app/projects/el-village-doctor/[id]/layout.tsx
+ */
+[data-village-doctor='true'] {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-village-doctor='true'] .vd-focus-ring:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px hsl(var(--background)),
+    0 0 0 4px hsl(var(--ring));
+}

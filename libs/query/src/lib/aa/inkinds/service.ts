@@ -52,10 +52,7 @@ async function runAction(
   });
 }
 
-export const useInkinds = (
-  projectUUID: UUID,
-  params: ListInkindParams = {},
-) => {
+export const useInkinds = (projectUUID: UUID, params: ListInkindParams = {}) => {
   const q = useProjectAction();
   const paramsString = JSON.stringify(params);
 

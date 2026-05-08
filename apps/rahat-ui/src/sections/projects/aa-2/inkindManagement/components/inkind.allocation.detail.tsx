@@ -267,7 +267,7 @@ export default function InkindAllocationDetail() {
         {[
           { name: 'Inkind Name', amount: inkindName },
           { name: 'No of Beneficiaries', amount: totalBeneficiaries },
-          { name: 'Total Available Inkinds', amount: totalAvailableInkinds },
+          { name: 'Total Inkinds', amount: totalAvailableInkinds },
           { name: 'Total Redeemed', amount: quantityRedeemed },
         ].map((card) => (
           <DataCard

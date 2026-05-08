@@ -2,11 +2,9 @@
 
 import React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { UUID } from 'crypto';
 import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { Package } from 'lucide-react';
 import { formatDate } from '../inkind.helpers';
 import InfoItem from 'apps/rahat-ui/src/sections/projects/aa-2/payout/benefTransactionDetails/infoItem';
 
@@ -92,6 +90,7 @@ export default function InkindTransactionDetail() {
               label="Transaction Hash"
               value={txHash || undefined}
               copyable
+              link={true}
             />
             <InfoItem label="Redeemed At" value={formatDate(redeemedAt)} />
             <InfoItem label="Vendor Name" value={vendorName || undefined} />

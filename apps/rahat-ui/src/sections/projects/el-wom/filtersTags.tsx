@@ -18,6 +18,18 @@ const SmsVoucherFiltersTags = ({
     return { key, value };
   });
 
+  const getDisplayValue = (key: string, value: unknown) => {
+    if (typeof value === 'object' && value) {
+      return format(value as Date, 'MMM dd yyyy');
+    }
+    const raw = String(value ?? '');
+    if (key === 'phoneNumber' || key === 'noOfReferrals') {
+      return raw;
+    }
+    const mapped = mapStatus(raw);
+    return mapped === '-' ? raw : mapped;
+  };
+
   const handleFilterArrayChange = (key: string, value: string) => {
     const { [key]: _, ...rest } = filters;
     setFilters(rest);
@@ -37,7 +49,7 @@ const SmsVoucherFiltersTags = ({
                 labelMapping[filter.key] ||
                 filter.key.replace(/([A-Z])/g, ' $1').trim();
               return (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" key={filter.key}>
                   {displayLabel}
                   {/* {filter?.key.charAt(0).toUpperCase() + filter?.key.slice(1)}:{' '} */}
                   <span
@@ -46,11 +58,7 @@ const SmsVoucherFiltersTags = ({
                     }
                     className="cursor-pointer bg-primary py-1 px-2 text-white rounded text-xs flex items-center gap-2"
                   >
-                    {typeof filter.value === 'object' ? (
-                      <>{format(filter.value, 'MMM dd yyyy')}</>
-                    ) : (
-                      <>{mapStatus(filter.value as string)}</>
-                    )}
+                    <>{getDisplayValue(filter.key, filter.value)}</>
                     <RxCrossCircled />
                   </span>
                 </div>

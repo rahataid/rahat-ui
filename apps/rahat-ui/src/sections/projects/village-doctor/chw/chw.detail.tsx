@@ -15,7 +15,13 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Copy, CopyCheck, ShoppingBag, UserCheck, Users } from 'lucide-react';
+import {
+  BadgeDollarSign,
+  Copy,
+  CopyCheck,
+  ShoppingBag,
+  Users,
+} from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
@@ -25,13 +31,33 @@ import {
   VillageDoctorSectionHeading,
 } from '../page-shell';
 
+/** Next.js dynamic segment may be `string | string[]`. */
+function routeSegment(v: string | string[] | undefined): string {
+  if (v == null) return '';
+  return typeof v === 'string' ? v : (v[0] ?? '');
+}
+
 export default function ChwDetail() {
   const { id, chwId } = useParams();
-  const { data } = useCHWGet({ projectUUID: id, uuid: chwId as string });
-  const { data: stats } = useCambodiaHealthWorkerByUUIDStats({
-    projectUUID: id,
-    chwUid: chwId as string,
-  }) as any;
+  const projectUuid = routeSegment(id as string | string[] | undefined);
+  const chwSlug = routeSegment(chwId as string | string[] | undefined);
+
+  const { data } = useCHWGet({
+    projectUUID: projectUuid,
+    uuid: chwSlug,
+  });
+
+  /** Prefer canonical `uuid` from GET so stats always align with this row */
+  const canonicalChwUid =
+    typeof data?.data?.uuid === 'string' && data.data.uuid.trim().length > 0
+      ? data.data.uuid.trim()
+      : chwSlug;
+
+  const { data: stats, isFetching: statsFetching } =
+    useCambodiaHealthWorkerByUUIDStats({
+      projectUUID: projectUuid,
+      chwUid: canonicalChwUid,
+    }) as any;
 
   const [copyAction, setCopyAction] = useState<boolean>(false);
   const clickToCopy = (name: string) => {
@@ -42,32 +68,38 @@ export default function ChwDetail() {
     }, 2000);
   };
 
+  const s = stats?.data ?? {};
+
   return (
     <VillageDoctorDetailChrome
       title={data?.data?.name}
-      subtitle="Referral performance and identity for this Village Doctor."
-      backHref={`/projects/el-village-doctor/${id}/chw`}
+      subtitle="Referral totals for this village doctor only—not program-wide figures."
+      backHref={`/projects/el-village-doctor/${projectUuid}/chw`}
     >
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <DataCard
-          title="Successful referrals"
-          number={String(stats?.data?.sales ?? '—')}
-          Icon={UserCheck}
-          className="rounded-xl border-border/80 shadow-sm"
-        />
-        <DataCard
-          title="Villagers referred"
-          number={String(stats?.data?.leads ?? '—')}
-          Icon={Users}
-          className="rounded-xl border-border/80 shadow-sm"
-        />
-        <DataCard
-          title="Eye checkups"
-          number={String(stats?.data?.leads_converted ?? '—')}
-          Icon={ShoppingBag}
-          className="rounded-xl border-border/80 shadow-sm"
-        />
-      </div>
+        <div
+          className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
+            statsFetching ? 'opacity-70 transition-opacity' : ''
+          }`}
+        >
+          <DataCard
+            title="Total Eyewear Sold"
+            number={String(s.healthWorkerEyewearSold ?? s.totalEyewearSold ?? 0)}
+            Icon={BadgeDollarSign}
+            className="rounded-lg border-solid"
+          />
+          <DataCard
+            title="Villagers Referred"
+            number={String(s.leadsRecieved ?? s.leads ?? 0)}
+            Icon={Users}
+            className="rounded-lg border-solid"
+          />
+          <DataCard
+            title="Total Vouchers Redeemed"
+            number={String(s.leadsConverted ?? s.leads_converted ?? 0)}
+            Icon={ShoppingBag}
+            className="rounded-lg border-solid"
+          />
+        </div>
 
       <Card className="border-border/80 shadow-sm">
         <CardHeader className="border-b border-border/60 pb-4">

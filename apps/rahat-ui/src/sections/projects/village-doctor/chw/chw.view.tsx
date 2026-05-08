@@ -1,6 +1,6 @@
 import {
-  useCambodiaHealthWorkersStats,
   useCHWList,
+  useCambodiaVendorsStats,
   usePagination,
 } from '@rahat-ui/query';
 import {
@@ -18,10 +18,12 @@ import { useCambodiaChwTableColumns } from './use.chw.table.columns';
 import CambodiaTable from '../table.component';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
+  BadgeDollarSign,
+  Coins,
   Download,
-  ShoppingBag,
+  Glasses,
   SlidersHorizontal,
-  UserCheck,
+  UserCog,
   Users,
 } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
@@ -32,10 +34,10 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import ViewColumns from '../../components/view.columns';
 import * as XLSX from 'xlsx';
-import DropdownComponent from '../../components/dropdownComponent';
-import MONTHS from '../../../../utils/months.json';
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
@@ -51,17 +53,55 @@ export default function CHWView() {
     selectedListItems,
     setSelectedListItems,
   } = usePagination();
-  const { data: stats } = useCambodiaHealthWorkersStats({
-    projectUUID: id,
-  }) as any;
   const debouncedSearch = useDebounce(filters, 500);
+
+  /** CHW API: `from`/`to` are `YYYY-MM-DD` (calendar days in browser local time — server aligns via `reportingUtcOffsetMinutes`). Strip legacy month/year filters and empty dates. */
+  const chwListFilters = React.useMemo(() => {
+    const raw = (debouncedSearch || {}) as Record<string, unknown>;
+    const next: Record<string, unknown> = { ...raw };
+    delete next.month;
+    delete next.year;
+    const from = typeof next.from === 'string' ? next.from.trim() : '';
+    const to = typeof next.to === 'string' ? next.to.trim() : '';
+    if (from) next.from = from;
+    else delete next.from;
+    if (to) next.to = to;
+    else delete next.to;
+    if ((from || to) && typeof window !== 'undefined') {
+      next.reportingUtcOffsetMinutes = -new Date().getTimezoneOffset();
+    }
+    return next;
+  }, [debouncedSearch]);
+
+  /** Same `cambodia.vendor.stats` payload as Eye Partner (omit `vendorId` = program totals). */
+  const vendorProgramStatsPayload = React.useMemo(() => {
+    const payload: { projectUUID: string; from?: string; to?: string } = {
+      projectUUID: id,
+    };
+    const from =
+      typeof chwListFilters.from === 'string'
+        ? chwListFilters.from.trim()
+        : '';
+    const to =
+      typeof chwListFilters.to === 'string' ? chwListFilters.to.trim() : '';
+    if (from) {
+      payload.from = new Date(`${from}T00:00:00`).toISOString();
+    }
+    if (to) {
+      payload.to = new Date(`${to}T23:59:59.999`).toISOString();
+    }
+    return payload;
+  }, [id, chwListFilters.from, chwListFilters.to]);
+
+  const { data: programStats, isFetching: programStatsFetching } =
+    useCambodiaVendorsStats(vendorProgramStatsPayload) as any;
   const { data } = useCHWList({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
+    ...(chwListFilters as any),
   });
 
   const { fetchAllData } = useCHWList({
@@ -70,7 +110,7 @@ export default function CHWView() {
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
+    ...(chwListFilters as any),
   });
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -139,50 +179,6 @@ export default function CHWView() {
 
     XLSX.writeFile(workbook, 'VillageDoctorReport.xlsx');
   };
-  const currentYear = new Date().getFullYear();
-  const START_YEAR = 2025;
-
-  const currentMonth = new Date().getMonth() + 1;
-  const currentMonthName = MONTHS.find(
-    (month) => month.value === currentMonth.toString(),
-  );
-
-  const transformedYearData = Array.from(
-    { length: currentYear + 5 - START_YEAR + 1 },
-    (_, index) => {
-      const year = START_YEAR + index;
-      return {
-        label: year.toString(),
-        value: year.toString(),
-      };
-    },
-  );
-
-  const transformedMonthData =
-    MONTHS.map((item) => ({
-      label: item.label.toString(),
-      value: item.value.toString(),
-    })) || [];
-
-  const handleSelect = (key: string, value: string) => {
-    if (key === 'Months') {
-      if (filters.year === undefined) {
-        setFilters({ ...filters, month: parseInt(value), year: currentYear });
-        return;
-      }
-      setFilters({ ...filters, month: parseInt(value) });
-    }
-    if (key === 'Years') {
-      setFilters({ ...filters, year: parseInt(value) });
-    }
-  };
-  React.useEffect(() => {
-    setFilters({
-      ...filters,
-      month: undefined,
-      year: undefined,
-    });
-  }, []);
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
       <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
@@ -198,23 +194,27 @@ export default function CHWView() {
       </div>
 
       <div className="flex-1 space-y-6 overflow-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
+        <div
+          className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
+            programStatsFetching ? 'opacity-70 transition-opacity' : ''
+          }`}
+        >
           <DataCard
-            title="Successful Referrals"
-            number={stats?.data?.sales}
-            Icon={UserCheck}
-            className="rounded-lg border-solid "
-          />
-          <DataCard
-            title="Villagers Referred"
-            number={stats?.data?.leads}
-            Icon={Users}
+            title="Total Eyewear Sold"
+            number={String(programStats?.data?.sales ?? 0)}
+            Icon={Glasses}
             className="rounded-lg border-solid"
           />
           <DataCard
-            title="Eye Checkups"
-            number={stats?.data?.leads_converted}
-            Icon={ShoppingBag}
+            title="Total Village Doctors"
+            number={String(programStats?.data?.healthWorkers ?? 0)}
+            Icon={UserCog}
+            className="rounded-lg border-solid"
+          />
+          <DataCard
+            title="Total Vouchers Redeemed"
+            number={String(programStats?.data?.leadsRecieved ?? 0)}
+            Icon={Users}
             className="rounded-lg border-solid"
           />
         </div>
@@ -236,21 +236,41 @@ export default function CHWView() {
                 }
                 onSearch={(event) => handleFilterChange(event)}
               />
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <DropdownComponent
-                  transformedData={transformedMonthData}
-                  title={'Months'}
-                  handleSelect={handleSelect}
-                  current={currentMonthName?.label}
-                  className="w-full sm:w-[160px]"
-                />
-                <DropdownComponent
-                  transformedData={transformedYearData}
-                  title={'Years'}
-                  handleSelect={handleSelect}
-                  current={currentYear}
-                  className="w-full sm:w-[140px]"
-                />
+              <div className="flex flex-wrap items-end gap-2 sm:flex-row sm:gap-3">
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="vd-chw-from"
+                    className="text-xs font-normal text-muted-foreground"
+                  >
+                    From
+                  </Label>
+                  <Input
+                    id="vd-chw-from"
+                    type="date"
+                    className="h-9 w-full sm:w-[155px]"
+                    value={filters.from ?? ''}
+                    onChange={(e) =>
+                      setFilters({ ...filters, from: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="vd-chw-to"
+                    className="text-xs font-normal text-muted-foreground"
+                  >
+                    To
+                  </Label>
+                  <Input
+                    id="vd-chw-to"
+                    type="date"
+                    className="h-9 w-full sm:w-[155px]"
+                    value={filters.to ?? ''}
+                    onChange={(e) =>
+                      setFilters({ ...filters, to: e.target.value })
+                    }
+                  />
+                </div>
                 <ViewColumns table={table} />
                 <Button
                   variant="outline"

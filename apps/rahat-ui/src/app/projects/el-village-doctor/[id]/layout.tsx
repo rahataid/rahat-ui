@@ -9,6 +9,7 @@ import { UUID } from 'crypto';
 import {
   CambodiaSubgraphProvider,
   PROJECT_SETTINGS_KEYS,
+  resolveCambodiaSubgraphUrl,
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
@@ -26,8 +27,22 @@ export default function ProjectLayoutRoot({
   useProjectContractSettings(uuid);
   useProjectSubgraphSettings(uuid);
 
-  const subgraphSettings = useProjectSettingsStore(
+  const projectSubgraphUrl = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
+  );
+
+  const resolvedSubgraphUrl = React.useMemo(
+    () => resolveCambodiaSubgraphUrl(projectSubgraphUrl),
+    [projectSubgraphUrl],
+  );
+
+  const subgraphClient = React.useMemo(
+    () =>
+      new Client({
+        url: resolvedSubgraphUrl,
+        exchanges: [cacheExchange, fetchExchange],
+      }),
+    [resolvedSubgraphUrl],
   );
 
   const renderChildren = () => {
@@ -38,16 +53,7 @@ export default function ProjectLayoutRoot({
     return children;
   };
   return (
-    <CambodiaSubgraphProvider
-      subgraphClient={
-        new Client({
-          url:
-            subgraphSettings ||
-            'http://localhost:8000/subgraphs/name/rahat/Cambodia/',
-          exchanges: [cacheExchange, fetchExchange],
-        })
-      }
-    >
+    <CambodiaSubgraphProvider subgraphClient={subgraphClient}>
       <ProjectLayout projectType={'el-village-doctor'}>
         <div
           className="h-full min-h-0 flex-1 antialiased [--tw-prose-body:var(--muted-foreground)]"

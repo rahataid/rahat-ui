@@ -9,6 +9,9 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Tabs,
   TabsContent,
@@ -19,6 +22,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
   BadgeDollarSign,
+  Coins,
   Copy,
   CopyCheck,
   Glasses,
@@ -41,9 +45,29 @@ import {
   VillageDoctorSectionHeading,
 } from '../page-shell';
 
+/** Next.js `useParams` may return `string | string[]` for dynamic segments. */
+function routeParam(
+  value: string | string[] | undefined,
+): string | undefined {
+  if (value == null) return undefined;
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export default function VendorsDetail() {
-  const { id, vendorId } = useParams();
-  const { data } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
+  const params = useParams();
+  const id = routeParam(params.id);
+  const vendorId = routeParam(params.vendorId);
+  const {
+    data: vendorQueryData,
+    isLoading: vendorLoading,
+    isFetching: vendorFetching,
+    isError: vendorIsError,
+    error: vendorQueryError,
+    isSuccess: vendorQuerySuccess,
+  } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
+
+  /** `formatResponse`: inner API payload is `vendorQueryData.data` */
+  const vendorRow = vendorQueryData?.data;
   const [walletCopied, setWalletCopied] = React.useState(false);
   const currentYear = new Date().getFullYear();
 
@@ -55,10 +79,27 @@ export default function VendorsDetail() {
     month: currentMonth,
     year: currentYear,
   });
-  const { data: vendorsStats } = useCambodiaVendorsStats({
-    projectUUID: id,
-    vendorId,
-  }) as any;
+  const [statsDateFrom, setStatsDateFrom] = React.useState('');
+  const [statsDateTo, setStatsDateTo] = React.useState('');
+
+  const vendorsStatsPayload = React.useMemo(() => {
+    const payload: {
+      projectUUID: string | undefined;
+      vendorId: string | undefined;
+      from?: string;
+      to?: string;
+    } = { projectUUID: id, vendorId };
+    if (statsDateFrom) {
+      payload.from = new Date(`${statsDateFrom}T00:00:00`).toISOString();
+    }
+    if (statsDateTo) {
+      payload.to = new Date(`${statsDateTo}T23:59:59.999`).toISOString();
+    }
+    return payload;
+  }, [id, vendorId, statsDateFrom, statsDateTo]);
+
+  const { data: vendorsStats, isFetching: vendorsStatsFetching } =
+    useCambodiaVendorsStats(vendorsStatsPayload) as any;
 
   const { data: lineChartReport, isLoading: lineChartLoading } =
     useCambodiaLineChartsReports({
@@ -95,7 +136,28 @@ export default function VendorsDetail() {
     }
   };
 
-  const wallet = data?.data?.User?.wallet as string | undefined;
+  const wallet = vendorRow?.User?.wallet as string | undefined;
+
+  const vendorFetchFailed =
+    vendorIsError &&
+    !vendorLoading &&
+    !vendorFetching &&
+    Boolean(id && vendorId);
+
+  const titleName =
+    vendorRow?.User?.name ??
+    (vendorLoading || vendorFetching
+      ? 'Loading…'
+      : vendorFetchFailed
+        ? 'Could not load partner'
+        : 'Eye partner');
+
+  const headerSubtitle =
+    vendorFetchFailed && vendorQueryError
+      ? `The partner request failed: ${vendorQueryError instanceof Error ? vendorQueryError.message : String(vendorQueryError)}. Check the Network tab for POST …/projects/${id}/actions (auth, 4xx/5xx).`
+      : vendorQuerySuccess && !vendorRow
+        ? 'No project assignment was found for this user and project (missing row in project vendors).'
+        : 'Performance, wallet, and activity for this Eye Partner location.';
 
   const copyWallet = () => {
     if (!wallet) return;
@@ -104,28 +166,81 @@ export default function VendorsDetail() {
     setTimeout(() => setWalletCopied(false), 1500);
   };
 
+  const statsDateFilterActions = (
+    <div className="w-max max-w-full rounded-xl border border-border/80 bg-muted/30 px-3 py-2.5 shadow-sm">
+      <div className="flex flex-wrap items-end justify-end gap-2 sm:gap-3">
+        <div className="flex w-[10.5rem] shrink-0 flex-col gap-1">
+          <Label htmlFor="vendor-stats-from" className="text-[11px]">
+            From
+          </Label>
+          <Input
+            id="vendor-stats-from"
+            type="date"
+            className="h-8 w-full bg-background"
+            value={statsDateFrom}
+            max={statsDateTo || undefined}
+            onChange={(e) => setStatsDateFrom(e.target.value)}
+          />
+        </div>
+        <div className="flex w-[10.5rem] shrink-0 flex-col gap-1">
+          <Label htmlFor="vendor-stats-to" className="text-[11px]">
+            To
+          </Label>
+          <Input
+            id="vendor-stats-to"
+            type="date"
+            className="h-8 w-full bg-background"
+            value={statsDateTo}
+            min={statsDateFrom || undefined}
+            onChange={(e) => setStatsDateTo(e.target.value)}
+          />
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 shrink-0 px-2.5 text-xs"
+          onClick={() => {
+            setStatsDateFrom('');
+            setStatsDateTo('');
+          }}
+        >
+          Clear dates
+        </Button>
+      </div>
+    </div>
+  );
+
+  console.log(vendorsStats?.data, 'vendor stats');
+
   return (
     <VillageDoctorDetailChrome
-      title={data?.data?.User?.name}
-      subtitle="Performance, wallet, and activity for this Eye Partner location."
+      title={titleName}
+      subtitle={headerSubtitle}
       backHref={`/projects/el-village-doctor/${id}/vendors`}
+      actions={statsDateFilterActions}
     >
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <DataCard
+      <div
+        className={
+          vendorsStatsFetching ? 'opacity-70 transition-opacity' : undefined
+        }
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* <DataCard
           className="rounded-xl border-border/80 shadow-sm"
           title="Wearers"
           Icon={Glasses}
           number={String(vendorsStats?.data?.consumers ?? 0)}
-        />
-        <DataCard
+        /> */}
+        {/* <DataCard
           className="rounded-xl border-border/80 shadow-sm"
           title="Eye checkups"
           Icon={ShoppingBag}
           number={String(vendorsStats?.data?.leadsConverted ?? 0)}
-        />
+        /> */}
         <DataCard
           className="rounded-xl border-border/80 shadow-sm"
-          title="Sales"
+          title="Total Eyewear Sold"
           Icon={BadgeDollarSign}
           number={String(vendorsStats?.data?.sales ?? 0)}
         />
@@ -141,12 +256,19 @@ export default function VendorsDetail() {
           Icon={Users}
           number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
         />
-        <DataCard
+        {/* <DataCard
           className="rounded-xl border-border/80 shadow-sm"
           title="Eyewear dispensed"
           Icon={Glasses}
           number={String(vendorsStats?.data?.footfalls ?? 0)}
+        /> */}
+        <DataCard
+          className="rounded-xl border-border/80 shadow-sm"
+          title="Total Purchase Amount (RMB)"
+          Icon={Coins}
+          number={String(vendorsStats?.data?.totalPurchaseAmountRmb ?? 0)}
         />
+      </div>
       </div>
 
       <Card className="border-border/80 shadow-sm">
@@ -164,7 +286,9 @@ export default function VendorsDetail() {
                 onClick={copyWallet}
                 className="flex cursor-pointer items-center gap-2 text-left text-sm font-medium"
               >
-                <span>{truncateEthAddress(wallet)}</span>
+                <span>
+                  {wallet ? truncateEthAddress(wallet) : '—'}
+                </span>
                 {walletCopied ? (
                   <CopyCheck size={18} strokeWidth={1.5} />
                 ) : (
@@ -173,7 +297,7 @@ export default function VendorsDetail() {
               </button>
             </VillageDoctorField>
             <VillageDoctorField label="Phone number">
-              {data?.data?.User?.phone ?? '—'}
+              {vendorRow?.User?.phone ?? '—'}
             </VillageDoctorField>
           </dl>
         </CardContent>
@@ -217,19 +341,19 @@ export default function VendorsDetail() {
       </Card>
 
       <Tabs defaultValue="transactionHistory" className="space-y-4">
-        <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-border/80 bg-muted/40 p-1">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-xl border border-border/80 bg-muted/40 p-1">
           <TabsTrigger
             value="transactionHistory"
             className="rounded-lg text-sm font-medium data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
           >
             Transactions
           </TabsTrigger>
-          <TabsTrigger
+          {/* <TabsTrigger
             value="conversionList"
             className="rounded-lg text-sm font-medium data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
           >
             Conversions
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger
             value="healthWorkers"
             className="rounded-lg text-sm font-medium data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
@@ -238,11 +362,11 @@ export default function VendorsDetail() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory" className="mt-0">
-          <TransactionHistoryView vendorAddress={data?.data?.User?.wallet} />
+          <TransactionHistoryView vendorAddress={vendorRow?.User?.wallet} />
         </TabsContent>
-        <TabsContent value="conversionList" className="mt-0">
+        {/* <TabsContent value="conversionList" className="mt-0">
           <ConversionListView />
-        </TabsContent>
+        </TabsContent> */}
         <TabsContent value="healthWorkers" className="mt-0">
           <HealthWorkersView />
         </TabsContent>

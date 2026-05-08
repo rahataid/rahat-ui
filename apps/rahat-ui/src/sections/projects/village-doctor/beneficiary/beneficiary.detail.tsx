@@ -65,9 +65,9 @@ export default function BeneficiaryDetail() {
             <VillageDoctorField label="Villager name">
               {data?.data?.piiData?.name ?? '—'}
             </VillageDoctorField>
-            <VillageDoctorField label="Gender">
+            {/* <VillageDoctorField label="Gender">
               {data?.data?.gender ?? '—'}
-            </VillageDoctorField>
+            </VillageDoctorField> */}
             <VillageDoctorField label="Phone number">
               {data?.data?.piiData?.phone ?? '—'}
             </VillageDoctorField>
@@ -101,11 +101,11 @@ export default function BeneficiaryDetail() {
                 </Tooltip>
               </TooltipProvider>
             </VillageDoctorField>
-            <VillageDoctorField label="Villager type">
+            {/* <VillageDoctorField label="Villager type">
               <Badge variant="secondary" className="font-medium">
                 {data?.data?.type ?? 'UNKNOWN'}
               </Badge>
-            </VillageDoctorField>
+            </VillageDoctorField> */}
             <VillageDoctorField label="Referred by (Village Doctor)">
               {vdLine === '-' ? '—' : vdLine}
             </VillageDoctorField>

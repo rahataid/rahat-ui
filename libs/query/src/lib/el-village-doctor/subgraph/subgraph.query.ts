@@ -11,6 +11,12 @@ import { useEffect } from 'react';
 import { useCambodiaProjectSubgraphStore } from './stores/cambodia-project.store';
 import { formatTransaction } from '../utils';
 
+function normalizeEvmAddressForSubgraph(addr: string | undefined): string {
+  const t = addr?.trim();
+  if (!t) return '';
+  return /^0x[a-fA-F0-9]{40}$/i.test(t) ? t.toLowerCase() : t;
+}
+
 export const useCambodiaProjectTransactions = () => {
   const { subgraphClient } = useCambodiaSubgraph();
   const { queryClient } = useRSQuery();
@@ -22,10 +28,19 @@ export const useCambodiaProjectTransactions = () => {
     {
       queryKey: ['CambodiaProjectTransactions'],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(
+        const { data, error } = await subgraphClient.query(
           CambodiaProjectTransactions,
           {},
         );
+        if (error) {
+          throw new Error(
+            error.message ||
+              'Could not reach the blockchain subgraph (GraphQL).',
+          );
+        }
+        if (!data) {
+          throw new Error('Subgraph returned no data.');
+        }
         const transactionsType = [
           'claimCreateds',
           'claimProcesseds',
@@ -63,12 +78,19 @@ export const useCambodiaBeneficiaryTransactions = (
     {
       queryKey: ['CambodiaBeneficiaryTxn', beneficiaryAddress],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(
+        const { data, error } = await subgraphClient.query(
           CambodiaBeneficiaryTransactions,
           {
             beneficiaryAddress,
           },
         );
+        if (error) {
+          throw new Error(
+            error.message ||
+              'Could not reach the blockchain subgraph (GraphQL).',
+          );
+        }
+        if (!data) throw new Error('Subgraph returned no data.');
         const transactionsType = [
           'tokensAllocateds',
           'claimCreateds',
@@ -91,17 +113,26 @@ export const useCambodiaBeneficiaryTransactions = (
 export const useCambodiaVendorTransactions = (vendorAddress: string) => {
   const { subgraphClient } = useCambodiaSubgraph();
   const { queryClient } = useRSQuery();
+  const vendor = normalizeEvmAddressForSubgraph(vendorAddress);
 
   const query = useQuery(
     {
-      queryKey: ['CambodiaVendorTxn', vendorAddress],
+      queryKey: ['CambodiaVendorTxn', vendor],
+      enabled: Boolean(vendor),
       queryFn: async () => {
-        const { data } = await subgraphClient.query(
+        const { data, error } = await subgraphClient.query(
           CambodiaVendorTransactions,
           {
-            vendor: vendorAddress,
+            vendor,
           },
         );
+        if (error) {
+          throw new Error(
+            error.message ||
+              'Could not reach the blockchain subgraph (GraphQL).',
+          );
+        }
+        if (!data) throw new Error('Subgraph returned no data.');
         const transactionType = ['claimProcesseds', 'offlineClaimProcesseds'];
 
         const formattedData = transactionType.reduce((acc, type) => {

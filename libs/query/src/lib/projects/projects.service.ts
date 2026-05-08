@@ -825,7 +825,6 @@ export const useCHWList = (payload: any) => {
 
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.LIST, restPayloadString],
-    placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -1013,12 +1012,19 @@ export const useCambodiaVendorGet = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
 
   const restPayloadString = JSON.stringify(restPayload);
+  const canFetch = Boolean(
+    projectUUID &&
+      restPayload.vendorId &&
+      typeof projectUUID === 'string' &&
+      typeof restPayload.vendorId === 'string',
+  );
 
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    enabled: canFetch,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1181,9 +1187,12 @@ export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
   const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
+  const chwUid =
+    typeof restPayload?.chwUid === 'string' ? restPayload.chwUid.trim() : '';
+
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.STATS, restPayloadString],
-    placeholderData: keepPreviousData,
+    enabled: Boolean(projectUUID && chwUid.length > 0),
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {

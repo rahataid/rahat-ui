@@ -31,11 +31,11 @@ export const useHealthWorkersTableColumns = () => {
       header: 'Health Worker Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
-    {
-      accessorKey: 'commissionPayout',
-      header: 'Commission Payout',
-      cell: ({ row }) => <div>{row.getValue('commissionPayout') ?? '-'}</div>,
-    },
+    // {
+    //   accessorKey: 'commissionPayout',
+    //   header: 'Commission Payout',
+    //   cell: ({ row }) => <div>{row.getValue('commissionPayout') ?? '-'}</div>,
+    // },
     {
       accessorKey: 'koboUsername',
       header: 'Kobo Username',

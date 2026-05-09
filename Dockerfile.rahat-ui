@@ -1,130 +1,130 @@
-# # Stage 1: Dependencies
-# FROM node:20-alpine AS deps
-# WORKDIR /usr/src/app
-
-# # Enable Corepack for pnpm
-# RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
-
-# # Copy package manifests for caching
-# COPY package.json pnpm-lock.yaml ./
-
-# # Install dependencies
-# RUN pnpm install 
-
-# # Stage 2: Builder
-# FROM node:20-alpine AS builder
-# WORKDIR /usr/src/app
-# RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
-# # Copy dependencies from deps stage
-# COPY --from=deps /usr/src/app/node_modules ./node_modules
-
-# # Copy the full source code
-# COPY . .
-
-# # Build the Next.js app
-# RUN pnpm run rahat:build
-
-# # Ensure .next exists for runtime
-# RUN [ -d "dist/apps/rahat-ui/.next" ] || (echo "ERROR: .next build missing!" && exit 1)
-
-# # Stage 3: Runner / Production
-# FROM node:20-alpine AS runner
-# WORKDIR /usr/src/app
-
-# # Enable Corepack for pnpm at runtime
-# RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
-
-# # Copy built app and node_modules (still as root)
-# COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
-# COPY --from=builder /usr/src/app/node_modules ./node_modules
-
-# # Fix ownership — create cache dir and give node user full access
-# RUN mkdir -p .next/cache/images && \
-#     chown -R node:node /usr/src/app
-
-# # Switch to non-root user AFTER fixing permissions
-# USER node
-
-# EXPOSE 3000
-# CMD ["node_modules/.bin/next", "start"]
-
-
-
-# -------- Base --------
-FROM node:20-alpine AS base
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
-RUN corepack enable && corepack prepare pnpm@9.1.3 --activate 
 
-# -------- Dependencies --------
-FROM base AS deps
-RUN apk add --no-cache libc6-compat python3 make g++
-COPY pnpm-lock.yaml package.json ./
-RUN pnpm install --frozen-lockfile
+# Enable Corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
 
-# -------- Builder --------
-FROM base AS builder
+# Copy package manifests for caching
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install 
+
+# Stage 2: Builder
+FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
+RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
+# Copy dependencies from deps stage
 COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# Copy the full source code
 COPY . .
 
-ARG NEXT_PUBLIC_API_HOST_URL
-ARG NEXT_PUBLIC_API_COMMUNICATION_URL
-ENV NEXT_PUBLIC_API_HOST_URL=$NEXT_PUBLIC_API_HOST_URL
-ENV NEXT_PUBLIC_API_COMMUNICATION_URL=$NEXT_PUBLIC_API_COMMUNICATION_URL
-
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm add sharp
+# Build the Next.js app
 RUN pnpm run rahat:build
-RUN [ -d "dist/apps/rahat-ui/.next/standalone" ] || \
-    (echo "ERROR: standalone output missing — ensure output: 'standalone' in next.config.js" && exit 1)
-RUN find dist/apps/rahat-ui/.next/standalone -name "*.map" -delete
 
-# -------- Runtime prep --------
-FROM node:20-alpine AS prep
+# Ensure .next exists for runtime
+RUN [ -d "dist/apps/rahat-ui/.next" ] || (echo "ERROR: .next build missing!" && exit 1)
+
+# Stage 3: Runner / Production
+FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 
-# Copy node binary to a known location
-RUN cp -p /usr/local/bin/node /node
+# Enable Corepack for pnpm at runtime
+RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
 
-# Collect all shared libs at their original absolute paths
-RUN ldd /usr/local/bin/node 2>/dev/null | \
-    grep -oE '(/usr)?/lib[^ ]+' | sort -u | \
-    while read lib; do \
-      mkdir -p "/collect$(dirname $lib)"; \
-      cp -pL "$lib" "/collect$(dirname $lib)/"; \
-    done
+# Copy built app and node_modules (still as root)
+COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 
-# Copy CA certs
-RUN mkdir -p /collect/etc/ssl && cp -r /etc/ssl/certs /collect/etc/ssl/certs
+# Fix ownership — create cache dir and give node user full access
+RUN mkdir -p .next/cache/images && \
+    chown -R node:node /usr/src/app
 
-# -------- Runner --------
-FROM scratch
-
-WORKDIR /usr/src/app
-
-ENV NODE_ENV=production
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-
-# Node binary
-COPY --from=prep /node /node
-
-# Shared libs at correct absolute paths
-COPY --from=prep /collect/ /
-
-# Standalone app bundle
-COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/standalone ./
-
-# Static assets (served by Next.js standalone server)
-COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/static \
-    ./dist/apps/rahat-ui/.next/static
-
-# Public folder — adjust path if your repo layout differs
-COPY --from=builder /usr/src/app/apps/rahat-ui/public \
-    ./apps/rahat-ui/public
+# Switch to non-root user AFTER fixing permissions
+USER node
 
 EXPOSE 3000
+CMD ["node_modules/.bin/next", "start"]
 
-CMD ["/node", "apps/rahat-ui/server.js"]
+
+
+# # -------- Base --------
+# FROM node:20-alpine AS base
+# WORKDIR /usr/src/app
+# RUN corepack enable && corepack prepare pnpm@9.1.3 --activate 
+
+# # -------- Dependencies --------
+# FROM base AS deps
+# RUN apk add --no-cache libc6-compat python3 make g++
+# COPY pnpm-lock.yaml package.json ./
+# RUN pnpm install --frozen-lockfile
+
+# # -------- Builder --------
+# FROM base AS builder
+# WORKDIR /usr/src/app
+# COPY --from=deps /usr/src/app/node_modules ./node_modules
+# COPY . .
+
+# ARG NEXT_PUBLIC_API_HOST_URL
+# ARG NEXT_PUBLIC_API_COMMUNICATION_URL
+# ENV NEXT_PUBLIC_API_HOST_URL=$NEXT_PUBLIC_API_HOST_URL
+# ENV NEXT_PUBLIC_API_COMMUNICATION_URL=$NEXT_PUBLIC_API_COMMUNICATION_URL
+
+# ENV NODE_OPTIONS="--max-old-space-size=4096"
+# ENV NEXT_TELEMETRY_DISABLED=1
+# RUN pnpm add sharp
+# RUN pnpm run rahat:build
+# RUN [ -d "dist/apps/rahat-ui/.next/standalone" ] || \
+#     (echo "ERROR: standalone output missing — ensure output: 'standalone' in next.config.js" && exit 1)
+# RUN find dist/apps/rahat-ui/.next/standalone -name "*.map" -delete
+
+# # -------- Runtime prep --------
+# FROM node:20-alpine AS prep
+# WORKDIR /usr/src/app
+
+# # Copy node binary to a known location
+# RUN cp -p /usr/local/bin/node /node
+
+# # Collect all shared libs at their original absolute paths
+# RUN ldd /usr/local/bin/node 2>/dev/null | \
+#     grep -oE '(/usr)?/lib[^ ]+' | sort -u | \
+#     while read lib; do \
+#       mkdir -p "/collect$(dirname $lib)"; \
+#       cp -pL "$lib" "/collect$(dirname $lib)/"; \
+#     done
+
+# # Copy CA certs
+# RUN mkdir -p /collect/etc/ssl && cp -r /etc/ssl/certs /collect/etc/ssl/certs
+
+# # -------- Runner --------
+# FROM scratch
+
+# WORKDIR /usr/src/app
+
+# ENV NODE_ENV=production
+# ENV PORT=3000
+# ENV HOSTNAME=0.0.0.0
+# ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+
+# # Node binary
+# COPY --from=prep /node /node
+
+# # Shared libs at correct absolute paths
+# COPY --from=prep /collect/ /
+
+# # Standalone app bundle
+# COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/standalone ./
+
+# # Static assets (served by Next.js standalone server)
+# COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/static \
+#     ./dist/apps/rahat-ui/.next/static
+
+# # Public folder — adjust path if your repo layout differs
+# COPY --from=builder /usr/src/app/apps/rahat-ui/public \
+#     ./apps/rahat-ui/public
+
+# EXPOSE 3000
+
+# CMD ["/node", "apps/rahat-ui/server.js"]

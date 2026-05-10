@@ -163,6 +163,9 @@ jobs:
           context: .
           file: Dockerfile.${{ matrix.app }}
           push: true
+          build-args: |
+            NEXT_PUBLIC_API_HOST_URL=${{ env.NEXT_PUBLIC_API_HOST_URL }}
+            NEXT_PUBLIC_API_COMMUNICATION_URL=${{ env.NEXT_PUBLIC_API_COMMUNICATION_URL }}
           # cache-from: type=gha
           # cache-to: type=gha,mode=max
           tags: |

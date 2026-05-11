@@ -131,6 +131,13 @@ export default function InkindAllocationDetail() {
     ? inkindAvailableStock + quantityRedeemed
     : quantityAllocated;
 
+  const inklindAllocationStats = [
+    { name: 'Inkind Name', amount: inkindName },
+    { name: 'No of Beneficiaries', amount: totalBeneficiaries },
+    { name: 'Total Inkinds', amount: totalAvailableInkinds },
+    { name: 'Total Redeemed', amount: quantityRedeemed },
+  ];
+
   const status = isWalkIn
     ? deriveStatus(totalAvailableInkinds, quantityRedeemed)
     : deriveStatus(quantityAllocated, quantityRedeemed);
@@ -272,12 +279,7 @@ export default function InkindAllocationDetail() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-        {[
-          { name: 'Inkind Name', amount: inkindName },
-          { name: 'No of Beneficiaries', amount: totalBeneficiaries },
-          { name: 'Total Inkinds', amount: totalAvailableInkinds },
-          { name: 'Total Redeemed', amount: quantityRedeemed },
-        ].map((card) => (
+        {inklindAllocationStats.map((card) => (
           <DataCard
             key={card.name}
             title={card.name}

@@ -254,98 +254,99 @@ export default function InkindAllocationDetail() {
     state: { columnVisibility },
   });
 
+  if (logsLoading) {
+    return (
+      <div className="flex items-center justify-center h-[300px]">
+        <SpinnerLoader />
+      </div>
+    );
+  }
   return (
     <div className="p-4">
-      {logsLoading ? (
-        <SpinnerLoader />
-      ) : (
-        <>
-          <HeaderWithBack
-            path={`/projects/aa/${id}/inkind-management?tab=inkindAllocation`}
-            title={groupName}
-            subtitle="Disbursement information for this group allocation"
-            status={status}
-            badgeClassName={STATUS_STYLE[status]}
-          />
+      <HeaderWithBack
+        path={`/projects/aa/${id}/inkind-management?tab=inkindAllocation`}
+        title={groupName}
+        subtitle="Disbursement information for this group allocation"
+        status={status}
+        badgeClassName={STATUS_STYLE[status]}
+      />
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-            {[
-              { name: 'Inkind Name', amount: inkindName },
-              { name: 'No of Beneficiaries', amount: totalBeneficiaries },
-              { name: 'Total Inkinds', amount: totalAvailableInkinds },
-              { name: 'Total Redeemed', amount: quantityRedeemed },
-            ].map((card) => (
-              <DataCard
-                key={card.name}
-                title={card.name}
-                number={String(card.amount)}
-                className="border-solid rounded-sm"
-                iconStyle="bg-white text-secondary-muted"
-              />
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+        {[
+          { name: 'Inkind Name', amount: inkindName },
+          { name: 'No of Beneficiaries', amount: totalBeneficiaries },
+          { name: 'Total Inkinds', amount: totalAvailableInkinds },
+          { name: 'Total Redeemed', amount: quantityRedeemed },
+        ].map((card) => (
+          <DataCard
+            key={card.name}
+            title={card.name}
+            number={String(card.amount)}
+            className="border-solid rounded-sm"
+            iconStyle="bg-white text-secondary-muted"
+          />
+        ))}
+      </div>
+
+      <Card className="rounded-sm">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <Package className="h-4 w-4 text-muted-foreground" />
+            <h2 className="font-semibold text-sm">Inkind logs</h2>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            List of all beneficiaries who received this inkind
+          </p>
+
+          <div className="flex items-center gap-2 mb-3">
+            <SearchInput
+              className="flex-1"
+              name="Search by wallet / name / phone"
+              value={search}
+              onSearch={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 gap-1 text-sm"
+              onClick={() => {
+                setOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                setPage(1);
+              }}
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" />
+              {order === 'desc' ? 'Desc' : 'Asc'}
+            </Button>
           </div>
 
-          <Card className="rounded-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Package className="h-4 w-4 text-muted-foreground" />
-                <h2 className="font-semibold text-sm">Inkind logs</h2>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">
-                List of all beneficiaries who received this inkind
-              </p>
-
-              <div className="flex items-center gap-2 mb-3">
-                <SearchInput
-                  className="flex-1"
-                  name="Search by wallet / name / phone"
-                  value={search}
-                  onSearch={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-9 gap-1 text-sm"
-                  onClick={() => {
-                    setOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
-                    setPage(1);
-                  }}
-                >
-                  <ArrowUpDown className="h-3.5 w-3.5" />
-                  {order === 'desc' ? 'Desc' : 'Asc'}
-                </Button>
-              </div>
-
-              <DemoTable
-                table={table}
-                tableHeight="h-[calc(100vh-520px)]"
-                loading={logsLoading}
-              />
-              <CustomPagination
-                currentPage={page}
-                handleNextPage={() => setPage((p) => p + 1)}
-                handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
-                handlePageSizeChange={(size) => {
-                  setPerPage(size as number);
-                  setPage(1);
-                }}
-                meta={{
-                  total: meta?.total ?? logRows.length,
-                  currentPage: page,
-                  lastPage: meta?.lastPage ?? 1,
-                  perPage,
-                  next: meta?.next ?? null,
-                  prev: meta?.prev ?? null,
-                }}
-                perPage={perPage}
-              />
-            </CardContent>
-          </Card>
-        </>
-      )}
+          <DemoTable
+            table={table}
+            tableHeight="h-[calc(100vh-520px)]"
+            loading={logsLoading}
+          />
+          <CustomPagination
+            currentPage={page}
+            handleNextPage={() => setPage((p) => p + 1)}
+            handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
+            handlePageSizeChange={(size) => {
+              setPerPage(size as number);
+              setPage(1);
+            }}
+            meta={{
+              total: meta?.total ?? logRows.length,
+              currentPage: page,
+              lastPage: meta?.lastPage ?? 1,
+              perPage,
+              next: meta?.next ?? null,
+              prev: meta?.prev ?? null,
+            }}
+            perPage={perPage}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

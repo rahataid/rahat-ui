@@ -99,6 +99,8 @@ export default function Detail() {
     sort: 'redeemedAt',
   });
 
+  const slicedData = logsData?.data?.slice(0, 5) || [];
+
   const { data: redemptionStats, isLoading: redemptionStatsLoading } =
     useGetVendorRedemptionStats({
       projectUUID: id,
@@ -142,7 +144,7 @@ export default function Detail() {
             />
             <TransactionCard
               transaction={data?.data?.transactions}
-              inkindTransactions={logsData?.data?.slice(0, 5) || []}
+              inkindTransactions={slicedData}
               loading={isLoading || logsLoading}
             />
           </div>

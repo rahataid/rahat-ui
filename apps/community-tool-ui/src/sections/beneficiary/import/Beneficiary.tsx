@@ -174,13 +174,17 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const fileName = formatNameString(files[0].name);
     if (!files.length) return;
     const reader = new FileReader();
+    const file = files[0];
+    const isCsv = file.name.toLowerCase().endsWith('.csv');
+
     reader.onload = (e: any) => {
       const data = e.target.result;
-      const workbook = xlsx.read(data, { type: 'array' });
+      const workbook = xlsx.read(data, { type: 'array', raw: isCsv });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const json = xlsx.utils.sheet_to_json(worksheet, {
         defval: '',
+        raw: isCsv
       }) as any;
       const sanitized = removeFieldsWithUnderscore(json || []);
       setRawData(sanitized);

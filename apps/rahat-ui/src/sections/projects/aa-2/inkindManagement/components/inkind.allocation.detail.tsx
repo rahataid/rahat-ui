@@ -21,6 +21,7 @@ import {
   CustomPagination,
   HeaderWithBack,
   DataCard,
+  SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Eye, Package, ArrowUpDown } from 'lucide-react';
@@ -129,6 +130,13 @@ export default function InkindAllocationDetail() {
   const totalAvailableInkinds = isWalkIn
     ? inkindAvailableStock + quantityRedeemed
     : quantityAllocated;
+
+  const inklindAllocationStats = [
+    { name: 'Inkind Name', amount: inkindName },
+    { name: 'No of Beneficiaries', amount: totalBeneficiaries },
+    { name: 'Total Inkinds', amount: totalAvailableInkinds },
+    { name: 'Total Redeemed', amount: quantityRedeemed },
+  ];
 
   const status = isWalkIn
     ? deriveStatus(totalAvailableInkinds, quantityRedeemed)
@@ -253,6 +261,13 @@ export default function InkindAllocationDetail() {
     state: { columnVisibility },
   });
 
+  if (logsLoading) {
+    return (
+      <div className="flex items-center justify-center h-[300px]">
+        <SpinnerLoader />
+      </div>
+    );
+  }
   return (
     <div className="p-4">
       <HeaderWithBack
@@ -264,12 +279,7 @@ export default function InkindAllocationDetail() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-        {[
-          { name: 'Inkind Name', amount: inkindName },
-          { name: 'No of Beneficiaries', amount: totalBeneficiaries },
-          { name: 'Total Available Inkinds', amount: totalAvailableInkinds },
-          { name: 'Total Redeemed', amount: quantityRedeemed },
-        ].map((card) => (
+        {inklindAllocationStats.map((card) => (
           <DataCard
             key={card.name}
             title={card.name}

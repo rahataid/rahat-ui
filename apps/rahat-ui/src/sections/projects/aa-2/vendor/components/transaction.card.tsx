@@ -95,32 +95,86 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
       </div>
       <div>
         <p className="font-semibold text-[14px] leading-[24px]">
-          {amount}{' '}
-          {type === 'cva' || type === 'fsp'
-            ? getAssetCode(settings, projectId)
-            : ''}
+          {amount} {type === 'cva' ? getAssetCode(settings, projectId) : ''}
         </p>
       </div>
     </div>
   );
 };
 
+type TransactionViewProps = {
+  value: string;
+  items: Txn[];
+  type: NonNullable<Txn['type']>;
+};
+
+const SkeletonTransaction = () => {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="flex justify-between space-x-4 items-center"
+        >
+          <div className="flex space-x-4 items-center">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+          </div>
+          <Skeleton className="h-6 w-16" />
+        </div>
+      ))}
+    </div>
+  );
+};
+const TransactionView = ({ value, items, type }: TransactionViewProps) => (
+  <TabsContent value={value} className="mt-2 p-2">
+    {items.length ? (
+      items.map((txn) => (
+        <div className="mb-4" key={txn.hash}>
+          <Transaction
+            amount={txn.amount}
+            date={txn.date}
+            hash={txn.hash}
+            title={txn.title}
+            type={type}
+          />
+        </div>
+      ))
+    ) : (
+      <NoResult />
+    )}
+  </TabsContent>
+);
+
 export default function TransactionCard({
   transaction,
   inkindTransactions,
   loading,
 }: Props) {
-  const [activeTab, setActiveTab] = useState('fsp');
+  const [activeTab, setActiveTab] = useState('cva');
 
-  const fspTransactions =
-    transaction?.filter((txn) => txn.title === 'TOKEN_TRANSFER') || [];
   const cvaTransactions =
     transaction?.filter((txn) => txn.title === 'VENDOR_REIMBURSEMENT') || [];
 
+  const normalizedInkindTransactions: Txn[] =
+    inkindTransactions?.map((txn) => ({
+      amount: txn.quantity,
+      date: txn.redeemedAt,
+      hash: txn.txHash,
+      title: txn.groupInkind.inkind.name,
+    })) || [];
+
   const TabsTriggerStats = [
-    { value: 'fsp', title: 'FSP', count: fspTransactions.length },
     { value: 'cva', title: 'CVA', count: cvaTransactions.length },
-    { value: 'inkind', title: 'In-kind', count: inkindTransactions.length },
+    {
+      value: 'inkind',
+      title: 'In-kind',
+      count: normalizedInkindTransactions.length,
+    },
   ];
 
   return (
@@ -131,27 +185,8 @@ export default function TransactionCard({
         description="List of recently made transactions"
       />
       {loading ? (
-        <div className="space-y-4">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div
-              key={index}
-              className="flex justify-between space-x-4 items-center"
-            >
-              <div className="flex space-x-4 items-center">
-                <Skeleton className="h-12 w-12 rounded-full" />
-
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" /> {/* Title */}
-                  <Skeleton className="h-3 w-32" /> {/* Subtitle */}
-                  <Skeleton className="h-3 w-20" /> {/* Date */}
-                </div>
-              </div>
-
-              <Skeleton className="h-6 w-16" />
-            </div>
-          ))}
-        </div>
-      ) : transaction?.length || inkindTransactions?.length ? (
+        <SkeletonTransaction />
+      ) : cvaTransactions.length || normalizedInkindTransactions.length ? (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="border bg-secondary rounded w-full">
             {TabsTriggerStats.map((tab) => (
@@ -162,12 +197,11 @@ export default function TransactionCard({
               >
                 <span>{tab.title}</span>
                 <span
-                  className={`ml-2 text-xs font-semibold px-2 py-0.5 rounded-full
-                      ${
-                        activeTab === tab.value
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-300 text-gray-600'
-                      }`}
+                  className={`ml-2 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    activeTab === tab.value
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-300 text-gray-600'
+                  }`}
                 >
                   {tab.count}
                 </span>
@@ -176,56 +210,12 @@ export default function TransactionCard({
           </TabsList>
 
           <ScrollArea className="h-[calc(100vh-500px)]">
-            <TabsContent value="fsp" className="mt-2  p-2">
-              {fspTransactions?.map((txn) => {
-                return (
-                  <div className="mb-4 " key={txn.hash}>
-                    <Transaction
-                      amount={txn.amount}
-                      date={txn.date}
-                      hash={txn.hash}
-                      title={txn.title}
-                      type={'fsp'}
-                    />
-                  </div>
-                );
-              })}
-              {!fspTransactions.length && <NoResult />}
-            </TabsContent>
-
-            <TabsContent value="cva" className="mt-2  p-2">
-              {cvaTransactions?.map((txn) => {
-                return (
-                  <div className="mb-4 " key={txn.hash}>
-                    <Transaction
-                      amount={txn.amount}
-                      date={txn.date}
-                      hash={txn.hash}
-                      title={txn.title}
-                      type={'cva'}
-                    />
-                  </div>
-                );
-              })}
-              {!cvaTransactions.length && <NoResult />}
-            </TabsContent>
-
-            <TabsContent value="inkind" className="mt-2  p-2 ">
-              {inkindTransactions?.map((txn) => {
-                return (
-                  <div className="mb-4 " key={txn.txHash}>
-                    <Transaction
-                      amount={txn.quantity}
-                      date={txn.redeemedAt}
-                      hash={txn.txHash}
-                      title={txn.groupInkind.inkind.name}
-                      type={'inkind'}
-                    />
-                  </div>
-                );
-              })}
-              {!inkindTransactions.length && <NoResult />}
-            </TabsContent>
+            <TransactionView value="cva" items={cvaTransactions} type="cva" />
+            <TransactionView
+              value="inkind"
+              items={normalizedInkindTransactions}
+              type="inkind"
+            />
           </ScrollArea>
         </Tabs>
       ) : (

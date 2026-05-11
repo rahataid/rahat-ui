@@ -22,7 +22,6 @@ import {
   useBulkAssignBenToProject,
   useCreateBeneficiaryGroup,
   usePagination,
-  useProjectList,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
@@ -33,7 +32,7 @@ import { useSecondPanel } from '../../providers/second-panel-provider';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import BeneficiaryGroupsView from './groups/beneficiary-groups.view';
-import { ChevronDownIcon, CloudDownload, Download } from 'lucide-react';
+import { ChevronDownIcon, CloudDownload } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
@@ -75,10 +74,6 @@ function BeneficiaryView() {
   const projectModal = useBoolean();
   const groupModal = useBoolean();
   const bulkAssign = useBulkAssignBenToProject();
-  const projectsList = useProjectList({
-    page: 1,
-    perPage: 10,
-  });
 
   const table = useReactTable({
     manualPagination: true,
@@ -109,13 +104,6 @@ function BeneficiaryView() {
         endDate: date,
       });
     }
-  };
-
-  const handleFilterProjectSelect = (project: string | UUID) => {
-    setFilters({
-      ...filters,
-      projectId: project,
-    });
   };
 
   const benUUIDs = Object.keys(selectedListItems);
@@ -244,8 +232,6 @@ function BeneficiaryView() {
             isBulkAssigning={false}
             projectModal={projectModal}
             groupModal={groupModal}
-            projects={projectsList?.data?.data || []}
-            handleFilterProjectSelect={handleFilterProjectSelect}
             filters={filters}
             setFilters={setFilters}
             handleDateChange={handleDateChange}

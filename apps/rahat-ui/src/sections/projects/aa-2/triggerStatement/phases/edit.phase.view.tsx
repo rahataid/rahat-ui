@@ -3,6 +3,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useDeletePhase,
   usePhases,
+  useProjectInfo,
   useProjectSettingsStore,
   useSinglePhase,
   useUpdatePhase,
@@ -22,6 +23,7 @@ import {
   getAddPhaseDefaultValues,
 } from './phase.schema';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function EditPhaseView() {
   const params = useParams();
@@ -46,7 +48,12 @@ export default function EditPhaseView() {
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
       'river_basin'
     ];
-
+  const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
+    projectId as UUID,
+  );
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
   const payoutEnabledPhase = useMemo(
     () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
     [phasesData],
@@ -127,7 +134,7 @@ export default function EditPhaseView() {
     }
   };
 
-  if (isLoading || isDeleted) return <TableLoader />;
+  if (isLoading || isDeleted || isProjectInfoLoading) return <TableLoader />;
 
   return (
     <>
@@ -170,6 +177,7 @@ export default function EditPhaseView() {
         submitLabel="Update"
         resetLabel="Reset"
         payoutEnabledPhase={payoutEnabledPhase}
+        stationHeading={stationHeading}
       />
     </>
   );

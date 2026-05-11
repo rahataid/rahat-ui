@@ -90,7 +90,7 @@ export default function Detail() {
     take: 10,
   });
 
-  const { data: logsData, isLoading: logsLoading } = useLogsDetailsByVendor({
+  const { data: logsData, isLoading: isLogsLoading } = useLogsDetailsByVendor({
     projectUuid: id,
     vendorId: vendorId,
     page: 1,
@@ -145,7 +145,7 @@ export default function Detail() {
             <TransactionCard
               transaction={data?.data?.transactions}
               inkindTransactions={slicedData}
-              loading={isLoading || logsLoading}
+              loading={isLoading || isLogsLoading}
             />
           </div>
         </TabsContent>

@@ -311,8 +311,6 @@ export const useLogsDetailsByVendor = (payload: {
       order,
     ],
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
     enabled: !!projectUuid && !!vendorId,
     queryFn: async () => {
       const mutate = await q.mutateAsync({

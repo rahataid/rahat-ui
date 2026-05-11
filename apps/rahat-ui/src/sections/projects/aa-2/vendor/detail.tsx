@@ -99,8 +99,6 @@ export default function Detail() {
     sort: 'redeemedAt',
   });
 
-  console.log('vendor inkind logs', logsData);
-
   const { data: redemptionStats, isLoading: redemptionStatsLoading } =
     useGetVendorRedemptionStats({
       projectUUID: id,
@@ -144,7 +142,7 @@ export default function Detail() {
             />
             <TransactionCard
               transaction={data?.data?.transactions}
-              inkindTransactions={logsData?.data || []}
+              inkindTransactions={logsData?.data?.slice(0, 5) || []}
               loading={isLoading || logsLoading}
             />
           </div>

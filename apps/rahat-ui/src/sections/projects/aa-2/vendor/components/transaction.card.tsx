@@ -99,7 +99,6 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
           {type === 'cva' || type === 'fsp'
             ? getAssetCode(settings, projectId)
             : ''}
-          {/* {getAssetCode(settings, projectId)} */}
         </p>
       </div>
     </div>
@@ -113,17 +112,10 @@ export default function TransactionCard({
 }: Props) {
   const [activeTab, setActiveTab] = useState('fsp');
 
-  console.log('inkindTransactions in card', inkindTransactions);
   const fspTransactions =
     transaction?.filter((txn) => txn.title === 'TOKEN_TRANSFER') || [];
   const cvaTransactions =
     transaction?.filter((txn) => txn.title === 'VENDOR_REIMBURSEMENT') || [];
-  // const inKindTransactions =
-  //   transaction?.filter(
-  //     (txn) =>
-  //       txn.title !== 'TOKEN_TRANSFER' && txn.title !== 'VENDOR_REIMBURSEMENT',
-  //   ) || [];
-  // const inKindTransactions = inkindTransactions.length;
 
   const TabsTriggerStats = [
     { value: 'fsp', title: 'FSP', count: fspTransactions.length },
@@ -160,21 +152,6 @@ export default function TransactionCard({
           ))}
         </div>
       ) : transaction?.length || inkindTransactions?.length ? (
-        // <ScrollArea className=" h-[calc(350px)]">
-        //   {transaction?.map((txn) => {
-        //     return (
-        //       <div className="mb-4" key={txn.hash}>
-        //         <Transaction
-        //           amount={txn.amount}
-        //           date={txn.date}
-        //           hash={txn.hash}
-        //           title={txn.title}
-        //         />
-        //       </div>
-        //     );
-        //   })}
-        // </ScrollArea>
-
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="border bg-secondary rounded w-full">
             {TabsTriggerStats.map((tab) => (

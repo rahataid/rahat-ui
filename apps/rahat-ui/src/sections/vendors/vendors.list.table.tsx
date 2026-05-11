@@ -86,12 +86,8 @@ export default function VendorsTable({
     (table.getColumn('status')?.getFilterValue() as string) || '';
   const projectFilter =
     (table.getColumn('projectName')?.getFilterValue() as string) || '';
-  const projectNames: string[] =
-    (projectList?.data?.data && projectList.data.data.length > 0
-      ? projectList.data.data
-          .map((project: Project) => project?.name)
-          .filter((name): name is string => Boolean(name))
-      : []) || [];
+  const projectNames =
+    projectList?.data?.data?.map((project: Project) => project.name) ?? [];
 
   return (
     <div className="border rounded shadow p-3">

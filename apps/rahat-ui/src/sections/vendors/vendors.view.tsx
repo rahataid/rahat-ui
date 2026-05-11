@@ -23,7 +23,8 @@ import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+  const { pagination, setNextPage, setPrevPage, setPerPage,setPagination } =
+   
     usePagination();
 
   const projectModal = useBoolean();
@@ -33,8 +34,8 @@ function VendorsView() {
   );
 
   const statusFilter =
-    (columnFilters.find((filter) => filter.id === 'status')?.value as string) ||
-    '';
+    (columnFilters.find((filter) => filter.id === 'status')
+      ?.value as string) || '';
   const projectFilter =
     (columnFilters.find((filter) => filter.id === 'projectName')
       ?.value as string) || '';

@@ -38,14 +38,7 @@ import {
   INKIND_TYPES,
   INKIND_TYPE_LABELS,
 } from '../schemas/inkind.validation';
-
-interface InkindItem {
-  uuid: string;
-  name: string;
-  description?: string;
-  type: InkindType;
-  availableStock?: number;
-}
+import { InkindItem } from '../types';
 
 interface InkindUpdateSheetProps {
   projectUUID: UUID;

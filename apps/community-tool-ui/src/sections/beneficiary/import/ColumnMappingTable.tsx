@@ -170,10 +170,9 @@ export default function ColumnMappingTable({
                 handleTargetFieldChange={handleTargetFieldChange}
                 column={column}
                 selectedField={getSelectedField(column)}
-                aiSuggestion={
-                  fieldSuggestions.find((s) => s.sourceField === column)
-                    ?.targetField
-                }
+                aiSuggestion={fieldSuggestions.find(
+                  (s) => s.sourceField === column,
+                )}
               />
             </th>
           ))}

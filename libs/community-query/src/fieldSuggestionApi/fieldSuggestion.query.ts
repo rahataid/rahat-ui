@@ -17,6 +17,30 @@ const uploadExcel = async ({
   });
   return res.data;
 };
+const uploadStandardJson = async ({
+  payload,
+  baseURL,
+}: {
+  payload: any;
+  baseURL: string;
+}) => {
+  const aiApi = getAiApi(baseURL);
+  const res = await aiApi.post('/api/json/standard/upload/', payload);
+  return res.data;
+};
+
+const getStandardFields = async ({
+  standardName,
+  baseURL,
+}: {
+  standardName: string;
+  baseURL: string;
+}) => {
+  const aiApi = getAiApi(baseURL);
+  const res = await aiApi.get(`/api/json/standard/${standardName}/fields`);
+  return res.data;
+};
+
 const uploadStandardLevel = async ({
   payload,
   baseURL,
@@ -46,5 +70,24 @@ export const useUploadStandardLevel = () => {
     onSuccess: () => {
       //qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
     },
+  });
+};
+
+export const useUploadStandardJson = () => {
+  return useMutation({
+    mutationFn: ({ payload, baseURL }: { payload: any; baseURL: string }) =>
+      uploadStandardJson({ payload, baseURL }),
+  });
+};
+
+export const useGetStandardFields = () => {
+  return useMutation({
+    mutationFn: ({
+      standardName,
+      baseURL,
+    }: {
+      standardName: string;
+      baseURL: string;
+    }) => getStandardFields({ standardName, baseURL }),
   });
 };

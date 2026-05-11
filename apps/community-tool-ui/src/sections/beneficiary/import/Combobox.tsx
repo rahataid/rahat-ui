@@ -75,7 +75,12 @@ export function ComboBox({
                 {data.map((d: string) => {
                   const isSuggested =
                     aiSuggestion &&
-                    d.toLowerCase() === aiSuggestion.toLowerCase();
+                    d.toLowerCase() === aiSuggestion.targetField?.toLowerCase();
+                  const isSimilar =
+                    aiSuggestion &&
+                    aiSuggestion.other_similar?.some(
+                      (s: any) => s.label.toLowerCase() === d.toLowerCase(),
+                    );
                   return (
                     <CommandItem
                       key={d}
@@ -102,6 +107,11 @@ export function ComboBox({
                         {isSuggested && (
                           <span className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-blue-100 text-blue-600 rounded-md border border-blue-200 shrink-0">
                             AI Suggested
+                          </span>
+                        )}
+                        {!isSuggested && isSimilar && (
+                          <span className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-600 rounded-md border border-gray-200 shrink-0">
+                            AI Similar
                           </span>
                         )}
                       </div>

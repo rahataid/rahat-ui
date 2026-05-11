@@ -34,9 +34,12 @@ import {
   useCreateImportSource,
   useExistingFieldMappings,
   useFetchKoboSettings,
+  useGetStandardFields,
   useUploadCsvForMapping,
+  useUploadStandardJson,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
+// import beneficiaryStandard from '../../../../../../beneficiary.json';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
@@ -59,6 +62,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
+  // const uploadStandardJson = useUploadStandardJson();
+  const getStandardFields = useGetStandardFields();
 
   const {
     currentScreen,
@@ -93,6 +98,18 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const fetchAiMappingSuggestions = async (file: File) => {
     try {
       setLoading(true);
+
+      // if (aiBaseurl) {
+      //   await uploadStandardJson.mutateAsync({
+      //     payload: beneficiaryStandard,
+      //     baseURL: aiBaseurl,
+      //   });
+
+      //   await getStandardFields.mutateAsync({
+      //     standardName: beneficiaryStandard.title,
+      //     baseURL: aiBaseurl,
+      //   });
+      // }
 
       const formData = new FormData();
       formData.append('file', file);

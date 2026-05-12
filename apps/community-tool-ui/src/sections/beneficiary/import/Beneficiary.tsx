@@ -58,7 +58,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const aiSetting = data?.data.find(
     (setting: any) => setting.name === 'AI_API_URL',
   );
+  console.log(aiSetting, 'aiSetting');
   const aiBaseurl = aiSetting?.value?.URL;
+  const aiStandardName = aiSetting?.value?.standard_name;
+  const aiStandardVersion = aiSetting?.value?.version;
 
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();

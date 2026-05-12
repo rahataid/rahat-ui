@@ -40,8 +40,8 @@ const getStandardFields = async ({
   const res = await aiApi.get(`/api/json/standard/${standardName}/fields`);
   return res.data;
 };
-
-const uploadStandardLevel = async ({
+// to add labels to standard field name
+const addStandardLabel = async ({
   payload,
   baseURL,
 }: {
@@ -62,11 +62,12 @@ export const useUploadCsvForMapping = () => {
     },
   });
 };
-
-export const useUploadStandardLevel = () => {
+// to update labels to standard field name
+export const useAddStandardLabel = () => {
+  
   return useMutation({
     mutationFn: ({ payload, baseURL }: { payload: any; baseURL: string }) =>
-      uploadStandardLevel({ payload, baseURL }),
+      addStandardLabel({ payload, baseURL }),
     onSuccess: () => {
       //qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
     },
@@ -91,3 +92,6 @@ export const useGetStandardFields = () => {
     }) => getStandardFields({ standardName, baseURL }),
   });
 };
+
+
+

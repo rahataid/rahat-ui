@@ -26,7 +26,11 @@ import { z } from 'zod';
 
 import React, { useEffect, useState } from 'react';
 
-import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
+import {
+  useCommunitySettingList,
+  useFieldDefinitionsCreate,
+  useAddStandardLabel,
+} from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
 import { DownloadCloud, Minus, Plus } from 'lucide-react';
 import Samples from '../samples.json';
@@ -47,6 +51,19 @@ const DEFAULT_VALUES = {
 
 export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
+  const addStandardLabel = useAddStandardLabel();
+  const { data: settings } = useCommunitySettingList({ page: 1, perPage: 20 });
+
+  const aiSetting = settings?.data.find(
+    (setting: any) => setting.name === 'AI_API_URL',
+  );
+  const aiBaseurl = aiSetting?.value?.URL;
+
+  const aiStandardName = aiSetting?.value?.STANDARD_NAME;
+
+  const aiStandardVersion = aiSetting?.value?.VERSION;
+
+
   const [showLabelValue, setShowLabelValue] = useState(false);
 
   const [variationTags, setVariationTags] = useState<Tag[]>([]);
@@ -112,6 +129,26 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     };
 
     await addFieldDefinitions.mutateAsync(payload);
+
+    const finalStandardName = aiStandardName || 'rahat';
+    const finalVersion = aiStandardVersion || '1.0';
+    console.log('Attempting AI API Call:', { aiBaseurl, finalStandardName, finalVersion });
+
+    if (aiBaseurl) {
+      await addStandardLabel.mutateAsync({
+        payload: {
+          standard_name: finalStandardName,
+          version: finalVersion,
+          field_name: data.name,
+          field_type: data.fieldType.toLowerCase(),
+          field_description: '',
+          is_active: true,
+          validation_rules: {},
+        },
+        baseURL: aiBaseurl,
+      });
+    }
+
     form.reset();
   };
 
@@ -126,8 +163,8 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   useEffect(() => {
     setShowLabelValue(
       form.watch('fieldType') === FieldType.CHECKBOX ||
-        form.watch('fieldType') === FieldType.RADIO ||
-        form.watch('fieldType') === FieldType.DROPDOWN,
+      form.watch('fieldType') === FieldType.RADIO ||
+      form.watch('fieldType') === FieldType.DROPDOWN,
     );
   }, [form.watch('fieldType'), form]);
 
@@ -333,7 +370,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                             type="button"
                             onClick={() => remove(index)}
                             className="p-1 text-xs  w-10"
-                            // disabled={fields.length === 0}
+                          // disabled={fields.length === 0}
                           >
                             <Minus size={18} strokeWidth={1.5} />
                           </Button>

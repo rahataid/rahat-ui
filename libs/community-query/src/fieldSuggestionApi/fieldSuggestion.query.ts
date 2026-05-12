@@ -17,15 +17,31 @@ const uploadExcel = async ({
   });
   return res.data;
 };
+
 const uploadStandardJson = async ({
   payload,
   baseURL,
 }: {
-  payload: any;
+  payload: {
+    file: File | Blob;
+    standard_name: string;
+    version?: string;
+    description?: string;
+  };
   baseURL: string;
 }) => {
   const aiApi = getAiApi(baseURL);
-  const res = await aiApi.post('/api/json/standard/upload/', payload);
+  const formData = new FormData();
+  formData.append('file', payload.file);
+  formData.append('standard_name', payload.standard_name);
+  formData.append('version', payload.version || '');
+  formData.append('description', payload.description || '');
+  console.log(formData, 'formData in uploadStandardJson');
+  const res = await aiApi.post('/api/json/standard/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return res.data;
 };
 
@@ -64,7 +80,6 @@ export const useUploadCsvForMapping = () => {
 };
 // to update labels to standard field name
 export const useAddStandardLabel = () => {
-  
   return useMutation({
     mutationFn: ({ payload, baseURL }: { payload: any; baseURL: string }) =>
       addStandardLabel({ payload, baseURL }),
@@ -92,6 +107,3 @@ export const useGetStandardFields = () => {
     }) => getStandardFields({ standardName, baseURL }),
   });
 };
-
-
-

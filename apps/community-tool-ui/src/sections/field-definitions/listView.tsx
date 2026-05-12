@@ -1,6 +1,6 @@
 'use client';
 import { Table, flexRender } from '@tanstack/react-table';
-import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
+import { CircleEllipsisIcon, Settings2, RefreshCw } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -23,6 +23,11 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import React from 'react';
+import {
+  useCommunitySettingList,
+  useUploadStandardJson,
+} from '@rahat-ui/community-query';
 
 type IProps = {
   // handleClick: (item: FieldDefinition) => void;
@@ -38,8 +43,42 @@ export default function ListView({
   filters,
   loading,
 }: IProps) {
+  const { isLoading, data } = useCommunitySettingList({ page: 1, perPage: 20 });
+
+  const aiSetting = data?.data.find(
+    (setting: any) => setting.name === 'AI_API_URL',
+  );
+  const aiBaseurl = aiSetting?.value?.URL;
+  const aiStandardName = aiSetting?.value?.standard_name;
+  const aiStandardVersion = aiSetting?.value?.version;
+  const uploadStandardFields = useUploadStandardJson();
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [syncing, setSyncing] = React.useState(false);
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      setSyncing(true);
+      try {
+        await uploadStandardFields.mutateAsync({
+          payload: {
+            file,
+            standard_name: 'community_data_standard',
+            version: '',
+            description: 'Uploaded by user',
+          },
+          baseURL: aiBaseurl,
+        });
+      } finally {
+        setSyncing(false);
+      }
+    }
+  };
   const handleFilterChange = (event: any) => {
-    console.log(event.target.value.replace(/\s+/g, '_'));
     if (event && event.target) {
       const { name, value } = event.target;
       table.getColumn(name)?.setFilterValue(value);
@@ -63,6 +102,24 @@ export default function ListView({
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
+          <Button
+            variant="outline"
+            className="mr-2 flex items-center gap-2"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={syncing}
+          >
+            <RefreshCw
+              className={syncing ? 'animate-spin h-4 w-4' : 'h-4 w-4'}
+            />
+            {syncing ? 'Syncing' : 'Sync'}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">

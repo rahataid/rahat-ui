@@ -58,7 +58,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const aiSetting = data?.data.find(
     (setting: any) => setting.name === 'AI_API_URL',
   );
-  console.log(aiSetting, 'aiSetting');
+
   const aiBaseurl = aiSetting?.value?.URL;
   const aiStandardName = aiSetting?.value?.standard_name;
   const aiStandardVersion = aiSetting?.value?.version;
@@ -101,7 +101,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const fetchAiMappingSuggestions = async (file: File) => {
     try {
       setLoading(true);
-
 
       const formData = new FormData();
       formData.append('file', file);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -22,15 +22,28 @@ import {
   HeaderWithBack,
   DataCard,
   SpinnerLoader,
+  IconLabelBtn,
 } from 'apps/rahat-ui/src/common';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Eye, Package, ArrowUpDown } from 'lucide-react';
+import {
+  Eye,
+  Package,
+  ArrowUpDown,
+  Download,
+  CloudDownloadIcon,
+} from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { format } from 'date-fns';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type LogRow = {
   uuid: string;
@@ -130,6 +143,78 @@ export default function InkindAllocationDetail() {
   const totalAvailableInkinds = isWalkIn
     ? inkindAvailableStock + quantityRedeemed
     : quantityAllocated;
+
+  const {
+    isFetching: isDownloading,
+    refetch: fetchEntireLogs,
+    data: entireLogsData,
+  } = useGetGroupInkindLogs(
+    projectUUID,
+    allocationId as string,
+    { search: debouncedSearch || undefined, sort, order },
+    true,
+    { enabled: false },
+  );
+
+  useEffect(() => {
+    if (!entireLogsData) return;
+    const raw = (entireLogsData as any)?.data?.logs;
+    if (!Array.isArray(raw) || raw.length === 0) return;
+    const rows = formatLogs(raw);
+    const headers = [
+      'Beneficiary Name',
+      'Beneficiary Phone',
+      'Beneficiary Wallet',
+      'Vendor Name',
+      'Vendor Wallet',
+      'Quantity',
+      'Tx Hash',
+      'Redeemed At',
+    ];
+    const escape = (val: string | number | null | undefined) => {
+      const str = val == null ? '' : String(val);
+      return str.includes(',') || str.includes('"') || str.includes('\n')
+        ? `"${str.replace(/"/g, '""')}"`
+        : str;
+    };
+    const csvLines = [
+      headers.join(','),
+      ...rows.map((r) =>
+        [
+          escape(r.beneficiaryName),
+          escape(r.beneficiaryPhone),
+          escape(r.beneficiaryWalletAddress),
+          escape(r.vendorName),
+          escape(r.vendorWalletAddress),
+          escape(r.quantity),
+          escape(r.txHash),
+          escape(
+            r.redeemedAt
+              ? format(new Date(r.redeemedAt), 'MMM dd, yyyy, hh:mm a')
+              : '',
+          ),
+        ].join(','),
+      ),
+    ];
+    const blob = new Blob([csvLines.join('\n')], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `inkind-logs-${groupName}-${inkindName}.csv`
+      .replace(/\s+/g, '-')
+      .toLowerCase();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [entireLogsData]);
+
+  const handleDownloadReport = () => {
+    fetchEntireLogs();
+  };
+  // console.log('Entire Logs Data:', entireLogsData);
 
   const inklindAllocationStats = [
     { name: 'Inkind Name', amount: inkindName },
@@ -270,13 +355,33 @@ export default function InkindAllocationDetail() {
   }
   return (
     <div className="p-4">
-      <HeaderWithBack
-        path={`/projects/aa/${id}/inkind-management?tab=inkindAllocation`}
-        title={groupName}
-        subtitle="Disbursement information for this group allocation"
-        status={status}
-        badgeClassName={STATUS_STYLE[status]}
-      />
+      <div className="flex items-center justify-between ">
+        <HeaderWithBack
+          path={`/projects/aa/${id}/inkind-management?tab=inkindAllocation`}
+          title={groupName}
+          subtitle="Disbursement information for this group allocation"
+          status={status}
+          badgeClassName={STATUS_STYLE[status]}
+        />
+        <div className="flex gap-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <IconLabelBtn
+                  Icon={CloudDownloadIcon}
+                  handleClick={handleDownloadReport}
+                  name={isDownloading ? 'Downloading...' : 'Download Report'}
+                  variant="outline"
+                  disabled={isDownloading}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Download Report</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {inklindAllocationStats.map((card) => (

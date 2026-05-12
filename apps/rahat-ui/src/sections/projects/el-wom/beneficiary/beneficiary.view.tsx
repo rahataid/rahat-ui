@@ -414,7 +414,7 @@ export default function BeneficiaryView() {
               className="rounded-sm"
             >
               <CloudDownload size={18} className="mr-1" />
-              {enabled ? 'Downloading...' : 'Download'}
+              {enabled ? 'Downloading...' : 'Download Referrals'}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

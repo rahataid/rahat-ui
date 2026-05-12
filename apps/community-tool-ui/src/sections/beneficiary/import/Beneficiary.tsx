@@ -102,17 +102,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     try {
       setLoading(true);
 
-      // if (aiBaseurl) {
-      //   await uploadStandardJson.mutateAsync({
-      //     payload: beneficiaryStandard,
-      //     baseURL: aiBaseurl,
-      //   });
-
-      //   await getStandardFields.mutateAsync({
-      //     standardName: beneficiaryStandard.title,
-      //     baseURL: aiBaseurl,
-      //   });
-      // }
 
       const formData = new FormData();
       formData.append('file', file);

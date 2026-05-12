@@ -35,7 +35,7 @@ export function DemoTable({
   return (
     <ScrollArea className={tableHeight ?? `h-[calc(100vh-${height})]`}>
       <TableComponent className="min-w-full">
-        <TableHeader className="sticky top-0 bg-gray-100 z-10">
+        <TableHeader className="sticky top-0 bg-gray-100 z-5">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {

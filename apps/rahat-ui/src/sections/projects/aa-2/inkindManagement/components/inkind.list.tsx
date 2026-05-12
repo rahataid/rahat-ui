@@ -57,12 +57,14 @@ import {
   useDeleteInkind,
   useAddInkindStock,
   useRemoveInkindStock,
-  useUpdateInkind
+  useUpdateInkind,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { usePagination } from '@rahat-ui/query';
+
 import {
   InkindType,
   INKIND_TYPES,
@@ -72,46 +74,13 @@ import {
 } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
-
-export type InkindItem = {
-  uuid: string;
-  name: string;
-  description?: string;
-  type: InkindType;
-  availableStock?: number;
-};
-
-type StockDialogState = {
-  open: boolean;
-  mode: 'add' | 'remove';
-  item: InkindItem | null;
-  quantity: string;
-  error: string;
-};
-
-type UpdateDialogState = {
-  open: boolean;
-  item: InkindItem | null;
-  name: string;
-  description: string;
-  type: InkindType;
-};
-
-type ConfirmDialogState = {
-  open: boolean;
-  item: InkindItem | null;
-  name: string;
-  description: string;
-  type: InkindType;
-};
-
-type ActionButtonProps = {
-  label: string;
-  icon: React.ReactNode;
-  hoverClass: string;
-  onClick: () => void;
-  disabled?: boolean;
-};
+import {
+  ActionButtonProps,
+  ConfirmDialogState,
+  InkindItem,
+  StockDialogState,
+  UpdateDialogState,
+} from '../types';
 
 function ActionButton({
   label,
@@ -162,11 +131,13 @@ export default function InkindList() {
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
+  const [nameFilter, setNameFilter] = useState<string>('');
   const [stockDialog, setStockDialog] = useState<StockDialogState>({
     open: false,
     mode: 'add',
@@ -184,11 +155,12 @@ export default function InkindList() {
   }>({});
 
   const { data, isLoading } = useInkinds(projectUUID, {
-    page: pagination.pageIndex + 1,
-    perPage: pagination.pageSize,
+    page: pagination.page,
+    perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     ...(typeFilter ? { type: typeFilter } : {}),
+    ...(nameFilter ? { name: nameFilter } : {}),
   });
 
   const deleteInkind = useDeleteInkind(projectUUID);
@@ -199,8 +171,10 @@ export default function InkindList() {
   const dialog = useSwal();
 
   const isGroupAssigned = (itemUuid: string) => {
-    const inkindDetails =  data?.data.find((a) => a.uuid == itemUuid);
-    return inkindDetails?.groupInkinds ? inkindDetails?.groupInkinds.length > 0 : false;
+    const inkindDetails = data?.data.find((a) => a.uuid == itemUuid);
+    return inkindDetails?.groupInkinds
+      ? inkindDetails?.groupInkinds.length > 0
+      : false;
   };
 
   const handleDelete = async (item: InkindItem) => {
@@ -339,7 +313,7 @@ export default function InkindList() {
       }),
     [data],
   );
-  const meta = data?.meta;
+  const meta = data?.response?.meta;
 
   const columns: ColumnDef<InkindItem>[] = useMemo(
     () => [
@@ -354,7 +328,10 @@ export default function InkindList() {
         accessorKey: 'description',
         header: 'Description',
         cell: ({ row }) => (
-          <TruncatedCell text={row.getValue('description') || '—'} maxLength={30} />
+          <TruncatedCell
+            text={row.getValue('description') || '—'}
+            maxLength={30}
+          />
         ),
       },
       {
@@ -448,15 +425,13 @@ export default function InkindList() {
     data: rows,
     columns,
     manualPagination: true,
-    pageCount: meta?.lastPage ?? -1,
-    onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: { columnVisibility, columnFilters, pagination },
+    state: { columnVisibility, columnFilters },
   });
 
   const isPending = addStock.isPending || removeStock.isPending;
@@ -484,24 +459,38 @@ export default function InkindList() {
         <SearchInput
           className="flex-1"
           name="Inkind Name"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onSearch={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
+          value={nameFilter}
+          onSearch={(event) => {
+            setNameFilter(event.target.value);
+            setPagination({ ...pagination, page: 1 });
+          }}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
-              {typeFilter ? INKIND_TYPE_LABELS[typeFilter as InkindType] : 'All Types'}
+              {typeFilter
+                ? INKIND_TYPE_LABELS[typeFilter as InkindType]
+                : 'All Types'}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => { setTypeFilter(undefined); setPagination((p) => ({ ...p, pageIndex: 0 })); }}>
+            <DropdownMenuItem
+              onSelect={() => {
+                setTypeFilter(undefined);
+                setPagination({ ...pagination, page: 1 });
+              }}
+            >
               All Types
             </DropdownMenuItem>
             {INKIND_TYPES.map((t) => (
-              <DropdownMenuItem key={t} onSelect={() => { setTypeFilter(t); setPagination((p) => ({ ...p, pageIndex: 0 })); }}>
+              <DropdownMenuItem
+                key={t}
+                onSelect={() => {
+                  setTypeFilter(t);
+                  setPagination({ ...pagination, page: 1 });
+                }}
+              >
                 {INKIND_TYPE_LABELS[t]}
               </DropdownMenuItem>
             ))}
@@ -514,19 +503,14 @@ export default function InkindList() {
         loading={isLoading}
       />
       <CustomPagination
-        currentPage={pagination.pageIndex + 1}
-        handleNextPage={() => table.nextPage()}
-        handlePrevPage={() => table.previousPage()}
-        handlePageSizeChange={(size) => table.setPageSize(size as number)}
-        meta={{
-          total: meta?.total ?? 0,
-          currentPage: pagination.pageIndex + 1,
-          lastPage: meta?.lastPage ?? 1,
-          perPage: pagination.pageSize,
-          next: table.getCanNextPage() ? 'next' : null,
-          prev: table.getCanPreviousPage() ? 'prev' : null,
-        }}
-        perPage={pagination.pageSize}
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        setPagination={setPagination}
+        meta={meta || { total: 0, currentPage: 0 }}
+        perPage={pagination.perPage}
+        total={meta?.total ?? 0}
       />
 
       {/* ── Stock Add / Remove Dialog ── */}
@@ -625,7 +609,9 @@ export default function InkindList() {
       >
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-medium">Update Inkind Item</DialogTitle>
+            <DialogTitle className="text-lg font-medium">
+              Update Inkind Item
+            </DialogTitle>
             <DialogDescription>
               Edit the details below, then review before saving.
             </DialogDescription>
@@ -770,7 +756,10 @@ export default function InkindList() {
                 <span className="text-sm text-muted-foreground shrink-0">
                   Description
                 </span>
-                <TruncatedCell text={confirmDialog.description} maxLength={50} />
+                <TruncatedCell
+                  text={confirmDialog.description}
+                  maxLength={50}
+                />
               </div>
             </div>
           </div>

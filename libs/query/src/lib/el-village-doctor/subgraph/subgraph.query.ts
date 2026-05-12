@@ -6,6 +6,7 @@ import {
   CambodiaBeneficiaryTransactions,
   CambodiaVendorTransactions,
   CambodiaProjectTransactions,
+  VillageDoctorVendorTransactions,
 } from './graph.query';
 import { useEffect } from 'react';
 import { useCambodiaProjectSubgraphStore } from './stores/cambodia-project.store';
@@ -141,6 +142,54 @@ export const useCambodiaVendorTransactions = (vendorAddress: string) => {
         }, []);
 
         return formattedData;
+      },
+    },
+    queryClient,
+  );
+
+  return query;
+};
+
+export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
+  const { subgraphClient } = useCambodiaSubgraph();
+  const { queryClient } = useRSQuery();
+  const vendor = normalizeEvmAddressForSubgraph(vendorAddress);
+
+  const query = useQuery(
+    {
+      queryKey: ['VillageDoctorVendorTxn', vendor],
+      enabled: Boolean(vendor),
+      queryFn: async () => {
+        const { data, error } = await subgraphClient.query(
+          VillageDoctorVendorTransactions,
+          { vendor },
+        );
+        if (error) {
+          throw new Error(
+            error.message ||
+              'Could not reach the blockchain subgraph (GraphQL).',
+          );
+        }
+        if (!data) throw new Error('Subgraph returned no data.');
+
+        const standardTypes = [
+          'claimCreateds',
+          'claimProcesseds',
+          'tokensAllocateds',
+          'otpVerifieds',
+          'offlineClaimProcesseds',
+        ];
+
+        const formatted = standardTypes.reduce((acc: any[], type) => {
+          const transactions = data[type] || [];
+          return acc.concat(transactions.map(formatTransaction));
+        }, []);
+
+        const claimDetailsFormatted = (data['claimDetails'] || []).map(
+          (t: any) => formatTransaction({ ...t, eventType: 'Claim Detail' }),
+        );
+
+        return [...formatted, ...claimDetailsFormatted];
       },
     },
     queryClient,

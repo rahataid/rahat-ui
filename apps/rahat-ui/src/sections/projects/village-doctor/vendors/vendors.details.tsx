@@ -46,9 +46,7 @@ import {
 } from '../page-shell';
 
 /** Next.js `useParams` may return `string | string[]` for dynamic segments. */
-function routeParam(
-  value: string | string[] | undefined,
-): string | undefined {
+function routeParam(value: string | string[] | undefined): string | undefined {
   if (value == null) return undefined;
   return Array.isArray(value) ? value[0] : value;
 }
@@ -68,6 +66,7 @@ export default function VendorsDetail() {
 
   /** `formatResponse`: inner API payload is `vendorQueryData.data` */
   const vendorRow = vendorQueryData?.data;
+  console.log(vendorRow, 'vendorRow in vendor details');
   const [walletCopied, setWalletCopied] = React.useState(false);
   const currentYear = new Date().getFullYear();
 
@@ -149,15 +148,19 @@ export default function VendorsDetail() {
     (vendorLoading || vendorFetching
       ? 'Loading…'
       : vendorFetchFailed
-        ? 'Could not load partner'
-        : 'Eye partner');
+      ? 'Could not load partner'
+      : 'Eye partner');
 
   const headerSubtitle =
     vendorFetchFailed && vendorQueryError
-      ? `The partner request failed: ${vendorQueryError instanceof Error ? vendorQueryError.message : String(vendorQueryError)}. Check the Network tab for POST …/projects/${id}/actions (auth, 4xx/5xx).`
+      ? `The partner request failed: ${
+          vendorQueryError instanceof Error
+            ? vendorQueryError.message
+            : String(vendorQueryError)
+        }. Check the Network tab for POST …/projects/${id}/actions (auth, 4xx/5xx).`
       : vendorQuerySuccess && !vendorRow
-        ? 'No project assignment was found for this user and project (missing row in project vendors).'
-        : 'Performance, wallet, and activity for this Eye Partner location.';
+      ? 'No project assignment was found for this user and project (missing row in project vendors).'
+      : 'Performance, wallet, and activity for this Eye Partner location.';
 
   const copyWallet = () => {
     if (!wallet) return;
@@ -226,49 +229,49 @@ export default function VendorsDetail() {
         }
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* <DataCard
+          {/* <DataCard
           className="rounded-xl border-border/80 shadow-sm"
           title="Wearers"
           Icon={Glasses}
           number={String(vendorsStats?.data?.consumers ?? 0)}
         /> */}
-        {/* <DataCard
+          {/* <DataCard
           className="rounded-xl border-border/80 shadow-sm"
           title="Eye checkups"
           Icon={ShoppingBag}
           number={String(vendorsStats?.data?.leadsConverted ?? 0)}
         /> */}
-        <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Total Eyewear Sold"
-          Icon={BadgeDollarSign}
-          number={String(vendorsStats?.data?.sales ?? 0)}
-        />
-        <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Village Doctors"
-          Icon={UserCog}
-          number={String(vendorsStats?.data?.healthWorkers ?? 0)}
-        />
-        <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Villagers referred"
-          Icon={Users}
-          number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
-        />
-        {/* <DataCard
+          <DataCard
+            className="rounded-xl border-border/80 shadow-sm"
+            title="Total Eyewear Sold"
+            Icon={BadgeDollarSign}
+            number={String(vendorsStats?.data?.sales ?? 0)}
+          />
+          <DataCard
+            className="rounded-xl border-border/80 shadow-sm"
+            title="Village Doctors"
+            Icon={UserCog}
+            number={String(vendorsStats?.data?.healthWorkers ?? 0)}
+          />
+          <DataCard
+            className="rounded-xl border-border/80 shadow-sm"
+            title="Villagers referred"
+            Icon={Users}
+            number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
+          />
+          {/* <DataCard
           className="rounded-xl border-border/80 shadow-sm"
           title="Eyewear dispensed"
           Icon={Glasses}
           number={String(vendorsStats?.data?.footfalls ?? 0)}
         /> */}
-        <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Total Purchase Amount (RMB)"
-          Icon={Coins}
-          number={String(vendorsStats?.data?.totalPurchaseAmountRmb ?? 0)}
-        />
-      </div>
+          <DataCard
+            className="rounded-xl border-border/80 shadow-sm"
+            title="Total Purchase Amount (RMB)"
+            Icon={Coins}
+            number={String(vendorsStats?.data?.totalPurchaseAmountRmb ?? 0)}
+          />
+        </div>
       </div>
 
       <Card className="border-border/80 shadow-sm">
@@ -286,13 +289,15 @@ export default function VendorsDetail() {
                 onClick={copyWallet}
                 className="flex cursor-pointer items-center gap-2 text-left text-sm font-medium"
               >
-                <span>
-                  {wallet ? truncateEthAddress(wallet) : '—'}
-                </span>
+                <span>{wallet ? truncateEthAddress(wallet) : '—'}</span>
                 {walletCopied ? (
                   <CopyCheck size={18} strokeWidth={1.5} />
                 ) : (
-                  <Copy size={18} strokeWidth={1.5} className="text-muted-foreground" />
+                  <Copy
+                    size={18}
+                    strokeWidth={1.5}
+                    className="text-muted-foreground"
+                  />
                 )}
               </button>
             </VillageDoctorField>

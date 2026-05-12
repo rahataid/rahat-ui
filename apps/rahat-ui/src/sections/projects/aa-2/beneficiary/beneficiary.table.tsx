@@ -18,20 +18,12 @@ import { useParams, useSearchParams } from 'next/navigation';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
   CustomPagination,
   DemoTable,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
-import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 function BeneficiaryTable() {
   const { id } = useParams();
   const uuid = id as UUID;
@@ -47,9 +39,7 @@ function BeneficiaryTable() {
     setFilters,
     setPagination,
   } = usePagination();
-  const { activeTab, setActiveTab } = useActiveTab('beneficiary');
   const searchParams = useSearchParams();
-  const refreshSearch = searchParams.get('tab');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

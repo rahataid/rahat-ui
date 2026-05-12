@@ -23,6 +23,7 @@ interface PhaseFormProps {
   submitLabel: string;
   resetLabel?: string;
   payoutEnabledPhase?: { name?: string } | null;
+  stationHeading: string;
 }
 
 export const PhaseForm: React.FC<PhaseFormProps> = ({
@@ -33,6 +34,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
   submitLabel,
   resetLabel = 'Clear',
   payoutEnabledPhase = null,
+  stationHeading,
 }) => (
   <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -58,10 +60,10 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
               name="riverBasin"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>River Basin</FormLabel>
+                  <FormLabel>{stationHeading}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="River basin"
+                      placeholder={stationHeading}
                       value={capitalizeFirstLetter(field.value)}
                       onChange={field.onChange}
                       disabled

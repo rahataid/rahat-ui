@@ -25,13 +25,7 @@ import {
   IconLabelBtn,
 } from 'apps/rahat-ui/src/common';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  Eye,
-  Package,
-  ArrowUpDown,
-  Download,
-  CloudDownloadIcon,
-} from 'lucide-react';
+import { Eye, Package, ArrowUpDown, CloudDownloadIcon } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { format } from 'date-fns';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -58,36 +52,6 @@ type LogRow = {
   txHash: string | null;
   redeemedAt?: string;
 };
-// export interface GroupInkinds {
-//   groupInkind: {
-//     uuid: UUID;
-//     inkindName: string;
-//     inkindType: string;
-//     groupName: string;
-//     quantityAllocated: number;
-//     quantityRedeemed: number;
-//     totalBeneficiaries: number;
-//   };
-//   logs: [
-//     {
-//       uuid: UUID;
-//       quantity: number;
-//       redeemedAt: string;
-//       txHash: string;
-//       beneficiary: {
-//         uuid: UUID;
-//         walletAddress: string;
-//         phone: string | null;
-//         name: string | null;
-//       };
-//       vendor: {
-//         uuid: UUID;
-//         name: string;
-//         walletAddress: string;
-//       };
-//     },
-//   ];
-// }
 
 function deriveStatus(
   allocated: number,
@@ -404,13 +368,13 @@ export default function InkindAllocationDetail() {
                 <IconLabelBtn
                   Icon={CloudDownloadIcon}
                   handleClick={handleDownloadReport}
-                  name={isDownloading ? 'Downloading...' : 'Download Report'}
+                  name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
                   variant="outline"
                   disabled={isDownloading}
                 />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Download Report</p>
+                <p>Export In-kind Logs</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

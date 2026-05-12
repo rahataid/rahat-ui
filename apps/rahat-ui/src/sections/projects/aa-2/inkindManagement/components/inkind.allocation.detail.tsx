@@ -58,6 +58,36 @@ type LogRow = {
   txHash: string | null;
   redeemedAt?: string;
 };
+// export interface GroupInkinds {
+//   groupInkind: {
+//     uuid: UUID;
+//     inkindName: string;
+//     inkindType: string;
+//     groupName: string;
+//     quantityAllocated: number;
+//     quantityRedeemed: number;
+//     totalBeneficiaries: number;
+//   };
+//   logs: [
+//     {
+//       uuid: UUID;
+//       quantity: number;
+//       redeemedAt: string;
+//       txHash: string;
+//       beneficiary: {
+//         uuid: UUID;
+//         walletAddress: string;
+//         phone: string | null;
+//         name: string | null;
+//       };
+//       vendor: {
+//         uuid: UUID;
+//         name: string;
+//         walletAddress: string;
+//       };
+//     },
+//   ];
+// }
 
 function deriveStatus(
   allocated: number,
@@ -151,7 +181,7 @@ export default function InkindAllocationDetail() {
   } = useGetGroupInkindLogs(
     projectUUID,
     allocationId as string,
-    { search: debouncedSearch || undefined, sort, order },
+    { sort, order },
     true,
     { enabled: false },
   );
@@ -160,49 +190,54 @@ export default function InkindAllocationDetail() {
     if (!entireLogsData) return;
     const raw = (entireLogsData as any)?.data?.logs;
     if (!Array.isArray(raw) || raw.length === 0) return;
-    const rows = formatLogs(raw);
-    const headers = [
-      'Beneficiary Name',
-      'Beneficiary Phone',
-      'Beneficiary Wallet',
-      'Vendor Name',
-      'Vendor Wallet',
-      'Quantity',
-      'Tx Hash',
-      'Redeemed At',
-    ];
-    const escape = (val: string | number | null | undefined) => {
-      const str = val == null ? '' : String(val);
-      return str.includes(',') || str.includes('"') || str.includes('\n')
-        ? `"${str.replace(/"/g, '""')}"`
-        : str;
+
+    const groupInkindMeta = (entireLogsData as any)?.data?.groupInkind;
+    const csvInkindName = groupInkindMeta?.inkindName ?? inkindName;
+    const csvGroupName = groupInkindMeta?.groupName ?? groupName;
+
+    const flattenEntry = (
+      entry: Record<string, any>,
+    ): Record<string, string> => {
+      const result: Record<string, string> = {};
+      for (const [key, value] of Object.entries(entry)) {
+        if (
+          value !== null &&
+          typeof value === 'object' &&
+          !Array.isArray(value)
+        ) {
+          for (const [nestedKey, nestedVal] of Object.entries(value)) {
+            result[`${key} ${nestedKey}`] =
+              nestedVal == null ? 'N/A' : String(nestedVal);
+          }
+        } else {
+          result[key] = value == null ? 'N/A' : String(value);
+        }
+      }
+      return result;
     };
+
+    const flatRows = raw.map(flattenEntry);
+    const headers = Object.keys(flatRows[0]);
+
+    const escape = (val: string) =>
+      val.includes(',') || val.includes('"') || val.includes('\n')
+        ? `"${val.replace(/"/g, '""')}"`
+        : val;
+
     const csvLines = [
       headers.join(','),
-      ...rows.map((r) =>
-        [
-          escape(r.beneficiaryName),
-          escape(r.beneficiaryPhone),
-          escape(r.beneficiaryWalletAddress),
-          escape(r.vendorName),
-          escape(r.vendorWalletAddress),
-          escape(r.quantity),
-          escape(r.txHash),
-          escape(
-            r.redeemedAt
-              ? format(new Date(r.redeemedAt), 'MMM dd, yyyy, hh:mm a')
-              : '',
-          ),
-        ].join(','),
+      ...flatRows.map((r: Record<string, string>) =>
+        headers.map((h) => escape(r[h] ?? 'N/A')).join(','),
       ),
     ];
+
     const blob = new Blob([csvLines.join('\n')], {
       type: 'text/csv;charset=utf-8;',
     });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `inkind-logs-${groupName}-${inkindName}.csv`
+    link.download = `${csvInkindName}-${csvGroupName}.csv`
       .replace(/\s+/g, '-')
       .toLowerCase();
     document.body.appendChild(link);
@@ -214,7 +249,6 @@ export default function InkindAllocationDetail() {
   const handleDownloadReport = () => {
     fetchEntireLogs();
   };
-  // console.log('Entire Logs Data:', entireLogsData);
 
   const inklindAllocationStats = [
     { name: 'Inkind Name', amount: inkindName },

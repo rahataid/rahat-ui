@@ -43,6 +43,26 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/collapsible';
 import { cn } from '@rahat-ui/shadcn/src';
 import { toast } from 'react-toastify';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { DateRange } from 'react-day-picker';
+
+const toUtcStartOfDayIso = (date: Date) =>
+  new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0, 0),
+  ).toISOString();
+
+const toUtcEndOfDayIso = (date: Date) =>
+  new Date(
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      23,
+      59,
+      59,
+      999,
+    ),
+  ).toISOString();
 
 function buildConsumerDetailQuery(rowData: any): string {
   const p = new URLSearchParams();
@@ -97,8 +117,60 @@ export default function BeneficiaryView() {
   } = usePagination();
 
   React.useEffect(() => {
-    setFilters('');
+    setFilters({});
   }, [setFilters]);
+
+  const handleDateRangeChange = React.useCallback(
+    (date: DateRange | undefined) => {
+      const nextFilters: Record<string, any> = { ...filters };
+
+      if (date?.from) {
+        nextFilters.startDate = toUtcStartOfDayIso(date.from);
+      } else {
+        delete nextFilters.startDate;
+      }
+
+      if (date?.to) {
+        nextFilters.endDate = toUtcEndOfDayIso(date.to);
+      } else {
+        delete nextFilters.endDate;
+      }
+
+      setFilters(nextFilters);
+    },
+    [filters, setFilters],
+  );
+
+  const handleClearDateRange = React.useCallback(() => {
+    const nextFilters: Record<string, any> = { ...filters };
+    delete nextFilters.startDate;
+    delete nextFilters.endDate;
+    setFilters(nextFilters);
+  }, [filters, setFilters]);
+
+  const isImportedFilterValue =
+    typeof (filters as any)?.isImported === 'boolean'
+      ? (filters as any).isImported
+        ? 'imported'
+        : 'non_imported'
+      : 'all';
+
+  const handleIsImportedFilterChange = React.useCallback(
+    (value: string) => {
+      const nextFilters: Record<string, any> = { ...filters };
+
+      if (value === 'imported') {
+        nextFilters.isImported = true;
+      } else if (value === 'non_imported') {
+        nextFilters.isImported = false;
+      } else {
+        delete nextFilters.isImported;
+      }
+
+      setFilters(nextFilters);
+    },
+    [filters, setFilters],
+  );
 
   const {
     data: beneficiaries,
@@ -223,6 +295,27 @@ export default function BeneficiaryView() {
 
   const filterFields = (
     <div className="flex gap-2">
+      <DateRangePicker
+        type="date-range"
+        placeholder="Created date range"
+        handleDateChange={handleDateRangeChange}
+        handleClearDate={handleClearDateRange}
+        className="flex-1 w-full"
+      />
+
+      <SelectComponent
+        onChange={handleIsImportedFilterChange}
+        name="Imported"
+        options={[
+          { value: 'all', label: 'All' },
+          { value: 'imported', label: 'Imported' },
+          { value: 'non_imported', label: 'Non-Imported' },
+        ]}
+        value={isImportedFilterValue}
+        className="flex-1"
+        showSelect={false}
+      />
+
       <SelectComponent
         onChange={(e) => setFilters({ ...filters, consentStatus: e })}
         name="Consent"
@@ -379,6 +472,9 @@ export default function BeneficiaryView() {
             total={meta?.total || 0}
             labelMapping={{
               phoneNumber: 'Phone Number',
+              startDate: 'Start Date',
+              endDate: 'End Date',
+              isImported: 'Imported',
               consentStatus: 'Consent',
               voucherStatus: 'Voucher Status',
               eyeCheckupStatus: 'Voucher Usage',

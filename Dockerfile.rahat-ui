@@ -68,8 +68,6 @@ COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/standalone ./
 # Sharp and its bindings
 COPY --from=builder /usr/src/app/node_modules/sharp \
     ./node_modules/sharp
-COPY --from=builder /usr/src/app/node_modules/@img \
-    ./node_modules/@img
 
 # Static assets (served by Next.js standalone server)
 COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/static \

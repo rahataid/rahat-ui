@@ -53,7 +53,6 @@ export default function FieldDefinitionsView() {
     <>
       <FieldDefinitionsListView
         table={table}
-        fieldList={data?.data?.rows || []}
         setFilters={setFilters}
         filters={filters}
         loading={isLoading}

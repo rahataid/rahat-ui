@@ -27,9 +27,12 @@ import React from 'react';
 import {
   useCommunitySettingList,
   useCommunitySettingUpdate,
+  useFieldDefinitionsList,
   useUploadStandardJson,
+  useGetStandardFields,
 } from '@rahat-ui/community-query';
 import { generateJsonSchemaFromFields } from '../../utils/transformDataToJson';
+import { checkStandardJsonMatch } from '../../utils/checkStandardJson';
 
 type IProps = {
   // handleClick: (item: FieldDefinition) => void;
@@ -37,19 +40,24 @@ type IProps = {
   setFilters: (fiters: Record<string, string>) => void;
   filters: Record<string, string>;
   loading: boolean;
-  fieldList: FieldDefinition[];
 };
 
 export default function ListView({
   table,
   setFilters,
   filters,
-  fieldList,
+
   loading,
 }: IProps) {
+  const { data: fieldData } = useFieldDefinitionsList({
+    page: 1,
+    perPage: 100,
+  });
+
   const updateCommunitySettings = useCommunitySettingUpdate();
   const { data } = useCommunitySettingList({ page: 1, perPage: 20 });
-  const schema = generateJsonSchemaFromFields(fieldList);
+  const schema = generateJsonSchemaFromFields(fieldData?.data?.rows);
+  console.log(schema, 'generated schema');
 
   const aiSetting = data?.data.find(
     (setting: { name: string }) => setting.name === 'AI_API_URL',
@@ -58,6 +66,7 @@ export default function ListView({
   const aiBaseurl = aiSetting?.value?.URL;
   const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
   const uploadStandardFields = useUploadStandardJson();
+  const getStandardFields = useGetStandardFields();
 
   const [syncing, setSyncing] = React.useState(false);
 
@@ -67,6 +76,20 @@ export default function ListView({
     setSyncing(true);
 
     try {
+      const existingJson = await getStandardFields.mutateAsync({
+        standardName: 'community_data_standard',
+        baseURL: aiBaseurl,
+      });
+      const isMatching = checkStandardJsonMatch(
+        existingJson,
+        fieldData?.data?.rows || [],
+      );
+      console.log(isMatching, 'isMatching');
+
+      if (isMatching) {
+        return;
+      }
+
       const schemaBlob = new Blob([JSON.stringify(schema, null, 2)], {
         type: 'application/json',
       });
@@ -128,19 +151,18 @@ export default function ListView({
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
-          {!aiStandardName && (
-            <Button
-              variant="outline"
-              className="mr-2 flex items-center gap-2"
-              onClick={handleSyncClick}
-              disabled={syncing}
-            >
-              <RefreshCw
-                className={syncing ? 'animate-spin h-4 w-4' : 'h-4 w-4'}
-              />
-              {syncing ? 'Syncing' : 'Sync'}
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            className="mr-2 flex items-center gap-2"
+            onClick={handleSyncClick}
+            disabled={syncing}
+          >
+            <RefreshCw
+              className={syncing ? 'animate-spin h-4 w-4' : 'h-4 w-4'}
+            />
+            {syncing ? 'Syncing' : 'Sync'}
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -183,9 +205,9 @@ export default function ListView({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       );
                     })}

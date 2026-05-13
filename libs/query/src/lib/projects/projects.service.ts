@@ -602,6 +602,8 @@ type GetConsumerData = {
   eyeCheckupStatus?: string;
   voucherType?: string;
   consentStatus?: string;
+  phoneNumber?: string;
+  noOfReferrals?: number | string;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
@@ -718,6 +720,58 @@ export const useListConsentConsumer = (
   };
 };
 
+export const useExportBeneficiaryReferral = (
+  payload: GetConsumerData,
+  enabled?: boolean,
+) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const EXPORT_BENEFICIARY_REFERRAL = 'rpProject.beneficiary.exportReferral';
+
+  const query = useQuery({
+    queryKey: [EXPORT_BENEFICIARY_REFERRAL, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: EXPORT_BENEFICIARY_REFERRAL,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              referredAt: new Date(row?.createdAt).toLocaleString() || '',
+              referrerWalletAddress: row?.Referrer?.walletAddress?.toString() || '',
+              referrerPhone:
+                row?.Referrer?.phone || row?.Referrer?.extras?.phone || '',
+              refereeWalletAddress: row?.Referral?.walletAddress?.toString() || '',
+              refereePhone: row?.Referral?.phone || row?.Referral?.extras?.phone || '',
+              refereeGender: row?.Referral?.gender || row?.Referral?.extras?.gender || '',
+              voucherStatus: mapStatus(row?.Referral?.voucherStatus),
+              voucherUsage: mapStatus(row?.Referral?.eyeCheckupStatus),
+              glassPurchaseType: mapStatus(row?.Referral?.voucherType),
+              consent: row?.Referral?.extras?.consent,
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {
@@ -825,7 +879,6 @@ export const useCHWList = (payload: any) => {
 
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.LIST, restPayloadString],
-    placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -839,8 +892,25 @@ export const useCHWList = (payload: any) => {
       return mutate;
     },
   });
+
+  // downloading full data
+  const fetchAllData = async () => {
+    const downloadPayload = {
+      ...restPayload,
+      download: true,
+    };
+    const response = await action.mutateAsync({
+      uuid: projectUUID,
+      data: {
+        action: MS_CAM_ACTIONS.CAMBODIA.CHW.LIST,
+        payload: downloadPayload,
+      },
+    });
+    return response?.data || [];
+  };
   return {
     ...query,
+    fetchAllData,
     data: useMemo(() => {
       return {
         ...query.data,
@@ -963,17 +1033,52 @@ export const useCambodiaVendorsList = (payload: any) => {
   return query;
 };
 
+export const useChinaEyeCenterList = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
 export const useCambodiaVendorGet = (payload: any) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
 
   const restPayloadString = JSON.stringify(restPayload);
+  const canFetch = Boolean(
+    projectUUID &&
+      restPayload.vendorId &&
+      typeof projectUUID === 'string' &&
+      typeof restPayload.vendorId === 'string',
+  );
 
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    enabled: canFetch,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1032,8 +1137,8 @@ export const useCambodiaCommisionCurrent = (payload: any) => {
       restPayloadString,
     ],
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1136,9 +1241,12 @@ export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
   const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
+  const chwUid =
+    typeof restPayload?.chwUid === 'string' ? restPayload.chwUid.trim() : '';
+
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.STATS, restPayloadString],
-    placeholderData: keepPreviousData,
+    enabled: Boolean(projectUUID && chwUid.length > 0),
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -1298,7 +1406,7 @@ export const useCambodiaLineChartsReports = (payload: any) => {
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
-          payload: restPayload?.filters,
+          payload: { ...restPayload?.filters, vendorId: restPayload?.vendorId },
         },
       });
       return mutate;

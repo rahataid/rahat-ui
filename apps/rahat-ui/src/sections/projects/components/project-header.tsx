@@ -14,7 +14,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
@@ -63,7 +63,7 @@ export function ProjectNav({
 
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-9 w-9 ring-2 ring-border hover:ring-primary/30 transition-all">
               <AvatarImage
                 src="https://github.com/shadcn.png"
                 alt="profile-icon"
@@ -73,36 +73,36 @@ export function ProjectNav({
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="mr-5 text-muted-foreground text-sm"
+            className="mr-5 w-56 text-sm"
             side="bottom"
           >
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
-                <span className="font-medium">
+                <span className="font-semibold text-foreground">
                   {user?.data?.name ?? 'John Doe'}{' '}
                 </span>
-                <span>{user?.data?.email ?? 'doe@john.com'}</span>
+                <span className="text-xs text-muted-foreground">{user?.data?.email ?? 'doe@john.com'}</span>
               </div>
               <Separator />
               <Link
-                className="p-1 hover:bg-secondary rounded"
+                className="px-2 py-1.5 rounded-md hover:bg-accent hover:text-foreground transition-colors"
                 href={paths.profile.root}
               >
                 Profile
               </Link>
               <Link
-                className="p-1 hover:bg-secondary rounded"
+                className="px-2 py-1.5 rounded-md hover:bg-accent hover:text-foreground transition-colors"
                 href={paths.dashboard.root}
               >
                 Home
               </Link>
               {/* <ThemeSwitch /> */}
-              <Badge
-                className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
+              <button
+                className="mt-2 w-full px-3 py-1.5 rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer text-center"
                 onClick={handleLogout}
               >
                 Logout
-              </Badge>
+              </button>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

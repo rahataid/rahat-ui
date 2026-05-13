@@ -15,8 +15,10 @@ export * from './lib/reports';
 export * from './lib/auth-apps';
 export * from './lib/el-kenya';
 export * from './lib/el-cambodia';
+export { useVillageDoctorVendorTransactions } from './lib/el-village-doctor';
 // export * from './lib/aa/trigger-statements';
 // export * from './lib/aa/activities';
+export * from './lib/el-crm';
 
 export * from './lib/c2c';
 

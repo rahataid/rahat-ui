@@ -1,7 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CustomPagination, DataCard, Heading } from 'apps/rahat-ui/src/common';
+import {
+  CustomPagination,
+  DataCard,
+  Heading,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -25,11 +30,7 @@ import {
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import {
-  useInkindsSummary,
-  useInkindTransactions,
-  useBeneficiaryGroups,
-} from '@rahat-ui/query';
+import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
@@ -57,7 +58,7 @@ type Movement = {
     uuid: string;
     group: {
       name: string;
-    }
+    };
     groupId: string;
     inkindId: string;
     quantityAllocated: number;
@@ -141,8 +142,11 @@ export default function InkindOverview() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const { data: summaryData } = useInkindsSummary(projectUUID);
-  const { data: txData, isFetching: txFetching } = useInkindTransactions(projectUUID, { page, perPage });
+  const { data: summaryData, isPending } = useInkindsSummary(projectUUID);
+  const { data: txData, isFetching: txFetching } = useInkindTransactions(
+    projectUUID,
+    { page, perPage },
+  );
 
   const inkindItemsSummary: any[] = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
@@ -154,6 +158,10 @@ export default function InkindOverview() {
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+
+  if (isPending) {
+    return <SpinnerLoader />;
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -167,25 +175,41 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title="Total Inkind Types"
-          number={String(inkindItemsSummary?.totalInkindTypes ? inkindItemsSummary.totalInkindTypes : 0)}
+          number={String(
+            inkindItemsSummary?.totalInkindTypes
+              ? inkindItemsSummary.totalInkindTypes
+              : 0,
+          )}
           subtitle="Distinct items registered"
         />
         <DataCard
           className="rounded-sm"
           title="Available Stock"
-          number={String(inkindItemsSummary?.totalAvailableStock ? inkindItemsSummary.totalAvailableStock : 0)}
+          number={String(
+            inkindItemsSummary?.totalAvailableStock
+              ? inkindItemsSummary.totalAvailableStock
+              : 0,
+          )}
           subtitle="Units currently available"
         />
         <DataCard
           className="rounded-sm"
           title="Assigned Stock"
-          number={String(inkindItemsSummary?.totalAssignedStock ? inkindItemsSummary.totalAssignedStock : 0)}
+          number={String(
+            inkindItemsSummary?.totalAssignedStock
+              ? inkindItemsSummary.totalAssignedStock
+              : 0,
+          )}
           subtitle="Units currently assigned"
         />
         <DataCard
           className="rounded-sm"
           title="Redeemed Stock"
-          number={String(inkindItemsSummary?.totalRedeemedStock ? inkindItemsSummary.totalRedeemedStock : 0)}
+          number={String(
+            inkindItemsSummary?.totalRedeemedStock
+              ? inkindItemsSummary.totalRedeemedStock
+              : 0,
+          )}
           subtitle="Units currently redeemed"
         />
       </div>
@@ -237,9 +261,14 @@ export default function InkindOverview() {
                         </div>
                         <div>
                           <div className="flex flex-row items-center gap-2">
-                            <TruncatedCell text={movement.inkind?.name || '—'} maxLength={30} />
+                            <TruncatedCell
+                              text={movement.inkind?.name || '—'}
+                              maxLength={30}
+                            />
                             <Badge className="bg-gray-200 text-gray-600">
-                              {formatLabel(INKIND_TYPE_LABELS[movement.inkind?.type])}
+                              {formatLabel(
+                                INKIND_TYPE_LABELS[movement.inkind?.type],
+                              )}
                             </Badge>
                           </div>
                           {movement.groupInkind && (
@@ -250,15 +279,17 @@ export default function InkindOverview() {
                           <p className="text-xs text-muted-foreground mt-0.5">
                             {movement.createdAt
                               ? format(
-                                new Date(movement.createdAt),
-                                'dd MMM yyyy, HH:mm',
-                              )
+                                  new Date(movement.createdAt),
+                                  'dd MMM yyyy, HH:mm',
+                                )
                               : '—'}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className={`text-sm font-semibold ${config.color}`}>
+                        <span
+                          className={`text-sm font-semibold ${config.color}`}
+                        >
                           {isPositive ? '+' : '-'}
                           {movement.quantity ?? 0}
                         </span>
@@ -279,9 +310,14 @@ export default function InkindOverview() {
       </div>
       <CustomPagination
         currentPage={page}
-        handleNextPage={() => setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))}
+        handleNextPage={() =>
+          setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))
+        }
         handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
-        handlePageSizeChange={(size) => { setPerPage(size as number); setPage(1); }}
+        handlePageSizeChange={(size) => {
+          setPerPage(size as number);
+          setPage(1);
+        }}
         meta={{
           total: meta?.total ?? 0,
           currentPage: page,
@@ -349,9 +385,9 @@ export default function InkindOverview() {
                         value={
                           selectedMovement.createdAt
                             ? format(
-                              new Date(selectedMovement.createdAt),
-                              'dd MMM yyyy, HH:mm:ss',
-                            )
+                                new Date(selectedMovement.createdAt),
+                                'dd MMM yyyy, HH:mm:ss',
+                              )
                             : '—'
                         }
                       />
@@ -382,7 +418,11 @@ export default function InkindOverview() {
                           label="Type"
                           value={
                             <Badge className="bg-gray-200 text-gray-600">
-                              {formatLabel(INKIND_TYPE_LABELS[selectedMovement.inkind.type])}
+                              {formatLabel(
+                                INKIND_TYPE_LABELS[
+                                  selectedMovement.inkind.type
+                                ],
+                              )}
                             </Badge>
                           }
                         />

@@ -30,16 +30,14 @@ export default function AddToQueue({
   hasUUID,
   loading,
 }: IProps) {
-
   const mappedData =
     data.length > 0
       ? data.map((d: any) => {
-        const { rawData, ...rest } = d;
-        return rest;
-      })
+          const { rawData, ...rest } = d;
+          return rest;
+        })
       : []; // Omit rawData
   const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
-
 
   function renderItemKey(item: any, key: string) {
     if (key === 'isDuplicate') {
@@ -54,8 +52,6 @@ export default function AddToQueue({
 
     return item[key];
   }
-
-
 
   const hasDuplicates = data.some((item: any) => item.isDuplicate);
 
@@ -125,10 +121,11 @@ export default function AddToQueue({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <tr
-                      className={`${item.isDuplicate
-                        ? 'bg-orange-100 border-b'
-                        : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
-                        }`}
+                      className={`${
+                        item.isDuplicate
+                          ? 'bg-orange-100 border-b'
+                          : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
+                      }`}
                       key={index}
                     >
                       {/* Dynamically generated table cells */}

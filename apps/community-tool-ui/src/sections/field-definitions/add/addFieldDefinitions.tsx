@@ -59,10 +59,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   );
   const aiBaseurl = aiSetting?.value?.URL;
 
-  const aiStandardName = aiSetting?.value?.STANDARD_NAME;
-
-  const aiStandardVersion = aiSetting?.value?.VERSION;
-
+  const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
 
   const [showLabelValue, setShowLabelValue] = useState(false);
 
@@ -130,15 +127,12 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
     await addFieldDefinitions.mutateAsync(payload);
 
-    const finalStandardName = aiStandardName || 'rahat';
-    const finalVersion = aiStandardVersion || '1.0';
-    console.log('Attempting AI API Call:', { aiBaseurl, finalStandardName, finalVersion });
+    const finalStandardName = aiStandardName;
 
     if (aiBaseurl) {
       await addStandardLabel.mutateAsync({
         payload: {
           standard_name: finalStandardName,
-          version: finalVersion,
           field_name: data.name,
           field_type: data.fieldType.toLowerCase(),
           field_description: '',
@@ -163,8 +157,8 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   useEffect(() => {
     setShowLabelValue(
       form.watch('fieldType') === FieldType.CHECKBOX ||
-      form.watch('fieldType') === FieldType.RADIO ||
-      form.watch('fieldType') === FieldType.DROPDOWN,
+        form.watch('fieldType') === FieldType.RADIO ||
+        form.watch('fieldType') === FieldType.DROPDOWN,
     );
   }, [form.watch('fieldType'), form]);
 
@@ -370,7 +364,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                             type="button"
                             onClick={() => remove(index)}
                             className="p-1 text-xs  w-10"
-                          // disabled={fields.length === 0}
+                            // disabled={fields.length === 0}
                           >
                             <Minus size={18} strokeWidth={1.5} />
                           </Button>

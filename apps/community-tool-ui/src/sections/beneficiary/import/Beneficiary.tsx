@@ -60,13 +60,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   );
 
   const aiBaseurl = aiSetting?.value?.URL;
-  const aiStandardName = aiSetting?.value?.standard_name;
-  const aiStandardVersion = aiSetting?.value?.version;
 
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
   // const uploadStandardJson = useUploadStandardJson();
-  const getStandardFields = useGetStandardFields();
 
   const {
     currentScreen,
@@ -413,6 +410,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     try {
       setLoading(true);
       const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
+
       // If action is IMPORT, source will be created on backend!
       // Otherwise, just validate in the backend
       if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
@@ -426,6 +424,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
       const { result, invalidFields, hasUUID } = res?.data;
       setHasUUID(hasUUID);
+
       setProcessedData(result);
       if (invalidFields.length) setInvalidFields(invalidFields);
       setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);

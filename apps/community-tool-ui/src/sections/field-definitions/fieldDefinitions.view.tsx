@@ -31,7 +31,6 @@ export default function FieldDefinitionsView() {
     ...pagination,
     ...(filters as any),
   });
-
   const columns = useFieldDefinitionsTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
@@ -54,6 +53,7 @@ export default function FieldDefinitionsView() {
     <>
       <FieldDefinitionsListView
         table={table}
+        fieldList={data?.data?.rows || []}
         setFilters={setFilters}
         filters={filters}
         loading={isLoading}

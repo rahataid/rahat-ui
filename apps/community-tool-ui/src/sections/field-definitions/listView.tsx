@@ -26,59 +26,85 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import React from 'react';
 import {
   useCommunitySettingList,
+  useCommunitySettingUpdate,
   useUploadStandardJson,
 } from '@rahat-ui/community-query';
+import { generateJsonSchemaFromFields } from '../../utils/transformDataToJson';
 
 type IProps = {
   // handleClick: (item: FieldDefinition) => void;
   table: Table<FieldDefinition>;
-  setFilters: (fiters: Record<string, any>) => void;
-  filters: Record<string, any>;
+  setFilters: (fiters: Record<string, string>) => void;
+  filters: Record<string, string>;
   loading: boolean;
+  fieldList: FieldDefinition[];
 };
 
 export default function ListView({
   table,
   setFilters,
   filters,
+  fieldList,
   loading,
 }: IProps) {
-  const { isLoading, data } = useCommunitySettingList({ page: 1, perPage: 20 });
+  const updateCommunitySettings = useCommunitySettingUpdate();
+  const { data } = useCommunitySettingList({ page: 1, perPage: 20 });
+  const schema = generateJsonSchemaFromFields(fieldList);
 
   const aiSetting = data?.data.find(
-    (setting: any) => setting.name === 'AI_API_URL',
+    (setting: { name: string }) => setting.name === 'AI_API_URL',
   );
+
   const aiBaseurl = aiSetting?.value?.URL;
-  const aiStandardName = aiSetting?.value?.standard_name;
-  const aiStandardVersion = aiSetting?.value?.version;
+  const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
   const uploadStandardFields = useUploadStandardJson();
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [syncing, setSyncing] = React.useState(false);
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
+  const handleSyncClick = async () => {
+    if (!aiBaseurl || !aiSetting) return;
 
-    if (file) {
-      setSyncing(true);
-      try {
-        await uploadStandardFields.mutateAsync({
-          payload: {
-            file,
-            standard_name: 'community_data_standard',
-            version: '',
-            description: 'Uploaded by user',
-          },
-          baseURL: aiBaseurl,
-        });
-      } finally {
-        setSyncing(false);
-      }
+    setSyncing(true);
+
+    try {
+      const schemaBlob = new Blob([JSON.stringify(schema, null, 2)], {
+        type: 'application/json',
+      });
+      const schemaFile = new File([schemaBlob], 'beneficiary.json', {
+        type: 'application/json',
+      });
+
+      await uploadStandardFields.mutateAsync({
+        payload: {
+          file: schemaFile,
+          standard_name: 'community_data_standard',
+          version: '',
+          description: 'Uploaded by user',
+        },
+        baseURL: aiBaseurl,
+      });
+      const finalSettingData = {
+        name: aiSetting.name,
+        requiredFields: [
+          ...(aiSetting.requiredFields ?? []),
+          'COMMUNITY_DATA_STANDARD',
+        ],
+        value: {
+          ...(aiSetting.value ?? {}),
+          COMMUNITY_DATA_STANDARD: 'community_data_standard',
+        },
+        isReadOnly: aiSetting.isReadOnly,
+        isPrivate: aiSetting.isPrivate,
+      };
+
+      await updateCommunitySettings.mutateAsync(finalSettingData);
+    } catch (error) {
+      console.error('Sync failed:', error);
+    } finally {
+      setSyncing(false);
     }
   };
-  const handleFilterChange = (event: any) => {
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event && event.target) {
       const { name, value } = event.target;
       table.getColumn(name)?.setFilterValue(value);
@@ -102,24 +128,19 @@ export default function ListView({
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
-          <Button
-            variant="outline"
-            className="mr-2 flex items-center gap-2"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={syncing}
-          >
-            <RefreshCw
-              className={syncing ? 'animate-spin h-4 w-4' : 'h-4 w-4'}
-            />
-            {syncing ? 'Syncing' : 'Sync'}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json,application/json"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-          </Button>
+          {!aiStandardName && (
+            <Button
+              variant="outline"
+              className="mr-2 flex items-center gap-2"
+              onClick={handleSyncClick}
+              disabled={syncing}
+            >
+              <RefreshCw
+                className={syncing ? 'animate-spin h-4 w-4' : 'h-4 w-4'}
+              />
+              {syncing ? 'Syncing' : 'Sync'}
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -162,9 +183,9 @@ export default function ListView({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}

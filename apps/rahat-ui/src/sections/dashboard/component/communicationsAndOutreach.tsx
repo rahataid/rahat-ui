@@ -64,19 +64,42 @@ const CommunicationsAndOutreach = ({
             Communication Success and Failure Rate
           </h1>
           <div className="w-full flex-1 p-4 pt-0">
-            <DynamicPieChart
-              pieData={[
-                {
-                  label: 'Success',
-                  value: commsStats?.messageStats?.successRate,
-                },
-                {
-                  label: 'Failure',
-                  value: 100 - commsStats?.messageStats?.successRate,
-                },
-              ]}
-              colors={['#388E3C', '#D32F2F']}
-            />
+            {!commsStats?.messageStats?.successRate ? (
+              <div className="relative w-full h-full flex items-center justify-center">
+                <svg
+                  className="max-w-[200px] max-h-[200px] w-40 h-40"
+                  viewBox="0 0 120 120"
+                  role="img"
+                  aria-label="No data"
+                >
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="44"
+                    fill="transparent"
+                    stroke="#E0E0E0"
+                    strokeWidth="16"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <p className="text-sm">No Data</p>
+                </div>
+              </div>
+            ) : (
+              <DynamicPieChart
+                pieData={[
+                  {
+                    label: 'Success',
+                    value: commsStats?.messageStats?.successRate,
+                  },
+                  {
+                    label: 'Failure',
+                    value: 100 - commsStats?.messageStats?.successRate,
+                  },
+                ]}
+                colors={['#388E3C', '#D32F2F']}
+              />
+            )}
           </div>
         </div>
       </div>

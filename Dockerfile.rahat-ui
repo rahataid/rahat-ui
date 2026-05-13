@@ -32,10 +32,11 @@ RUN find dist/apps/rahat-ui/.next/standalone -name "*.map" -delete
 FROM node:20-alpine AS prep
 WORKDIR /usr/src/app
 
-# Copy node binary to a known location
 RUN cp -p /usr/local/bin/node /node
 
-# Collect all shared libs at their original absolute paths
+# Collect shared libs for node AND sharp
+COPY --from=builder /usr/src/app/node_modules/sharp ./node_modules/sharp
+
 RUN ldd /usr/local/bin/node 2>/dev/null | \
     grep -oE '(/usr)?/lib[^ ]+' | sort -u | \
     while read lib; do \
@@ -43,7 +44,15 @@ RUN ldd /usr/local/bin/node 2>/dev/null | \
       cp -pL "$lib" "/collect$(dirname $lib)/"; \
     done
 
-# Copy CA certs
+# Also collect sharp's native binding deps
+RUN find ./node_modules/sharp -name "*.node" | while read binding; do \
+      ldd "$binding" 2>/dev/null | grep -oE '(/usr)?/lib[^ ]+' | sort -u | \
+      while read lib; do \
+        mkdir -p "/collect$(dirname $lib)"; \
+        cp -pL "$lib" "/collect$(dirname $lib)/"; \
+      done; \
+    done
+
 RUN mkdir -p /collect/etc/ssl && cp -r /etc/ssl/certs /collect/etc/ssl/certs
 
 # -------- Runner --------

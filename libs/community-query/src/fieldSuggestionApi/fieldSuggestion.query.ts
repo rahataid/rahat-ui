@@ -69,6 +69,22 @@ const addStandardLabel = async ({
   return res.data;
 };
 
+const deleteStandardLabels = async ({
+  standardName,
+  baseURL,
+}: {
+  standardName: string;
+  baseURL: string;
+}) => {
+  const aiApi = getAiApi(baseURL);
+  const res = await aiApi.delete('/api/json/standard/labels', {
+    params: {
+      standard_name: standardName,
+    },
+  });
+  return res.data;
+};
+
 export const useUploadCsvForMapping = () => {
   return useMutation({
     mutationFn: ({ payload, baseURL }: { payload: any; baseURL: string }) =>
@@ -105,5 +121,17 @@ export const useGetStandardFields = () => {
       standardName: string;
       baseURL: string;
     }) => getStandardFields({ standardName, baseURL }),
+  });
+};
+
+export const useDeleteStandardLabels = () => {
+  return useMutation({
+    mutationFn: ({
+      standardName,
+      baseURL,
+    }: {
+      standardName: string;
+      baseURL: string;
+    }) => deleteStandardLabels({ standardName, baseURL }),
   });
 };

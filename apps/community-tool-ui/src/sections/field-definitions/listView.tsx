@@ -30,6 +30,7 @@ import {
   useFieldDefinitionsList,
   useUploadStandardJson,
   useGetStandardFields,
+  useDeleteStandardLabels,
 } from '@rahat-ui/community-query';
 import { generateJsonSchemaFromFields } from '../../utils/transformDataToJson';
 import { checkStandardJsonMatch } from '../../utils/checkStandardJson';
@@ -53,11 +54,11 @@ export default function ListView({
     page: 1,
     perPage: 100,
   });
+  const rows = fieldData?.data?.rows || [];
 
   const updateCommunitySettings = useCommunitySettingUpdate();
   const { data } = useCommunitySettingList({ page: 1, perPage: 20 });
-  const schema = generateJsonSchemaFromFields(fieldData?.data?.rows);
-  console.log(schema, 'generated schema');
+  const schema = generateJsonSchemaFromFields(rows);
 
   const aiSetting = data?.data.find(
     (setting: { name: string }) => setting.name === 'AI_API_URL',
@@ -67,8 +68,48 @@ export default function ListView({
   const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
   const uploadStandardFields = useUploadStandardJson();
   const getStandardFields = useGetStandardFields();
+  const deleteStandardLabels = useDeleteStandardLabels();
 
   const [syncing, setSyncing] = React.useState(false);
+
+  const uploadSchemaFile = async (standardName: string) => {
+    const schemaBlob = new Blob([JSON.stringify(schema, null, 2)], {
+      type: 'application/json',
+    });
+    const schemaFile = new File([schemaBlob], 'beneficiary.json', {
+      type: 'application/json',
+    });
+
+    await uploadStandardFields.mutateAsync({
+      payload: {
+        file: schemaFile,
+        standard_name: standardName,
+        version: '',
+        description: 'Uploaded by user',
+      },
+      baseURL: aiBaseurl,
+    });
+  };
+
+  const updateStandardSetting = async (standardName: string) => {
+    if (!aiSetting) return;
+
+    const finalSettingData = {
+      name: aiSetting.name,
+      requiredFields: [
+        ...(aiSetting.requiredFields ?? []),
+        'COMMUNITY_DATA_STANDARD',
+      ],
+      value: {
+        ...(aiSetting.value ?? {}),
+        COMMUNITY_DATA_STANDARD: standardName,
+      },
+      isReadOnly: aiSetting.isReadOnly,
+      isPrivate: aiSetting.isPrivate,
+    };
+
+    await updateCommunitySettings.mutateAsync(finalSettingData);
+  };
 
   const handleSyncClick = async () => {
     if (!aiBaseurl || !aiSetting) return;
@@ -76,51 +117,29 @@ export default function ListView({
     setSyncing(true);
 
     try {
-      const existingJson = await getStandardFields.mutateAsync({
-        standardName: 'community_data_standard',
-        baseURL: aiBaseurl,
-      });
-      const isMatching = checkStandardJsonMatch(
-        existingJson,
-        fieldData?.data?.rows || [],
-      );
-      console.log(isMatching, 'isMatching');
+      if (aiStandardName) {
+        const existingJson = await getStandardFields.mutateAsync({
+          standardName: aiStandardName,
+          baseURL: aiBaseurl,
+        });
+        const isMatching = checkStandardJsonMatch(existingJson, rows);
+        console.log(isMatching, 'isMatchinggggggg');
 
-      if (isMatching) {
+        if (isMatching) {
+          return;
+        }
+
+        await deleteStandardLabels.mutateAsync({
+          standardName: aiStandardName,
+          baseURL: aiBaseurl,
+        });
+        await uploadSchemaFile(aiStandardName);
         return;
       }
 
-      const schemaBlob = new Blob([JSON.stringify(schema, null, 2)], {
-        type: 'application/json',
-      });
-      const schemaFile = new File([schemaBlob], 'beneficiary.json', {
-        type: 'application/json',
-      });
-
-      await uploadStandardFields.mutateAsync({
-        payload: {
-          file: schemaFile,
-          standard_name: 'community_data_standard',
-          version: '',
-          description: 'Uploaded by user',
-        },
-        baseURL: aiBaseurl,
-      });
-      const finalSettingData = {
-        name: aiSetting.name,
-        requiredFields: [
-          ...(aiSetting.requiredFields ?? []),
-          'COMMUNITY_DATA_STANDARD',
-        ],
-        value: {
-          ...(aiSetting.value ?? {}),
-          COMMUNITY_DATA_STANDARD: 'community_data_standard',
-        },
-        isReadOnly: aiSetting.isReadOnly,
-        isPrivate: aiSetting.isPrivate,
-      };
-
-      await updateCommunitySettings.mutateAsync(finalSettingData);
+      const standardName = 'community_data_standard';
+      await uploadSchemaFile(standardName);
+      await updateStandardSetting(standardName);
     } catch (error) {
       console.error('Sync failed:', error);
     } finally {

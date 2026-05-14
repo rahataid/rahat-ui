@@ -1390,8 +1390,7 @@ export const useCambodiaVendorsStatsByVendorIds = (payload: {
       const body = qr.data as
         | { data?: { leadsRecieved?: number; leads?: number } }
         | undefined;
-      const raw =
-        body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
+      const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
       map[vendorId] = typeof raw === 'number' ? raw : 0;
     });
     return map;
@@ -1630,8 +1629,7 @@ function cambodiaAppStatNumericCount(stat: {
   if (d == null) return 0;
   if (Array.isArray(d)) {
     return d.reduce(
-      (sum, item) =>
-        sum + (typeof item?.count === 'number' ? item.count : 0),
+      (sum, item) => sum + (typeof item?.count === 'number' ? item.count : 0),
       0,
     );
   }
@@ -1644,7 +1642,7 @@ function cambodiaAppStatNumericCount(stat: {
   return 0;
 }
 
-export const useCambodiaAppStats = (payload: { projectUUID: string }) => {
+export const useCambodiaAppStats = (payload: { projectUUID: UUID }) => {
   const q = useProjectAction<any[]>();
   const { projectUUID } = payload;
 
@@ -1669,8 +1667,11 @@ export const useCambodiaAppStats = (payload: { projectUUID: string }) => {
       const list: { name: string; data?: unknown }[] = Array.isArray(raw)
         ? raw
         : Array.isArray((raw as { data?: unknown[] })?.data)
-          ? ((raw as { data: unknown[] }).data as { name: string; data?: unknown }[])
-          : [];
+        ? ((raw as { data: unknown[] }).data as {
+            name: string;
+            data?: unknown;
+          }[])
+        : [];
       const byName = Object.fromEntries(
         list.map((s) => [s.name, cambodiaAppStatNumericCount(s)]),
       );

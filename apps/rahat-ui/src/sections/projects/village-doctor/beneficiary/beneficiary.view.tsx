@@ -11,7 +11,7 @@ import {
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { Download, UserRoundX } from 'lucide-react';
+import { Download, SlidersHorizontal, UserRoundX } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -19,13 +19,16 @@ import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
-import { useCambodiaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
+import {
+  eyePartnerDisplayName,
+  useCambodiaBeneficiaryTableColumns,
+  villageDoctorDisplayName,
+} from './use.beneficiary.table.columns';
 import {
   Card,
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
-import { SlidersHorizontal } from 'lucide-react';
 
 export default function ELVillageDoctorVillagerView() {
   const { id } = useParams() as { id: UUID };
@@ -47,20 +50,24 @@ export default function ELVillageDoctorVillagerView() {
   const debouncedSearch = useDebounce(filters, 500);
 
   const { data, isLoading } = useCambodiaBeneficiaries({
+    ...(debouncedSearch as any),
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
+    /** Must win over any stray `enabled` key from hash/filters spread */
+    enabled: true,
   });
+  const listTotal = data?.response?.meta?.total;
   const { data: allData } = useCambodiaBeneficiaries({
-    page: pagination.page,
-    perPage: data?.response?.meta?.total,
+    ...(debouncedSearch as any),
+    enabled: typeof listTotal === 'number' && listTotal > 0,
+    page: 1,
+    perPage: listTotal ?? pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
   });
 
   useEffect(() => {
@@ -71,20 +78,21 @@ export default function ELVillageDoctorVillagerView() {
 
   const processedData = {
     ...data,
-    data: data?.data.map((benef) => ({
-      ...benef,
-      name: benef?.piiData?.name,
-    })),
+    data:
+      data?.data?.map((benef) => ({
+        ...benef,
+        name: benef?.piiData?.name,
+      })) ?? [],
   };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
+      setFilters((prev: Record<string, string>) => ({
+        ...prev,
         [name]: filterValue,
-      });
+      }));
     }
   };
 
@@ -112,21 +120,15 @@ export default function ELVillageDoctorVillagerView() {
     const rowsToDownload = allData?.data || [];
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => {
-      const ex = item?.extras || {};
-      const vd =
-        item.healthWorker?.name ??
-        item.health_worker?.name ??
-        item.HealthWorker?.name ??
-        ex.healthWorkerName ??
-        ex.Health_Worker_Name ??
-        ex.meta?.Health_Worker_Name ??
-        '-';
+      const vd = villageDoctorDisplayName(item);
+      const ep = eyePartnerDisplayName(item);
       return {
         Name: item.piiData?.name,
         Phone: item.piiData?.phone,
-        Type: item.type,
-        Gender: item.projectData?.gender,
-        'Village Doctor': vd,
+        // Type: item.type,
+        // Gender: item.projectData?.gender,
+        'Village Doctor': vd === '-' ? '' : vd,
+        'Eye Partner': ep === '-' ? '' : ep,
         TimeStamp: new Date(item.createdAt).toLocaleDateString(),
       };
     });
@@ -155,7 +157,11 @@ export default function ELVillageDoctorVillagerView() {
                 <UserRoundX className="mr-2 h-4 w-4" /> Discarded Villagers
               </Button>
             </Link>
-            <Button variant="outline" size="sm" onClick={() => handleDownload()}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleDownload()}
+            >
               <Download className="mr-2 h-4 w-4" /> Download Villagers
             </Button>
           </div>
@@ -171,13 +177,9 @@ export default function ELVillageDoctorVillagerView() {
             </div>
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
               <SearchInput
-                isDisabled={true}
                 name="name"
-                className="w-full lg:max-w-md cursor-not-allowed"
-                value={
-                  (table.getColumn('name')?.getFilterValue() as string) ??
-                  filters?.name
-                }
+                className="w-full lg:max-w-md"
+                value={filters?.name ?? ''}
                 onSearch={(event) => handleFilterChange(event)}
               />
               {/* <div className="w-full lg:max-w-xs">

@@ -98,6 +98,27 @@ query VendorTransactions($vendor:String!) {
 }
 `;
 
+/** Allocations where the recipient is a beneficiary tied to this vendor's claims (not the vendor wallet). */
+export const VillageDoctorVendorTokensAllocatedForBeneficiaries = `
+query VendorTokensAllocatedForBeneficiaries($beneficiaries: [Bytes!]!) {
+  tokensAllocateds(
+    first: 1000
+    orderBy: blockTimestamp
+    orderDirection: desc
+    where: { beneficiary_in: $beneficiaries }
+  ) {
+    amount
+    beneficiary
+    blockNumber
+    blockTimestamp
+    id
+    token
+    transactionHash
+    eventType
+  }
+}
+`;
+
 export const VillageDoctorVendorTransactions = `
 query VendorTransactions($vendor: String!) {
   claimCreateds(

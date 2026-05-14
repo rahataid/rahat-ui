@@ -1,4 +1,8 @@
-import { useCambodiaVendorsList, usePagination } from '@rahat-ui/query';
+import {
+  useCambodiaVendorsList,
+  useCambodiaVendorsStatsByVendorIds,
+  usePagination,
+} from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -41,16 +45,49 @@ export default function VendorsView() {
     ...(debouncedSearch as any),
   });
 
+  const vendorIdsForStats = React.useMemo(() => {
+    const rows = vendors?.data;
+    if (!Array.isArray(rows)) return [] as string[];
+    const ids: string[] = [];
+    for (const v of rows) {
+      const rawId =
+        v && typeof v === 'object' && 'vendorId' in v ? v.vendorId : undefined;
+      const trimmed =
+        rawId != null && typeof rawId === 'string' ? rawId.trim() : '';
+      if (trimmed) ids.push(trimmed);
+    }
+    return ids;
+  }, [vendors?.data]);
+
+  const { statsByVendorId } = useCambodiaVendorsStatsByVendorIds({
+    projectUUID: typeof id === 'string' ? id : undefined,
+    vendorIds: vendorIdsForStats,
+  });
+
   const tableData: any = React.useMemo(() => {
     if (vendors?.data)
-      return vendors?.data.map((vendor) => ({
-        ...vendor,
-        name: vendor.User?.name,
-        phone: vendor.User?.phone,
-        wallet: vendor.User?.wallet,
-      }));
+      return vendors?.data.map((vendor) => {
+        const vendorKey =
+          vendor?.vendorId != null &&
+          typeof vendor.vendorId === 'string' &&
+          vendor.vendorId.trim()
+            ? vendor.vendorId.trim()
+            : '';
+        const referrals =
+          vendorKey !== ''
+            ? (statsByVendorId[vendorKey] ?? null)
+            : undefined;
+        return {
+          ...vendor,
+          name: vendor.User?.name,
+          phone: vendor.User?.phone,
+          wallet: vendor.User?.wallet,
+          username: vendor.User?.username,
+          successfulReferrals: referrals,
+        };
+      });
     else return [];
-  }, [vendors?.data]);
+  }, [vendors?.data, statsByVendorId]);
   const columns = useCambodiaVendorsTableColumns();
   const table = useReactTable({
     data: tableData || [],

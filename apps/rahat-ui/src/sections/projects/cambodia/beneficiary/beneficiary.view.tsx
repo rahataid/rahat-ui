@@ -41,20 +41,23 @@ export default function BeneficiaryView() {
   const debouncedSearch = useDebounce(filters, 500);
 
   const { data, isLoading } = useCambodiaBeneficiaries({
+    ...(debouncedSearch as any),
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
+    enabled: true,
   });
+  const listTotal = data?.response?.meta?.total;
   const { data: allData } = useCambodiaBeneficiaries({
-    page: pagination.page,
-    perPage: data?.response?.meta?.total,
+    ...(debouncedSearch as any),
+    enabled: typeof listTotal === 'number' && listTotal > 0,
+    page: 1,
+    perPage: listTotal ?? pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
   });
 
   useEffect(() => {
@@ -65,20 +68,21 @@ export default function BeneficiaryView() {
 
   const processedData = {
     ...data,
-    data: data?.data.map((benef) => ({
-      ...benef,
-      name: benef?.piiData?.name,
-    })),
+    data:
+      data?.data?.map((benef) => ({
+        ...benef,
+        name: benef?.piiData?.name,
+      })) ?? [],
   };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
+      setFilters((prev: Record<string, string>) => ({
+        ...prev,
         [name]: filterValue,
-      });
+      }));
     }
   };
 
@@ -151,13 +155,9 @@ export default function BeneficiaryView() {
         <div className="rounded-lg border bg-card p-4 ">
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
-              isDisabled={true}
               name="name"
-              className="w-[100%] cursor-not-allowed"
-              value={
-                (table.getColumn('name')?.getFilterValue() as string) ??
-                filters?.name
-              }
+              className="w-[100%]"
+              value={filters?.name ?? ''}
               onSearch={(event) => handleFilterChange(event)}
             />
             <div className="flex justify-between space-x-2 w-[40%]">

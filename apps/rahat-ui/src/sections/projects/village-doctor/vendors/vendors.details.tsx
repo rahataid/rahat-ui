@@ -3,6 +3,7 @@ import {
   useCambodiaLineChartsReports,
   useCambodiaVendorGet,
   useCambodiaVendorsStats,
+  useVillageDoctorVendorTransactions,
 } from '@rahat-ui/query';
 import {
   Card,
@@ -51,6 +52,29 @@ function routeParam(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
+/** Vendor GET payload may expose nested user as `User` or `user` (serialization). */
+function pickVendorWallet(row: Record<string, unknown> | undefined): string {
+  if (!row || typeof row !== 'object') return '';
+  const user =
+    (row['User'] as Record<string, unknown> | undefined) ??
+    (row['user'] as Record<string, unknown> | undefined);
+  const direct =
+    typeof user?.['wallet'] === 'string'
+      ? user['wallet']
+      : typeof row['wallet'] === 'string'
+      ? row['wallet']
+      : '';
+  const trimmed = direct.trim();
+  if (trimmed) return trimmed;
+  const extras = user?.['extras'];
+  if (extras && typeof extras === 'object' && extras !== null) {
+    const ex = extras as Record<string, unknown>;
+    const w = ex['wallet'] ?? ex['walletAddress'];
+    return typeof w === 'string' ? w.trim() : '';
+  }
+  return '';
+}
+
 export default function VendorsDetail() {
   const params = useParams();
   const id = routeParam(params.id);
@@ -66,7 +90,6 @@ export default function VendorsDetail() {
 
   /** `formatResponse`: inner API payload is `vendorQueryData.data` */
   const vendorRow = vendorQueryData?.data;
-  console.log(vendorRow, 'vendorRow in vendor details');
   const [walletCopied, setWalletCopied] = React.useState(false);
   const currentYear = new Date().getFullYear();
 
@@ -106,6 +129,13 @@ export default function VendorsDetail() {
       filters,
       vendorId: vendorId as string,
     });
+
+  const wallet = pickVendorWallet(
+    vendorRow as Record<string, unknown> | undefined,
+  );
+  const { data: vendorTransactions, isLoading: vendorTransactionsLoading } =
+    useVillageDoctorVendorTransactions(wallet);
+
   const transformedYearData = Array.from({ length: 5 }, (_, index) => {
     const year = currentYear + index;
     return {
@@ -134,8 +164,6 @@ export default function VendorsDetail() {
       setFilters({ ...filters, year: parseInt(value) });
     }
   };
-
-  const wallet = vendorRow?.User?.wallet as string | undefined;
 
   const vendorFetchFailed =
     vendorIsError &&
@@ -214,8 +242,6 @@ export default function VendorsDetail() {
     </div>
   );
 
-  console.log(vendorsStats?.data, 'vendor stats');
-
   return (
     <VillageDoctorDetailChrome
       title={titleName}
@@ -249,13 +275,13 @@ export default function VendorsDetail() {
           />
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
-            title="Village Doctors"
+            title="Total Village Doctors"
             Icon={UserCog}
             number={String(vendorsStats?.data?.healthWorkers ?? 0)}
           />
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
-            title="Villagers referred"
+            title="Total Successfull Referrals"
             Icon={Users}
             number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
           />
@@ -267,7 +293,7 @@ export default function VendorsDetail() {
         /> */}
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
-            title="Total Purchase Amount (RMB)"
+            title="Total Sales in EP (RMB)"
             Icon={Coins}
             number={String(vendorsStats?.data?.totalPurchaseAmountRmb ?? 0)}
           />
@@ -303,6 +329,9 @@ export default function VendorsDetail() {
             </VillageDoctorField>
             <VillageDoctorField label="Phone number">
               {vendorRow?.User?.phone ?? '—'}
+            </VillageDoctorField>
+            <VillageDoctorField label="Username">
+              {vendorRow?.User?.username ?? '—'}
             </VillageDoctorField>
           </dl>
         </CardContent>
@@ -367,7 +396,10 @@ export default function VendorsDetail() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory" className="mt-0">
-          <TransactionHistoryView vendorAddress={vendorRow?.User?.wallet} />
+          <TransactionHistoryView
+            vendorTransactions={vendorTransactions}
+            isLoading={vendorTransactionsLoading}
+          />
         </TabsContent>
         {/* <TabsContent value="conversionList" className="mt-0">
           <ConversionListView />

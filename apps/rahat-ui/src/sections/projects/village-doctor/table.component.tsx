@@ -91,10 +91,7 @@ export default function CambodiaTable({
                   className="h-32 text-center"
                 >
                   <p className="text-sm font-medium text-muted-foreground">
-                    No results match your filters.
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground/90">
-                    Try adjusting search or date range.
+                    No villagers found.
                   </p>
                 </TableCell>
               </TableRow>

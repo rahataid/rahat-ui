@@ -1,8 +1,4 @@
 import {
-  useVillageDoctorVendorTransactions,
-  usePagination,
-} from '@rahat-ui/query';
-import {
   ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
@@ -18,19 +14,22 @@ import { useTransactionHistoryTableColumns } from './use.transaction.history.tab
 import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 type IProps = {
-  vendorAddress: string;
+  vendorTransactions: Record<string, unknown>[] | undefined;
+  isLoading: boolean;
 };
 
-export default function TransactionHistoryView({ vendorAddress }: IProps) {
+export default function TransactionHistoryView({
+  vendorTransactions,
+  isLoading,
+}: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
   const [rowSelection, setRowSelection] = React.useState({});
-  const { data: vendorTransactions, isLoading } =
-    useVillageDoctorVendorTransactions(vendorAddress);
   const columns = useTransactionHistoryTableColumns();
   const table = useReactTable({
     manualPagination: true,

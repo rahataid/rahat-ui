@@ -125,7 +125,9 @@ jobs:
 
       - name: Copy environment file into the rahat-ui app root
         run: mkdir -p apps/rahat-ui && cp .env apps/rahat-ui/.env
-
+      - name: Export env vars for Docker build
+        run: |
+          grep -E 'NEXT_PUBLIC_API_HOST_URL|NEXT_PUBLIC_API_COMMUNICATION_URL' .env >> $GITHUB_ENV || true
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0
@@ -136,8 +138,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build apps
-        run: pnpm build:all
+      # - name: Build apps
+      #   run: pnpm build:all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -167,6 +169,9 @@ jobs:
           context: .
           file: Dockerfile.rahat-ui
           push: ${{ github.event.inputs.image_tag != '' }}
+          build-args: |
+            NEXT_PUBLIC_API_HOST_URL=${{ env.NEXT_PUBLIC_API_HOST_URL }}
+            NEXT_PUBLIC_API_COMMUNICATION_URL=${{ env.NEXT_PUBLIC_API_COMMUNICATION_URL }}
           tags: ${{ steps.tags.outputs.tags }}
 
     outputs:

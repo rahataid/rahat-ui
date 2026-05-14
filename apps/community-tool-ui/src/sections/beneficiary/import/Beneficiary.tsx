@@ -48,6 +48,14 @@ interface IProps {
   fieldDefinitions: [];
 }
 
+interface AiClassifiedHeader {
+  header?: string;
+  predicted_label?: string;
+  other_similar?: unknown;
+  match?: unknown;
+  similarity?: unknown;
+}
+
 export default function BenImp({ fieldDefinitions }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
@@ -108,13 +116,55 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       });
 
       if (uploadResult && uploadResult.classified_headers.length) {
-        const aiData = uploadResult.classified_headers.map((header: any) => ({
-          sourceField: header.header,
-          targetField: header.predicted_label,
-          other_similar: header.other_similar,
-          match: header.match,
-          similarity: header.similarity,
-        }));
+        const usedTargetFields = new Set<string>();
+
+        // Sort headers to prioritize exact matches (where header === predicted_label)
+        const sortedHeaders = [...uploadResult.classified_headers].sort(
+          (a, b) => {
+            const aIsExactMatch = a.header === a.predicted_label;
+            const bIsExactMatch = b.header === b.predicted_label;
+            // Exact matches come first
+            if (aIsExactMatch && !bIsExactMatch) return -1;
+            if (!aIsExactMatch && bIsExactMatch) return 1;
+            return 0;
+          },
+        );
+
+        const aiData = sortedHeaders.map((header: AiClassifiedHeader) => {
+          const predictedLabel = String(header.predicted_label || '').trim();
+          const sourceHeader = String(header.header || '').trim();
+
+          let targetField = predictedLabel || sourceHeader;
+
+          // If the predicted label is already used, fall back to source header
+          if (usedTargetFields.has(targetField)) {
+            targetField = sourceHeader;
+          }
+
+          // If source header is also taken, add a suffix
+          if (usedTargetFields.has(targetField)) {
+            let suffix = 1;
+            let uniqueTargetField = `${sourceHeader}_${suffix}`;
+
+            while (usedTargetFields.has(uniqueTargetField)) {
+              suffix += 1;
+              uniqueTargetField = `${sourceHeader}_${suffix}`;
+            }
+
+            targetField = uniqueTargetField;
+          }
+
+          usedTargetFields.add(targetField);
+
+          return {
+            sourceField: header.header,
+            targetField,
+            other_similar: header.other_similar,
+            match: header.match,
+            similarity: header.similarity,
+          };
+        });
+        console.log('AI Mapping Suggestions:', aiData);
 
         setFieldSuggestions(aiData); // Store AI suggestions separately
       }
@@ -130,9 +180,11 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
     const res = await existingMapQuery.mutateAsync(importId);
+
     if (res && res?.data) {
       setHasExistingMapping(true);
       const { fieldMapping } = res.data;
+
       return setMappings(fieldMapping?.sourceTargetMappings);
     }
   };
@@ -197,6 +249,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
+    console.log('handleTargetFieldChange', sourceField, targetField);
     // Source field as it is
     // Target field sanitized
     if (sourceField === EMPTY_SELECTION) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
@@ -34,17 +34,24 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
     beneficiaryUUID: beneficiaryId,
   });
 
-  const filteredInkinds = (inKindData?.inkinds || []).filter(
-    (item: InKindItem) =>
-      item.inkindType === 'PRE_DEFINED' ||
-      (item.inkindType === 'WALK_IN' && item.redeemedAmount > 0),
+  const filteredInkinds = useMemo(
+    () =>
+      (inKindData?.inkinds || []).filter(
+        (item: InKindItem) =>
+          item.inkindType === 'PRE_DEFINED' ||
+          (item.inkindType === 'WALK_IN' && item.redeemedAmount > 0),
+      ),
+    [inKindData?.inkinds],
   );
+
+  const hasTokenData = !!(tokenData?.assignedToken || tokenData?.redemmedToken);
+  const showBorder = filteredInkinds.length > 0;
 
   return (
     <>
       <div className="flex items-center">
-        <div className="h-24 w-24 rounded-md  bg-gray-700 flex justify-center items-center">
-          <User className="" color="white" />
+        <div className="h-24 w-24 rounded-md bg-gray-700 flex justify-center items-center">
+          <User color="white" />
         </div>
 
         <div className="flex flex-col ml-6">
@@ -105,10 +112,8 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
       <div
         className={`p-4 w-full max-w-2xl bg-white ${
-          !isInKindPending && filteredInkinds.length === 0
-            ? ''
-            : 'border rounded-xl shadow-sm'
-        } `}
+          showBorder ? 'border rounded-xl shadow-sm' : ''
+        }`}
       >
         {/* Title */}
         {isPending ? (
@@ -129,35 +134,24 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
               <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
             </div>
           </>
-        ) : (
-          <>
-            {tokenData?.assignedToken || tokenData?.redemmedToken ? (
-              <>
-                <div className="flex gap-4 mb-6">
-                  <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-                    <p className="text-sm text-gray-500">Assigned</p>
-                    <h3 className="text-xl font-bold">
-                      {tokenData?.assignedToken} Tokens
-                    </h3>
-                    <p className="text-gray-600">
-                      NPR {tokenData?.assignedToken}
-                    </p>
-                  </div>
-
-                  <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-                    <p className="text-sm text-gray-500">Redeemed</p>
-                    <h3 className="text-xl font-bold">
-                      {tokenData?.redemmedToken} Tokens
-                    </h3>
-                    <p className="text-gray-600">
-                      NPR {tokenData?.redemmedToken}
-                    </p>
-                  </div>
-                </div>
-              </>
-            ) : null}
-          </>
-        )}
+        ) : hasTokenData ? (
+          <div className="flex gap-4 mb-6">
+            <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+              <p className="text-sm text-gray-500">Assigned</p>
+              <h3 className="text-xl font-bold">
+                {tokenData?.assignedToken} Tokens
+              </h3>
+              <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
+            </div>
+            <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+              <p className="text-sm text-gray-500">Redeemed</p>
+              <h3 className="text-xl font-bold">
+                {tokenData?.redemmedToken} Tokens
+              </h3>
+              <p className="text-gray-600">NPR {tokenData?.redemmedToken}</p>
+            </div>
+          </div>
+        ) : null}
 
         {filteredInkinds.length > 0 && (
           <InkindDetails filteredInkinds={filteredInkinds} />

@@ -15,6 +15,7 @@ interface InKindItem {
   redeemedAmount: number;
   status: string;
 }
+
 const InkindDetails = ({
   filteredInkinds,
 }: {

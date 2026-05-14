@@ -605,6 +605,9 @@ type GetConsumerData = {
   consentStatus?: string;
   phoneNumber?: string;
   noOfReferrals?: number | string;
+  startDate?: string;
+  endDate?: string;
+  isImported?: boolean;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {

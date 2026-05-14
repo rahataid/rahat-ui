@@ -18,15 +18,25 @@ interface InKindItem {
   redeemedAmount: number;
   status: string;
 }
-const InkindDetails = () => {
-  const params = useParams();
-  const projectId = params.id as UUID;
-  const beneficiaryId = params.uuid as UUID;
+const InkindDetails = ({
+  filteredInkinds,
+}: {
+  filteredInkinds: InKindItem[];
+}) => {
+  // const params = useParams();
+  // const projectId = params.id as UUID;
+  // const beneficiaryId = params.uuid as UUID;
 
-  const { data: inKindData, isPending: isInKindPending } = useInkindDetails({
-    projectUUID: projectId,
-    beneficiaryUUID: beneficiaryId,
-  });
+  // const { data: inKindData, isPending: isInKindPending } = useInkindDetails({
+  //   projectUUID: projectId,
+  //   beneficiaryUUID: beneficiaryId,
+  // });
+
+  // const filteredInkinds = (inKindData?.inkinds || []).filter(
+  //   (item: InKindItem) =>
+  //     item.inkindType === 'PRE_DEFINED' ||
+  //     (item.inkindType === 'WALK_IN' && item.redeemedAmount > 0),
+  // );
 
   const columns: ColumnDef<InKindItem>[] = [
     {
@@ -72,18 +82,20 @@ const InkindDetails = () => {
   ];
 
   const table = useReactTable({
-    data: inKindData?.inkinds || [],
+    data: filteredInkinds,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+
+  // if (!isInKindPending && filteredInkinds.length === 0) return null;
 
   return (
     <>
       <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
       <DemoTable
         table={table}
-        loading={isInKindPending}
+        // loading={isInKindPending}
         tableHeight="h-[calc(100vh-600px)]"
       />
     </>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
-import { useTokenDetails } from '@rahat-ui/query';
+import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import InkindDetails from './beneficiary.inkind.details';
@@ -10,7 +10,14 @@ import InkindDetails from './beneficiary.inkind.details';
 type IProps = {
   beneficiary: any;
 };
-
+interface InKindItem {
+  inkindName: string;
+  availableAmount: number;
+  assignedAmount?: number;
+  inkindType: string;
+  redeemedAmount: number;
+  status: string;
+}
 const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const params = useParams();
   const projectId = params.id as UUID;
@@ -22,6 +29,18 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
     beneficiaryUUID: beneficiaryId,
   });
 
+  const { data: inKindData, isPending: isInKindPending } = useInkindDetails({
+    projectUUID: projectId,
+    beneficiaryUUID: beneficiaryId,
+  });
+
+  const filteredInkinds = (inKindData?.inkinds || []).filter(
+    (item: InKindItem) =>
+      item.inkindType === 'PRE_DEFINED' ||
+      (item.inkindType === 'WALK_IN' && item.redeemedAmount > 0),
+  );
+
+  console.log('filteredInkinds', filteredInkinds.length);
   return (
     <>
       <div className="flex items-center">
@@ -63,6 +82,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
             )}
             <p>
               {!beneficiary?.extras?.location &&
+                !beneficiary?.projectData?.location &&
                 !beneficiary?.extras?.ward_no &&
                 'N/A'}
             </p>
@@ -84,7 +104,13 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           isBadge
         />
       </div>
-      <div className="p-4 border rounded-xl shadow-sm w-full max-w-2xl bg-white">
+      <div
+        className={`p-4 w-full max-w-2xl bg-white ${
+          !isInKindPending && filteredInkinds.length === 0
+            ? ''
+            : 'border rounded-xl shadow-sm'
+        } `}
+      >
         {/* Title */}
         {isPending ? (
           <>
@@ -134,7 +160,9 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           </>
         )}
 
-        <InkindDetails />
+        {filteredInkinds.length && (
+          <InkindDetails filteredInkinds={filteredInkinds} />
+        )}
       </div>
     </>
   );

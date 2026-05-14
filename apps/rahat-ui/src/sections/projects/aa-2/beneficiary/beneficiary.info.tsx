@@ -40,7 +40,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       (item.inkindType === 'WALK_IN' && item.redeemedAmount > 0),
   );
 
-  console.log('filteredInkinds', filteredInkinds.length);
   return (
     <>
       <div className="flex items-center">
@@ -160,7 +159,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           </>
         )}
 
-        {filteredInkinds.length && (
+        {filteredInkinds.length > 0 && (
           <InkindDetails filteredInkinds={filteredInkinds} />
         )}
       </div>

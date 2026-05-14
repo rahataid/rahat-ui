@@ -1,4 +1,3 @@
-import { useInkindDetails } from '@rahat-ui/query';
 import { DemoTable } from 'apps/rahat-ui/src/common';
 import {
   getCoreRowModel,
@@ -6,8 +5,6 @@ import {
   useReactTable,
   ColumnDef,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 
 interface InKindItem {
@@ -23,21 +20,6 @@ const InkindDetails = ({
 }: {
   filteredInkinds: InKindItem[];
 }) => {
-  // const params = useParams();
-  // const projectId = params.id as UUID;
-  // const beneficiaryId = params.uuid as UUID;
-
-  // const { data: inKindData, isPending: isInKindPending } = useInkindDetails({
-  //   projectUUID: projectId,
-  //   beneficiaryUUID: beneficiaryId,
-  // });
-
-  // const filteredInkinds = (inKindData?.inkinds || []).filter(
-  //   (item: InKindItem) =>
-  //     item.inkindType === 'PRE_DEFINED' ||
-  //     (item.inkindType === 'WALK_IN' && item.redeemedAmount > 0),
-  // );
-
   const columns: ColumnDef<InKindItem>[] = [
     {
       header: 'Items',
@@ -88,16 +70,10 @@ const InkindDetails = ({
     getSortedRowModel: getSortedRowModel(),
   });
 
-  // if (!isInKindPending && filteredInkinds.length === 0) return null;
-
   return (
     <>
       <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
-      <DemoTable
-        table={table}
-        // loading={isInKindPending}
-        tableHeight="h-[calc(100vh-600px)]"
-      />
+      <DemoTable table={table} tableHeight="h-[calc(100vh-600px)]" />
     </>
   );
 };

@@ -14,6 +14,7 @@ FROM base AS builder
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
+RUN if [ -f .env ]; then cp .env apps/rahat-ui/.env; fi
 
 ARG NEXT_PUBLIC_API_HOST_URL
 ARG NEXT_PUBLIC_API_COMMUNICATION_URL

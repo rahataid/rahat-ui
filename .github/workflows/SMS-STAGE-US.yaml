@@ -123,6 +123,9 @@ jobs:
       - name: Create environment file
         run: tee ./.env <<<"$ENV"
 
+      - name: Copy environment file into the rahat-ui app root
+        run: mkdir -p apps/rahat-ui && cp .env apps/rahat-ui/.env
+
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0

@@ -13,7 +13,6 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import SearchInput from '../../components/search.input';
@@ -29,7 +28,8 @@ import {
 import { SlidersHorizontal } from 'lucide-react';
 
 export default function VendorsView() {
-  const { id } = useParams() as { id: UUID };
+  const { id } = useParams() as { id?: string };
+  const projectUUID = typeof id === 'string' ? id : undefined;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -41,7 +41,7 @@ export default function VendorsView() {
 
   const debouncedSearch = useDebounce(filters, 500);
   const { data: vendors, isLoading } = useCambodiaVendorsList({
-    projectUUID: id,
+    projectUUID,
     ...(debouncedSearch as any),
   });
 
@@ -60,7 +60,7 @@ export default function VendorsView() {
   }, [vendors?.data]);
 
   const { statsByVendorId } = useCambodiaVendorsStatsByVendorIds({
-    projectUUID: typeof id === 'string' ? id : undefined,
+    projectUUID,
     vendorIds: vendorIdsForStats,
   });
 
@@ -74,9 +74,7 @@ export default function VendorsView() {
             ? vendor.vendorId.trim()
             : '';
         const referrals =
-          vendorKey !== ''
-            ? (statsByVendorId[vendorKey] ?? null)
-            : undefined;
+          vendorKey !== '' ? statsByVendorId[vendorKey] ?? null : undefined;
         return {
           ...vendor,
           name: vendor.User?.name,

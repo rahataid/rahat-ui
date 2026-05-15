@@ -1374,63 +1374,46 @@ export const useCambodiaVendorsStatsByVendorIds = (payload: {
     return [...next].sort();
   }, [vendorIds]);
 
-  const queries = useQueries({
-    queries: dedupedVendorIds.map((vendorId) => ({
-      queryKey: [
-        MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
-        'byVendorId',
-        projectUUID,
-        vendorId,
-      ],
-      enabled: Boolean(projectUUID && vendorId),
-      placeholderData: keepPreviousData,
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
-      queryFn: async () => {
-        const mutate = await q.mutateAsync({
-          uuid: projectUUID as UUID,
-          data: {
-            action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
-            payload: { vendorId },
-          },
-        });
-        return mutate;
-      },
-    })),
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+      'byVendorIds',
+      projectUUID,
+      dedupedVendorIds,
+    ],
+    enabled: Boolean(projectUUID && dedupedVendorIds.length > 0),
+    placeholderData: keepPreviousData,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+    queryFn: async () => {
+      const map: Record<string, number | null | undefined> = {};
+
+      for (const vendorId of dedupedVendorIds) {
+        try {
+          const mutate = await q.mutateAsync({
+            uuid: projectUUID as UUID,
+            data: {
+              action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+              payload: { vendorId },
+            },
+          });
+
+          const body = mutate as
+            | { data?: { leadsRecieved?: number; leads?: number } }
+            | undefined;
+          const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
+          map[vendorId] = typeof raw === 'number' ? raw : 0;
+        } catch {
+          map[vendorId] = undefined;
+        }
+      }
+
+      return map;
+    },
   });
 
-  const statsByVendorId = useMemo(() => {
-    const map: Record<string, number | null | undefined> = {};
-    dedupedVendorIds.forEach((vendorId, index) => {
-      const qr = queries[index];
-      if (!qr) {
-        map[vendorId] = undefined;
-        return;
-      }
-      if (qr.isError) {
-        map[vendorId] = undefined;
-        return;
-      }
-      if (qr.isLoading) {
-        map[vendorId] = null;
-        return;
-      }
-      if (!qr.isSuccess) {
-        map[vendorId] = undefined;
-        return;
-      }
-      const body = qr.data as
-        | { data?: { leadsRecieved?: number; leads?: number } }
-        | undefined;
-      const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
-      map[vendorId] = typeof raw === 'number' ? raw : 0;
-    });
-    return map;
-  }, [dedupedVendorIds, queries]);
-
-  const isFetching = queries.some((x) => x.isFetching);
-
-  return { statsByVendorId, isFetching };
+  return { statsByVendorId: query.data ?? {}, isFetching: query.isFetching };
 };
 
 export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {

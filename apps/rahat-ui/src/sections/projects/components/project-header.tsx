@@ -14,7 +14,6 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
@@ -72,16 +71,15 @@ export function ProjectNav({
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="mr-5 w-56 text-sm"
-            side="bottom"
-          >
+          <DropdownMenuContent className="mr-5 w-56 text-sm" side="bottom">
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
                 <span className="font-semibold text-foreground">
                   {user?.data?.name ?? 'John Doe'}{' '}
                 </span>
-                <span className="text-xs text-muted-foreground">{user?.data?.email ?? 'doe@john.com'}</span>
+                <span className="text-xs text-muted-foreground">
+                  {user?.data?.email ?? 'doe@john.com'}
+                </span>
               </div>
               <Separator />
               <Link

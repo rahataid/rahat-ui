@@ -62,7 +62,14 @@ const COLORS = {
   warning: '#f59e0b',
   danger: '#ef4444',
   muted: '#94a3b8',
-  voucherTypes: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#0ea5e9', '#a855f7'],
+  voucherTypes: [
+    '#6366f1',
+    '#22c55e',
+    '#f59e0b',
+    '#ef4444',
+    '#0ea5e9',
+    '#a855f7',
+  ],
 };
 
 function formatNumber(n: number | undefined): string {
@@ -154,7 +161,9 @@ export default function ReferralsSection({ projectUUID }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight">Referral Program</h2>
+        <h2 className="text-xl font-semibold tracking-tight">
+          Referral Program
+        </h2>
         <p className="text-sm text-muted-foreground mt-1">
           Real-time stats for beneficiary referrals and redemptions
         </p>
@@ -210,9 +219,9 @@ export default function ReferralsSection({ projectUUID }: Props) {
         ))}
       </div>
 
-      {/* Top referrers + voucher-type breakdown */}
+      {/* Top referrers + voucher-type breakdown + Weekly referrals trend */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <div className="rounded-lg p-2 bg-amber-500/10">
@@ -270,7 +279,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
               </div>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card>
           <CardHeader className="pb-2">
@@ -331,89 +340,96 @@ export default function ReferralsSection({ projectUUID }: Props) {
             )}
           </CardContent>
         </Card>
-      </div>
 
-      {/* Weekly referrals trend */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg p-2 bg-blue-500/10">
-              <TrendingUp className="h-4 w-4 text-blue-500" />
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <div className="rounded-lg p-2 bg-blue-500/10">
+                <TrendingUp className="h-4 w-4 text-blue-500" />
+              </div>
+              <div>
+                <CardTitle className="text-base font-semibold">
+                  Referrals Over Time
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Weekly referral creation (last 12 weeks)
+                </CardDescription>
+              </div>
             </div>
-            <div>
-              <CardTitle className="text-base font-semibold">
-                Referrals Over Time
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Weekly referral creation (last 12 weeks)
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {weekly.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-              <TrendingUp className="h-8 w-8 mb-2 opacity-30" />
-              <p className="text-sm">No referrals yet</p>
-            </div>
-          ) : (
-            <ChartContainer
-              config={{ count: { label: 'Referrals', color: COLORS.primary } }}
-              className="h-[260px] w-full"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={weekly}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="fillReferrals" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor={COLORS.primary}
-                        stopOpacity={0.3}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor={COLORS.primary}
-                        stopOpacity={0.05}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="hsl(var(--border))"
-                    strokeOpacity={0.5}
-                  />
-                  <XAxis
-                    dataKey="week"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 11 }}
-                    dy={8}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 11 }}
-                    width={40}
-                    allowDecimals={false}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Area
-                    type="monotone"
-                    dataKey="count"
-                    stroke={COLORS.primary}
-                    fill="url(#fillReferrals)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            {weekly.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <TrendingUp className="h-8 w-8 mb-2 opacity-30" />
+                <p className="text-sm">No referrals yet</p>
+              </div>
+            ) : (
+              <ChartContainer
+                config={{
+                  count: { label: 'Referrals', color: COLORS.primary },
+                }}
+                className="h-[260px] w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={weekly}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="fillReferrals"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={COLORS.primary}
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={COLORS.primary}
+                          stopOpacity={0.05}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="hsl(var(--border))"
+                      strokeOpacity={0.5}
+                    />
+                    <XAxis
+                      dataKey="week"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11 }}
+                      dy={8}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11 }}
+                      width={40}
+                      allowDecimals={false}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      stroke={COLORS.primary}
+                      fill="url(#fillReferrals)"
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Referrals per referrer histogram */}
       <Card>

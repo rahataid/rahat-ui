@@ -79,9 +79,7 @@ export default function CHWView() {
       projectUUID: id,
     };
     const from =
-      typeof chwListFilters.from === 'string'
-        ? chwListFilters.from.trim()
-        : '';
+      typeof chwListFilters.from === 'string' ? chwListFilters.from.trim() : '';
     const to =
       typeof chwListFilters.to === 'string' ? chwListFilters.to.trim() : '';
     if (from) {
@@ -212,7 +210,7 @@ export default function CHWView() {
             className="rounded-lg border-solid"
           />
           <DataCard
-            title="Total Vouchers Redeemed"
+            title="Total Successful Referrals"
             number={String(programStats?.data?.leadsRecieved ?? 0)}
             Icon={Users}
             className="rounded-lg border-solid"
@@ -289,10 +287,12 @@ export default function CHWView() {
               handleNextPage={setNextPage}
               handlePrevPage={setPrevPage}
               handlePageSizeChange={setPerPage}
-              meta={(data?.response?.meta as any) || {
-                total: 0,
-                currentPage: 0,
-              }}
+              meta={
+                (data?.response?.meta as any) || {
+                  total: 0,
+                  currentPage: 0,
+                }
+              }
               perPage={pagination?.perPage}
               total={data?.response?.meta?.total || 0}
             />

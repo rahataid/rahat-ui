@@ -10,6 +10,7 @@ import {
   UseQueryResult,
   keepPreviousData,
   useMutation,
+  useQueries,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -604,6 +605,9 @@ type GetConsumerData = {
   consentStatus?: string;
   phoneNumber?: string;
   noOfReferrals?: number | string;
+  startDate?: string;
+  endDate?: string;
+  isImported?: boolean;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
@@ -755,12 +759,16 @@ export const useExportBeneficiaryReferral = (
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
               referredAt: new Date(row?.createdAt).toLocaleString() || '',
-              referrerWalletAddress: row?.Referrer?.walletAddress?.toString() || '',
+              referrerWalletAddress:
+                row?.Referrer?.walletAddress?.toString() || '',
               referrerPhone:
                 row?.Referrer?.phone || row?.Referrer?.extras?.phone || '',
-              refereeWalletAddress: row?.Referral?.walletAddress?.toString() || '',
-              refereePhone: row?.Referral?.phone || row?.Referral?.extras?.phone || '',
-              refereeGender: row?.Referral?.gender || row?.Referral?.extras?.gender || '',
+              refereeWalletAddress:
+                row?.Referral?.walletAddress?.toString() || '',
+              refereePhone:
+                row?.Referral?.phone || row?.Referral?.extras?.phone || '',
+              refereeGender:
+                row?.Referral?.gender || row?.Referral?.extras?.gender || '',
               voucherStatus: mapStatus(row?.Referral?.voucherStatus),
               voucherUsage: mapStatus(row?.Referral?.eyeCheckupStatus),
               glassPurchaseType: mapStatus(row?.Referral?.voucherType),
@@ -955,27 +963,106 @@ export const useCHWGet = (payload: any) => {
 
 export const useCambodiaBeneficiaries = (payload: any) => {
   const q = useProjectAction<Beneficiary[]>();
-  const { projectUUID, ...restPayload } = payload;
+  const { projectUUID, enabled = true, ...restPayload } = payload;
 
-  const restPayloadString = JSON.stringify(restPayload);
+  const { page, perPage, ...listRest } = restPayload;
+  /** Only fields Cambodia `ListBeneficiaryDto` understands — avoids polluted cache keys and payloads */
+  const sanitizedPayload: {
+    page: number;
+    perPage: number;
+    order?: string;
+    sort?: string;
+    type?: string;
+    name?: string;
+    projectUUID?: string;
+  } = {
+    page: Number(page),
+    perPage: Number(perPage),
+  };
+  if (typeof projectUUID === 'string' && projectUUID) {
+    sanitizedPayload.projectUUID = projectUUID;
+  }
+  if (typeof listRest.order === 'string' && listRest.order) {
+    sanitizedPayload.order = listRest.order;
+  }
+  if (typeof listRest.sort === 'string' && listRest.sort) {
+    sanitizedPayload.sort = listRest.sort;
+  }
+  if (typeof listRest.type === 'string' && listRest.type) {
+    sanitizedPayload.type = listRest.type;
+  }
+  if (typeof listRest.name === 'string' && listRest.name.trim()) {
+    sanitizedPayload.name = listRest.name.trim();
+  }
+
+  const restPayloadString = JSON.stringify(sanitizedPayload);
 
   const query = useQuery({
-    queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST, restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    enabled:
+      Boolean(enabled) &&
+      Boolean(projectUUID) &&
+      Number.isFinite(sanitizedPayload.page) &&
+      sanitizedPayload.page > 0 &&
+      Number.isFinite(sanitizedPayload.perPage) &&
+      sanitizedPayload.perPage > 0,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
-          payload: restPayload,
+          payload: sanitizedPayload,
         },
       });
       return mutate;
     },
   });
-  return { ...query };
+
+  const normalizedData = useMemo(() => {
+    const raw = query.data;
+    if (!raw) return raw;
+    const inner = raw.data as unknown;
+    const rows = Array.isArray(inner)
+      ? inner
+      : inner &&
+        typeof inner === 'object' &&
+        Array.isArray((inner as { data?: unknown }).data)
+      ? (inner as { data: Beneficiary[] }).data ?? []
+      : [];
+    const resp = raw.response as { meta?: unknown; data?: unknown } | undefined;
+    const paginatedMeta =
+      inner &&
+      typeof inner === 'object' &&
+      !Array.isArray(inner) &&
+      'meta' in inner
+        ? (inner as { meta?: unknown }).meta
+        : undefined;
+    const nestedMeta =
+      resp?.data &&
+      typeof resp.data === 'object' &&
+      !Array.isArray(resp.data) &&
+      'meta' in resp.data
+        ? (resp.data as { meta?: unknown }).meta
+        : undefined;
+    const meta = resp?.meta ?? nestedMeta ?? paginatedMeta;
+    return {
+      ...raw,
+      data: rows,
+      response:
+        resp && meta !== undefined && resp.meta === undefined
+          ? { ...resp, meta }
+          : raw.response,
+    };
+  }, [query.data]);
+
+  return { ...query, data: normalizedData };
 };
 
 export const useCambodiaBeneficiary = (payload: any) => {
@@ -1237,6 +1324,86 @@ export const useCambodiaVendorsStats = (payload: any) => {
   return query;
 };
 
+/**
+ * Fetches Cambodia vendor stats for many Eye Partners in parallel (same action as
+ * {@link useCambodiaVendorsStats}, one request per `vendorId`). Use on list pages;
+ * {@link useCambodiaVendorsStats} alone only returns one aggregate when `vendorId` is omitted.
+ */
+export const useCambodiaVendorsStatsByVendorIds = (payload: {
+  projectUUID?: string;
+  vendorIds: readonly string[];
+}) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, vendorIds } = payload;
+
+  const dedupedVendorIds = useMemo(() => {
+    const next = new Set<string>();
+    for (const raw of vendorIds || []) {
+      const id = typeof raw === 'string' ? raw.trim() : '';
+      if (id) next.add(id);
+    }
+    return [...next].sort();
+  }, [vendorIds]);
+
+  const queries = useQueries({
+    queries: dedupedVendorIds.map((vendorId) => ({
+      queryKey: [
+        MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+        'byVendorId',
+        projectUUID,
+        vendorId,
+      ],
+      enabled: Boolean(projectUUID && vendorId),
+      placeholderData: keepPreviousData,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
+      queryFn: async () => {
+        const mutate = await q.mutateAsync({
+          uuid: projectUUID as UUID,
+          data: {
+            action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+            payload: { vendorId },
+          },
+        });
+        return mutate;
+      },
+    })),
+  });
+
+  const statsByVendorId = useMemo(() => {
+    const map: Record<string, number | null | undefined> = {};
+    dedupedVendorIds.forEach((vendorId, index) => {
+      const qr = queries[index];
+      if (!qr) {
+        map[vendorId] = undefined;
+        return;
+      }
+      if (qr.isError) {
+        map[vendorId] = undefined;
+        return;
+      }
+      if (qr.isLoading) {
+        map[vendorId] = null;
+        return;
+      }
+      if (!qr.isSuccess) {
+        map[vendorId] = undefined;
+        return;
+      }
+      const body = qr.data as
+        | { data?: { leadsRecieved?: number; leads?: number } }
+        | undefined;
+      const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
+      map[vendorId] = typeof raw === 'number' ? raw : 0;
+    });
+    return map;
+  }, [dedupedVendorIds, queries]);
+
+  const isFetching = queries.some((x) => x.isFetching);
+
+  return { statsByVendorId, isFetching };
+};
+
 export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
   const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
@@ -1448,6 +1615,78 @@ export const useCambodiaCommisionStats = (payload: any) => {
           if (b.name === 'TOTAL_LEAD_CONVERTED') return 1;
           return 0;
         });
+    },
+  });
+  return query;
+};
+
+function cambodiaAppStatNumericCount(stat: {
+  name: string;
+  data?: unknown;
+}): number {
+  const d = stat?.data as
+    | { count?: unknown }
+    | Array<{ count?: number }>
+    | null
+    | undefined;
+  if (d == null) return 0;
+  if (Array.isArray(d)) {
+    return d.reduce(
+      (sum, item) => sum + (typeof item?.count === 'number' ? item.count : 0),
+      0,
+    );
+  }
+  const c = d.count;
+  if (typeof c === 'number' && Number.isFinite(c)) return c;
+  if (typeof c === 'string') {
+    const n = parseInt(String(c).replace(/[^\d.-]/g, ''), 10);
+    return Number.isFinite(n) ? n : 0;
+  }
+  return 0;
+}
+
+export const useCambodiaAppStats = (payload: { projectUUID: UUID }) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+      projectUUID,
+      'app-stats',
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+          payload: {},
+        },
+      });
+      const raw = mutate?.data;
+      const list: { name: string; data?: unknown }[] = Array.isArray(raw)
+        ? raw
+        : Array.isArray((raw as { data?: unknown[] })?.data)
+        ? ((raw as { data: unknown[] }).data as {
+            name: string;
+            data?: unknown;
+          }[])
+        : [];
+      const byName = Object.fromEntries(
+        list.map((s) => [s.name, cambodiaAppStatNumericCount(s)]),
+      );
+      return {
+        totalWearers: byName['TOTAL_WEARERS'] ?? 0,
+        totalEyeCheckup:
+          byName['TOTAL_CONSUMERS'] ?? byName['TOTAL_LEAD_CONVERTED'] ?? 0,
+        healthWorkerSales: byName['HEALTH_WORKER_SALES'] ?? 0,
+        totalVillagersReferred: byName['TOTAL_LEADS'] ?? 0,
+        totalEyewearDispensed: byName['TOTAL_EYEWEAR_DISPENSED'] ?? 0,
+        totalHealthWorkers: byName['TOTAL_HEALTH_WORKERS'] ?? 0,
+      };
     },
   });
   return query;

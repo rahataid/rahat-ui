@@ -7,15 +7,64 @@ import {
   CambodiaVendorTransactions,
   CambodiaProjectTransactions,
   VillageDoctorVendorTransactions,
+  VillageDoctorVendorTokensAllocatedForBeneficiaries,
 } from './graph.query';
 import { useEffect } from 'react';
 import { useCambodiaProjectSubgraphStore } from './stores/cambodia-project.store';
 import { formatTransaction } from '../utils';
 
 function normalizeEvmAddressForSubgraph(addr: string | undefined): string {
-  const t = addr?.trim();
-  if (!t) return '';
-  return /^0x[a-fA-F0-9]{40}$/i.test(t) ? t.toLowerCase() : t;
+  const raw = typeof addr === 'string' ? addr : String(addr ?? '');
+  const t = raw.trim();
+  if (!t || t === 'undefined' || t === 'null') return '';
+  const lower = t.toLowerCase();
+  if (/^0x[a-f0-9]{40}$/.test(lower)) return lower;
+  if (/^[a-f0-9]{40}$/.test(lower)) return `0x${lower}`;
+  return lower;
+}
+
+function isCanonicalSubgraphVendorAddress(v: string): boolean {
+  return /^0x[a-f0-9]{40}$/.test(v);
+}
+
+function collectVendorRelatedBeneficiaryAddresses(
+  payload: Record<string, unknown>,
+): string[] {
+  const seen = new Set<string>();
+  const add = (a: unknown) => {
+    const n = normalizeEvmAddressForSubgraph(
+      typeof a === 'string' ? a : String(a ?? ''),
+    );
+    if (n && isCanonicalSubgraphVendorAddress(n)) seen.add(n);
+  };
+  for (const c of (payload['claimCreateds'] as { claimee?: string }[]) ?? [])
+    add(c?.claimee);
+  for (const c of (payload['claimProcesseds'] as { beneficiary?: string }[]) ??
+    [])
+    add(c?.beneficiary);
+  for (const c of (payload['claimDetails'] as { beneficiary?: string }[]) ?? [])
+    add(c?.beneficiary);
+  for (const c of
+    (payload['offlineClaimProcesseds'] as { beneficiary?: string }[]) ?? [])
+    add(c?.beneficiary);
+  for (const c of (payload['otpVerifieds'] as { beneficiary?: string }[]) ?? [])
+    add(c?.beneficiary);
+  return [...seen];
+}
+
+function mergeSubgraphRowsById<T extends { id?: string }>(
+  existing: T[],
+  extra: T[],
+): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const row of [...existing, ...extra]) {
+    const id = row?.id != null ? String(row.id) : '';
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push(row);
+  }
+  return out;
 }
 
 export const useCambodiaProjectTransactions = () => {
@@ -154,11 +203,11 @@ export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
   const { subgraphClient } = useCambodiaSubgraph();
   const { queryClient } = useRSQuery();
   const vendor = normalizeEvmAddressForSubgraph(vendorAddress);
-
-  const query = useQuery(
+  const enabled = isCanonicalSubgraphVendorAddress(vendor);
+  return useQuery(
     {
       queryKey: ['VillageDoctorVendorTxn', vendor],
-      enabled: Boolean(vendor),
+      enabled,
       queryFn: async () => {
         const { data, error } = await subgraphClient.query(
           VillageDoctorVendorTransactions,
@@ -170,7 +219,38 @@ export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
               'Could not reach the blockchain subgraph (GraphQL).',
           );
         }
-        if (!data) throw new Error('Subgraph returned no data.');
+        const payloadRaw = data ?? {};
+        const beneficiaryAddrs =
+          collectVendorRelatedBeneficiaryAddresses(payloadRaw);
+        let mergedTokensAllocated = [
+          ...((payloadRaw.tokensAllocateds as object[]) || []),
+        ];
+        if (beneficiaryAddrs.length > 0) {
+          const CHUNK = 200;
+          for (let i = 0; i < beneficiaryAddrs.length; i += CHUNK) {
+            const chunk = beneficiaryAddrs.slice(i, i + CHUNK);
+            const { data: allocData, error: allocErr } =
+              await subgraphClient.query(
+                VillageDoctorVendorTokensAllocatedForBeneficiaries,
+                { beneficiaries: chunk },
+              );
+            if (allocErr) {
+              console.warn(
+                '[subgraph] VendorTokensAllocatedForBeneficiaries:',
+                allocErr,
+              );
+            }
+            mergedTokensAllocated = mergeSubgraphRowsById(
+              mergedTokensAllocated,
+              (allocData?.tokensAllocateds as { id?: string }[]) || [],
+            );
+          }
+        }
+
+        const payload = {
+          ...payloadRaw,
+          tokensAllocateds: mergedTokensAllocated,
+        };
 
         const standardTypes = [
           'claimCreateds',
@@ -181,11 +261,11 @@ export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
         ];
 
         const formatted = standardTypes.reduce((acc: any[], type) => {
-          const transactions = data[type] || [];
+          const transactions = payload[type] || [];
           return acc.concat(transactions.map(formatTransaction));
         }, []);
 
-        const claimDetailsFormatted = (data['claimDetails'] || []).map(
+        const claimDetailsFormatted = (payload['claimDetails'] || []).map(
           (t: any) => formatTransaction({ ...t, eventType: 'Claim Detail' }),
         );
 
@@ -194,6 +274,4 @@ export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
     },
     queryClient,
   );
-
-  return query;
 };

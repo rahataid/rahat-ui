@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import '../el-village-doctor.css';
+// import {el-village-doctor.css};
 import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { useParams } from 'next/navigation';

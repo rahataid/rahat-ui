@@ -8,7 +8,7 @@ export const useCambodiaChwTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Health Worker Name',
+      header: 'Village Doctor Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
@@ -39,7 +39,7 @@ export const useCambodiaChwTableColumns = () => {
     // },
 
     {
-      accessorKey: 'optical eye center',
+      accessorKey: 'Eye Partner',
       accessorFn: (row) => row.vendor,
       header: 'Eye Partner',
       cell: ({ row }) => <div> {row?.original?.vendor?.name} </div>,

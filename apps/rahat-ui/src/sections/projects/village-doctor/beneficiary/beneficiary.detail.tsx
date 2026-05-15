@@ -1,6 +1,5 @@
 'use client';
 import { useCambodiaBeneficiary } from '@rahat-ui/query';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -18,7 +17,10 @@ import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import TransactionHistoryView from './transaction.history.view';
-import { villageDoctorDisplayName } from './use.beneficiary.table.columns';
+import {
+  eyePartnerDisplayName,
+  villageDoctorDisplayName,
+} from './use.beneficiary.table.columns';
 import {
   VillageDoctorDetailChrome,
   VillageDoctorField,
@@ -46,6 +48,7 @@ export default function BeneficiaryDetail() {
   };
 
   const vdLine = villageDoctorDisplayName(data?.data);
+  const epLine = eyePartnerDisplayName(data?.data);
 
   return (
     <VillageDoctorDetailChrome
@@ -85,7 +88,9 @@ export default function BeneficiaryDetail() {
                         clickToCopy(data?.data?.walletAddress ?? '')
                       }
                     >
-                      <span>{truncateEthAddress(data?.data?.walletAddress)}</span>
+                      <span>
+                        {truncateEthAddress(data?.data?.walletAddress)}
+                      </span>
                       {copyAction ? (
                         <CopyCheck size={18} strokeWidth={1.5} />
                       ) : (
@@ -108,6 +113,10 @@ export default function BeneficiaryDetail() {
             </VillageDoctorField> */}
             <VillageDoctorField label="Referred by (Village Doctor)">
               {vdLine === '-' ? '—' : vdLine}
+            </VillageDoctorField>
+
+            <VillageDoctorField label="Eye Partner">
+              {epLine === '-' ? '—' : epLine}
             </VillageDoctorField>
           </dl>
         </CardContent>

@@ -3,18 +3,13 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { humanizeString } from '../../utils';
 import ExtraInfoCard from './ExtraInfo';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { CircleCheck, CircleCheckBig } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type IProps = {
   data: any;

@@ -51,16 +51,7 @@ export default function CHWView() {
     projectUUID: id,
   }) as any;
   const debouncedSearch = useDebounce(filters, 500);
-  const { data } = useCHWList({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...(debouncedSearch as any),
-  });
-
-  const { fetchAllData } = useCHWList({
+  const { data, fetchAllData } = useCHWList({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -97,7 +88,10 @@ export default function CHWView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = (await fetchAllData()) || [];
+    let rowsToDownload = (await fetchAllData()) || [];
+    if (!rowsToDownload.length && Array.isArray(data?.data) && data.data.length) {
+      rowsToDownload = data.data;
+    }
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => ({
       healthWorkerName: item.name,

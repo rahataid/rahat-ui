@@ -879,6 +879,35 @@ export const useProjectEdit = () => {
   );
 };
 
+/** Project actions return `FormattedResponse<T>`; list endpoints sometimes nest rows as `{ data: rows }` instead of a bare array. */
+function unwrapProjectActionListRows(
+  formatted:
+    | { data?: unknown; response?: { data?: unknown } }
+    | undefined
+    | null,
+): any[] {
+  if (!formatted) return [];
+  const primary = formatted.data;
+  if (Array.isArray(primary)) return primary;
+  if (
+    primary &&
+    typeof primary === 'object' &&
+    Array.isArray((primary as { data?: unknown }).data)
+  ) {
+    return (primary as { data: any[] }).data;
+  }
+  const fromResponse = formatted.response?.data;
+  if (Array.isArray(fromResponse)) return fromResponse;
+  if (
+    fromResponse &&
+    typeof fromResponse === 'object' &&
+    Array.isArray((fromResponse as { data?: unknown }).data)
+  ) {
+    return (fromResponse as { data: any[] }).data;
+  }
+  return [];
+}
+
 export const useCHWList = (payload: any) => {
   const action = useProjectAction();
   const { projectUUID, ...restPayload } = payload;
@@ -914,7 +943,7 @@ export const useCHWList = (payload: any) => {
         payload: downloadPayload,
       },
     });
-    return response?.data || [];
+    return unwrapProjectActionListRows(response);
   };
   return {
     ...query,

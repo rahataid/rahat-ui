@@ -33,7 +33,7 @@ export default function VendorsView() {
   const getVendors = useProjectAction();
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/sms-voucher/${id}/vendors/${rowData.walletAddress}?name=${
+      `/projects/el-wom/${id}/vendors/${rowData.walletAddress}?name=${
         rowData.name
       }&&phone=${encodeURIComponent(rowData.phone)}&&walletAddress=${
         rowData.walletAddress

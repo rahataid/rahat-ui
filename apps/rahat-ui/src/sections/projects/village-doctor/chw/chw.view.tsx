@@ -93,16 +93,7 @@ export default function CHWView() {
 
   const { data: programStats, isFetching: programStatsFetching } =
     useCambodiaVendorsStats(vendorProgramStatsPayload) as any;
-  const { data } = useCHWList({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...(chwListFilters as any),
-  });
-
-  const { fetchAllData } = useCHWList({
+  const { data, fetchAllData } = useCHWList({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -139,18 +130,23 @@ export default function CHWView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = (await fetchAllData()) || [];
+    let rowsToDownload = (await fetchAllData()) || [];
+    if (!rowsToDownload.length && Array.isArray(data?.data) && data.data.length) {
+      rowsToDownload = data.data;
+    }
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => ({
       villageDoctorName: item.name,
       koboUserName: item.koboUsername,
-      successfulReferrals: item._count?.SALE || 0,
+      /** Matches table: conversions in period (not SALE-type beneficiaries). */
+      successfulReferrals: item._count?.LeadConversions ?? item._count?.SALE ?? 0,
       villagersReferred: item._count?.LEAD || 0,
-      eyeCheckup: item._count?.LeadConversions || 0,
       glassesPurchased:
-        item.extras?.glassesPurchased || item.extras?.purchaseEyewearCount || 0,
+        item.extras?.glassesPurchased ??
+        item.extras?.purchaseEyewearCount ??
+        0,
       purchaseAmountRmb:
-        item.extras?.purchaseAmountRmb || item.extras?.purchaseAmount || 0,
+        item.extras?.purchaseAmountRmb ?? item.extras?.purchaseAmount ?? 0,
       eyePartner: item.vendor?.name || '-',
     }));
     const summaryByEyePartner = worksheetData.reduce((acc: any, item: any) => {
@@ -210,7 +206,7 @@ export default function CHWView() {
             className="rounded-lg border-solid"
           />
           <DataCard
-            title="Total Successful Referrals"
+            title="Total Number of Successful Referrals"
             number={String(programStats?.data?.leadsRecieved ?? 0)}
             Icon={Users}
             className="rounded-lg border-solid"

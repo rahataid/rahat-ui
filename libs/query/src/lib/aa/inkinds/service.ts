@@ -171,8 +171,7 @@ export const useInkindsSummary = (projectUUID: UUID) => {
   return useQuery({
     queryKey: ['aa.inkinds.getSummary', projectUUID],
     staleTime: 5 * 60 * 1000, // 5 minutes
-    queryFn: () =>
-      runAction(q, projectUUID, 'aa.inkinds.getSummary', {}),
+    queryFn: () => runAction(q, projectUUID, 'aa.inkinds.getSummary', {}),
   });
 };
 
@@ -262,7 +261,12 @@ export const useGroupInkindAllocations = (projectUUID: UUID, payload?: any) => {
     queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID, paramsKey],
     staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: () =>
-      runAction(q, projectUUID, 'aaProject.groupInkinds.getByGroup', payload ?? {}),
+      runAction(
+        q,
+        projectUUID,
+        'aaProject.groupInkinds.getByGroup',
+        payload ?? {},
+      ),
   });
 };
 
@@ -344,6 +348,8 @@ export const useGetGroupInkindLogs = (
   projectUUID: UUID,
   allocationUUID: string,
   params: GetGroupInkindLogsParams = {},
+  getEntireLogs?: boolean,
+  options?: { enabled?: boolean },
 ) => {
   const q = useProjectAction();
   const paramsKey = JSON.stringify(params);
@@ -354,13 +360,15 @@ export const useGetGroupInkindLogs = (
       projectUUID,
       allocationUUID,
       paramsKey,
+      getEntireLogs ?? false,
     ],
-    enabled: !!allocationUUID,
+    enabled: (options?.enabled ?? true) && !!allocationUUID,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: () =>
       runAction(q, projectUUID, 'aaProject.groupInkinds.getLogs', {
         groupInkindId: allocationUUID,
+        getEntireLogs: getEntireLogs ?? false,
         ...params,
       }),
   });
@@ -415,7 +423,7 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
         queryKey: ['aa.inkinds.getSummary', projectUUID],
       });
       queryClient.invalidateQueries({
-        queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID]
+        queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID],
       });
     },
     onError: (error: any) => {

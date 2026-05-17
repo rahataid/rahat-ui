@@ -33,6 +33,7 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserList } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
+import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
 import { UUID } from 'crypto';
 import {
   TooltipContent,
@@ -57,6 +58,7 @@ import React, {
   useState,
   ChangeEvent,
   useCallback,
+  useRef,
 } from 'react';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
@@ -98,6 +100,7 @@ export default function AddActivities() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
+  const communicationFormRef = useRef<HTMLDivElement>(null);
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
@@ -149,9 +152,24 @@ export default function AddActivities() {
 
       for (const file of filesArray) {
         const currentFiles = form.getValues('activityDocuments') || [];
-        const isDuplicateFile = currentFiles.some(
-          (f) => f.fileName === file.name,
+
+        // Check for duplicates by comparing with both server and original file names
+        const existingFileNames = currentFiles.map((f) => f.fileName);
+        const existingOriginalNames = currentFiles
+          .map((f) => (f as any).originalFileName)
+          .filter(Boolean);
+
+        const isDuplicateInFiles = isFileNameDuplicate(
+          file.name,
+          existingFileNames,
         );
+        const isDuplicateInOriginals =
+          existingOriginalNames.some((origName: string) =>
+            isFileNameDuplicate(file.name, [origName]),
+          ) || existingOriginalNames.includes(file.name);
+
+        const isDuplicateFile = isDuplicateInFiles || isDuplicateInOriginals;
+
         if (isDuplicateFile) {
           toast.error(`Cannot upload duplicate file: ${file.name}`);
           continue;
@@ -165,6 +183,7 @@ export default function AddActivities() {
         const tempFile = {
           fileName: file.name,
           mediaURL: '', // Will be updated after upload completes
+          originalFileName: file.name, // Store original name for duplicate detection
         };
         form.setValue('activityDocuments', [...currentFiles, tempFile]);
         setUploadingFileName(file.name);
@@ -174,17 +193,28 @@ export default function AddActivities() {
           formData.append('file', file);
           const { data: afterUpload } = await uploadFile.mutateAsync(formData);
 
+          // Add originalFileName to track server-side name transformations
+          const uploadedFileWithOriginal = {
+            ...afterUpload,
+            originalFileName: file.name,
+          };
+
           // Replace temporary file with actual uploaded file
           const updatedFiles = form.getValues('activityDocuments') || [];
+
           const fileIndex = updatedFiles.findIndex(
             (f) => f.fileName === file.name && f.mediaURL === '',
           );
+
           if (fileIndex !== -1) {
-            updatedFiles[fileIndex] = afterUpload;
+            updatedFiles[fileIndex] = uploadedFileWithOriginal;
             form.setValue('activityDocuments', updatedFiles);
           } else {
             // Fallback: just add it if we can't find the temp entry
-            form.setValue('activityDocuments', [...currentFiles, afterUpload]);
+            form.setValue('activityDocuments', [
+              ...currentFiles,
+              uploadedFileWithOriginal,
+            ]);
           }
         } catch (error) {
           // Remove temporary file entry on error
@@ -198,6 +228,7 @@ export default function AddActivities() {
           setUploadingFileName(null);
         }
       }
+
       // Reset the input value to allow selecting the same files again
       event.target.value = '';
     }
@@ -492,7 +523,7 @@ export default function AddActivities() {
                 </div>
               </div>
             </div>
-            <ScrollArea className=" h-[calc(100vh-230px)]">
+            <ScrollArea>
               <div className="rounded-xl border p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -846,6 +877,15 @@ export default function AddActivities() {
                 className="border-dashed border-primary text-primary text-md w-full mt-4"
                 onClick={() => {
                   addCommunicationOpen.onToggle();
+                  // Scroll to communication form when opening
+                  if (!addCommunicationOpen.value) {
+                    setTimeout(() => {
+                      communicationFormRef.current?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                      });
+                    }, 100);
+                  }
                 }}
               >
                 Add Communication
@@ -856,15 +896,17 @@ export default function AddActivities() {
                 )}
               </Button>
               {(addCommunicationOpen.value || editCommunicationOpen.value) && (
-                <AddCommunicationForm
-                  form={communicationForm}
-                  setOpen={addCommunicationOpen.setValue}
-                  onSave={handleSave}
-                  setLoading={audioUploading.setValue}
-                  appTransports={appTransports}
-                  isMultiSelect={true}
-                  editMode={editCommunicationOpen}
-                />
+                <div ref={communicationFormRef}>
+                  <AddCommunicationForm
+                    form={communicationForm}
+                    setOpen={addCommunicationOpen.setValue}
+                    onSave={handleSave}
+                    setLoading={audioUploading.setValue}
+                    appTransports={appTransports}
+                    isMultiSelect={true}
+                    editMode={editCommunicationOpen}
+                  />
+                </div>
               )}
 
               <CommunicationDataCard

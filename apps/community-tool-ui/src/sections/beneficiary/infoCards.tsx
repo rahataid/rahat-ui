@@ -40,7 +40,7 @@ export default function InfoCards({ data }: IProps) {
           <CardContent>
             <div className="mb-2">
               <p className="text-xs flex gap-1 items-center">
-                {truncateEthAddress(data?.walletAddress) || 'N/A'}
+                { data?.walletAddress ? truncateEthAddress(data?.walletAddress) : 'N/A'}
                 {data?.isVerified && <CircleCheck size={13} color="green" />}
               </p>
               <p className="text-sm font-normal text-muted-foreground ">

@@ -4,9 +4,10 @@ import {
   PROJECT_SETTINGS_KEYS,
   usePhases,
   useProjectSettingsStore,
+  useProjectInfo,
 } from '@rahat-ui/query';
 import { PhaseForm } from './PhaseForm';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo } from 'react';
@@ -17,6 +18,7 @@ import {
   AddPhaseSchema,
   getAddPhaseDefaultValues,
 } from './phase.schema';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function AddPhaseView() {
   const params = useParams();
@@ -34,6 +36,13 @@ export default function AddPhaseView() {
   }));
   const dataSourceSettings =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE];
+
+  const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
+    projectId as UUID,
+  );
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
 
   const phaseSource = useMemo(() => {
     if (dataSourceSettings?.dhm) return 'DHM';
@@ -118,6 +127,8 @@ export default function AddPhaseView() {
     form.setValue('canTriggerPayout', resetValues.canTriggerPayout);
   };
 
+  if (isProjectInfoLoading) return <TableLoader />;
+
   return (
     <>
       <div className="mt-4 px-4">
@@ -135,6 +146,7 @@ export default function AddPhaseView() {
         submitLabel="Add"
         resetLabel="Clear"
         payoutEnabledPhase={payoutEnabledPhase}
+        stationHeading={stationHeading}
       />
     </>
   );

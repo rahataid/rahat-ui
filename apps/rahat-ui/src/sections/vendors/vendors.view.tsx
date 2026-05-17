@@ -6,7 +6,6 @@ import {
   SortingState,
   VisibilityState,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -21,15 +20,48 @@ import { UUID } from 'crypto';
 import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
+import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage,setPagination } =
+   
+    usePagination();
 
   const projectModal = useBoolean();
   const [refetch, setRefetch] = React.useState(false);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
+  const statusFilter =
+    (columnFilters.find((filter) => filter.id === 'status')
+      ?.value as string) || '';
+  const projectFilter =
+    (columnFilters.find((filter) => filter.id === 'projectName')
+      ?.value as string) || '';
+  const vendorNameFilter =
+    (columnFilters.find((filter) => filter.id === 'name')?.value as string) ||
+    '';
+
+  // Reset to page 1 whenever server-side filters change
+  React.useEffect(() => {
+    setPagination({ ...pagination, page: 1 });
+  }, [statusFilter, projectFilter, vendorNameFilter]);
+
+  const debouncedNameSearch = useDebounce(vendorNameFilter, 500);
+
+  const vendorPayload = React.useMemo(
+    () => ({
+      ...pagination,
+      ...(debouncedNameSearch && { vendorName: debouncedNameSearch }),
+      ...(statusFilter && { status: statusFilter }),
+      ...(projectFilter && { projectName: projectFilter }),
+    }),
+    [pagination, debouncedNameSearch, statusFilter, projectFilter],
+  );
 
   const addVendor = useAssignVendorToProject();
-  const { data: vendorData } = useVendorList(pagination, refetch);
+  const { data: vendorData } = useVendorList(vendorPayload, refetch);
 
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
@@ -38,10 +70,9 @@ function VendorsView() {
     setSelectedRow(row);
     projectModal.onTrue();
   };
-
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
-    const res = await addVendor.mutateAsync({
+    await addVendor.mutateAsync({
       vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
     });
@@ -50,9 +81,6 @@ function VendorsView() {
   };
   const columns = useTableColumns(handleAssignModalClick);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -67,7 +95,6 @@ function VendorsView() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
@@ -81,8 +108,8 @@ function VendorsView() {
     <>
       <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl text-label">Vendors ss</h1>
-          <p className="text-sub-label">Here is the list of all the vendors</p>
+          <h1 className="font-semibold text-2xl text-label">Vendors</h1>
+          <p className="text-sub-label">Here is the list of all the vendorss</p>
         </div>
         <VendorsTable
           table={table}

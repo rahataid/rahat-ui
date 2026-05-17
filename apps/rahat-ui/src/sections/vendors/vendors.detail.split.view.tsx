@@ -126,13 +126,13 @@ export default function VendorsDetailSplitView({
             handleContinueClick={deleteVendor}
           />
 
-          <TooltipComponent
+          {/* <TooltipComponent
             handleOnClick={() =>
               router.push(`/vendors/${vendorsDetail?.id}/edit`)
             }
             Icon={Pencil}
             tip="Edit"
-          />
+          /> */}
           {vendorsDetail?.projectName === 'N/A' && (
             <TooltipComponent
               handleOnClick={assignVoucher}

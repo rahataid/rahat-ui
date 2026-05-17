@@ -13,16 +13,59 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
-export const useProjectStakeholdersTableColumns = () => {
+const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
+  const [showAll, setShowAll] = React.useState(false);
+
+  if (!supportArea || supportArea.length === 0) return null;
+
+  const visibleItems = showAll ? supportArea : supportArea.slice(0, 1);
+
+  return (
+    <div className="flex flex-wrap gap-1 items-center">
+      {visibleItems.map((area, index) => (
+        <Badge key={index} className="w-auto">
+          <TruncatedCell text={area} maxLength={14} />
+        </Badge>
+      ))}
+      {supportArea.length > 1 && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAll((prev) => !prev);
+          }}
+          className="text-xs text-primary hover:underline whitespace-nowrap"
+        >
+          {showAll ? 'Show less' : `+${supportArea.length - 1} more`}
+        </button>
+      )}
+    </div>
+  );
+};
+
+export const useProjectStakeholdersTableColumns = (
+  onConflict?: (groupNames: string[], stakeholderName: string) => void,
+) => {
   const router = useRouter();
   const { id } = useParams();
   const removeStakeholder = useDeleteStakeholders();
 
-  const handleDelete = async (uuid: string) => {
-    await removeStakeholder.mutateAsync({
-      projectUUID: id as UUID,
-      stakeholderPayload: { uuid },
-    });
+  const handleDelete = async (uuid: string, stakeholderName: string) => {
+    try {
+      const response = await removeStakeholder.mutateAsync({
+        projectUUID: id as UUID,
+        stakeholderPayload: { uuid },
+      });
+
+      // Check if response indicates a conflict
+      if (response?.data?.isSuccess === false && response?.data?.groupNames) {
+        // Show conflict dialog with group names
+        onConflict?.(response.data.groupNames, stakeholderName);
+      }
+      // If successful, the success handler in the mutation will show toast
+    } catch (error) {
+      // Error handler in the mutation will show error toast
+      console.error('Error deleting stakeholder:', error);
+    }
   };
   const columns: ColumnDef<any>[] = [
     {
@@ -68,14 +111,9 @@ export const useProjectStakeholdersTableColumns = () => {
     {
       accessorKey: 'supportArea',
       header: 'Support Area',
-      cell: ({ row }) =>
-        row?.original?.supportArea.length > 0 ? (
-          <Badge className="w-auto">
-            <TruncatedCell text={row.original.supportArea[0]} maxLength={10} />
-          </Badge>
-        ) : (
-          []
-        ),
+      cell: ({ row }) => (
+        <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
+      ),
     },
 
     {
@@ -121,7 +159,7 @@ export const useProjectStakeholdersTableColumns = () => {
                 dialogTitle="Delete"
                 tip="Delete"
                 handleClick={() => {
-                  handleDelete(row.original.uuid);
+                  handleDelete(row.original.uuid, row.original.name);
                 }}
                 variant="destructive"
                 color="red"
@@ -190,14 +228,9 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'supportArea',
       header: 'Support Area',
-      cell: ({ row }) =>
-        row?.original?.supportArea.length > 0 ? (
-          <Badge className="w-auto">
-            <TruncatedCell text={row.original.supportArea[0]} maxLength={14} />
-          </Badge>
-        ) : (
-          []
-        ),
+      cell: ({ row }) => (
+        <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
+      ),
     },
     {
       accessorKey: 'municipality',
@@ -305,14 +338,9 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'supportArea',
       header: 'Support Area',
-      cell: ({ row }) =>
-        row?.original?.supportArea.length > 0 ? (
-          <Badge className="w-auto">
-            <TruncatedCell text={row.original.supportArea[0]} maxLength={14} />
-          </Badge>
-        ) : (
-          []
-        ),
+      cell: ({ row }) => (
+        <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
+      ),
     },
 
     {

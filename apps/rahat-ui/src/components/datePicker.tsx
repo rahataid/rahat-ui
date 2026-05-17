@@ -12,13 +12,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 
 type DatePickerType = {
   placeholder: string;
   type: string;
   handleDateChange: any;
   className?: string;
+  selectedDate?: Date;
+  minDate?: Date;
+  maxDate?: Date;
 };
 
 export function DatePicker({
@@ -26,8 +29,16 @@ export function DatePicker({
   handleDateChange,
   type,
   className,
+  selectedDate,
+  minDate,
+  maxDate,
 }: DatePickerType) {
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date | undefined>(selectedDate);
+
+  useEffect(() => {
+    setDate(selectedDate);
+  }, [selectedDate]);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -51,6 +62,10 @@ export function DatePicker({
             handleDateChange(date, type);
             setDate(date);
           }}
+          disabled={[
+            ...(minDate ? [{ before: minDate }] : []),
+            ...(maxDate ? [{ after: maxDate }] : []),
+          ]}
           initialFocus
         />
       </PopoverContent>

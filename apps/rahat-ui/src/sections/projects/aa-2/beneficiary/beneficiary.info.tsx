@@ -1,14 +1,27 @@
 import React from 'react';
-import { Coins, Copy, CopyCheck, User } from 'lucide-react';
+import { Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { DataCard, DataItem } from 'apps/rahat-ui/src/common';
+import { DataItem } from 'apps/rahat-ui/src/common';
+import { useTokenDetails } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import InkindDetails from './beneficiary.inkind.details';
 
 type IProps = {
   beneficiary: any;
 };
 
 const BeneficiaryInfo = ({ beneficiary }: IProps) => {
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const beneficiaryId = params.uuid as UUID;
   const { clickToCopy, copyAction } = useCopy();
+
+  const { data: tokenData, isPending } = useTokenDetails({
+    projectUUID: projectId,
+    beneficiaryUUID: beneficiaryId,
+  });
+
   return (
     <>
       <div className="flex items-center">
@@ -30,14 +43,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           </div>
         </div>
       </div>
-
-      <DataCard
-        className="border-solid w-1/2 rounded-xl"
-        iconStyle="bg-white text-secondary-muted"
-        title="Token Assigned"
-        Icon={Coins}
-        number={beneficiary?.benTokens || 0}
-      />
 
       <div className="grid grid-cols-3 gap-6 py-4">
         <DataItem label="Age" value={beneficiary?.projectData?.age || 'N/A'} />
@@ -78,6 +83,58 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           value={beneficiary?.projectData?.internetStatus?.split('_').join(' ')}
           isBadge
         />
+      </div>
+      <div className="p-4 border rounded-xl shadow-sm w-full max-w-2xl bg-white">
+        {/* Title */}
+        {isPending ? (
+          <>
+            <div className="animate-pulse flex gap-4 mb-6">
+              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+              </div>
+
+              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+              </div>
+            </div>
+            <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+              <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+            </div>
+          </>
+        ) : (
+          <>
+            {tokenData?.assignedToken || tokenData?.redemmedToken ? (
+              <>
+                <div className="flex gap-4 mb-6">
+                  <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                    <p className="text-sm text-gray-500">Assigned</p>
+                    <h3 className="text-xl font-bold">
+                      {tokenData?.assignedToken} Tokens
+                    </h3>
+                    <p className="text-gray-600">
+                      NPR {tokenData?.assignedToken}
+                    </p>
+                  </div>
+
+                  <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                    <p className="text-sm text-gray-500">Redeemed</p>
+                    <h3 className="text-xl font-bold">
+                      {tokenData?.redemmedToken} Tokens
+                    </h3>
+                    <p className="text-gray-600">
+                      NPR {tokenData?.redemmedToken}
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </>
+        )}
+
+        <InkindDetails />
       </div>
     </>
   );

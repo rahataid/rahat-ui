@@ -1,18 +1,15 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { ChevronDown, Plus, Settings2 } from 'lucide-react';
-
+import { ChevronDown, Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   TableBody,
@@ -24,13 +21,11 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
-import { useEffect, useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 import CreateGroupModal from './components/createGroupModal';
 import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
-import AddButton from '../projects/components/add.btn';
 import { useRouter } from 'next/navigation';
 
 type IProps = {
@@ -39,8 +34,6 @@ type IProps = {
   isBulkAssigning: boolean;
   projectModal: any;
   groupModal: any;
-  projects: any;
-  handleFilterProjectSelect: (selectedProject: string) => void;
   filters: Record<string, any>;
   handleCreateGroup: any;
   handleDateChange: any;
@@ -52,47 +45,13 @@ export default function ListView({
   handleBulkAssign,
   isBulkAssigning,
   projectModal,
-  projects,
-  handleFilterProjectSelect,
   filters,
   handleCreateGroup,
   groupModal,
   handleDateChange,
   setFilters,
 }: IProps) {
-  const [selectedProject, setSelectedProject] = useState<null | Record<
-    string,
-    any
-  >>(null);
-
-  const handleSelectProject = (project: Record<string, any>) => {
-    setSelectedProject(project);
-    handleFilterProjectSelect(project.value);
-  };
   const router = useRouter();
-  const selectFilterProjectItems = [
-    {
-      name: 'All',
-      value: undefined,
-    },
-    {
-      name: 'Not Assigned',
-      value: 'NOT_ASSGNED',
-    },
-    ...projects.map((p: any) => ({
-      name: p.name,
-      value: p.uuid,
-    })),
-  ];
-
-  useEffect(() => {
-    if (filters?.projectId) {
-      const project = selectFilterProjectItems.find((p) => {
-        return p.value === filters?.projectId;
-      });
-      setSelectedProject(project);
-    }
-  }, [filters?.projectId, projects]);
 
   return (
     <>
@@ -125,62 +84,17 @@ export default function ListView({
             placeholder="Pick Start Date"
             handleDateChange={handleDateChange}
             type="start"
+            selectedDate={filters?.startDate}
+            maxDate={filters?.endDate}
           />
           <DatePicker
             placeholder="Pick End Date"
             handleDateChange={handleDateChange}
             type="end"
+            selectedDate={filters?.endDate}
+            minDate={filters?.startDate}
           />
 
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                {selectedProject ? selectedProject.name : 'Select Project'}
-                <ChevronDown className="mr-2 h-4 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {selectFilterProjectItems.map((project: any) => (
-                <DropdownMenuItem
-                  key={project.name}
-                  textValue={project.value}
-                  onSelect={() => handleSelectProject(project)}
-                >
-                  {project.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
           <Button
             variant={'default'}
             type="button"

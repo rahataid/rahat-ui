@@ -14,6 +14,7 @@ WORKDIR /usr/src/app
 # Enable pnpm (must run as root before USER node)
 RUN corepack enable
 
+RUN chown -R node:node /usr/src/app
 USER node
 
 COPY --chown=node:node dist/apps/rahat-ui/ ./

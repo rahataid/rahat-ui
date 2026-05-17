@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 RUN corepack enable
 
 COPY dist/apps/rahat-ui/package.json ./
-RUN pnpm install
+RUN pnpm install --ignore-scripts
 
 FROM node:22-alpine AS runner
 WORKDIR /usr/src/app

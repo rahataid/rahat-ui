@@ -1,0 +1,31 @@
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "govIDNumber": "A123456789",
+    "gender": "Male",
+    "birthDate": "1990-01-01",
+    "phone": "+1234567890",
+    "email": "john.doe@example.com",
+    "archived": false,
+    "location": "Kathmandu",
+    "bankedStatus": "BANKED | UNBANKED | UNDER_BANKED | UNKNOWN",
+    "internetStatus": "MOBILE_INTERNET | HOME_INTERNET | NO_INTERNET | UNKNOWN",
+    "phoneStatus": "SMART_PHONE | FEATURE_PHONE | NO_PHONE | UNKNOWN"
+  },
+
+  {
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "govIDNumber": "B987654321",
+    "gender": "Female",
+    "birthDate": "1985-05-15",
+    "phone": "+1987654321",
+    "email": "jane.smith@example.com",
+    "archived": false,
+    "location": "Lalitpur",
+    "bankedStatus": "UNBANKED",
+    "internetStatus": "NO_INTERNET",
+    "phoneStatus": "FEATURE_PHONE"
+  }
+]

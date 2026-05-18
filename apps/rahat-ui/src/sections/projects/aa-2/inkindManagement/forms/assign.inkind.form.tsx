@@ -130,7 +130,6 @@ export default function AssignInkindForm({ onNext }: Props) {
       ...(isOffline && selectedVendor
         ? {
             vendorId: selectedVendor.uuid,
-            // vendorName: selectedVendor.inkind?.name ?? '',
           }
         : {}),
     });

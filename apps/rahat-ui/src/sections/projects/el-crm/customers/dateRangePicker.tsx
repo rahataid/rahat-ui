@@ -54,6 +54,7 @@ export function DateRangePicker({ value, onChange }: Props) {
             numberOfMonths={1}
             selected={value}
             onSelect={handleSelect}
+            disabled={{ after: new Date() }}
             initialFocus
           />
         </PopoverContent>

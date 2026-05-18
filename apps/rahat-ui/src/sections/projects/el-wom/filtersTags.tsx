@@ -13,6 +13,7 @@ const SmsVoucherFiltersTags = ({
   setFilters,
   total,
   labelMapping,
+  setDateRange,
 }: any) => {
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
@@ -48,11 +49,17 @@ const SmsVoucherFiltersTags = ({
     if (key === 'startDate' || key === 'endDate') {
       const { startDate: _startDate, endDate: _endDate, ...rest } = filters;
       setFilters(rest);
+      setDateRange(undefined);
       return;
     }
 
     const { [key]: _, ...rest } = filters;
     setFilters(rest);
+  };
+
+  const handleClearFilter = () => {
+    setFilters({});
+    setDateRange(undefined);
   };
 
   return (
@@ -90,7 +97,7 @@ const SmsVoucherFiltersTags = ({
         <Button
           className="text-white hidden sm:block"
           size={'sm'}
-          onClick={() => setFilters({})}
+          onClick={handleClearFilter}
         >
           Clear filter
         </Button>

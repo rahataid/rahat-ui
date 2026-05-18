@@ -393,12 +393,10 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
-      // setSettings({
-      //   [uuid]: {
-      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
-      //   },
-      // });
+      // Removed window.location.reload(): it caused the page to reload on
+      // every visit when the persisted store was stale/cleared, making the
+      // app appear unresponsive. The CambodiaSubgraphProvider in the layout
+      // reads from the store reactively, so a reload is not needed.
     }
   }, [query.data]);
 
@@ -1134,7 +1132,10 @@ export const useCambodiaVendorsList = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    // Disabled to prevent a focus event (e.g. clicking after switching tabs)
+    // from triggering a full refetch + N sequential stats mutations, which
+    // caused the page to become unresponsive.
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1413,7 +1414,16 @@ export const useCambodiaVendorsStatsByVendorIds = (payload: {
     },
   });
 
-  return { statsByVendorId: query.data ?? {}, isFetching: query.isFetching };
+  // Stable fallback so consumers' useMemo deps don't see a new reference every render
+  // while the query is still pending.
+  const EMPTY_STATS: Record<string, number | null | undefined> = useMemo(
+    () => ({}),
+    [],
+  );
+  return {
+    statsByVendorId: query.data ?? EMPTY_STATS,
+    isFetching: query.isFetching,
+  };
 };
 
 export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {

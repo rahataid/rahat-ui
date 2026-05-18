@@ -41,20 +41,23 @@ export default function BeneficiaryView() {
   const debouncedSearch = useDebounce(filters, 500);
 
   const { data, isLoading } = useCambodiaBeneficiaries({
+    ...(debouncedSearch as any),
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
+    enabled: true,
   });
+  const listTotal = data?.response?.meta?.total;
   const { data: allData } = useCambodiaBeneficiaries({
-    page: pagination.page,
-    perPage: data?.response?.meta?.total,
+    ...(debouncedSearch as any),
+    enabled: typeof listTotal === 'number' && listTotal > 0,
+    page: 1,
+    perPage: listTotal ?? pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
   });
 
   useEffect(() => {
@@ -65,20 +68,21 @@ export default function BeneficiaryView() {
 
   const processedData = {
     ...data,
-    data: data?.data.map((benef) => ({
-      ...benef,
-      name: benef?.piiData?.name,
-    })),
+    data:
+      data?.data?.map((benef) => ({
+        ...benef,
+        name: benef?.piiData?.name,
+      })) ?? [],
   };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
+      setFilters((prev: Record<string, string>) => ({
+        ...prev,
         [name]: filterValue,
-      });
+      }));
     }
   };
 
@@ -136,11 +140,11 @@ export default function BeneficiaryView() {
                 <UserRoundX className="mr-2 h-4 w-4" /> Discarded Beneficiaries
               </Button>
             </Link>
-            <Link href={`/projects/el-cambodia/${id}/beneficiary/upload`}>
+            {/* <Link href={`/projects/el-cambodia/${id}/beneficiary/upload`}>
               <Button variant="outline">
                 <CloudUpload className="mr-2 h-4 w-4" /> Upload Beneficiaries
               </Button>
-            </Link>
+            </Link> */}
 
             <Button variant="outline" onClick={() => handleDownload()}>
               <Download className="mr-2 h-4 w-4" /> Download Beneficiaries
@@ -153,10 +157,7 @@ export default function BeneficiaryView() {
             <SearchInput
               name="name"
               className="w-[100%]"
-              value={
-                (table.getColumn('name')?.getFilterValue() as string) ??
-                filters?.name
-              }
+              value={filters?.name ?? ''}
               onSearch={(event) => handleFilterChange(event)}
             />
             <div className="flex justify-between space-x-2 w-[40%]">

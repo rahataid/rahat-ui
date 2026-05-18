@@ -24,7 +24,9 @@ export type ProjectType =
   | 'C2C'
   | 'el-kenya'
   | 'el-cambodia'
-  | 'sms-voucher';
+  | 'el-village-doctor'
+  | 'sms-voucher'
+  | 'el-crm';
 
 export type useProjectNavItemsType = (
   projectType: ProjectType,

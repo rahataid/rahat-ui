@@ -110,6 +110,7 @@
     "react-resizable-panels": "^2.0.12",
     "react-simple-player": "^1.1.0",
     "react-toastify": "^10.0.4",
+    "recharts": "^2.15.4",
     "shadcn-ui": "^0.8.0",
     "socket.io-client": "^4.7.5",
     "sonner": "^1.4.41",

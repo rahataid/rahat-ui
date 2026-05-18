@@ -10,6 +10,7 @@ import {
   UseQueryResult,
   keepPreviousData,
   useMutation,
+  useQueries,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -392,12 +393,10 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
-      // setSettings({
-      //   [uuid]: {
-      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
-      //   },
-      // });
+      // Removed window.location.reload(): it caused the page to reload on
+      // every visit when the persisted store was stale/cleared, making the
+      // app appear unresponsive. The CambodiaSubgraphProvider in the layout
+      // reads from the store reactively, so a reload is not needed.
     }
   }, [query.data]);
 
@@ -602,6 +601,11 @@ type GetConsumerData = {
   eyeCheckupStatus?: string;
   voucherType?: string;
   consentStatus?: string;
+  phoneNumber?: string;
+  noOfReferrals?: number | string;
+  startDate?: string;
+  endDate?: string;
+  isImported?: boolean;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
@@ -718,6 +722,62 @@ export const useListConsentConsumer = (
   };
 };
 
+export const useExportBeneficiaryReferral = (
+  payload: GetConsumerData,
+  enabled?: boolean,
+) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const EXPORT_BENEFICIARY_REFERRAL = 'rpProject.beneficiary.exportReferral';
+
+  const query = useQuery({
+    queryKey: [EXPORT_BENEFICIARY_REFERRAL, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: EXPORT_BENEFICIARY_REFERRAL,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              referredAt: new Date(row?.createdAt).toLocaleString() || '',
+              referrerWalletAddress:
+                row?.Referrer?.walletAddress?.toString() || '',
+              referrerPhone:
+                row?.Referrer?.phone || row?.Referrer?.extras?.phone || '',
+              refereeWalletAddress:
+                row?.Referral?.walletAddress?.toString() || '',
+              refereePhone:
+                row?.Referral?.phone || row?.Referral?.extras?.phone || '',
+              refereeGender:
+                row?.Referral?.gender || row?.Referral?.extras?.gender || '',
+              voucherStatus: mapStatus(row?.Referral?.voucherStatus),
+              voucherUsage: mapStatus(row?.Referral?.eyeCheckupStatus),
+              glassPurchaseType: mapStatus(row?.Referral?.voucherType),
+              consent: row?.Referral?.extras?.consent,
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {
@@ -817,6 +877,35 @@ export const useProjectEdit = () => {
   );
 };
 
+/** Project actions return `FormattedResponse<T>`; list endpoints sometimes nest rows as `{ data: rows }` instead of a bare array. */
+function unwrapProjectActionListRows(
+  formatted:
+    | { data?: unknown; response?: { data?: unknown } }
+    | undefined
+    | null,
+): any[] {
+  if (!formatted) return [];
+  const primary = formatted.data;
+  if (Array.isArray(primary)) return primary;
+  if (
+    primary &&
+    typeof primary === 'object' &&
+    Array.isArray((primary as { data?: unknown }).data)
+  ) {
+    return (primary as { data: any[] }).data;
+  }
+  const fromResponse = formatted.response?.data;
+  if (Array.isArray(fromResponse)) return fromResponse;
+  if (
+    fromResponse &&
+    typeof fromResponse === 'object' &&
+    Array.isArray((fromResponse as { data?: unknown }).data)
+  ) {
+    return (fromResponse as { data: any[] }).data;
+  }
+  return [];
+}
+
 export const useCHWList = (payload: any) => {
   const action = useProjectAction();
   const { projectUUID, ...restPayload } = payload;
@@ -825,7 +914,6 @@ export const useCHWList = (payload: any) => {
 
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.LIST, restPayloadString],
-    placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -839,8 +927,25 @@ export const useCHWList = (payload: any) => {
       return mutate;
     },
   });
+
+  // downloading full data
+  const fetchAllData = async () => {
+    const downloadPayload = {
+      ...restPayload,
+      download: true,
+    };
+    const response = await action.mutateAsync({
+      uuid: projectUUID,
+      data: {
+        action: MS_CAM_ACTIONS.CAMBODIA.CHW.LIST,
+        payload: downloadPayload,
+      },
+    });
+    return unwrapProjectActionListRows(response);
+  };
   return {
     ...query,
+    fetchAllData,
     data: useMemo(() => {
       return {
         ...query.data,
@@ -885,27 +990,106 @@ export const useCHWGet = (payload: any) => {
 
 export const useCambodiaBeneficiaries = (payload: any) => {
   const q = useProjectAction<Beneficiary[]>();
-  const { projectUUID, ...restPayload } = payload;
+  const { projectUUID, enabled = true, ...restPayload } = payload;
 
-  const restPayloadString = JSON.stringify(restPayload);
+  const { page, perPage, ...listRest } = restPayload;
+  /** Only fields Cambodia `ListBeneficiaryDto` understands — avoids polluted cache keys and payloads */
+  const sanitizedPayload: {
+    page: number;
+    perPage: number;
+    order?: string;
+    sort?: string;
+    type?: string;
+    name?: string;
+    projectUUID?: string;
+  } = {
+    page: Number(page),
+    perPage: Number(perPage),
+  };
+  if (typeof projectUUID === 'string' && projectUUID) {
+    sanitizedPayload.projectUUID = projectUUID;
+  }
+  if (typeof listRest.order === 'string' && listRest.order) {
+    sanitizedPayload.order = listRest.order;
+  }
+  if (typeof listRest.sort === 'string' && listRest.sort) {
+    sanitizedPayload.sort = listRest.sort;
+  }
+  if (typeof listRest.type === 'string' && listRest.type) {
+    sanitizedPayload.type = listRest.type;
+  }
+  if (typeof listRest.name === 'string' && listRest.name.trim()) {
+    sanitizedPayload.name = listRest.name.trim();
+  }
+
+  const restPayloadString = JSON.stringify(sanitizedPayload);
 
   const query = useQuery({
-    queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST, restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    enabled:
+      Boolean(enabled) &&
+      Boolean(projectUUID) &&
+      Number.isFinite(sanitizedPayload.page) &&
+      sanitizedPayload.page > 0 &&
+      Number.isFinite(sanitizedPayload.perPage) &&
+      sanitizedPayload.perPage > 0,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
-          payload: restPayload,
+          payload: sanitizedPayload,
         },
       });
       return mutate;
     },
   });
-  return { ...query };
+
+  const normalizedData = useMemo(() => {
+    const raw = query.data;
+    if (!raw) return raw;
+    const inner = raw.data as unknown;
+    const rows = Array.isArray(inner)
+      ? inner
+      : inner &&
+        typeof inner === 'object' &&
+        Array.isArray((inner as { data?: unknown }).data)
+      ? (inner as { data: Beneficiary[] }).data ?? []
+      : [];
+    const resp = raw.response as { meta?: unknown; data?: unknown } | undefined;
+    const paginatedMeta =
+      inner &&
+      typeof inner === 'object' &&
+      !Array.isArray(inner) &&
+      'meta' in inner
+        ? (inner as { meta?: unknown }).meta
+        : undefined;
+    const nestedMeta =
+      resp?.data &&
+      typeof resp.data === 'object' &&
+      !Array.isArray(resp.data) &&
+      'meta' in resp.data
+        ? (resp.data as { meta?: unknown }).meta
+        : undefined;
+    const meta = resp?.meta ?? nestedMeta ?? paginatedMeta;
+    return {
+      ...raw,
+      data: rows,
+      response:
+        resp && meta !== undefined && resp.meta === undefined
+          ? { ...resp, meta }
+          : raw.response,
+    };
+  }, [query.data]);
+
+  return { ...query, data: normalizedData };
 };
 
 export const useCambodiaBeneficiary = (payload: any) => {
@@ -948,6 +1132,37 @@ export const useCambodiaVendorsList = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
+    // Disabled to prevent a focus event (e.g. clicking after switching tabs)
+    // from triggering a full refetch + N sequential stats mutations, which
+    // caused the page to become unresponsive.
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useChinaEyeCenterList = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -968,12 +1183,19 @@ export const useCambodiaVendorGet = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
 
   const restPayloadString = JSON.stringify(restPayload);
+  const canFetch = Boolean(
+    projectUUID &&
+      restPayload.vendorId &&
+      typeof projectUUID === 'string' &&
+      typeof restPayload.vendorId === 'string',
+  );
 
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    enabled: canFetch,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1032,8 +1254,8 @@ export const useCambodiaCommisionCurrent = (payload: any) => {
       restPayloadString,
     ],
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1132,13 +1354,88 @@ export const useCambodiaVendorsStats = (payload: any) => {
   return query;
 };
 
+/**
+ * Fetches Cambodia vendor stats for many Eye Partners in parallel (same action as
+ * {@link useCambodiaVendorsStats}, one request per `vendorId`). Use on list pages;
+ * {@link useCambodiaVendorsStats} alone only returns one aggregate when `vendorId` is omitted.
+ */
+export const useCambodiaVendorsStatsByVendorIds = (payload: {
+  projectUUID?: string;
+  vendorIds: readonly string[];
+}) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, vendorIds } = payload;
+
+  const dedupedVendorIds = useMemo(() => {
+    const next = new Set<string>();
+    for (const raw of vendorIds || []) {
+      const id = typeof raw === 'string' ? raw.trim() : '';
+      if (id) next.add(id);
+    }
+    return [...next].sort();
+  }, [vendorIds]);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+      'byVendorIds',
+      projectUUID,
+      dedupedVendorIds,
+    ],
+    enabled: Boolean(projectUUID && dedupedVendorIds.length > 0),
+    placeholderData: keepPreviousData,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+    queryFn: async () => {
+      const map: Record<string, number | null | undefined> = {};
+
+      for (const vendorId of dedupedVendorIds) {
+        try {
+          const mutate = await q.mutateAsync({
+            uuid: projectUUID as UUID,
+            data: {
+              action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+              payload: { vendorId },
+            },
+          });
+
+          const body = mutate as
+            | { data?: { leadsRecieved?: number; leads?: number } }
+            | undefined;
+          const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
+          map[vendorId] = typeof raw === 'number' ? raw : 0;
+        } catch {
+          map[vendorId] = undefined;
+        }
+      }
+
+      return map;
+    },
+  });
+
+  // Stable fallback so consumers' useMemo deps don't see a new reference every render
+  // while the query is still pending.
+  const EMPTY_STATS: Record<string, number | null | undefined> = useMemo(
+    () => ({}),
+    [],
+  );
+  return {
+    statsByVendorId: query.data ?? EMPTY_STATS,
+    isFetching: query.isFetching,
+  };
+};
+
 export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
   const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
+  const chwUid =
+    typeof restPayload?.chwUid === 'string' ? restPayload.chwUid.trim() : '';
+
   const query = useQuery({
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.STATS, restPayloadString],
-    placeholderData: keepPreviousData,
+    enabled: Boolean(projectUUID && chwUid.length > 0),
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -1298,7 +1595,7 @@ export const useCambodiaLineChartsReports = (payload: any) => {
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
-          payload: restPayload?.filters,
+          payload: { ...restPayload?.filters, vendorId: restPayload?.vendorId },
         },
       });
       return mutate;
@@ -1340,6 +1637,78 @@ export const useCambodiaCommisionStats = (payload: any) => {
           if (b.name === 'TOTAL_LEAD_CONVERTED') return 1;
           return 0;
         });
+    },
+  });
+  return query;
+};
+
+function cambodiaAppStatNumericCount(stat: {
+  name: string;
+  data?: unknown;
+}): number {
+  const d = stat?.data as
+    | { count?: unknown }
+    | Array<{ count?: number }>
+    | null
+    | undefined;
+  if (d == null) return 0;
+  if (Array.isArray(d)) {
+    return d.reduce(
+      (sum, item) => sum + (typeof item?.count === 'number' ? item.count : 0),
+      0,
+    );
+  }
+  const c = d.count;
+  if (typeof c === 'number' && Number.isFinite(c)) return c;
+  if (typeof c === 'string') {
+    const n = parseInt(String(c).replace(/[^\d.-]/g, ''), 10);
+    return Number.isFinite(n) ? n : 0;
+  }
+  return 0;
+}
+
+export const useCambodiaAppStats = (payload: { projectUUID: UUID }) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+      projectUUID,
+      'app-stats',
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+          payload: {},
+        },
+      });
+      const raw = mutate?.data;
+      const list: { name: string; data?: unknown }[] = Array.isArray(raw)
+        ? raw
+        : Array.isArray((raw as { data?: unknown[] })?.data)
+        ? ((raw as { data: unknown[] }).data as {
+            name: string;
+            data?: unknown;
+          }[])
+        : [];
+      const byName = Object.fromEntries(
+        list.map((s) => [s.name, cambodiaAppStatNumericCount(s)]),
+      );
+      return {
+        totalWearers: byName['TOTAL_WEARERS'] ?? 0,
+        totalEyeCheckup:
+          byName['TOTAL_CONSUMERS'] ?? byName['TOTAL_LEAD_CONVERTED'] ?? 0,
+        healthWorkerSales: byName['HEALTH_WORKER_SALES'] ?? 0,
+        totalVillagersReferred: byName['TOTAL_LEADS'] ?? 0,
+        totalEyewearDispensed: byName['TOTAL_EYEWEAR_DISPENSED'] ?? 0,
+        totalHealthWorkers: byName['TOTAL_HEALTH_WORKERS'] ?? 0,
+      };
     },
   });
   return query;

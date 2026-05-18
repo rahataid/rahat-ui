@@ -1,16 +1,11 @@
 'use client';
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
 import React, { FC } from 'react';
 import { ProjectType } from './nav-items.types';
 import { ProjectNav } from './project-header';
-import ProjectNavView from './project.nav.view';
 import { useProjectHeaderItems } from './useProjectHeaderItems';
 import { useProjectNavItems } from './useProjectNavItems';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import { SidebarProvider } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { ProjectSidebar } from 'apps/rahat-ui/src/sidebar-components/project-sidebar';
 import { useParams, useRouter } from 'next/navigation';
@@ -43,50 +38,9 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
 
   const { navItems: menuItems } = useProjectNavItems(projectType);
   const { headerNav } = useProjectHeaderItems(projectType);
-  const renderResizablePanel = (children: React.ReactNode, index?: number) => {
-    return children;
-    // (
-    //   <ResizablePanel minSize={40} key={index}>
-    //     {children}
-    //     {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
-    //   </ResizablePanel>
-    // );
-  };
-  const renderChildren = () => {
-    if (Array.isArray(children)) {
-      return children.map((child, index) => {
-        return (
-          <>
-            {/* <ResizableHandle withHandle /> */}
-            {renderResizablePanel(child, index)}
-          </>
-        );
-      });
-    }
-    return (
-      <>
-        {/* <ResizableHandle /> */}
-        {renderResizablePanel(children)}
-      </>
-    );
-  };
 
   return (
     <>
-      {/* <ProjectNav component={headerNav} />
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={15} minSize={15} maxSize={15}>
-          {menuItems.map((item) => (
-            <ProjectNavView
-              key={item.title}
-              title={item.title}
-              items={item.children}
-            />
-          ))}
-          {navFooter}
-        </ResizablePanel>
-        {renderChildren()}
-      </ResizablePanelGroup> */}
       <SidebarProvider>
         {menuItems.map((item) => (
           <ProjectSidebar
@@ -95,11 +49,15 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
             items={item.children}
           />
         ))}
-        <div className="w-full h-full">
+        <div
+          className={cn(
+            'flex min-h-0 min-w-0 flex-1 flex-col',
+            projectType === 'el-village-doctor' &&
+              'bg-gradient-to-br from-muted/45 via-background to-muted/20',
+          )}
+        >
           <ProjectNav component={headerNav} />
-          {/* <ResizablePanelGroup direction="horizontal"> */}
-          {renderChildren()}
-          {/* </ResizablePanelGroup> */}
+          {children}
         </div>
       </SidebarProvider>
     </>

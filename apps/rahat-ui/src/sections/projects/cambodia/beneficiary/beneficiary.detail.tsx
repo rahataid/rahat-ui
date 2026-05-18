@@ -38,9 +38,9 @@ export default function BeneficiaryDetail() {
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title="Beneficiary details"
-          subtitle="Here is the detailed view of selected beneficiary"
-          path={`/projects/el-cambodia/${id}/beneficiary`}
+          title="Villager details"
+          subtitle="Here is the detailed view of selected villager"
+          path={`/projects/el-village-doctor/${id}/villagers`}
         />
         {/* <div className="flex space-x-3">
           <div className="flex bg-secondary rounded-full w-10 h-10 justify-center items-center hover:cursor-pointer">
@@ -54,7 +54,7 @@ export default function BeneficiaryDetail() {
       </div>
       <div className="p-5 rounded-md border grid grid-cols-4 gap-5 mb-5">
         <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
+          <h1 className="text-md text-muted-foreground">Villager Name</h1>
           <p className="font-medium">{data?.data?.piiData?.name ?? '-'}</p>
         </div>
         <div>
@@ -68,7 +68,7 @@ export default function BeneficiaryDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">
-            Beneficiary Data Upload Date
+            Villager Data Upload Date
           </h1>
           <p className="font-medium">
             {/* {data?.data?.createdAt.toLocaleString()} */}
@@ -99,7 +99,7 @@ export default function BeneficiaryDetail() {
           </TooltipProvider>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
+          <h1 className="text-md text-muted-foreground">Villager Type</h1>
 
           <Badge variant="secondary">{data?.data?.type ?? 'UNKNOWN'}</Badge>
         </div>

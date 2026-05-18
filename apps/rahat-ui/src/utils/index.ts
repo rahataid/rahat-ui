@@ -37,6 +37,29 @@ export function formatdbDate(date: string | Date) {
     : '';
 }
 
+export function formatDateTime(
+  date: string | Date,
+  options?: {
+    dateStyle?: Intl.DateTimeFormatOptions;
+    timeStyle?: Intl.DateTimeFormatOptions;
+    locale?: string;
+  },
+) {
+  const d = new Date(date);
+  const dateStr = d.toLocaleDateString(options?.locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    ...options?.dateStyle,
+  });
+  const timeStr = d.toLocaleTimeString(options?.locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    ...options?.timeStyle,
+  });
+  return { dateStr, timeStr, date: d };
+}
+
 export function getDayOfWeek(dbDate: string) {
   const date = new Date(dbDate);
   const today = new Date();
@@ -133,3 +156,10 @@ export const formatDateFromBloackChain = (dateString: string) => {
   const formattedDate = `${month} ${day}, ${year} ${hours12}:${minutes} ${period}`;
   return formattedDate;
 };
+
+export function formatNumber(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 100_000) return new Intl.NumberFormat('en-US').format(n);
+  return n.toLocaleString();
+}
+

@@ -112,8 +112,8 @@ export default function ListView({
           .getSelectedRowModel()
           .rows.map((row) => row.original.uuid)}
       />
-      <div className="border rounded shadow p-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:space-x-2 items-center mb-2 gap-2">
+      <div className="border rounded-lg shadow-card p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:space-x-2 items-center mb-3 gap-2">
           <Input
             placeholder="Filter beneficiary..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -167,7 +167,6 @@ export default function ListView({
               </DropdownMenuContent>
             </DropdownMenu>
             <AddButton
-              className="text-white rounded-sm hover:text-blue-500 hover:border hover:border-blue-500"
               name="Beneficiary"
               path={`/beneficiary/add`}
             />
@@ -209,7 +208,7 @@ export default function ListView({
             <TableLoader />
           ) : (
             <TableComponent>
-              <TableHeader className="sticky top-0 bg-card">
+              <TableHeader className="sticky top-0 bg-muted/50">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

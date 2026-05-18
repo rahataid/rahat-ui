@@ -106,7 +106,6 @@ export default function AssignInkindForm({ onNext }: Props) {
   const selectedGroup = groups.find((g: any) => g.uuid === selectedGroupId);
 
   const handleModeToggle = (checked: boolean) => {
-    // checked=true → Online, checked=false → Offline
     setIsOffline(!checked);
     if (checked) {
       setSelectedVendor(null);
@@ -139,7 +138,6 @@ export default function AssignInkindForm({ onNext }: Props) {
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
           <div className="flex items-center justify-between ">
             <p className="text-base font-semibold">Assign Inkind to Group</p>
-            {/* Assign mode toggle — shown only once an InKind item is selected */}
 
             <div className="flex items-center space-x-3">
               <Switch

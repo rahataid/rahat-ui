@@ -201,7 +201,7 @@ export default function ELVillageDoctorVillagerView() {
               table={table}
               loading={isLoading}
               tableHeight="h-[calc(100vh-480px)]"
-              emptyMessage="No beneficiaries found."
+              emptyMessage="No villagers found."
             />
             <CustomPagination
               currentPage={pagination.page}

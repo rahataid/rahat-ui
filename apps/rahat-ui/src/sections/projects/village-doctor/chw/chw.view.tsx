@@ -289,7 +289,7 @@ export default function CHWView() {
             <CambodiaTable
               table={table}
               tableHeight="h-[calc(100vh-520px)]"
-              emptyMessage="No community health workers found."
+              emptyMessage="No village doctos found."
             />
             <CustomPagination
               currentPage={pagination.page}

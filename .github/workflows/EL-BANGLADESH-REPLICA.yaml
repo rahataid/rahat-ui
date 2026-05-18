@@ -18,6 +18,7 @@ jobs:
       - name: import env file
         run: |
           touch ./.env && echo "$env_release" >> ./.env
+          grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV  
 
       - uses: actions/setup-node@v3
         with:

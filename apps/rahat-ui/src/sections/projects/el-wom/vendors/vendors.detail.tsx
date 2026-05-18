@@ -64,7 +64,7 @@ export default function VendorsDetail() {
         <HeaderWithBack
           title="Vendor details"
           subtitle="Here is the detailed view of selected vendor"
-          path={`/projects/sms-voucher/${id}/vendors`}
+          path={`/projects/el-wom/${id}/vendors`}
         />
       </div>
 

@@ -62,9 +62,9 @@ export default function SelectBeneficiaryView() {
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
 
   const handleUpdateBeneficiaryGroup = async () => {
-    const members = table
-      .getSelectedRowModel()
-      .rows?.map((data) => ({ uuid: data?.original?.uuid }));
+    const members = Object.entries(selectedListItems)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([uuid]) => ({ uuid }));
     const payload = {
       uuid: Id,
       beneficiaries: members,

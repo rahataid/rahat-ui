@@ -1,4 +1,4 @@
-name: EL Release SMS Voucher Indonesia Extension 2026 CI/CD
+name: EL Replica Bangladesh CI/CD
 on:
   workflow_dispatch:
 

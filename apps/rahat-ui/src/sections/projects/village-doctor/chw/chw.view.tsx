@@ -131,7 +131,11 @@ export default function CHWView() {
   });
   const handleDownload = async () => {
     let rowsToDownload = (await fetchAllData()) || [];
-    if (!rowsToDownload.length && Array.isArray(data?.data) && data.data.length) {
+    if (
+      !rowsToDownload.length &&
+      Array.isArray(data?.data) &&
+      data.data.length
+    ) {
       rowsToDownload = data.data;
     }
     const workbook = XLSX.utils.book_new();
@@ -139,12 +143,11 @@ export default function CHWView() {
       villageDoctorName: item.name,
       koboUserName: item.koboUsername,
       /** Matches table: conversions in period (not SALE-type beneficiaries). */
-      successfulReferrals: item._count?.LeadConversions ?? item._count?.SALE ?? 0,
+      successfulReferrals:
+        item._count?.LeadConversions ?? item._count?.SALE ?? 0,
       villagersReferred: item._count?.LEAD || 0,
       glassesPurchased:
-        item.extras?.glassesPurchased ??
-        item.extras?.purchaseEyewearCount ??
-        0,
+        item.extras?.glassesPurchased ?? item.extras?.purchaseEyewearCount ?? 0,
       purchaseAmountRmb:
         item.extras?.purchaseAmountRmb ?? item.extras?.purchaseAmount ?? 0,
       eyePartner: item.vendor?.name || '-',
@@ -203,6 +206,12 @@ export default function CHWView() {
             title="Total Village Doctors"
             number={String(programStats?.data?.healthWorkers ?? 0)}
             Icon={UserCog}
+            className="rounded-lg border-solid"
+          />
+          <DataCard
+            title="Total Number of Villagers Referred"
+            number={String(programStats?.data?.leadsConverted ?? 0)}
+            Icon={Users}
             className="rounded-lg border-solid"
           />
           <DataCard
@@ -277,7 +286,11 @@ export default function CHWView() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <CambodiaTable table={table} tableHeight="h-[calc(100vh-520px)]" />
+            <CambodiaTable
+              table={table}
+              tableHeight="h-[calc(100vh-520px)]"
+              emptyMessage="No community health workers found."
+            />
             <CustomPagination
               currentPage={pagination.page}
               handleNextPage={setNextPage}

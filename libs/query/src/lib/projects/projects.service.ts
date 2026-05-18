@@ -1390,25 +1390,27 @@ export const useCambodiaVendorsStatsByVendorIds = (payload: {
     queryFn: async () => {
       const map: Record<string, number | null | undefined> = {};
 
-      for (const vendorId of dedupedVendorIds) {
-        try {
-          const mutate = await q.mutateAsync({
-            uuid: projectUUID as UUID,
-            data: {
-              action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
-              payload: { vendorId },
-            },
-          });
+      await Promise.all(
+        dedupedVendorIds.map(async (vendorId) => {
+          try {
+            const mutate = await q.mutateAsync({
+              uuid: projectUUID as UUID,
+              data: {
+                action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+                payload: { vendorId },
+              },
+            });
 
-          const body = mutate as
-            | { data?: { leadsRecieved?: number; leads?: number } }
-            | undefined;
-          const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
-          map[vendorId] = typeof raw === 'number' ? raw : 0;
-        } catch {
-          map[vendorId] = undefined;
-        }
-      }
+            const body = mutate as
+              | { data?: { leadsRecieved?: number; leads?: number } }
+              | undefined;
+            const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
+            map[vendorId] = typeof raw === 'number' ? raw : 0;
+          } catch {
+            map[vendorId] = undefined;
+          }
+        }),
+      );
 
       return map;
     },

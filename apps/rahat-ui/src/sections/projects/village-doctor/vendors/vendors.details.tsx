@@ -281,7 +281,13 @@ export default function VendorsDetail() {
           />
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
-            title="Total Successfull Referrals"
+            title="Total Villagers Referred"
+            Icon={Users}
+            number={String(vendorsStats?.data?.leadsConverted ?? 0)}
+          />
+          <DataCard
+            className="rounded-xl border-border/80 shadow-sm"
+            title="Total Successful Referrals"
             Icon={Users}
             number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
           />

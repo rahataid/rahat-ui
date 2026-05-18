@@ -15,12 +15,14 @@ type IProps = {
   table: Table<any>;
   tableHeight?: string;
   loading?: boolean;
+  emptyMessage?: string;
 };
 
 export default function CambodiaTable({
   table,
   tableHeight,
   loading,
+  emptyMessage = 'No records found.',
 }: IProps) {
   return (
     <div className="overflow-hidden rounded-b-none border-x border-b border-border/80 bg-card shadow-[inset_0_1px_0_0_hsl(var(--border)/0.5)]">
@@ -63,7 +65,9 @@ export default function CambodiaTable({
                       strokeWidth={1.75}
                       aria-hidden
                     />
-                    <span className="text-sm font-medium">Loading records…</span>
+                    <span className="text-sm font-medium">
+                      Loading records…
+                    </span>
                   </div>
                 </TableCell>
               </TableRow>
@@ -79,7 +83,10 @@ export default function CambodiaTable({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="tabular-nums text-sm">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -91,7 +98,7 @@ export default function CambodiaTable({
                   className="h-32 text-center"
                 >
                   <p className="text-sm font-medium text-muted-foreground">
-                    No villagers found.
+                    {emptyMessage}
                   </p>
                 </TableCell>
               </TableRow>

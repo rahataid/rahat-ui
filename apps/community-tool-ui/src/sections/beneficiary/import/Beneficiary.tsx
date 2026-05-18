@@ -27,6 +27,8 @@ import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
 import FilterBox from './FilterBox';
 import InfoBox from './InfoBox';
+import Samples from './sample.json';
+import * as XLSX from 'xlsx';
 
 import {
   useBeneficiaryImportStore,
@@ -184,7 +186,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const worksheet = workbook.Sheets[sheetName];
       const json = xlsx.utils.sheet_to_json(worksheet, {
         defval: '',
-        raw: isCsv
+        raw: isCsv,
       }) as any;
       const sanitized = removeFieldsWithUnderscore(json || []);
       setRawData(sanitized);
@@ -235,7 +237,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
 
-    for (let m of mappings) {
+    for (const m of mappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         const replaced = finalPayload.map((item: any) => {
@@ -374,6 +376,15 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
+  const handleSampleDownload = (e) => {
+    e.preventDefault();
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(Samples);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, 'beneficiary_sample.xlsx');
+  };
 
   return (
     <div className="h-custom">
@@ -389,6 +400,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               koboForms={koboForms}
               handleKoboFormChange={handleKoboFormChange}
               handleGoClick={handleGoClick}
+              handleSampleDownload={handleSampleDownload}
             />
             <div className="pt-10">{loading && <Loader />}</div>
           </>

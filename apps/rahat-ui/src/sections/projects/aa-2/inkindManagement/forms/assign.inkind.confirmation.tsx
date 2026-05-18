@@ -53,6 +53,12 @@ export default function AssignInkindConfirmation({
   ];
 
   const handleSubmit = async () => {
+    // console.log('Form Data to submit:', {
+    //   groupId: formData.groupId,
+    //   inkindId: formData.inkindId,
+    //   mode: formData.mode,
+    //   ...(formData.vendorId ? { payoutProcessorId: formData.vendorId } : {}),
+    // });
     try {
       await assignGroupInkind.mutateAsync({
         groupId: formData.groupId,

@@ -200,7 +200,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                           {inkindItems.map((item: any) => (
                             <CommandItem
                               key={item.uuid}
-                              value={item.uuid}
+                              value={item.name}
                               onSelect={() => {
                                 setValue('inkindId', item.uuid, {
                                   shouldValidate: true,
@@ -283,7 +283,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                           {groups.map((group: any) => (
                             <CommandItem
                               key={group.uuid}
-                              value={group.uuid}
+                              value={group.name}
                               onSelect={() => {
                                 setValue('groupId', group.uuid, {
                                   shouldValidate: true,
@@ -363,7 +363,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                         {vendorItems.map((item: any) => (
                           <CommandItem
                             key={item.uuid}
-                            value={item.uuid}
+                            value={item.name}
                             onSelect={() => {
                               setSelectedVendor(item);
                               setVendorOpen(false);

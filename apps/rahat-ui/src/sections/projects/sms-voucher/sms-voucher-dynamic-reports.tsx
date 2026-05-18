@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react';
 
 import { useAuthStore } from '@rumsan/react-query';
 import ErrorBoundary from 'apps/rahat-ui/src/utils/error-boundary';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import DataCardWrapper from '../../chart-reports/datacard-wrapper';
 import PieChartWrapper from '../../chart-reports/pie-chart-wrapper';
 import BarChartWrapper from './sms-voucher-barchart-wrapper';
@@ -38,6 +39,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
   className,
 }) => {
   const [dynamicData, setDynamicData] = useState<{ [key: string]: any }>({});
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchDynamicData = async () => {
       const fetchDataForSource = async (source: string) => {
@@ -49,7 +51,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
             break;
           case 'url':
             try {
-              const response = await fetch(dataSource.args.url, {
+              const response = await fetch(dataSource.args.url.trim(), {
                 ...dataSource.args.apiCallData,
                 headers: {
                   'Content-Type': 'application/json',
@@ -64,7 +66,12 @@ const DynamicReports: FC<DynamicReportsProps> = ({
                 );
               }
               const res = await response.json();
-              fetchedData = res?.data;
+              const raw = res?.data;
+              fetchedData = Array.isArray(raw)
+                ? raw
+                : Array.isArray(raw?.benefStats)
+                ? raw.benefStats
+                : null;
             } catch (error) {
               console.error(error);
               fetchedData = null;
@@ -80,6 +87,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
         return { source, data: fetchedData };
       };
       const fetchAllData = async () => {
+        setIsLoading(true);
         console.log('dataSources', dataSources);
         const promises = Object.keys(dataSources).map(fetchDataForSource);
         const results = await Promise.all(promises);
@@ -90,6 +98,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
           }
         });
         setDynamicData(dataMap);
+        setIsLoading(false);
       };
       fetchAllData();
     };
@@ -181,6 +190,23 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       </div>
     );
   };
+
+  if (isLoading)
+    return (
+      <div className={className}>
+        {ui?.map((row, rowIndex) => (
+          <div key={rowIndex}>
+            {row?.title && <Skeleton className="h-6 w-48 mt-5 mb-2" />}
+            <div className="grid gap-4 mt-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {row.fields.map((_, colIndex) => (
+                <Skeleton key={colIndex} className="h-36 w-full rounded-md" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+
   return (
     <div className={className}>
       {ui?.map((row, index) => renderUIRow(row, index))}

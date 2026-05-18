@@ -92,8 +92,6 @@ export default function AssignInkindForm({ onNext }: Props) {
   );
   const groups: any[] = unassignedGroupsData?.data ?? [];
 
-  console.log('Unassigned groups for selected inkind:', groups);
-
   const { data: vendors } = useAAVendorsList({
     projectUUID: projectUUID,
     page: 1,

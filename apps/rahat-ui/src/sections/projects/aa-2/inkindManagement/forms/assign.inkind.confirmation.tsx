@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from 'libs/shadcn/src/components/ui/button';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Loader2, UserRound } from 'lucide-react';
 import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
@@ -53,12 +52,6 @@ export default function AssignInkindConfirmation({
   ];
 
   const handleSubmit = async () => {
-    // console.log('Form Data to submit:', {
-    //   groupId: formData.groupId,
-    //   inkindId: formData.inkindId,
-    //   mode: formData.mode,
-    //   ...(formData.vendorId ? { payoutProcessorId: formData.vendorId } : {}),
-    // });
     try {
       await assignGroupInkind.mutateAsync({
         groupId: formData.groupId,

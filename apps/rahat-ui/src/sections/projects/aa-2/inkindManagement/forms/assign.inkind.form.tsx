@@ -102,10 +102,8 @@ export default function AssignInkindForm({ onNext }: Props) {
     sort: 'createdAt',
   });
 
-  console.log('Fetched vendors for project:', vendors);
   const vendorItems: any[] = vendors?.data ?? [];
 
-  console.log('Available offline vendors for selected inkind:', vendorItems);
   const selectedInkind = inkindItems.find((i) => i.uuid === selectedInkindId);
   const selectedGroup = groups.find((g: any) => g.uuid === selectedGroupId);
 

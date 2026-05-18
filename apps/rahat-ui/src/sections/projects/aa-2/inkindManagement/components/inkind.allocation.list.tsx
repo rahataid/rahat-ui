@@ -3,10 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import {
-  useGroupInkindAllocations,
-  useBeneficiaryGroups,
-} from '@rahat-ui/query';
+import { useGroupInkindAllocations } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -32,9 +29,15 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { INKIND_TYPES, INKIND_TYPE_LABELS, InkindType } from '../schemas/inkind.validation';
+import {
+  INKIND_TYPES,
+  INKIND_TYPE_LABELS,
+  InkindType,
+} from '../schemas/inkind.validation';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+
+type ModeTab = 'ONLINE' | 'OFFLINE';
 
 type AllocationRow = {
   uuid: string;
@@ -47,6 +50,7 @@ type AllocationRow = {
   quantityAllocated: number;
   quantityRedeemed: number;
   beneficiaryCount: number;
+  mode: string | null;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -81,15 +85,16 @@ export default function InkindAllocationList() {
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({});
+  const [modeTab, setModeTab] = useState<ModeTab>('ONLINE');
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
 
   const { data, isLoading } = useGroupInkindAllocations(projectUUID, {
-    inkindType: typeFilter
+    inkindType: typeFilter,
+    mode: modeTab,
   });
 
   const rows = useMemo<AllocationRow[]>(() => {
@@ -111,6 +116,7 @@ export default function InkindAllocationList() {
           quantityAllocated: item.quantityAllocated ?? 0,
           quantityRedeemed: item.quantityRedeemed ?? 0,
           beneficiaryCount: item.group?._count?.beneficiaries ?? 0,
+          mode: item.mode ?? null,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
         };
@@ -172,7 +178,11 @@ export default function InkindAllocationList() {
           <span className="font-semibold">
             {row.original.quantityRedeemed}{' '}
             <span className="text-xs font-normal">
-              / {isWalkIn ? (row.original.inkindAvailableStock + row.original.quantityRedeemed) : row.original.beneficiaryCount}
+              /{' '}
+              {isWalkIn
+                ? row.original.inkindAvailableStock +
+                  row.original.quantityRedeemed
+                : row.original.beneficiaryCount}
             </span>
           </span>
         );
@@ -235,6 +245,33 @@ export default function InkindAllocationList() {
         titleStyle="font-medium text-lg"
         description="Inkind items assigned to beneficiary groups"
       />
+      <div className="flex border-b mb-4">
+        {(['ONLINE', 'OFFLINE'] as ModeTab[]).map((tab) => {
+          const label = tab === 'ONLINE' ? 'Online' : 'Offline';
+          const isActive = modeTab === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => {
+                setModeTab(tab);
+                setPagination((p) => ({ ...p, pageIndex: 0 }));
+              }}
+              className={`py-2 px-4 text-sm font-medium flex items-center gap-2 ${
+                isActive
+                  ? 'border-b-2 border-primary text-primary'
+                  : 'text-muted-foreground'
+              }`}
+            >
+              {label}
+              {isActive && (
+                <Badge className="h-5 min-w-[20px] justify-center text-white px-2 py-0 bg-[#297AD6]">
+                  {rows.length}
+                </Badge>
+              )}
+            </button>
+          );
+        })}
+      </div>
       <div className="flex items-center gap-2 mb-2">
         <SearchInput
           className="flex-1"
@@ -249,7 +286,9 @@ export default function InkindAllocationList() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
-              {typeFilter ? INKIND_TYPE_LABELS[typeFilter as InkindType] : 'All Types'}
+              {typeFilter
+                ? INKIND_TYPE_LABELS[typeFilter as InkindType]
+                : 'All Types'}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

@@ -10,7 +10,6 @@ import {
   useProjectContractSettings,
   useProjectSafeWalletSettings,
   useProjectSubgraphSettings,
-  useProjectBlockChainSettings,
 } from '@rahat-ui/query';
 
 export default function ProjectLayoutRoot({
@@ -30,7 +29,6 @@ export default function ProjectLayoutRoot({
   useProjectContractSettings(uuid);
   useProjectSubgraphSettings(uuid);
   useProjectSafeWalletSettings(uuid);
-  useProjectBlockChainSettings(uuid);
   const [checking, setChecking] = React.useState(true);
 
   // UUID format validation (simple regex for UUID v4)

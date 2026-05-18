@@ -31,7 +31,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
   );
 
   const chainSettings = useProjectSettingsStore(
-    (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
+    (state) => state?.settings?.[projectUUID]?.['CHAIN_SETTINGS'],
   );
 
   const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)];

@@ -199,7 +199,6 @@ export default function AssignInkindForm({ onNext }: Props) {
                                   shouldValidate: true,
                                 });
                                 setValue('groupId', '');
-                                setIsOffline(false);
                                 setSelectedVendor(null);
                                 setInkindOpen(false);
                               }}

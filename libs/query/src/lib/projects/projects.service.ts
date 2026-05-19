@@ -988,12 +988,47 @@ export const useCHWGet = (payload: any) => {
   };
 };
 
+/** Normalize paginated villager list API shape for table/export. */
+export const normalizeCambodiaBeneficiaryListResponse = (raw: any) => {
+  if (!raw) return raw;
+  const inner = raw.data as unknown;
+  const rows = Array.isArray(inner)
+    ? inner
+    : inner &&
+        typeof inner === 'object' &&
+        Array.isArray((inner as { data?: unknown }).data)
+      ? (inner as { data: Beneficiary[] }).data ?? []
+      : [];
+  const resp = raw.response as { meta?: unknown; data?: unknown } | undefined;
+  const paginatedMeta =
+    inner &&
+    typeof inner === 'object' &&
+    !Array.isArray(inner) &&
+    'meta' in inner
+      ? (inner as { meta?: unknown }).meta
+      : undefined;
+  const nestedMeta =
+    resp?.data &&
+    typeof resp.data === 'object' &&
+    !Array.isArray(resp.data) &&
+    'meta' in resp.data
+      ? (resp.data as { meta?: unknown }).meta
+      : undefined;
+  const meta = resp?.meta ?? nestedMeta ?? paginatedMeta;
+  return {
+    ...raw,
+    data: rows,
+    response:
+      resp && meta !== undefined && resp.meta === undefined
+        ? { ...resp, meta }
+        : raw.response,
+  };
+};
+
 export const useCambodiaBeneficiaries = (payload: any) => {
-  const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, enabled = true, ...restPayload } = payload;
 
   const { page, perPage, ...listRest } = restPayload;
-  /** Only fields Cambodia `ListBeneficiaryDto` understands — avoids polluted cache keys and payloads */
   const sanitizedPayload: {
     page: number;
     perPage: number;
@@ -1024,6 +1059,12 @@ export const useCambodiaBeneficiaries = (payload: any) => {
 
   const restPayloadString = JSON.stringify(sanitizedPayload);
 
+  const q = useProjectAction<Beneficiary[]>([
+    MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+    projectUUID,
+    restPayloadString,
+  ]);
+
   const query = useQuery({
     queryKey: [
       MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
@@ -1032,7 +1073,8 @@ export const useCambodiaBeneficiaries = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    // Same as vendors list: focus refetch + shared projectAction mutation caused hangs.
+    refetchOnWindowFocus: false,
     enabled:
       Boolean(enabled) &&
       Boolean(projectUUID) &&
@@ -1052,42 +1094,10 @@ export const useCambodiaBeneficiaries = (payload: any) => {
     },
   });
 
-  const normalizedData = useMemo(() => {
-    const raw = query.data;
-    if (!raw) return raw;
-    const inner = raw.data as unknown;
-    const rows = Array.isArray(inner)
-      ? inner
-      : inner &&
-        typeof inner === 'object' &&
-        Array.isArray((inner as { data?: unknown }).data)
-      ? (inner as { data: Beneficiary[] }).data ?? []
-      : [];
-    const resp = raw.response as { meta?: unknown; data?: unknown } | undefined;
-    const paginatedMeta =
-      inner &&
-      typeof inner === 'object' &&
-      !Array.isArray(inner) &&
-      'meta' in inner
-        ? (inner as { meta?: unknown }).meta
-        : undefined;
-    const nestedMeta =
-      resp?.data &&
-      typeof resp.data === 'object' &&
-      !Array.isArray(resp.data) &&
-      'meta' in resp.data
-        ? (resp.data as { meta?: unknown }).meta
-        : undefined;
-    const meta = resp?.meta ?? nestedMeta ?? paginatedMeta;
-    return {
-      ...raw,
-      data: rows,
-      response:
-        resp && meta !== undefined && resp.meta === undefined
-          ? { ...resp, meta }
-          : raw.response,
-    };
-  }, [query.data]);
+  const normalizedData = useMemo(
+    () => normalizeCambodiaBeneficiaryListResponse(query.data),
+    [query.data],
+  );
 
   return { ...query, data: normalizedData };
 };

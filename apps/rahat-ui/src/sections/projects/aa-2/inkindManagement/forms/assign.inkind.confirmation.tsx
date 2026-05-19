@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from 'libs/shadcn/src/components/ui/button';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Loader2, UserRound } from 'lucide-react';
 import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
@@ -17,6 +16,9 @@ interface AssignInkindSummary {
   groupName: string;
   availableStock: number;
   beneficiaryCount: number;
+  mode?: string;
+  vendorId?: string;
+  vendorName?: string;
 }
 
 interface Props {
@@ -28,7 +30,7 @@ interface Props {
 export default function AssignInkindConfirmation({
   formData,
   onSuccess,
-  tab
+  tab,
 }: Props) {
   const router = useRouter();
   const { id } = useParams();
@@ -42,7 +44,11 @@ export default function AssignInkindConfirmation({
   const cardData = [
     { label: 'Inkind Item', value: formData.inkindName },
     { label: 'Beneficiary Group', value: formData.groupName },
-    { label: 'Available Stock', value: formData.availableStock }
+    { label: 'Available Stock', value: formData.availableStock },
+    { label: 'Assign Mode', value: formData.mode ?? 'Online' },
+    ...(formData.vendorName
+      ? [{ label: 'Vendor', value: formData.vendorName }]
+      : []),
   ];
 
   const handleSubmit = async () => {
@@ -50,8 +56,10 @@ export default function AssignInkindConfirmation({
       await assignGroupInkind.mutateAsync({
         groupId: formData.groupId,
         inkindId: formData.inkindId,
+        mode: formData.mode,
+        ...(formData.vendorId ? { payoutProcessorId: formData.vendorId } : {}),
       });
-      
+
       onSuccess();
     } catch {
       // Error handled by the mutation's onError toast
@@ -66,7 +74,11 @@ export default function AssignInkindConfirmation({
           {cardData.map((item) => (
             <div key={item.label}>
               <p className="text-sm text-muted-foreground">{item.label}</p>
-              <TruncatedCell text={item.value as string} maxLength={30} className='text-lg font-semibold text-primary' />
+              <TruncatedCell
+                text={item.value as string}
+                maxLength={30}
+                className="text-lg font-semibold text-primary"
+              />
             </div>
           ))}
         </div>
@@ -103,8 +115,10 @@ export default function AssignInkindConfirmation({
         <Button
           type="button"
           variant="secondary"
-          className='px-10 rounded-sm'
-          onClick={() => router.push(`/projects/aa/${id}/inkind-management?tab=${tab}`)}
+          className="px-10 rounded-sm"
+          onClick={() =>
+            router.push(`/projects/aa/${id}/inkind-management?tab=${tab}`)
+          }
           disabled={assignGroupInkind.isPending}
         >
           Cancel

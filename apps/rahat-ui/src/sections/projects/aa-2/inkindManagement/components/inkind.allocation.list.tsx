@@ -51,6 +51,7 @@ type AllocationRow = {
   quantityRedeemed: number;
   beneficiaryCount: number;
   mode: string | null;
+  vendor?: string | null;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -117,6 +118,7 @@ export default function InkindAllocationList() {
           quantityRedeemed: item.quantityRedeemed ?? 0,
           beneficiaryCount: item.group?._count?.beneficiaries ?? 0,
           mode: item.mode ?? null,
+          vendor: item.vendor ?? null,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
         };
@@ -128,102 +130,118 @@ export default function InkindAllocationList() {
       );
   }, [data]);
 
-  const columns: ColumnDef<AllocationRow>[] = [
-    {
-      accessorKey: 'inkindName',
-      header: 'Inkind Name',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.original.inkindName} maxLength={20} />
-      ),
-    },
-    {
-      accessorKey: 'groupName',
-      header: 'Beneficiary Group',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.original.groupName} maxLength={20} />
-      ),
-    },
-    {
-      accessorKey: 'inkindType',
-      header: 'Inkind Type',
-      cell: ({ row }) => (
-        <Badge className="bg-gray-200 text-gray-600">
-          {formatLabel(row.original.inkindType)}
-        </Badge>
-      ),
-    },
-    {
-      id: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const isWalkIn = row.original.inkindType === 'WALK_IN';
-        const status = isWalkIn
-          ? deriveStatus(
-              row.original.inkindAvailableStock + row.original.quantityRedeemed,
-              row.original.quantityRedeemed,
-            )
-          : deriveStatus(
-              row.original.quantityAllocated,
-              row.original.quantityRedeemed,
-            );
-        return <Badge className={STATUS_STYLE[status]}>{status}</Badge>;
+  const columns: ColumnDef<AllocationRow>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'inkindName',
+        header: 'Inkind Name',
+        cell: ({ row }) => (
+          <TruncatedCell text={row.original.inkindName} maxLength={20} />
+        ),
       },
-    },
-    {
-      accessorKey: 'quantityRedeemed',
-      header: 'Total Redeemed',
-      cell: ({ row }) => {
-        const isWalkIn = row.original.inkindType === 'WALK_IN';
-        return (
-          <span className="font-semibold">
-            {row.original.quantityRedeemed}{' '}
-            <span className="text-xs font-normal">
-              /{' '}
-              {isWalkIn
-                ? row.original.inkindAvailableStock +
-                  row.original.quantityRedeemed
-                : row.original.beneficiaryCount}
-            </span>
-          </span>
-        );
+      {
+        accessorKey: 'groupName',
+        header: 'Beneficiary Group',
+        cell: ({ row }) => (
+          <TruncatedCell text={row.original.groupName} maxLength={20} />
+        ),
       },
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        const r = row.original;
-        const params = new URLSearchParams({
-          groupId: r.groupId,
-          inkindId: r.inkindId,
-          groupName: r.groupName,
-          inkindName: r.inkindName,
-          inkindType: r.inkindType,
-          inkindAvailableStock: String(r.inkindAvailableStock),
-          quantityAllocated: String(r.quantityAllocated),
-          quantityRedeemed: String(r.quantityRedeemed),
-          beneficiaryCount: String(r.beneficiaryCount),
-        });
-        console.debug(
-          'Navigating to details page with params:',
-          params.toString(),
-        );
-        return (
-          <TooltipComponent
-            Icon={Eye}
-            tip="View Details"
-            iconStyle="hover:text-primary cursor-pointer"
-            handleOnClick={() =>
-              router.push(
-                `/projects/aa/${id}/inkind-management/${r.uuid}?${params}`,
+      ...(modeTab === 'OFFLINE'
+        ? [
+            {
+              accessorKey: 'vendor',
+              header: 'Vendor',
+              cell: ({ row }: { row: { original: AllocationRow } }) => (
+                <span>{row.original.vendor ?? 'N/A'}</span>
+              ),
+            } as ColumnDef<AllocationRow>,
+          ]
+        : []),
+      {
+        accessorKey: 'inkindType',
+        header: 'Inkind Type',
+        cell: ({ row }) => (
+          <Badge className="bg-gray-200 text-gray-600">
+            {formatLabel(row.original.inkindType)}
+          </Badge>
+        ),
+      },
+      {
+        id: 'status',
+        header: 'Status',
+        cell: ({ row }) => {
+          const isWalkIn = row.original.inkindType === 'WALK_IN';
+          const status = isWalkIn
+            ? deriveStatus(
+                row.original.inkindAvailableStock +
+                  row.original.quantityRedeemed,
+                row.original.quantityRedeemed,
               )
-            }
-          />
-        );
+            : deriveStatus(
+                row.original.quantityAllocated,
+                row.original.quantityRedeemed,
+              );
+          return <Badge className={STATUS_STYLE[status]}>{status}</Badge>;
+        },
       },
-    },
-  ];
+      {
+        accessorKey: 'quantityRedeemed',
+        header: 'Total Redeemed',
+        cell: ({ row }) => {
+          const isWalkIn = row.original.inkindType === 'WALK_IN';
+          return (
+            <span className="font-semibold">
+              {row.original.quantityRedeemed}{' '}
+              <span className="text-xs font-normal">
+                /{' '}
+                {isWalkIn
+                  ? row.original.inkindAvailableStock +
+                    row.original.quantityRedeemed
+                  : row.original.beneficiaryCount}
+              </span>
+            </span>
+          );
+        },
+      },
+
+      {
+        id: 'actions',
+        header: 'Actions',
+        enableHiding: false,
+        cell: ({ row }) => {
+          const r = row.original;
+          const params = new URLSearchParams({
+            groupId: r.groupId,
+            inkindId: r.inkindId,
+            groupName: r.groupName,
+            inkindName: r.inkindName,
+            inkindType: r.inkindType,
+            inkindAvailableStock: String(r.inkindAvailableStock),
+            quantityAllocated: String(r.quantityAllocated),
+            quantityRedeemed: String(r.quantityRedeemed),
+            beneficiaryCount: String(r.beneficiaryCount),
+          });
+          console.debug(
+            'Navigating to details page with params:',
+            params.toString(),
+          );
+          return (
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
+                router.push(
+                  `/projects/aa/${id}/inkind-management/${r.uuid}?${params}`,
+                )
+              }
+            />
+          );
+        },
+      },
+    ],
+    [modeTab],
+  );
 
   const table = useReactTable({
     data: rows,

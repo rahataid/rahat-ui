@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useGroupInkindAllocations } from '@rahat-ui/query';
 import {
@@ -83,10 +83,14 @@ export default function InkindAllocationList() {
   const { id } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
-  const [modeTab, setModeTab] = useState<ModeTab>('ONLINE');
+  const [modeTab, setModeTab] = useState<ModeTab>(
+    () =>
+      ((searchParams.get('mode') ?? '').toUpperCase() as ModeTab) || 'ONLINE',
+  );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -220,6 +224,7 @@ export default function InkindAllocationList() {
             quantityAllocated: String(r.quantityAllocated),
             quantityRedeemed: String(r.quantityRedeemed),
             beneficiaryCount: String(r.beneficiaryCount),
+            from: modeTab.toLowerCase(),
           });
           console.debug(
             'Navigating to details page with params:',

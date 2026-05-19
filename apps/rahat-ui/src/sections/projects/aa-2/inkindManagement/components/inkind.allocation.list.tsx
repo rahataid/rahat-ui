@@ -3,17 +3,15 @@
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useGroupInkindAllocations } from '@rahat-ui/query';
+import { useGroupInkindAllocations, usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   ColumnDef,
-  ColumnFiltersState,
   VisibilityState,
 } from '@tanstack/react-table';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import {
   DemoTable,
   Heading,
@@ -85,22 +83,28 @@ export default function InkindAllocationList() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { pagination, setPagination, setNextPage, setPrevPage, setPerPage } =
+    usePagination();
+
+  const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const [modeTab, setModeTab] = useState<ModeTab>(
     () =>
       ((searchParams.get('mode') ?? '').toUpperCase() as ModeTab) || 'ONLINE',
   );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+
+  const debouncedSearch = useDebounce(search, 500);
 
   const { data, isLoading } = useGroupInkindAllocations(projectUUID, {
     inkindType: typeFilter,
     mode: modeTab,
+    search: debouncedSearch || undefined,
+    page: pagination.page,
+    perPage: pagination.perPage,
   });
+
+  const meta: any = data?.response?.meta ?? null;
 
   const rows = useMemo<AllocationRow[]>(() => {
     const d = data?.data ?? data?.response?.data ?? data;
@@ -251,14 +255,12 @@ export default function InkindAllocationList() {
   const table = useReactTable({
     data: rows,
     columns,
-    onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: { columnVisibility, columnFilters, pagination },
+    manualPagination: true,
+    manualFiltering: true,
+    state: { columnVisibility },
   });
 
   return (
@@ -277,7 +279,7 @@ export default function InkindAllocationList() {
               key={tab}
               onClick={() => {
                 setModeTab(tab);
-                setPagination((p) => ({ ...p, pageIndex: 0 }));
+                setPagination({ ...pagination, page: 1 });
               }}
               className={`py-2 px-4 text-sm font-medium flex items-center gap-2 ${
                 isActive
@@ -288,7 +290,7 @@ export default function InkindAllocationList() {
               {label}
               {isActive && (
                 <Badge className="h-5 min-w-[20px] justify-center text-white px-2 py-0 bg-[#297AD6]">
-                  {rows.length}
+                  {meta?.total ?? rows.length}
                 </Badge>
               )}
             </button>
@@ -299,12 +301,11 @@ export default function InkindAllocationList() {
         <SearchInput
           className="flex-1"
           name="Inkind Name"
-          value={
-            (table.getColumn('inkindName')?.getFilterValue() as string) ?? ''
-          }
-          onSearch={(e) =>
-            table.getColumn('inkindName')?.setFilterValue(e.target.value)
-          }
+          value={search}
+          onSearch={(e) => {
+            setSearch(e.target.value);
+            setPagination({ ...pagination, page: 1 });
+          }}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -316,11 +317,22 @@ export default function InkindAllocationList() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => setTypeFilter(undefined)}>
+            <DropdownMenuItem
+              onSelect={() => {
+                setTypeFilter(undefined);
+                setPagination({ ...pagination, page: 1 });
+              }}
+            >
               All Types
             </DropdownMenuItem>
             {INKIND_TYPES.map((t) => (
-              <DropdownMenuItem key={t} onSelect={() => setTypeFilter(t)}>
+              <DropdownMenuItem
+                key={t}
+                onSelect={() => {
+                  setTypeFilter(t);
+                  setPagination({ ...pagination, page: 1 });
+                }}
+              >
                 {INKIND_TYPE_LABELS[t]}
               </DropdownMenuItem>
             ))}
@@ -333,19 +345,14 @@ export default function InkindAllocationList() {
         loading={isLoading}
       />
       <CustomPagination
-        currentPage={pagination.pageIndex + 1}
-        handleNextPage={() => table.nextPage()}
-        handlePrevPage={() => table.previousPage()}
-        handlePageSizeChange={(size) => table.setPageSize(size as number)}
-        meta={{
-          total: rows.length,
-          currentPage: pagination.pageIndex + 1,
-          lastPage: table.getPageCount() || 1,
-          perPage: pagination.pageSize,
-          next: null,
-          prev: null,
-        }}
-        perPage={pagination.pageSize}
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        setPagination={setPagination}
+        meta={meta || { total: 0, currentPage: 0 }}
+        perPage={pagination.perPage}
+        total={meta?.total}
       />
     </div>
   );

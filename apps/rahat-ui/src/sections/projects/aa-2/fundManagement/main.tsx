@@ -3,18 +3,20 @@ import { FundManagementTabs } from './components';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
-import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
-import { useFundAssignmentStore } from '@rahat-ui/query';
+import { useAbility } from 'apps/rahat-ui/src/context/AbilityContext.old';
 
 export default function FundManagementView() {
   const router = useRouter();
   const { id: projectUUID } = useParams() as { id: UUID };
-  const projectBalance = useProjectBalance(projectUUID);
+  // const projectBalance = useProjectBalance(projectUUID);
   // const projectBalance = useFundAssignmentStore(
   //   (state) => state.projectBalance,
   // );
+
+  // Check if user can create FundManagement before showing button
+  const ability = useAbility();
+  const canOpenAssignFunds = ability.can('create', 'FundManagement');
 
   return (
     <div className="p-4">
@@ -23,10 +25,7 @@ export default function FundManagementView() {
           title="Fund Management"
           description="Track all the fund management reports here"
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
+        {canOpenAssignFunds && (
           <IconLabelBtn
             Icon={Plus}
             handleClick={() =>
@@ -34,7 +33,7 @@ export default function FundManagementView() {
             }
             name="Assign Funds"
           />
-        </RoleAuth>
+        )}
       </div>
       <FundManagementTabs />
     </div>

@@ -45,7 +45,6 @@ const BeneficiaryGroupsDetails = () => {
 
   const { mutate: generateQr } = useGenerateQrPdf(projectId);
 
-  console.log('qrDetails', qrDetails);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const columns = useProjectBeneficiaryGroupDetailsTableColumns();
@@ -92,6 +91,7 @@ const BeneficiaryGroupsDetails = () => {
   if (isGroupLoading || isQrLoading) {
     return <SpinnerLoader />;
   }
+  console.log('qrDetails', qrDetails);
 
   return (
     <div className="p-4 ">
@@ -102,7 +102,7 @@ const BeneficiaryGroupsDetails = () => {
           path={`/projects/aa/${projectId}/beneficiary?tab=beneficiaryGroups`}
         />
         {/* <div className="flex items-end justify-end"> */}
-        {qrDetails?.fileUrl ? (
+        {qrDetails?.status === 'completed' ? (
           <Button
             variant="outline"
             onClick={() => window.open(qrDetails.fileUrl, '_blank')}

@@ -1,15 +1,7 @@
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../projects';
-import {
-  keepPreviousData,
-  useMutation,
-  UseMutationOptions,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSwal } from 'libs/query/src/swal';
-import { on } from 'events';
 
 function useToast() {
   const alert = useSwal();
@@ -23,6 +15,7 @@ function useToast() {
 export const useGetBeneficiariesQr = (payload: {
   projectUuid: UUID;
   groupId: UUID;
+  isSuccess?: boolean;
 }) => {
   const q = useProjectAction();
 
@@ -40,8 +33,9 @@ export const useGetBeneficiariesQr = (payload: {
       });
       return mutate.data;
     },
+    // keepPreviousData: true,
     enabled: !!payload.projectUuid && !!payload.groupId,
-    staleTime: 60 * 60 * 1000, // 1 hour
+    staleTime: 1000,
   });
 
   return query;
@@ -54,35 +48,37 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
 
   return useMutation({
     mutationFn: async (groupId: UUID) => {
-      const mutate = await q.mutateAsync(
-        {
-          uuid: projectUuid,
-          data: {
-            action: 'aaProject.beneficiary.generateQrPdf',
-            payload: {
-              groupId: groupId,
-            },
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.beneficiary.generateQrPdf',
+          payload: {
+            groupId: groupId,
           },
         },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({
-              queryKey: ['beneficiariesQr', { projectUuid, groupId }],
-            });
-            toast.fire({
-              title: 'QR PDF generated successfully',
-              icon: 'success',
-            });
-          },
-          onError: (error: any) => {
-            toast.fire({
-              title: error?.message || 'Failed to generate QR PDF',
-              icon: 'error',
-            });
-          },
-        },
-      );
+      });
       return mutate.data;
+    },
+    onSuccess: (_, groupId) => {
+      queryClient.invalidateQueries({
+        queryKey: ['beneficiariesQr', { projectUuid, groupId }],
+      });
+
+      // useGetBeneficiariesQr({
+      //   projectUuid,
+      //   groupId,
+      // });
+      window.location.reload();
+      toast.fire({
+        title: 'QR generated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      toast.fire({
+        title: error?.message || 'Failed to generate QR PDF',
+        icon: 'error',
+      });
     },
   });
 };

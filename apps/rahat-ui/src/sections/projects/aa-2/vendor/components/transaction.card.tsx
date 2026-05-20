@@ -3,7 +3,7 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
@@ -12,23 +12,35 @@ import { UUID } from 'crypto';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { InKindLog } from '../types';
 
 type Txn = {
   title?: string;
   subtitle?: string;
   date?: string;
-  amount?: string;
+  amount?: string | number;
   hash?: string;
   beneficiaryName?: string;
+  type?: 'fsp' | 'cva' | 'inkind';
 };
+
 type Props = {
   loading: boolean;
   transaction: Txn[];
+  inkindTransactions: InKindLog[];
 };
 
-const Transaction = ({ amount, date, hash, title }: Txn) => {
+const Transaction = ({ amount, date, hash, title, type }: Txn) => {
   const { id } = useParams();
   const projectId = id as string;
+
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -83,14 +95,88 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
       </div>
       <div>
         <p className="font-semibold text-[14px] leading-[24px]">
-          {amount} {getAssetCode(settings, projectId)}
+          {amount} {type === 'cva' ? getAssetCode(settings, projectId) : ''}
         </p>
       </div>
     </div>
   );
 };
 
-export default function TransactionCard({ transaction, loading }: Props) {
+type TransactionViewProps = {
+  value: string;
+  items: Txn[];
+  type: NonNullable<Txn['type']>;
+};
+
+const SkeletonTransaction = () => {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="flex justify-between space-x-4 items-center"
+        >
+          <div className="flex space-x-4 items-center">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+          </div>
+          <Skeleton className="h-6 w-16" />
+        </div>
+      ))}
+    </div>
+  );
+};
+const TransactionView = ({ value, items, type }: TransactionViewProps) => (
+  <TabsContent value={value} className="mt-2 p-2">
+    {items.length ? (
+      items.map((txn) => (
+        <div className="mb-4" key={txn.hash}>
+          <Transaction
+            amount={txn.amount}
+            date={txn.date}
+            hash={txn.hash}
+            title={txn.title}
+            type={type}
+          />
+        </div>
+      ))
+    ) : (
+      <NoResult />
+    )}
+  </TabsContent>
+);
+
+export default function TransactionCard({
+  transaction,
+  inkindTransactions,
+  loading,
+}: Props) {
+  const [activeTab, setActiveTab] = useState('cva');
+
+  const cvaTransactions =
+    transaction?.filter((txn) => txn.title === 'VENDOR_REIMBURSEMENT') || [];
+
+  const normalizedInkindTransactions: Txn[] =
+    inkindTransactions?.map((txn) => ({
+      amount: txn.quantity,
+      date: txn.redeemedAt,
+      hash: txn.txHash,
+      title: txn.groupInkind.inkind.name,
+    })) || [];
+
+  const TabsTriggerStats = [
+    { value: 'cva', title: 'CVA', count: cvaTransactions.length },
+    {
+      value: 'inkind',
+      title: 'In-kind',
+      count: normalizedInkindTransactions.length,
+    },
+  ];
+
   return (
     <div className="border rounded-sm p-4">
       <Heading
@@ -99,41 +185,39 @@ export default function TransactionCard({ transaction, loading }: Props) {
         description="List of recently made transactions"
       />
       {loading ? (
-        <div className="space-y-4">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div
-              key={index}
-              className="flex justify-between space-x-4 items-center"
-            >
-              <div className="flex space-x-4 items-center">
-                <Skeleton className="h-12 w-12 rounded-full" />
+        <SkeletonTransaction />
+      ) : cvaTransactions.length || normalizedInkindTransactions.length ? (
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="border bg-secondary rounded w-full">
+            {TabsTriggerStats.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="w-full data-[state=active]:bg-white"
+              >
+                <span>{tab.title}</span>
+                <span
+                  className={`ml-2 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    activeTab === tab.value
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-300 text-gray-600'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" /> {/* Title */}
-                  <Skeleton className="h-3 w-32" /> {/* Subtitle */}
-                  <Skeleton className="h-3 w-20" /> {/* Date */}
-                </div>
-              </div>
-
-              <Skeleton className="h-6 w-16" />
-            </div>
-          ))}
-        </div>
-      ) : transaction?.length ? (
-        <ScrollArea className=" h-[calc(350px)]">
-          {transaction?.map((txn) => {
-            return (
-              <div className="mb-4" key={txn.hash}>
-                <Transaction
-                  amount={txn.amount}
-                  date={txn.date}
-                  hash={txn.hash}
-                  title={txn.title}
-                />
-              </div>
-            );
-          })}
-        </ScrollArea>
+          <ScrollArea className="h-[calc(100vh-500px)]">
+            <TransactionView value="cva" items={cvaTransactions} type="cva" />
+            <TransactionView
+              value="inkind"
+              items={normalizedInkindTransactions}
+              type="inkind"
+            />
+          </ScrollArea>
+        </Tabs>
       ) : (
         <div className="h-full grid place-items-center">
           <div className="flex flex-col items-center text-muted-foreground">

@@ -105,12 +105,18 @@ export default function BeneficiaryView() {
 
   const handleDateChange = (range: DateRange | undefined) => {
     setDateRange(range);
-
+    
     if (range?.from && range?.to) {
+      const startDate = new Date(range.from);
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(range.to);
+      endDate.setHours(23, 59, 59, 999);
+
       setFilters({
         ...filters,
-        startDate: range.from,
-        endDate: range.to,
+        startDate,
+        endDate,
       });
     }
   };

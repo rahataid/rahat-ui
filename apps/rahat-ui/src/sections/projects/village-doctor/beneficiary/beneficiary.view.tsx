@@ -1,5 +1,11 @@
 'use client';
-import { useCambodiaBeneficiaries, usePagination } from '@rahat-ui/query';
+import {
+  MS_CAM_ACTIONS,
+  normalizeCambodiaBeneficiaryListResponse,
+  useCambodiaBeneficiaries,
+  usePagination,
+  useProjectAction,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
@@ -14,7 +20,7 @@ import { UUID } from 'crypto';
 import { Download, SlidersHorizontal, UserRoundX } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
@@ -49,6 +55,13 @@ export default function ELVillageDoctorVillagerView() {
   // const { name, type, ...otherFilters } = filters;
   const debouncedSearch = useDebounce(filters, 500);
 
+  const [isExporting, setIsExporting] = useState(false);
+  const exportAction = useProjectAction([
+    MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+    'export',
+    id,
+  ]);
+
   const { data, isLoading } = useCambodiaBeneficiaries({
     ...(debouncedSearch as any),
     page: pagination.page,
@@ -58,16 +71,6 @@ export default function ELVillageDoctorVillagerView() {
     projectUUID: id,
     /** Must win over any stray `enabled` key from hash/filters spread */
     enabled: true,
-  });
-  const listTotal = data?.response?.meta?.total;
-  const { data: allData } = useCambodiaBeneficiaries({
-    ...(debouncedSearch as any),
-    enabled: typeof listTotal === 'number' && listTotal > 0,
-    page: 1,
-    perPage: listTotal ?? pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
   });
 
   useEffect(() => {
@@ -108,7 +111,7 @@ export default function ELVillageDoctorVillagerView() {
     onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
-      return originalRow.walletAddress;
+      return originalRow.uuid ?? originalRow.walletAddress;
     },
 
     state: {
@@ -117,25 +120,52 @@ export default function ELVillageDoctorVillagerView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = allData?.data || [];
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((item: any) => {
-      const vd = villageDoctorDisplayName(item);
-      const ep = eyePartnerDisplayName(item);
-      return {
-        Name: item.piiData?.name,
-        Phone: item.piiData?.phone,
-        // Type: item.type,
-        // Gender: item.projectData?.gender,
-        'Village Doctor': vd === '-' ? '' : vd,
-        'Eye Partner': ep === '-' ? '' : ep,
-        TimeStamp: new Date(item.createdAt).toLocaleDateString(),
-      };
-    });
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Villagers');
+    const total = processedData?.response?.meta?.total;
+    if (!total || total <= 0) return;
 
-    XLSX.writeFile(workbook, 'Villagers.xlsx');
+    setIsExporting(true);
+    try {
+      const raw = await exportAction.mutateAsync({
+        uuid: id,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+          payload: {
+            page: 1,
+            perPage: total,
+            order: 'desc',
+            sort: 'createdAt',
+            projectUUID: id,
+            ...(typeof debouncedSearch?.name === 'string' &&
+            debouncedSearch.name.trim()
+              ? { name: debouncedSearch.name.trim() }
+              : {}),
+            ...(typeof debouncedSearch?.type === 'string' && debouncedSearch.type
+              ? { type: debouncedSearch.type }
+              : {}),
+          },
+        },
+      });
+      const rowsToDownload =
+        normalizeCambodiaBeneficiaryListResponse(raw)?.data || [];
+      const workbook = XLSX.utils.book_new();
+      const worksheetData = rowsToDownload?.map((item: any) => {
+        const vd = villageDoctorDisplayName(item);
+        const ep = eyePartnerDisplayName(item);
+        return {
+          Name: item.piiData?.name,
+          Phone: item.piiData?.phone,
+          'Village Doctor': vd === '-' ? '' : vd,
+          'Eye Partner': ep === '-' ? '' : ep,
+          TimeStamp: new Date(item.createdAt).toLocaleDateString(),
+        };
+      });
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Villagers');
+
+      XLSX.writeFile(workbook, 'Villagers.xlsx');
+    } finally {
+      setIsExporting(false);
+    }
   };
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
@@ -160,9 +190,11 @@ export default function ELVillageDoctorVillagerView() {
             <Button
               variant="outline"
               size="sm"
+              disabled={isExporting || !processedData?.response?.meta?.total}
               onClick={() => handleDownload()}
             >
-              <Download className="mr-2 h-4 w-4" /> Download Villagers
+              <Download className="mr-2 h-4 w-4" />{' '}
+              {isExporting ? 'Preparing…' : 'Download Villagers'}
             </Button>
           </div>
         </div>
@@ -201,6 +233,7 @@ export default function ELVillageDoctorVillagerView() {
               table={table}
               loading={isLoading}
               tableHeight="h-[calc(100vh-480px)]"
+              emptyMessage="No villagers found."
             />
             <CustomPagination
               currentPage={pagination.page}

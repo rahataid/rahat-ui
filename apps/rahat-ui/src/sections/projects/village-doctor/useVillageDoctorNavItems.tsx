@@ -39,7 +39,7 @@ export const useNavItems = () => {
       icon: <Users size={18} strokeWidth={1.5} />,
     },
     {
-      title: 'Eye Partners',
+      title: 'Eye Partner Optical Store',
       path: `/projects/el-village-doctor/${id}/vendors`,
       subtitle: 20,
       icon: <Hospital size={18} strokeWidth={1.5} />,

@@ -73,6 +73,7 @@ export default function TransactionHistoryView({ walletAddress }: Props) {
         table={table}
         tableHeight="h-[calc(100vh-500px)]"
         loading={isLoading}
+        emptyMessage="No transactions found."
       />
     </div>
   );

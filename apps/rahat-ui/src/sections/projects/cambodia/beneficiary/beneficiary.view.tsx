@@ -1,5 +1,11 @@
 'use client';
-import { useCambodiaBeneficiaries, usePagination } from '@rahat-ui/query';
+import {
+  MS_CAM_ACTIONS,
+  normalizeCambodiaBeneficiaryListResponse,
+  useCambodiaBeneficiaries,
+  usePagination,
+  useProjectAction,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
@@ -14,7 +20,7 @@ import { UUID } from 'crypto';
 import { CloudUpload, Download, UserRoundX } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
@@ -40,6 +46,13 @@ export default function BeneficiaryView() {
   // const { name, type, ...otherFilters } = filters;
   const debouncedSearch = useDebounce(filters, 500);
 
+  const [isExporting, setIsExporting] = useState(false);
+  const exportAction = useProjectAction([
+    MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+    'export',
+    id,
+  ]);
+
   const { data, isLoading } = useCambodiaBeneficiaries({
     ...(debouncedSearch as any),
     page: pagination.page,
@@ -48,16 +61,6 @@ export default function BeneficiaryView() {
     sort: 'createdAt',
     projectUUID: id,
     enabled: true,
-  });
-  const listTotal = data?.response?.meta?.total;
-  const { data: allData } = useCambodiaBeneficiaries({
-    ...(debouncedSearch as any),
-    enabled: typeof listTotal === 'number' && listTotal > 0,
-    page: 1,
-    perPage: listTotal ?? pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
   });
 
   useEffect(() => {
@@ -98,7 +101,7 @@ export default function BeneficiaryView() {
     onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
-      return originalRow.walletAddress;
+      return originalRow.uuid ?? originalRow.walletAddress;
     },
 
     state: {
@@ -107,20 +110,49 @@ export default function BeneficiaryView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = allData?.data || [];
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((item: any) => ({
-      Name: item.piiData?.name,
-      Phone: item.piiData?.phone,
-      Type: item.type,
-      Gender: item.projectData?.gender,
-      HealthWorker: item.healthWorker?.name,
-      TimeStamp: new Date(item.createdAt).toLocaleDateString(),
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
+    const total = processedData?.response?.meta?.total;
+    if (!total || total <= 0) return;
 
-    XLSX.writeFile(workbook, 'Beneficiaries.xlsx');
+    setIsExporting(true);
+    try {
+      const raw = await exportAction.mutateAsync({
+        uuid: id,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+          payload: {
+            page: 1,
+            perPage: total,
+            order: 'desc',
+            sort: 'createdAt',
+            projectUUID: id,
+            ...(typeof debouncedSearch?.name === 'string' &&
+            debouncedSearch.name.trim()
+              ? { name: debouncedSearch.name.trim() }
+              : {}),
+            ...(typeof debouncedSearch?.type === 'string' && debouncedSearch.type
+              ? { type: debouncedSearch.type }
+              : {}),
+          },
+        },
+      });
+      const rowsToDownload =
+        normalizeCambodiaBeneficiaryListResponse(raw)?.data || [];
+      const workbook = XLSX.utils.book_new();
+      const worksheetData = rowsToDownload?.map((item: any) => ({
+        Name: item.piiData?.name,
+        Phone: item.piiData?.phone,
+        Type: item.type,
+        Gender: item.projectData?.gender,
+        HealthWorker: item.healthWorker?.name,
+        TimeStamp: new Date(item.createdAt).toLocaleDateString(),
+      }));
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
+
+      XLSX.writeFile(workbook, 'Beneficiaries.xlsx');
+    } finally {
+      setIsExporting(false);
+    }
   };
   return (
     <>

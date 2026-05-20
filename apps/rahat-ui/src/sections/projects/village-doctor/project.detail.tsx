@@ -116,7 +116,7 @@ export default function ProjectDetail() {
       >
         <DataCard
           {...dataCardToneProps}
-          title="Total EP"
+          title="Total Eye Partners"
           Icon={Users}
           number={String(appStats?.consumers ?? 0)}
         />
@@ -134,19 +134,19 @@ export default function ProjectDetail() {
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Successful Referrals in EP"
+          title="Total Successful Referrals in Eye Partners"
           Icon={BadgeCheck}
           number={String(appStats?.leadsConverted ?? 0)}
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Eyewear Sold in EP"
+          title="Total Eyewear Sold in Eye Partners"
           Icon={Glasses}
           number={String(appStats?.totalEyewearSold ?? 0)}
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Sales in EP (RMB)"
+          title="Total Sales in Eye Partners (RMB)"
           Icon={Banknote}
           number={rmbDisplay}
         />

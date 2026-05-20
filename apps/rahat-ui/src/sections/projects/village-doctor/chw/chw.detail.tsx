@@ -91,8 +91,17 @@ export default function ChwDetail() {
           className="rounded-lg border-solid"
         />
         <DataCard
-          title="Total Successful Referrals"
+          title="Total Number of Successful Referrals"
           number={String(s.leadsConverted ?? s.leads_converted ?? 0)}
+          Icon={ShoppingBag}
+          className="rounded-lg border-solid"
+        />
+
+        <DataCard
+          title="Total Sales in RMB"
+          number={String(
+            s.totalPurchaseAmountRmb ?? s.totalPurchaseAmount ?? 0,
+          )}
           Icon={ShoppingBag}
           className="rounded-lg border-solid"
         />

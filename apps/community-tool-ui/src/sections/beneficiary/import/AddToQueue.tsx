@@ -42,7 +42,15 @@ export default function AddToQueue({
   function renderItemKey(item: any, key: string) {
     if (key === 'isDuplicate') {
       return '';
-    } else return item[key];
+    }
+
+    // Handle boolean values
+    if (typeof item[key] === 'boolean') {
+      return item[key] ? 'Yes' : 'No';
+      // OR return item[key].toString();
+    }
+
+    return item[key];
   }
 
   const hasDuplicates = data.some((item: any) => item.isDuplicate);

@@ -12,6 +12,7 @@ type Store = {
   loading: boolean;
   mappings: any[];
   processedData: any[];
+  fieldSuggestions: any[]; //
   rawData: any[];
   validBenef: any[];
   hasUUID: boolean;
@@ -22,6 +23,7 @@ type Store = {
   setImportId: (importId: string) => void;
   setImportSource: (importSource: string) => void;
   setKoboForms: (koboForms: []) => void;
+  setFieldSuggestions: (fieldSuggestions: any[]) => void;
   setLoading: (loading: boolean) => void;
   setMappings: (mappings: any[]) => void;
   setProcessedData: (processedData: any[]) => void;
@@ -40,6 +42,8 @@ const initialState = {
   koboForms: [],
   loading: false,
   mappings: [],
+  fieldSuggestions: [],
+
   processedData: [],
   rawData: [],
   validBenef: [],
@@ -48,6 +52,7 @@ const initialState = {
 
 export const useBeneficiaryImportStore = create<Store>((set) => ({
   ...initialState,
+  setFieldSuggestions: (fieldSuggestions: any[]) => set({ fieldSuggestions }),
   setCurrentScreen: (currentScreen: string) => set({ currentScreen }),
   setDuplicateData: (duplicateData: any[]) => set({ duplicateData }),
   setHasExistingMapping: (hasExistingMapping: boolean) =>

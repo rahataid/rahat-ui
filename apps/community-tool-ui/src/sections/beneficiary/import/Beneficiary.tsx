@@ -30,11 +30,16 @@ import InfoBox from './InfoBox';
 
 import {
   useBeneficiaryImportStore,
+  useCommunitySettingList,
   useCreateImportSource,
   useExistingFieldMappings,
   useFetchKoboSettings,
+  useGetStandardFields,
+  useUploadCsvForMapping,
+  useUploadStandardJson,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
+// import beneficiaryStandard from '../../../../../../beneficiary.json';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
@@ -43,12 +48,30 @@ interface IProps {
   fieldDefinitions: [];
 }
 
+interface AiClassifiedHeader {
+  header?: string;
+  predicted_label?: string;
+  other_similar?: unknown;
+  match?: unknown;
+  similarity?: unknown;
+}
+
 export default function BenImp({ fieldDefinitions }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
   const existingMapQuery = useExistingFieldMappings();
   const importSourceQuery = useCreateImportSource();
+  const { isLoading, data } = useCommunitySettingList({ page: 1, perPage: 20 });
+  const aiSetting = data?.data.find(
+    (setting: any) => setting.name === 'AI_API_URL',
+  );
+
+  const aiBaseurl = aiSetting?.value?.URL;
+
+  // filed suggesting api  Hooks
+  const uploadCsvForMapping = useUploadCsvForMapping();
+  // const uploadStandardJson = useUploadStandardJson();
 
   const {
     currentScreen,
@@ -75,15 +98,93 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setValidBenef,
     hasUUID,
     setHasUUID,
+    fieldSuggestions,
+    setFieldSuggestions,
   } = useBeneficiaryImportStore();
   // ==========States=============
+
+  const fetchAiMappingSuggestions = async (file: File) => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadResult = await uploadCsvForMapping.mutateAsync({
+        payload: formData,
+        baseURL: aiBaseurl,
+      });
+
+      if (uploadResult && uploadResult.classified_headers.length) {
+        const usedTargetFields = new Set<string>();
+
+        // Sort headers to prioritize exact matches (where header === predicted_label)
+        const sortedHeaders = [...uploadResult.classified_headers].sort(
+          (a, b) => {
+            const aIsExactMatch = a.header === a.predicted_label;
+            const bIsExactMatch = b.header === b.predicted_label;
+            // Exact matches come first
+            if (aIsExactMatch && !bIsExactMatch) return -1;
+            if (!aIsExactMatch && bIsExactMatch) return 1;
+            return 0;
+          },
+        );
+
+        const aiData = sortedHeaders.map((header: AiClassifiedHeader) => {
+          const predictedLabel = String(header.predicted_label || '').trim();
+          const sourceHeader = String(header.header || '').trim();
+
+          let targetField = predictedLabel || sourceHeader;
+
+          // If the predicted label is already used, fall back to source header
+          if (usedTargetFields.has(targetField)) {
+            targetField = sourceHeader;
+          }
+
+          // If source header is also taken, add a suffix
+          if (usedTargetFields.has(targetField)) {
+            let suffix = 1;
+            let uniqueTargetField = `${sourceHeader}_${suffix}`;
+
+            while (usedTargetFields.has(uniqueTargetField)) {
+              suffix += 1;
+              uniqueTargetField = `${sourceHeader}_${suffix}`;
+            }
+
+            targetField = uniqueTargetField;
+          }
+
+          usedTargetFields.add(targetField);
+
+          return {
+            sourceField: header.header,
+            targetField,
+            other_similar: header.other_similar,
+            match: header.match,
+            similarity: header.similarity,
+          };
+        });
+        console.log('AI Mapping Suggestions:', aiData);
+
+        setFieldSuggestions(aiData); // Store AI suggestions separately
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('AI Mapping Error:', error);
+      setLoading(false);
+      // Silently fail - user can still map manually
+    }
+  };
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
     const res = await existingMapQuery.mutateAsync(importId);
+
     if (res && res?.data) {
       setHasExistingMapping(true);
       const { fieldMapping } = res.data;
+
       return setMappings(fieldMapping?.sourceTargetMappings);
     }
   };
@@ -148,6 +249,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
+    console.log('handleTargetFieldChange', sourceField, targetField);
     // Source field as it is
     // Target field sanitized
     if (sourceField === EMPTY_SELECTION) {
@@ -171,28 +273,55 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setLoading(true);
     setRawData([]);
     const files = e.target.files || [];
+    if (!files.length) {
+      setLoading(false);
+      return;
+    }
     const fileName = formatNameString(files[0].name);
-    if (!files.length) return;
-    const reader = new FileReader();
-    const file = files[0];
-    const isCsv = file.name.toLowerCase().endsWith('.csv');
 
-    reader.onload = (e: any) => {
-      const data = e.target.result;
-      const workbook = xlsx.read(data, { type: 'array', raw: isCsv });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const json = xlsx.utils.sheet_to_json(worksheet, {
-        defval: '',
-        raw: isCsv
-      }) as any;
-      const sanitized = removeFieldsWithUnderscore(json || []);
-      setRawData(sanitized);
+    const readFileAndFetchSuggestions = () => {
+      return new Promise<void>((resolve, reject) => {
+        const reader = new FileReader();
+        const file = files[0];
+        const isCsv = file.name.toLowerCase().endsWith('.csv');
+
+        reader.onload = async (event: any) => {
+          try {
+            const data = event.target.result;
+            const workbook = xlsx.read(data, { type: 'array', raw: isCsv });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = xlsx.utils.sheet_to_json(worksheet, {
+              defval: '',
+              raw: isCsv,
+            }) as any;
+            const sanitized = removeFieldsWithUnderscore(json || []);
+            setRawData(sanitized);
+            await fetchAiMappingSuggestions(file);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsArrayBuffer(files[0]);
+      });
     };
-    reader.readAsArrayBuffer(files[0]);
-    setImportId(fileName);
-    await fetchExistingMapping(fileName);
-    setLoading(false);
+
+    try {
+      await readFileAndFetchSuggestions();
+      setImportId(fileName);
+      await fetchExistingMapping(fileName);
+    } catch (error) {
+      console.error('File selection error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error reading file',
+        text: 'There was an issue processing the uploaded file.',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoClick = () => {
@@ -232,10 +361,36 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
   const validateOrImport = (action: string) => {
     setValidBenef([]);
+
+    const finalMappings = [...mappings];
+
+    if (fieldSuggestions && fieldSuggestions.length > 0) {
+      fieldSuggestions.forEach((aiSuggestion: any) => {
+        const existingMapping = finalMappings.find(
+          (m: any) => m.sourceField === aiSuggestion.sourceField,
+        );
+
+        // If user hasn't manually selected this field
+        if (!existingMapping && aiSuggestion.targetField) {
+          if (aiSuggestion.similarity === 100) {
+            finalMappings.push({
+              sourceField: aiSuggestion.sourceField,
+              targetField: aiSuggestion.targetField,
+            });
+          } else {
+            console.log('ai mapping skipped');
+          }
+        } else if (existingMapping) {
+          console.log(' user already selected: skipping ai suggestion ');
+        }
+      });
+
+      setMappings(finalMappings);
+    }
     let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
 
-    for (let m of mappings) {
+    for (const m of finalMappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         const replaced = finalPayload.map((item: any) => {
@@ -308,6 +463,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     try {
       setLoading(true);
       const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
+
       // If action is IMPORT, source will be created on backend!
       // Otherwise, just validate in the backend
       if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
@@ -321,6 +477,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
       const { result, invalidFields, hasUUID } = res?.data;
       setHasUUID(hasUUID);
+
       setProcessedData(result);
       if (invalidFields.length) setInvalidFields(invalidFields);
       setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);

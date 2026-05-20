@@ -91,7 +91,6 @@ const BeneficiaryGroupsDetails = () => {
   if (isGroupLoading || isQrLoading) {
     return <SpinnerLoader />;
   }
-  console.log('qrDetails', qrDetails);
 
   return (
     <div className="p-4 ">

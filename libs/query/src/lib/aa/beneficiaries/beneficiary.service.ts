@@ -36,6 +36,11 @@ export const useGetBeneficiariesQr = (payload: {
     // keepPreviousData: true,
     enabled: !!payload.projectUuid && !!payload.groupId,
     staleTime: 1000,
+    refetchInterval: (query) => {
+      const data = query.state.data as { status?: string } | null;
+      if (data?.status === 'processing') return 3000;
+      return false;
+    },
   });
 
   return query;
@@ -63,12 +68,6 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
       queryClient.invalidateQueries({
         queryKey: ['beneficiariesQr', { projectUuid, groupId }],
       });
-
-      // useGetBeneficiariesQr({
-      //   projectUuid,
-      //   groupId,
-      // });
-      window.location.reload();
       toast.fire({
         title: 'QR generated successfully',
         icon: 'success',

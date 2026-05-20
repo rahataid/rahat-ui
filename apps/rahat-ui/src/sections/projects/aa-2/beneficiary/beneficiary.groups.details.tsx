@@ -37,22 +37,13 @@ const BeneficiaryGroupsDetails = () => {
   const groupId = params.groupId as UUID;
   const { data: groupDetails, isPending: isGroupLoading } =
     useSingleBeneficiaryGroup(projectId, groupId);
+
   const { data: qrDetails, isPending: isQrLoading } = useGetBeneficiariesQr({
     projectUuid: projectId,
     groupId,
   });
 
   const { mutate: generateQr } = useGenerateQrPdf(projectId);
-
-  const handleGenerateQr = () => {
-    generateQr(groupId);
-  };
-
-  const handleDownloadQr = () => {
-    if (qrDetails?.fileUrl) {
-      window.open(qrDetails.fileUrl, '_blank');
-    }
-  };
 
   console.log('qrDetails', qrDetails);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -114,7 +105,7 @@ const BeneficiaryGroupsDetails = () => {
         {qrDetails?.fileUrl ? (
           <Button
             variant="outline"
-            onClick={handleDownloadQr}
+            onClick={() => window.open(qrDetails.fileUrl, '_blank')}
             className="cursor-pointer"
           >
             <CloudDownload className="mr-1" />
@@ -123,8 +114,9 @@ const BeneficiaryGroupsDetails = () => {
         ) : (
           <Button
             variant="outline"
-            onClick={handleGenerateQr}
+            onClick={() => generateQr(groupId)}
             className="cursor-pointer"
+            disabled={isQrLoading}
           >
             <CloudDownload className="mr-1" />
             Generate QR

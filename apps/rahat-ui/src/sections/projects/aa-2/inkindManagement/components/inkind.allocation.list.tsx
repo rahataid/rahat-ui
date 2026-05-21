@@ -230,10 +230,7 @@ export default function InkindAllocationList() {
             beneficiaryCount: String(r.beneficiaryCount),
             from: modeTab.toLowerCase(),
           });
-          console.debug(
-            'Navigating to details page with params:',
-            params.toString(),
-          );
+
           return (
             <TooltipComponent
               Icon={Eye}
@@ -339,11 +336,7 @@ export default function InkindAllocationList() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <DemoTable
-        table={table}
-        // tableHeight="h-[calc(100vh-420px)]"
-        loading={isLoading}
-      />
+      <DemoTable table={table} loading={isLoading} />
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}

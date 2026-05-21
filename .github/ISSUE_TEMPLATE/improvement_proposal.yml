@@ -1,0 +1,64 @@
+name: Rahat Improvement Proposal 🚀
+description: Propose a new feature or improvement for the Rahat platform
+title: '[RIP]: '
+labels: ['Feature Title 🏷️', 'Needs Triage']
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 🌟 Thank you for taking the time to contribute to Rahat!
+        Added to [@rahat2026](https://github.com/orgs/rahataid/projects/61) when filed from repos with project automation.
+
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product (project board)
+      options:
+        - EL
+        - AA
+        - CVA
+        - CT
+        - Core
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P1 — current sprint
+        - P2 — next sprint
+        - P3 — backlog
+    validations:
+      required: true
+
+  - type: textarea
+    id: abstract
+    attributes:
+      label: 'Abstract 🧠'
+      description: Provide a concise summary of the feature or improvement.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 'Motivation 💡'
+    validations:
+      required: true
+
+  - type: textarea
+    id: pitch
+    attributes:
+      label: 'Pitch 🎯'
+    validations:
+      required: true
+
+  - type: textarea
+    id: path_to_achieve
+    attributes:
+      label: 'Path to Achieve 🚧'
+    validations:
+      required: false

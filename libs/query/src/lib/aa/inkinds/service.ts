@@ -403,7 +403,12 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
   const toast = useToast();
 
   return useMutation({
-    mutationFn: (payload: { groupId: string; inkindId: string }) =>
+    mutationFn: (payload: {
+      groupId: string;
+      inkindId: string;
+      mode?: string;
+      payoutProcessorId?: string;
+    }) =>
       runAction(
         q,
         projectUUID,

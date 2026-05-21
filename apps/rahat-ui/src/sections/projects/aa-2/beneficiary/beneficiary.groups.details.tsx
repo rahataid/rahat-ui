@@ -126,14 +126,14 @@ const BeneficiaryGroupsDetails = () => {
       </div>
       <div className="flex gap-6 mb-5">
         <DataCard
-          className="border-solid w-1/4 rounded-md"
+          className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
           title="Total Beneficiaries"
           Icon={User}
           number={groupDetails?.groupedBeneficiaries?.length || 0}
         />
         <DataCard
-          className="border-solid w-1/4 rounded-md"
+          className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
           title="Total Token Assigned"
           Icon={Coins}

@@ -1,11 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useInkinds, useGetUnassignedGroupInkind } from '@rahat-ui/query';
+import {
+  useInkinds,
+  useGetUnassignedGroupInkind,
+  PayoutMode,
+  useAAVendorsList,
+} from '@rahat-ui/query';
 import { cn } from 'libs/shadcn/src';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import {
@@ -31,9 +36,12 @@ import {
 } from 'libs/shadcn/src/components/ui/command';
 import { Check, ChevronDown } from 'lucide-react';
 import {
+  AssignInkindOfflineSchema,
   AssignInkindSchema,
   AssignInkindValues,
 } from './schema/inkinds.schema';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 interface Props {
   onNext: (
@@ -42,6 +50,9 @@ interface Props {
       groupName: string;
       availableStock: number;
       beneficiaryCount: number;
+      mode: PayoutMode;
+      vendorId?: string;
+      vendorName?: string;
     },
   ) => void;
 }
@@ -52,10 +63,20 @@ export default function AssignInkindForm({ onNext }: Props) {
 
   const [inkindOpen, setInkindOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
+  const [vendorOpen, setVendorOpen] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState<any>(null);
+
+  const isOfflineRef = useRef(false);
 
   const form = useForm<AssignInkindValues>({
-    resolver: zodResolver(AssignInkindSchema),
-    defaultValues: { inkindId: '', groupId: '' },
+    resolver: (values, context, options) => {
+      const schema = isOfflineRef.current
+        ? AssignInkindOfflineSchema
+        : AssignInkindSchema;
+      return zodResolver(schema)(values, context, options);
+    },
+    defaultValues: { inkindId: '', groupId: '', vendorId: '' },
   });
 
   const { control, handleSubmit, watch, setValue } = form;
@@ -79,8 +100,28 @@ export default function AssignInkindForm({ onNext }: Props) {
   );
   const groups: any[] = unassignedGroupsData?.data ?? [];
 
+  const { data: vendors } = useAAVendorsList({
+    projectUUID: projectUUID,
+    page: 1,
+    perPage: 100,
+    order: 'desc',
+    sort: 'createdAt',
+  });
+
+  const vendorItems: any[] = vendors?.data ?? [];
+
   const selectedInkind = inkindItems.find((i) => i.uuid === selectedInkindId);
   const selectedGroup = groups.find((g: any) => g.uuid === selectedGroupId);
+
+  const handleModeToggle = (checked: boolean) => {
+    const newOffline = !checked;
+    setIsOffline(newOffline);
+    isOfflineRef.current = newOffline;
+    if (checked) {
+      setSelectedVendor(null);
+      setValue('vendorId', '');
+    }
+  };
 
   const onSubmit = (data: AssignInkindValues) => {
     const availableStock = selectedInkind?.availableStock ?? 0;
@@ -91,6 +132,7 @@ export default function AssignInkindForm({ onNext }: Props) {
       groupName: selectedGroup?.name ?? '',
       availableStock,
       beneficiaryCount: 0,
+      mode: isOffline ? PayoutMode.OFFLINE : PayoutMode.ONLINE,
     });
   };
 
@@ -98,7 +140,24 @@ export default function AssignInkindForm({ onNext }: Props) {
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
-          <p className="text-base font-semibold">Assign Inkind to Group</p>
+          <div className="flex items-center justify-between ">
+            <p className="text-base font-semibold">Assign Inkind to Group</p>
+
+            <div className="flex items-center space-x-3">
+              <Switch
+                checked={!isOffline}
+                onCheckedChange={handleModeToggle}
+                id="assign-mode-switch"
+              />
+              <Label htmlFor="assign-mode-switch">
+                Assign mode:{' '}
+                <span className="font-semibold">
+                  {isOffline ? 'Offline' : 'Online'}
+                </span>
+              </Label>
+            </div>
+          </div>
+          {/* InKind Item */}
           <FormField
             control={control}
             name="inkindId"
@@ -138,12 +197,14 @@ export default function AssignInkindForm({ onNext }: Props) {
                           {inkindItems.map((item: any) => (
                             <CommandItem
                               key={item.uuid}
-                              value={item.uuid}
+                              value={item.name}
                               onSelect={() => {
                                 setValue('inkindId', item.uuid, {
                                   shouldValidate: true,
                                 });
                                 setValue('groupId', '');
+                                setValue('vendorId', '');
+                                setSelectedVendor(null);
                                 setInkindOpen(false);
                               }}
                             >
@@ -179,6 +240,7 @@ export default function AssignInkindForm({ onNext }: Props) {
             )}
           />
 
+          {/* Beneficiary Group */}
           <FormField
             control={control}
             name="groupId"
@@ -218,7 +280,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                           {groups.map((group: any) => (
                             <CommandItem
                               key={group.uuid}
-                              value={group.uuid}
+                              value={group.name}
                               onSelect={() => {
                                 setValue('groupId', group.uuid, {
                                   shouldValidate: true,
@@ -255,12 +317,106 @@ export default function AssignInkindForm({ onNext }: Props) {
             )}
           />
 
+          {/* Vendor selection — shown only in offline mode */}
+          {isOffline && (
+            <FormField
+              control={control}
+              name="vendorId"
+              render={({ field }) => (
+                <FormItem className="flex flex-col space-y-3 w-full">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="mt-1 text-base font-medium">
+                      Select Vendor
+                    </FormLabel>
+                    {selectedVendor && (
+                      <p className="text-xs text-muted-foreground">
+                        Selected:{' '}
+                        <span className="font-semibold text-primary">
+                          {selectedVendor.inkind?.name}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                  <Popover open={vendorOpen} onOpenChange={setVendorOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            'justify-between font-normal w-full',
+                            !field.value && 'text-muted-foreground',
+                          )}
+                        >
+                          {selectedVendor
+                            ? `${selectedVendor.name ?? 'N/A'} `
+                            : 'Select Vendor'}
+                          <ChevronDown className="opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search vendors..."
+                          className="h-9"
+                        />
+                        <CommandList>
+                          <CommandEmpty>No vendors found.</CommandEmpty>
+                          <CommandGroup>
+                            {vendorItems.map((item: any) => (
+                              <CommandItem
+                                key={item.uuid}
+                                value={item.name}
+                                onSelect={() => {
+                                  setValue('vendorId', item.uuid, {
+                                    shouldValidate: true,
+                                  });
+                                  setSelectedVendor(item);
+                                  setVendorOpen(false);
+                                }}
+                              >
+                                <span className="flex-1">{item.name}</span>
+                                <Check
+                                  className={cn(
+                                    'ml-auto',
+                                    field.value === item.uuid
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {selectedVendor && (
+                    <p className="text-xs text-muted-foreground -mt-1">
+                      Selected Vendor:{' '}
+                      <span className="font-semibold text-primary">
+                        {selectedVendor.name}
+                      </span>
+                    </p>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
           <div className="flex justify-end items-center">
             <div className="flex space-x-2">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => form.reset()}
+                onClick={() => {
+                  form.reset();
+                  setIsOffline(false);
+                  setSelectedVendor(null);
+                }}
                 className="px-10 rounded-sm w-40"
               >
                 Clear

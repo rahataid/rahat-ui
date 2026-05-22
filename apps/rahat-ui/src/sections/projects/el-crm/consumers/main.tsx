@@ -1,16 +1,10 @@
 'use client';
 
 import React from 'react';
-import {
-  Card,
-  CardContent,
-} from '@rahat-ui/shadcn/components/card';
+import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import DemoTable from 'apps/rahat-ui/src/components/table';
-import {
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useConsumersTableColumn } from './useConsumersTableColumn';
 import {
   Search,
@@ -125,7 +119,7 @@ export default function ConsumersView() {
     ).length;
   }, [filters]);
 
-  const totalConsumers = consumers.length;
+  const totalConsumers = meta?.total ?? 0;
   const messageDeliverySuccessful = 0;
   const messageDeliveryFailed = 0;
   const consumersCompleting1Year = 0;
@@ -235,9 +229,7 @@ export default function ConsumersView() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
-                          <stat.icon
-                            className={`h-5 w-5 ${stat.iconColor}`}
-                          />
+                          <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="bottom">

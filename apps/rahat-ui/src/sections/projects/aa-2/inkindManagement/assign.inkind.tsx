@@ -6,6 +6,7 @@ import { ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 import AssignInkindForm from './forms/assign.inkind.form';
 import AssignInkindConfirmation from './forms/assign.inkind.confirmation';
 import { AssignInkindValues } from './forms/schema/inkinds.schema';
+import { PayoutMode } from '@rahat-ui/query';
 
 const ASSIGN_INKIND_STEPS = [
   {
@@ -21,6 +22,9 @@ type AssignInkindSummary = AssignInkindValues & {
   groupName: string;
   availableStock: number;
   beneficiaryCount: number;
+  mode: PayoutMode;
+  vendorId?: string;
+  vendorName?: string;
 };
 
 export default function AssignInkindView() {

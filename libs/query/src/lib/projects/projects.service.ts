@@ -907,7 +907,7 @@ function unwrapProjectActionListRows(
 }
 
 export const useCHWList = (payload: any) => {
-  const action = useProjectAction();
+  const action = useProjectAction(['cambodiaCHWList']);
   const { projectUUID, ...restPayload } = payload;
 
   const restPayloadString = JSON.stringify(restPayload);
@@ -995,10 +995,10 @@ export const normalizeCambodiaBeneficiaryListResponse = (raw: any) => {
   const rows = Array.isArray(inner)
     ? inner
     : inner &&
-        typeof inner === 'object' &&
-        Array.isArray((inner as { data?: unknown }).data)
-      ? (inner as { data: Beneficiary[] }).data ?? []
-      : [];
+      typeof inner === 'object' &&
+      Array.isArray((inner as { data?: unknown }).data)
+    ? (inner as { data: Beneficiary[] }).data ?? []
+    : [];
   const resp = raw.response as { meta?: unknown; data?: unknown } | undefined;
   const paginatedMeta =
     inner &&
@@ -1341,11 +1341,15 @@ export const useCambodiaDiscardedBeneficiaries = (payload: any) => {
 };
 
 export const useCambodiaVendorsStats = (payload: any) => {
-  const q = useProjectAction<any[]>();
+  const q = useProjectAction<any[]>(['cambodiaVendorStats']);
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
   const query = useQuery({
-    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS, restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,

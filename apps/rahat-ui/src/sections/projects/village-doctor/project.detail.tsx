@@ -7,8 +7,11 @@ import { UUID } from 'crypto';
 import {
   BadgeCheck,
   Banknote,
+  Coins,
+  Eye,
   Glasses,
   Stethoscope,
+  UserCheck,
   UserPlus,
   Users,
 } from 'lucide-react';
@@ -117,7 +120,7 @@ export default function ProjectDetail() {
         <DataCard
           {...dataCardToneProps}
           title="Total Eye Partners"
-          Icon={Users}
+          Icon={Eye}
           number={String(appStats?.consumers ?? 0)}
         />
         <DataCard
@@ -128,14 +131,14 @@ export default function ProjectDetail() {
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Villagers Referred"
-          Icon={UserPlus}
+          title="Total Number of Villagers Referred"
+          Icon={Users}
           number={String(appStats?.leadsRecieved ?? 0)}
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Successful Referrals in Eye Partners"
-          Icon={BadgeCheck}
+          title="Total Number of Successful Referrals in Eye Partners"
+          Icon={UserCheck}
           number={String(appStats?.leadsConverted ?? 0)}
         />
         <DataCard
@@ -147,7 +150,7 @@ export default function ProjectDetail() {
         <DataCard
           {...dataCardToneProps}
           title="Total Sales in Eye Partners (RMB)"
-          Icon={Banknote}
+          Icon={Coins}
           number={rmbDisplay}
         />
       </div>

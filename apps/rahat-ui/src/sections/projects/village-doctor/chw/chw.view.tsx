@@ -25,6 +25,7 @@ import {
   SlidersHorizontal,
   UserCog,
   Users,
+  X,
 } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
@@ -42,6 +43,11 @@ export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [dateRangeError, setDateRangeError] = React.useState<string | null>(
+    null,
+  );
+  const [filterResetKey, setFilterResetKey] = React.useState(0);
+  const todayStr = new Date().toISOString().split('T')[0];
 
   const {
     pagination,
@@ -73,26 +79,9 @@ export default function CHWView() {
     return next;
   }, [debouncedSearch]);
 
-  /** Same `cambodia.vendor.stats` payload as Eye Partner (omit `vendorId` = program totals). */
-  const vendorProgramStatsPayload = React.useMemo(() => {
-    const payload: { projectUUID: string; from?: string; to?: string } = {
-      projectUUID: id,
-    };
-    const from =
-      typeof chwListFilters.from === 'string' ? chwListFilters.from.trim() : '';
-    const to =
-      typeof chwListFilters.to === 'string' ? chwListFilters.to.trim() : '';
-    if (from) {
-      payload.from = new Date(`${from}T00:00:00`).toISOString();
-    }
-    if (to) {
-      payload.to = new Date(`${to}T23:59:59.999`).toISOString();
-    }
-    return payload;
-  }, [id, chwListFilters.from, chwListFilters.to]);
-
+  /** Program-wide totals — not scoped by table date filters. */
   const { data: programStats, isFetching: programStatsFetching } =
-    useCambodiaVendorsStats(vendorProgramStatsPayload) as any;
+    useCambodiaVendorsStats({ projectUUID: id }) as any;
   const { data, fetchAllData } = useCHWList({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -140,31 +129,31 @@ export default function CHWView() {
     }
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => ({
-      villageDoctorName: item.name,
-      koboUserName: item.koboUsername,
+      'Village Doctor Name': item.name,
+      'Kobo Username': item.koboUsername,
       /** Matches table: conversions in period (not SALE-type beneficiaries). */
-      successfulReferrals:
+      'Successful Referrals':
         item._count?.LeadConversions ?? item._count?.SALE ?? 0,
-      villagersReferred: item._count?.LEAD || 0,
-      glassesPurchased:
+      'Villagers Referred': item._count?.LEAD || 0,
+      'Glasses Purchased':
         item.extras?.glassesPurchased ?? item.extras?.purchaseEyewearCount ?? 0,
-      purchaseAmountRmb:
+      'Purchase Amount (RMB)':
         item.extras?.purchaseAmountRmb ?? item.extras?.purchaseAmount ?? 0,
-      eyePartner: item.vendor?.name || '-',
+      'Eye Partner': item.vendor?.name || '-',
     }));
     const summaryByEyePartner = worksheetData.reduce((acc: any, item: any) => {
-      const key = item.eyePartner;
+      const key = item['Eye Partner'];
       acc[key] = acc[key] || {
-        eyePartner: key,
-        villagersReferred: 0,
-        successfulReferrals: 0,
-        glassesPurchased: 0,
-        purchaseAmountRmb: 0,
+        'Eye Partner': key,
+        'Villagers Referred': 0,
+        'Successful Referrals': 0,
+        'Glasses Purchased': 0,
+        'Purchase Amount (RMB)': 0,
       };
-      acc[key].villagersReferred += item.villagersReferred;
-      acc[key].successfulReferrals += item.successfulReferrals;
-      acc[key].glassesPurchased += item.glassesPurchased;
-      acc[key].purchaseAmountRmb += item.purchaseAmountRmb;
+      acc[key]['Villagers Referred'] += item['Villagers Referred'];
+      acc[key]['Successful Referrals'] += item['Successful Referrals'];
+      acc[key]['Glasses Purchased'] += item['Glasses Purchased'];
+      acc[key]['Purchase Amount (RMB)'] += item['Purchase Amount (RMB)'];
       return acc;
     }, {});
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
@@ -210,13 +199,13 @@ export default function CHWView() {
           />
           <DataCard
             title="Total Number of Villagers Referred"
-            number={String(programStats?.data?.leadsConverted ?? 0)}
+            number={String(programStats?.data?.leadsRecieved ?? 0)}
             Icon={Users}
             className="rounded-lg border-solid"
           />
           <DataCard
             title="Total Number of Successful Referrals"
-            number={String(programStats?.data?.leadsRecieved ?? 0)}
+            number={String(programStats?.data?.leadsConverted ?? 0)}
             Icon={Users}
             className="rounded-lg border-solid"
           />
@@ -243,37 +232,77 @@ export default function CHWView() {
                 <div className="flex flex-col gap-1">
                   <Label
                     htmlFor="vd-chw-from"
-                    className="text-xs font-normal text-muted-foreground"
+                    className="text-xs font-normal !text-[#6b7c94]"
                   >
                     From
                   </Label>
                   <Input
+                    key={`vd-chw-from-${filterResetKey}`}
                     id="vd-chw-from"
                     type="date"
-                    className="h-9 w-full sm:w-[155px]"
+                    className={`h-9 w-full sm:w-[155px]${
+                      dateRangeError ? ' border-destructive' : ''
+                    }${!(filters.from ?? '') ? ' text-muted-foreground' : ''}`}
                     value={filters.from ?? ''}
-                    onChange={(e) =>
-                      setFilters({ ...filters, from: e.target.value })
-                    }
+                    max={todayStr}
+                    onChange={(e) => {
+                      setFilters({ ...filters, from: e.target.value });
+                      setDateRangeError(null);
+                    }}
                   />
                 </div>
                 <div className="flex flex-col gap-1">
                   <Label
                     htmlFor="vd-chw-to"
-                    className="text-xs font-normal text-muted-foreground"
+                    className="text-xs font-normal !text-[#6b7c94]"
                   >
                     To
                   </Label>
                   <Input
+                    key={`vd-chw-to-${filterResetKey}`}
                     id="vd-chw-to"
                     type="date"
-                    className="h-9 w-full sm:w-[155px]"
+                    className={`h-9 w-full sm:w-[155px]${
+                      dateRangeError ? ' border-destructive' : ''
+                    }${!(filters.to ?? '') ? ' text-muted-foreground' : ''}`}
                     value={filters.to ?? ''}
-                    onChange={(e) =>
-                      setFilters({ ...filters, to: e.target.value })
-                    }
+                    max={todayStr}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (filters.from && val < filters.from) {
+                        const { to, ...rest } = filters;
+                        setFilters(rest);
+                        setDateRangeError(
+                          '"To" date cannot be less than "From" date.',
+                        );
+                      } else {
+                        setFilters({ ...filters, to: val });
+                        setDateRangeError(null);
+                      }
+                    }}
                   />
                 </div>
+                {dateRangeError && (
+                  <p className="w-full text-[11px] text-destructive">
+                    {dateRangeError}
+                  </p>
+                )}
+                {(filters.from || filters.to || dateRangeError) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 px-2 text-muted-foreground hover:text-foreground self-end"
+                    onClick={() => {
+                      const { from, to, ...rest } = filters;
+                      setFilters(rest);
+                      setDateRangeError(null);
+                      setFilterResetKey((k) => k + 1);
+                    }}
+                    title="Clear date filter"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
                 <ViewColumns table={table} />
                 <Button
                   variant="outline"

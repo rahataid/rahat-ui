@@ -1,4 +1,5 @@
 'use client';
+
 import {
   useCambodiaLineChartsReports,
   useCambodiaVendorGet,
@@ -27,13 +28,13 @@ import {
   Copy,
   CopyCheck,
   Glasses,
-  ShoppingBag,
   UserCog,
   Users,
+  UserStar,
+  X,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React from 'react';
-import ConversionListView from './conversion.list.view';
 import HealthWorkersView from './health.workers.view';
 import TransactionHistoryView from './transaction.history.view';
 import CambodiaLineCharts from '../../../chart-reports/cambodia-line-chart';
@@ -46,13 +47,11 @@ import {
   VillageDoctorSectionHeading,
 } from '../page-shell';
 
-/** Next.js `useParams` may return `string | string[]` for dynamic segments. */
 function routeParam(value: string | string[] | undefined): string | undefined {
   if (value == null) return undefined;
   return Array.isArray(value) ? value[0] : value;
 }
 
-/** Vendor GET payload may expose nested user as `User` or `user` (serialization). */
 function pickVendorWallet(row: Record<string, unknown> | undefined): string {
   if (!row || typeof row !== 'object') return '';
   const user =
@@ -88,7 +87,6 @@ export default function VendorsDetail() {
     isSuccess: vendorQuerySuccess,
   } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
 
-  /** `formatResponse`: inner API payload is `vendorQueryData.data` */
   const vendorRow = vendorQueryData?.data;
   const [walletCopied, setWalletCopied] = React.useState(false);
   const currentYear = new Date().getFullYear();
@@ -103,6 +101,11 @@ export default function VendorsDetail() {
   });
   const [statsDateFrom, setStatsDateFrom] = React.useState('');
   const [statsDateTo, setStatsDateTo] = React.useState('');
+  const [dateRangeError, setDateRangeError] = React.useState<string | null>(
+    null,
+  );
+  const [filterResetKey, setFilterResetKey] = React.useState(0);
+  const todayStr = new Date().toISOString().split('T')[0];
 
   const vendorsStatsPayload = React.useMemo(() => {
     const payload: {
@@ -171,24 +174,9 @@ export default function VendorsDetail() {
     !vendorFetching &&
     Boolean(id && vendorId);
 
-  const titleName =
-    vendorRow?.User?.name ??
-    (vendorLoading || vendorFetching
-      ? 'Loading…'
-      : vendorFetchFailed
-      ? 'Could not load partner'
-      : 'Eye partner');
-
+  const titleName = 'Eye partner';
   const headerSubtitle =
-    vendorFetchFailed && vendorQueryError
-      ? `The partner request failed: ${
-          vendorQueryError instanceof Error
-            ? vendorQueryError.message
-            : String(vendorQueryError)
-        }. Check the Network tab for POST …/projects/${id}/actions (auth, 4xx/5xx).`
-      : vendorQuerySuccess && !vendorRow
-      ? 'No project assignment was found for this user and project (missing row in project vendors).'
-      : 'Performance, wallet, and activity for this Eye Partner location.';
+    'Performance, wallet, and activity for this Eye Partner location.';
 
   const copyWallet = () => {
     if (!wallet) return;
@@ -198,47 +186,78 @@ export default function VendorsDetail() {
   };
 
   const statsDateFilterActions = (
-    <div className="w-max max-w-full rounded-xl border border-border/80 bg-muted/30 px-3 py-2.5 shadow-sm">
+    <div className="w-max max-w-full rounded-xl px-3 py-2.5">
       <div className="flex flex-wrap items-end justify-end gap-2 sm:gap-3">
         <div className="flex w-[10.5rem] shrink-0 flex-col gap-1">
-          <Label htmlFor="vendor-stats-from" className="text-[11px]">
+          <Label
+            htmlFor="vendor-stats-from"
+            className="text-[11px] !text-[#6b7c94]"
+          >
             From
           </Label>
           <Input
+            key={`vendor-stats-from-${filterResetKey}`}
             id="vendor-stats-from"
             type="date"
-            className="h-8 w-full bg-background"
+            className={`h-8 w-full bg-background${
+              dateRangeError ? ' border-destructive' : ''
+            }${!statsDateFrom ? ' text-muted-foreground' : ''}`}
             value={statsDateFrom}
-            max={statsDateTo || undefined}
-            onChange={(e) => setStatsDateFrom(e.target.value)}
+            max={todayStr}
+            onChange={(e) => {
+              setStatsDateFrom(e.target.value);
+              setDateRangeError(null);
+            }}
           />
         </div>
         <div className="flex w-[10.5rem] shrink-0 flex-col gap-1">
-          <Label htmlFor="vendor-stats-to" className="text-[11px]">
+          <Label
+            htmlFor="vendor-stats-to"
+            className="text-[11px] !text-[#6b7c94]"
+          >
             To
           </Label>
           <Input
+            key={`vendor-stats-to-${filterResetKey}`}
             id="vendor-stats-to"
             type="date"
-            className="h-8 w-full bg-background"
+            className={`h-8 w-full bg-background${
+              dateRangeError ? ' border-destructive' : ''
+            }${!statsDateTo ? ' text-muted-foreground' : ''}`}
             value={statsDateTo}
-            min={statsDateFrom || undefined}
-            onChange={(e) => setStatsDateTo(e.target.value)}
+            max={todayStr}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (statsDateFrom && val < statsDateFrom) {
+                setStatsDateTo('');
+                setDateRangeError('"To" date cannot be less than "From" date.');
+              } else {
+                setStatsDateTo(val);
+                setDateRangeError(null);
+              }
+            }}
           />
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-8 shrink-0 px-2.5 text-xs"
-          onClick={() => {
-            setStatsDateFrom('');
-            setStatsDateTo('');
-          }}
-        >
-          Clear dates
-        </Button>
+        {((statsDateFrom && statsDateTo) || dateRangeError) && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-9 px-2 text-muted-foreground hover:text-foreground self-end"
+            onClick={() => {
+              setStatsDateFrom('');
+              setStatsDateTo('');
+              setDateRangeError(null);
+              setFilterResetKey((k) => k + 1);
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
       </div>
+      {dateRangeError && (
+        <p className="mt-1.5 text-[11px] text-destructive">{dateRangeError}</p>
+      )}
     </div>
   );
 
@@ -255,41 +274,29 @@ export default function VendorsDetail() {
         }
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Wearers"
-          Icon={Glasses}
-          number={String(vendorsStats?.data?.consumers ?? 0)}
-        /> */}
-          {/* <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Eye checkups"
-          Icon={ShoppingBag}
-          number={String(vendorsStats?.data?.leadsConverted ?? 0)}
-        /> */}
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
             title="Total Eyewear Sold"
-            Icon={BadgeDollarSign}
+            Icon={Glasses}
             number={String(vendorsStats?.data?.sales ?? 0)}
           />
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
             title="Total Village Doctors"
-            Icon={UserCog}
+            Icon={UserStar}
             number={String(vendorsStats?.data?.healthWorkers ?? 0)}
           />
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
-            title="Total Villagers Referred"
+            title="Total Number of Villagers Referred"
             Icon={Users}
-            number={String(vendorsStats?.data?.leadsConverted ?? 0)}
+            number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
           />
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
-            title="Total Successful Referrals"
+            title="Total Number of Successful Referrals"
             Icon={Users}
-            number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
+            number={String(vendorsStats?.data?.leadsConverted ?? 0)}
           />
           {/* <DataCard
           className="rounded-xl border-border/80 shadow-sm"

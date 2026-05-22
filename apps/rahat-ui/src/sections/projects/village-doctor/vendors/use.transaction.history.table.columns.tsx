@@ -85,15 +85,12 @@ export const useTransactionHistoryTableColumns = () => {
     {
       accessorKey: 'timeStamp',
       header: 'Time Stamp',
-      cell: ({ row }) => (
-        <div>
-          {row?.original?.timeStamp
-            ? new Date(
-                Number(row.original.timeStamp) * 1000,
-              ).toLocaleDateString()
-            : 'N/A'}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('timeStamp'));
+        const formattedDate = date.toLocaleDateString();
+
+        return <div className="lowercase ml-4">{formattedDate}</div>;
+      },
     },
   ];
   return columns;

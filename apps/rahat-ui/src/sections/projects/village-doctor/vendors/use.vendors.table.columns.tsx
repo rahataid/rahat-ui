@@ -83,6 +83,24 @@ export const useCambodiaVendorsTableColumns = () => {
     },
 
     {
+      accessorKey: 'successfulReferrals',
+      header: 'Successful Referrals',
+      cell: ({ row }) => {
+        const v = row?.original?.successfulReferrals as
+          | number
+          | null
+          | undefined;
+        if (v === null) {
+          return <span className="tabular-nums text-muted-foreground">…</span>;
+        }
+        if (v === undefined) {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        return <div className="tabular-nums">{v}</div>;
+      },
+    },
+
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,

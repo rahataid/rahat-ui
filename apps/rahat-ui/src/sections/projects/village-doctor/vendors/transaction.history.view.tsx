@@ -1,4 +1,3 @@
-import { useCambodiaVendorTransactions, usePagination } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -9,31 +8,28 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import React from 'react';
 import CambodiaTable from '../table.component';
 import { useTransactionHistoryTableColumns } from './use.transaction.history.table.columns';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 type IProps = {
-  vendorAddress: string;
+  vendorTransactions: Record<string, unknown>[] | undefined;
+  isLoading: boolean;
 };
 
-export default function TransactionHistoryView({ vendorAddress }: IProps) {
-  const { id } = useParams() as { id: UUID };
+export default function TransactionHistoryView({
+  vendorTransactions,
+  isLoading,
+}: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
   const [rowSelection, setRowSelection] = React.useState({});
-  // const { data: vendorTransactions, isLoading } = useCambodiaVendorTransactions(
-  //   '0x9ffb7323c3f10abfe2e386bdf96de715201c1ab3',
-  // );
-  const { data: vendorTransactions, isLoading } =
-    useCambodiaVendorTransactions(vendorAddress);
   const columns = useTransactionHistoryTableColumns();
   const table = useReactTable({
     manualPagination: true,
@@ -61,6 +57,7 @@ export default function TransactionHistoryView({ vendorAddress }: IProps) {
           table={table}
           tableHeight="h-[calc(300px)]"
           loading={isLoading}
+          emptyMessage="No transactions found."
         />
       </div>
       <Pagination

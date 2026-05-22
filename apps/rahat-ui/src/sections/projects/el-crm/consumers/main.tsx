@@ -1,16 +1,10 @@
 'use client';
 
 import React from 'react';
-import {
-  Card,
-  CardContent,
-} from '@rahat-ui/shadcn/components/card';
+import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import DemoTable from 'apps/rahat-ui/src/components/table';
-import {
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useConsumersTableColumn } from './useConsumersTableColumn';
 import {
   Search,
@@ -31,9 +25,21 @@ import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useConsumers, usePagination } from '@rahat-ui/query';
+import {
+  useConsumers,
+  usePagination,
+  useSyncLegacyImported,
+} from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { toast } from 'react-toastify';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { MoreVertical } from 'lucide-react';
 
 export default function ConsumersView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -54,6 +60,39 @@ export default function ConsumersView() {
     ...debouncedFilters,
     ...pagination,
   });
+
+  const { mutateAsync: syncLegacyImport, isPending: isSyncingLegacy } =
+    useSyncLegacyImported(projectUUID);
+
+  const handleSyncLegacyImport = async () => {
+    const shouldSync = window.confirm(
+      'Sync legacy beneficiaries now? This may take a while based on source data size.',
+    );
+    if (!shouldSync) return;
+
+    try {
+      const result = await syncLegacyImport();
+      if (result?.status === 'completed') {
+        toast.success(
+          `Legacy sync complete. Fetched ${result.fetched || 0}, inserted ${
+            result.inserted || 0
+          }.`,
+        );
+        return;
+      }
+      toast.info(
+        result?.reason
+          ? `Legacy sync skipped: ${result.reason}`
+          : 'Legacy sync skipped.',
+      );
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to sync legacy beneficiaries.';
+      toast.error(message);
+    }
+  };
 
   const handleFilter = React.useCallback(
     (key: string, value: any) => {
@@ -80,7 +119,7 @@ export default function ConsumersView() {
     ).length;
   }, [filters]);
 
-  const totalConsumers = consumers.length;
+  const totalConsumers = meta?.total ?? 0;
   const messageDeliverySuccessful = 0;
   const messageDeliveryFailed = 0;
   const consumersCompleting1Year = 0;
@@ -136,13 +175,35 @@ export default function ConsumersView() {
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
         {/* Page Header */}
-        <div className="border-b border-border bg-card px-6 py-5">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Consumers
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Track consumer engagement and program completion
-          </p>
+        <div className="border-b border-border bg-card px-6 py-5 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Consumers
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Track consumer engagement and program completion
+            </p>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="p-0"
+                aria-label="More actions"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={handleSyncLegacyImport}
+                disabled={isSyncingLegacy}
+              >
+                {isSyncingLegacy ? 'Syncing...' : 'Sync Legacy'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="flex-1 p-6 space-y-6 overflow-auto">
@@ -168,9 +229,7 @@ export default function ConsumersView() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
-                          <stat.icon
-                            className={`h-5 w-5 ${stat.iconColor}`}
-                          />
+                          <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="bottom">

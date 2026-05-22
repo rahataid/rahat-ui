@@ -1,8 +1,5 @@
 'use client';
-import {
-  useCambodiaHealthWorkerByUUIDStats,
-  useCHWGet,
-} from '@rahat-ui/query';
+import { useCambodiaHealthWorkerByUUIDStats, useCHWGet } from '@rahat-ui/query';
 import {
   Card,
   CardContent,
@@ -17,6 +14,7 @@ import {
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
   BadgeDollarSign,
+  Coins,
   Copy,
   CopyCheck,
   ShoppingBag,
@@ -34,7 +32,7 @@ import {
 /** Next.js dynamic segment may be `string | string[]`. */
 function routeSegment(v: string | string[] | undefined): string {
   if (v == null) return '';
-  return typeof v === 'string' ? v : (v[0] ?? '');
+  return typeof v === 'string' ? v : v[0] ?? '';
 }
 
 export default function ChwDetail() {
@@ -76,30 +74,39 @@ export default function ChwDetail() {
       subtitle="Referral totals for this village doctor only—not program-wide figures."
       backHref={`/projects/el-village-doctor/${projectUuid}/chw`}
     >
-        <div
-          className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
-            statsFetching ? 'opacity-70 transition-opacity' : ''
-          }`}
-        >
-          <DataCard
-            title="Total Eyewear Sold"
-            number={String(s.healthWorkerEyewearSold ?? s.totalEyewearSold ?? 0)}
-            Icon={BadgeDollarSign}
-            className="rounded-lg border-solid"
-          />
-          <DataCard
-            title="Villagers Referred"
-            number={String(s.leadsRecieved ?? s.leads ?? 0)}
-            Icon={Users}
-            className="rounded-lg border-solid"
-          />
-          <DataCard
-            title="Total Vouchers Redeemed"
-            number={String(s.leadsConverted ?? s.leads_converted ?? 0)}
-            Icon={ShoppingBag}
-            className="rounded-lg border-solid"
-          />
-        </div>
+      <div
+        className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
+          statsFetching ? 'opacity-70 transition-opacity' : ''
+        }`}
+      >
+        <DataCard
+          title="Total Eyewear Sold"
+          number={String(s.healthWorkerEyewearSold ?? s.totalEyewearSold ?? 0)}
+          Icon={BadgeDollarSign}
+          className="rounded-lg border-solid"
+        />
+        <DataCard
+          title="Total Number of Villagers Referred"
+          number={String(s.leadsRecieved ?? s.leads ?? 0)}
+          Icon={Users}
+          className="rounded-lg border-solid"
+        />
+        <DataCard
+          title="Total Number of Successful Referrals"
+          number={String(s.leadsConverted ?? s.leads_converted ?? 0)}
+          Icon={ShoppingBag}
+          className="rounded-lg border-solid"
+        />
+
+        <DataCard
+          title="Total Sales by Village Doctor (RMB)"
+          number={String(
+            s.totalPurchaseAmountRmb ?? s.totalPurchaseAmount ?? 0,
+          )}
+          Icon={Coins}
+          className="rounded-lg border-solid"
+        />
+      </div>
 
       <Card className="border-border/80 shadow-sm">
         <CardHeader className="border-b border-border/60 pb-4">

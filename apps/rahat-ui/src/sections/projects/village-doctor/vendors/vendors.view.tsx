@@ -1,4 +1,8 @@
-import { useCambodiaVendorsList, usePagination } from '@rahat-ui/query';
+import {
+  useCambodiaVendorsList,
+  useCambodiaVendorsStatsByVendorIds,
+  usePagination,
+} from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -9,7 +13,6 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import SearchInput from '../../components/search.input';
@@ -25,7 +28,8 @@ import {
 import { SlidersHorizontal } from 'lucide-react';
 
 export default function VendorsView() {
-  const { id } = useParams() as { id: UUID };
+  const { id } = useParams() as { id?: string };
+  const projectUUID = typeof id === 'string' ? id : undefined;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -37,20 +41,51 @@ export default function VendorsView() {
 
   const debouncedSearch = useDebounce(filters, 500);
   const { data: vendors, isLoading } = useCambodiaVendorsList({
-    projectUUID: id,
+    projectUUID,
     ...(debouncedSearch as any),
+  });
+
+  const vendorIdsForStats = React.useMemo(() => {
+    const rows = vendors?.data;
+    if (!Array.isArray(rows)) return [] as string[];
+    const ids: string[] = [];
+    for (const v of rows) {
+      const rawId =
+        v && typeof v === 'object' && 'vendorId' in v ? v.vendorId : undefined;
+      const trimmed =
+        rawId != null && typeof rawId === 'string' ? rawId.trim() : '';
+      if (trimmed) ids.push(trimmed);
+    }
+    return ids;
+  }, [vendors?.data]);
+
+  const { statsByVendorId } = useCambodiaVendorsStatsByVendorIds({
+    projectUUID,
+    vendorIds: vendorIdsForStats,
   });
 
   const tableData: any = React.useMemo(() => {
     if (vendors?.data)
-      return vendors?.data.map((vendor) => ({
-        ...vendor,
-        name: vendor.User?.name,
-        phone: vendor.User?.phone,
-        wallet: vendor.User?.wallet,
-      }));
+      return vendors?.data.map((vendor) => {
+        const vendorKey =
+          vendor?.vendorId != null &&
+          typeof vendor.vendorId === 'string' &&
+          vendor.vendorId.trim()
+            ? vendor.vendorId.trim()
+            : '';
+        const referrals =
+          vendorKey !== '' ? statsByVendorId[vendorKey] ?? null : undefined;
+        return {
+          ...vendor,
+          name: vendor.User?.name,
+          phone: vendor.User?.phone,
+          wallet: vendor.User?.wallet,
+          username: vendor.User?.username,
+          successfulReferrals: referrals,
+        };
+      });
     else return [];
-  }, [vendors?.data]);
+  }, [vendors?.data, statsByVendorId]);
   const columns = useCambodiaVendorsTableColumns();
   const table = useReactTable({
     data: tableData || [],
@@ -114,6 +149,7 @@ export default function VendorsView() {
               table={table}
               tableHeight="h-[calc(100vh-420px)]"
               loading={isLoading}
+              emptyMessage="No eye partner optical store found."
             />
             <div className="border-t border-border/70 bg-muted/15 px-3 py-2">
               <Pagination

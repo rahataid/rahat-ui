@@ -8,7 +8,7 @@ export const useCambodiaChwTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Health Worker Name',
+      header: 'Village Doctor Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
@@ -24,14 +24,29 @@ export const useCambodiaChwTableColumns = () => {
     // },
     {
       accessorKey: 'villagers referred',
-      header: 'Villagers Referred',
+      header: 'Total Villagers Referred',
       cell: ({ row }) => <div> {row?.original?._count?.LEAD} </div>,
     },
+    // {
+    //   accessorKey: 'successful referrals',
+    //   header: 'Total Number of Successful Referrals',
+    //   cell: ({ row }) => <div> {row?.original?._count?.LeadConversions} </div>,
+    // },
+
     {
-      accessorKey: 'eye checkup',
-      header: 'Eye Checkup',
+      accessorKey: 'Successful Referrals',
+      accessorFn: (row) => row.vendor,
+      header: 'Total Successful Referrals',
       cell: ({ row }) => <div> {row?.original?._count?.LeadConversions} </div>,
     },
+
+    {
+      accessorKey: 'Eyewear Sold',
+      accessorFn: (row) => row.vendor,
+      header: 'Total Eyewear Sold',
+      cell: ({ row }) => <div> {row?.original?.extras?.glassesPurchased} </div>,
+    },
+
     // {
     //   accessorKey: 'phone',
     //   header: 'Phone',
@@ -39,7 +54,15 @@ export const useCambodiaChwTableColumns = () => {
     // },
 
     {
-      accessorKey: 'optical eye center',
+      accessorKey: 'Total Sales (RMB)',
+      header: 'Total Sales (RMB)',
+      cell: ({ row }) => (
+        <div> {row?.original?.extras?.purchaseAmountRmb} </div>
+      ),
+    },
+
+    {
+      accessorKey: 'Eye Partner',
       accessorFn: (row) => row.vendor,
       header: 'Eye Partner',
       cell: ({ row }) => <div> {row?.original?.vendor?.name} </div>,

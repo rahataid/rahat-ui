@@ -1,5 +1,11 @@
 'use client';
-import { useCambodiaBeneficiaries, usePagination } from '@rahat-ui/query';
+import {
+  MS_CAM_ACTIONS,
+  normalizeCambodiaBeneficiaryListResponse,
+  useCambodiaBeneficiaries,
+  usePagination,
+  useProjectAction,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
@@ -11,21 +17,24 @@ import {
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { Download, UserRoundX } from 'lucide-react';
+import { Download, SlidersHorizontal, UserRoundX } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
-import { useCambodiaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
+import {
+  eyePartnerDisplayName,
+  useCambodiaBeneficiaryTableColumns,
+  villageDoctorDisplayName,
+} from './use.beneficiary.table.columns';
 import {
   Card,
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
-import { SlidersHorizontal } from 'lucide-react';
 
 export default function ELVillageDoctorVillagerView() {
   const { id } = useParams() as { id: UUID };
@@ -46,21 +55,22 @@ export default function ELVillageDoctorVillagerView() {
   // const { name, type, ...otherFilters } = filters;
   const debouncedSearch = useDebounce(filters, 500);
 
+  const [isExporting, setIsExporting] = useState(false);
+  const exportAction = useProjectAction([
+    MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+    'export',
+    id,
+  ]);
+
   const { data, isLoading } = useCambodiaBeneficiaries({
+    ...(debouncedSearch as any),
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
-  });
-  const { data: allData } = useCambodiaBeneficiaries({
-    page: pagination.page,
-    perPage: data?.response?.meta?.total,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...(debouncedSearch as any),
+    /** Must win over any stray `enabled` key from hash/filters spread */
+    enabled: true,
   });
 
   useEffect(() => {
@@ -71,20 +81,21 @@ export default function ELVillageDoctorVillagerView() {
 
   const processedData = {
     ...data,
-    data: data?.data.map((benef) => ({
-      ...benef,
-      name: benef?.piiData?.name,
-    })),
+    data:
+      data?.data?.map((benef) => ({
+        ...benef,
+        name: benef?.piiData?.name,
+      })) ?? [],
   };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
+      setFilters((prev: Record<string, string>) => ({
+        ...prev,
         [name]: filterValue,
-      });
+      }));
     }
   };
 
@@ -100,7 +111,7 @@ export default function ELVillageDoctorVillagerView() {
     onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
-      return originalRow.walletAddress;
+      return originalRow.uuid ?? originalRow.walletAddress;
     },
 
     state: {
@@ -109,31 +120,52 @@ export default function ELVillageDoctorVillagerView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = allData?.data || [];
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((item: any) => {
-      const ex = item?.extras || {};
-      const vd =
-        item.healthWorker?.name ??
-        item.health_worker?.name ??
-        item.HealthWorker?.name ??
-        ex.healthWorkerName ??
-        ex.Health_Worker_Name ??
-        ex.meta?.Health_Worker_Name ??
-        '-';
-      return {
-        Name: item.piiData?.name,
-        Phone: item.piiData?.phone,
-        Type: item.type,
-        Gender: item.projectData?.gender,
-        'Village Doctor': vd,
-        TimeStamp: new Date(item.createdAt).toLocaleDateString(),
-      };
-    });
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Villagers');
+    const total = processedData?.response?.meta?.total;
+    if (!total || total <= 0) return;
 
-    XLSX.writeFile(workbook, 'Villagers.xlsx');
+    setIsExporting(true);
+    try {
+      const raw = await exportAction.mutateAsync({
+        uuid: id,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+          payload: {
+            page: 1,
+            perPage: total,
+            order: 'desc',
+            sort: 'createdAt',
+            projectUUID: id,
+            ...(typeof debouncedSearch?.name === 'string' &&
+            debouncedSearch.name.trim()
+              ? { name: debouncedSearch.name.trim() }
+              : {}),
+            ...(typeof debouncedSearch?.type === 'string' && debouncedSearch.type
+              ? { type: debouncedSearch.type }
+              : {}),
+          },
+        },
+      });
+      const rowsToDownload =
+        normalizeCambodiaBeneficiaryListResponse(raw)?.data || [];
+      const workbook = XLSX.utils.book_new();
+      const worksheetData = rowsToDownload?.map((item: any) => {
+        const vd = villageDoctorDisplayName(item);
+        const ep = eyePartnerDisplayName(item);
+        return {
+          Name: item.piiData?.name,
+          Phone: item.piiData?.phone,
+          'Village Doctor': vd === '-' ? '' : vd,
+          'Eye Partner': ep === '-' ? '' : ep,
+          TimeStamp: new Date(item.createdAt).toLocaleDateString(),
+        };
+      });
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Villagers');
+
+      XLSX.writeFile(workbook, 'Villagers.xlsx');
+    } finally {
+      setIsExporting(false);
+    }
   };
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
@@ -155,8 +187,14 @@ export default function ELVillageDoctorVillagerView() {
                 <UserRoundX className="mr-2 h-4 w-4" /> Discarded Villagers
               </Button>
             </Link>
-            <Button variant="outline" size="sm" onClick={() => handleDownload()}>
-              <Download className="mr-2 h-4 w-4" /> Download Villagers
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isExporting || !processedData?.response?.meta?.total}
+              onClick={() => handleDownload()}
+            >
+              <Download className="mr-2 h-4 w-4" />{' '}
+              {isExporting ? 'Preparing…' : 'Download Villagers'}
             </Button>
           </div>
         </div>
@@ -171,13 +209,9 @@ export default function ELVillageDoctorVillagerView() {
             </div>
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
               <SearchInput
-                isDisabled={true}
                 name="name"
-                className="w-full lg:max-w-md cursor-not-allowed"
-                value={
-                  (table.getColumn('name')?.getFilterValue() as string) ??
-                  filters?.name
-                }
+                className="w-full lg:max-w-md"
+                value={filters?.name ?? ''}
                 onSearch={(event) => handleFilterChange(event)}
               />
               {/* <div className="w-full lg:max-w-xs">
@@ -199,6 +233,7 @@ export default function ELVillageDoctorVillagerView() {
               table={table}
               loading={isLoading}
               tableHeight="h-[calc(100vh-480px)]"
+              emptyMessage="No villagers found."
             />
             <CustomPagination
               currentPage={pagination.page}

@@ -13,12 +13,27 @@ const SmsVoucherFiltersTags = ({
   setFilters,
   total,
   labelMapping,
+  setDateRange,
 }: any) => {
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
   });
 
   const getDisplayValue = (key: string, value: unknown) => {
+    if (key === 'isImported') {
+      if (value === true || value === 'true') return 'Imported';
+      if (value === false || value === 'false') return 'Non-Imported';
+      return 'All';
+    }
+
+    if (key === 'startDate' || key === 'endDate') {
+      const dateValue = new Date(String(value));
+      if (!Number.isNaN(dateValue.getTime())) {
+        return format(dateValue, 'MMM dd yyyy');
+      }
+      return String(value ?? '');
+    }
+
     if (typeof value === 'object' && value) {
       return format(value as Date, 'MMM dd yyyy');
     }
@@ -31,8 +46,20 @@ const SmsVoucherFiltersTags = ({
   };
 
   const handleFilterArrayChange = (key: string, value: string) => {
+    if (key === 'startDate' || key === 'endDate') {
+      const { startDate: _startDate, endDate: _endDate, ...rest } = filters;
+      setFilters(rest);
+      setDateRange(undefined);
+      return;
+    }
+
     const { [key]: _, ...rest } = filters;
     setFilters(rest);
+  };
+
+  const handleClearFilter = () => {
+    setFilters({});
+    setDateRange(undefined);
   };
 
   return (
@@ -70,7 +97,7 @@ const SmsVoucherFiltersTags = ({
         <Button
           className="text-white hidden sm:block"
           size={'sm'}
-          onClick={() => setFilters({})}
+          onClick={handleClearFilter}
         >
           Clear filter
         </Button>

@@ -15,6 +15,7 @@ export type Transaction = {
   topic: string;
   beneficiary: number;
   voucherId: string;
+  timeStamp?: string;
   timestamp: string;
   txHash: string;
   processedBy: string;
@@ -89,7 +90,8 @@ export const useTableColumns = () => {
       },
     },
     {
-      accessorKey: 'timeStamp',
+      accessorKey: 'timestamp',
+      accessorFn: (row) => row.timeStamp ?? row.timestamp,
       header: ({ column }) => {
         return (
           <Button
@@ -102,10 +104,26 @@ export const useTableColumns = () => {
         );
       },
       cell: ({ row }) => {
-        const date = new Date(row.getValue('timeStamp'));
-        const formattedDate = date.toLocaleDateString();
+        const timestampValue = row.getValue('timestamp');
+        if (!timestampValue) return <div className="ml-4">-</div>;
 
-        return <div className="lowercase ml-4">{formattedDate}</div>;
+        const date = new Date(String(timestampValue));
+        if (Number.isNaN(date.getTime())) {
+          return <div className="ml-4">{String(timestampValue)}</div>;
+        }
+
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const formattedDate = date.toLocaleDateString('en-US', {
+          timeZone,
+        });
+        const formattedTime = date.toLocaleTimeString('en-US', {
+          timeZone,
+        });
+        return (
+          <div className="lowercase ml-4">
+            {formattedDate} {formattedTime}
+          </div>
+        );
       },
     },
     {

@@ -23,6 +23,8 @@ import {
   Download,
   Glasses,
   SlidersHorizontal,
+  Stethoscope,
+  UserCheck,
   UserCog,
   Users,
   X,
@@ -132,12 +134,12 @@ export default function CHWView() {
       'Village Doctor Name': item.name,
       'Kobo Username': item.koboUsername,
       /** Matches table: conversions in period (not SALE-type beneficiaries). */
-      'Successful Referrals':
+      'Total Successful Referrals':
         item._count?.LeadConversions ?? item._count?.SALE ?? 0,
-      'Villagers Referred': item._count?.LEAD || 0,
-      'Glasses Purchased':
+      'Total Villagers Referred': item._count?.LEAD || 0,
+      'Total Eyewear Sold':
         item.extras?.glassesPurchased ?? item.extras?.purchaseEyewearCount ?? 0,
-      'Purchase Amount (RMB)':
+      'Total Sales (RMB)':
         item.extras?.purchaseAmountRmb ?? item.extras?.purchaseAmount ?? 0,
       'Eye Partner': item.vendor?.name || '-',
     }));
@@ -145,15 +147,16 @@ export default function CHWView() {
       const key = item['Eye Partner'];
       acc[key] = acc[key] || {
         'Eye Partner': key,
-        'Villagers Referred': 0,
-        'Successful Referrals': 0,
-        'Glasses Purchased': 0,
-        'Purchase Amount (RMB)': 0,
+        'Total Villagers Referred': 0,
+        'Total Successful Referrals': 0,
+        'Total Eyewear Sold': 0,
+        'Total Sales (RMB)': 0,
       };
-      acc[key]['Villagers Referred'] += item['Villagers Referred'];
-      acc[key]['Successful Referrals'] += item['Successful Referrals'];
-      acc[key]['Glasses Purchased'] += item['Glasses Purchased'];
-      acc[key]['Purchase Amount (RMB)'] += item['Purchase Amount (RMB)'];
+      acc[key]['Total Villagers Referred'] += item['Total Villagers Referred'];
+      acc[key]['Total Successful Referrals'] +=
+        item['Total Successful Referrals'];
+      acc[key]['Total Eyewear Sold'] += item['Total Eyewear Sold'];
+      acc[key]['Total Sales (RMB)'] += item['Total Sales (RMB)'];
       return acc;
     }, {});
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
@@ -194,7 +197,7 @@ export default function CHWView() {
           <DataCard
             title="Total Village Doctors"
             number={String(programStats?.data?.healthWorkers ?? 0)}
-            Icon={UserCog}
+            Icon={Stethoscope}
             className="rounded-lg border-solid"
           />
           <DataCard
@@ -206,7 +209,7 @@ export default function CHWView() {
           <DataCard
             title="Total Number of Successful Referrals"
             number={String(programStats?.data?.leadsConverted ?? 0)}
-            Icon={Users}
+            Icon={UserCheck}
             className="rounded-lg border-solid"
           />
         </div>
@@ -228,89 +231,102 @@ export default function CHWView() {
                 }
                 onSearch={(event) => handleFilterChange(event)}
               />
-              <div className="flex flex-wrap items-end gap-2 sm:flex-row sm:gap-3">
-                <div className="flex flex-col gap-1">
-                  <Label
-                    htmlFor="vd-chw-from"
-                    className="text-xs font-normal !text-[#6b7c94]"
-                  >
-                    From
-                  </Label>
-                  <Input
-                    key={`vd-chw-from-${filterResetKey}`}
-                    id="vd-chw-from"
-                    type="date"
-                    className={`h-9 w-full sm:w-[155px]${
-                      dateRangeError ? ' border-destructive' : ''
-                    }${!(filters.from ?? '') ? ' text-muted-foreground' : ''}`}
-                    value={filters.from ?? ''}
-                    max={todayStr}
-                    onChange={(e) => {
-                      setFilters({ ...filters, from: e.target.value });
-                      setDateRangeError(null);
-                    }}
-                  />
+              <div className="flex flex-wrap items-start gap-2 sm:flex-row sm:gap-3">
+                <div className={`relative${filters.from ? ' pb-[18px]' : ''}`}>
+                  <div className="flex flex-wrap items-end gap-2 sm:gap-3">
+                    <div className="flex flex-col gap-1">
+                      <Label
+                        htmlFor="vd-chw-from"
+                        className="text-xs font-normal !text-[#6b7c94]"
+                      >
+                        From
+                      </Label>
+                      <Input
+                        key={`vd-chw-from-${filterResetKey}`}
+                        id="vd-chw-from"
+                        type="date"
+                        className={`h-9 w-full sm:w-[155px]${
+                          dateRangeError ? ' border-destructive' : ''
+                        }${
+                          !(filters.from ?? '') ? ' text-muted-foreground' : ''
+                        }`}
+                        value={filters.from ?? ''}
+                        max={todayStr}
+                        onChange={(e) => {
+                          setFilters({ ...filters, from: e.target.value });
+                          setDateRangeError(null);
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <Label
+                        htmlFor="vd-chw-to"
+                        className="text-xs font-normal !text-[#6b7c94]"
+                      >
+                        To
+                      </Label>
+                      <Input
+                        key={`vd-chw-to-${filterResetKey}`}
+                        id="vd-chw-to"
+                        type="date"
+                        className={`h-9 w-full sm:w-[155px]${
+                          dateRangeError ? ' border-destructive' : ''
+                        }${
+                          !(filters.to ?? '') ? ' text-muted-foreground' : ''
+                        }`}
+                        value={filters.to ?? ''}
+                        max={todayStr}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (filters.from && val < filters.from) {
+                            const { to, ...rest } = filters;
+                            setFilters(rest);
+                            setDateRangeError(
+                              '"To" date cannot be less than "From" date.',
+                            );
+                          } else {
+                            setFilters({ ...filters, to: val });
+                            setDateRangeError(null);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {filters.from && (
+                    <p
+                      className="absolute bottom-0 left-0 min-h-[14px] text-[11px] leading-tight text-destructive"
+                      aria-live="polite"
+                    >
+                      {dateRangeError ?? '\u00A0'}
+                    </p>
+                  )}
                 </div>
-                <div className="flex flex-col gap-1">
-                  <Label
-                    htmlFor="vd-chw-to"
-                    className="text-xs font-normal !text-[#6b7c94]"
-                  >
-                    To
-                  </Label>
-                  <Input
-                    key={`vd-chw-to-${filterResetKey}`}
-                    id="vd-chw-to"
-                    type="date"
-                    className={`h-9 w-full sm:w-[155px]${
-                      dateRangeError ? ' border-destructive' : ''
-                    }${!(filters.to ?? '') ? ' text-muted-foreground' : ''}`}
-                    value={filters.to ?? ''}
-                    max={todayStr}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (filters.from && val < filters.from) {
-                        const { to, ...rest } = filters;
+                <div className="flex flex-wrap items-end gap-2 pt-5 sm:gap-3">
+                  {(filters.from || filters.to || dateRangeError) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 px-2 text-muted-foreground hover:text-foreground"
+                      onClick={() => {
+                        const { from, to, ...rest } = filters;
                         setFilters(rest);
-                        setDateRangeError(
-                          '"To" date cannot be less than "From" date.',
-                        );
-                      } else {
-                        setFilters({ ...filters, to: val });
                         setDateRangeError(null);
-                      }
-                    }}
-                  />
-                </div>
-                {dateRangeError && (
-                  <p className="w-full text-[11px] text-destructive">
-                    {dateRangeError}
-                  </p>
-                )}
-                {(filters.from || filters.to || dateRangeError) && (
+                        setFilterResetKey((k) => k + 1);
+                      }}
+                      title="Clear date filter"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <ViewColumns table={table} />
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 px-2 text-muted-foreground hover:text-foreground self-end"
-                    onClick={() => {
-                      const { from, to, ...rest } = filters;
-                      setFilters(rest);
-                      setDateRangeError(null);
-                      setFilterResetKey((k) => k + 1);
-                    }}
-                    title="Clear date filter"
+                    variant="outline"
+                    className="text-muted-foreground rounded-sm"
+                    onClick={handleDownload}
                   >
-                    <X className="h-4 w-4" />
+                    <Download className="w-4 h-4 mr-1" /> Download
                   </Button>
-                )}
-                <ViewColumns table={table} />
-                <Button
-                  variant="outline"
-                  className="text-muted-foreground rounded-sm"
-                  onClick={handleDownload}
-                >
-                  <Download className="w-4 h-4 mr-1" /> Download
-                </Button>
+                </div>
               </div>
             </div>
           </CardHeader>

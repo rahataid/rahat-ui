@@ -88,9 +88,18 @@ export const useTransactionHistoryTableColumns = () => {
       },
       cell: ({ row }) => {
         const date = new Date(row.getValue('timeStamp'));
-        const formattedDate = date.toLocaleDateString();
-
-        return <div className="lowercase ml-4">{formattedDate}</div>;
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const formattedDate = date.toLocaleDateString('en-Us', {
+          timeZone,
+        });
+        const formattedTime = date.toLocaleTimeString('en-Us', {
+          timeZone,
+        });
+        return (
+          <div className="lowercase ml-4">
+            {formattedDate} {formattedTime}
+          </div>
+        );
       },
     },
   ];

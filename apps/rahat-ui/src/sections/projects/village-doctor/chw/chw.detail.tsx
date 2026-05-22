@@ -18,6 +18,7 @@ import {
   Copy,
   CopyCheck,
   ShoppingBag,
+  UserCheck,
   Users,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -70,7 +71,7 @@ export default function ChwDetail() {
 
   return (
     <VillageDoctorDetailChrome
-      title={data?.data?.name}
+      title={`Village Doctor - ${data?.data?.name}`}
       subtitle="Referral totals for this village doctor only—not program-wide figures."
       backHref={`/projects/el-village-doctor/${projectUuid}/chw`}
     >
@@ -94,7 +95,7 @@ export default function ChwDetail() {
         <DataCard
           title="Total Number of Successful Referrals"
           number={String(s.leadsConverted ?? s.leads_converted ?? 0)}
-          Icon={ShoppingBag}
+          Icon={UserCheck}
           className="rounded-lg border-solid"
         />
 

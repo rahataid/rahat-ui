@@ -57,6 +57,7 @@ export default function TransactionHistoryView({
           table={table}
           tableHeight="h-[calc(300px)]"
           loading={isLoading}
+          emptyMessage="No transactions found."
         />
       </div>
       <Pagination

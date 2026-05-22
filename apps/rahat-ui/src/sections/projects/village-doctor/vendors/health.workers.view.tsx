@@ -63,6 +63,7 @@ export default function HealthWorkersView() {
           table={table}
           tableHeight="h-[calc(300px)]"
           loading={isLoading}
+          emptyMessage="No village doctors found."
         />
       </div>
       <CustomPagination

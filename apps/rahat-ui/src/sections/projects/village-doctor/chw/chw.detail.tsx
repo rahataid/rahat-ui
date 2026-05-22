@@ -14,6 +14,7 @@ import {
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
   BadgeDollarSign,
+  Coins,
   Copy,
   CopyCheck,
   ShoppingBag,
@@ -85,15 +86,24 @@ export default function ChwDetail() {
           className="rounded-lg border-solid"
         />
         <DataCard
-          title="Total Villagers Referred"
+          title="Total Number of Villagers Referred"
           number={String(s.leadsRecieved ?? s.leads ?? 0)}
           Icon={Users}
           className="rounded-lg border-solid"
         />
         <DataCard
-          title="Total Successful Referrals"
+          title="Total Number of Successful Referrals"
           number={String(s.leadsConverted ?? s.leads_converted ?? 0)}
           Icon={ShoppingBag}
+          className="rounded-lg border-solid"
+        />
+
+        <DataCard
+          title="Total Sales by Village Doctor (RMB)"
+          number={String(
+            s.totalPurchaseAmountRmb ?? s.totalPurchaseAmount ?? 0,
+          )}
+          Icon={Coins}
           className="rounded-lg border-solid"
         />
       </div>

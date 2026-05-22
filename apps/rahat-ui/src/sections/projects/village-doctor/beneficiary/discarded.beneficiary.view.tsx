@@ -110,6 +110,7 @@ export default function DiscardedBeneficiaryView() {
             table={table}
             loading={isLoading}
             tableHeight="h-[calc(100vh-420px)]"
+            emptyMessage="No discarded villagers found."
           />
           <CustomPagination
             currentPage={pagination.page}

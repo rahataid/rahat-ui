@@ -67,6 +67,41 @@ function buildConsumerDetailQuery(rowData: any): string {
   return p.toString();
 }
 
+const BENEFICIARY_EXPORT_CONFIG = {
+  columns: [
+    { label: 'Referred Date', key: 'referredAt', width: 22 },
+    {
+      label: 'Referrer Wallet Address',
+      key: 'referrerWalletAddress',
+      width: 46,
+    },
+    { label: 'Referrer Phone', key: 'referrerPhone', width: 20 },
+    {
+      label: 'Referee Wallet Address',
+      key: 'refereeWalletAddress',
+      width: 46,
+    },
+    { label: 'Referee Phone', key: 'refereePhone', width: 20 },
+    { label: 'Referee Gender', key: 'refereeGender', width: 16 },
+    { label: 'Voucher Status', key: 'voucherStatus', width: 16 },
+    { label: 'Voucher Usage', key: 'voucherUsage', width: 24 },
+    { label: 'Glass Purchase Type', key: 'glassPurchaseType', width: 24 },
+    { label: 'Consent', key: 'consent', width: 12 },
+  ],
+};
+
+const formatBeneficiaryForExport = (row: any) => {
+  return BENEFICIARY_EXPORT_CONFIG.columns.reduce(
+    (acc, col) => ({
+      ...acc,
+      [col.label]:
+        col.key === 'referredAt'
+          ? row?.[col.key]?.split(',')?.[0] ?? ''
+          : row?.[col.key] ?? '',
+    }),
+    {} as Record<string, string>,
+  );
+};
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -105,7 +140,7 @@ export default function BeneficiaryView() {
 
   const handleDateChange = (range: DateRange | undefined) => {
     setDateRange(range);
-    
+
     if (range?.from && range?.to) {
       const startDate = new Date(range.from);
       startDate.setHours(0, 0, 0, 0);
@@ -247,19 +282,22 @@ export default function BeneficiaryView() {
       if (!referralExportData?.data?.length) {
         toast.error('No data to download.');
       } else {
-        generateExcel(referralExportData.data, 'BeneficiaryReferral', 10);
+        generateExcel(referralExportData.data, 'BeneficiaryReferral');
       }
       setEnabled(false);
     }
   }, [enabled, isSuccess, referralExportData?.data]);
 
-  const generateExcel = (data: any, title: string, numberOfColumns: number) => {
+  const generateExcel = (data: any[], title: string) => {
+    const exportData = data.map(formatBeneficiaryForExport);
+
     const wb = XLSX.utils.book_new();
 
-    const ws = XLSX.utils.json_to_sheet(data);
+    const ws = XLSX.utils.json_to_sheet(exportData);
 
-    const columnWidths = 25;
-    ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
+    ws['!cols'] = BENEFICIARY_EXPORT_CONFIG.columns.map((col) => ({
+      wch: col.width,
+    }));
 
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 

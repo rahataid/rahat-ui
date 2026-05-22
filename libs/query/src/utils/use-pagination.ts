@@ -63,7 +63,9 @@ export const usePagination = (): usePaginationReturn => {
     if (JSON.stringify(storedFilters) !== JSON.stringify(filters)) {
       hashStorage.setItem('filters', filters);
     }
-    setPagination({ ...pagination, page: 1 });
+    // Use functional update to avoid stale closure on `pagination` and skip
+    // the re-render entirely when the page is already 1.
+    setPagination((prev) => (prev.page !== 1 ? { ...prev, page: 1 } : prev));
   }, [filters]);
 
   useEffect(() => {

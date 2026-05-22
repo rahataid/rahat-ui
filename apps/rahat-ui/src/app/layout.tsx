@@ -13,6 +13,7 @@ import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 import { NewCommunicationQueryProvider } from '@rahat-ui/query';
 import { PostHogProvider } from '../providers/PostHogProvider';
+import { headers } from 'next/headers';
 
 export const metadata = {
   icons: {
@@ -25,8 +26,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const nonce = headers().get('x-nonce') || '';
+
   return (
     <html lang="en">
+      <head nonce={nonce}></head>
       <body>
         <title>Welcome to Rahat</title>
         <PostHogProvider>
@@ -46,6 +50,7 @@ export default function RootLayout({
                           <main className={GeistSans.className}>
                             {children}
                           </main>
+                          <script nonce={nonce} />
                           <ToastContainer />
                           <Toaster />
                         </ThemeProvider>

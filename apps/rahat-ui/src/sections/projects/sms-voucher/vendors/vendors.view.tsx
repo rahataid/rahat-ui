@@ -102,7 +102,7 @@ export default function VendorsView() {
           </div>
           <ElkenyaTable
             table={table}
-            tableHeight="h-[calc(100vh-310px)]"
+            tableHeight="h-[calc(100vh-316px)]"
             loading={getVendors?.isPending}
           />
         </div>

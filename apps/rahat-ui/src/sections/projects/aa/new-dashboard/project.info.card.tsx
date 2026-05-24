@@ -12,7 +12,7 @@ export default function ProjectInfoCard({ project }: IProps) {
   const { id } = useParams();
   const projectId = id as UUID;
 
-  const hazardType = useProjectSettingsStore((s) => s?.settings?.[projectId as string]?.[PROJECT_SETTINGS_KEYS.HAZARD_TYPE])
+  // const hazardType = useProjectSettingsStore((s) => s?.settings?.[projectId as string]?.[PROJECT_SETTINGS_KEYS.HAZARD_TYPE])
 
   return (
     <div className="bg-card p-4 rounded-sm shadow-md">
@@ -31,10 +31,10 @@ export default function ProjectInfoCard({ project }: IProps) {
           <h1 className="text-muted-foreground text-sm">Location</h1>
           <p className="text-sm">{project?.extras?.location || '-'}</p>
         </div>
-        <div className='text-right'>
+        {/* <div className='text-right'>
           <h1 className="text-muted-foreground text-sm">Hazard Type</h1>
           <p className="text-sm">{hazardType || '-'}</p>
-        </div>
+        </div> */}
         <div className="">
           <h1 className="text-muted-foreground text-sm">River Basin</h1>
           <p className="text-sm">{project?.extras?.basin || '-'}</p>

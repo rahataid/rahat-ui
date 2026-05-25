@@ -17,6 +17,7 @@ import {
   splitFullName,
   splitValidAndInvalid,
   transformExportKeys,
+  trimWhitespace,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 import React from 'react';
@@ -232,7 +233,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
           icon: 'error',
           title: 'Failed to fetch kobotool data',
         });
-      const sanitized = removeFieldsWithUnderscore(koboData.data.results);
+      const sanitized = trimWhitespace(removeFieldsWithUnderscore(koboData.data.results));
       setRawData(sanitized);
       await fetchExistingMapping(found.imported);
       setLoading(false);
@@ -295,7 +296,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               defval: '',
               raw: isCsv,
             }) as any;
-            const sanitized = removeFieldsWithUnderscore(json || []);
+            const sanitized = trimWhitespace(removeFieldsWithUnderscore(json || []));
             setRawData(sanitized);
             await fetchAiMappingSuggestions(file);
             resolve();

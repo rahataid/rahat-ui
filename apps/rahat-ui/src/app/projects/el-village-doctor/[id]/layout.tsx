@@ -55,12 +55,7 @@ export default function ProjectLayoutRoot({
   return (
     <CambodiaSubgraphProvider subgraphClient={subgraphClient}>
       <ProjectLayout projectType={'el-village-doctor'}>
-        <div
-          className="h-full min-h-0 flex-1 antialiased [--tw-prose-body:var(--muted-foreground)]"
-          data-village-doctor="true"
-        >
-          {renderChildren()}
-        </div>
+        {renderChildren()}
       </ProjectLayout>
     </CambodiaSubgraphProvider>
   );

@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { formatLocalDateTime } from 'apps/rahat-ui/src/utils';
 export type Transaction = {
   id: string;
   topic: string;
@@ -103,28 +104,11 @@ export const useTableColumns = () => {
           </Button>
         );
       },
-      cell: ({ row }) => {
-        const timestampValue = row.getValue('timestamp');
-        if (!timestampValue) return <div className="ml-4">-</div>;
-
-        const date = new Date(String(timestampValue));
-        if (Number.isNaN(date.getTime())) {
-          return <div className="ml-4">{String(timestampValue)}</div>;
-        }
-
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const formattedDate = date.toLocaleDateString('en-US', {
-          timeZone,
-        });
-        const formattedTime = date.toLocaleTimeString('en-US', {
-          timeZone,
-        });
-        return (
-          <div className="lowercase ml-4">
-            {formattedDate} {formattedTime}
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <div className="lowercase ml-4">
+          {formatLocalDateTime(row.getValue('timestamp') as string | Date)}
+        </div>
+      ),
     },
     {
       accessorKey: 'txHash',

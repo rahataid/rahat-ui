@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { formatDT } from 'apps/rahat-ui/src/utils';
+import { formatLocalDateTime } from 'apps/rahat-ui/src/utils';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
@@ -36,8 +36,6 @@ export default function BeneficiaryDetail() {
     uuid: benId,
   }) as any;
 
-  console.log(data?.data, 'hello lishu');
-
   const [copyAction, setCopyAction] = useState<boolean>(false);
   const clickToCopy = (name: string) => {
     navigator.clipboard.writeText(name);
@@ -49,6 +47,10 @@ export default function BeneficiaryDetail() {
 
   const vdLine = villageDoctorDisplayName(data?.data);
   const epLine = eyePartnerDisplayName(data?.data);
+
+  const recordCreatedLabel = data?.data?.createdAt
+    ? formatLocalDateTime(data.data.createdAt)
+    : '—';
 
   return (
     <VillageDoctorDetailChrome
@@ -75,7 +77,7 @@ export default function BeneficiaryDetail() {
               {data?.data?.piiData?.phone ?? '—'}
             </VillageDoctorField>
             <VillageDoctorField label="Record created">
-              {data?.data?.createdAt ? formatDT(data?.data?.createdAt) : '—'}
+              {recordCreatedLabel}
             </VillageDoctorField>
             <VillageDoctorField label="Wallet address">
               <TooltipProvider delayDuration={100}>

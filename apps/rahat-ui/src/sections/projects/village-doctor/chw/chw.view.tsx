@@ -41,6 +41,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import ViewColumns from '../../components/view.columns';
 import * as XLSX from 'xlsx';
+import { VillageDoctorPageShell } from '../page-shell';
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
@@ -169,20 +170,11 @@ export default function CHWView() {
     XLSX.writeFile(workbook, 'VillageDoctorReport.xlsx');
   };
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Village Doctors
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Monitor village doctors (referrers), filter by period, and export
-            program reports.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-6 overflow-auto p-6">
+    <VillageDoctorPageShell
+      title="Village Doctors"
+      subtitle="Monitor village doctors (referrers), filter by period, and export program reports."
+      contentClassName="space-y-6"
+    >
         <div
           className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
             programStatsFetching ? 'opacity-70 transition-opacity' : ''
@@ -352,7 +344,6 @@ export default function CHWView() {
             />
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </VillageDoctorPageShell>
   );
 }

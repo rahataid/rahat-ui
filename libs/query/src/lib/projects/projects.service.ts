@@ -1424,10 +1424,7 @@ export const useCambodiaVendorsStatsByVendorIds = (payload: {
                   };
                 }
               | undefined;
-            const raw =
-              body?.data?.leadsConverted ??
-              body?.data?.leads_converted ??
-              0;
+            const raw = body?.data?.leadsConverted ?? 0;
             map[vendorId] = typeof raw === 'number' ? raw : 0;
           } catch {
             map[vendorId] = undefined;

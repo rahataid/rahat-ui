@@ -11,7 +11,7 @@ on:
       tag_suffix:
         description: "Tag suffix (e.g., test-load)"
         required: true
-        default: "crm-dev"
+        default: "el-vd-dry-run"
         type: string
       vault_secret_path:
         description: "Vault secret path"
@@ -33,6 +33,7 @@ on:
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
+          - "[DRY] github/data/rahat/rahat-ui/demo/EL"
 
           # Main folder
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"

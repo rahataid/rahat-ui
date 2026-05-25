@@ -546,6 +546,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               koboForms={koboForms}
               handleKoboFormChange={handleKoboFormChange}
               handleGoClick={handleGoClick}
+              loading={loading}
             />
             <div className="pt-10">{loading && <Loader />}</div>
           </>

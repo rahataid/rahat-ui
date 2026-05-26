@@ -355,7 +355,9 @@ export default function InkindAllocationDetail() {
     <div className="p-4">
       <div className="flex items-center justify-between ">
         <HeaderWithBack
-          path={`/projects/aa/${id}/inkind-management?tab=inkindAllocation`}
+          path={`/projects/aa/${id}/inkind-management?tab=inkindAllocation&mode=${
+            sp.get('from') ?? 'online'
+          }`}
           title={groupName}
           subtitle="Disbursement information for this group allocation"
           status={status}

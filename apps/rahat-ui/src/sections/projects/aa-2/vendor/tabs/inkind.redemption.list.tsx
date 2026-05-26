@@ -12,7 +12,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import React from 'react';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
-import { usePagination } from '@rahat-ui/query';
+import { usePagination, useGetInkindRedemptionLogs } from '@rahat-ui/query';
 import { useInkindRedemptionColumn } from '../columns/useInkindRedemptionColumn';
 
 export type DummyInkindRedemption = {
@@ -43,7 +43,6 @@ export const InkindRedemptionList = ({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  console.log('vendor id', vendorId);
   const {
     filters,
     setFilters,
@@ -55,13 +54,6 @@ export const InkindRedemptionList = ({
   } = usePagination();
 
   const debounceSearch = useDebounce(filters, 500);
-
-  // const { data, isPending } = useGetInkindRedemptionLogs({
-  //   projectUuid: id,
-  //   ...pagination,
-  //   ...(vendorId ? { vendorUuid: vendorId } : {}),
-  //   search: debounceSearch.name,
-  // });
 
   const data = {
     success: true,
@@ -121,6 +113,12 @@ export const InkindRedemptionList = ({
       next: null,
     },
   };
+  // const { data, isPending } = useGetInkindRedemptionLogs({
+  //   projectUuid: id,
+  //   ...pagination,
+  //   ...(vendorId ? { vendorUuid: vendorId } : {}),
+  //   search: debounceSearch.name,
+  // });
 
   const meta = {
     total: data?.meta?.total || 0,

@@ -337,12 +337,18 @@ export const useLogsDetailsByVendor = (payload: {
 export const useGetInkindRedemptionLogs = (payload: {
   projectUuid: UUID;
   page?: number;
-
   perPage?: number;
   search?: string;
+  vendorUuid?: UUID;
 }) => {
   const q = useProjectAction<any[]>();
-  const { projectUuid, page = 1, perPage = 10, search = '' } = payload;
+  const {
+    projectUuid,
+    page = 1,
+    perPage = 10,
+    search = '',
+    vendorUuid,
+  } = payload;
 
   const query = useQuery({
     queryKey: [
@@ -351,6 +357,7 @@ export const useGetInkindRedemptionLogs = (payload: {
       page,
       perPage,
       search,
+      vendorUuid,
     ],
     placeholderData: keepPreviousData,
     enabled: !!projectUuid,
@@ -363,6 +370,7 @@ export const useGetInkindRedemptionLogs = (payload: {
             page,
             perPage,
             search: search ?? '',
+            ...(vendorUuid ? { vendorUuid } : {}),
           },
         },
       });

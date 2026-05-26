@@ -2,7 +2,6 @@ import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
-  ColumnDef,
 } from '@tanstack/react-table';
 import {
   CustomPagination,
@@ -12,15 +11,11 @@ import {
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import React from 'react';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { UUID } from 'crypto';
-import { useGetInkindRedemptionLogs, usePagination } from '@rahat-ui/query';
-import { Eye } from 'lucide-react';
+import { usePagination } from '@rahat-ui/query';
+import { useInkindRedemptionColumn } from '../columns/useInkindRedemptionColumn';
 
-type DummyInkindRedemption = {
+export type DummyInkindRedemption = {
   uuid: string;
   vendor: {
     name: string;
@@ -33,42 +28,9 @@ type DummyInkindRedemption = {
   quantity: number;
   approvedAt: Date;
   approvedBy: string;
-  status: string;
+  redemptionStatus: string;
   redeemedAt: string;
   transactionHash: string | null;
-};
-
-const getStatusBadge = (status: string) => {
-  const config: Record<string, { bg: string; color: string; label: string }> = {
-    APPROVED: {
-      bg: '#ECFDF3',
-      color: '#027A48',
-      label: 'Approved',
-    },
-    PENDING: {
-      bg: '#EFF8FF',
-      color: '#175CD3',
-      label: 'Pending',
-    },
-    REJECTED: {
-      bg: '#FEF3F2',
-      color: '#B42318',
-      label: 'Rejected',
-    },
-  };
-  const c = config[status] || {
-    bg: '#F9FAFB',
-    color: '#344054',
-    label: status,
-  };
-  return (
-    <Badge
-      className="text-xs font-normal"
-      style={{ backgroundColor: c.bg, color: c.color }}
-    >
-      {c.label}
-    </Badge>
-  );
 };
 
 export const InkindRedemptionList = ({ id }: { id: UUID }) => {
@@ -151,8 +113,6 @@ export const InkindRedemptionList = ({ id }: { id: UUID }) => {
     },
   };
 
-  console.log('Inkind Redemption Logs:', data);
-
   const meta = {
     total: data?.meta?.total || 0,
     lastPage: data?.meta?.lastPage || 0,
@@ -160,110 +120,7 @@ export const InkindRedemptionList = ({ id }: { id: UUID }) => {
     perPage: pagination.perPage,
   };
 
-  const columns: ColumnDef<DummyInkindRedemption>[] = [
-    {
-      header: 'Vendor Name',
-      cell: ({ row }) => {
-        return (
-          <TruncatedCell
-            text={row.original?.vendor?.name || 'N/A'}
-            maxLength={20}
-          />
-        );
-      },
-    },
-    {
-      accessorKey: 'transactionHash',
-      header: 'TxHash',
-      cell: ({ row }) => {
-        if (!row.original?.transactionHash) {
-          return <div>N/A</div>;
-        }
-        return (
-          <div className="flex flex-row">
-            <div className="w-20 truncate">
-              <a
-                href={`https://sepolia.basescan.org/tx/${row.getValue(
-                  'transactionHash',
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className=" text-blue-500 hover:underline cursor-pointer "
-              >
-                <TruncatedCell
-                  text={row.getValue('transactionHash')}
-                  maxLength={10}
-                />
-              </a>
-            </div>
-            <CopyTooltip
-              value={row.getValue('transactionHash')}
-              uniqueKey={row.getValue('transactionHash')}
-            />
-          </div>
-        );
-      },
-    },
-    {
-      header: 'In-kind Item',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={row.original?.inkind?.name || 'N/A'}
-          maxLength={20}
-        />
-      ),
-    },
-    // {
-    //   accessorKey: 'quantity',
-    //   header: 'Qty',
-    // },
-    {
-      accessorKey: 'redemptionStatus',
-      header: 'Status',
-      cell: ({ row }) => getStatusBadge(row.getValue('redemptionStatus')),
-    },
-    {
-      accessorKey: 'approvedBy',
-      header: 'Approved By',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={row.original?.approvedBy || 'N/A'}
-          maxLength={12}
-        />
-      ),
-    },
-    {
-      accessorKey: 'approvedAt',
-      header: 'Redeemed At',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={
-            row.original?.approvedAt
-              ? dateFormat(row.original?.approvedAt)
-              : 'N/A'
-          }
-          maxLength={12}
-        />
-      ),
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              // onClick={() => handleViewClick(row.original)}
-            />
-          </div>
-        );
-      },
-    },
-  ];
+  const columns = useInkindRedemptionColumn(id);
 
   const table = useReactTable({
     manualPagination: true,

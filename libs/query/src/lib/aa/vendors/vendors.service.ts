@@ -372,3 +372,50 @@ export const useGetInkindRedemptionLogs = (payload: {
 
   return query;
 };
+
+export const useUpdateVendorRedemptionStatus = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        redemptionStatus: string;
+        uuid: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.inkinds.updateVendorRedemptionStatus',
+          payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Vendor redemption status updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating inkind redemption status.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};

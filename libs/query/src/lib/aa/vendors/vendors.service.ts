@@ -334,3 +334,41 @@ export const useLogsDetailsByVendor = (payload: {
 
   return query;
 };
+export const useGetInkindRedemptionLogs = (payload: {
+  projectUuid: UUID;
+  page?: number;
+
+  perPage?: number;
+  search?: string;
+}) => {
+  const q = useProjectAction<any[]>();
+  const { projectUuid, page = 1, perPage = 10, search = '' } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aa.vendor.inkind_redemption.get_redemption_logs',
+      projectUuid,
+      page,
+      perPage,
+      search,
+    ],
+    placeholderData: keepPreviousData,
+    enabled: !!projectUuid,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.inkinds.getVendorRedemptions',
+          payload: {
+            page,
+            perPage,
+            search: search ?? '',
+          },
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};

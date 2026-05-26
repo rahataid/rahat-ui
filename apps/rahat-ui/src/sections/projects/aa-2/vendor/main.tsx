@@ -10,6 +10,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { VendorList } from './tabs/vendor.list';
 import { VendorRedemptionList } from './tabs/vendor.redemption.list';
+import { InkindRedemptionList } from './tabs/inkind.redemption.list';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
@@ -37,12 +38,21 @@ export default function VendorsView() {
             >
               Vendor Redemption List
             </TabsTrigger>
+            <TabsTrigger
+              className="w-full data-[state=active]:bg-white"
+              value="inkindRedemptionList"
+            >
+              Inkind Redemption List
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="vendorList">
             <VendorList id={id} />
           </TabsContent>
           <TabsContent value="vendorRedemptionList">
             <VendorRedemptionList id={id} />
+          </TabsContent>
+          <TabsContent value="inkindRedemptionList">
+            <InkindRedemptionList id={id} />
           </TabsContent>
         </Tabs>
       </div>

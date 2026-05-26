@@ -150,6 +150,7 @@ export default function InkindAllocationDetail() {
     { enabled: false },
   );
 
+  // console.log('entireLogsData', entireLogsData);
   useEffect(() => {
     if (!entireLogsData) return;
     const raw = (entireLogsData as any)?.data?.logs;
@@ -372,7 +373,7 @@ export default function InkindAllocationDetail() {
                   handleClick={handleDownloadReport}
                   name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
                   variant="outline"
-                  disabled={isDownloading}
+                  disabled={isDownloading || logRows.length === 0}
                 />
               </TooltipTrigger>
               <TooltipContent>

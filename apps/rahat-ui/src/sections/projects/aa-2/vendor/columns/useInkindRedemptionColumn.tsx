@@ -146,7 +146,7 @@ export const useInkindRedemptionColumn = (id: UUID) => {
                   <DialogComponent
                     onSubmit={() => handleApproveClick(row)}
                     onCancel={() => null}
-                    title="Approve Redemption Request"
+                    title="Approve Inkind Redemption Request"
                     subtitle="Are you sure you want to approve this redemption request?"
                     trigger={
                       <div className="cursor-pointer select-none text-[#297AD6]">

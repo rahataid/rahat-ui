@@ -33,10 +33,17 @@ export type DummyInkindRedemption = {
   transactionHash: string | null;
 };
 
-export const InkindRedemptionList = ({ id }: { id: UUID }) => {
+export const InkindRedemptionList = ({
+  id,
+  vendorId,
+}: {
+  id: UUID;
+  vendorId?: UUID;
+}) => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  console.log('vendor id', vendorId);
   const {
     filters,
     setFilters,
@@ -52,8 +59,10 @@ export const InkindRedemptionList = ({ id }: { id: UUID }) => {
   // const { data, isPending } = useGetInkindRedemptionLogs({
   //   projectUuid: id,
   //   ...pagination,
+  //   ...(vendorId ? { vendorUuid: vendorId } : {}),
   //   search: debounceSearch.name,
   // });
+
   const data = {
     success: true,
     data: [

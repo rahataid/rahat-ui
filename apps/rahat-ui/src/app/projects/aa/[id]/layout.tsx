@@ -3,8 +3,6 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsContract,
-  useAAProjectSettingsDatasource,
-  useAAProjectSettingsHazardType,
   useEntities,
   useProjectChainSettings,
   useProjectContractSettings,
@@ -27,10 +25,7 @@ export default function ProjectLayoutRoot({
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;
-  const { isLoading: isDatasourceLoading } =
-    useAAProjectSettingsDatasource(uuid);
   const { isLoading: isContractLoading } = useProjectContractSettings(uuid);
-  const { isLoading: isHazardLoading } = useAAProjectSettingsHazardType(uuid);
   const { isLoading: isSubgraphLoading } = useProjectSubgraphSettings(uuid);
   const { isLoading: isAAContractLoading } = useAAProjectSettingsContract(uuid);
   useProjectChainSettings(uuid);
@@ -44,9 +39,8 @@ export default function ProjectLayoutRoot({
 
   const isSettingsLoading =
     !hasSettingsInStore &&
-    (isDatasourceLoading ||
+    (
       isContractLoading ||
-      isHazardLoading ||
       isSubgraphLoading ||
       isAAContractLoading);
 

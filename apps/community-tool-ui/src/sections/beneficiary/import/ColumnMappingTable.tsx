@@ -12,6 +12,7 @@ import {
   truncatedText,
 } from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { ComboBox } from './Combobox';
 
 interface ColumnMappingTableProps {
@@ -38,9 +39,17 @@ export default function ColumnMappingTable({
   fieldDefs,
   mappings,
 }: ColumnMappingTableProps) {
-  const [columns, setColumns] = useState([]) as any[];
-  const { setMappings, fieldSuggestions } = useBeneficiaryImportStore();
 
+
+  const [columns, setColumns] = useState([]) as any[];
+
+  const { setMappings, fieldSuggestions } =
+    useBeneficiaryImportStore();
+
+  console.log(
+    fieldSuggestions,
+    'fieldSuggestionsssss from column mapping',
+  );
 
   const extractColumns = () => {
     if (rawData.length > 0) {
@@ -52,12 +61,19 @@ export default function ColumnMappingTable({
 
   function renderField(item: any, key: string) {
     const isUrl = isURL(item[key]);
+
     if (isUrl)
       return (
-        <a className="text-blue-400" href={item[key]} target="_blank">
+        <a
+          className="text-blue-400"
+          href={item[key]}
+          target="_blank"
+          rel="noreferrer"
+        >
           Open Link
         </a>
       );
+
     return item[key];
   }
 
@@ -78,19 +94,24 @@ export default function ColumnMappingTable({
       const found = mappings.find((m) => {
         return m.sourceField === sourceField;
       });
+
       if (!found) return '';
+
       return found.targetField;
     } else {
       let targetField = '';
+
       // 1. Try AI Suggestions
       const aiFound = fieldSuggestions.find(
         (s) => s.sourceField === sourceField,
       );
+
       if (aiFound && aiFound.targetField) {
         targetField = aiFound.targetField;
       } else {
         // 2. Search for variation match
         const variationMatch = findFieldName(sourceField);
+
         if (variationMatch) {
           targetField = variationMatch.targetField;
         }
@@ -101,14 +122,21 @@ export default function ColumnMappingTable({
         const alreadyMapped = myMappings.find(
           (m) => m.sourceField === sourceField,
         );
+
         if (!alreadyMapped) {
           myMappings.push({
             sourceField,
             targetField,
           });
-          const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
+
+          const filtered = filterUniqueTargetsOnly(
+            myMappings,
+            'targetField',
+          );
+
           setMappings(filtered);
         }
+
         return targetField;
       }
 
@@ -116,14 +144,21 @@ export default function ColumnMappingTable({
     }
   }
 
-  function filterUniqueTargetsOnly(arr: IMapping[], key: string) {
+  function filterUniqueTargetsOnly(
+    arr: IMapping[],
+    key: string,
+  ) {
     const seen = new Set();
+
     return arr.filter((item: any) => {
       const keyValue = item[key];
+
       if (seen.has(keyValue)) {
         return false;
       }
+
       seen.add(keyValue);
+
       return true;
     });
   }
@@ -134,65 +169,154 @@ export default function ColumnMappingTable({
     ) as any;
 
     if (!found) return null;
+
     let targetF = found.name;
+
     const fieldName = found.name.toLowerCase();
+
     if (CAMEL_CASE_PRIMARY_FIELDS.includes(fieldName)) {
       targetF = PRIMARY_FILED_MAP[fieldName];
     }
 
-    return { sourceField: sourceField, targetField: targetF };
+    return {
+      sourceField: sourceField,
+      targetField: targetF,
+    };
   }
 
   return (
     <table className="ml-8 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead>
         <tr>
-          {columns.map((column: any, index: number) => (
-            <th className="py-1.5" key={index}>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1">
-                      <span>{truncatedText(column, 40)}</span>
-                      {fieldSuggestions.find((s) => s.sourceField === column) && (
-                        <span className="text-[10px] bg-blue-100 text-blue-600 px-1 rounded">AI</span>
-                      )}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{column}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+          {columns.map((column: any, index: number) => {
+            const suggestion = fieldSuggestions.find(
+              (s) => s.sourceField === column,
+            );
 
-              <ComboBox
-                data={sortedData}
-                handleTargetFieldChange={handleTargetFieldChange}
-                column={column}
-                selectedField={getSelectedField(column)}
-                aiSuggestion={fieldSuggestions.find(
-                  (s) => s.sourceField === column,
-                )}
-              />
-            </th>
-          ))}
+            const phoneDuplicates =
+              suggestion?.deduplication?.phone || [];
+
+            const govtDuplicates =
+              suggestion?.deduplication?.govtIDNumber || [];
+
+            const isPhoneField =
+              suggestion?.targetField === 'phone';
+
+            const isGovtField =
+              suggestion?.targetField === 'govtIDNumber';
+
+            const hasDuplicates =
+              (isPhoneField &&
+                phoneDuplicates.length > 0) ||
+              (isGovtField &&
+                govtDuplicates.length > 0);
+
+            return (
+              <th className="py-1.5" key={index}>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1">
+                        <span>
+                          {truncatedText(column, 40)}
+                        </span>
+
+                        {/* AI Badge */}
+                        {suggestion && (
+                          <span className="text-[10px] bg-blue-100 text-blue-600 px-1 rounded">
+                            AI
+                          </span>
+                        )}
+
+                        {/* Duplicate Warning */}
+                        {hasDuplicates && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="cursor-pointer">
+                                <AlertTriangle
+                                  size={14}
+                                  className="text-red-500"
+                                />
+                              </span>
+                            </TooltipTrigger>
+
+                            <TooltipContent>
+                              <div className="max-w-[220px] text-xs space-y-1">
+                                {isPhoneField &&
+                                  phoneDuplicates.length >
+                                  0 && (
+                                    <p>
+                                      Duplicate phone data
+                                      found in rows:{' '}
+                                      {phoneDuplicates.join(
+                                        ', ',
+                                      )}
+                                    </p>
+                                  )}
+
+                                {isGovtField &&
+                                  govtDuplicates.length >
+                                  0 && (
+                                    <p>
+                                      Duplicate Govt ID
+                                      data found in rows:{' '}
+                                      {govtDuplicates.join(
+                                        ', ',
+                                      )}
+                                    </p>
+                                  )}
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </TooltipTrigger>
+
+                    <TooltipContent>
+                      <p>{column}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <ComboBox
+                  data={sortedData}
+                  handleTargetFieldChange={
+                    handleTargetFieldChange
+                  }
+                  column={column}
+                  selectedField={getSelectedField(
+                    column,
+                  )}
+                  aiSuggestion={suggestion}
+                />
+              </th>
+            );
+          })}
         </tr>
       </thead>
+
       <tbody>
-        {rawData.slice(0, 10).map((item: any, index: number) => (
-          <tr
-            key={index}
-            className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
-          >
-            {columns.map((column: any, columnIndex: number) => (
-              <td className="px-2 py-1.5" key={columnIndex}>
-                {typeof item[column] === 'object'
-                  ? ''
-                  : renderField(item, column)}
-              </td>
-            ))}
-          </tr>
-        ))}
+        {rawData.slice(0, 10).map(
+          (item: any, index: number) => (
+            <tr
+              key={index}
+              className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+            >
+              {columns.map(
+                (column: any, columnIndex: number) => (
+                  <td
+                    className="px-2 py-1.5"
+                    key={columnIndex}
+                  >
+                    {typeof item[column] === 'object'
+                      ? ''
+                      : renderField(item, column)}
+                  </td>
+                ),
+              )}
+            </tr>
+          ),
+        )}
       </tbody>
     </table>
   );

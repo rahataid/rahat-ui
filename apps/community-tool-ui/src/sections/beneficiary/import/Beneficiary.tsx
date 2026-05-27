@@ -115,6 +115,9 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         payload: formData,
         baseURL: aiBaseurl,
       });
+      console.log(uploadResult.deduplication_results, 'deduplication results')
+      console.log(uploadResult.deduplication_results.results.phone, 'deduplication phone')
+      console.log(uploadResult.deduplication_results.results.govtIDNumber, 'deduplication govIdNumber')
 
       if (uploadResult && uploadResult.classified_headers.length) {
         const usedTargetFields = new Set<string>();
@@ -163,9 +166,13 @@ export default function BenImp({ fieldDefinitions }: IProps) {
             other_similar: header.other_similar,
             match: header.match,
             similarity: header.similarity,
+            deduplication: {
+              phone: uploadResult.deduplication_results.results.phone,
+              govtIDNumber: uploadResult.deduplication_results.results.govtIDNumber,
+            }
           };
         });
-        console.log('AI Mapping Suggestions:', aiData);
+
 
         setFieldSuggestions(aiData); // Store AI suggestions separately
       }

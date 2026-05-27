@@ -29,7 +29,7 @@ function ViewGroup() {
   } = usePagination();
 
   const debouncedFilters = useDebounce(filters, 500) as any;
-  debouncedFilters.autoCreated = false;
+  // debouncedFilters.autoCreated = false;
   const { isLoading, data } = useCommunityGroupList({
     ...pagination,
     ...(debouncedFilters as any),

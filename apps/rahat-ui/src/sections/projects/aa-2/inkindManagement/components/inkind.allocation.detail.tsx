@@ -161,44 +161,25 @@ export default function InkindAllocationDetail() {
     const exportInkindName = groupInkindMeta?.inkindName ?? inkindName;
     const exportGroupName = groupInkindMeta?.groupName ?? groupName;
 
-    const flattenEntry = (
-      entry: Record<string, any>,
-    ): Record<string, string> => {
-      const result: Record<string, string> = {};
-      for (const [key, value] of Object.entries(entry)) {
-        if (
-          value !== null &&
-          typeof value === 'object' &&
-          !Array.isArray(value)
-        ) {
-          for (const [nestedKey, nestedVal] of Object.entries(value)) {
-            result[`${key} ${nestedKey}`] =
-              nestedVal == null ? 'N/A' : String(nestedVal);
-          }
-        } else {
-          result[key] = value == null ? 'N/A' : String(value);
-        }
-      }
-      return result;
-    };
-
-    const flatRows = raw.map(flattenEntry);
-    const excludeColumns = new Set([
-      'uuid',
-      'beneficiary uuid',
-      'vendor uuid',
-      'vendor walletAddress',
-      'beneficiary name',
-    ]);
-    const headers = Object.keys(flatRows[0]).filter(
-      (h) => !excludeColumns.has(h),
-    );
+    const sheet1Headers = [
+      'quantity',
+      'redeemedAt',
+      'txHash',
+      'beneficiary walletAddress',
+      'beneficiary phone',
+      'vendor name',
+    ];
 
     const sheet1Data = [
-      headers,
-      ...flatRows.map((r: Record<string, string>) =>
-        headers.map((h) => r[h] ?? 'N/A'),
-      ),
+      sheet1Headers,
+      ...raw.map((r: any) => [
+        String(r.quantity ?? r.quantityDisbursed ?? 0),
+        r.redeemedAt ?? r.createdAt ?? 'N/A',
+        r.txHash ?? 'N/A',
+        r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
+        r.beneficiary?.phone ?? 'N/A',
+        r.vendor?.name ?? 'N/A',
+      ]),
     ];
 
     const mode = inkindType === 'WALK_IN' ? 'Offline' : 'Online';

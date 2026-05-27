@@ -8,6 +8,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import * as XLSX from 'xlsx';
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -157,8 +158,8 @@ export default function InkindAllocationDetail() {
     if (!Array.isArray(raw) || raw.length === 0) return;
 
     const groupInkindMeta = (entireLogsData as any)?.data?.groupInkind;
-    const csvInkindName = groupInkindMeta?.inkindName ?? inkindName;
-    const csvGroupName = groupInkindMeta?.groupName ?? groupName;
+    const exportInkindName = groupInkindMeta?.inkindName ?? inkindName;
+    const exportGroupName = groupInkindMeta?.groupName ?? groupName;
 
     const flattenEntry = (
       entry: Record<string, any>,
@@ -193,32 +194,54 @@ export default function InkindAllocationDetail() {
       (h) => !excludeColumns.has(h),
     );
 
-    const escape = (val: string) =>
-      val.includes(',') || val.includes('"') || val.includes('\n')
-        ? `"${val.replace(/"/g, '""')}"`
-        : val;
-
-    const csvLines = [
-      headers.join(','),
+    const sheet1Data = [
+      headers,
       ...flatRows.map((r: Record<string, string>) =>
-        headers.map((h) => escape(r[h] ?? 'N/A')).join(','),
+        headers.map((h) => r[h] ?? 'N/A'),
       ),
     ];
 
-    const blob = new Blob([csvLines.join('\n')], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${csvInkindName}-${csvGroupName}.csv`
+    const mode = inkindType === 'WALK_IN' ? 'Offline' : 'Online';
+    const sheet2Headers = [
+      'Inkind name',
+      'No of Beneficiaries',
+      'Total inkinds',
+      'Total redeemed',
+      'mode',
+    ];
+    const sheet2Data = [
+      sheet2Headers,
+      [
+        exportInkindName,
+        String(totalBeneficiaries),
+        String(totalAvailableInkinds),
+        String(quantityRedeemed),
+        mode,
+      ],
+    ];
+
+    const wb = XLSX.utils.book_new();
+
+    const ws1 = XLSX.utils.aoa_to_sheet(sheet1Data);
+    XLSX.utils.book_append_sheet(wb, ws1, 'Redemption Logs');
+
+    const ws2 = XLSX.utils.aoa_to_sheet(sheet2Data);
+    XLSX.utils.book_append_sheet(wb, ws2, 'Inkind details');
+
+    const fileName = `${exportInkindName}-${exportGroupName}.xlsx`
       .replace(/\s+/g, '-')
       .toLowerCase();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [entireLogsData]);
+
+    XLSX.writeFile(wb, fileName);
+  }, [
+    entireLogsData,
+    inkindType,
+    totalBeneficiaries,
+    totalAvailableInkinds,
+    quantityRedeemed,
+    inkindName,
+    groupName,
+  ]);
 
   const handleDownloadReport = () => {
     fetchEntireLogs();

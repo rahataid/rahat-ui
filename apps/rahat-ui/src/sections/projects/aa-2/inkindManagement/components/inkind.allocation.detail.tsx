@@ -384,10 +384,11 @@ export default function InkindAllocationDetail() {
                   name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
                   variant="outline"
                   disabled={isDownloading || logRows.length === 0}
+                  className="cursor-pointer"
                 />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Export In-kind Logs</p>
+                <p>{logRows.length === 0 ? 'No data to export' : 'Export In-kind Logs'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

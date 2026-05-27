@@ -11,7 +11,7 @@ import {
 } from './graph.query';
 import { useEffect } from 'react';
 import { useCambodiaProjectSubgraphStore } from './stores/cambodia-project.store';
-import { formatTransaction } from '../utils';
+import { formatTransaction, sortTransactionsByTimestamp } from '../utils';
 
 function normalizeEvmAddressForSubgraph(addr: string | undefined): string {
   const raw = typeof addr === 'string' ? addr : String(addr ?? '');
@@ -103,7 +103,7 @@ export const useCambodiaProjectTransactions = () => {
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));
         }, []);
-        return newData;
+        return sortTransactionsByTimestamp(newData);
       },
     },
     queryClient,
@@ -151,7 +151,7 @@ export const useCambodiaBeneficiaryTransactions = (
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));
         }, []);
-        return newData;
+        return sortTransactionsByTimestamp(newData);
       },
     },
     queryClient,
@@ -190,7 +190,7 @@ export const useCambodiaVendorTransactions = (vendorAddress: string) => {
           return acc.concat(transactions.map(formatTransaction));
         }, []);
 
-        return formattedData;
+        return sortTransactionsByTimestamp(formattedData);
       },
     },
     queryClient,
@@ -269,7 +269,10 @@ export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
           (t: any) => formatTransaction({ ...t, eventType: 'Claim Detail' }),
         );
 
-        return [...formatted, ...claimDetailsFormatted];
+        return sortTransactionsByTimestamp([
+          ...formatted,
+          ...claimDetailsFormatted,
+        ]);
       },
     },
     queryClient,

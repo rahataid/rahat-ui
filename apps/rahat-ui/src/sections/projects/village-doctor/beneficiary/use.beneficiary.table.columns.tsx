@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { formatLocalDateTime } from 'apps/rahat-ui/src/utils';
 
 export function villageDoctorDisplayName(row: Record<string, any> | undefined) {
   if (!row) return '-';
@@ -105,21 +106,11 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'createdAt',
       header: 'Timestamp',
-      cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const formattedDate = date.toLocaleDateString('en-Us', {
-          timeZone,
-        });
-        const formattedTime = date.toLocaleTimeString('en-Us', {
-          timeZone,
-        });
-        return (
-          <div className="lowercase ml-4">
-            {formattedDate} {formattedTime}
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <div className="lowercase ml-4">
+          {formatLocalDateTime(row.getValue('createdAt') as string | Date)}
+        </div>
+      ),
     },
 
     {

@@ -182,7 +182,16 @@ export default function InkindAllocationDetail() {
     };
 
     const flatRows = raw.map(flattenEntry);
-    const headers = Object.keys(flatRows[0]);
+    const excludeColumns = new Set([
+      'uuid',
+      'beneficiary uuid',
+      'vendor uuid',
+      'vendor walletAddress',
+      'beneficiary name',
+    ]);
+    const headers = Object.keys(flatRows[0]).filter(
+      (h) => !excludeColumns.has(h),
+    );
 
     const escape = (val: string) =>
       val.includes(',') || val.includes('"') || val.includes('\n')

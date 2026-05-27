@@ -1416,9 +1416,15 @@ export const useCambodiaVendorsStatsByVendorIds = (payload: {
             });
 
             const body = mutate as
-              | { data?: { leadsRecieved?: number; leads?: number } }
+              | {
+                  data?: {
+                    leadsRecieved?: number;
+                    leadsConverted?: number;
+                    leads?: number;
+                  };
+                }
               | undefined;
-            const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
+            const raw = body?.data?.leadsConverted ?? 0;
             map[vendorId] = typeof raw === 'number' ? raw : 0;
           } catch {
             map[vendorId] = undefined;

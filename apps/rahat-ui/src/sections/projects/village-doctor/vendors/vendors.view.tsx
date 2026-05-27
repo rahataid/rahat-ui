@@ -20,6 +20,7 @@ import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CambodiaTable from '../table.component';
 import { useCambodiaVendorsTableColumns } from './use.vendors.table.columns';
+import { VillageDoctorPageShell } from '../page-shell';
 import {
   Card,
   CardContent,
@@ -117,20 +118,11 @@ export default function VendorsView() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Eye Partners
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Manage Eye Partner profiles, assignments, and performance for this
-            program.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-6 overflow-auto p-6">
+    <VillageDoctorPageShell
+      title="Eye Partners"
+      subtitle="Manage Eye Partner profiles, assignments, and performance for this program."
+      contentClassName="space-y-6"
+    >
         <Card className="flex flex-col overflow-hidden">
           <CardHeader className="border-b border-border px-5 py-4">
             <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
@@ -164,7 +156,6 @@ export default function VendorsView() {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </VillageDoctorPageShell>
   );
 }

@@ -10,19 +10,13 @@ import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { ArrowLeft, Zap } from 'lucide-react';
 import Link from 'next/link';
-import {
-  useAutomationDetail,
-  useListElCrmSessionBroadcast,
-} from '@rahat-ui/query';
+import { useAutomationDetail, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { PaginatedResult } from '@rumsan/sdk/types';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
 import CommsLogsTable from 'apps/rahat-ui/src/sections/projects/aa/communication-logs/comms.logs.table';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-} from '@tanstack/react-table';
-import ClientSidePagination from '../../../../components/client.side.pagination';
+import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function AutomationDetailPage() {
   const { id: projectUUID, automationId } = useParams() as {
@@ -30,13 +24,25 @@ export default function AutomationDetailPage() {
     automationId: string;
   };
 
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+
   const { data, isLoading, error } = useAutomationDetail(
     projectUUID,
     automationId,
+    pagination,
   );
 
   const rule = data?.rule;
   const logs = data?.logs || [];
+  const meta: PaginatedResult<any>['meta'] = data?.meta || {
+    total: 0,
+    lastPage: 1,
+    currentPage: pagination.page,
+    perPage: pagination.perPage,
+    prev: null,
+    next: null,
+  };
+
   const showsRecurringConfig =
     Boolean(rule?.isRecurring) && Boolean(rule?.recurrenceCooldownDays);
   const showsMaxSends =
@@ -44,11 +50,12 @@ export default function AutomationDetailPage() {
 
   const columns = useCommsLogsTableColumns();
   const table = useReactTable({
+    manualPagination: true,
     data: logs,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
+
   if (isLoading) return <div>Loading...</div>;
   if (error)
     return (
@@ -142,15 +149,21 @@ export default function AutomationDetailPage() {
             <CardTitle>Automation Session Logs</CardTitle>
           </CardHeader>
           <CardContent>
-            {Array.isArray(logs) && logs.length === 0 ? (
+            {logs.length === 0 ? (
               <div>No session logs found.</div>
             ) : (
-              table && (
-                <>
-                  <CommsLogsTable table={table} />
-                  <ClientSidePagination table={table} />
-                </>
-              )
+              <>
+                <CommsLogsTable table={table} />
+                <CustomPagination
+                  meta={meta}
+                  handleNextPage={setNextPage}
+                  handlePrevPage={setPrevPage}
+                  handlePageSizeChange={setPerPage}
+                  currentPage={pagination.page}
+                  perPage={pagination.perPage}
+                  total={meta?.total}
+                />
+              </>
             )}
           </CardContent>
         </Card>

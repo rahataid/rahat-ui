@@ -182,13 +182,11 @@ export default function InkindAllocationDetail() {
       ]),
     ];
 
-    const mode = inkindType === 'WALK_IN' ? 'Offline' : 'Online';
     const sheet2Headers = [
       'Inkind name',
       'No of Beneficiaries',
       'Total inkinds',
       'Total redeemed',
-      'mode',
     ];
     const sheet2Data = [
       sheet2Headers,
@@ -197,7 +195,6 @@ export default function InkindAllocationDetail() {
         String(totalBeneficiaries),
         String(totalAvailableInkinds),
         String(quantityRedeemed),
-        mode,
       ],
     ];
 

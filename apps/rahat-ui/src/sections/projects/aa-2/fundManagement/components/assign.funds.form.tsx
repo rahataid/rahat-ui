@@ -154,9 +154,9 @@ export default function AssignFundsForm({
     const selectedGroup = benGroups?.data.find(
       (group) => group?.uuid === selectedGroupId,
     );
-    const count = selectedGroup?._count?.groupedBeneficiaries ?? 0;
+    const count = selectedGroup?._count?.beneficiaries ?? 0;
     const total = tokenPerBenef * count;
-
+    
     if (!isNaN(total)) {
       setValue('totalTokenAmount', total);
     }

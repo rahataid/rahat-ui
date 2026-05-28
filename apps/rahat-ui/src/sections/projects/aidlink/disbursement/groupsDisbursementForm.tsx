@@ -58,6 +58,7 @@ export function BeneficiaryGroupsDisbursementForm({
     (group) => group.uuid === selectedGroup,
   );
   const totalBeneficiaries =
+  selectedGroupData?._count?.beneficiaries ||
     selectedGroupData?._count?.groupedBeneficiaries ||
     selectedGroupData?.totalBeneficiaries ||
     0;

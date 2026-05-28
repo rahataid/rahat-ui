@@ -142,9 +142,8 @@ export const splitValidAndDuplicates = (
 
 function createInvalidFieldError(errFields: any, isDuplicate: boolean) {
   const errFieldsArr = errFields.map((err: any) => err.fieldName);
-  return `Invalid fields: ${errFieldsArr.join(', ')} ${
-    isDuplicate ? 'and This row is duplicate!' : ''
-  }`;
+  return `Invalid fields: ${errFieldsArr.join(', ')} ${isDuplicate ? 'and This row is duplicate!' : ''
+    }`;
 }
 
 // Export both error and duplicate data to excel
@@ -248,6 +247,8 @@ export function formatDate(date: Date) {
 
   return formattedDate;
 }
+
+
 
 export const selectNonEmptyFields = (data: any) => {
   const nonEmptyFields: any = {};

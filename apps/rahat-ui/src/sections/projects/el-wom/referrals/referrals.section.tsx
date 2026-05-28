@@ -97,7 +97,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
   ) ?? { redeemed: 0, total: 0, rate: 0 };
   const avgPerReferrer =
     getReferralStat<number>(stats, REFERRAL_STAT_NAMES.AVG_PER_REFERRER) ?? 0;
-  const HISTOGRAM_ORDER = ['1', '2', '3-5', '6-9', '10'];
+  const HISTOGRAM_ORDER = ['1-2', '3-4', '5-6', '7-8', '9-10'];
   const rawHistogram =
     getReferralStat<HistogramEntry[]>(stats, REFERRAL_STAT_NAMES.HISTOGRAM) ??
     [];
@@ -118,38 +118,67 @@ export default function ReferralsSection({ projectUUID }: Props) {
       stats,
       REFERRAL_STAT_NAMES.REFEREE_VOUCHER_TYPE,
     ) ?? [];
+  const totalNewConsumers =
+    getReferralStat<number>(stats, REFERRAL_STAT_NAMES.TOTAL_NEW_CONSUMERS) ??
+    0;
+  const totalNonRedeemedNewConsumers =
+    getReferralStat<number>(
+      stats,
+      REFERRAL_STAT_NAMES.TOTAL_NON_REDEEMED_NEW_CONSUMERS,
+    ) ?? 0;
+  const voucherUsageBreakdown =
+    getReferralStat<RefereeVoucherTypeEntry[]>(
+      stats,
+      REFERRAL_STAT_NAMES.REFEREE_VOUCHER_USAGE,
+    ) ?? [];
 
   const kpiCards = [
+    // {
+    //   title: 'Total Referrers',
+    //   value: totalReferrers,
+    //   icon: Users,
+    //   bgColor: 'bg-indigo-500/10',
+    //   iconColor: 'text-indigo-500',
+    //   subtitle: null,
+    // },
+    // {
+    //   title: 'Total Referees',
+    //   value: totalReferees,
+    //   icon: UserPlus,
+    //   bgColor: 'bg-emerald-500/10',
+    //   iconColor: 'text-emerald-500',
+    //   subtitle: null,
+    // },
+    // {
+    //   title: 'Redeemed Referees',
+    //   value: redeemedReferees.redeemed,
+    //   icon: UserCheck,
+    //   bgColor: 'bg-green-500/10',
+    //   iconColor: 'text-green-600',
+    //   subtitle: `${redeemedReferees.rate}% redemption rate`,
+    // },
     {
-      title: 'Total Referrers',
-      value: totalReferrers,
+      title: 'Total Consumers',
+      value: totalNewConsumers,
       icon: Users,
-      bgColor: 'bg-indigo-500/10',
-      iconColor: 'text-indigo-500',
+      bgColor: 'bg-blue-500/10',
+      iconColor: 'text-blue-500',
       subtitle: null,
     },
     {
-      title: 'Total Referees',
-      value: totalReferees,
-      icon: UserPlus,
-      bgColor: 'bg-emerald-500/10',
-      iconColor: 'text-emerald-500',
-      subtitle: null,
-    },
-    {
-      title: 'Redeemed Referees',
-      value: redeemedReferees.redeemed,
-      icon: UserCheck,
-      bgColor: 'bg-green-500/10',
-      iconColor: 'text-green-600',
-      subtitle: `${redeemedReferees.rate}% redemption rate`,
-    },
-    {
-      title: 'Avg Referrals / Referrer',
+      title: 'Avg Referrals',
       value: avgPerReferrer,
       icon: TrendingUp,
       bgColor: 'bg-violet-500/10',
       iconColor: 'text-violet-500',
+      subtitle: null,
+    },
+    {
+      title: 'Total Inactive Consumers',
+      value: totalNonRedeemedNewConsumers,
+      icon: AlertTriangle,
+      bgColor: 'bg-amber-500/10',
+      iconColor: 'text-amber-500',
       subtitle: null,
     },
   ];
@@ -161,6 +190,15 @@ export default function ReferralsSection({ projectUUID }: Props) {
         fill: COLORS.voucherTypes[idx % COLORS.voucherTypes.length],
       })),
     [voucherTypeBreakdown],
+  );
+
+  const voucherUsageChartData = useMemo(
+    () =>
+      voucherUsageBreakdown.map((entry, idx) => ({
+        ...entry,
+        fill: COLORS.voucherTypes[idx % COLORS.voucherTypes.length],
+      })),
+    [voucherUsageBreakdown],
   );
 
   return (
@@ -194,7 +232,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
       )}
       <ScrollArea className="h-[calc(100vh-270px)]">
         {/* KPI cards */}
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
           {kpiCards.map((card) => (
             <Card
               key={card.title}
@@ -289,15 +327,75 @@ export default function ReferralsSection({ projectUUID }: Props) {
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
+                <div className="rounded-lg p-2 bg-emerald-500/10">
+                  <Layers className="h-4 w-4 text-emerald-500" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Referee Voucher Usage
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Eye checkup vs glasses purchase among new consumers
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {voucherUsageChartData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <Layers className="h-8 w-8 mb-2 opacity-30" />
+                  <p className="text-sm">No usage data yet</p>
+                </div>
+              ) : (
+                <ChartContainer
+                  config={Object.fromEntries(
+                    voucherUsageChartData.map((v) => [
+                      v.id,
+                      { label: v.id, color: v.fill },
+                    ]),
+                  )}
+                  className="h-[260px] w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={voucherUsageChartData}
+                        dataKey="count"
+                        nameKey="id"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={90}
+                        paddingAngle={3}
+                        strokeWidth={0}
+                      >
+                        {voucherUsageChartData.map((entry, idx) => (
+                          <Cell key={`u-${idx}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip
+                        content={<ChartTooltipContent nameKey="id" />}
+                      />
+                      <ChartLegend content={<ChartLegendContent />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
                 <div className="rounded-lg p-2 bg-violet-500/10">
                   <Layers className="h-4 w-4 text-violet-500" />
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold">
-                    Referee Voucher Types
+                    Referee Glass Purchase Types
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Voucher type distribution across referees
+                    Glass purchase type distribution across referees
                   </CardDescription>
                 </div>
               </div>
@@ -306,7 +404,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
               {voucherChartData.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                   <Layers className="h-8 w-8 mb-2 opacity-30" />
-                  <p className="text-sm">No voucher data yet</p>
+                  <p className="text-sm">No purchase data yet</p>
                 </div>
               ) : (
                 <ChartContainer
@@ -435,76 +533,74 @@ export default function ReferralsSection({ projectUUID }: Props) {
             </CardContent>
           </Card> */}
 
-            {/* Referrals per referrer histogram */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <div className="rounded-lg p-2 bg-emerald-500/10">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          {/* Referrals per referrer histogram */}
+          <Card className='lg:col-span-2'>
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg p-2 bg-emerald-500/10">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Referrals per Referrer
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Distribution of how many referees each referrer onboarded
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-base font-semibold">
-                  Referrals per Referrer
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Distribution of how many referees each referrer onboarded
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {histogram.every((h) => h.count === 0) ? (
-              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                <CheckCircle2 className="h-8 w-8 mb-2 opacity-30" />
-                <p className="text-sm">No referral activity yet</p>
-              </div>
-            ) : (
-              <ChartContainer
-                config={{
-                  count: { label: 'Referrers', color: COLORS.primary },
-                }}
-                className="h-[240px] w-full"
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={histogram}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      vertical={false}
-                      stroke="hsl(var(--border))"
-                      strokeOpacity={0.5}
-                    />
-                    <XAxis
-                      dataKey="id"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 11 }}
-                      dy={8}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 11 }}
-                      width={40}
-                      allowDecimals={false}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar
-                      dataKey="count"
-                      fill={COLORS.primary}
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            )}
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              {histogram.every((h) => h.count === 0) ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <CheckCircle2 className="h-8 w-8 mb-2 opacity-30" />
+                  <p className="text-sm">No referral activity yet</p>
+                </div>
+              ) : (
+                <ChartContainer
+                  config={{
+                    count: { label: 'Referrers', color: COLORS.primary },
+                  }}
+                  className="h-[240px] w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={histogram}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        vertical={false}
+                        stroke="hsl(var(--border))"
+                        strokeOpacity={0.5}
+                      />
+                      <XAxis
+                        dataKey="id"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11 }}
+                        dy={8}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11 }}
+                        width={40}
+                        allowDecimals={false}
+                      />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar
+                        dataKey="count"
+                        fill={COLORS.primary}
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              )}
+            </CardContent>
+          </Card>
         </div>
-
-      
       </ScrollArea>
     </div>
   );

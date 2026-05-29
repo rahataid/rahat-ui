@@ -38,6 +38,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 type LogRow = {
   uuid: string;
@@ -364,22 +365,26 @@ export default function InkindAllocationDetail() {
           badgeClassName={STATUS_STYLE[status]}
         />
         <div className="flex gap-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <IconLabelBtn
-                  Icon={CloudDownloadIcon}
-                  handleClick={handleDownloadReport}
-                  name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
-                  variant="outline"
-                  disabled={isDownloading}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Export In-kind Logs</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconLabelBtn
+                    Icon={CloudDownloadIcon}
+                    handleClick={handleDownloadReport}
+                    name={
+                      isDownloading ? 'Exporting...' : 'Export In-kind Logs'
+                    }
+                    variant="outline"
+                    disabled={isDownloading}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Export In-kind Logs</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </RoleAuth>
         </div>
       </div>
 

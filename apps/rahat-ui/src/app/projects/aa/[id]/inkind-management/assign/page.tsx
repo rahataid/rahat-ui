@@ -5,7 +5,7 @@ import AssignInkindView from 'apps/rahat-ui/src/sections/projects/aa-2/inkindMan
 
 const AssignInkindPage = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+    <RoleAuth roles={[AARoles.ADMIN]}>
       <AssignInkindView />
     </RoleAuth>
   );

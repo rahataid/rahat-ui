@@ -8,6 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useState } from 'react';
 import { Copy, CopyCheck } from 'lucide-react';
+import { formatLocalDateTime } from 'apps/rahat-ui/src/utils';
 export const useTransactionHistoryTableColumns = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<string | null>(
     null,
@@ -85,12 +86,11 @@ export const useTransactionHistoryTableColumns = () => {
     {
       accessorKey: 'timeStamp',
       header: 'Time Stamp',
-      cell: ({ row }) => {
-        const date = new Date(row.getValue('timeStamp'));
-        const formattedDate = date.toLocaleDateString();
-
-        return <div className="lowercase ml-4">{formattedDate}</div>;
-      },
+      cell: ({ row }) => (
+        <div className="lowercase ml-4">
+          {formatLocalDateTime(row.getValue('timeStamp') as string | Date)}
+        </div>
+      ),
     },
   ];
   return columns;

@@ -35,6 +35,7 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
+import { VillageDoctorPageShell } from '../page-shell';
 
 export default function ELVillageDoctorVillagerView() {
   const { id } = useParams() as { id: UUID };
@@ -168,39 +169,31 @@ export default function ELVillageDoctorVillagerView() {
     }
   };
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Villagers
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-              Track all villagers and referral outcomes for this project.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/projects/el-village-doctor/${id}/villagers/discardedvillager`}
-            >
-              <Button variant="outline" size="sm">
-                <UserRoundX className="mr-2 h-4 w-4" /> Discarded Villagers
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={isExporting || !processedData?.response?.meta?.total}
-              onClick={() => handleDownload()}
-            >
-              <Download className="mr-2 h-4 w-4" />{' '}
-              {isExporting ? 'Preparing…' : 'Download Villagers'}
+    <VillageDoctorPageShell
+      title="Villagers"
+      subtitle="Track all villagers and referral outcomes for this project."
+      contentClassName="space-y-6"
+      actions={
+        <>
+          <Link
+            href={`/projects/el-village-doctor/${id}/villagers/discardedvillager`}
+          >
+            <Button variant="outline" size="sm">
+              <UserRoundX className="mr-2 h-4 w-4" /> Discarded Villagers
             </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-6 overflow-auto p-6">
+          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isExporting || !processedData?.response?.meta?.total}
+            onClick={() => handleDownload()}
+          >
+            <Download className="mr-2 h-4 w-4" />{' '}
+            {isExporting ? 'Preparing…' : 'Download Villagers'}
+          </Button>
+        </>
+      }
+    >
         <Card className="flex flex-col overflow-hidden">
           <CardHeader className="border-b border-border px-5 py-4">
             <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
@@ -251,7 +244,6 @@ export default function ELVillageDoctorVillagerView() {
             />
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </VillageDoctorPageShell>
   );
 }

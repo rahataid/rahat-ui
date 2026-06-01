@@ -41,7 +41,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
 
   return (
     <>
-      <SidebarProvider>
+      <SidebarProvider className="flex h-full min-h-0 w-full flex-1 overflow-hidden">
         {menuItems.map((item) => (
           <ProjectSidebar
             key={item.title}
@@ -51,13 +51,18 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
         ))}
         <div
           className={cn(
-            'flex min-h-0 min-w-0 flex-1 flex-col',
+            'flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden',
             projectType === 'el-village-doctor' &&
-              'bg-gradient-to-br from-muted/45 via-background to-muted/20',
+              'bg-gradient-to-br from-muted/45 via-background to-muted/20 antialiased [--tw-prose-body:var(--muted-foreground)]',
           )}
+          data-village-doctor={
+            projectType === 'el-village-doctor' ? 'true' : undefined
+          }
         >
           <ProjectNav component={headerNav} />
-          {children}
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            {children}
+          </div>
         </div>
       </SidebarProvider>
     </>

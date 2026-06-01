@@ -22,6 +22,7 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
 import { SlidersHorizontal } from 'lucide-react';
+import { VillageDoctorPageShell } from '../page-shell';
 
 export default function TransactionsView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -58,20 +59,11 @@ export default function TransactionsView() {
     },
   });
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Transactions
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Blockchain-documented disbursements and program events for this
-            project.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-6 overflow-auto p-6">
+    <VillageDoctorPageShell
+      title="Transactions"
+      subtitle="Blockchain-documented disbursements and program events for this project."
+      contentClassName="space-y-6"
+    >
         <Card className="flex flex-col overflow-hidden">
           <CardHeader className="border-b border-border px-5 py-4">
             <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
@@ -112,7 +104,6 @@ export default function TransactionsView() {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </VillageDoctorPageShell>
   );
 }

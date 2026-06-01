@@ -28,6 +28,8 @@ import {
   Copy,
   CopyCheck,
   Glasses,
+  Stethoscope,
+  UserCheck,
   UserCog,
   Users,
   UserStar,
@@ -174,7 +176,7 @@ export default function VendorsDetail() {
     !vendorFetching &&
     Boolean(id && vendorId);
 
-  const titleName = 'Eye partner';
+  // const titleName = 'Eye partner';
   const headerSubtitle =
     'Performance, wallet, and activity for this Eye Partner location.';
 
@@ -263,7 +265,7 @@ export default function VendorsDetail() {
 
   return (
     <VillageDoctorDetailChrome
-      title={titleName}
+      title={`Eye Partner - ${vendorRow?.User?.name}`}
       subtitle={headerSubtitle}
       backHref={`/projects/el-village-doctor/${id}/vendors`}
       actions={statsDateFilterActions}
@@ -283,7 +285,7 @@ export default function VendorsDetail() {
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
             title="Total Village Doctors"
-            Icon={UserStar}
+            Icon={Stethoscope}
             number={String(vendorsStats?.data?.healthWorkers ?? 0)}
           />
           <DataCard
@@ -295,15 +297,9 @@ export default function VendorsDetail() {
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
             title="Total Number of Successful Referrals"
-            Icon={Users}
+            Icon={UserCheck}
             number={String(vendorsStats?.data?.leadsConverted ?? 0)}
           />
-          {/* <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Eyewear dispensed"
-          Icon={Glasses}
-          number={String(vendorsStats?.data?.footfalls ?? 0)}
-        /> */}
           <DataCard
             className="rounded-xl border-border/80 shadow-sm"
             title="Total Sales in EP (RMB)"

@@ -19,9 +19,10 @@ import {
   MessageSquare,
   CheckCircle,
   XCircle,
-  Smartphone,
   Send,
+  Gauge,
 } from 'lucide-react';
+import { StatCardsSkeleton, TableSkeleton } from '../skeletons';
 import Link from 'next/link';
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
@@ -58,13 +59,18 @@ export default function SummaryView() {
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useMsgTableColumn();
 
-  const { data, meta } = useListElCrmCampaign(projectUUID, {
+  const {
+    data,
+    meta,
+    isLoading: isCampaignLoading,
+  } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
   });
 
-  const { data: statsRows = [] } = useCustomerStats(projectUUID);
+  const { data: statsRows = [], isLoading: isStatsLoading } =
+    useCustomerStats(projectUUID);
 
   const {
     totalMessagesSent,
@@ -74,7 +80,6 @@ export default function SummaryView() {
     messagesToConsumers,
     messagesToCustomers,
     deliveryRate,
-    topAudience,
   } = useMemo(() => {
     const statsByName: Record<string, unknown> = {};
 
@@ -105,12 +110,6 @@ export default function SummaryView() {
       messagesToConsumers: consumers,
       messagesToCustomers: customers,
       deliveryRate: rate,
-      topAudience:
-        consumers === customers
-          ? 'Balanced'
-          : consumers > customers
-          ? 'Consumers'
-          : 'Customers',
     };
   }, [statsRows]);
 
@@ -129,7 +128,7 @@ export default function SummaryView() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                Communication Center
+                Communications
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
                 Send messages and track communication logs
@@ -152,6 +151,9 @@ export default function SummaryView() {
         </div>
 
         <div className="flex-1 p-6 space-y-6 overflow-auto">
+          {isStatsLoading ? (
+            <StatCardsSkeleton count={4} />
+          ) : (
           <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
             {[
               {
@@ -161,7 +163,7 @@ export default function SummaryView() {
                 color: 'text-primary',
                 bgColor: 'bg-primary/5',
                 iconColor: 'text-primary',
-                tooltip: 'From stats table: TOTAL_MESSAGES_SENT',
+                tooltip: 'All messages dispatched across channels',
               },
               {
                 title: 'Delivery Successful',
@@ -170,7 +172,7 @@ export default function SummaryView() {
                 color: 'text-success',
                 bgColor: 'bg-success/5',
                 iconColor: 'text-success',
-                tooltip: 'From stats table: TOTAL_MESSAGES_SUCCESS',
+                tooltip: 'Messages confirmed delivered by the provider',
               },
               {
                 title: 'Delivery Failed',
@@ -179,17 +181,22 @@ export default function SummaryView() {
                 color: 'text-destructive',
                 bgColor: 'bg-destructive/5',
                 iconColor: 'text-destructive',
-                tooltip: 'From stats table: TOTAL_MESSAGES_FAILED',
+                tooltip: 'Messages the provider was unable to deliver',
               },
               {
-                title: 'Top Audience',
-                value: topAudience,
-                icon: Smartphone,
-                color: 'text-foreground',
-                bgColor: 'bg-muted',
-                iconColor: 'text-muted-foreground',
+                title: 'Delivery Rate',
+                value: `${deliveryRate}%`,
+                icon: Gauge,
+                color:
+                  deliveryRate >= 90
+                    ? 'text-success'
+                    : deliveryRate >= 60
+                    ? 'text-warning'
+                    : 'text-destructive',
+                bgColor: 'bg-primary/5',
+                iconColor: 'text-primary',
                 tooltip:
-                  'Based on MESSAGES_TO_CONSUMERS vs MESSAGES_TO_CUSTOMERS',
+                  'Percentage of sent messages confirmed delivered by the provider',
               },
             ].map((stat) => (
               <Card
@@ -223,6 +230,7 @@ export default function SummaryView() {
               </Card>
             ))}
           </div>
+          )}
 
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
@@ -301,7 +309,11 @@ export default function SummaryView() {
               </div>
             </div>
             <CardContent className="p-0">
-              <DemoTable table={table} tableHeight="h-[calc(100vh-600px)]" />
+              {isCampaignLoading ? (
+                <TableSkeleton rows={5} />
+              ) : (
+                <DemoTable table={table} tableHeight="h-[calc(100vh-600px)]" />
+              )}
               <CustomPagination
                 meta={meta || { total: 0, currentPage: 0 }}
                 handleNextPage={setNextPage}

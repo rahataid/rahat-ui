@@ -621,14 +621,24 @@ export const useDeleteElCrmAutomationRule = (projectUUID: UUID) => {
 export const useAutomationDetail = (
   projectUUID: UUID,
   automationId: string,
+  pagination?: {
+    page?: number;
+    perPage?: number;
+    sort?: string;
+    order?: 'asc' | 'desc';
+    status?: string;
+  },
 ) => {
   const action = useProjectAction();
   return useQuery({
-    queryKey: ['automation-detail', automationId],
+    queryKey: ['automation-detail', automationId, pagination],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
-        data: { action: AUTOMATION_DETAIL, payload: { uuid: automationId } },
+        data: {
+          action: AUTOMATION_DETAIL,
+          payload: { uuid: automationId, ...pagination },
+        },
       });
       return res.data ?? null;
     },

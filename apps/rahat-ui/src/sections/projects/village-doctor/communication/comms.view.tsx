@@ -30,6 +30,7 @@ import React, { useMemo } from 'react';
 import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
 import { useTableColumns } from './use.table.columns';
+import { VillageDoctorPageShell } from '../page-shell';
 
 import { DateRange } from 'react-day-picker';
 import * as XLSX from 'xlsx';
@@ -189,19 +190,11 @@ export default function CommunicationView() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Communication
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Broadcast status, delivery outcomes, and message history at a glance.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-6 overflow-auto p-6">
+    <VillageDoctorPageShell
+      title="Communication"
+      subtitle="Broadcast status, delivery outcomes, and message history at a glance."
+      contentClassName="space-y-6"
+    >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {cardData?.map((item, index) => (
             <DataCard
@@ -276,7 +269,6 @@ export default function CommunicationView() {
             />
           </CardContent>
         </Card>
-      </div>
-    </div>
+    </VillageDoctorPageShell>
   );
 }

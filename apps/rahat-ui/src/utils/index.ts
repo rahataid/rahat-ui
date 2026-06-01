@@ -128,6 +128,47 @@ export const exportDataToExcel = (data: any[]) => {
   saveAs(blob, fileName);
 };
 
+export function formatLocalDateTime(
+  value: string | Date | number | null | undefined,
+): string {
+  if (value == null || value === '') return '-';
+
+  let date: Date;
+  if (value instanceof Date) {
+    date = value;
+  } else if (typeof value === 'number') {
+    date = new Date(value < 1e12 ? value * 1000 : value);
+  } else {
+    const legacyUtcMatch = value.match(
+      /^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s+(\d{1,2}):(\d{2}):(\d{2})$/,
+    );
+    if (legacyUtcMatch) {
+      const [, month, day, year, hour, minute, second] = legacyUtcMatch;
+      date = new Date(
+        Date.UTC(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          Number(hour),
+          Number(minute),
+          Number(second),
+        ),
+      );
+    } else {
+      date = new Date(value);
+    }
+  }
+
+  if (Number.isNaN(date.getTime())) {
+    return typeof value === 'string' ? value : '-';
+  }
+
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const formattedDate = date.toLocaleDateString('en-US', { timeZone });
+  const formattedTime = date.toLocaleTimeString('en-US', { timeZone });
+  return `${formattedDate} ${formattedTime}`;
+}
+
 export function formatDT(date: Date) {
   const changedDate = new Date(date);
   const year = changedDate.getFullYear();

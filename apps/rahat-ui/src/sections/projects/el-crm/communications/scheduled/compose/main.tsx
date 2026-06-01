@@ -81,6 +81,11 @@ import {
   useToggleElCrmAutomation,
   useTriggerElCrmCampaign,
 } from '@rahat-ui/query';
+import {
+  getPlasgateSmsInfo,
+  isPlasgateChannel,
+  truncateToPlasgateLimit,
+} from '../../const';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -644,6 +649,11 @@ export default function ComposeScheduleView() {
   });
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
+  const isPlasgate = isPlasgateChannel(selectedTransportName);
+  const plasgateSmsInfo = useMemo(
+    () => (isPlasgate ? getPlasgateSmsInfo(messageContent) : null),
+    [isPlasgate, messageContent],
+  );
 
   // Derive current active step
   const currentStep = useMemo(() => {
@@ -960,12 +970,38 @@ export default function ComposeScheduleView() {
                             </Select>
                           )
                         ) : (
-                          <Textarea
-                            placeholder="Type your message here…"
-                            value={messageContent}
-                            onChange={(e) => setMessageContent(e.target.value)}
-                            rows={4}
-                          />
+                          <>
+                            <Textarea
+                              placeholder="Type your message here…"
+                              value={messageContent}
+                              onChange={(e) =>
+                                setMessageContent(
+                                  isPlasgate
+                                    ? truncateToPlasgateLimit(e.target.value)
+                                    : e.target.value,
+                                )
+                              }
+                              rows={4}
+                            />
+                            {isPlasgate && plasgateSmsInfo && (
+                              <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
+                                <span>
+                                  {plasgateSmsInfo.encoding === 'GSM-7'
+                                    ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
+                                    : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
+                                </span>
+                                <span
+                                  className={cn(
+                                    plasgateSmsInfo.remaining <= 10 &&
+                                      'text-destructive font-medium',
+                                  )}
+                                >
+                                  {plasgateSmsInfo.length} /{' '}
+                                  {plasgateSmsInfo.limit}
+                                </span>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </StepCard>

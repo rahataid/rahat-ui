@@ -42,6 +42,8 @@ import {
   useListElCrmSessionBroadcast,
   usePagination,
   useRetryFailedSession,
+  useListElCrmAutomation,
+  useAutomationDetail,
 } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import SearchInput from '../../../../components/search.input';
@@ -102,6 +104,8 @@ export default function MessageDetailPage() {
     setFilters,
   } = usePagination();
 
+  const isAutomatic = !!campaign?.isAutomatic;
+
   const { data: logs, isLoading: isLogsLoading } = useListElCrmSessionBroadcast(
     projectUUID,
     {
@@ -111,14 +115,41 @@ export default function MessageDetailPage() {
     },
     {
       queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
-      enabled: !!campaign?.sessionId,
+      enabled: !!campaign?.sessionId && !isAutomatic,
     },
   );
 
+  const automations = useListElCrmAutomation(projectUUID, {
+    page: 1,
+    perPage: 100,
+  });
+
+  const automationRuleUuid = React.useMemo(() => {
+    if (!isAutomatic || !campaign?.uuid) return '';
+    const rules = (automations.data ?? []) as Array<{
+      uuid: string;
+      campaign?: { uuid?: string } | null;
+    }>;
+    return rules.find((r) => r.campaign?.uuid === campaign.uuid)?.uuid ?? '';
+  }, [automations.data, isAutomatic, campaign?.uuid]);
+
+  const { data: automationDetail, isLoading: isAutomationLoading } =
+    useAutomationDetail(projectUUID, automationRuleUuid, pagination);
+
+  const logsData: any[] = isAutomatic
+    ? automationDetail?.logs ?? []
+    : logs?.data ?? [];
+  const logsMetaRaw = isAutomatic
+    ? automationDetail?.meta
+    : logs?.response?.meta;
+  const isLogsTableLoading = isAutomatic
+    ? automations.isLoading || isAutomationLoading
+    : isLogsLoading;
+
   // Calculate total price from logs
   const totalPrice = React.useMemo(() => {
-    if (!logs?.data) return 0;
-    return logs.data.reduce((sum: number, log: any) => {
+    if (!logsData.length) return 0;
+    return logsData.reduce((sum: number, log: any) => {
       let price = log?.disposition?.price;
       if (typeof price === 'string' && price.startsWith('-')) {
         price = price.substring(1);
@@ -126,11 +157,11 @@ export default function MessageDetailPage() {
       const num = parseFloat(price);
       return sum + (isNaN(num) ? 0 : num);
     }, 0);
-  }, [logs]);
+  }, [logsData]);
 
   const table = useReactTable({
     manualPagination: true,
-    data: logs?.data || [],
+    data: logsData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -232,11 +263,14 @@ export default function MessageDetailPage() {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const meta = logs?.response.meta || { total: 0, currentPage: 0 };
+  const meta = logsMetaRaw || { total: 0, currentPage: 0 };
   const isSent = !!campaign.sessionId;
   const deliveredCount = count?.SUCCESS ?? 0;
   const failedCount = count?.FAIL ?? 0;
-  const totalRecipients = campaign?.recipientCount || 0;
+  const totalRecipients = isAutomatic
+    ? meta?.total ?? 0
+    : campaign?.recipientCount || 0;
+  const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
   const deliveryRate =
     totalRecipients > 0
       ? Math.round((deliveredCount / totalRecipients) * 100)
@@ -331,7 +365,8 @@ export default function MessageDetailPage() {
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
                     <Users className="h-3 w-3" />
-                    {totalRecipients.toLocaleString()} recipients
+                    {totalRecipients.toLocaleString()}{' '}
+                    {recipientsLabel.toLowerCase()}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <CalendarDays className="h-3 w-3" />
@@ -346,7 +381,7 @@ export default function MessageDetailPage() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              {showRetryButton && (
+              {showRetryButton && !isAutomatic && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -363,22 +398,24 @@ export default function MessageDetailPage() {
                   <TooltipContent>Retry all failed deliveries</TooltipContent>
                 </Tooltip>
               )}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    disabled={isSent || trigger.isPending}
-                    onClick={() => setIsConfirmDialogOpen(true)}
-                    className="gap-2"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                    {trigger.isPending ? 'Sending…' : 'Send Message'}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isSent ? 'Message already sent' : 'Send this message now'}
-                </TooltipContent>
-              </Tooltip>
+              {!campaign.isAutomatic && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      disabled={isSent || trigger.isPending}
+                      onClick={() => setIsConfirmDialogOpen(true)}
+                      className="gap-2"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      {trigger.isPending ? 'Sending…' : 'Send Message'}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isSent ? 'Message already sent' : 'Send this message now'}
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
           </div>
         </div>
@@ -466,10 +503,10 @@ export default function MessageDetailPage() {
                     </span>
                   </div>
 
-                  {/* Recipients */}
+                  {/* Recipients / Sent */}
                   <div className="flex items-center justify-between px-5 py-3.5">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Recipients
+                      {recipientsLabel}
                     </span>
                     <span className="text-sm font-semibold tabular-nums text-foreground">
                       {totalRecipients.toLocaleString()}
@@ -532,12 +569,12 @@ export default function MessageDetailPage() {
                       <div className="rounded-md bg-primary/10 p-1.5">
                         <Hash className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      Delivery Logs
+                      {isAutomatic ? 'Automation Session Logs' : 'Delivery Logs'}
                       <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
                         {meta?.total || 0}
                       </span>
                     </CardTitle>
-                    {hasActiveFilters && (
+                    {!isAutomatic && hasActiveFilters && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -551,33 +588,39 @@ export default function MessageDetailPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
-                    <div className="md:col-span-3">
-                      <SearchInput
-                        value={filters.address}
-                        name="Audience"
-                        onSearch={(e) => handleSearch(e, 'address')}
-                      />
-                    </div>
+                  {!isAutomatic && (
+                    <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
+                      <div className="md:col-span-3">
+                        <SearchInput
+                          value={filters.address}
+                          name="Audience"
+                          onSearch={(e) => handleSearch(e, 'address')}
+                        />
+                      </div>
 
-                    <div className="md:col-span-1 !mt-0">
-                      <SelectComponent
-                        name="Status"
-                        options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                        onChange={(value) =>
-                          handleFilterChange('status', value)
-                        }
-                        value={filters?.status ?? 'ALL'}
-                      />
+                      <div className="md:col-span-1 !mt-0">
+                        <SelectComponent
+                          name="Status"
+                          options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                          onChange={(value) =>
+                            handleFilterChange('status', value)
+                          }
+                          value={filters?.status ?? 'ALL'}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </CardHeader>
 
                 <CardContent className="p-0">
                   <DemoTable
                     table={table}
-                    loading={isLogsLoading}
-                    tableHeight="h-[calc(100vh-535px)]"
+                    loading={isLogsTableLoading}
+                    tableHeight={
+                      isAutomatic
+                        ? 'h-[calc(100vh-475px)]'
+                        : 'h-[calc(100vh-535px)]'
+                    }
                   />
                   <CustomPagination
                     meta={meta}

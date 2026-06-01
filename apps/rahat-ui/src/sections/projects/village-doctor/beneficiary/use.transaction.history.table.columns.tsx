@@ -9,6 +9,7 @@ import {
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { formatLocalDateTime } from 'apps/rahat-ui/src/utils';
 export type Transaction = {
   id: string;
   topic: string;
@@ -86,12 +87,11 @@ export const useTransactionHistoryTableColumns = () => {
           </Button>
         );
       },
-      cell: ({ row }) => {
-        const date = new Date(row.getValue('timeStamp'));
-        const formattedDate = date.toLocaleDateString();
-
-        return <div className="lowercase ml-4">{formattedDate}</div>;
-      },
+      cell: ({ row }) => (
+        <div className="lowercase ml-4">
+          {formatLocalDateTime(row.getValue('timeStamp') as string | Date)}
+        </div>
+      ),
     },
   ];
   return columns;

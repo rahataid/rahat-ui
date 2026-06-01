@@ -107,6 +107,6 @@ export interface BeneficiaryGroupListItem {
   updatedAt: string;
   deletedAt: string | null;
   _count: {
-    groupedBeneficiaries: number;
+    beneficiaries: number;
   };
 }

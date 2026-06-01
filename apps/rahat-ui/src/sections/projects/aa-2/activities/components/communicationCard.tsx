@@ -147,6 +147,7 @@ export function CommunicationCard({
                   {activityCommunication?.communicationTitle}
                 </h3>
               </TooltipWrapper>
+
               <TooltipComponent
                 Icon={ArrowUpRightSquare}
                 tip="View Communication Log"

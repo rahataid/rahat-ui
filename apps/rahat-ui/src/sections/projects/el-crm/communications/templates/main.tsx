@@ -23,6 +23,7 @@ import {
   Clock3,
   Plus,
   Search,
+  Send,
   Trash2,
   MessageSquare,
   TriangleAlert,
@@ -55,6 +56,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { StatCardsSkeleton, TemplateCardsSkeleton } from '../skeletons';
 
 export default function TemplatesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -63,7 +65,10 @@ export default function TemplatesView() {
   const [channelFilter, setChannelFilter] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
 
-  const { data: templateList } = useListElCrmTemplate(projectUUID, {});
+  const { data: templateList, isLoading } = useListElCrmTemplate(
+    projectUUID,
+    {},
+  );
   const deleteTemplate = useDeleteTemplate(projectUUID);
 
   const templates = templateList || [];
@@ -195,7 +200,7 @@ export default function TemplatesView() {
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
         {/* Page Header */}
-        <div className="sticky top-0 z-10 border-b border-border bg-card px-6 py-5">
+        <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -222,7 +227,12 @@ export default function TemplatesView() {
         </div>
 
         <div className="flex-1 p-6 space-y-6 overflow-auto">
-          {templates.length === 0 ? (
+          {isLoading ? (
+            <>
+              <StatCardsSkeleton count={3} />
+              <TemplateCardsSkeleton count={6} />
+            </>
+          ) : templates.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-96 text-center">
               <div className="rounded-full bg-muted p-4 mb-4">
                 <MessageSquare className="h-8 w-8 text-muted-foreground" />
@@ -628,13 +638,13 @@ export default function TemplatesView() {
                                 </p>
                               )}
 
-                              <div className="mt-auto flex items-center justify-end gap-2 border-t pt-3">
+                              <div className="mt-auto flex items-center justify-between gap-2 border-t pt-3">
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <Button
-                                      variant="outline"
+                                      variant="ghost"
                                       size="sm"
-                                      className="text-destructive hover:text-destructive"
+                                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                     >
                                       <Trash2 className="mr-2 h-4 w-4" />
                                       Delete
@@ -643,12 +653,56 @@ export default function TemplatesView() {
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>
-                                        Are you absolutely sure?
+                                        Delete template
+                                        {' '}
+                                        <span className="text-foreground">
+                                          &quot;{template.name}&quot;
+                                        </span>
+                                        ?
                                       </AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        This action cannot be undone. This will
-                                        permanently delete your template from
-                                        our servers.
+                                      <AlertDialogDescription asChild>
+                                        <div className="space-y-3 text-sm">
+                                          <p>
+                                            This action cannot be undone. The
+                                            template will be removed from this
+                                            project and can no longer be used
+                                            in new messages.
+                                          </p>
+                                          <div className="rounded-md border bg-muted/40 p-3 text-xs space-y-1">
+                                            <div className="flex justify-between gap-3">
+                                              <span className="text-muted-foreground">
+                                                Channel
+                                              </span>
+                                              <span className="font-medium text-foreground">
+                                                {channelName}
+                                              </span>
+                                            </div>
+                                            <div className="flex justify-between gap-3">
+                                              <span className="text-muted-foreground">
+                                                Status
+                                              </span>
+                                              <span className="font-medium text-foreground">
+                                                {template.status || 'UNKNOWN'}
+                                              </span>
+                                            </div>
+                                            <div className="flex justify-between gap-3">
+                                              <span className="text-muted-foreground">
+                                                Type
+                                              </span>
+                                              <span className="font-medium text-foreground">
+                                                {template?.type || 'TEXT'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                          {template.status === 'APPROVED' && (
+                                            <p className="text-xs text-warning">
+                                              Heads up: any scheduled or
+                                              automatic campaigns referencing
+                                              this template will fail to send
+                                              after deletion.
+                                            </p>
+                                          )}
+                                        </div>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -659,12 +713,31 @@ export default function TemplatesView() {
                                         onClick={() =>
                                           handleDelete(template.cuid)
                                         }
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                       >
-                                        Continue
+                                        Delete template
                                       </AlertDialogAction>
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
                                 </AlertDialog>
+
+                                {template.status === 'APPROVED' && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Link
+                                        href={`/projects/el-crm/${projectUUID}/communications/messages/compose?templateId=${encodeURIComponent(template.externalId || template.cuid)}&channel=${encodeURIComponent(channelName)}`}
+                                      >
+                                        <Button size="sm" className="gap-2">
+                                          <Send className="h-4 w-4" />
+                                          Use Template
+                                        </Button>
+                                      </Link>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      Compose a new message with this template
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
                               </div>
                             </CardContent>
                           </Card>

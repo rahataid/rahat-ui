@@ -12,8 +12,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { formatDateTime } from '../../../../../utils';
 
-export const useMsgTableColumn = () => {
+export const useMsgTableColumn = (
+  options: { hideRecipientCount?: boolean } = {},
+) => {
   const { id } = useParams();
+  const { hideRecipientCount = false } = options;
 
   const getChannelVariant = (channel: string) => {
     switch (channel) {
@@ -26,7 +29,7 @@ export const useMsgTableColumn = () => {
     }
   };
 
-  const columns: ColumnDef<any>[] = [
+  const allColumns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: () => (
@@ -150,5 +153,7 @@ export const useMsgTableColumn = () => {
       },
     },
   ];
-  return columns;
+  return hideRecipientCount
+    ? allColumns.filter((c) => (c as any).accessorKey !== 'recipientCount')
+    : allColumns;
 };

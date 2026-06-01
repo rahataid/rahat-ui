@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Check,
   MessageSquare,
@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
   Card,
@@ -54,6 +54,11 @@ import {
   useListElCrmTemplate,
   useListElCrmTransport,
 } from '@rahat-ui/query';
+import {
+  getPlasgateSmsInfo,
+  isPlasgateChannel,
+  truncateToPlasgateLimit,
+} from '../../const';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -130,6 +135,10 @@ type TemplateOption = {
 export default function ComposeMessageView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefillTemplateId = searchParams?.get('templateId') ?? '';
+  const prefillChannel = searchParams?.get('channel') ?? '';
+  const hasAppliedPrefill = useRef(false);
 
   // Progressive wizard state
   const [selectedTransportId, setSelectedTransportId] = useState('');
@@ -145,6 +154,35 @@ export default function ComposeMessageView() {
   const transport = useListElCrmTransport(projectUUID);
   const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
+
+  // Apply deep-link prefill (e.g. /compose?templateId=...&channel=WhatsApp)
+  useEffect(() => {
+    if (hasAppliedPrefill.current) return;
+    if (!prefillTemplateId && !prefillChannel) return;
+    if (!transport.data?.length) return;
+
+    const channelMatch = prefillChannel
+      ? transport.data.find(
+          (t: TransportOption) =>
+            t.name.toLowerCase() === prefillChannel.toLowerCase(),
+        )
+      : undefined;
+
+    if (channelMatch) {
+      setSelectedTransportId(channelMatch.cuid);
+      setSelectedTransportName(channelMatch.name);
+    }
+
+    const isWhatsAppChannel = (channelMatch?.name || prefillChannel)
+      .toLowerCase()
+      .includes('whatsapp');
+
+    if (prefillTemplateId && isWhatsAppChannel) {
+      setMessageContent(prefillTemplateId);
+    }
+
+    hasAppliedPrefill.current = true;
+  }, [prefillTemplateId, prefillChannel, transport.data]);
 
   const filtersForCount = useMemo(() => {
     const f: Record<string, string[]> = {};
@@ -168,6 +206,11 @@ export default function ComposeMessageView() {
   });
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
+  const isPlasgate = isPlasgateChannel(selectedTransportName);
+  const plasgateSmsInfo = useMemo(
+    () => (isPlasgate ? getPlasgateSmsInfo(messageContent) : null),
+    [isPlasgate, messageContent],
+  );
 
   // Derive current active step
   const currentStep = useMemo(() => {
@@ -397,12 +440,37 @@ export default function ComposeMessageView() {
                         </>
                       )
                     ) : (
-                      <Textarea
-                        placeholder="Type your message here…"
-                        value={messageContent}
-                        onChange={(e) => setMessageContent(e.target.value)}
-                        rows={4}
-                      />
+                      <>
+                        <Textarea
+                          placeholder="Type your message here…"
+                          value={messageContent}
+                          onChange={(e) =>
+                            setMessageContent(
+                              isPlasgate
+                                ? truncateToPlasgateLimit(e.target.value)
+                                : e.target.value,
+                            )
+                          }
+                          rows={4}
+                        />
+                        {isPlasgate && plasgateSmsInfo && (
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>
+                              {plasgateSmsInfo.encoding === 'GSM-7'
+                                ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
+                                : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
+                            </span>
+                            <span
+                              className={cn(
+                                plasgateSmsInfo.remaining <= 10 &&
+                                  'text-destructive font-medium',
+                              )}
+                            >
+                              {plasgateSmsInfo.length} / {plasgateSmsInfo.limit}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </StepCard>

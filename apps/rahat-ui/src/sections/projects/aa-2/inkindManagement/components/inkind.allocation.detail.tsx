@@ -8,6 +8,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import * as XLSX from 'xlsx';
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -150,65 +151,75 @@ export default function InkindAllocationDetail() {
     { enabled: false },
   );
 
+  // console.log('entireLogsData', entireLogsData);
   useEffect(() => {
     if (!entireLogsData) return;
     const raw = (entireLogsData as any)?.data?.logs;
     if (!Array.isArray(raw) || raw.length === 0) return;
 
     const groupInkindMeta = (entireLogsData as any)?.data?.groupInkind;
-    const csvInkindName = groupInkindMeta?.inkindName ?? inkindName;
-    const csvGroupName = groupInkindMeta?.groupName ?? groupName;
+    const exportInkindName = groupInkindMeta?.inkindName ?? inkindName;
+    const exportGroupName = groupInkindMeta?.groupName ?? groupName;
 
-    const flattenEntry = (
-      entry: Record<string, any>,
-    ): Record<string, string> => {
-      const result: Record<string, string> = {};
-      for (const [key, value] of Object.entries(entry)) {
-        if (
-          value !== null &&
-          typeof value === 'object' &&
-          !Array.isArray(value)
-        ) {
-          for (const [nestedKey, nestedVal] of Object.entries(value)) {
-            result[`${key} ${nestedKey}`] =
-              nestedVal == null ? 'N/A' : String(nestedVal);
-          }
-        } else {
-          result[key] = value == null ? 'N/A' : String(value);
-        }
-      }
-      return result;
-    };
-
-    const flatRows = raw.map(flattenEntry);
-    const headers = Object.keys(flatRows[0]);
-
-    const escape = (val: string) =>
-      val.includes(',') || val.includes('"') || val.includes('\n')
-        ? `"${val.replace(/"/g, '""')}"`
-        : val;
-
-    const csvLines = [
-      headers.join(','),
-      ...flatRows.map((r: Record<string, string>) =>
-        headers.map((h) => escape(r[h] ?? 'N/A')).join(','),
-      ),
+    const sheet1Headers = [
+      'quantity',
+      'redeemedAt',
+      'txHash',
+      'beneficiary walletAddress',
+      'beneficiary phone',
+      'vendor name',
     ];
 
-    const blob = new Blob([csvLines.join('\n')], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${csvInkindName}-${csvGroupName}.csv`
+    const sheet1Data = [
+      sheet1Headers,
+      ...raw.map((r: any) => [
+        String(r.quantity ?? r.quantityDisbursed ?? 0),
+        r.redeemedAt ?? r.createdAt ?? 'N/A',
+        r.txHash ?? 'N/A',
+        r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
+        r.beneficiary?.phone ?? 'N/A',
+        r.vendor?.name ?? 'N/A',
+      ]),
+    ];
+
+    const sheet2Headers = [
+      'Inkind name',
+      'No of Beneficiaries',
+      'Total inkinds',
+      'Total redeemed',
+    ];
+    const sheet2Data = [
+      sheet2Headers,
+      [
+        exportInkindName,
+        String(totalBeneficiaries),
+        String(totalAvailableInkinds),
+        String(quantityRedeemed),
+      ],
+    ];
+
+    const wb = XLSX.utils.book_new();
+
+    const ws1 = XLSX.utils.aoa_to_sheet(sheet1Data);
+    XLSX.utils.book_append_sheet(wb, ws1, 'Redemption Logs');
+
+    const ws2 = XLSX.utils.aoa_to_sheet(sheet2Data);
+    XLSX.utils.book_append_sheet(wb, ws2, 'Inkind details');
+
+    const fileName = `${exportInkindName}-${exportGroupName}.xlsx`
       .replace(/\s+/g, '-')
       .toLowerCase();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [entireLogsData]);
+
+    XLSX.writeFile(wb, fileName);
+  }, [
+    entireLogsData,
+    inkindType,
+    totalBeneficiaries,
+    totalAvailableInkinds,
+    quantityRedeemed,
+    inkindName,
+    groupName,
+  ]);
 
   const handleDownloadReport = () => {
     fetchEntireLogs();
@@ -372,11 +383,12 @@ export default function InkindAllocationDetail() {
                   handleClick={handleDownloadReport}
                   name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
                   variant="outline"
-                  disabled={isDownloading}
+                  disabled={isDownloading || logRows.length === 0}
+                  className="cursor-pointer"
                 />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Export In-kind Logs</p>
+                <p>{logRows.length === 0 ? 'No data to export' : 'Export In-kind Logs'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

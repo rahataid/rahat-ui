@@ -143,7 +143,7 @@ export default function AddCommunicationForm({
 
     if (groupType === 'BENEFICIARY') {
       const beneficiaryGroupsList = beneficiaryGroups.filter(
-        (a: any) => a?._count?.groupedBeneficiaries > 0,
+        (a: any) => a?._count?.beneficiaries > 0,
       );
       return beneficiaryGroupsList.map((group: any) => ({
         label: group?.name || '',

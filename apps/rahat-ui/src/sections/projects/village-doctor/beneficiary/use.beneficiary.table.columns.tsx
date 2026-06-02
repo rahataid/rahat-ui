@@ -104,6 +104,22 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     },
 
     {
+      accessorKey: 'hasRedeemed',
+      header: 'Has Redeemed?',
+      cell: ({ row }) => (
+        <span
+          className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${
+            row.original.hasRedeemed
+              ? 'border-green-200 bg-green-50 text-green-700'
+              : 'border-amber-200 bg-amber-50 text-amber-700'
+          }`}
+        >
+          {row.original.hasRedeemed ? 'Redeemed' : 'Not Redeemed'}
+        </span>
+      ),
+    },
+
+    {
       accessorKey: 'createdAt',
       header: 'Timestamp',
       cell: ({ row }) => (

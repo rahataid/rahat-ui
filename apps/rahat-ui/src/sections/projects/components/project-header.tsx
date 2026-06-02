@@ -12,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
@@ -38,7 +39,12 @@ export function ProjectNav({
   component?: React.ReactNode;
 }) {
   const currentPath = usePathname();
+  const params = useParams();
   const showNotification = currentPath.split('/').includes('aa');
+  const isAAProject = currentPath.split('/').includes('aa') && params?.id;
+  const settingsPath = isAAProject
+    ? `/projects/aa/${params.id}/update-aa-settings`
+    : null;
 
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
@@ -105,6 +111,16 @@ export function ProjectNav({
               >
                 Home
               </Link>
+              {settingsPath && (
+                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                  <Link
+                    className="p-1 hover:bg-secondary rounded"
+                    href={settingsPath}
+                  >
+                    Settings
+                  </Link>
+                </RoleAuth>
+              )}
               {/* <ThemeSwitch /> */}
               <Badge
                 className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"

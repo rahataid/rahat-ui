@@ -1,6 +1,6 @@
 import { useUpdateVendorRedemptionStatus } from '@rahat-ui/query';
-import { ColumnDef } from '@tanstack/react-table';
-import { DummyInkindRedemption } from '../tabs/inkind.redemption.list';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { InkindRedemptionData } from '../tabs/inkind.redemption.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -8,19 +8,21 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { UUID } from 'crypto';
+import { formatLabel } from '../../inkindManagement/components/inkind.allocation.list';
+import { INKIND_TYPE_LABELS } from '../../inkindManagement/schemas/inkind.validation';
 
 export const useInkindRedemptionColumn = (id: UUID) => {
   const approveRedemptionStatus = useUpdateVendorRedemptionStatus();
-  const handleApproveClick = (row: any) => {
+  const handleApproveClick = (row: Row<InkindRedemptionData>) => {
     approveRedemptionStatus.mutate({
       projectUUID: id,
       payload: {
-        redemptionStatus: 'APPROVED',
+        status: 'APPROVED',
         uuid: row.original.uuid,
       },
     });
   };
-  const columns: ColumnDef<DummyInkindRedemption>[] = [
+  const columns: ColumnDef<InkindRedemptionData>[] = [
     {
       header: 'Vendor Name',
       cell: ({ row }) => {
@@ -73,6 +75,19 @@ export const useInkindRedemptionColumn = (id: UUID) => {
         />
       ),
     },
+    {
+      accessorKey: 'type',
+      header: 'Type',
+      cell: ({ row }) => {
+        const type = row.original?.inkind?.type;
+        return (
+          <Badge className="bg-gray-200 text-gray-600">
+            {formatLabel(INKIND_TYPE_LABELS[type])}
+          </Badge>
+        );
+      },
+    },
+
     {
       accessorKey: 'quantity',
       header: 'Quantity',

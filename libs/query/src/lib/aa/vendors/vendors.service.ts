@@ -339,6 +339,8 @@ export const useGetInkindRedemptionLogs = (payload: {
   page?: number;
   perPage?: number;
   search?: string;
+  status?: string;
+  inkindType?: string;
   vendorUuid?: UUID;
 }) => {
   const q = useProjectAction<any[]>();
@@ -347,6 +349,8 @@ export const useGetInkindRedemptionLogs = (payload: {
     page = 1,
     perPage = 10,
     search = '',
+    status = '',
+    inkindType = '',
     vendorUuid,
   } = payload;
 
@@ -357,6 +361,8 @@ export const useGetInkindRedemptionLogs = (payload: {
       page,
       perPage,
       search,
+      status,
+      inkindType,
       vendorUuid,
     ],
     placeholderData: keepPreviousData,
@@ -370,6 +376,8 @@ export const useGetInkindRedemptionLogs = (payload: {
             page,
             perPage,
             search: search ?? '',
+            ...(status ? { status } : {}),
+            ...(inkindType ? { inkindType } : {}),
             ...(vendorUuid ? { vendorUuid } : {}),
           },
         },
@@ -384,6 +392,7 @@ export const useGetInkindRedemptionLogs = (payload: {
 export const useUpdateVendorRedemptionStatus = () => {
   const q = useProjectAction();
   const alert = useSwal();
+  const qc = useQueryClient();
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
@@ -397,8 +406,8 @@ export const useUpdateVendorRedemptionStatus = () => {
     }: {
       projectUUID: UUID;
       payload: {
-        redemptionStatus: string;
-        uuid: string;
+        status: string;
+        uuid: UUID;
       };
     }) => {
       return q.mutateAsync({
@@ -411,6 +420,10 @@ export const useUpdateVendorRedemptionStatus = () => {
     },
     onSuccess: () => {
       q.reset();
+      qc.invalidateQueries({
+        queryKey: ['aa.vendor.inkind_redemption.get_redemption_logs'],
+      });
+
       toast.fire({
         title: 'Vendor redemption status updated successfully',
         icon: 'success',

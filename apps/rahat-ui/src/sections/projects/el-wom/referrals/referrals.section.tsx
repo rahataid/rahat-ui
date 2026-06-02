@@ -335,7 +335,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
                     Referee Voucher Usage
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Eye checkup vs glasses purchase among new consumers
+                    Eye checkup and glasses purchase among new consumers
                   </CardDescription>
                 </div>
               </div>

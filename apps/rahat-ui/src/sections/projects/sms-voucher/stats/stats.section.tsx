@@ -238,7 +238,7 @@ export default function SmsVoucherStatsSection({ projectUUID }: Props) {
     },
     {
       title: 'Voucher Usage Type',
-      description: 'Eye checkup vs purchase of glasses',
+      description: 'Eye checkup and purchase of glasses',
       icon: EyeOff,
       iconBg: 'bg-sky-500/10',
       iconColor: 'text-sky-500',

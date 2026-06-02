@@ -21,7 +21,6 @@ export const useElkenyaBeneficiaryTableColumns = ({
     if (status === 'FRAMES') {
       return 'bg-violet-50 text-violet-500';
     }
-
     if (status === 'READING_GLASSES' || status === 'WALK_IN') {
       return 'bg-blue-50 text-blue-500';
     }

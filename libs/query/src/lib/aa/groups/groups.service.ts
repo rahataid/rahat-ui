@@ -375,7 +375,7 @@ export const useSingleBeneficiaryGroup = (
   return query;
 };
 
-export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
+export const useBeneficiariesGroups = (uuid: UUID, payload: any, options?: { staleTime?: number }) => {
   const q = useProjectAction();
   const { setBeneficiariesGroups, setBeneficiariesGroupsMeta } =
     useBeneficiariesGroupStore((state) => ({
@@ -395,7 +395,7 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
-    staleTime: 20 * 60 * 1000, // 20 minutes
+    staleTime: options?.staleTime ?? 20 * 60 * 1000, // default 20 minutes
   });
 
   useEffect(() => {

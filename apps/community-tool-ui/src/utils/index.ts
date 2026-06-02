@@ -75,6 +75,22 @@ export function removeFieldsWithUnderscore(dataArray: []) {
   return removeKeyFromArrayObjects(splittedData, 'errorMessage');
 }
 
+// New utility: trim whitespace from all string fields in an array of objects
+export const trimWhitespace = (dataArray: any[]) => {
+  return dataArray.map((item) => {
+    const cleaned = { ...item };
+    Object.keys(cleaned).forEach((key) => {
+      if (typeof cleaned[key] === 'string') {
+        cleaned[key] = cleaned[key].trim();
+      }
+    });
+    return cleaned;
+  });
+};
+
+
+
+
 export const truncatedText = (text: string, maxLen: number) => {
   return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
 };

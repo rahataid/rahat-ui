@@ -26,7 +26,11 @@ import { z } from 'zod';
 
 import React, { useEffect, useState } from 'react';
 
-import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
+import {
+  useCommunitySettingList,
+  useFieldDefinitionsCreate,
+  useAddStandardLabel,
+} from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
 import { DownloadCloud, Minus, Plus } from 'lucide-react';
 import Samples from '../samples.json';
@@ -47,6 +51,16 @@ const DEFAULT_VALUES = {
 
 export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
+  const addStandardLabel = useAddStandardLabel();
+  const { data: settings } = useCommunitySettingList({ page: 1, perPage: 20 });
+
+  const aiSetting = settings?.data.find(
+    (setting: any) => setting.name === 'AI_API_URL',
+  );
+  const aiBaseurl = aiSetting?.value?.URL;
+
+  const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
+
   const [showLabelValue, setShowLabelValue] = useState(false);
 
   const [variationTags, setVariationTags] = useState<Tag[]>([]);
@@ -112,6 +126,23 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     };
 
     await addFieldDefinitions.mutateAsync(payload);
+
+    const finalStandardName = aiStandardName;
+
+    if (aiBaseurl) {
+      await addStandardLabel.mutateAsync({
+        payload: {
+          standard_name: finalStandardName,
+          field_name: data.name,
+          field_type: data.fieldType.toLowerCase(),
+          field_description: '',
+          is_active: true,
+          validation_rules: {},
+        },
+        baseURL: aiBaseurl,
+      });
+    }
+
     form.reset();
   };
 

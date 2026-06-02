@@ -81,6 +81,7 @@ import {
   StockDialogState,
   UpdateDialogState,
 } from '../types';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 function ActionButton({
   label,
@@ -380,39 +381,44 @@ export default function InkindList() {
           const item = row.original;
           const isAssigned = isGroupAssigned(item.uuid);
           return (
-            <TooltipProvider>
-              <div className="flex items-center gap-1">
-                <ActionButton
-                  label="Add Stock"
-                  icon={<PlusCircle size={16} strokeWidth={1.8} />}
-                  hoverClass="hover:bg-green-50 text-green-600"
-                  onClick={() => openStockDialog(item, 'add')}
-                />
-                <ActionButton
-                  label="Remove Stock"
-                  icon={<MinusCircle size={16} strokeWidth={1.8} />}
-                  hoverClass="hover:bg-yellow-50 text-yellow-600"
-                  onClick={() => openStockDialog(item, 'remove')}
-                />
-                <ActionButton
-                  label={
-                    isAssigned
-                      ? 'Cannot delete — assigned to a group'
-                      : 'Delete'
-                  }
-                  icon={<Trash2 size={16} strokeWidth={1.8} />}
-                  hoverClass="hover:bg-red-50 text-red-500"
-                  disabled={isAssigned}
-                  onClick={() => handleDelete(item)}
-                />
-                <ActionButton
-                  label="Update Details"
-                  icon={<Pencil size={16} strokeWidth={1.8} />}
-                  hoverClass="hover:bg-blue-50 text-blue-500"
-                  onClick={() => openUpdateDialog(item)}
-                />
-              </div>
-            </TooltipProvider>
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <TooltipProvider>
+                <div className="flex items-center gap-1">
+                  <ActionButton
+                    label="Add Stock"
+                    icon={<PlusCircle size={16} strokeWidth={1.8} />}
+                    hoverClass="hover:bg-green-50 text-green-600"
+                    onClick={() => openStockDialog(item, 'add')}
+                  />
+                  <ActionButton
+                    label="Remove Stock"
+                    icon={<MinusCircle size={16} strokeWidth={1.8} />}
+                    hoverClass="hover:bg-yellow-50 text-yellow-600"
+                    onClick={() => openStockDialog(item, 'remove')}
+                  />
+                  <ActionButton
+                    label={
+                      isAssigned
+                        ? 'Cannot delete — assigned to a group'
+                        : 'Delete'
+                    }
+                    icon={<Trash2 size={16} strokeWidth={1.8} />}
+                    hoverClass="hover:bg-red-50 text-red-500"
+                    disabled={isAssigned}
+                    onClick={() => handleDelete(item)}
+                  />
+                  <ActionButton
+                    label="Update Details"
+                    icon={<Pencil size={16} strokeWidth={1.8} />}
+                    hoverClass="hover:bg-blue-50 text-blue-500"
+                    onClick={() => openUpdateDialog(item)}
+                  />
+                </div>
+              </TooltipProvider>
+            </RoleAuth>
           );
         },
       },
@@ -444,16 +450,21 @@ export default function InkindList() {
           titleStyle="font-medium text-lg"
           description="List of all budget items"
         />
-        <Button
-          variant="default"
-          size="sm"
-          className="rounded-sm"
-          onClick={() =>
-            router.push(`/projects/aa/${id}/inkind-management/add`)
-          }
+        <RoleAuth
+          roles={[AARoles.ADMIN, ]}
+          hasContent={false}
         >
-          Create Inkind
-        </Button>
+          <Button
+            variant="default"
+            size="sm"
+            className="rounded-sm"
+            onClick={() =>
+              router.push(`/projects/aa/${id}/inkind-management/add`)
+            }
+          >
+            Create Inkind
+          </Button>
+        </RoleAuth>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <SearchInput

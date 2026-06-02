@@ -18,7 +18,7 @@ const BeneficiaryGroups = () => {
   const [filters, setFilters] = React.useState({ search: '' });
   const router = useRouter();
 
-  const { data, isLoading } = useBeneficiariesGroups(id as UUID, {
+  const { isLoading } = useBeneficiariesGroups(id as UUID, {
     sort: 'updatedAt',
     order: 'desc',
     ...filters,
@@ -98,7 +98,7 @@ const BeneficiaryGroups = () => {
                       <div className="flex text-sm text-gray-500 justify-between items-center">
                         <div className="flex items-center gap-1">
                           <Users size={18} strokeWidth={2} />
-                          {i?._count?.groupedBeneficiaries || 0} beneficiaries
+                          {i?._count?.beneficiaries || 0} beneficiaries
                         </div>
 
                         {i?.tokensReserved?.numberOfTokens && (

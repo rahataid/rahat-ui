@@ -45,6 +45,12 @@ export default function AddToQueue({
       return '';
     }
 
+    // Handle boolean values
+    if (typeof item[key] === 'boolean') {
+      return item[key] ? 'Yes' : 'No';
+      // OR return item[key].toString();
+    }
+
     return item[key];
   }
 

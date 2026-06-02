@@ -99,11 +99,15 @@ export default function PaymentInitiation() {
       projectUUID: projectID,
     });
   const { data: beneficiaryGroups, isLoading: isBeneficiaryGroupsLoading } =
-    useBeneficiariesGroups(projectID, {
-      perPage: '100',
-      tokenAssigned: true,
-      hasPayout: false,
-    });
+    useBeneficiariesGroups(
+      projectID,
+      {
+        perPage: '100',
+        tokenAssigned: true,
+        hasPayout: false,
+      },
+      { staleTime: 0 },
+    );
   const { data: vendors, isLoading: isVendorsLoading } = useAAVendorsList({
     projectUUID: projectID,
     page: 1,

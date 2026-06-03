@@ -13,10 +13,10 @@ apps/**/.next/
 # Nx cache
 .nx/
 
-# Env files
-.env*
-.env.*
-!.env
+# Env files — exclude local overrides, include base .env
+.env.local
+.env.*.local
+.env.production.local
 
 # Logs
 *.log

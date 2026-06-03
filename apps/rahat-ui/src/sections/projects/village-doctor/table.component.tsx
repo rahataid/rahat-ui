@@ -82,7 +82,7 @@ export default function CambodiaTable({
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="tabular-nums text-sm">
+                    <TableCell key={cell.id} className="tabular-nums text-xs">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

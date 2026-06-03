@@ -1075,6 +1075,9 @@ export const useCambodiaBeneficiaries = (payload: any) => {
     refetchOnMount: true,
     // Same as vendors list: focus refetch + shared projectAction mutation caused hangs.
     refetchOnWindowFocus: false,
+    // Don't retry: a slow/failed search lookup would otherwise be retried 3x,
+    // multiplying the time before "No villagers found." appears.
+    retry: false,
     enabled:
       Boolean(enabled) &&
       Boolean(projectUUID) &&

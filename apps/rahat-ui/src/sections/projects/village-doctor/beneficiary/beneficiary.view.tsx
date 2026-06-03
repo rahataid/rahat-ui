@@ -3,6 +3,7 @@ import {
   MS_CAM_ACTIONS,
   normalizeCambodiaBeneficiaryListResponse,
   useCambodiaBeneficiaries,
+  useVillageDoctorRedeemedBeneficiaries,
   usePagination,
   useProjectAction,
 } from '@rahat-ui/query';
@@ -63,6 +64,8 @@ export default function ELVillageDoctorVillagerView() {
     id,
   ]);
 
+  const { data: redeemedAddresses } = useVillageDoctorRedeemedBeneficiaries();
+
   const { data, isLoading } = useCambodiaBeneficiaries({
     ...(debouncedSearch as any),
     page: pagination.page,
@@ -83,9 +86,12 @@ export default function ELVillageDoctorVillagerView() {
   const processedData = {
     ...data,
     data:
-      data?.data?.map((benef) => ({
+      data?.data?.map((benef: any) => ({
         ...benef,
         name: benef?.piiData?.name,
+        hasRedeemed: benef?.walletAddress && redeemedAddresses
+          ? redeemedAddresses.has(benef.walletAddress.toLowerCase())
+          : false,
       })) ?? [],
   };
   const handleFilterChange = (event: any) => {
@@ -140,7 +146,12 @@ export default function ELVillageDoctorVillagerView() {
             debouncedSearch.name.trim()
               ? { name: debouncedSearch.name.trim() }
               : {}),
-            ...(typeof debouncedSearch?.type === 'string' && debouncedSearch.type
+            ...(typeof debouncedSearch?.phone === 'string' &&
+            debouncedSearch.phone.trim()
+              ? { phone: debouncedSearch.phone.trim() }
+              : {}),
+            ...(typeof debouncedSearch?.type === 'string' &&
+            debouncedSearch.type
               ? { type: debouncedSearch.type }
               : {}),
           },
@@ -194,20 +205,21 @@ export default function ELVillageDoctorVillagerView() {
         </>
       }
     >
-        <Card className="flex flex-col overflow-hidden">
-          <CardHeader className="border-b border-border px-5 py-4">
-            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              Filters
-            </div>
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-              <SearchInput
-                name="name"
-                className="w-full lg:max-w-md"
-                value={filters?.name ?? ''}
-                onSearch={(event) => handleFilterChange(event)}
-              />
-              {/* <div className="w-full lg:max-w-xs">
+      <Card className="flex flex-col overflow-hidden">
+        <CardHeader className="border-b border-border px-5 py-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+            Filters
+          </div>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+            <SearchInput
+              name="name"
+              placeholder="Search name and phone number..."
+              className="w-full lg:max-w-md"
+              value={filters?.name ?? ''}
+              onSearch={(event) => handleFilterChange(event)}
+            />
+            {/* <div className="w-full lg:max-w-xs">
                 <SelectComponent
                   name="Type"
                   options={['ALL', 'Sale', 'Lead']}
@@ -219,31 +231,31 @@ export default function ELVillageDoctorVillagerView() {
                   value={filters?.type || ''}
                 />
               </div> */}
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <CambodiaTable
-              table={table}
-              loading={isLoading}
-              tableHeight="h-[calc(100vh-480px)]"
-              emptyMessage="No villagers found."
-            />
-            <CustomPagination
-              currentPage={pagination.page}
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              meta={
-                (processedData?.response?.meta as any) || {
-                  total: 0,
-                  currentPage: 0,
-                }
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <CambodiaTable
+            table={table}
+            loading={isLoading}
+            tableHeight="h-[calc(100vh-480px)]"
+            emptyMessage="No villagers found."
+          />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            meta={
+              (processedData?.response?.meta as any) || {
+                total: 0,
+                currentPage: 0,
               }
-              perPage={pagination?.perPage}
-              total={processedData?.response?.meta?.total || 0}
-            />
-          </CardContent>
-        </Card>
+            }
+            perPage={pagination?.perPage}
+            total={processedData?.response?.meta?.total || 0}
+          />
+        </CardContent>
+      </Card>
     </VillageDoctorPageShell>
   );
 }

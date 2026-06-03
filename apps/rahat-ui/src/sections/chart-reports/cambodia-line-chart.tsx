@@ -10,21 +10,21 @@ type LineChartData = {
 /** Aligns with `APP.REPORT_LABELS` in rahat-project-cambodia (chart report titles). */
 const Y_AXIS_LABEL_BY_REPORT: Record<string, string> = {
   'Villagers Referred': 'Villagers referred (count)',
-  'Total purchase amount in EP (in RMB)': 'Purchase amount (RMB)',
-  'Successful referrals in EP': 'Successful referrals (count)',
-  'Total number of villagers in EP': 'Cumulative villagers in EP (count)',
+  'Total Sales Amount in EP (in RMB)': 'Sales amount (RMB)',
+  'Successful Referrals in EP': 'Successful referrals (count)',
+  'Total Number of Villagers in EP': 'Cumulative villagers in EP (count)',
 };
 
 const AXIS_LABEL_STYLE = {
   colors: '#6b7280',
-  fontSize: '12px',
+  fontSize: '11px',
   fontWeight: 400,
 } as const;
 
 const AXIS_TITLE_STYLE = {
   color: '#374151',
-  fontSize: '12px',
-  fontWeight: 600,
+  fontSize: '11px',
+  fontWeight: 400,
 } as const;
 
 function yAxisTitleForReport(chartTitle: string): string {
@@ -81,7 +81,7 @@ const CambodiaLineCharts = ({ series, categories, name }: LineChartData) => {
   return (
     <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm shadow-black/[0.03]">
       <div className="border-b border-border/80 px-5 py-4">
-        <h2 className="text-sm font-semibold tracking-tight text-foreground">
+        <h2 className="text-sm font-normal tracking-tight text-foreground">
           {name}
         </h2>
       </div>

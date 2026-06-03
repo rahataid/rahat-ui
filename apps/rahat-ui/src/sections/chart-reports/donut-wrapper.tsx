@@ -8,6 +8,8 @@ type DonutData = {
 };
 
 const DonutWrapper = ({ actualData, component, source }: DonutData) => {
+  if (!Array.isArray(actualData)) return null;
+
   const chartStatsData = actualData?.find(
     (d: any) => d.name === component?.dataMap,
   );
@@ -19,8 +21,9 @@ const DonutWrapper = ({ actualData, component, source }: DonutData) => {
   }));
   console.log('statsDonutData', statsDonutData);
 
-  if (statsDonutData?.length > 0)
-    return (
+  if (!statsDonutData?.length) return null;
+
+  return (
       <div className="bg-card border rounded-sm p-4 shadow-md">
         <p className="text-md font-medium mb-4">{component?.title}</p>
         <div className="flex justify-center">
@@ -33,7 +36,7 @@ const DonutWrapper = ({ actualData, component, source }: DonutData) => {
           />
         </div>
       </div>
-    );
+  );
 };
 
 export default DonutWrapper;

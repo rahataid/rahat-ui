@@ -18,16 +18,12 @@ import { useCambodiaChwTableColumns } from './use.chw.table.columns';
 import CambodiaTable from '../table.component';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
-  BadgeDollarSign,
-  Coins,
   Download,
   Glasses,
   SlidersHorizontal,
   Stethoscope,
   UserCheck,
-  UserCog,
   Users,
-  X,
 } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
@@ -37,20 +33,35 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import ViewColumns from '../../components/view.columns';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import * as XLSX from 'xlsx';
 import { VillageDoctorPageShell } from '../page-shell';
+import { DateRange } from 'react-day-picker';
+import { toast } from 'react-toastify';
+
+const formatLocalDate = (value: Date) => {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
+  const day = String(value.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const INVALID_RANGE_MSG = '"To" date cannot be less than "From" date.';
+
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [filterResetKey, setFilterResetKey] = React.useState(0);
   const [dateRangeError, setDateRangeError] = React.useState<string | null>(
     null,
   );
-  const [filterResetKey, setFilterResetKey] = React.useState(0);
-  const todayStr = new Date().toISOString().split('T')[0];
+
+  const showDateRangeError = React.useCallback((message: string) => {
+    setDateRangeError(message);
+    toast.error(message);
+  }, []);
 
   const {
     pagination,
@@ -175,175 +186,153 @@ export default function CHWView() {
       subtitle="Monitor village doctors (referrers), filter by period, and export program reports."
       contentClassName="space-y-6"
     >
-        <div
-          className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
-            programStatsFetching ? 'opacity-70 transition-opacity' : ''
-          }`}
-        >
-          <DataCard
-            title="Total Eyewear Sold"
-            number={String(programStats?.data?.sales ?? 0)}
-            Icon={Glasses}
-            className="rounded-lg border-solid"
-          />
-          <DataCard
-            title="Total Village Doctors"
-            number={String(programStats?.data?.healthWorkers ?? 0)}
-            Icon={Stethoscope}
-            className="rounded-lg border-solid"
-          />
-          <DataCard
-            title="Total Number of Villagers Referred"
-            number={String(programStats?.data?.leadsRecieved ?? 0)}
-            Icon={Users}
-            className="rounded-lg border-solid"
-          />
-          <DataCard
-            title="Total Number of Successful Referrals"
-            number={String(programStats?.data?.leadsConverted ?? 0)}
-            Icon={UserCheck}
-            className="rounded-lg border-solid"
-          />
-        </div>
+      <div
+        className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
+          programStatsFetching
+            ? 'opacity-70 transition-opacity duration-200'
+            : ''
+        }`}
+      >
+        <DataCard
+          title="Total Eyewear Sold"
+          number={String(programStats?.data?.sales ?? 0)}
+          Icon={Glasses}
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
+        />
+        <DataCard
+          title="Total Village Doctors"
+          number={String(programStats?.data?.healthWorkers ?? 0)}
+          Icon={Stethoscope}
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
+        />
+        <DataCard
+          title="Total Villagers Referred"
+          number={String(programStats?.data?.leadsRecieved ?? 0)}
+          Icon={Users}
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
+        />
+        <DataCard
+          title="Total Successful Referrals"
+          number={String(programStats?.data?.leadsConverted ?? 0)}
+          Icon={UserCheck}
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
+        />
+      </div>
 
-        <Card className="flex flex-col overflow-hidden">
-          <CardHeader className="border-b border-border px-5 py-4">
-            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              Filters
-            </div>
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-              <SearchInput
-                name="koboUsername"
-                className="w-full lg:max-w-sm"
-                value={
-                  (table
-                    .getColumn('koboUsername')
-                    ?.getFilterValue() as string) ?? filters?.koboUsername
-                }
-                onSearch={(event) => handleFilterChange(event)}
-              />
-              <div className="flex flex-wrap items-start gap-2 sm:flex-row sm:gap-3">
-                <div className={`relative${filters.from ? ' pb-[18px]' : ''}`}>
-                  <div className="flex flex-wrap items-end gap-2 sm:gap-3">
-                    <div className="flex flex-col gap-1">
-                      <Label
-                        htmlFor="vd-chw-from"
-                        className="text-xs font-normal !text-[#6b7c94]"
-                      >
-                        From
-                      </Label>
-                      <Input
-                        key={`vd-chw-from-${filterResetKey}`}
-                        id="vd-chw-from"
-                        type="date"
-                        className={`h-9 w-full sm:w-[155px]${
-                          dateRangeError ? ' border-destructive' : ''
-                        }${
-                          !(filters.from ?? '') ? ' text-muted-foreground' : ''
-                        }`}
-                        value={filters.from ?? ''}
-                        max={todayStr}
-                        onChange={(e) => {
-                          setFilters({ ...filters, from: e.target.value });
-                          setDateRangeError(null);
-                        }}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <Label
-                        htmlFor="vd-chw-to"
-                        className="text-xs font-normal !text-[#6b7c94]"
-                      >
-                        To
-                      </Label>
-                      <Input
-                        key={`vd-chw-to-${filterResetKey}`}
-                        id="vd-chw-to"
-                        type="date"
-                        className={`h-9 w-full sm:w-[155px]${
-                          dateRangeError ? ' border-destructive' : ''
-                        }${
-                          !(filters.to ?? '') ? ' text-muted-foreground' : ''
-                        }`}
-                        value={filters.to ?? ''}
-                        max={todayStr}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (filters.from && val < filters.from) {
-                            const { to, ...rest } = filters;
-                            setFilters(rest);
-                            setDateRangeError(
-                              '"To" date cannot be less than "From" date.',
-                            );
-                          } else {
-                            setFilters({ ...filters, to: val });
-                            setDateRangeError(null);
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {filters.from && (
-                    <p
-                      className="absolute bottom-0 left-0 min-h-[14px] text-[11px] leading-tight text-destructive"
-                      aria-live="polite"
-                    >
-                      {dateRangeError ?? '\u00A0'}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-end gap-2 pt-5 sm:gap-3">
-                  {(filters.from || filters.to || dateRangeError) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-9 px-2 text-muted-foreground hover:text-foreground"
-                      onClick={() => {
-                        const { from, to, ...rest } = filters;
-                        setFilters(rest);
-                        setDateRangeError(null);
-                        setFilterResetKey((k) => k + 1);
-                      }}
-                      title="Clear date filter"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <ViewColumns table={table} />
-                  <Button
-                    variant="outline"
-                    className="text-muted-foreground rounded-sm"
-                    onClick={handleDownload}
-                  >
-                    <Download className="w-4 h-4 mr-1" /> Download
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <CambodiaTable
-              table={table}
-              tableHeight="h-[calc(100vh-520px)]"
-              emptyMessage="No village doctos found."
-            />
-            <CustomPagination
-              currentPage={pagination.page}
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              meta={
-                (data?.response?.meta as any) || {
-                  total: 0,
-                  currentPage: 0,
-                }
+      <Card className="flex flex-col overflow-hidden">
+        <CardHeader className="border-b border-border px-5 py-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+            Filters
+          </div>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <SearchInput
+              name="koboUsername"
+              className="w-full lg:max-w-sm"
+              value={
+                (table.getColumn('koboUsername')?.getFilterValue() as string) ??
+                filters?.koboUsername
               }
-              perPage={pagination?.perPage}
-              total={data?.response?.meta?.total || 0}
+              onSearch={(event) => handleFilterChange(event)}
             />
-          </CardContent>
-        </Card>
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <DateRangePicker
+                  key={filterResetKey}
+                  placeholder="Select date range"
+                  type="range"
+                  className={`h-9 w-auto${
+                    dateRangeError ? ' border-destructive' : ''
+                  }`}
+                  handleDateChange={(range: DateRange | undefined) => {
+                    const from = range?.from
+                      ? formatLocalDate(range.from)
+                      : undefined;
+                    const to = range?.to
+                      ? formatLocalDate(range.to)
+                      : undefined;
+
+                    if (from && to && to < from) {
+                      showDateRangeError(INVALID_RANGE_MSG);
+                      return;
+                    }
+
+                    setDateRangeError(null);
+                    const { from: _f, to: _t, ...rest } = filters;
+                    setFilters({
+                      ...rest,
+                      ...(from ? { from } : {}),
+                      ...(to ? { to } : {}),
+                    });
+                  }}
+                  handleClearDate={() => {
+                    const { from, to, ...rest } = filters;
+                    setFilters(rest);
+                    setDateRangeError(null);
+                    setFilterResetKey((k) => k + 1);
+                  }}
+                  onInvalidRange={() => {
+                    showDateRangeError(INVALID_RANGE_MSG);
+                  }}
+                />
+                <ViewColumns table={table} />
+                <Button
+                  variant="outline"
+                  className="text-muted-foreground rounded-sm"
+                  onClick={handleDownload}
+                >
+                  <Download className="w-4 h-4 mr-1" /> Download
+                </Button>
+              </div>
+              {dateRangeError && (
+                <p
+                  className="w-[280px] self-start text-left text-[11px] leading-tight text-destructive"
+                  aria-live="polite"
+                >
+                  {dateRangeError}
+                </p>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <CambodiaTable
+            table={table}
+            tableHeight="h-[calc(100vh-520px)]"
+            emptyMessage="No village doctors found."
+          />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            meta={
+              (data?.response?.meta as any) || {
+                total: 0,
+                currentPage: 0,
+              }
+            }
+            perPage={pagination?.perPage}
+            total={data?.response?.meta?.total || 0}
+          />
+        </CardContent>
+      </Card>
     </VillageDoctorPageShell>
   );
 }

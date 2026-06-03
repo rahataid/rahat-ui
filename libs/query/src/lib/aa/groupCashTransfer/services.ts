@@ -2,7 +2,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../projects';
-import { runAction, ACTION_NS, useToast } from './utils';
+import { runAction, ACTION_NS } from './utils';
+import { useSwal } from 'libs/query/src/swal';
+
+function useToast() {
+  const alert = useSwal();
+  return alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+}
 import {
   AssignFundPayload,
   CreateGroupCashTransferPayload,
@@ -102,8 +113,12 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
     onSuccess: () => {
       q.reset();
       toast.fire({ title: 'Fund assigned successfully.', icon: 'success' });
-      queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.get', projectUUID] });
-      queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.getRecords', projectUUID] });
+      queryClient.invalidateQueries({
+        queryKey: [ACTION_NS + '.get', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ACTION_NS + '.getRecords', projectUUID],
+      });
     },
     onError: (error: any) => {
       q.reset();
@@ -127,7 +142,10 @@ export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
       runAction(q, projectUUID, ACTION_NS + '.disburse', { uuid }),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: 'Disbursement initiated (PENDING).', icon: 'success' });
+      toast.fire({
+        title: 'Disbursement initiated (PENDING).',
+        icon: 'success',
+      });
       queryClient.invalidateQueries({
         queryKey: [ACTION_NS + '.get', projectUUID],
       });

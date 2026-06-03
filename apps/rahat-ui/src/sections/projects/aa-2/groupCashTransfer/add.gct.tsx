@@ -141,11 +141,14 @@ export default function AddGct() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <div className="p-4 rounded-sm border bg-card space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
 
-            {/* Row 1: Name + Phone */}
-            <div className="grid grid-cols-2 gap-4">
+          {/* ── Group Information ─────────────────────────────────────────── */}
+          <div className="p-4 rounded-sm border bg-card space-y-4">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Group Information
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -172,53 +175,28 @@ export default function AddGct() {
                   </FormItem>
                 )}
               />
-            </div>
-
-            {/* Row 2: District + Municipality + Ward */}
-            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="district"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>District</Label>
+                    <Label>Email (Optional)</Label>
                     <FormControl>
-                      <Input placeholder="Enter district" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="municipality"
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>Municipality</Label>
-                    <FormControl>
-                      <Input placeholder="Enter municipality" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="ward"
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>Ward (Community)</Label>
-                    <FormControl>
-                      <Input placeholder="Enter Ward and community" {...field} />
+                      <Input type="email" placeholder="Enter email address" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+          </div>
 
-            {/* Row 3: Bank Name + Bank Branch Name + Account Holder Name */}
-            <div className="grid grid-cols-3 gap-4">
+          {/* ── Bank Details ──────────────────────────────────────────────── */}
+          <div className="p-4 rounded-sm border bg-card space-y-4">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Bank Details
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="bankName"
@@ -258,10 +236,6 @@ export default function AddGct() {
                   </FormItem>
                 )}
               />
-            </div>
-
-            {/* Row 4: Account Number + Email + Support Area */}
-            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="accountNumber"
@@ -275,95 +249,130 @@ export default function AddGct() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>Email (Optional)</Label>
-                    <FormControl>
-                      <Input type="email" placeholder="Enter email address" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="supportArea"
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>Support Area (Optional)</Label>
-                    <FormControl>
-                      <>
-                        <TagInput
-                          {...field}
-                          tags={supportAreaTags}
-                          setTags={(newTags) => {
-                            setSupportAreaTags(newTags);
-                            form.setValue('supportArea', newTags as [Tag, ...Tag[]]);
-                          }}
-                          placeholder="Enter value and press ENTER"
-                          className="min-h-[23px]"
-                          styleClasses={{
-                            inlineTagsContainer:
-                              'border-input rounded shadow-xs p-1 gap-1 ' +
-                              'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
-                            input: 'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
-                            tag: {
-                              body: 'h-7 relative rounded-sm border border-input font-medium text-xs ps-2 pe-7',
-                              closeButton:
-                                'absolute -inset-y-px -end-px p-0 rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-muted-foreground/80 hover:text-foreground',
-                            },
-                          }}
-                          activeTagIndex={activeTagIndex}
-                          setActiveTagIndex={setActiveTagIndex}
-                          inputProps={{
-                            value: unsavedTagInput,
-                            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                              setUnsavedTagInput(e.target.value),
-                            onKeyDown: handleTagKeyDown,
-                          }}
-                        />
-                        {unsavedTagInput && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            Press Enter to add.
-                          </span>
-                        )}
-                      </>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
+          </div>
 
-            {/* Footer */}
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                type="button"
-                variant="secondary"
-                className="px-8"
-                onClick={handleClear}
-                disabled={createGct.isPending}
-              >
-                Clear
-              </Button>
-              <Button
-                type="submit"
-                className="px-8"
-                disabled={createGct.isPending || unsavedTagInput.trim() !== ''}
-              >
-                {createGct.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  'Create'
+          {/* ── Other Information ─────────────────────────────────────────── */}
+          <div className="p-4 rounded-sm border bg-card space-y-4">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Other Information
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="district"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>District</Label>
+                    <FormControl>
+                      <Input placeholder="Enter district" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </Button>
+              />
+              <FormField
+                control={form.control}
+                name="ward"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Ward (Community)</Label>
+                    <FormControl>
+                      <Input placeholder="Enter Ward and community" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="municipality"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Municipality</Label>
+                    <FormControl>
+                      <Input placeholder="Enter municipality" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+            <FormField
+              control={form.control}
+              name="supportArea"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>Support Area (Optional)</Label>
+                  <FormControl>
+                    <>
+                      <TagInput
+                        {...field}
+                        tags={supportAreaTags}
+                        setTags={(newTags) => {
+                          setSupportAreaTags(newTags);
+                          form.setValue('supportArea', newTags as [Tag, ...Tag[]]);
+                        }}
+                        placeholder="Enter value and press ENTER"
+                        className="min-h-[23px]"
+                        styleClasses={{
+                          inlineTagsContainer:
+                            'border-input rounded shadow-xs p-1 gap-1 ' +
+                            'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
+                          input: 'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
+                          tag: {
+                            body: 'h-7 relative rounded-sm border border-input font-medium text-xs ps-2 pe-7',
+                            closeButton:
+                              'absolute -inset-y-px -end-px p-0 rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-muted-foreground/80 hover:text-foreground',
+                          },
+                        }}
+                        activeTagIndex={activeTagIndex}
+                        setActiveTagIndex={setActiveTagIndex}
+                        inputProps={{
+                          value: unsavedTagInput,
+                          onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                            setUnsavedTagInput(e.target.value),
+                          onKeyDown: handleTagKeyDown,
+                        }}
+                      />
+                      {unsavedTagInput && (
+                        <span className="text-xs text-muted-foreground ml-1">
+                          Press Enter to add.
+                        </span>
+                      )}
+                    </>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* ── Footer ───────────────────────────────────────────────────── */}
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              className="px-8"
+              onClick={handleClear}
+              disabled={createGct.isPending}
+            >
+              Clear
+            </Button>
+            <Button
+              type="submit"
+              className="px-8"
+              disabled={createGct.isPending || unsavedTagInput.trim() !== ''}
+            >
+              {createGct.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create'
+              )}
+            </Button>
           </div>
         </form>
       </Form>

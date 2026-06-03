@@ -78,7 +78,7 @@ export default function VendorsView() {
             <VendorRedemptionList id={id} />
           </TabsContent>
           <TabsContent value="inkindRedemptionList">
-            <InkindRedemptionList id={id} />
+            <InkindRedemptionList id={id} showActions={true} />
           </TabsContent>
         </Tabs>
       </div>

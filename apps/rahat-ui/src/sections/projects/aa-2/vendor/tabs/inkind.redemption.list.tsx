@@ -39,9 +39,11 @@ export type InkindRedemptionData = {
 export const InkindRedemptionList = ({
   id,
   vendorId,
+  showActions = true,
 }: {
   id: UUID;
   vendorId?: UUID;
+  showActions?: boolean;
 }) => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -58,72 +60,14 @@ export const InkindRedemptionList = ({
 
   const debounceSearch = useDebounce(filters, 500);
 
-  // const data = {
-  //   success: true,
-  //   data: [
-  //     {
-  //       id: 2,
-  //       uuid: '123fd8f6-a14d-4234-afa5-fb3f6e66e74b',
-  //       redemptionStatus: 'APPROVED',
-  //       quantity: 20,
-  //       transactionHash:
-  //         '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-  //       approvedBy: 'Rumsan',
-  //       approvedAt: '2026-05-22T09:41:00.151Z',
-  //       inkindUuid: 'c95160e3-12ea-491d-af51-6aa579046516',
-  //       vendorUuid: '8f8328c4-7164-4c75-ba8e-9a9f63e74fee',
-  //       createdAt: '2026-05-22T07:02:55.489Z',
-  //       updatedAt: '2026-05-22T07:02:55.489Z',
-  //       inkind: {
-  //         uuid: 'c95160e3-12ea-491d-af51-6aa579046516',
-  //         name: 'CHHATA',
-  //         type: 'WALK_IN',
-  //       },
-  //       vendor: {
-  //         uuid: '8f8328c4-7164-4c75-ba8e-9a9f63e74fee',
-  //         name: 'Mohit Rajbhandari',
-  //       },
-  //     },
-  //     {
-  //       id: 1,
-  //       uuid: '32ab7cbe-71a2-4ea7-a3b5-2c5ae864d727',
-  //       redemptionStatus: 'REQUESTED',
-  //       quantity: 20,
-  //       transactionHash: null,
-  //       approvedBy: null,
-  //       approvedAt: '2026-05-22T06:32:07.269Z',
-  //       inkindUuid: '6b90233a-1976-4826-b6cb-20a6a93c3fcb',
-  //       vendorUuid: '8f8328c4-7164-4c75-ba8e-9a9f63e74fee',
-  //       createdAt: '2026-05-22T06:32:07.269Z',
-  //       updatedAt: '2026-05-22T06:32:07.269Z',
-  //       inkind: {
-  //         uuid: '6b90233a-1976-4826-b6cb-20a6a93c3fcb',
-  //         name: 'GLASS',
-  //         type: 'PRE_DEFINED',
-  //       },
-  //       vendor: {
-  //         uuid: '8f8328c4-7164-4c75-ba8e-9a9f63e74fee',
-  //         name: 'Mohit Rajbhandari',
-  //       },
-  //     },
-  //   ],
-  //   meta: {
-  //     total: 2,
-  //     lastPage: 1,
-  //     currentPage: 1,
-  //     perPage: 10,
-  //     prev: null,
-  //     next: null,
-  //   },
-  // };
   const { data, isPending } = useGetInkindRedemptionLogs({
     projectUuid: id,
     ...pagination,
     ...(vendorId ? { vendorUuid: vendorId } : {}),
     vendorName: debounceSearch.vendorName,
     inkindName: debounceSearch.inkindName,
-    status: debounceSearch.status,
-    inkindType: debounceSearch.inkindType,
+    status: filters.status,
+    inkindType: filters.inkindType,
   });
 
   const queryData = data as any;
@@ -144,7 +88,7 @@ export const InkindRedemptionList = ({
     next: null,
   };
 
-  const columns = useInkindRedemptionColumn(id);
+  const columns = useInkindRedemptionColumn(id, showActions);
 
   const table = useReactTable({
     manualPagination: true,
@@ -220,7 +164,7 @@ export const InkindRedemptionList = ({
         table={table}
         tableHeight="h-[500px]"
         message="No In-kind Redemption Records"
-        // loading={isPending}
+        loading={isPending}
       />
       <CustomPagination
         currentPage={pagination.page}

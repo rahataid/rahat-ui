@@ -11,7 +11,10 @@ import { UUID } from 'crypto';
 import { formatLabel } from '../../inkindManagement/components/inkind.allocation.list';
 import { INKIND_TYPE_LABELS } from '../../inkindManagement/schemas/inkind.validation';
 
-export const useInkindRedemptionColumn = (id: UUID) => {
+export const useInkindRedemptionColumn = (
+  id: UUID,
+  showActions: boolean = true,
+) => {
   const approveRedemptionStatus = useUpdateVendorRedemptionStatus();
   const handleApproveClick = (row: Row<InkindRedemptionData>) => {
     approveRedemptionStatus.mutate({
@@ -133,49 +136,52 @@ export const useInkindRedemptionColumn = (id: UUID) => {
         />
       ),
     },
-
-    {
-      id: 'actions',
-      header: 'Actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        const status = row.original?.redemptionStatus?.toLowerCase();
-        return (
-          <>
-            <div className="flex items-center justify-start">
-              {status === 'approved' ? (
-                <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
-                  <div>Approved on:</div>
-                  <TruncatedCell
-                    text={
-                      row.original?.redemptionStatus === 'APPROVED' &&
-                      row.original?.approvedAt
-                        ? dateFormat(row.original?.approvedAt)
-                        : 'N/A'
-                    }
-                    maxLength={30}
-                  />
-                </div>
-              ) : (
-                <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
-                  <DialogComponent
-                    onSubmit={() => handleApproveClick(row)}
-                    onCancel={() => null}
-                    title="Approve Inkind Redemption Request"
-                    subtitle="Are you sure you want to approve this redemption request?"
-                    trigger={
-                      <div className="cursor-pointer select-none text-[#297AD6]">
-                        Approve
+    ...(showActions
+      ? [
+          {
+            id: 'actions',
+            header: 'Actions',
+            enableHiding: false,
+            cell: ({ row }: { row: Row<InkindRedemptionData> }) => {
+              const status = row.original?.redemptionStatus?.toLowerCase();
+              return (
+                <>
+                  <div className="flex items-center justify-start">
+                    {status === 'approved' ? (
+                      <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
+                        <div>Approved on:</div>
+                        <TruncatedCell
+                          text={
+                            row.original?.redemptionStatus === 'APPROVED' &&
+                            row.original?.approvedAt
+                              ? dateFormat(row.original?.approvedAt)
+                              : 'N/A'
+                          }
+                          maxLength={30}
+                        />
                       </div>
-                    }
-                  />
-                </RoleAuth>
-              )}
-            </div>
-          </>
-        );
-      },
-    },
+                    ) : (
+                      <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+                        <DialogComponent
+                          onSubmit={() => handleApproveClick(row)}
+                          onCancel={() => null}
+                          title="Approve Inkind Redemption Request"
+                          subtitle="Are you sure you want to approve this redemption request?"
+                          trigger={
+                            <div className="cursor-pointer select-none text-[#297AD6]">
+                              Approve
+                            </div>
+                          }
+                        />
+                      </RoleAuth>
+                    )}
+                  </div>
+                </>
+              );
+            },
+          },
+        ]
+      : []),
   ];
   return columns;
 };

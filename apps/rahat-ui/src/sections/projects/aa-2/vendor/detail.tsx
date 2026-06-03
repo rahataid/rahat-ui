@@ -187,7 +187,7 @@ export default function Detail() {
         )}
         {shouldRenderTab('inkindRedemptionList') && (
           <TabsContent value="inkindRedemptionList">
-            <InkindRedemptionList id={id} vendorId={vendorId} />
+            <InkindRedemptionList id={id} vendorId={vendorId} showActions={false} />
           </TabsContent>
         )}
       </Tabs>

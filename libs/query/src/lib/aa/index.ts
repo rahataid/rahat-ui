@@ -12,3 +12,4 @@ export * from './funManagement';
 export * from './vendors';
 export * from './payout';
 export * from './inkinds';
+export * from './groupCashTransfer';

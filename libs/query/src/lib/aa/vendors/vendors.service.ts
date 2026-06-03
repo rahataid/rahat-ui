@@ -339,6 +339,8 @@ export const useGetInkindRedemptionLogs = (payload: {
   page?: number;
   perPage?: number;
   search?: string;
+  vendorName?: string;
+  inkindName?: string;
   status?: string;
   inkindType?: string;
   vendorUuid?: UUID;
@@ -349,6 +351,8 @@ export const useGetInkindRedemptionLogs = (payload: {
     page = 1,
     perPage = 10,
     search = '',
+    vendorName = '',
+    inkindName = '',
     status = '',
     inkindType = '',
     vendorUuid,
@@ -361,6 +365,8 @@ export const useGetInkindRedemptionLogs = (payload: {
       page,
       perPage,
       search,
+      vendorName,
+      inkindName,
       status,
       inkindType,
       vendorUuid,
@@ -376,6 +382,8 @@ export const useGetInkindRedemptionLogs = (payload: {
             page,
             perPage,
             search: search ?? '',
+            ...(vendorName ? { vendorName } : {}),
+            ...(inkindName ? { inkindName } : {}),
             ...(status ? { status } : {}),
             ...(inkindType ? { inkindType } : {}),
             ...(vendorUuid ? { vendorUuid } : {}),

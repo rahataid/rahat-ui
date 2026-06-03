@@ -120,7 +120,8 @@ export const InkindRedemptionList = ({
     projectUuid: id,
     ...pagination,
     ...(vendorId ? { vendorUuid: vendorId } : {}),
-    search: debounceSearch.name,
+    vendorName: debounceSearch.vendorName,
+    inkindName: debounceSearch.inkindName,
     status: debounceSearch.status,
     inkindType: debounceSearch.inkindType,
   });
@@ -183,8 +184,8 @@ export const InkindRedemptionList = ({
         <SearchInput
           className="w-full flex-[4]"
           name="vendor name"
-          onSearch={(e) => handleSearch(e, 'name')}
-          value={filters?.name || ''}
+          onSearch={(e) => handleSearch(e, 'vendorName')}
+          value={filters?.vendorName || ''}
         />
         <SearchInput
           className="w-full flex-[4]"

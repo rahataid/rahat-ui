@@ -32,6 +32,7 @@ import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -63,7 +64,7 @@ export default function TriggerStatementDetail() {
     projectInfo?.value?.project_type || '',
   );
 
-console.log("trigger data", trigger);
+  console.log('trigger data', trigger);
 
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
@@ -244,7 +245,10 @@ console.log("trigger data", trigger);
                   target="_blank"
                   className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
                 >
-                  {trigger.transactionHash}
+                  <TruncatedCell
+                    text={trigger.transactionHash || 'N/A'}
+                    maxLength={10}
+                  />
                 </Link>
               </div>
             )}

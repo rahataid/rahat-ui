@@ -8,6 +8,7 @@ import {
   CambodiaProjectTransactions,
   VillageDoctorVendorTransactions,
   VillageDoctorVendorTokensAllocatedForBeneficiaries,
+  VillageDoctorRedeemedBeneficiaries,
 } from './graph.query';
 import { useEffect } from 'react';
 import { useCambodiaProjectSubgraphStore } from './stores/cambodia-project.store';
@@ -273,6 +274,38 @@ export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
           ...formatted,
           ...claimDetailsFormatted,
         ]);
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useVillageDoctorRedeemedBeneficiaries = () => {
+  const { subgraphClient } = useCambodiaSubgraph();
+  const { queryClient } = useRSQuery();
+
+  return useQuery(
+    {
+      queryKey: ['VillageDoctorRedeemedBeneficiaries'],
+      queryFn: async () => {
+        const { data, error } = await subgraphClient.query(
+          VillageDoctorRedeemedBeneficiaries,
+          {},
+        );
+        if (error) {
+          throw new Error(
+            error.message ||
+              'Could not reach the blockchain subgraph (GraphQL).',
+          );
+        }
+        const addresses = new Set<string>();
+        for (const item of (data?.claimProcesseds as { beneficiary?: string }[]) ?? []) {
+          if (item.beneficiary) addresses.add(item.beneficiary.toLowerCase());
+        }
+        for (const item of (data?.offlineClaimProcesseds as { beneficiary?: string }[]) ?? []) {
+          if (item.beneficiary) addresses.add(item.beneficiary.toLowerCase());
+        }
+        return addresses;
       },
     },
     queryClient,

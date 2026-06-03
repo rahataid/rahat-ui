@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Check,
   MessageSquare,
@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
   Card,
@@ -49,11 +49,17 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import {
+  useConsumers,
   useCreateElCrmCampaign,
   useCustomers,
   useListElCrmTemplate,
   useListElCrmTransport,
 } from '@rahat-ui/query';
+import {
+  getPlasgateSmsInfo,
+  isPlasgateChannel,
+  truncateToPlasgateLimit,
+} from '../../const';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -75,7 +81,10 @@ type FilterField =
   | 'source'
   | 'location'
   | 'isVerified'
-  | 'customerCode';
+  | 'customerCode'
+  | 'name'
+  | 'vendorName'
+  | 'channel';
 type FilterRow = { id: string; field: FilterField | ''; value: string };
 
 const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
@@ -85,16 +94,21 @@ const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
     .filter(Boolean);
 
 const FILTER_FIELD_OPTIONS: { value: FilterField; label: string }[] = [
+  { value: 'name', label: 'Name' },
   { value: 'category', label: 'Status' },
   { value: 'source', label: 'Source' },
   { value: 'location', label: 'Location' },
   { value: 'customerCode', label: 'Customer Code' },
+  { value: 'channel', label: 'Channel' },
 ];
 
 const BENEFICIARY_FILTER_FIELD_OPTIONS: {
   value: FilterField;
   label: string;
-}[] = [{ value: 'isVerified', label: 'Verified' }];
+}[] = [
+  { value: 'name', label: 'Beneficiary Name' },
+  { value: 'vendorName', label: 'Vendor Name' },
+];
 
 const FILTER_VALUE_OPTIONS: Partial<
   Record<FilterField, { value: string; label: string }[]>
@@ -130,6 +144,10 @@ type TemplateOption = {
 export default function ComposeMessageView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefillTemplateId = searchParams?.get('templateId') ?? '';
+  const prefillChannel = searchParams?.get('channel') ?? '';
+  const hasAppliedPrefill = useRef(false);
 
   // Progressive wizard state
   const [selectedTransportId, setSelectedTransportId] = useState('');
@@ -146,17 +164,52 @@ export default function ComposeMessageView() {
   const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
 
+  // Apply deep-link prefill (e.g. /compose?templateId=...&channel=WhatsApp)
+  useEffect(() => {
+    if (hasAppliedPrefill.current) return;
+    if (!prefillTemplateId && !prefillChannel) return;
+    if (!transport.data?.length) return;
+
+    const channelMatch = prefillChannel
+      ? transport.data.find(
+          (t: TransportOption) =>
+            t.name.toLowerCase() === prefillChannel.toLowerCase(),
+        )
+      : undefined;
+
+    if (channelMatch) {
+      setSelectedTransportId(channelMatch.cuid);
+      setSelectedTransportName(channelMatch.name);
+    }
+
+    const isWhatsAppChannel = (channelMatch?.name || prefillChannel)
+      .toLowerCase()
+      .includes('whatsapp');
+
+    if (prefillTemplateId && isWhatsAppChannel) {
+      setMessageContent(prefillTemplateId);
+    }
+
+    hasAppliedPrefill.current = true;
+  }, [prefillTemplateId, prefillChannel, transport.data]);
+
   const filtersForCount = useMemo(() => {
-    const f: Record<string, string[]> = {};
+    const f: Record<string, string | string[]> = {};
     const categories = collectFilterValues(filterRows, 'category');
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
     const customerCodes = collectFilterValues(filterRows, 'customerCode');
+    const names = collectFilterValues(filterRows, 'name');
+    const channels = collectFilterValues(filterRows, 'channel');
 
     if (categories.length) f.category = categories;
     if (sources.length) f.source = sources;
     if (locations.length) f.location = locations;
     if (customerCodes.length) f.customerCode = customerCodes;
+    // Vendor count endpoint matches a single name string (contains).
+    if (names.length) f.name = names[0];
+    // Channel lives in vendor extras; count matches a single value (contains).
+    if (channels.length) f.channel = channels[0];
 
     return f;
   }, [filterRows]);
@@ -167,7 +220,32 @@ export default function ComposeMessageView() {
     perPage: 1,
   });
 
+  const beneficiaryFiltersForCount = useMemo(() => {
+    const f: Record<string, string> = {};
+    // Consumer count endpoint matches a single name string (contains).
+    const names = collectFilterValues(filterRows, 'name');
+    if (names.length) f.name = names[0];
+    const vendorNames = collectFilterValues(filterRows, 'vendorName');
+    if (vendorNames.length) f.vendorName = vendorNames[0];
+    return f;
+  }, [filterRows]);
+
+  const consumerEstimate = useConsumers(projectUUID, {
+    ...beneficiaryFiltersForCount,
+    page: 1,
+    perPage: 1,
+  });
+
+  const audienceEstimate =
+    selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
+  const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
+
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
+  const isPlasgate = isPlasgateChannel(selectedTransportName);
+  const plasgateSmsInfo = useMemo(
+    () => (isPlasgate ? getPlasgateSmsInfo(messageContent) : null),
+    [isPlasgate, messageContent],
+  );
 
   // Derive current active step
   const currentStep = useMemo(() => {
@@ -218,20 +296,24 @@ export default function ComposeMessageView() {
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
     const customerCodes = collectFilterValues(filterRows, 'customerCode');
-    const verified = Array.from(
-      new Set(
-        collectFilterValues(filterRows, 'isVerified').map(
-          (value) => value === 'true',
-        ),
-      ),
-    );
+    const names = collectFilterValues(filterRows, 'name');
+    const vendorNames = collectFilterValues(filterRows, 'vendorName');
+    const channels = collectFilterValues(filterRows, 'channel');
 
     if (categories.length) options.vendorStatus = categories;
     if (sources.length) options.vendorSource = sources;
     if (locations.length) options.location = locations;
     if (customerCodes.length) options.customerCode = customerCodes;
-    if (verified.length === 1) options.beneficiaryIsVerified = verified[0];
-    if (verified.length > 1) options.beneficiaryIsVerified = verified;
+    if (names.length) {
+      if (selectedGroup === 'BENEFICIARY') options.beneficiaryName = names;
+      else options.vendorName = names;
+    }
+    if (vendorNames.length && selectedGroup === 'BENEFICIARY') {
+      options.beneficiaryVendorName = vendorNames;
+    }
+    if (channels.length && selectedGroup === 'VENDOR') {
+      options.vendorChannel = channels;
+    }
 
     const payload = {
       targetType: selectedGroup,
@@ -397,12 +479,37 @@ export default function ComposeMessageView() {
                         </>
                       )
                     ) : (
-                      <Textarea
-                        placeholder="Type your message here…"
-                        value={messageContent}
-                        onChange={(e) => setMessageContent(e.target.value)}
-                        rows={4}
-                      />
+                      <>
+                        <Textarea
+                          placeholder="Type your message here…"
+                          value={messageContent}
+                          onChange={(e) =>
+                            setMessageContent(
+                              isPlasgate
+                                ? truncateToPlasgateLimit(e.target.value)
+                                : e.target.value,
+                            )
+                          }
+                          rows={4}
+                        />
+                        {isPlasgate && plasgateSmsInfo && (
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>
+                              {plasgateSmsInfo.encoding === 'GSM-7'
+                                ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
+                                : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
+                            </span>
+                            <span
+                              className={cn(
+                                plasgateSmsInfo.remaining <= 10 &&
+                                  'text-destructive font-medium',
+                              )}
+                            >
+                              {plasgateSmsInfo.length} / {plasgateSmsInfo.limit}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </StepCard>
@@ -573,6 +680,12 @@ export default function ComposeMessageView() {
                                       placeholder={
                                         row.field === 'location'
                                           ? 'e.g., Kathmandu'
+                                          : row.field === 'name'
+                                          ? 'e.g., John Doe'
+                                          : row.field === 'vendorName'
+                                          ? 'e.g., Apple Store'
+                                          : row.field === 'channel'
+                                          ? 'e.g., Wholesale'
                                           : 'Value'
                                       }
                                       value={row.value}
@@ -607,24 +720,22 @@ export default function ComposeMessageView() {
                               Add Filter
                             </Button>
 
-                            {selectedGroup === 'VENDOR' && (
-                              <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-                                <Users className="h-4 w-4" />
-                                <span>
-                                  Estimated recipients:{' '}
-                                  {recipientEstimate.isLoading ? (
-                                    <span className="italic">calculating…</span>
-                                  ) : (
-                                    <>
-                                      <strong className="text-foreground">
-                                        {recipientEstimate.meta?.total ?? 0}
-                                      </strong>{' '}
-                                      customers
-                                    </>
-                                  )}
-                                </span>
-                              </div>
-                            )}
+                            <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                              <Users className="h-4 w-4" />
+                              <span>
+                                Estimated recipients:{' '}
+                                {audienceEstimate.isLoading ? (
+                                  <span className="italic">calculating…</span>
+                                ) : (
+                                  <>
+                                    <strong className="text-foreground">
+                                      {audienceEstimate.meta?.total ?? 0}
+                                    </strong>{' '}
+                                    {audienceNoun}
+                                  </>
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       );
@@ -736,16 +847,14 @@ export default function ComposeMessageView() {
                 multiline
               />
             )}
-            {selectedGroup === 'VENDOR' && (
-              <DetailRow
-                label="Estimated Recipients"
-                value={
-                  recipientEstimate.isLoading
-                    ? 'Calculating...'
-                    : String(recipientEstimate.meta?.total ?? 0)
-                }
-              />
-            )}
+            <DetailRow
+              label="Estimated Recipients"
+              value={
+                audienceEstimate.isLoading
+                  ? 'Calculating...'
+                  : String(audienceEstimate.meta?.total ?? 0)
+              }
+            />
           </div>
 
           <DialogFooter className="gap-2">

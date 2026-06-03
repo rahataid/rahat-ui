@@ -137,13 +137,13 @@ export default function ProjectDetail() {
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Number of Villagers Referred"
+          title="Total Villagers Referred"
           Icon={Users}
           number={String(appStats?.leadsRecieved ?? 0)}
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Number of Successful Referrals in Eye Partners"
+          title="Total Successful Referrals in Eye Partners"
           Icon={UserCheck}
           number={String(appStats?.leadsConverted ?? 0)}
         />
@@ -155,7 +155,12 @@ export default function ProjectDetail() {
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Sales in Eye Partners (RMB)"
+          title={
+            <>
+              Total Sales Amount in Eye Partners{' '}
+              <span className="text-[#229b27]">(RMB)</span>
+            </>
+          }
           Icon={Coins}
           number={rmbDisplay}
         />

@@ -626,6 +626,7 @@ export const useAutomationDetail = (
     perPage?: number;
     sort?: string;
     order?: 'asc' | 'desc';
+    status?: string;
   },
 ) => {
   const action = useProjectAction();

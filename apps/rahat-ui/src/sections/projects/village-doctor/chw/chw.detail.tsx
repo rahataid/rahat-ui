@@ -76,36 +76,54 @@ export default function ChwDetail() {
       backHref={`/projects/el-village-doctor/${projectUuid}/chw`}
     >
       <div
-        className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
-          statsFetching ? 'opacity-70 transition-opacity' : ''
+        className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-7 ${
+          statsFetching ? 'opacity-70 transition-opacity duration-200' : ''
         }`}
       >
         <DataCard
           title="Total Eyewear Sold"
           number={String(s.healthWorkerEyewearSold ?? s.totalEyewearSold ?? 0)}
           Icon={BadgeDollarSign}
-          className="rounded-lg border-solid"
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
         />
         <DataCard
-          title="Total Number of Villagers Referred"
+          title="Total Villagers Referred"
           number={String(s.leadsRecieved ?? s.leads ?? 0)}
           Icon={Users}
-          className="rounded-lg border-solid"
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
         />
         <DataCard
-          title="Total Number of Successful Referrals"
+          title="Total Successful Referrals"
           number={String(s.leadsConverted ?? s.leads_converted ?? 0)}
           Icon={UserCheck}
-          className="rounded-lg border-solid"
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
         />
-
         <DataCard
-          title="Total Sales by Village Doctor (RMB)"
-          number={String(
-            s.totalPurchaseAmountRmb ?? s.totalPurchaseAmount ?? 0,
-          )}
+          title={
+            <>
+              Total Sales Amount by Village Doctor{' '}
+              <span className="text-[#229b27]">(RMB)</span>
+            </>
+          }
+          number={Number(s.totalPurchaseAmountRmb ?? s.totalPurchaseAmount ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}
           Icon={Coins}
-          className="rounded-lg border-solid"
+          className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+          titleClassName="text-sm font-medium text-muted-foreground"
+          cardHeaderClassName="px-5 pb-2 pt-5"
+          cardContentClassName="px-5 pb-5 pt-0"
+          numberClassName="text-2xl font-semibold tracking-tight text-foreground"
         />
       </div>
 

@@ -25,47 +25,32 @@ export const useCambodiaChwTableColumns = () => {
     {
       accessorKey: 'villagers referred',
       header: 'Total Villagers Referred',
-      cell: ({ row }) => <div> {row?.original?._count?.LEAD} </div>,
+      cell: ({ row }) => <div>{row?.original?._count?.LEAD ?? 0}</div>,
     },
-    // {
-    //   accessorKey: 'successful referrals',
-    //   header: 'Total Number of Successful Referrals',
-    //   cell: ({ row }) => <div> {row?.original?._count?.LeadConversions} </div>,
-    // },
-
     {
       accessorKey: 'Successful Referrals',
       accessorFn: (row) => row.vendor,
       header: 'Total Successful Referrals',
-      cell: ({ row }) => <div> {row?.original?._count?.LeadConversions} </div>,
+      cell: ({ row }) => <div>{row?.original?._count?.LeadConversions ?? 0}</div>,
     },
-
     {
       accessorKey: 'Eyewear Sold',
       accessorFn: (row) => row.vendor,
       header: 'Total Eyewear Sold',
-      cell: ({ row }) => <div> {row?.original?.extras?.glassesPurchased} </div>,
+      cell: ({ row }) => <div>{row?.original?.extras?.glassesPurchased ?? 0}</div>,
     },
-
-    // {
-    //   accessorKey: 'phone',
-    //   header: 'Phone',
-    //   cell: ({ row }) => <div>{row.getValue('phone')}</div>,
-    // },
-
     {
       accessorKey: 'Total Sales (RMB)',
       header: 'Total Sales (RMB)',
       cell: ({ row }) => (
-        <div> {row?.original?.extras?.purchaseAmountRmb} </div>
+        <div>{row?.original?.extras?.purchaseAmountRmb ?? 0}</div>
       ),
     },
-
     {
       accessorKey: 'Eye Partner',
       accessorFn: (row) => row.vendor,
       header: 'Eye Partner',
-      cell: ({ row }) => <div> {row?.original?.vendor?.name} </div>,
+      cell: ({ row }) => <div>{row?.original?.vendor?.name ?? '—'}</div>,
     },
 
     {

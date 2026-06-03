@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -47,6 +48,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { StatCardsSkeleton, TableSkeleton } from '../skeletons';
 
 export default function ScheduledView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -59,7 +61,7 @@ export default function ScheduledView() {
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const { data, meta } = useListElCrmCampaign(projectUUID, {
+  const { data, meta, isLoading } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
     isScheduled: true,
@@ -127,7 +129,7 @@ export default function ScheduledView() {
     }));
   };
 
-  const statCards = [
+  const scheduleStats = [
     {
       title: 'Total',
       value: meta?.total || 0,
@@ -147,7 +149,7 @@ export default function ScheduledView() {
       tooltip: 'Messages already sent from schedule',
     },
     {
-      title: 'Pending Schedules',
+      title: 'Pending',
       value: meta?.counts?.pending || 0,
       icon: CalendarRange,
       color: 'text-warning',
@@ -155,6 +157,9 @@ export default function ScheduledView() {
       iconColor: 'text-warning',
       tooltip: 'Messages scheduled for later delivery',
     },
+  ];
+
+  const automationStats = [
     {
       title: 'Active Rules',
       value: meta?.automation?.activeRules || 0,
@@ -194,7 +199,13 @@ export default function ScheduledView() {
     const diffMs = nextRun.getTime() - now.getTime();
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+    const localTime = nextRun.toLocaleString(undefined, {
+      weekday: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    });
+    return { distance: `${hours}h ${minutes}m`, localTime };
   };
 
   return (
@@ -228,64 +239,55 @@ export default function ScheduledView() {
         </div>
 
         <div className="flex-1 p-6 space-y-6 overflow-auto">
-          {/* Stats Grid */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {statCards.map((stat) => (
-              <Card
-                key={stat.title}
-                className="relative overflow-hidden transition-shadow hover:shadow-md"
-              >
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1.5">
-                      <p className="text-sm font-medium text-muted-foreground leading-none">
-                        {stat.title}
-                      </p>
-                      <p
-                        className={`text-3xl font-bold tracking-tight ${stat.color}`}
-                      >
-                        {stat.value}
-                      </p>
-                    </div>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
-                          <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
-                        <p className="max-w-[220px]">{stat.tooltip}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Stats Sections */}
+          {isLoading ? (
+            <>
+              <StatCardsSkeleton count={3} />
+              <StatCardsSkeleton count={3} />
+            </>
+          ) : (
+            <>
+              <StatSection
+                heading="Schedule"
+                description="Status of one-off scheduled messages."
+                stats={scheduleStats}
+              />
+              <StatSection
+                heading="Automation"
+                description="Event-driven campaigns triggered by rules."
+                stats={automationStats}
+              />
+            </>
+          )}
 
           {/* Automation Info Bar */}
-          {(meta?.automation?.activeRules ?? 0) > 0 && (
-            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span>
-                  Next automation run in{' '}
-                  <span className="font-medium text-foreground">
-                    {getNextAutomationRun()}
-                  </span>{' '}
-                  (daily at midnight UTC)
-                </span>
+          {(meta?.automation?.activeRules ?? 0) > 0 && (() => {
+            const nextRun = getNextAutomationRun();
+            return (
+              <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span>
+                    Next automation run in{' '}
+                    <span className="font-medium text-foreground">
+                      {nextRun.distance}
+                    </span>{' '}
+                    <span className="text-xs">
+                      ({nextRun.localTime} · runs daily at midnight UTC)
+                    </span>
+                  </span>
+                </div>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose?tab=automatic`}
+                >
+                  <Button variant="ghost" size="sm" className="gap-1.5 h-7 text-xs">
+                    <Zap className="h-3.5 w-3.5" />
+                    View Automation
+                  </Button>
+                </Link>
               </div>
-              <Link
-                href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose?tab=automatic`}
-              >
-                <Button variant="ghost" size="sm" className="gap-1.5 h-7 text-xs">
-                  <Zap className="h-3.5 w-3.5" />
-                  View Automation
-                </Button>
-              </Link>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Scheduled Table Card */}
           <Card className="flex flex-col">
@@ -505,7 +507,9 @@ export default function ScheduledView() {
 
             {/* Table */}
             <CardContent className="p-0">
-              {data.length === 0 ? (
+              {isLoading ? (
+                <TableSkeleton rows={8} />
+              ) : data.length === 0 ? (
                 <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
                   <CalendarClock className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
                   <h3 className="mb-2 text-lg font-semibold text-foreground">
@@ -559,5 +563,71 @@ export default function ScheduledView() {
         </div>
       </div>
     </TooltipProvider>
+  );
+}
+
+type StatCardDef = {
+  title: string;
+  value: number | string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bgColor: string;
+  iconColor: string;
+  tooltip: string;
+};
+
+function StatSection({
+  heading,
+  description,
+  stats,
+}: {
+  heading: string;
+  description?: string;
+  stats: StatCardDef[];
+}) {
+  return (
+    <section className="space-y-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {heading}
+        </h2>
+        {description && (
+          <p className="text-xs text-muted-foreground">{description}</p>
+        )}
+      </div>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <Card
+            key={stat.title}
+            className="relative overflow-hidden transition-shadow hover:shadow-md"
+          >
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1.5">
+                  <p className="text-sm font-medium text-muted-foreground leading-none">
+                    {stat.title}
+                  </p>
+                  <p
+                    className={`text-3xl font-bold tracking-tight ${stat.color}`}
+                  >
+                    {stat.value}
+                  </p>
+                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
+                      <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p className="max-w-[220px]">{stat.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </section>
   );
 }

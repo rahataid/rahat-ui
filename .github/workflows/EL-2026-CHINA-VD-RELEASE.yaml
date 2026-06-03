@@ -1,4 +1,4 @@
-name: EL Release SMS Voucher Bangladesh CI/CD
+name: EL Release China VD 2026 CI/CD
 on:
   workflow_dispatch:
 
@@ -15,7 +15,7 @@ jobs:
 
       - name: import env file
         env:
-          env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_BANGLADESH }}
+          env_release: ${{ secrets.ENV_EL_RELEASE_CHINA_VD_EXTENSION_2026 }}
         run: |
           touch ./.env && echo "$env_release" >> ./.env
           grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV  
@@ -60,8 +60,6 @@ jobs:
             NEXT_PUBLIC_API_HOST_URL=${{ env.NEXT_PUBLIC_API_HOST_URL }}
             NEXT_PUBLIC_API_COMMUNICATION_URL=${{ env.NEXT_PUBLIC_API_COMMUNICATION_URL }}
           tags: |
-            esatya/rahat-ui:el-release-smsvoucher-bangladesh
-            esatya/rahat-ui:el-release-smsvoucher-bangladesh-${{ env.VERSION  }}
-            esatya/rahat-ui:el-release-smsvoucher-bangladesh-${{ env.VERSION  }}-${{ env.timestamp }}
-            
-  
+            esatya/rahat-ui:el-release-vd-china-2026
+            esatya/rahat-ui:el-release-vd-china-2026-${{ env.VERSION }}
+            esatya/rahat-ui:el-release-vd-china-2026-${{ env.VERSION }}-${{ env.timestamp }}

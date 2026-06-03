@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { formatLocalDateTime } from 'apps/rahat-ui/src/utils';
 
 export function villageDoctorDisplayName(row: Record<string, any> | undefined) {
   if (!row) return '-';
@@ -103,23 +104,29 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     },
 
     {
+      accessorKey: 'hasRedeemed',
+      header: 'Has Redeemed?',
+      cell: ({ row }) => (
+        <span
+          className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${
+            row.original.hasRedeemed
+              ? 'border-green-200 bg-green-50 text-green-700'
+              : 'border-amber-200 bg-amber-50 text-amber-700'
+          }`}
+        >
+          {row.original.hasRedeemed ? 'Redeemed' : 'Not Redeemed'}
+        </span>
+      ),
+    },
+
+    {
       accessorKey: 'createdAt',
       header: 'Timestamp',
-      cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const formattedDate = date.toLocaleDateString('en-Us', {
-          timeZone,
-        });
-        const formattedTime = date.toLocaleTimeString('en-Us', {
-          timeZone,
-        });
-        return (
-          <div className="lowercase ml-4">
-            {formattedDate} {formattedTime}
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <div className="lowercase ml-4">
+          {formatLocalDateTime(row.getValue('createdAt') as string | Date)}
+        </div>
+      ),
     },
 
     {

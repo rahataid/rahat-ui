@@ -3,6 +3,7 @@ import {
   MS_CAM_ACTIONS,
   normalizeCambodiaBeneficiaryListResponse,
   useCambodiaBeneficiaries,
+  useVillageDoctorRedeemedBeneficiaries,
   usePagination,
   useProjectAction,
 } from '@rahat-ui/query';
@@ -35,6 +36,7 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
+import { VillageDoctorPageShell } from '../page-shell';
 
 export default function ELVillageDoctorVillagerView() {
   const { id } = useParams() as { id: UUID };
@@ -62,6 +64,8 @@ export default function ELVillageDoctorVillagerView() {
     id,
   ]);
 
+  const { data: redeemedAddresses } = useVillageDoctorRedeemedBeneficiaries();
+
   const { data, isLoading } = useCambodiaBeneficiaries({
     ...(debouncedSearch as any),
     page: pagination.page,
@@ -82,9 +86,12 @@ export default function ELVillageDoctorVillagerView() {
   const processedData = {
     ...data,
     data:
-      data?.data?.map((benef) => ({
+      data?.data?.map((benef: any) => ({
         ...benef,
         name: benef?.piiData?.name,
+        hasRedeemed: benef?.walletAddress && redeemedAddresses
+          ? redeemedAddresses.has(benef.walletAddress.toLowerCase())
+          : false,
       })) ?? [],
   };
   const handleFilterChange = (event: any) => {
@@ -139,7 +146,12 @@ export default function ELVillageDoctorVillagerView() {
             debouncedSearch.name.trim()
               ? { name: debouncedSearch.name.trim() }
               : {}),
-            ...(typeof debouncedSearch?.type === 'string' && debouncedSearch.type
+            ...(typeof debouncedSearch?.phone === 'string' &&
+            debouncedSearch.phone.trim()
+              ? { phone: debouncedSearch.phone.trim() }
+              : {}),
+            ...(typeof debouncedSearch?.type === 'string' &&
+            debouncedSearch.type
               ? { type: debouncedSearch.type }
               : {}),
           },
@@ -168,53 +180,46 @@ export default function ELVillageDoctorVillagerView() {
     }
   };
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="border-b border-border/80 bg-card/95 px-6 py-5 shadow-sm shadow-black/[0.03] backdrop-blur supports-[backdrop-filter]:bg-card/90">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Villagers
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-              Track all villagers and referral outcomes for this project.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/projects/el-village-doctor/${id}/villagers/discardedvillager`}
-            >
-              <Button variant="outline" size="sm">
-                <UserRoundX className="mr-2 h-4 w-4" /> Discarded Villagers
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={isExporting || !processedData?.response?.meta?.total}
-              onClick={() => handleDownload()}
-            >
-              <Download className="mr-2 h-4 w-4" />{' '}
-              {isExporting ? 'Preparing…' : 'Download Villagers'}
+    <VillageDoctorPageShell
+      title="Villagers"
+      subtitle="Track all villagers and referral outcomes for this project."
+      contentClassName="space-y-6"
+      actions={
+        <>
+          <Link
+            href={`/projects/el-village-doctor/${id}/villagers/discardedvillager`}
+          >
+            <Button variant="outline" size="sm">
+              <UserRoundX className="mr-2 h-4 w-4" /> Discarded Villagers
             </Button>
+          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isExporting || !processedData?.response?.meta?.total}
+            onClick={() => handleDownload()}
+          >
+            <Download className="mr-2 h-4 w-4" />{' '}
+            {isExporting ? 'Preparing…' : 'Download Villagers'}
+          </Button>
+        </>
+      }
+    >
+      <Card className="flex flex-col overflow-hidden">
+        <CardHeader className="border-b border-border px-5 py-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+            Filters
           </div>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-6 overflow-auto p-6">
-        <Card className="flex flex-col overflow-hidden">
-          <CardHeader className="border-b border-border px-5 py-4">
-            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              Filters
-            </div>
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-              <SearchInput
-                name="name"
-                className="w-full lg:max-w-md"
-                value={filters?.name ?? ''}
-                onSearch={(event) => handleFilterChange(event)}
-              />
-              {/* <div className="w-full lg:max-w-xs">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+            <SearchInput
+              name="name"
+              placeholder="Search name and phone number..."
+              className="w-full lg:max-w-md"
+              value={filters?.name ?? ''}
+              onSearch={(event) => handleFilterChange(event)}
+            />
+            {/* <div className="w-full lg:max-w-xs">
                 <SelectComponent
                   name="Type"
                   options={['ALL', 'Sale', 'Lead']}
@@ -226,32 +231,31 @@ export default function ELVillageDoctorVillagerView() {
                   value={filters?.type || ''}
                 />
               </div> */}
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <CambodiaTable
-              table={table}
-              loading={isLoading}
-              tableHeight="h-[calc(100vh-480px)]"
-              emptyMessage="No villagers found."
-            />
-            <CustomPagination
-              currentPage={pagination.page}
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              meta={
-                (processedData?.response?.meta as any) || {
-                  total: 0,
-                  currentPage: 0,
-                }
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <CambodiaTable
+            table={table}
+            loading={isLoading}
+            tableHeight="h-[calc(100vh-480px)]"
+            emptyMessage="No villagers found."
+          />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            meta={
+              (processedData?.response?.meta as any) || {
+                total: 0,
+                currentPage: 0,
               }
-              perPage={pagination?.perPage}
-              total={processedData?.response?.meta?.total || 0}
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            }
+            perPage={pagination?.perPage}
+            total={processedData?.response?.meta?.total || 0}
+          />
+        </CardContent>
+      </Card>
+    </VillageDoctorPageShell>
   );
 }

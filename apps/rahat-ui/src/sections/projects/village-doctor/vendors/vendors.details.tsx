@@ -12,8 +12,8 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { DateRange } from 'react-day-picker';
 import {
   Tabs,
   TabsContent,
@@ -28,10 +28,11 @@ import {
   Copy,
   CopyCheck,
   Glasses,
+  Stethoscope,
+  UserCheck,
   UserCog,
   Users,
   UserStar,
-  X,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React from 'react';
@@ -46,6 +47,15 @@ import {
   VillageDoctorField,
   VillageDoctorSectionHeading,
 } from '../page-shell';
+
+const formatLocalDate = (value: Date) => {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
+  const day = String(value.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const INVALID_RANGE_MSG = '"To" date cannot be less than "From" date.';
 
 function routeParam(value: string | string[] | undefined): string | undefined {
   if (value == null) return undefined;
@@ -105,7 +115,6 @@ export default function VendorsDetail() {
     null,
   );
   const [filterResetKey, setFilterResetKey] = React.useState(0);
-  const todayStr = new Date().toISOString().split('T')[0];
 
   const vendorsStatsPayload = React.useMemo(() => {
     const payload: {
@@ -174,7 +183,7 @@ export default function VendorsDetail() {
     !vendorFetching &&
     Boolean(id && vendorId);
 
-  const titleName = 'Eye partner';
+  // const titleName = 'Eye partner';
   const headerSubtitle =
     'Performance, wallet, and activity for this Eye Partner location.';
 
@@ -187,83 +196,52 @@ export default function VendorsDetail() {
 
   const statsDateFilterActions = (
     <div className="w-max max-w-full rounded-xl px-3 py-2.5">
-      <div className="flex flex-wrap items-end justify-end gap-2 sm:gap-3">
-        <div className="flex w-[10.5rem] shrink-0 flex-col gap-1">
-          <Label
-            htmlFor="vendor-stats-from"
-            className="text-[11px] !text-[#6b7c94]"
+      <div className="flex flex-col items-start gap-1">
+        <DateRangePicker
+          key={filterResetKey}
+          placeholder="Select date range"
+          type="range"
+          className={`h-9 w-auto${
+            dateRangeError ? ' border-destructive' : ''
+          }`}
+          handleDateChange={(range: DateRange | undefined) => {
+            const from = range?.from ? formatLocalDate(range.from) : '';
+            const to = range?.to ? formatLocalDate(range.to) : '';
+
+            if (from && to && to < from) {
+              setDateRangeError(INVALID_RANGE_MSG);
+              return;
+            }
+
+            setDateRangeError(null);
+            setStatsDateFrom(from);
+            setStatsDateTo(to);
+          }}
+          handleClearDate={() => {
+            setStatsDateFrom('');
+            setStatsDateTo('');
+            setDateRangeError(null);
+            setFilterResetKey((k) => k + 1);
+          }}
+          onInvalidRange={() => {
+            setDateRangeError(INVALID_RANGE_MSG);
+          }}
+        />
+        {dateRangeError && (
+          <p
+            className="w-[280px] self-start text-left text-[11px] leading-tight text-destructive"
+            aria-live="polite"
           >
-            From
-          </Label>
-          <Input
-            key={`vendor-stats-from-${filterResetKey}`}
-            id="vendor-stats-from"
-            type="date"
-            className={`h-8 w-full bg-background${
-              dateRangeError ? ' border-destructive' : ''
-            }${!statsDateFrom ? ' text-muted-foreground' : ''}`}
-            value={statsDateFrom}
-            max={todayStr}
-            onChange={(e) => {
-              setStatsDateFrom(e.target.value);
-              setDateRangeError(null);
-            }}
-          />
-        </div>
-        <div className="flex w-[10.5rem] shrink-0 flex-col gap-1">
-          <Label
-            htmlFor="vendor-stats-to"
-            className="text-[11px] !text-[#6b7c94]"
-          >
-            To
-          </Label>
-          <Input
-            key={`vendor-stats-to-${filterResetKey}`}
-            id="vendor-stats-to"
-            type="date"
-            className={`h-8 w-full bg-background${
-              dateRangeError ? ' border-destructive' : ''
-            }${!statsDateTo ? ' text-muted-foreground' : ''}`}
-            value={statsDateTo}
-            max={todayStr}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (statsDateFrom && val < statsDateFrom) {
-                setStatsDateTo('');
-                setDateRangeError('"To" date cannot be less than "From" date.');
-              } else {
-                setStatsDateTo(val);
-                setDateRangeError(null);
-              }
-            }}
-          />
-        </div>
-        {((statsDateFrom && statsDateTo) || dateRangeError) && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-9 px-2 text-muted-foreground hover:text-foreground self-end"
-            onClick={() => {
-              setStatsDateFrom('');
-              setStatsDateTo('');
-              setDateRangeError(null);
-              setFilterResetKey((k) => k + 1);
-            }}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+            {dateRangeError}
+          </p>
         )}
       </div>
-      {dateRangeError && (
-        <p className="mt-1.5 text-[11px] text-destructive">{dateRangeError}</p>
-      )}
     </div>
   );
 
   return (
     <VillageDoctorDetailChrome
-      title={titleName}
+      title={`Eye Partner - ${vendorRow?.User?.name}`}
       subtitle={headerSubtitle}
       backHref={`/projects/el-village-doctor/${id}/vendors`}
       actions={statsDateFilterActions}
@@ -273,42 +251,61 @@ export default function VendorsDetail() {
           vendorsStatsFetching ? 'opacity-70 transition-opacity' : undefined
         }
       >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <DataCard
-            className="rounded-xl border-border/80 shadow-sm"
+            className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+            titleClassName="text-sm font-medium text-muted-foreground"
+            cardHeaderClassName="px-5 pb-2 pt-5"
+            cardContentClassName="px-5 pb-5 pt-0"
+            numberClassName="text-2xl font-semibold tracking-tight text-foreground"
             title="Total Eyewear Sold"
             Icon={Glasses}
             number={String(vendorsStats?.data?.sales ?? 0)}
           />
           <DataCard
-            className="rounded-xl border-border/80 shadow-sm"
+            className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+            titleClassName="text-sm font-medium text-muted-foreground"
+            cardHeaderClassName="px-5 pb-2 pt-5"
+            cardContentClassName="px-5 pb-5 pt-0"
+            numberClassName="text-2xl font-semibold tracking-tight text-foreground"
             title="Total Village Doctors"
-            Icon={UserStar}
+            Icon={Stethoscope}
             number={String(vendorsStats?.data?.healthWorkers ?? 0)}
           />
           <DataCard
-            className="rounded-xl border-border/80 shadow-sm"
-            title="Total Number of Villagers Referred"
+            className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+            titleClassName="text-sm font-medium text-muted-foreground"
+            cardHeaderClassName="px-5 pb-2 pt-5"
+            cardContentClassName="px-5 pb-5 pt-0"
+            numberClassName="text-2xl font-semibold tracking-tight text-foreground"
+            title="Total Villagers Referred"
             Icon={Users}
             number={String(vendorsStats?.data?.leadsRecieved ?? 0)}
           />
           <DataCard
-            className="rounded-xl border-border/80 shadow-sm"
-            title="Total Number of Successful Referrals"
-            Icon={Users}
+            className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+            titleClassName="text-sm font-medium text-muted-foreground"
+            cardHeaderClassName="px-5 pb-2 pt-5"
+            cardContentClassName="px-5 pb-5 pt-0"
+            numberClassName="text-2xl font-semibold tracking-tight text-foreground"
+            title="Total Successful Referrals"
+            Icon={UserCheck}
             number={String(vendorsStats?.data?.leadsConverted ?? 0)}
           />
-          {/* <DataCard
-          className="rounded-xl border-border/80 shadow-sm"
-          title="Eyewear dispensed"
-          Icon={Glasses}
-          number={String(vendorsStats?.data?.footfalls ?? 0)}
-        /> */}
           <DataCard
-            className="rounded-xl border-border/80 shadow-sm"
-            title="Total Sales in EP (RMB)"
+            className="rounded-xl border border-border/80 shadow-sm shadow-black/[0.03]"
+            titleClassName="text-sm font-medium text-muted-foreground"
+            cardHeaderClassName="px-5 pb-2 pt-5"
+            cardContentClassName="px-5 pb-5 pt-0"
+            numberClassName="text-2xl font-semibold tracking-tight text-foreground"
+            title={
+              <>
+                Total Sales Amount in Eye Partners{' '}
+                <span className="text-[#229b27]">(RMB)</span>
+              </>
+            }
             Icon={Coins}
-            number={String(vendorsStats?.data?.totalPurchaseAmountRmb ?? 0)}
+            number={Number(vendorsStats?.data?.totalPurchaseAmountRmb ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import {
   useCambodiaLineChartsReports,
+  useCambodiaVendorsList,
   useCambodiaVendorsStats,
   useGetProjectDatasource,
 } from '@rahat-ui/query';
@@ -36,6 +37,7 @@ type CambodiaProgramVendorStatsPayload = {
   leadsConverted?: number;
   totalEyewearSold?: number;
   totalPurchaseAmountRmb?: number;
+  totalVendors?: number;
 };
 
 export default function ProjectDetail() {
@@ -55,9 +57,13 @@ export default function ProjectDetail() {
 
   const { data: appStatsRaw, isFetching: appStatsFetching } =
     useCambodiaVendorsStats({ projectUUID: id });
+  const { data: vendorsList } = useCambodiaVendorsList({ projectUUID: id });
   const appStats = appStatsRaw?.data as
     | CambodiaProgramVendorStatsPayload
     | undefined;
+
+  const totalEyePartners =
+    vendorsList?.data?.length ?? appStats?.totalVendors ?? 0;
 
   const handleSelect = (key: string, value: string) => {
     if (key === 'Months') {
@@ -121,7 +127,7 @@ export default function ProjectDetail() {
           {...dataCardToneProps}
           title="Total Eye Partners"
           Icon={Eye}
-          number={String(appStats?.consumers ?? 0)}
+          number={String(totalEyePartners)}
         />
         <DataCard
           {...dataCardToneProps}
@@ -131,13 +137,13 @@ export default function ProjectDetail() {
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Number of Villagers Referred"
+          title="Total Villagers Referred"
           Icon={Users}
           number={String(appStats?.leadsRecieved ?? 0)}
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Number of Successful Referrals in Eye Partners"
+          title="Total Successful Referrals in Eye Partners"
           Icon={UserCheck}
           number={String(appStats?.leadsConverted ?? 0)}
         />
@@ -149,7 +155,12 @@ export default function ProjectDetail() {
         />
         <DataCard
           {...dataCardToneProps}
-          title="Total Sales in Eye Partners (RMB)"
+          title={
+            <>
+              Total Sales Amount in Eye Partners{' '}
+              <span className="text-[#229b27]">(RMB)</span>
+            </>
+          }
           Icon={Coins}
           number={rmbDisplay}
         />

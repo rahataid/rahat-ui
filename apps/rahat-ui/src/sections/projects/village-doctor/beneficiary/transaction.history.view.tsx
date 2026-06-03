@@ -36,9 +36,7 @@ export default function TransactionHistoryView({ walletAddress }: Props) {
   const columns = useTransactionHistoryTableColumns();
 
   const { data: beneficiaryTransactions, isLoading } =
-    useCambodiaBeneficiaryTransactions(
-      walletAddress || '0xaacbee76efd2221bc6c86d60e83ed0b2fb539b47',
-    );
+    useCambodiaBeneficiaryTransactions(walletAddress || '');
 
   const tableData: any = React.useMemo(() => {
     if (beneficiaryTransactions) return beneficiaryTransactions;

@@ -22,7 +22,9 @@ export default function TransactionHistoryView({
   vendorTransactions,
   isLoading,
 }: IProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: 'timeStamp', desc: true },
+  ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );

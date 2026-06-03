@@ -56,7 +56,7 @@ export const useCambodiaVendorsTableColumns = () => {
                       clickToCopy(row?.original?.wallet, row.index, columnKey)
                     }
                   >
-                    <p className="text-sm truncate w-16">
+                    <p className="text-xs truncate w-16">
                       {row?.original?.wallet}
                     </p>
                     <span className="ml-1">

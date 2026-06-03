@@ -1075,6 +1075,9 @@ export const useCambodiaBeneficiaries = (payload: any) => {
     refetchOnMount: true,
     // Same as vendors list: focus refetch + shared projectAction mutation caused hangs.
     refetchOnWindowFocus: false,
+    // Don't retry: a slow/failed search lookup would otherwise be retried 3x,
+    // multiplying the time before "No villagers found." appears.
+    retry: false,
     enabled:
       Boolean(enabled) &&
       Boolean(projectUUID) &&
@@ -1416,9 +1419,15 @@ export const useCambodiaVendorsStatsByVendorIds = (payload: {
             });
 
             const body = mutate as
-              | { data?: { leadsRecieved?: number; leads?: number } }
+              | {
+                  data?: {
+                    leadsRecieved?: number;
+                    leadsConverted?: number;
+                    leads?: number;
+                  };
+                }
               | undefined;
-            const raw = body?.data?.leadsRecieved ?? body?.data?.leads ?? 0;
+            const raw = body?.data?.leadsConverted ?? 0;
             map[vendorId] = typeof raw === 'number' ? raw : 0;
           } catch {
             map[vendorId] = undefined;

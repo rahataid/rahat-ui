@@ -34,3 +34,5 @@ export * from './lib/new-comms';
 export * from './utils/amountFormate';
 export * from './utils/useGraphQLErrorHandler';
 export * from './utils/debounceHooks';
+export * from './utils/fieldSuggestionApi';
+

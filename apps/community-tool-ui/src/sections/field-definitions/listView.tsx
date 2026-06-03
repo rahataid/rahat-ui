@@ -1,6 +1,6 @@
 'use client';
 import { Table, flexRender } from '@tanstack/react-table';
-import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
+import { CircleEllipsisIcon, Settings2, RefreshCw } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -23,12 +23,23 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import React from 'react';
+import {
+  useCommunitySettingList,
+  useCommunitySettingUpdate,
+  useFieldDefinitionsList,
+  useUploadStandardJson,
+  useGetStandardFields,
+  useDeleteStandardLabels,
+} from '@rahat-ui/community-query';
+import { generateJsonSchemaFromFields } from '../../utils/transformDataToJson';
+import { checkStandardJsonMatch } from '../../utils/checkStandardJson';
 
 type IProps = {
   // handleClick: (item: FieldDefinition) => void;
   table: Table<FieldDefinition>;
-  setFilters: (fiters: Record<string, any>) => void;
-  filters: Record<string, any>;
+  setFilters: (fiters: Record<string, string>) => void;
+  filters: Record<string, string>;
   loading: boolean;
 };
 
@@ -36,10 +47,181 @@ export default function ListView({
   table,
   setFilters,
   filters,
+
   loading,
 }: IProps) {
-  const handleFilterChange = (event: any) => {
-    console.log(event.target.value.replace(/\s+/g, '_'));
+  const { data: fieldData } = useFieldDefinitionsList({
+    page: 1,
+    perPage: 100,
+  });
+  const rows = React.useMemo(() => fieldData?.data?.rows || [], [fieldData]);
+  const rowNamesKey = React.useMemo(
+    () =>
+      rows
+        .map((row: FieldDefinition) => row.name)
+        .sort()
+        .join('|'),
+    [rows],
+  );
+
+  const updateCommunitySettings = useCommunitySettingUpdate();
+  const { data } = useCommunitySettingList({ page: 1, perPage: 20 });
+  const schema = generateJsonSchemaFromFields(rows);
+
+  const aiSetting = data?.data.find(
+    (setting: { name: string }) => setting.name === 'AI_API_URL',
+  );
+
+  const aiBaseurl = aiSetting?.value?.URL;
+  const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
+  const uploadStandardFields = useUploadStandardJson();
+  const getStandardFields = useGetStandardFields();
+  const deleteStandardLabels = useDeleteStandardLabels();
+  const rowsRef = React.useRef(rows);
+  const getStandardFieldsRef = React.useRef(getStandardFields.mutateAsync);
+
+  const [syncing, setSyncing] = React.useState(false);
+  const [syncStatus, setSyncStatus] = React.useState<
+    'checking' | 'synced' | 'not-synced'
+  >('checking');
+
+  React.useEffect(() => {
+    rowsRef.current = rows;
+  }, [rows]);
+
+  React.useEffect(() => {
+    getStandardFieldsRef.current = getStandardFields.mutateAsync;
+  }, [getStandardFields.mutateAsync]);
+
+  const uploadSchemaFile = async (standardName: string) => {
+    const schemaBlob = new Blob([JSON.stringify(schema, null, 2)], {
+      type: 'application/json',
+    });
+    const schemaFile = new File([schemaBlob], 'beneficiary.json', {
+      type: 'application/json',
+    });
+
+    await uploadStandardFields.mutateAsync({
+      payload: {
+        file: schemaFile,
+        standard_name: standardName,
+        version: '',
+        description: 'Uploaded by user',
+      },
+      baseURL: aiBaseurl,
+    });
+  };
+
+  const updateStandardSetting = async (standardName: string) => {
+    if (!aiSetting) return;
+
+    const finalSettingData = {
+      name: aiSetting.name,
+      requiredFields: [
+        ...(aiSetting.requiredFields ?? []),
+        'COMMUNITY_DATA_STANDARD',
+      ],
+      value: {
+        ...(aiSetting.value ?? {}),
+        COMMUNITY_DATA_STANDARD: standardName,
+      },
+      isReadOnly: aiSetting.isReadOnly,
+      isPrivate: aiSetting.isPrivate,
+    };
+
+    await updateCommunitySettings.mutateAsync(finalSettingData);
+  };
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    const checkSyncStatus = async () => {
+      if (!aiBaseurl) {
+        if (isMounted) setSyncStatus('not-synced');
+        return;
+      }
+
+      if (!rowsRef.current.length) {
+        if (isMounted) setSyncStatus('checking');
+        return;
+      }
+
+      if (!aiStandardName) {
+        if (isMounted) setSyncStatus('not-synced');
+        return;
+      }
+
+      if (isMounted) setSyncStatus('checking');
+
+      try {
+        const existingJson = await getStandardFieldsRef.current({
+          standardName: aiStandardName,
+          baseURL: aiBaseurl,
+        });
+        const isMatching = checkStandardJsonMatch(
+          existingJson,
+          rowsRef.current,
+        );
+
+        if (isMounted) {
+          setSyncStatus(isMatching ? 'synced' : 'not-synced');
+        }
+      } catch (error) {
+        if (isMounted) {
+          setSyncStatus('not-synced');
+        }
+      }
+    };
+
+    checkSyncStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [aiBaseurl, aiStandardName, rowNamesKey]);
+
+  const handleSyncClick = async () => {
+    if (!aiBaseurl || !aiSetting) return;
+
+    setSyncing(true);
+
+    try {
+      if (aiStandardName) {
+        console.log(
+          'Checking existing standard fields against current field definitions...',
+        );
+        const existingJson = await getStandardFields.mutateAsync({
+          standardName: aiStandardName,
+          baseURL: aiBaseurl,
+        });
+        const isMatching = checkStandardJsonMatch(existingJson, rows);
+
+        if (isMatching) {
+          setSyncStatus('synced');
+          return;
+        }
+
+        await deleteStandardLabels.mutateAsync({
+          standardName: aiStandardName,
+          baseURL: aiBaseurl,
+        });
+        await uploadSchemaFile(aiStandardName);
+        setSyncStatus('synced');
+        return;
+      }
+
+      const standardName = 'community_data_standard';
+      await uploadSchemaFile(standardName);
+      await updateStandardSetting(standardName);
+      setSyncStatus('synced');
+    } catch (error) {
+      console.error('Sync failed:', error);
+      setSyncStatus('not-synced');
+    } finally {
+      setSyncing(false);
+    }
+  };
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event && event.target) {
       const { name, value } = event.target;
       table.getColumn(name)?.setFilterValue(value);
@@ -63,6 +245,28 @@ export default function ListView({
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
+          <Button
+            variant="outline"
+            className="mr-2 flex items-center gap-2"
+            onClick={handleSyncClick}
+            disabled={syncing || syncStatus === 'checking'}
+          >
+            <RefreshCw
+              className={
+                syncing || syncStatus === 'checking'
+                  ? 'animate-spin h-4 w-4'
+                  : 'h-4 w-4'
+              }
+            />
+            {syncing
+              ? 'Syncing'
+              : syncStatus === 'checking'
+              ? 'Checking'
+              : syncStatus === 'synced'
+              ? 'Synced'
+              : 'Not Synced'}
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">

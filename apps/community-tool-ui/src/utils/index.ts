@@ -75,6 +75,22 @@ export function removeFieldsWithUnderscore(dataArray: []) {
   return removeKeyFromArrayObjects(splittedData, 'errorMessage');
 }
 
+// New utility: trim whitespace from all string fields in an array of objects
+export const trimWhitespace = (dataArray: any[]) => {
+  return dataArray.map((item) => {
+    const cleaned = { ...item };
+    Object.keys(cleaned).forEach((key) => {
+      if (typeof cleaned[key] === 'string') {
+        cleaned[key] = cleaned[key].trim();
+      }
+    });
+    return cleaned;
+  });
+};
+
+
+
+
 export const truncatedText = (text: string, maxLen: number) => {
   return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
 };
@@ -142,9 +158,8 @@ export const splitValidAndDuplicates = (
 
 function createInvalidFieldError(errFields: any, isDuplicate: boolean) {
   const errFieldsArr = errFields.map((err: any) => err.fieldName);
-  return `Invalid fields: ${errFieldsArr.join(', ')} ${
-    isDuplicate ? 'and This row is duplicate!' : ''
-  }`;
+  return `Invalid fields: ${errFieldsArr.join(', ')} ${isDuplicate ? 'and This row is duplicate!' : ''
+    }`;
 }
 
 // Export both error and duplicate data to excel

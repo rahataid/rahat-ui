@@ -78,6 +78,7 @@ import {
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
@@ -137,6 +138,7 @@ export default function AddActivities() {
     perPage: 100,
   });
   useBeneficiariesGroups(projectID as UUID, {
+    excludeGroupPurpose: GroupPurpose.GENERAL,
     page: 1,
     perPage: 100,
   });

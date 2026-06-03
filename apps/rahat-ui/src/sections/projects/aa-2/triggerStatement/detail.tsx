@@ -177,7 +177,7 @@ export default function TriggerStatementDetail() {
             </TooltipWrapper>
           </RoleAuth>
           <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
             {source === 'MANUAL' &&

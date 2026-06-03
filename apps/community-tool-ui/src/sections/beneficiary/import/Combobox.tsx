@@ -28,6 +28,7 @@ export function ComboBox({
   handleTargetFieldChange,
   column,
   selectedField,
+  aiSuggestion,
 }: any) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
@@ -71,28 +72,52 @@ export function ComboBox({
             <CommandEmpty>No field found.</CommandEmpty>
             <CommandList>
               <CommandGroup>
-                {data.map((d: string) => (
-                  <CommandItem
-                    key={d}
-                    value={humanizeString(d)}
-                    onSelect={(currentValue) => {
-                      const formatted = currentValue
-                        .toLowerCase()
-                        .replace(/ /g, '_');
-                      setValue(formatted === value ? '' : formatted);
-                      setOpen(false);
-                      handleTargetFieldChange(column, d);
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        'mr-2 h-4 w-4',
-                        value === d ? 'opacity-100' : 'opacity-0',
-                      )}
-                    />
-                    {humanizeString(d)}
-                  </CommandItem>
-                ))}
+                {data.map((d: string) => {
+                  const isSuggested =
+                    aiSuggestion &&
+                    d.toLowerCase() === aiSuggestion.targetField?.toLowerCase();
+                  const isSimilar =
+                    aiSuggestion &&
+                    aiSuggestion.other_similar?.some(
+                      (s: any) => s.label.toLowerCase() === d.toLowerCase(),
+                    );
+                  return (
+                    <CommandItem
+                      key={d}
+                      value={humanizeString(d)}
+                      onSelect={(currentValue) => {
+                        const formatted = currentValue
+                          .toLowerCase()
+                          .replace(/ /g, '_');
+                        setValue(formatted === value ? '' : formatted);
+                        setOpen(false);
+                        handleTargetFieldChange(column, d);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          humanizeString(value) === humanizeString(d)
+                            ? 'opacity-100'
+                            : 'opacity-0',
+                        )}
+                      />
+                      <div className="flex items-center justify-between w-full">
+                        <span>{humanizeString(d)}</span>
+                        {isSuggested && (
+                          <span className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-blue-100 text-blue-600 rounded-md border border-blue-200 shrink-0">
+                            AI Suggested
+                          </span>
+                        )}
+                        {!isSuggested && isSimilar && (
+                          <span className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-600 rounded-md border border-gray-200 shrink-0">
+                            AI Similar
+                          </span>
+                        )}
+                      </div>
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </CommandList>
           </ScrollArea>

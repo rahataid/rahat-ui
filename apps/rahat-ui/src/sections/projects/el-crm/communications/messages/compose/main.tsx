@@ -49,6 +49,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import {
+  useConsumers,
   useCreateElCrmCampaign,
   useCustomers,
   useListElCrmTemplate,
@@ -80,7 +81,10 @@ type FilterField =
   | 'source'
   | 'location'
   | 'isVerified'
-  | 'customerCode';
+  | 'customerCode'
+  | 'name'
+  | 'vendorName'
+  | 'channel';
 type FilterRow = { id: string; field: FilterField | ''; value: string };
 
 const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
@@ -90,16 +94,21 @@ const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
     .filter(Boolean);
 
 const FILTER_FIELD_OPTIONS: { value: FilterField; label: string }[] = [
+  { value: 'name', label: 'Name' },
   { value: 'category', label: 'Status' },
   { value: 'source', label: 'Source' },
   { value: 'location', label: 'Location' },
   { value: 'customerCode', label: 'Customer Code' },
+  { value: 'channel', label: 'Channel' },
 ];
 
 const BENEFICIARY_FILTER_FIELD_OPTIONS: {
   value: FilterField;
   label: string;
-}[] = [{ value: 'isVerified', label: 'Verified' }];
+}[] = [
+  { value: 'name', label: 'Beneficiary Name' },
+  { value: 'vendorName', label: 'Vendor Name' },
+];
 
 const FILTER_VALUE_OPTIONS: Partial<
   Record<FilterField, { value: string; label: string }[]>
@@ -185,16 +194,22 @@ export default function ComposeMessageView() {
   }, [prefillTemplateId, prefillChannel, transport.data]);
 
   const filtersForCount = useMemo(() => {
-    const f: Record<string, string[]> = {};
+    const f: Record<string, string | string[]> = {};
     const categories = collectFilterValues(filterRows, 'category');
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
     const customerCodes = collectFilterValues(filterRows, 'customerCode');
+    const names = collectFilterValues(filterRows, 'name');
+    const channels = collectFilterValues(filterRows, 'channel');
 
     if (categories.length) f.category = categories;
     if (sources.length) f.source = sources;
     if (locations.length) f.location = locations;
     if (customerCodes.length) f.customerCode = customerCodes;
+    // Vendor count endpoint matches a single name string (contains).
+    if (names.length) f.name = names[0];
+    // Channel lives in vendor extras; count matches a single value (contains).
+    if (channels.length) f.channel = channels[0];
 
     return f;
   }, [filterRows]);
@@ -204,6 +219,26 @@ export default function ComposeMessageView() {
     page: 1,
     perPage: 1,
   });
+
+  const beneficiaryFiltersForCount = useMemo(() => {
+    const f: Record<string, string> = {};
+    // Consumer count endpoint matches a single name string (contains).
+    const names = collectFilterValues(filterRows, 'name');
+    if (names.length) f.name = names[0];
+    const vendorNames = collectFilterValues(filterRows, 'vendorName');
+    if (vendorNames.length) f.vendorName = vendorNames[0];
+    return f;
+  }, [filterRows]);
+
+  const consumerEstimate = useConsumers(projectUUID, {
+    ...beneficiaryFiltersForCount,
+    page: 1,
+    perPage: 1,
+  });
+
+  const audienceEstimate =
+    selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
+  const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
   const isPlasgate = isPlasgateChannel(selectedTransportName);
@@ -261,20 +296,24 @@ export default function ComposeMessageView() {
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
     const customerCodes = collectFilterValues(filterRows, 'customerCode');
-    const verified = Array.from(
-      new Set(
-        collectFilterValues(filterRows, 'isVerified').map(
-          (value) => value === 'true',
-        ),
-      ),
-    );
+    const names = collectFilterValues(filterRows, 'name');
+    const vendorNames = collectFilterValues(filterRows, 'vendorName');
+    const channels = collectFilterValues(filterRows, 'channel');
 
     if (categories.length) options.vendorStatus = categories;
     if (sources.length) options.vendorSource = sources;
     if (locations.length) options.location = locations;
     if (customerCodes.length) options.customerCode = customerCodes;
-    if (verified.length === 1) options.beneficiaryIsVerified = verified[0];
-    if (verified.length > 1) options.beneficiaryIsVerified = verified;
+    if (names.length) {
+      if (selectedGroup === 'BENEFICIARY') options.beneficiaryName = names;
+      else options.vendorName = names;
+    }
+    if (vendorNames.length && selectedGroup === 'BENEFICIARY') {
+      options.beneficiaryVendorName = vendorNames;
+    }
+    if (channels.length && selectedGroup === 'VENDOR') {
+      options.vendorChannel = channels;
+    }
 
     const payload = {
       targetType: selectedGroup,
@@ -641,6 +680,12 @@ export default function ComposeMessageView() {
                                       placeholder={
                                         row.field === 'location'
                                           ? 'e.g., Kathmandu'
+                                          : row.field === 'name'
+                                          ? 'e.g., John Doe'
+                                          : row.field === 'vendorName'
+                                          ? 'e.g., Apple Store'
+                                          : row.field === 'channel'
+                                          ? 'e.g., Wholesale'
                                           : 'Value'
                                       }
                                       value={row.value}
@@ -675,24 +720,22 @@ export default function ComposeMessageView() {
                               Add Filter
                             </Button>
 
-                            {selectedGroup === 'VENDOR' && (
-                              <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-                                <Users className="h-4 w-4" />
-                                <span>
-                                  Estimated recipients:{' '}
-                                  {recipientEstimate.isLoading ? (
-                                    <span className="italic">calculating…</span>
-                                  ) : (
-                                    <>
-                                      <strong className="text-foreground">
-                                        {recipientEstimate.meta?.total ?? 0}
-                                      </strong>{' '}
-                                      customers
-                                    </>
-                                  )}
-                                </span>
-                              </div>
-                            )}
+                            <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                              <Users className="h-4 w-4" />
+                              <span>
+                                Estimated recipients:{' '}
+                                {audienceEstimate.isLoading ? (
+                                  <span className="italic">calculating…</span>
+                                ) : (
+                                  <>
+                                    <strong className="text-foreground">
+                                      {audienceEstimate.meta?.total ?? 0}
+                                    </strong>{' '}
+                                    {audienceNoun}
+                                  </>
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       );
@@ -804,16 +847,14 @@ export default function ComposeMessageView() {
                 multiline
               />
             )}
-            {selectedGroup === 'VENDOR' && (
-              <DetailRow
-                label="Estimated Recipients"
-                value={
-                  recipientEstimate.isLoading
-                    ? 'Calculating...'
-                    : String(recipientEstimate.meta?.total ?? 0)
-                }
-              />
-            )}
+            <DetailRow
+              label="Estimated Recipients"
+              value={
+                audienceEstimate.isLoading
+                  ? 'Calculating...'
+                  : String(audienceEstimate.meta?.total ?? 0)
+              }
+            />
           </div>
 
           <DialogFooter className="gap-2">

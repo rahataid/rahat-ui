@@ -63,6 +63,8 @@ export default function TriggerStatementDetail() {
     projectInfo?.value?.project_type || '',
   );
 
+console.log("trigger data", trigger);
+
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
   const txnUrl = getExplorerUrl({
@@ -234,9 +236,9 @@ export default function TriggerStatementDetail() {
               <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
             </div>
 
-            <div className="flex-1 min-w-0">
-              <p className="mb-1">TxHash</p>
-              {trigger?.transactionHash ? (
+            {trigger?.transactionHash && (
+              <div className="flex-1 min-w-0">
+                <p className="mb-1">TxHash</p>
                 <Link
                   href={txnUrl || '#'}
                   target="_blank"
@@ -244,10 +246,8 @@ export default function TriggerStatementDetail() {
                 >
                   {trigger.transactionHash}
                 </Link>
-              ) : (
-                <p className="text-red-500">N/A</p>
-              )}
-            </div>
+              </div>
+            )}
             {trigger?.createdBy && (
               <div>
                 <p className="mb-1">Created By</p>

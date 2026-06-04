@@ -64,8 +64,6 @@ export default function TriggerStatementDetail() {
     projectInfo?.value?.project_type || '',
   );
 
-  console.log('trigger data', trigger);
-
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
   const txnUrl = getExplorerUrl({

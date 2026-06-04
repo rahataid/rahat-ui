@@ -61,7 +61,7 @@ export default function AddManualTriggerForm({
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-2">
-                    <FormLabel>Trigger Title s</FormLabel>
+                    <FormLabel>Trigger Title</FormLabel>
                     <FormControl>
                       <Input
                         type="text"

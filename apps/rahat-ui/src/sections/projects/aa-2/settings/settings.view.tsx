@@ -24,11 +24,8 @@ export default function AASettingsView() {
 
   return (
     <div>
-      <div className="p-4 pb-2 flex justify-between items-center space-x-4">
-        <Heading
-          title="Settings"
-          description="Manage project settings"
-        />
+      <div className="pb-1 flex justify-between items-center space-x-4">
+        <Heading title="Settings" description="Manage project settings" />
         <IconLabelBtn
           Icon={Plus}
           handleClick={handleAddClick}

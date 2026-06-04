@@ -50,6 +50,10 @@ const groupProposeValues = [
     name: 'Communication',
     value: 'COMMUNICATION',
   },
+  {
+    name: 'General',
+    value: 'GENERAL',
+  },
 ];
 
 export default function UpdateGroupProposeModal({

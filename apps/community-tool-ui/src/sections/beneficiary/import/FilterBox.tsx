@@ -1,6 +1,7 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigRight, DownloadCloud } from 'lucide-react';
 import { IMPORT_OPTIONS, IMPORT_SOURCE } from '../../../constants/app.const';
+
 import ExcelUploader from './ExcelUploader';
 import InfoBox from './InfoBox';
 import ItemSelector from './ItemSelector';
@@ -15,6 +16,7 @@ interface FilterBoxProps {
   handleGoClick: any;
   rawData: any;
   handleSampleDownload: any;
+  loading: boolean;
   // handleUniqueFieldChange: any;
 }
 
@@ -28,6 +30,7 @@ export default function FilterBox({
   handleGoClick,
   rawData,
   handleSampleDownload,
+  loading,
 }: FilterBoxProps) {
   return (
     <>
@@ -72,9 +75,11 @@ export default function FilterBox({
           {rawData.length > 0 && (
             <Button
               onClick={handleGoClick}
+              disabled={loading || rawData.length === 0}
               className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
             >
-              <ArrowBigRight size={18} strokeWidth={2} /> Go
+              <ArrowBigRight size={18} strokeWidth={2} />{' '}
+              {loading ? 'Loading...' : 'Go'}
             </Button>
           )}
         </div>

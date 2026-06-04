@@ -17,7 +17,11 @@ import { TriggersListTabs, TriggersPhaseCard } from './components';
 import ExtendedTriggerLogicCard from './components/extended-trigger-logic.card';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useProjectSettingsGet, useRevertPhase, useSinglePhase } from '@rahat-ui/query';
+import {
+  useProjectSettingsGet,
+  useRevertPhase,
+  useSinglePhase,
+} from '@rahat-ui/query';
 import {
   Alert,
   AlertDescription,
@@ -35,9 +39,14 @@ export default function PhaseDetail() {
 
   const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
   const revertPhase = useRevertPhase();
-  const { data: triggerLogicSetting } = useProjectSettingsGet(projectId, 'ENABLE_TRIGGER_LOGIC');
+  const { data: triggerLogicSetting } = useProjectSettingsGet(
+    projectId,
+    'ENABLE_TRIGGER_LOGIC',
+  );
   console.log('triggerLogicSetting', triggerLogicSetting);
-  const isTriggerLogicEnabled = triggerLogicSetting?.value === true || triggerLogicSetting?.value === 'true';
+  const isTriggerLogicEnabled =
+    triggerLogicSetting?.value === true ||
+    triggerLogicSetting?.value === 'true';
 
   const handleAddTriggerClick = () => {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);

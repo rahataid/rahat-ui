@@ -50,6 +50,29 @@ export const useActivitiesCategories = (uuid: UUID) => {
   return query;
 };
 
+export const useAddActivityCategory = () => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      uuid,
+      name,
+    }: {
+      uuid: UUID;
+      name: string;
+    }) => {
+      const result = await q.mutateAsync({
+        uuid,
+        data: { action: 'ms.activityCategories.add', payload: { name } },
+      });
+      return result.data;
+    },
+    onSuccess: (_, { uuid }) => {
+      queryClient.invalidateQueries({ queryKey: ['categories', uuid] });
+    },
+  });
+};
+
 export const useActivities = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { settings } = useProjectSettingsStore((state) => ({

@@ -34,7 +34,8 @@ function ViewGroup() {
     ...pagination,
     ...(debouncedFilters as any),
   });
-  const columns = useCommunityGroupTableColumns();
+  const columns = useCommunityGroupTableColumns(false);
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     manualPagination: true,

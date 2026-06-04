@@ -96,7 +96,9 @@ export default function InKindBeneficiaryList() {
           iconStyle="hover:text-primary cursor-pointer"
           handleOnClick={() => {
             router.push(
-              `/projects/aa/${id}/beneficiary/${row.original.beneficiary.uuid}`,
+              `/projects/aa/${id}/beneficiary/${row.original.beneficiary.uuid}?vendorId=${vendorId}&tab=inKindBeneficiaryList&subTab=${activeTab}#pagination=${encodeURIComponent(
+                JSON.stringify(pagination),
+              )}`,
             );
           }}
         />

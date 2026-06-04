@@ -3,18 +3,13 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { humanizeString } from '../../utils';
 import ExtraInfoCard from './ExtraInfo';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { CircleCheck, CircleCheckBig } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type IProps = {
   data: any;
@@ -40,7 +35,7 @@ export default function InfoCards({ data }: IProps) {
           <CardContent>
             <div className="mb-2">
               <p className="text-xs flex gap-1 items-center">
-                { data?.walletAddress ? truncateEthAddress(data?.walletAddress) : 'N/A'}
+                {data?.walletAddress ? truncateEthAddress(data?.walletAddress) : 'N/A'}
                 {data?.isVerified && <CircleCheck size={13} color="green" />}
               </p>
               <p className="text-sm font-normal text-muted-foreground ">

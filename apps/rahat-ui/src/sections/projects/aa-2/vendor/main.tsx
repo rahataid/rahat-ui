@@ -28,7 +28,7 @@ export default function VendorsView() {
     {
       title: 'Vendor Redemption List',
       value: 'vendorRedemptionList',
-      module: 'all',
+      module: 'fund',
     },
     {
       title: 'Inkind Redemption List',
@@ -43,10 +43,17 @@ export default function VendorsView() {
     );
   }, [navTabsConfig]);
 
+  const hasFundManagement = useMemo(() => {
+    return navTabsConfig?.value?.navsettings?.some(
+      (tab: { title: string }) => tab.title === 'Fund Management',
+    );
+  }, [navTabsConfig]);
+
   const visibleTabs = useMemo(() => {
     return VendorsTabs.filter((tab) => {
       if (tab.module === 'all') return true;
       if (tab.module === 'inkind') return hasInkindManagement;
+      if (tab.module === 'fund') return hasFundManagement;
       return false;
     });
   }, [hasInkindManagement]);

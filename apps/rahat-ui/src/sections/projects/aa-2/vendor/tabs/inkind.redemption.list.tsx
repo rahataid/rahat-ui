@@ -7,6 +7,7 @@ import {
   CustomPagination,
   DemoTable,
   SearchInput,
+  SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import React from 'react';
@@ -15,7 +16,6 @@ import { UUID } from 'crypto';
 import { usePagination, useGetInkindRedemptionLogs } from '@rahat-ui/query';
 import { useInkindRedemptionColumn } from '../columns/useInkindRedemptionColumn';
 import { InkindType } from '../../inkindManagement/schemas/inkind.validation';
-import SpinnerLoader from '../../../components/spinner.loader';
 
 export type InkindRedemptionData = {
   uuid: UUID;
@@ -164,7 +164,7 @@ export const InkindRedemptionList = ({
         table={table}
         tableHeight="h-[500px]"
         message="No In-kind Redemption Records"
-        loading={isPending}
+        // loading={isPending}
       />
       <CustomPagination
         currentPage={pagination.page}

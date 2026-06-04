@@ -273,15 +273,24 @@ export default function EditTrigger() {
   };
 
   const handleUpdate = async (data: any) => {
-    const payload = {
+    console.log(data, 'data ');
+
+    const payload: any = {
       title: data.title,
-      source: data?.source.split(':')[0].toUpperCase(),
       description: data.description,
-      triggerStatement: data.triggerStatement,
       phaseId: trigger?.phaseId,
       uuid: trigger?.uuid,
       isMandatory: !data?.isMandatory,
     };
+
+    if (data?.source) {
+      payload.source = data.source.split(':')[0].toUpperCase();
+    }
+
+    if (data?.triggerStatement) {
+      payload.triggerStatement = data.triggerStatement;
+    }
+
     await updateTrigger.mutateAsync({
       projectUUID: projectId,
       triggerUpdatePayload: payload,

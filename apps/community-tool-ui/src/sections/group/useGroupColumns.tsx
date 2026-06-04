@@ -9,8 +9,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
 import EditGroup from './edit.group';
+import { formatDate } from '../../utils';
 
-export const useCommunityGroupTableColumns = () => {
+export const useCommunityGroupTableColumns = (showAutoCreated = true) => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const deletegroup = useCommunityGroupDelete();
@@ -24,46 +25,53 @@ export const useCommunityGroupTableColumns = () => {
     deletegroup.mutateAsync(data);
   };
 
-  const columns: ColumnDef<ListGroup>[] = [
+  const autoCreatedColumn = {
+    header: 'Auto Created',
+    accessorKey: 'autoCreated',
+    cell: ({ row }: { row: any }) => <div>{row.original.autoCreated ? 'Yes' : 'No'}</div>,
+  };
+
+  const columns: ColumnDef<any>[] = [
     {
       header: 'ID',
       accessorKey: 'ID',
-      cell: ({ row }) => <div>{row.original.id}</div>,
+      cell: ({ row }: { row: any }) => <div>{row.original.id}</div>,
     },
     {
       header: 'Name',
       accessorKey: 'name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }: { row: any }) => <div>{row.getValue('name')}</div>,
     },
     {
       header: `${pathName === '/group' ? 'Created By' : 'Imported By'}`,
       cell: ({ row }) => {
-        return <div>{row.original.user?.name || '-'}</div>;
+        return <div>{(row as any).original.user?.name || '-'}</div>;
       },
     },
     {
       header: 'Total Beneficiaries',
+      cell: ({ row }) => (
+        <div className="ml-5">{row.original.beneficiariesGroup.length || '-'}</div>
+      ),
+    },
+    {
+      header: 'Created At',
+      accessorKey: 'createdAt',
       cell: ({ row }) => {
-        return (
-          <div className="ml-5">
-            {row.original.beneficiariesGroup.length || '-'}
-          </div>
-        );
+        const date = (row as any).original.createdAt;
+        return <div>{date ? formatDate(date) : '-'}</div>;
       },
     },
+    ...(showAutoCreated ? [autoCreatedColumn] : []),
     {
       id: 'actions',
       enableHiding: false,
       header: 'Actions',
-      cell: ({ row }) => {
+      cell: ({ row }: { row: any }) => {
         return (
           <div className="flex gap-4">
             <Link href={`/group/${row.original.uuid}`}>
-              <Eye
-                size={20}
-                strokeWidth={1.5}
-                className="cursor-pointer hover:text-primary"
-              />
+              <Eye size={20} strokeWidth={1.5} className="cursor-pointer hover:text-primary" />
             </Link>
 
             <Edit
@@ -73,12 +81,8 @@ export const useCommunityGroupTableColumns = () => {
               onClick={() =>
                 setSecondPanelComponent(
                   <>
-                    <EditGroup
-                      key={row.original.uuid}
-                      data={row.original}
-                      closeSecondPanel={closeSecondPanel}
-                    />
-                  </>,
+                    <EditGroup key={row.original.uuid} data={row.original} closeSecondPanel={closeSecondPanel} />
+                  </>
                 )
               }
             />
@@ -135,8 +139,8 @@ export const useCommunityGroupDeailsColumns = () => {
       cell: ({ row }) => {
         return (
           row.original.beneficiary.firstName +
-            ' ' +
-            row.original.beneficiary.lastName ?? '-'
+          ' ' +
+          row.original.beneficiary.lastName ?? '-'
         );
       },
     },

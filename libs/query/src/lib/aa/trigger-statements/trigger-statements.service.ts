@@ -889,7 +889,6 @@ export const useUpdateTriggerStatement = () => {
       projectUUID: UUID;
       triggerUpdatePayload: any;
     }) => {
-      console.log(triggerUpdatePayload, 'triggerUpdatePayload in service');
       return q.mutateAsync({
         uuid: projectUUID,
         data: {

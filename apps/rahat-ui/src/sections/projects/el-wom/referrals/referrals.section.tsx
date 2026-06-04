@@ -213,7 +213,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
       </div>
 
       {/* Limit reached alert */}
-      {limitReached.count > 0 && (
+      {/* {limitReached.count > 0 && (
         <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 px-4 py-3">
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
@@ -229,8 +229,8 @@ export default function ReferralsSection({ projectUUID }: Props) {
             </div>
           </div>
         </div>
-      )}
-      <ScrollArea className="h-[calc(100vh-270px)]">
+      )} */}
+      <ScrollArea className="h-[calc(100vh-160px)]">
         {/* KPI cards */}
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
           {kpiCards.map((card) => (
@@ -332,7 +332,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold">
-                    Referee Voucher Usage
+                    Voucher Usage Type
                   </CardTitle>
                   <CardDescription className="text-xs">
                     Eye checkup and glasses purchase among new consumers
@@ -392,10 +392,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold">
-                    Referee Glass Purchase Types
+                    Glass Purchase Type
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Glass purchase type distribution across referees
+                    Glass purchase type distribution across new consumers
                   </CardDescription>
                 </div>
               </div>

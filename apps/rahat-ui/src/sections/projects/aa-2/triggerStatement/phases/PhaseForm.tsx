@@ -64,6 +64,11 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
     });
   }, [disbursementMethodOptions, allPhases, currentPhaseId]);
 
+  const allMethodsTaken = useMemo(() => {
+    if (!disbursementMethodOptions.length) return false;
+    return methodOptions.every((opt) => opt.disable);
+  }, [methodOptions, disbursementMethodOptions.length]);
+
   const filterSelectedOptions = useCallback(
     (values: string[] | undefined) => {
       return disbursementMethodOptions.filter((o) => values?.includes(o.value));
@@ -192,7 +197,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                           <FormControl>
                             <Checkbox
                               checked={field.value === true}
-                              // disabled={!!payoutEnabledPhase}
+                              disabled={allMethodsTaken}
                               onCheckedChange={(checked) => {
                                 field.onChange(checked === true);
                               }}
@@ -202,12 +207,12 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                             Can Trigger Payout
                           </FormLabel>
                         </div>
-                        {/* {payoutEnabledPhase ? (
+                        {allMethodsTaken ? (
                           <p className="text-sm text-yellow-600 ml-2">
-                            Phase "{payoutEnabledPhase.name}" already has payout
-                            enabled.
+                            All disbursement methods already used - no options
+                            left to select
                           </p>
-                        ) : null} */}
+                        ) : null}
                       </FormItem>
                     )}
                   />

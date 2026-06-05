@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
 import { getHumidityColor } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
+import { getLatestValue } from 'apps/rahat-ui/src/utils';
 
 export default function HumidityWatchView() {
   const params = useParams();
@@ -37,12 +38,6 @@ export default function HumidityWatchView() {
   }, [data]);
 
   const updatedAt = data?.updatedAt;
-
-  // Helper function to get latest value from history
-  const getLatestValue = (history: any[]) => {
-    if (!history || !Array.isArray(history) || history.length === 0) return null;
-    return history[history.length - 1];
-  };
 
   if (isLoading) {
     return <TableLoader />;

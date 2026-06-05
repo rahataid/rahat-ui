@@ -73,7 +73,6 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
     },
     [disbursementMethodOptions],
   );
-  console.log(allPhases, 'all phases');
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -167,12 +166,12 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
 
               <div className="space-y-2">
                 <p className="text-sm font-medium">Other Options:</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex w-full items-start  ">
                   <FormField
                     control={form.control}
                     name="canRevert"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0 w-full ">
                         <FormControl>
                           <Checkbox
                             checked={field.value === true}
@@ -192,8 +191,8 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                     control={form.control}
                     name="canTriggerPayout"
                     render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <div className="flex flex-row items-center space-x-2">
+                      <FormItem className="space-y-1 w-full">
+                        <div className="flex flex-row  space-x-2  ">
                           <FormControl>
                             <Checkbox
                               checked={field.value === true}
@@ -216,12 +215,14 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                       </FormItem>
                     )}
                   />
+
+                  {/* <div className="w-full"> */}
                   {watchCanTriggerPayout && (
                     <FormField
                       control={form.control}
                       name="disbursementMethods"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className=" flex  flex-col items-start w-full">
                           <FormLabel>Disbursement Methods</FormLabel>
                           <FormControl>
                             <MultipleSelector
@@ -239,6 +240,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                       )}
                     />
                   )}
+                  {/* </div> */}
                 </div>
               </div>
 

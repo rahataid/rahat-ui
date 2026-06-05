@@ -123,7 +123,6 @@ const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
     .filter(Boolean);
 
 const FILTER_FIELD_OPTIONS: { value: FilterField; label: string }[] = [
-  { value: 'name', label: 'Name' },
   { value: 'category', label: 'Status' },
   { value: 'source', label: 'Source' },
   { value: 'location', label: 'Location' },
@@ -656,15 +655,12 @@ export default function ComposeScheduleView() {
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
     const customerCodes = collectFilterValues(filterRows, 'customerCode');
-    const names = collectFilterValues(filterRows, 'name');
     const channels = collectFilterValues(filterRows, 'channel');
 
     if (categories.length) f.category = categories;
     if (sources.length) f.source = sources;
     if (locations.length) f.location = locations;
     if (customerCodes.length) f.customerCode = customerCodes;
-    // Vendor count endpoint matches a single name string (contains).
-    if (names.length) f.name = names[0];
     // Channel lives in vendor extras; count matches a single value (contains).
     if (channels.length) f.channel = channels[0];
 
@@ -790,9 +786,8 @@ export default function ComposeScheduleView() {
     if (sources.length) options.vendorSource = sources;
     if (locations.length) options.location = locations;
     if (customerCodes.length) options.customerCode = customerCodes;
-    if (names.length) {
-      if (selectedGroup === 'BENEFICIARY') options.beneficiaryName = names;
-      else options.vendorName = names;
+    if (names.length && selectedGroup === 'BENEFICIARY') {
+      options.beneficiaryName = names;
     }
     if (vendorNames.length && selectedGroup === 'BENEFICIARY') {
       options.beneficiaryVendorName = vendorNames;

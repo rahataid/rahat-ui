@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Loader2, Search } from 'lucide-react';
@@ -37,23 +36,8 @@ import {
   useAssignGroupCashTransferFund,
   useGetAllValidGroupCashTransfers,
 } from '@rahat-ui/query';
-
-// ─── Schema ───────────────────────────────────────────────────────────────────
-
-const AssignCashSchema = z.object({
-  title: z.string().min(1, 'Fund title is required'),
-  groupCashTransferId: z.string().min(1, 'Please select a GCT group'),
-  amount: z
-    .string()
-    .min(1, 'Amount is required')
-    .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
-      message: 'Amount must be a positive number',
-    }),
-});
-
-type AssignCashValues = z.infer<typeof AssignCashSchema>;
-
-// ─── Component ────────────────────────────────────────────────────────────────
+import { AssignCashSchema, AssignCashValues } from './types/gct.schemas';
+import { SectionCard } from './components/gct.form-sections';
 
 export default function AssignCashGct() {
   const { id } = useParams();
@@ -61,10 +45,10 @@ export default function AssignCashGct() {
   const projectUUID = id as UUID;
 
   const assignFund = useAssignGroupCashTransferFund(projectUUID);
-
   const { data: groupsData, isLoading: groupsLoading } =
     useGetAllValidGroupCashTransfers(projectUUID);
-  const groups: { uuid: string; name: string }[] = groupsData?.data ?? groupsData ?? [];
+  const groups: { uuid: string; name: string }[] =
+    groupsData?.data ?? groupsData ?? [];
 
   const [groupSearch, setGroupSearch] = useState('');
   const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
@@ -99,20 +83,13 @@ export default function AssignCashGct() {
       });
       router.push(`/projects/aa/${id}/group-cash-transfer`);
     } catch (error: any) {
-      const msg: string =
-        error?.response?.data?.message || error?.message || '';
+      const msg: string = error?.response?.data?.message || error?.message || '';
       if (/already|duplicate|reserved/i.test(msg)) {
         form.setError('groupCashTransferId', {
           message: 'This group already has funds reserved.',
         });
       }
     }
-  };
-
-  const handleClear = () => {
-    form.reset();
-    setSelectedGroupName('');
-    setGroupSearch('');
   };
 
   return (
@@ -125,9 +102,7 @@ export default function AssignCashGct() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <div className="p-4 rounded-sm border bg-card space-y-4">
-
-            {/* Row 1: Fund Title + GCT Group */}
+          <SectionCard title="Fund Details">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -153,7 +128,10 @@ export default function AssignCashGct() {
                     <Label>
                       GCT Group <span className="text-destructive">*</span>
                     </Label>
-                    <Popover open={groupPopoverOpen} onOpenChange={setGroupPopoverOpen}>
+                    <Popover
+                      open={groupPopoverOpen}
+                      onOpenChange={setGroupPopoverOpen}
+                    >
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -170,7 +148,10 @@ export default function AssignCashGct() {
                       </PopoverTrigger>
                       <PopoverContent className="w-[320px] p-0" align="start">
                         <div className="flex items-center border-b px-3 py-2 gap-2">
-                          <Search size={14} className="text-muted-foreground shrink-0" />
+                          <Search
+                            size={14}
+                            className="text-muted-foreground shrink-0"
+                          />
                           <input
                             className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground"
                             placeholder="Search groups…"
@@ -209,7 +190,6 @@ export default function AssignCashGct() {
               />
             </div>
 
-            {/* Row 2: Amount */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -233,13 +213,16 @@ export default function AssignCashGct() {
               />
             </div>
 
-            {/* Footer */}
             <div className="flex justify-end gap-2 pt-2">
               <Button
                 type="button"
                 variant="secondary"
                 className="px-8"
-                onClick={handleClear}
+                onClick={() => {
+                  form.reset();
+                  setSelectedGroupName('');
+                  setGroupSearch('');
+                }}
                 disabled={assignFund.isPending}
               >
                 Clear
@@ -259,7 +242,7 @@ export default function AssignCashGct() {
                 )}
               </Button>
             </div>
-          </div>
+          </SectionCard>
         </form>
       </Form>
 

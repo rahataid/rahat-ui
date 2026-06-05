@@ -16,10 +16,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { UUID } from 'crypto';
 import {
-  Tooltip,
-  TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
@@ -31,93 +28,45 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { usePagination, useGroupCashTransfers } from '@rahat-ui/query';
 import GctDeleteDialog from './gct.delete.dialog';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type GctItem = {
-  uuid: string;
-  name: string;
-  phone?: string;
-  extras?: {
-    municipality?: string;
-    ward?: string;
-    supportArea?: string[];
-    district?: string;
-    email?: string;
-  };
-  groupCashTransferRecords?: { uuid: string; amount: number; status: string }[];
-  totalAssignedAmount?: number;
-};
-
-// ─── Action button ────────────────────────────────────────────────────────────
-
-function ActionBtn({
-  label,
-  icon,
-  hoverClass,
-  onClick,
-  disabled = false,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  hoverClass: string;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          onClick={onClick}
-          disabled={disabled}
-          className={`p-1.5 rounded transition-colors ${
-            disabled
-              ? 'opacity-35 cursor-not-allowed text-muted-foreground'
-              : hoverClass
-          }`}
-        >
-          {icon}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="top">
-        <p>{label}</p>
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
+import GctActionBtn from './gct.action-btn';
+import { GctItem } from '../types/gct.types';
 
 export default function GctList() {
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
 
-  // Pagination state
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
 
-  // Filter state
   const [nameFilter, setNameFilter] = useState('');
   const [phoneFilter, setPhoneFilter] = useState('');
   const [wardFilter, setWardFilter] = useState('');
   const [supportAreaFilter, setSupportAreaFilter] = useState('');
 
   const debouncedFilters = useDebounce(
-    { search: nameFilter, phone: phoneFilter, ward: wardFilter, supportArea: supportAreaFilter },
+    {
+      search: nameFilter,
+      phone: phoneFilter,
+      ward: wardFilter,
+      supportArea: supportAreaFilter,
+    },
     500,
   );
 
-  // Reset to page 1 whenever debounced filters change
   useEffect(() => {
     setPagination((prev: typeof pagination) => ({ ...prev, page: 1 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedFilters.search, debouncedFilters.phone, debouncedFilters.ward, debouncedFilters.supportArea]);
+  }, [
+    debouncedFilters.search,
+    debouncedFilters.phone,
+    debouncedFilters.ward,
+    debouncedFilters.supportArea,
+  ]);
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  // Queries & mutations
   const { data, isLoading } = useGroupCashTransfers(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
@@ -126,20 +75,22 @@ export default function GctList() {
     ...(debouncedFilters.search ? { search: debouncedFilters.search } : {}),
     ...(debouncedFilters.phone ? { phone: debouncedFilters.phone } : {}),
     ...(debouncedFilters.ward ? { ward: debouncedFilters.ward } : {}),
-    ...(debouncedFilters.supportArea ? { supportArea: debouncedFilters.supportArea } : {}),
+    ...(debouncedFilters.supportArea
+      ? { supportArea: debouncedFilters.supportArea }
+      : {}),
   });
 
-  // Active item for sheet / dialog
   const [activeItem, setActiveItem] = useState<GctItem | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const openDelete = (item: GctItem) => { setActiveItem(item); setDeleteOpen(true); };
+  const openDelete = (item: GctItem) => {
+    setActiveItem(item);
+    setDeleteOpen(true);
+  };
 
-  // Table data
   const rows = useMemo<GctItem[]>(() => data?.data ?? [], [data]);
   const meta = data?.response?.meta;
 
-  // Column definitions
   const columns: ColumnDef<GctItem>[] = useMemo(
     () => [
       {
@@ -160,14 +111,20 @@ export default function GctList() {
         id: 'municipality',
         header: 'Municipality',
         cell: ({ row }) => (
-          <TruncatedCell text={row.original.extras?.municipality || '—'} maxLength={15} />
+          <TruncatedCell
+            text={row.original.extras?.municipality || '—'}
+            maxLength={15}
+          />
         ),
       },
       {
         id: 'ward',
         header: 'Ward (Community)',
         cell: ({ row }) => (
-          <TruncatedCell text={row.original.extras?.ward || '—'} maxLength={15} />
+          <TruncatedCell
+            text={row.original.extras?.ward || '—'}
+            maxLength={15}
+          />
         ),
       },
       {
@@ -176,31 +133,17 @@ export default function GctList() {
         cell: ({ row }) => {
           const areas = row.original.extras?.supportArea ?? [];
           if (!areas.length) return '—';
-          const visible = areas.slice(0, 1);
-          const overflow = areas.slice(1);
+          const [first, ...rest] = areas;
           return (
             <TooltipProvider>
               <div className="flex items-center gap-1 max-w-[140px]">
-                {visible.map((area) => (
-                  <Badge key={area} className="bg-gray-100 text-gray-700 hover:bg-gray-100 text-xs truncate max-w-[90px]">
-                    {area}
+                <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 text-xs truncate max-w-[90px]">
+                  {first}
+                </Badge>
+                {rest.length > 0 && (
+                  <Badge className="bg-gray-200 text-gray-600 hover:bg-gray-200 text-xs shrink-0">
+                    +{rest.length}
                   </Badge>
-                ))}
-                {overflow.length > 0 && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge className="bg-gray-200 text-gray-600 hover:bg-gray-200 text-xs shrink-0 cursor-default">
-                        +{overflow.length}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-[200px]">
-                      <div className="flex flex-wrap gap-1">
-                        {overflow.map((a) => (
-                          <span key={a} className="text-xs">{a}</span>
-                        ))}
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
                 )}
               </div>
             </TooltipProvider>
@@ -216,7 +159,7 @@ export default function GctList() {
           return (
             <TooltipProvider>
               <div className="flex items-center gap-1">
-                <ActionBtn
+                <GctActionBtn
                   label="View"
                   icon={<Eye size={16} strokeWidth={1.8} />}
                   hoverClass="hover:bg-gray-100 text-gray-600"
@@ -230,7 +173,7 @@ export default function GctList() {
                   roles={[AARoles.ADMIN, AARoles.Municipality]}
                   hasContent={false}
                 >
-                  <ActionBtn
+                  <GctActionBtn
                     label="Edit"
                     icon={<Pencil size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-blue-50 text-blue-500"
@@ -240,8 +183,10 @@ export default function GctList() {
                       )
                     }
                   />
-                  <ActionBtn
-                    label={hasFund ? 'Cannot delete — funds reserved' : 'Delete'}
+                  <GctActionBtn
+                    label={
+                      hasFund ? 'Cannot delete — funds reserved' : 'Delete'
+                    }
                     icon={<Trash2 size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-red-50 text-red-500"
                     disabled={hasFund}
@@ -273,7 +218,6 @@ export default function GctList() {
 
   return (
     <div>
-      {/* Filters */}
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <SearchInput
           className="flex-1 min-w-[140px]"
@@ -326,7 +270,6 @@ export default function GctList() {
         total={meta?.total ?? 0}
       />
 
-      {/* Delete dialog */}
       <GctDeleteDialog
         projectUUID={projectUUID}
         item={activeItem}

@@ -21,91 +21,33 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { TooltipProvider } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ChevronDown, Eye, Plus } from 'lucide-react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { DemoTable, SearchInput, CustomPagination, Heading } from 'apps/rahat-ui/src/common';
 import { usePagination, useGctRecords } from '@rahat-ui/query';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const STATUSES = ['NOT_STARTED', 'PENDING', 'STARTED', 'COMPLETED'] as const;
-type GctRecordStatus = (typeof STATUSES)[number];
-
-const STATUS_STYLE: Record<string, string> = {
-  NOT_STARTED: 'bg-gray-100 text-gray-600',
-  PENDING: 'bg-yellow-100 text-yellow-700',
-  STARTED: 'bg-blue-100 text-blue-700',
-  COMPLETED: 'bg-green-100 text-green-700',
-};
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type GctRecord = {
-  uuid: string;
-  title?: string;
-  amount: number;
-  status: string;
-  groupCashTransfer?: { uuid: string; name: string };
-  createdBy?: string;
-};
-
-// ─── Action button ────────────────────────────────────────────────────────────
-
-function ActionBtn({
-  label,
-  icon,
-  hoverClass,
-  onClick,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  hoverClass: string;
-  onClick: () => void;
-}) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          onClick={onClick}
-          className={`p-1.5 rounded transition-colors ${hoverClass}`}
-        >
-          {icon}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="top">
-        <p>{label}</p>
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
+import GctActionBtn from './gct.action-btn';
+import { GctFundRecord, GCT_STATUS_STYLE, GCT_RECORD_STATUSES } from '../types/gct.types';
 
 export default function GctManagementList() {
   const { id } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
 
-  // Pagination
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
 
-  // Filter state
   const [titleSearch, setTitleSearch] = useState('');
   const [groupSearch, setGroupSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<GctRecordStatus | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
-  const debouncedFilters = useDebounce({ title: titleSearch, group: groupSearch }, 500);
+  const debouncedFilters = useDebounce(
+    { title: titleSearch, group: groupSearch },
+    500,
+  );
 
-  // Reset page on filter change
   useEffect(() => {
     setPagination((prev: typeof pagination) => ({ ...prev, page: 1 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,10 +63,9 @@ export default function GctManagementList() {
     order: 'desc',
   });
 
-  const rows = useMemo<GctRecord[]>(() => data?.data ?? [], [data]);
+  const rows = useMemo<GctFundRecord[]>(() => data?.data ?? [], [data]);
   const meta = data?.meta ?? data?.response?.meta;
 
-  // Client-side filter (server DTO only has groupCashTransferId + sort/page)
   const filtered = useMemo(() => {
     let result = rows;
     if (debouncedFilters.title) {
@@ -143,7 +84,7 @@ export default function GctManagementList() {
     return result;
   }, [rows, debouncedFilters, statusFilter]);
 
-  const columns: ColumnDef<GctRecord>[] = useMemo(
+  const columns: ColumnDef<GctFundRecord>[] = useMemo(
     () => [
       {
         id: 'title',
@@ -182,12 +123,12 @@ export default function GctManagementList() {
         id: 'status',
         header: 'Status',
         cell: ({ row }) => {
-          const status = row.original.status;
+          const s = row.original.status;
           return (
             <Badge
-              className={`text-xs ${STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'}`}
+              className={`text-xs ${GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'}`}
             >
-              {status?.replace(/_/g, ' ') ?? '—'}
+              {s?.replace(/_/g, ' ') ?? '—'}
             </Badge>
           );
         },
@@ -195,25 +136,22 @@ export default function GctManagementList() {
       {
         id: 'actions',
         header: 'Action',
-        cell: ({ row }) => {
-          const item = row.original;
-          return (
-            <TooltipProvider>
-              <div className="flex items-center gap-1">
-                <ActionBtn
-                  label="View"
-                  icon={<Eye size={16} strokeWidth={1.8} />}
-                  hoverClass="hover:bg-gray-100 text-gray-600"
-                  onClick={() =>
-                    router.push(
-                      `/projects/aa/${id}/group-cash-transfer/records/${item.uuid}`,
-                    )
-                  }
-                />
-              </div>
-            </TooltipProvider>
-          );
-        },
+        cell: ({ row }) => (
+          <TooltipProvider>
+            <div className="flex items-center gap-1">
+              <GctActionBtn
+                label="View"
+                icon={<Eye size={16} strokeWidth={1.8} />}
+                hoverClass="hover:bg-gray-100 text-gray-600"
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${id}/group-cash-transfer/records/${row.original.uuid}`,
+                  )
+                }
+              />
+            </div>
+          </TooltipProvider>
+        ),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -255,7 +193,6 @@ export default function GctManagementList() {
         </RoleAuth>
       </div>
 
-      {/* Filters */}
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <SearchInput
           className="flex-1 min-w-[160px]"
@@ -280,7 +217,7 @@ export default function GctManagementList() {
             <DropdownMenuItem onSelect={() => setStatusFilter(undefined)}>
               All Statuses
             </DropdownMenuItem>
-            {STATUSES.map((s) => (
+            {GCT_RECORD_STATUSES.map((s) => (
               <DropdownMenuItem key={s} onSelect={() => setStatusFilter(s)}>
                 {s.replace(/_/g, ' ')}
               </DropdownMenuItem>

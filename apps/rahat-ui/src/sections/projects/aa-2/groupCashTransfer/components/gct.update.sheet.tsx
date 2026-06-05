@@ -3,11 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
-import { Tag, TagInput } from 'emblor';
-import { isValidPhoneNumber } from 'react-phone-number-input';
+import { Tag } from 'emblor';
 import {
   Sheet,
   SheetContent,
@@ -15,13 +13,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@rahat-ui/shadcn/src/components/ui/sheet';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@rahat-ui/shadcn/src/components/ui/form';
+import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,43 +24,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { useUpdateGroupCashTransfer } from '@rahat-ui/query';
-
-// ─── Schema ───────────────────────────────────────────────────────────────────
-
-const UpdateGctSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  phone: z
-    .string()
-    .optional()
-    .refine((v) => !v || v === '+977' || isValidPhoneNumber(v), {
-      message: 'Invalid phone number',
-    }),
-  district: z.string().optional(),
-  municipality: z.string().optional(),
-  ward: z.string().optional(),
-  bankName: z.string().optional(),
-  bankBranchName: z.string().optional(),
-  accountName: z.string().optional(),
-  accountNumber: z.string().optional(),
-  email: z
-    .string()
-    .optional()
-    .refine((v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), {
-      message: 'Invalid email address',
-    }),
-  supportArea: z
-    .array(z.object({ id: z.string(), text: z.string() }))
-    .optional(),
-});
-
-type UpdateGctValues = z.infer<typeof UpdateGctSchema>;
-
-// ─── Props ────────────────────────────────────────────────────────────────────
+import { GctGroupSchema, GctGroupValues, applyDuplicateErrors } from '../types/gct.schemas';
+import { BasicInfoSection, BankDetailsSection } from './gct.form-sections';
 
 interface GctUpdateSheetProps {
   projectUUID: UUID;
@@ -76,8 +35,6 @@ interface GctUpdateSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctUpdateSheet({
   projectUUID,
@@ -87,14 +44,13 @@ export default function GctUpdateSheet({
 }: GctUpdateSheetProps) {
   const updateGct = useUpdateGroupCashTransfer(projectUUID);
 
-  const [supportAreaTags, setSupportAreaTags] = useState<Tag[]>([]);
-  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-  const [unsavedTagInput, setUnsavedTagInput] = useState('');
-  const [pendingValues, setPendingValues] = useState<UpdateGctValues | null>(null);
+  const [initialTags, setInitialTags] = useState<Tag[]>([]);
+  const [hasUnsavedTag, setHasUnsavedTag] = useState(false);
+  const [pendingValues, setPendingValues] = useState<GctGroupValues | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const form = useForm<UpdateGctValues>({
-    resolver: zodResolver(UpdateGctSchema),
+  const form = useForm<GctGroupValues>({
+    resolver: zodResolver(GctGroupSchema),
     defaultValues: {
       name: '',
       phone: '+977',
@@ -113,13 +69,11 @@ export default function GctUpdateSheet({
   useEffect(() => {
     if (!item) return;
     const extras = item.extras ?? {};
-    const existingTags: Tag[] = Array.isArray(extras.supportArea)
+    const tags: Tag[] = Array.isArray(extras.supportArea)
       ? extras.supportArea.map((s: string, i: number) => ({ id: String(i), text: s }))
       : [];
 
-    setSupportAreaTags(existingTags);
-    setUnsavedTagInput('');
-
+    setInitialTags(tags);
     form.reset({
       name: item.name ?? '',
       phone: item.phone ?? '+977',
@@ -131,30 +85,15 @@ export default function GctUpdateSheet({
       accountName: item.bankDetails?.accountName ?? '',
       accountNumber: item.bankDetails?.accountNumber ?? '',
       email: extras.email ?? '',
-      supportArea: existingTags,
+      supportArea: tags,
     });
-  }, [item, form]);
+  }, [item]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (unsavedTagInput.trim()) {
-        const newTag: Tag = { id: Date.now().toString(), text: unsavedTagInput.trim() };
-        const updated = [...supportAreaTags, newTag];
-        setSupportAreaTags(updated);
-        form.setValue('supportArea', updated);
-        setUnsavedTagInput('');
-      }
-    }
-  };
-
-  // Step 1: validate then show confirm dialog
-  const onSubmit = (values: UpdateGctValues) => {
+  const onSubmit = (values: GctGroupValues) => {
     setPendingValues(values);
     setConfirmOpen(true);
   };
 
-  // Step 2: perform the actual update after confirmation
   const handleConfirmedUpdate = async () => {
     if (!item || !pendingValues) return;
     setConfirmOpen(false);
@@ -181,29 +120,20 @@ export default function GctUpdateSheet({
       });
       onOpenChange(false);
     } catch (error: any) {
-      const msg: string =
-        error?.response?.data?.message || error?.message || '';
-      if (/\bname\b/i.test(msg)) {
-        form.setError('name', { message: 'Group name already exists' });
-      }
-      if (/phone/i.test(msg)) {
-        form.setError('phone', { message: 'Phone number already exists' });
-      }
-      if (/email/i.test(msg)) {
-        form.setError('email', { message: 'Email already exists' });
-      }
-      if (/account.?number/i.test(msg) || /account/i.test(msg)) {
-        form.setError('accountNumber', {
-          message: 'Account number already exists',
-        });
-      }
+      const msg: string = error?.response?.data?.message || error?.message || '';
+      applyDuplicateErrors(msg, (field, err) =>
+        form.setError(field as keyof GctGroupValues, err),
+      );
     }
   };
 
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="w-[480px] sm:w-[560px] overflow-y-auto">
+        <SheetContent
+          side="right"
+          className="w-[480px] sm:w-[560px] overflow-y-auto"
+        >
           <SheetHeader className="mb-6">
             <SheetTitle>Edit GCT Group</SheetTitle>
             <SheetDescription>
@@ -213,203 +143,15 @@ export default function GctUpdateSheet({
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <BasicInfoSection
+                key={item?.uuid ?? 'sheet'}
+                form={form}
+                initialTags={initialTags}
+                shouldDirty
+                onUnsavedChange={setHasUnsavedTag}
+              />
+              <BankDetailsSection form={form} />
 
-              {/* ── Basic Info ──────────────────────────────────────────────── */}
-              <div className="space-y-3">
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Basic Info</p>
-
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>GCT Group Name <span className="text-destructive">*</span></Label>
-                      <FormControl>
-                        <Input placeholder="Group name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-3">
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Phone Number</Label>
-                        <FormControl>
-                          <PhoneInput defaultCountry="NP" placeholder="+977" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Email</Label>
-                        <FormControl>
-                          <Input type="email" placeholder="Email address" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="district"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>District</Label>
-                        <FormControl>
-                          <Input placeholder="District" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="municipality"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Municipality</Label>
-                        <FormControl>
-                          <Input placeholder="Municipality" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="ward"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Ward (Community)</Label>
-                        <FormControl>
-                          <Input placeholder="Ward" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="supportArea"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>Support Area</Label>
-                      <FormControl>
-                        <>
-                          <TagInput
-                            {...field}
-                            tags={supportAreaTags}
-                            setTags={(newTags) => {
-                              setSupportAreaTags(newTags);
-                              form.setValue('supportArea', newTags as [Tag, ...Tag[]]);
-                            }}
-                            placeholder="Enter value and press ENTER"
-                            className="min-h-[23px]"
-                            styleClasses={{
-                              inlineTagsContainer:
-                                'border-input rounded shadow-xs p-1 gap-1 ' +
-                                'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
-                              input: 'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
-                              tag: {
-                                body: 'h-7 relative rounded-sm border border-input font-medium text-xs ps-2 pe-7',
-                                closeButton:
-                                  'absolute -inset-y-px -end-px p-0 rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-muted-foreground/80 hover:text-foreground',
-                              },
-                            }}
-                            activeTagIndex={activeTagIndex}
-                            setActiveTagIndex={setActiveTagIndex}
-                            inputProps={{
-                              value: unsavedTagInput,
-                              onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                                setUnsavedTagInput(e.target.value),
-                              onKeyDown: handleTagKeyDown,
-                            }}
-                          />
-                          {unsavedTagInput && (
-                            <span className="text-xs text-muted-foreground ml-1">
-                              Press Enter to add.
-                            </span>
-                          )}
-                        </>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* ── Bank Details ──────────────────────────────────────────────── */}
-              <div className="space-y-3 pt-2">
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Bank Details</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <FormField
-                    control={form.control}
-                    name="bankName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Bank Name</Label>
-                        <FormControl>
-                          <Input placeholder="Bank name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="bankBranchName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Branch Name</Label>
-                        <FormControl>
-                          <Input placeholder="Branch name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="accountName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Account Holder Name</Label>
-                        <FormControl>
-                          <Input placeholder="Account holder" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="accountNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Label>Account Number</Label>
-                        <FormControl>
-                          <Input placeholder="Account number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* ── Footer ──────────────────────────────────────────────────────── */}
               <div className="flex justify-end gap-2 pt-4">
                 <Button
                   type="button"
@@ -422,7 +164,7 @@ export default function GctUpdateSheet({
                 <Button
                   type="submit"
                   className="px-8 rounded-sm"
-                  disabled={updateGct.isPending || unsavedTagInput.trim() !== ''}
+                  disabled={updateGct.isPending || hasUnsavedTag}
                 >
                   {updateGct.isPending ? (
                     <>
@@ -439,14 +181,16 @@ export default function GctUpdateSheet({
         </SheetContent>
       </Sheet>
 
-      {/* Confirmation dialog */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Edit</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to save the changes to{' '}
-              <span className="font-semibold text-foreground">"{item?.name}"</span>?
+              <span className="font-semibold text-foreground">
+                "{item?.name}"
+              </span>
+              ?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -5,3 +5,6 @@ export { default as GctUpdateSheet } from './gct.update.sheet';
 export { default as GctDeleteDialog } from './gct.delete.dialog';
 export { default as GctManagementList } from './gct.management.list';
 export { default as GctRecordDetail } from './gct.record.detail';
+export { default as GctActionBtn } from './gct.action-btn';
+export { default as GctSupportAreaInput } from './gct.support-area-input';
+export { BasicInfoSection, BankDetailsSection, SectionCard } from './gct.form-sections';

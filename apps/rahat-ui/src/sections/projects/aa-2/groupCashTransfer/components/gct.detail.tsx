@@ -3,7 +3,14 @@
 import { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { CheckCircle2, Loader2, Pencil, ShieldCheck, Trash2, XCircle } from 'lucide-react';
+import {
+  CheckCircle2,
+  Loader2,
+  Pencil,
+  ShieldCheck,
+  Trash2,
+  XCircle,
+} from 'lucide-react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -14,17 +21,17 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
-import { Back } from 'apps/rahat-ui/src/common';
-import { useGetOneGroupCashTransfer } from '@rahat-ui/query';
 import {
   ColumnDef,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { DemoTable } from 'apps/rahat-ui/src/common';
+import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
+import { Back, DemoTable } from 'apps/rahat-ui/src/common';
+import { useGetOneGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
 import GctDeleteDialog from './gct.delete.dialog';
 import GctUpdateSheet from './gct.update.sheet';
+import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -37,13 +44,6 @@ function InfoRow({ label, value }: { label: string; value?: string | null }) {
   );
 }
 
-const STATUS_STYLE: Record<string, string> = {
-  NOT_STARTED: 'bg-gray-100 text-gray-600',
-  PENDING: 'bg-yellow-100 text-yellow-700',
-  SUCCESS: 'bg-green-100 text-green-700',
-  FAILED: 'bg-red-100 text-red-600',
-};
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctDetail() {
@@ -54,21 +54,51 @@ export default function GctDetail() {
 
   const [updateOpen, setUpdateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const { data, isLoading } = useGetOneGroupCashTransfer(projectUUID, gctUUID);
-  const item = data?.data ?? data ?? null;
+  const [validationResult, setValidationResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
 
+  const { data, isLoading } = useGetOneGroupCashTransfer(projectUUID, gctUUID);
+  const validateBank = useValidateBankAccount(projectUUID);
+
+  const item = data?.data ?? data ?? null;
   const extras = item?.extras ?? {};
   const bankDetails = item?.bankDetails ?? {};
   const supportAreas: string[] = Array.isArray(extras?.supportArea)
     ? extras.supportArea
     : [];
 
-  type FundRecord = { uuid: string; title?: string; amount: number; status: string; createdBy?: string };
-  const records: FundRecord[] = item?.groupCashTransferRecords ?? [];
+  const records: GctFundRecord[] = item?.groupCashTransferRecords ?? [];
   const hasFund = records.length > 0;
   const totalAssigned: number = item?.totalAssignedAmount ?? 0;
 
-  const recordColumns: ColumnDef<FundRecord>[] = useMemo(
+  const handleValidateBankAccount = async () => {
+    setValidationResult(null);
+    try {
+      const result = await validateBank.mutateAsync({
+        bankName: bankDetails?.bankName,
+        bankBranchName: bankDetails?.bankBranchName,
+        accountName: bankDetails?.accountName,
+        accountNumber: bankDetails?.accountNumber,
+      });
+      setValidationResult({
+        success: true,
+        message: result?.message || 'Bank account validated successfully.',
+      });
+    } catch (error: unknown) {
+      const e = error as { response?: { data?: { message?: string } }; message?: string };
+      setValidationResult({
+        success: false,
+        message:
+          e?.response?.data?.message ||
+          e?.message ||
+          'Validation failed.',
+      });
+    }
+  };
+
+  const recordColumns: ColumnDef<GctFundRecord>[] = useMemo(
     () => [
       {
         accessorKey: 'title',
@@ -81,7 +111,9 @@ export default function GctDetail() {
         accessorKey: 'amount',
         header: 'Amount',
         cell: ({ row }) => (
-          <span className="font-semibold">{row.original.amount.toLocaleString()}</span>
+          <span className="font-semibold">
+            {row.original.amount.toLocaleString()}
+          </span>
         ),
       },
       {
@@ -95,7 +127,9 @@ export default function GctDetail() {
         cell: ({ row }) => {
           const s = row.original.status;
           return (
-            <Badge className={`text-xs ${STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'}`}>
+            <Badge
+              className={`text-xs ${GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'}`}
+            >
               {s.replace('_', ' ')}
             </Badge>
           );
@@ -138,7 +172,10 @@ export default function GctDetail() {
           )}
         </div>
 
-        <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]} hasContent={false}>
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.Municipality]}
+          hasContent={false}
+        >
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -211,28 +248,25 @@ export default function GctDetail() {
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Bank Details
               </CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 h-7 text-xs"
-                onClick={handleValidateBankAccount}
-                disabled={validateBank.isPending || !bankDetails?.accountNumber}
-              >
-                {validateBank.isPending ? (
-                  <>
-                    <Loader2 size={12} className="animate-spin" />
-                    Validating bank account…
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck size={12} />
-                    Validate Bank Account
-                  </>
-                )}
-              </Button>
             </div>
           </CardHeader>
           <CardContent className="px-4 pb-4">
+            {validationResult && (
+              <div
+                className={`flex items-center gap-2 text-xs mb-3 p-2 rounded ${
+                  validationResult.success
+                    ? 'bg-green-50 text-green-700'
+                    : 'bg-red-50 text-red-600'
+                }`}
+              >
+                {validationResult.success ? (
+                  <CheckCircle2 size={14} />
+                ) : (
+                  <XCircle size={14} />
+                )}
+                {validationResult.message}
+              </div>
+            )}
             <InfoRow label="Bank Name" value={bankDetails?.bankName} />
             <Separator />
             <InfoRow label="Bank Branch Name" value={bankDetails?.bankBranchName} />
@@ -241,12 +275,14 @@ export default function GctDetail() {
             <Separator />
             <InfoRow label="Account Number" value={bankDetails?.accountNumber} />
             <Separator />
-            <InfoRow label="Total Reserved Amount" value={totalAssigned.toLocaleString()} />
+            <InfoRow
+              label="Total Reserved Amount"
+              value={totalAssigned.toLocaleString()}
+            />
           </CardContent>
         </Card>
       </div>
 
-      {/* Fund records table */}
       {records.length > 0 && (
         <Card className="rounded-sm mt-4">
           <CardHeader className="pb-2 pt-4 px-4">
@@ -272,7 +308,9 @@ export default function GctDetail() {
         item={item}
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        onDeleted={() => router.push(`/projects/aa/${id}/group-cash-transfer`)}
+        onDeleted={() =>
+          router.push(`/projects/aa/${id}/group-cash-transfer`)
+        }
       />
     </div>
   );

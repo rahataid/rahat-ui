@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { Pencil, Trash2 } from 'lucide-react';
+import { CheckCircle2, Loader2, Pencil, ShieldCheck, Trash2, XCircle } from 'lucide-react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -15,7 +15,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
-import Back from 'apps/rahat-ui/src/sections/projects/components/back';
+import { Back } from 'apps/rahat-ui/src/common';
 import { useGetOneGroupCashTransfer } from '@rahat-ui/query';
 import {
   ColumnDef,
@@ -54,7 +54,6 @@ export default function GctDetail() {
 
   const [updateOpen, setUpdateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
   const { data, isLoading } = useGetOneGroupCashTransfer(projectUUID, gctUUID);
   const item = data?.data ?? data ?? null;
 
@@ -69,7 +68,6 @@ export default function GctDetail() {
   const hasFund = records.length > 0;
   const totalAssigned: number = item?.totalAssignedAmount ?? 0;
 
-  // Fund records table — hooks must be unconditional, before any early return
   const recordColumns: ColumnDef<FundRecord>[] = useMemo(
     () => [
       {
@@ -77,15 +75,6 @@ export default function GctDetail() {
         header: 'Title',
         cell: ({ row }) => (
           <span className="font-medium">{row.original.title || '—'}</span>
-        ),
-      },
-      {
-        accessorKey: 'uuid',
-        header: 'Record UUID',
-        cell: ({ row }) => (
-          <span className="font-mono text-xs text-muted-foreground truncate block max-w-[220px]">
-            {row.original.uuid}
-          </span>
         ),
       },
       {
@@ -144,7 +133,7 @@ export default function GctDetail() {
           </div>
           {hasFund && (
             <Badge className="bg-green-100 text-green-700 hover:bg-green-100 ml-2">
-              Fund Assigned
+              Fund Reserved
             </Badge>
           )}
         </div>
@@ -195,7 +184,6 @@ export default function GctDetail() {
             <Separator />
             <InfoRow label="Ward (Community)" value={extras?.ward} />
             <Separator />
-            {/* Support area pills */}
             <div className="flex flex-col gap-1 py-2">
               <span className="text-xs text-muted-foreground">Support Area</span>
               {supportAreas.length > 0 ? (
@@ -219,9 +207,30 @@ export default function GctDetail() {
         {/* Bank details */}
         <Card className="rounded-sm">
           <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Bank Details
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                Bank Details
+              </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 h-7 text-xs"
+                onClick={handleValidateBankAccount}
+                disabled={validateBank.isPending || !bankDetails?.accountNumber}
+              >
+                {validateBank.isPending ? (
+                  <>
+                    <Loader2 size={12} className="animate-spin" />
+                    Validating bank account…
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck size={12} />
+                    Validate Bank Account
+                  </>
+                )}
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="px-4 pb-4">
             <InfoRow label="Bank Name" value={bankDetails?.bankName} />
@@ -232,7 +241,7 @@ export default function GctDetail() {
             <Separator />
             <InfoRow label="Account Number" value={bankDetails?.accountNumber} />
             <Separator />
-            <InfoRow label="Total Assigned Amount" value={totalAssigned.toLocaleString()} />
+            <InfoRow label="Total Reserved Amount" value={totalAssigned.toLocaleString()} />
           </CardContent>
         </Card>
       </div>
@@ -242,7 +251,7 @@ export default function GctDetail() {
         <Card className="rounded-sm mt-4">
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Assigned Fund Records
+              Reserved Fund Records
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">
@@ -251,7 +260,6 @@ export default function GctDetail() {
         </Card>
       )}
 
-      {/* Update sheet */}
       <GctUpdateSheet
         projectUUID={projectUUID}
         item={item}
@@ -259,7 +267,6 @@ export default function GctDetail() {
         onOpenChange={setUpdateOpen}
       />
 
-      {/* Delete dialog */}
       <GctDeleteDialog
         projectUUID={projectUUID}
         item={item}

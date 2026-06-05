@@ -1,11 +1,12 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -17,16 +18,24 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import {
   useAssignGroupCashTransferFund,
-  useGroupCashTransfers,
+  useGetAllValidGroupCashTransfers,
 } from '@rahat-ui/query';
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
@@ -53,32 +62,58 @@ export default function AssignCashGct() {
 
   const assignFund = useAssignGroupCashTransferFund(projectUUID);
 
-  // Fetch all groups for the dropdown (high perPage, no pagination needed here)
-  const { data: groupsData, isLoading: groupsLoading } = useGroupCashTransfers(
-    projectUUID,
-    { page: 1, perPage: 100, order: 'asc', sort: 'name' },
-  );
-  const groups: { uuid: string; name: string }[] = groupsData?.data ?? [];
+  const { data: groupsData, isLoading: groupsLoading } =
+    useGetAllValidGroupCashTransfers(projectUUID);
+  const groups: { uuid: string; name: string }[] = groupsData?.data ?? groupsData ?? [];
+
+  const [groupSearch, setGroupSearch] = useState('');
+  const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
+  const [selectedGroupName, setSelectedGroupName] = useState('');
+  const [pendingValues, setPendingValues] = useState<AssignCashValues | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const filteredGroups = useMemo(() => {
+    if (!groupSearch.trim()) return groups;
+    const lower = groupSearch.toLowerCase();
+    return groups.filter((g) => g.name.toLowerCase().includes(lower));
+  }, [groups, groupSearch]);
 
   const form = useForm<AssignCashValues>({
     resolver: zodResolver(AssignCashSchema),
-    defaultValues: {
-      title: '',
-      groupCashTransferId: '',
-      amount: '',
-    },
+    defaultValues: { title: '', groupCashTransferId: '', amount: '' },
   });
 
-  const handleSubmit = async (values: AssignCashValues) => {
-    await assignFund.mutateAsync({
-      title: values.title,
-      groupCashTransferId: values.groupCashTransferId,
-      amount: Number(values.amount),
-    });
-    router.push(`/projects/aa/${id}/group-cash-transfer?tab=gctManagementList`);
+  const handleSubmit = (values: AssignCashValues) => {
+    setPendingValues(values);
+    setConfirmOpen(true);
   };
 
-  const handleClear = () => form.reset();
+  const handleConfirmedAssign = async () => {
+    if (!pendingValues) return;
+    setConfirmOpen(false);
+    try {
+      await assignFund.mutateAsync({
+        title: pendingValues.title,
+        groupCashTransferId: pendingValues.groupCashTransferId,
+        amount: Number(pendingValues.amount),
+      });
+      router.push(`/projects/aa/${id}/group-cash-transfer`);
+    } catch (error: any) {
+      const msg: string =
+        error?.response?.data?.message || error?.message || '';
+      if (/already|duplicate|reserved/i.test(msg)) {
+        form.setError('groupCashTransferId', {
+          message: 'This group already has funds reserved.',
+        });
+      }
+    }
+  };
+
+  const handleClear = () => {
+    form.reset();
+    setSelectedGroupName('');
+    setGroupSearch('');
+  };
 
   return (
     <div className="p-4">
@@ -118,28 +153,56 @@ export default function AssignCashGct() {
                     <Label>
                       GCT Group <span className="text-destructive">*</span>
                     </Label>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      disabled={groupsLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={
-                              groupsLoading ? 'Loading groups…' : 'Select a GCT Group'
-                            }
+                    <Popover open={groupPopoverOpen} onOpenChange={setGroupPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            disabled={groupsLoading}
+                            className="w-full justify-between font-normal"
+                          >
+                            {groupsLoading
+                              ? 'Loading groups…'
+                              : selectedGroupName || 'Select a validated GCT Group'}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[320px] p-0" align="start">
+                        <div className="flex items-center border-b px-3 py-2 gap-2">
+                          <Search size={14} className="text-muted-foreground shrink-0" />
+                          <input
+                            className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground"
+                            placeholder="Search groups…"
+                            value={groupSearch}
+                            onChange={(e) => setGroupSearch(e.target.value)}
                           />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {groups.map((g) => (
-                          <SelectItem key={g.uuid} value={g.uuid}>
-                            {g.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                        </div>
+                        <div className="max-h-[200px] overflow-y-auto">
+                          {filteredGroups.length === 0 ? (
+                            <p className="text-sm text-muted-foreground p-3 text-center">
+                              No validated groups found.
+                            </p>
+                          ) : (
+                            filteredGroups.map((g) => (
+                              <button
+                                key={g.uuid}
+                                type="button"
+                                className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                onClick={() => {
+                                  field.onChange(g.uuid);
+                                  setSelectedGroupName(g.name);
+                                  setGroupPopoverOpen(false);
+                                  setGroupSearch('');
+                                }}
+                              >
+                                {g.name}
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -199,6 +262,41 @@ export default function AssignCashGct() {
           </div>
         </form>
       </Form>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Assign Cash</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to assign{' '}
+              <span className="font-semibold text-foreground">
+                NPR {Number(pendingValues?.amount).toLocaleString()}
+              </span>{' '}
+              to{' '}
+              <span className="font-semibold text-foreground">
+                "{selectedGroupName}"
+              </span>
+              ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={assignFund.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmedAssign}
+              disabled={assignFund.isPending}
+            >
+              {assignFund.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Assigning…
+                </>
+              ) : (
+                'Assign Cash'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

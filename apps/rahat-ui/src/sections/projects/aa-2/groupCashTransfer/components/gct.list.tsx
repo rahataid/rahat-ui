@@ -31,7 +31,6 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { usePagination, useGroupCashTransfers } from '@rahat-ui/query';
 import GctDeleteDialog from './gct.delete.dialog';
-import GctUpdateSheet from './gct.update.sheet';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -132,19 +131,9 @@ export default function GctList() {
 
   // Active item for sheet / dialog
   const [activeItem, setActiveItem] = useState<GctItem | null>(null);
-  const [updateOpen, setUpdateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const openUpdate = (item: GctItem) => { setActiveItem(item); setUpdateOpen(true); };
   const openDelete = (item: GctItem) => { setActiveItem(item); setDeleteOpen(true); };
-
-  const handleResetFilters = () => {
-    setNameFilter('');
-    setPhoneFilter('');
-    setWardFilter('');
-    setSupportAreaFilter('');
-    setPagination({ ...pagination, page: 1 });
-  };
 
   // Table data
   const rows = useMemo<GctItem[]>(() => data?.data ?? [], [data]);
@@ -245,10 +234,14 @@ export default function GctList() {
                     label="Edit"
                     icon={<Pencil size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-blue-50 text-blue-500"
-                    onClick={() => openUpdate(item)}
+                    onClick={() =>
+                      router.push(
+                        `/projects/aa/${id}/group-cash-transfer/${item.uuid}/edit`,
+                      )
+                    }
                   />
                   <ActionBtn
-                    label={hasFund ? 'Cannot delete — fund records assigned' : 'Delete'}
+                    label={hasFund ? 'Cannot delete — funds reserved' : 'Delete'}
                     icon={<Trash2 size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-red-50 text-red-500"
                     disabled={hasFund}
@@ -287,7 +280,7 @@ export default function GctList() {
           name="name"
           value={nameFilter}
           onSearch={(e) => {
-            setNameFilter(e.target.value);
+            setNameFilter(e.target.value.trim());
             setPagination({ ...pagination, page: 1 });
           }}
         />
@@ -296,7 +289,7 @@ export default function GctList() {
           name="phone"
           value={phoneFilter}
           onSearch={(e) => {
-            setPhoneFilter(e.target.value);
+            setPhoneFilter(e.target.value.trim());
             setPagination({ ...pagination, page: 1 });
           }}
         />
@@ -305,7 +298,7 @@ export default function GctList() {
           name="Ward (Community)"
           value={wardFilter}
           onSearch={(e) => {
-            setWardFilter(e.target.value);
+            setWardFilter(e.target.value.trim());
             setPagination({ ...pagination, page: 1 });
           }}
         />
@@ -314,7 +307,7 @@ export default function GctList() {
           name="support area"
           value={supportAreaFilter}
           onSearch={(e) => {
-            setSupportAreaFilter(e.target.value);
+            setSupportAreaFilter(e.target.value.trim());
             setPagination({ ...pagination, page: 1 });
           }}
         />
@@ -331,14 +324,6 @@ export default function GctList() {
         meta={meta || { total: 0, currentPage: 0, lastPage: 1 }}
         perPage={pagination.perPage}
         total={meta?.total ?? 0}
-      />
-
-      {/* Update sheet */}
-      <GctUpdateSheet
-        projectUUID={projectUUID}
-        item={activeItem}
-        open={updateOpen}
-        onOpenChange={setUpdateOpen}
       />
 
       {/* Delete dialog */}

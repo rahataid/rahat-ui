@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,12 +20,26 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { useCreateGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
+import {
+  useGetOneGroupCashTransfer,
+  useUpdateGroupCashTransfer,
+} from '@rahat-ui/query';
+import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
-const CreateGctSchema = z.object({
+const EditGctSchema = z.object({
   name: z.string().min(1, 'GCT Group Name is required'),
   phone: z
     .string()
@@ -51,25 +65,28 @@ const CreateGctSchema = z.object({
     .optional(),
 });
 
-type CreateGctValues = z.infer<typeof CreateGctSchema>;
+type EditGctValues = z.infer<typeof EditGctSchema>;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function AddGct() {
-  const { id } = useParams();
+export default function EditGct() {
+  const { id, uuid } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
+  const gctUUID = uuid as string;
 
   const [supportAreaTags, setSupportAreaTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
   const [unsavedTagInput, setUnsavedTagInput] = useState('');
-  const [validating, setValidating] = useState(false);
+  const [pendingValues, setPendingValues] = useState<EditGctValues | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const createGct = useCreateGroupCashTransfer(projectUUID);
-  const validateBank = useValidateBankAccount(projectUUID);
+  const { data, isLoading } = useGetOneGroupCashTransfer(projectUUID, gctUUID);
+  const item = data?.data ?? data ?? null;
+  const updateGct = useUpdateGroupCashTransfer(projectUUID);
 
-  const form = useForm<CreateGctValues>({
-    resolver: zodResolver(CreateGctSchema),
+  const form = useForm<EditGctValues>({
+    resolver: zodResolver(EditGctSchema),
     defaultValues: {
       name: '',
       phone: '+977',
@@ -85,6 +102,35 @@ export default function AddGct() {
     },
   });
 
+  // Populate once data arrives
+  useEffect(() => {
+    if (!item) return;
+    const extras = item.extras ?? {};
+    const existingTags: Tag[] = Array.isArray(extras.supportArea)
+      ? extras.supportArea.map((s: string, i: number) => ({
+          id: String(i),
+          text: s,
+        }))
+      : [];
+
+    setSupportAreaTags(existingTags);
+    setUnsavedTagInput('');
+
+    form.reset({
+      name: item.name ?? '',
+      phone: item.phone ?? '+977',
+      district: extras.district ?? '',
+      municipality: extras.municipality ?? '',
+      ward: extras.ward ?? '',
+      bankName: item.bankDetails?.bankName ?? '',
+      bankBranchName: item.bankDetails?.bankBranchName ?? '',
+      accountName: item.bankDetails?.accountName ?? '',
+      accountNumber: item.bankDetails?.accountNumber ?? '',
+      email: extras.email ?? '',
+      supportArea: existingTags,
+    });
+  }, [item]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -95,50 +141,41 @@ export default function AddGct() {
         };
         const updated = [...supportAreaTags, newTag];
         setSupportAreaTags(updated);
-        form.setValue('supportArea', updated);
+        form.setValue('supportArea', updated, { shouldDirty: true });
         setUnsavedTagInput('');
       }
     }
   };
 
-  const handleSubmit = async (values: CreateGctValues) => {
-    const supportAreaStrings = (values.supportArea ?? []).map((t) => t.text);
+  const handleSubmit = (values: EditGctValues) => {
+    setPendingValues(values);
+    setConfirmOpen(true);
+  };
 
-    setValidating(true);
-    try {
-      await validateBank.mutateAsync({
-        bankName: values.bankName,
-        bankBranchName: values.bankBranchName,
-        accountName: values.accountName,
-        accountNumber: values.accountNumber,
-      });
-    } catch (error: any) {
-      setValidating(false);
-      form.setError('accountNumber', {
-        message:
-          error?.response?.data?.message ||
-          error?.message ||
-          'Bank account validation failed.',
-      });
-      return;
-    }
-    setValidating(false);
+  const handleConfirmedUpdate = async () => {
+    if (!pendingValues) return;
+    setConfirmOpen(false);
+    const supportAreaStrings = (pendingValues.supportArea ?? []).map(
+      (t) => t.text,
+    );
 
     try {
-      await createGct.mutateAsync({
-        name: values.name,
-        phone: values.phone === '+977' ? undefined : values.phone,
+      await updateGct.mutateAsync({
+        uuid: gctUUID,
+        name: pendingValues.name,
+        phone:
+          pendingValues.phone === '+977' ? undefined : pendingValues.phone,
         bankDetails: {
-          bankName: values.bankName,
-          bankBranchName: values.bankBranchName,
-          accountName: values.accountName,
-          accountNumber: values.accountNumber,
+          bankName: pendingValues.bankName,
+          bankBranchName: pendingValues.bankBranchName,
+          accountName: pendingValues.accountName,
+          accountNumber: pendingValues.accountNumber,
         },
         extras: {
-          district: values.district,
-          municipality: values.municipality,
-          ward: values.ward,
-          email: values.email,
+          district: pendingValues.district,
+          municipality: pendingValues.municipality,
+          ward: pendingValues.ward,
+          email: pendingValues.email,
           supportArea: supportAreaStrings,
         },
       });
@@ -163,17 +200,21 @@ export default function AddGct() {
     }
   };
 
-  const handleClear = () => {
-    form.reset();
-    setSupportAreaTags([]);
-    setUnsavedTagInput('');
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[300px]">
+        <SpinnerLoader />
+      </div>
+    );
+  }
+
+  const isDirty = form.formState.isDirty;
 
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Create GCT Group"
-        subtitle="Fill the form below to create new Group for Group Cash Transfer"
+        title="Edit GCT Group"
+        subtitle="Update the details for this GCT Group"
         path={`/projects/aa/${id}/group-cash-transfer`}
       />
 
@@ -282,7 +323,11 @@ export default function AddGct() {
                         tags={supportAreaTags}
                         setTags={(newTags) => {
                           setSupportAreaTags(newTags);
-                          form.setValue('supportArea', newTags as [Tag, ...Tag[]]);
+                          form.setValue(
+                            'supportArea',
+                            newTags as [Tag, ...Tag[]],
+                            { shouldDirty: true },
+                          );
                         }}
                         placeholder="Enter value and press ENTER"
                         className="min-h-[23px]"
@@ -290,7 +335,8 @@ export default function AddGct() {
                           inlineTagsContainer:
                             'border-input rounded shadow-xs p-1 gap-1 ' +
                             'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
-                          input: 'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
+                          input:
+                            'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
                           tag: {
                             body: 'h-7 relative rounded-sm border border-input font-medium text-xs ps-2 pe-7',
                             closeButton:
@@ -301,8 +347,9 @@ export default function AddGct() {
                         setActiveTagIndex={setActiveTagIndex}
                         inputProps={{
                           value: unsavedTagInput,
-                          onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                            setUnsavedTagInput(e.target.value),
+                          onChange: (
+                            e: React.ChangeEvent<HTMLInputElement>,
+                          ) => setUnsavedTagInput(e.target.value),
                           onKeyDown: handleTagKeyDown,
                         }}
                       />
@@ -358,7 +405,10 @@ export default function AddGct() {
                   <FormItem>
                     <Label>Bank Account Holder Name <span className="text-destructive">*</span></Label>
                     <FormControl>
-                      <Input placeholder="Enter Bank Account Holder Name" {...field} />
+                      <Input
+                        placeholder="Enter Bank Account Holder Name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -386,34 +436,65 @@ export default function AddGct() {
               type="button"
               variant="secondary"
               className="px-8"
-              onClick={handleClear}
-              disabled={validating || createGct.isPending}
+              onClick={() => router.push(`/projects/aa/${id}/group-cash-transfer`)}
+              disabled={updateGct.isPending}
             >
-              Clear
+              Cancel
             </Button>
             <Button
               type="submit"
               className="px-8"
-              disabled={validating || createGct.isPending || unsavedTagInput.trim() !== ''}
+              disabled={
+                updateGct.isPending ||
+                !isDirty ||
+                unsavedTagInput.trim() !== ''
+              }
             >
-              {validating ? (
+              {updateGct.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Validating bank account...
-                </>
-              ) : createGct.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  Saving...
                 </>
               ) : (
-                'Create'
+                'Save Changes'
               )}
             </Button>
           </div>
         </form>
       </Form>
 
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Edit</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to save changes to{' '}
+              <span className="font-semibold text-foreground">
+                "{item?.name}"
+              </span>
+              ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={updateGct.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmedUpdate}
+              disabled={updateGct.isPending}
+            >
+              {updateGct.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

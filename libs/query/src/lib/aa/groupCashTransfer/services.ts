@@ -131,6 +131,24 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
   });
 };
 
+export const useValidateBankAccount = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      runAction(q, projectUUID, ACTION_NS + '.validateBankAccount', payload),
+    onError: (error: any) => {
+      q.reset();
+      toast.fire({
+        title: 'Bank account validation failed.',
+        icon: 'error',
+        text: error?.response?.data?.message || 'Error',
+      });
+    },
+  });
+};
+
 export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();

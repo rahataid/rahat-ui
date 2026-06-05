@@ -51,6 +51,17 @@ export const useGctRecords = (
   });
 };
 
+export const useGetAllValidGroupCashTransfers = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: [ACTION_NS + '.getAllValid', projectUUID],
+    staleTime: 5 * 60 * 1000,
+    queryFn: () =>
+      runAction(q, projectUUID, ACTION_NS + '.getAllValid', {}),
+  });
+};
+
 export const useGetOneGctRecord = (
   projectUUID: UUID,
   recordUuid: string,

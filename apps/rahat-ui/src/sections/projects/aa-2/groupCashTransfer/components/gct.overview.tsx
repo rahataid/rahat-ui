@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Users, FileText } from 'lucide-react';
-import { DataCard } from 'apps/rahat-ui/src/common';
+import { DataCard, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useGetGctData } from '@rahat-ui/query';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 
@@ -12,7 +12,7 @@ const STATUS_COLORS = ['#009688', '#FBCA14', '#B0BEC5', '#DC3545'];
 
 export default function GctOverview() {
   const { id } = useParams();
-  const { data, isLoading } = useGetGctData(id as UUID);
+  const { data, isPending } = useGetGctData(id as UUID);
 
   const stats = data?.data ?? data ?? null;
 
@@ -61,6 +61,8 @@ export default function GctOverview() {
     },
   ];
 
+  if (isPending) return <SpinnerLoader />;
+
   return (
     <div className="pt-2 space-y-4">
       {/* Stat cards */}
@@ -71,7 +73,7 @@ export default function GctOverview() {
             title={card.title}
             number={card.number}
             Icon={Icon}
-            loading={isLoading}
+            loading={false}
             className="rounded-sm"
             infoIcon
             infoTooltip={card.infoTooltip}
@@ -119,7 +121,7 @@ export default function GctOverview() {
             </span>
           </p>
           <div className="w-full aspect-square max-h-[260px]">
-            <DynamicPieChart pieData={allocationData} colors={ALLOCATION_COLORS} isLoading={isLoading} />
+            <DynamicPieChart pieData={allocationData} colors={ALLOCATION_COLORS} isLoading={false} />
           </div>
         </div>
 
@@ -154,7 +156,7 @@ export default function GctOverview() {
             <span className="font-medium text-foreground">{totalRecords}</span>
           </p>
           <div className="w-full aspect-square max-h-[260px]">
-            <DynamicPieChart pieData={statusData} colors={STATUS_COLORS} isLoading={isLoading} />
+            <DynamicPieChart pieData={statusData} colors={STATUS_COLORS} isLoading={false} />
           </div>
         </div>
       </div>

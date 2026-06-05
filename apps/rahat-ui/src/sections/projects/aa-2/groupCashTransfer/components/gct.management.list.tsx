@@ -22,10 +22,11 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { TooltipProvider } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { ChevronDown, Eye, Plus } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { ChevronDown, Download, Eye, Loader2, Plus } from 'lucide-react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { DemoTable, SearchInput, CustomPagination, Heading } from 'apps/rahat-ui/src/common';
-import { usePagination, useGctRecords } from '@rahat-ui/query';
+import { usePagination, useGctRecords, useProjectAction } from '@rahat-ui/query';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import GctActionBtn from './gct.action-btn';
@@ -55,6 +56,43 @@ export default function GctManagementList() {
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [downloading, setDownloading] = useState(false);
+  const q = useProjectAction();
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const result = await q.mutateAsync({
+        uuid: projectUUID as `${string}-${string}-${string}-${string}-${string}`,
+        data: {
+          action: 'aaProject.groupCashTransfer.getRecords',
+          payload: {
+            perPage: 10000,
+            sort: 'createdAt',
+            order: 'desc',
+            ...(statusFilter ? { status: statusFilter } : {}),
+          },
+        },
+      });
+      const records: GctFundRecord[] = result?.data ?? [];
+      const rows = records.map((r) => ({
+        'Record Name': r.title ?? '',
+        'Amount': r.amount ?? '',
+        'Group Cash Transfer Name': r.groupCashTransfer?.name ?? '',
+        'Status': r.status ?? '',
+        'Payout Processor ID': (r as any).payoutProcessorId ?? '',
+        'Disbursed At': (r as any).disbursedAt ?? '',
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Logs');
+      const date = new Date().toISOString().split('T')[0];
+      const suffix = statusFilter ? `_${statusFilter.toLowerCase()}` : '';
+      XLSX.writeFile(wb, `group_cash_transfer_logs${suffix}_${date}.xlsx`);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const { data, isLoading } = useGctRecords(projectUUID, {
     page: pagination.page,
@@ -166,18 +204,34 @@ export default function GctManagementList() {
           titleStyle="font-medium text-lg"
           description="List of all the Group Cash Transfer Records"
         />
-        <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]} hasContent={false}>
+        <div className="flex items-center gap-2">
           <Button
             size="sm"
+            variant="outline"
             className="rounded-sm gap-1.5"
-            onClick={() =>
-              router.push(`/projects/aa/${id}/group-cash-transfer/assign-cash`)
-            }
+            onClick={handleDownload}
+            disabled={downloading}
           >
-            <Plus size={14} />
-            Assign Cash
+            {downloading ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <Download size={14} />
+            )}
+            Download Logs
           </Button>
-        </RoleAuth>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]} hasContent={false}>
+            <Button
+              size="sm"
+              className="rounded-sm gap-1.5"
+              onClick={() =>
+                router.push(`/projects/aa/${id}/group-cash-transfer/assign-cash`)
+              }
+            >
+              <Plus size={14} />
+              Assign Cash
+            </Button>
+          </RoleAuth>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 mb-2 flex-wrap">

@@ -10,10 +10,12 @@ import {
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import GctList from './gct.list';
 import GctManagementList from './gct.management.list';
+import GctOverview from './gct.overview';
 
 // ─── Tab registry ─────────────────────────────────────────────────────────────
 
 const GCT_TABS = [
+  { value: 'overview', label: 'Overview' },
   { value: 'gctGroupList', label: 'GCT Group List' },
   { value: 'gctManagementList', label: 'GCT Management' },
 ] as const;
@@ -21,6 +23,7 @@ const GCT_TABS = [
 type GctTabValue = (typeof GCT_TABS)[number]['value'];
 
 const componentMap: Record<GctTabValue, ComponentType> = {
+  overview: GctOverview,
   gctGroupList: GctList,
   gctManagementList: GctManagementList,
 };
@@ -28,17 +31,17 @@ const componentMap: Record<GctTabValue, ComponentType> = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctTabs() {
-  const { activeTab, setActiveTab } = useActiveTab('gctGroupList');
+  const { activeTab, setActiveTab } = useActiveTab('overview');
 
   useEffect(() => {
-    if (!activeTab) setActiveTab('gctGroupList');
+    if (!activeTab) setActiveTab('overview');
   }, [activeTab, setActiveTab]);
 
   return (
     <div className="rounded-md border overflow-hidden">
       <Tabs
-        value={activeTab || 'gctGroupList'}
-        defaultValue={activeTab || 'gctGroupList'}
+        value={activeTab || 'overview'}
+        defaultValue={activeTab || 'overview'}
         onValueChange={setActiveTab}
       >
         <div className="px-4 pt-3">

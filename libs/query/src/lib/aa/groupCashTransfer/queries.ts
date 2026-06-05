@@ -76,3 +76,13 @@ export const useGetOneGctRecord = (
       runAction(q, projectUUID, ACTION_NS + '.getOneRecord', { uuid: recordUuid }),
   });
 };
+
+export const useGetGctData = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: [ACTION_NS + '.getGCTData', projectUUID],
+    refetchOnMount: true,
+    queryFn: () => runAction(q, projectUUID, ACTION_NS + '.getGCTData', {}),
+  });
+};

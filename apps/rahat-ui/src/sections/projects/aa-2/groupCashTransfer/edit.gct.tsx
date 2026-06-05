@@ -260,7 +260,7 @@ export default function EditGct() {
                   <FormItem>
                     <Label>Email (Optional)</Label>
                     <FormControl>
-                      <Input type="email" placeholder="Enter email address" {...field} />
+                      <Input type="text" placeholder="Enter email address" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

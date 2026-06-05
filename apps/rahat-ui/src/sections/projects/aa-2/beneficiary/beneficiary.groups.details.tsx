@@ -14,23 +14,37 @@ import {
 import { useProjectBeneficiaryGroupDetailsTableColumns } from './columns';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useSingleBeneficiaryGroup } from '@rahat-ui/query';
+import {
+  useGenerateQrPdf,
+  useGetBeneficiariesQr,
+  useSingleBeneficiaryGroup,
+} from '@rahat-ui/query';
 import {
   ClientSidePagination,
   DataCard,
   DemoTable,
   HeaderWithBack,
   SearchInput,
+  SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
+
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { CloudDownload } from 'lucide-react';
 
 const BeneficiaryGroupsDetails = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
-  const { data: groupDetails, isLoading } = useSingleBeneficiaryGroup(
-    projectId,
+  const { data: groupDetails, isPending: isGroupLoading } =
+    useSingleBeneficiaryGroup(projectId, groupId);
+
+  const { data: qrDetails, isPending: isQrLoading } = useGetBeneficiariesQr({
+    projectUuid: projectId,
     groupId,
-  );
+  });
+
+  const { mutate: generateQr } = useGenerateQrPdf(projectId);
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const columns = useProjectBeneficiaryGroupDetailsTableColumns();
@@ -74,25 +88,52 @@ const BeneficiaryGroupsDetails = () => {
     );
   }, [groupDetails]);
 
+  if (isGroupLoading || isQrLoading) {
+    return <SpinnerLoader />;
+  }
+
   return (
     <div className="p-4 ">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center ">
         <HeaderWithBack
           title={groupDetails?.name}
-          subtitle="Detailed view of the selected beneficiary group"
+          subtitle="Detailed view of the selected beneficiary groups"
           path={`/projects/aa/${projectId}/beneficiary?tab=beneficiaryGroups`}
         />
+        {/* <div className="flex items-end justify-end"> */}
+        {qrDetails?.status === 'completed' ? (
+          <Button
+            variant="outline"
+            onClick={() => window.open(qrDetails.fileUrl, '_blank')}
+            className="cursor-pointer"
+          >
+            <CloudDownload className="mr-1" />
+            Download QR
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            onClick={() => generateQr(groupId)}
+            className="cursor-pointer"
+            disabled={isQrLoading}
+          >
+            <CloudDownload className="mr-1" />
+            Generate QR
+          </Button>
+        )}
+
+        {/* </div> */}
       </div>
       <div className="flex gap-6 mb-5">
         <DataCard
-          className="border-solid w-1/4 rounded-md"
+          className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
           title="Total Beneficiaries"
           Icon={User}
           number={groupDetails?.groupedBeneficiaries?.length || 0}
         />
         <DataCard
-          className="border-solid w-1/4 rounded-md"
+          className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
           title="Total Token Assigned"
           Icon={Coins}

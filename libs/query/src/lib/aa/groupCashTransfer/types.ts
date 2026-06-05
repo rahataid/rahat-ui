@@ -38,6 +38,15 @@ export type ListGctRecordsParams = {
   sort?: 'createdAt' | 'title' | 'amount';
   order?: 'asc' | 'desc';
   groupCashTransferId?: string;
+  groupCashTransferName?: string;
+  search?: string;
+  status?: string;
+};
+
+export type UpdateGctRecordPayload = {
+  uuid: string;
+  title?: string;
+  amount?: number;
 };
 
 export type AssignFundPayload = {

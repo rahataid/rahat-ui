@@ -30,7 +30,6 @@ import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinne
 import { Back, DemoTable } from 'apps/rahat-ui/src/common';
 import { useGetOneGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
 import GctDeleteDialog from './gct.delete.dialog';
-import GctUpdateSheet from './gct.update.sheet';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -52,7 +51,6 @@ export default function GctDetail() {
   const gctUUID = uuid as string;
   const router = useRouter();
 
-  const [updateOpen, setUpdateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [validationResult, setValidationResult] = useState<{
     success: boolean;
@@ -181,7 +179,11 @@ export default function GctDetail() {
               variant="outline"
               size="sm"
               className="gap-1.5"
-              onClick={() => setUpdateOpen(true)}
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/group-cash-transfer/${gctUUID}/edit`,
+                )
+              }
             >
               <Pencil size={14} />
               Edit
@@ -307,13 +309,6 @@ export default function GctDetail() {
           </CardContent>
         </Card>
       )}
-
-      <GctUpdateSheet
-        projectUUID={projectUUID}
-        item={item}
-        open={updateOpen}
-        onOpenChange={setUpdateOpen}
-      />
 
       <GctDeleteDialog
         projectUUID={projectUUID}

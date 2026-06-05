@@ -155,10 +155,10 @@ export default function EditGct() {
               type="button"
               variant="secondary"
               className="px-8"
-              onClick={() => router.push(`/projects/aa/${id}/group-cash-transfer`)}
+              onClick={() => form.reset()}
               disabled={updateGct.isPending}
             >
-              Cancel
+              Clear
             </Button>
             <Button
               type="submit"
@@ -171,7 +171,7 @@ export default function EditGct() {
                   Saving...
                 </>
               ) : (
-                'Save Changes'
+                'Confirm'
               )}
             </Button>
           </div>
@@ -199,7 +199,7 @@ export default function EditGct() {
                   Saving...
                 </>
               ) : (
-                'Save Changes'
+                'Confirm'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

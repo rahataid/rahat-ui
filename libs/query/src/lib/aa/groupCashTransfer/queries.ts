@@ -56,7 +56,7 @@ export const useGetAllValidGroupCashTransfers = (projectUUID: UUID) => {
 
   return useQuery({
     queryKey: [ACTION_NS + '.getAllValid', projectUUID],
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
     queryFn: () =>
       runAction(q, projectUUID, ACTION_NS + '.getAllValid', {}),
   });

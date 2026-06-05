@@ -34,6 +34,7 @@ export default function AddGct() {
 
   const [validating, setValidating] = useState(false);
   const [hasUnsavedTag, setHasUnsavedTag] = useState(false);
+  const [clearKey, setClearKey] = useState(0);
 
   const createGct = useCreateGroupCashTransfer(projectUUID);
   const validateBank = useValidateBankAccount(projectUUID);
@@ -105,6 +106,7 @@ export default function AddGct() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <BasicInfoSection
+            key={clearKey}
             form={form}
             onUnsavedChange={setHasUnsavedTag}
           />
@@ -115,7 +117,7 @@ export default function AddGct() {
               type="button"
               variant="secondary"
               className="px-8"
-              onClick={() => form.reset(DEFAULT_VALUES)}
+              onClick={() => { form.reset(DEFAULT_VALUES); setClearKey((k) => k + 1); }}
               disabled={isPending}
             >
               Clear

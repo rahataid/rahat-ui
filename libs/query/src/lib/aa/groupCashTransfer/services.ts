@@ -19,6 +19,7 @@ import {
   CreateGroupCashTransferPayload,
   DisbursePayload,
   UpdateGroupCashTransferPayload,
+  UpdateGctRecordPayload,
 } from './types';
 
 export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
@@ -124,6 +125,35 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
       q.reset();
       toast.fire({
         title: 'Error assigning fund.',
+        icon: 'error',
+        text: error?.response?.data?.message || 'Error',
+      });
+    },
+  });
+};
+
+export const useUpdateGctRecord = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: (payload: UpdateGctRecordPayload) =>
+      runAction(q, projectUUID, ACTION_NS + '.updateRecord', payload as any),
+    onSuccess: (_, variables) => {
+      q.reset();
+      toast.fire({ title: 'Record updated successfully.', icon: 'success' });
+      queryClient.invalidateQueries({
+        queryKey: [ACTION_NS + '.getRecords', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ACTION_NS + '.getOneRecord', projectUUID, variables.uuid],
+      });
+    },
+    onError: (error: any) => {
+      q.reset();
+      toast.fire({
+        title: 'Error updating record.',
         icon: 'error',
         text: error?.response?.data?.message || 'Error',
       });

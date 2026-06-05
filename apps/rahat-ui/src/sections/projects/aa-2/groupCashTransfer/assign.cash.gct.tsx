@@ -81,7 +81,7 @@ export default function AssignCashGct() {
         groupCashTransferId: pendingValues.groupCashTransferId,
         amount: Number(pendingValues.amount),
       });
-      router.push(`/projects/aa/${id}/group-cash-transfer`);
+      router.push(`/projects/aa/${id}/group-cash-transfer?tab=gctManagementList`);
     } catch (error: any) {
       const msg: string = error?.response?.data?.message || error?.message || '';
       if (/already|duplicate|reserved/i.test(msg)) {

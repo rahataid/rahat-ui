@@ -1,7 +1,9 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
+import { Pencil } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { format } from 'date-fns';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -39,7 +41,10 @@ function DetailRow({
 
 export default function GctRecordDetail() {
   const { id, recordUuid } = useParams();
+  const router = useRouter();
   const projectUUID = id as UUID;
+  const backPath = `/projects/aa/${id}/group-cash-transfer?tab=gctManagementList`;
+  const editPath = `/projects/aa/${id}/group-cash-transfer/records/${recordUuid}/edit`;
   const { data, isLoading } = useGetOneGctRecord(
     projectUUID,
     recordUuid as string,
@@ -60,12 +65,23 @@ export default function GctRecordDetail() {
 
   return (
     <div className="p-4">
-      <div className="mb-6">
-        <Back />
-        <h1 className="text-2xl font-semibold">{record?.title ?? 'Fund Record'}</h1>
-        <p className="text-muted-foreground text-sm mt-0.5">
-          Group Cash Transfer fund record details
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <Back path={backPath} />
+          <h1 className="text-2xl font-semibold">{record?.title ?? 'Fund Record'}</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">
+            Group Cash Transfer fund record details
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 mt-1"
+          onClick={() => router.push(editPath)}
+        >
+          <Pencil className="h-4 w-4" />
+          Edit
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

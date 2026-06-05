@@ -61,28 +61,15 @@ export default function GctManagementList() {
     perPage: pagination.perPage,
     sort: 'createdAt',
     order: 'desc',
+    ...(debouncedFilters.title ? { search: debouncedFilters.title } : {}),
+    ...(debouncedFilters.group ? { groupCashTransferName: debouncedFilters.group } : {}),
+    ...(statusFilter ? { status: statusFilter } : {}),
   });
 
   const rows = useMemo<GctFundRecord[]>(() => data?.data ?? [], [data]);
   const meta = data?.meta ?? data?.response?.meta;
 
-  const filtered = useMemo(() => {
-    let result = rows;
-    if (debouncedFilters.title) {
-      const lower = debouncedFilters.title.toLowerCase();
-      result = result.filter((r) => r.title?.toLowerCase().includes(lower));
-    }
-    if (debouncedFilters.group) {
-      const lower = debouncedFilters.group.toLowerCase();
-      result = result.filter((r) =>
-        r.groupCashTransfer?.name?.toLowerCase().includes(lower),
-      );
-    }
-    if (statusFilter) {
-      result = result.filter((r) => r.status === statusFilter);
-    }
-    return result;
-  }, [rows, debouncedFilters, statusFilter]);
+  const filtered = rows;
 
   const columns: ColumnDef<GctFundRecord>[] = useMemo(
     () => [

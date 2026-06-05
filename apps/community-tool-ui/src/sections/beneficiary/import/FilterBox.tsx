@@ -47,7 +47,7 @@ export default function FilterBox({
             defaultData={importSource}
           />
           {importSource === IMPORT_SOURCE.EXCEL && (
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 flex justify-end mr-4">
               <Button
                 className="ml-4 text-blue-700 bg-gray-300 hover:bg-gray-300 flex items-center"
                 onClick={(e) => handleSampleDownload(e)}
@@ -72,7 +72,7 @@ export default function FilterBox({
         </div>
         <div></div>
         <div>
-          {rawData.length > 0 && (
+          {(rawData.length > 0 || importSource === IMPORT_SOURCE.EXCEL) && (
             <Button
               onClick={handleGoClick}
               disabled={loading || rawData.length === 0}

@@ -61,11 +61,17 @@ export default function EditPhaseView() {
     'DISBURSHMENT_METHODS',
   );
 
+  const disbursementMethodLabels: Record<string, string> = {
+    GROUP_TOKEN: 'Group Cash Token',
+    TOKEN: 'Token',
+    INKIND: 'Inkind',
+  };
+
   const disbursementMethodOptions: Option[] = useMemo(() => {
     const methods: string[] = disbursementMethodsSetting?.value || [];
     return methods.map((m: string) => ({
       value: m,
-      label: m,
+      label: disbursementMethodLabels[m] || m,
     }));
   }, [disbursementMethodsSetting]);
 
@@ -90,7 +96,7 @@ export default function EditPhaseView() {
       requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
-      disbursementMethods: phase?.disbursementMethods || [],
+      disbursementMethods: phase?.disbursementConfig?.disbursementMethods || [],
     });
   }, [phase, form, riverBasin]);
 
@@ -133,7 +139,7 @@ export default function EditPhaseView() {
       requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
-      disbursementMethods: phase?.disbursementMethods || [],
+      disbursementMethods: phase?.disbursementConfig?.disbursementMethods || [],
     });
   };
 

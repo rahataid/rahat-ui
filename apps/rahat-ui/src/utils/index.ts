@@ -4,11 +4,6 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { format, isValid, parse } from 'date-fns';
 
-export const getLatestValue = (history: any[]) => {
-  if (!history || !Array.isArray(history) || history.length === 0) return null;
-  return history[history.length - 1];
-};
-
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {
     return address;

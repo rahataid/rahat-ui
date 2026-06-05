@@ -9,9 +9,8 @@ import React, { useMemo } from 'react';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
-import { getHumidityColor } from './utils/color.utils';
+import { getHumidityColor, getLatestValue } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
-import { getLatestValue } from 'apps/rahat-ui/src/utils';
 
 export default function HumidityWatchView() {
   const params = useParams();

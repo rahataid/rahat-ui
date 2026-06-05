@@ -5,9 +5,11 @@ import {
   usePhases,
   useProjectInfo,
   useProjectSettingsStore,
+  useProjectSettingsGet,
   useSinglePhase,
   useUpdatePhase,
 } from '@rahat-ui/query';
+import { Option } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { PhaseForm } from './PhaseForm';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { Trash } from 'lucide-react';
@@ -54,6 +56,19 @@ export default function EditPhaseView() {
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
   );
+  const { data: disbursementMethodsSetting } = useProjectSettingsGet(
+    projectId,
+    'DISBURSHMENT_METHODS',
+  );
+
+  const disbursementMethodOptions: Option[] = useMemo(() => {
+    const methods: string[] = disbursementMethodsSetting?.value || [];
+    return methods.map((m: string) => ({
+      value: m,
+      label: m,
+    }));
+  }, [disbursementMethodsSetting]);
+
   const payoutEnabledPhase = useMemo(
     () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
     [phasesData],
@@ -75,17 +90,20 @@ export default function EditPhaseView() {
       requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
+      disbursementMethods: phase?.disbursementMethods || [],
     });
   }, [phase, form, riverBasin]);
 
   const handleUpdatePhase = async (data: AddPhaseFormValues) => {
+    const canTriggerPayout = !!data.canTriggerPayout;
     const payload = {
       uuid: phaseId,
       name: data.name.trim().toUpperCase(),
       canRevert: !!data.canRevert,
-      canTriggerPayout: !!data.canTriggerPayout,
+      canTriggerPayout,
       requiredMandatoryTriggers: Number(data.requiredMandatoryTriggers),
       requiredOptionalTriggers: Number(data.requiredOptionalTriggers),
+      disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
     };
 
     try {
@@ -115,6 +133,7 @@ export default function EditPhaseView() {
       requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
+      disbursementMethods: phase?.disbursementMethods || [],
     });
   };
 
@@ -178,6 +197,9 @@ export default function EditPhaseView() {
         resetLabel="Reset"
         payoutEnabledPhase={payoutEnabledPhase}
         stationHeading={stationHeading}
+        disbursementMethodOptions={disbursementMethodOptions}
+        allPhases={phasesData}
+        currentPhaseId={phaseId}
       />
     </>
   );

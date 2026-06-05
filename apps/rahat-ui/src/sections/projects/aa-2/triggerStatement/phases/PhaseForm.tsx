@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AddPhaseFormInputValues, AddPhaseFormValues } from './phase.schema';
 import {
@@ -14,6 +14,9 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import MultipleSelector, {
+  Option,
+} from '@rahat-ui/shadcn/src/components/custom/multi-select';
 
 interface PhaseFormProps {
   form: UseFormReturn<AddPhaseFormInputValues, unknown, AddPhaseFormValues>;
@@ -24,6 +27,9 @@ interface PhaseFormProps {
   resetLabel?: string;
   payoutEnabledPhase?: { name?: string } | null;
   stationHeading: string;
+  disbursementMethodOptions?: Option[];
+  allPhases?: any[];
+  currentPhaseId?: string;
 }
 
 export const PhaseForm: React.FC<PhaseFormProps> = ({
@@ -35,65 +41,50 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
   resetLabel = 'Clear',
   payoutEnabledPhase = null,
   stationHeading,
-}) => (
-  <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <div className="p-4">
-        <ScrollArea className="h-[calc(100vh-230px)] pr-2">
-          <div className="rounded-xl border p-4 space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phase Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Write phase name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+  disbursementMethodOptions = [],
+  allPhases = [],
+  currentPhaseId,
+}) => {
+  const watchCanTriggerPayout = form.watch('canTriggerPayout');
 
-            <FormField
-              control={form.control}
-              name="riverBasin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{stationHeading}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={stationHeading}
-                      value={capitalizeFirstLetter(field.value)}
-                      onChange={field.onChange}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+  const methodOptions = useMemo(() => {
+    return disbursementMethodOptions.map((opt) => {
+      const usedByPhase = allPhases.find(
+        (p: any) =>
+          p.id !== currentPhaseId &&
+          p.disbursementMethods?.includes(opt.value),
+      );
+      return {
+        ...opt,
+        disable: !!usedByPhase,
+        label: usedByPhase
+          ? `${opt.label} - Already used by ${usedByPhase.name}`
+          : opt.label,
+      };
+    });
+  }, [disbursementMethodOptions, allPhases, currentPhaseId]);
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  const filterSelectedOptions = useCallback(
+    (values: string[] | undefined) => {
+      return disbursementMethodOptions.filter((o) => values?.includes(o.value));
+    },
+    [disbursementMethodOptions],
+  );
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="p-4">
+          <ScrollArea className="h-[calc(100vh-230px)] pr-2">
+            <div className="rounded-xl border p-4 space-y-4">
               <FormField
                 control={form.control}
-                name="requiredMandatoryTriggers"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Mandatory Triggers*</FormLabel>
+                    <FormLabel>Phase Name</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        placeholder="Enter Mandatory Triggers"
-                        value={
-                          typeof field.value === 'string' ||
-                          typeof field.value === 'number'
-                            ? field.value
-                            : ''
-                        }
-                        onChange={(e) => field.onChange(e.target.value)}
-                      />
+                      <Input placeholder="Write phase name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -102,99 +93,170 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
 
               <FormField
                 control={form.control}
-                name="requiredOptionalTriggers"
+                name="riverBasin"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Optional Triggers*</FormLabel>
+                    <FormLabel>{stationHeading}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        min={0}
-                        placeholder="Enter Optional Triggers"
-                        value={
-                          typeof field.value === 'string' ||
-                          typeof field.value === 'number'
-                            ? field.value
-                            : ''
-                        }
-                        onChange={(e) => field.onChange(e.target.value)}
+                        placeholder={stationHeading}
+                        value={capitalizeFirstLetter(field.value)}
+                        onChange={field.onChange}
+                        disabled
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Other Options:</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="canRevert"
+                  name="requiredMandatoryTriggers"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                    <FormItem>
+                      <FormLabel>Mandatory Triggers*</FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value === true}
-                          onCheckedChange={(checked) => {
-                            field.onChange(checked === true);
-                          }}
+                        <Input
+                          type="number"
+                          min={0}
+                          placeholder="Enter Mandatory Triggers"
+                          value={
+                            typeof field.value === 'string' ||
+                            typeof field.value === 'number'
+                              ? field.value
+                              : ''
+                          }
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
                       </FormControl>
-                      <FormLabel className="font-medium">Can Revert</FormLabel>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
 
                 <FormField
                   control={form.control}
-                  name="canTriggerPayout"
+                  name="requiredOptionalTriggers"
                   render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <div className="flex flex-row items-center space-x-2">
+                    <FormItem>
+                      <FormLabel>Optional Triggers*</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          placeholder="Enter Optional Triggers"
+                          value={
+                            typeof field.value === 'string' ||
+                            typeof field.value === 'number'
+                              ? field.value
+                              : ''
+                          }
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Other Options:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="canRevert"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                         <FormControl>
                           <Checkbox
                             checked={field.value === true}
-                            disabled={!!payoutEnabledPhase}
                             onCheckedChange={(checked) => {
                               field.onChange(checked === true);
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="font-medium">
-                          Can Trigger Payout
-                        </FormLabel>
-                      </div>
-                      {payoutEnabledPhase ? (
-                        <p className="text-sm text-yellow-600 ml-2">
-                          Phase "{payoutEnabledPhase.name}" already has payout
-                          enabled.
-                        </p>
-                      ) : null}
-                    </FormItem>
+                        <FormLabel className="font-medium">Can Revert</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="canTriggerPayout"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <div className="flex flex-row items-center space-x-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value === true}
+                              // disabled={!!payoutEnabledPhase}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked === true);
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-medium">
+                            Can Trigger Payout
+                          </FormLabel>
+                        </div>
+                        {/* {payoutEnabledPhase ? (
+                          <p className="text-sm text-yellow-600 ml-2">
+                            Phase "{payoutEnabledPhase.name}" already has payout
+                            enabled.
+                          </p>
+                        ) : null} */}
+                      </FormItem>
+                    )}
+                  />
+                  {watchCanTriggerPayout && (
+                    <FormField
+                      control={form.control}
+                      name="disbursementMethods"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Disbursement Methods</FormLabel>
+                          <FormControl>
+                            <MultipleSelector
+                              value={filterSelectedOptions(field.value)}
+                              onChange={(options: Option[]) => {
+                                field.onChange(
+                                  options.map((o) => o.value),
+                                );
+                              }}
+                              options={methodOptions}
+                              placeholder="Select disbursement methods"
+                              hideClearAllButton
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-36"
+                  onClick={onReset}
+                  disabled={loading}
+                >
+                  {resetLabel}
+                </Button>
+                <Button type="submit" className="w-36" disabled={loading}>
+                  {loading ? `${submitLabel}...` : submitLabel}
+                </Button>
               </div>
             </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-36"
-                onClick={onReset}
-                disabled={loading}
-              >
-                {resetLabel}
-              </Button>
-              <Button type="submit" className="w-36" disabled={loading}>
-                {loading ? `${submitLabel}...` : submitLabel}
-              </Button>
-            </div>
-          </div>
-        </ScrollArea>
-      </div>
-    </form>
-  </Form>
-);
+          </ScrollArea>
+        </div>
+      </form>
+    </Form>
+  );
+};

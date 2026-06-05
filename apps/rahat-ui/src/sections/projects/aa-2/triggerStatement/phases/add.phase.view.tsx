@@ -5,7 +5,9 @@ import {
   usePhases,
   useProjectSettingsStore,
   useProjectInfo,
+  useProjectSettingsGet,
 } from '@rahat-ui/query';
+import { Option } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { PhaseForm } from './PhaseForm';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -77,15 +79,23 @@ export default function AddPhaseView() {
     }
   }, [riverBasin, form]);
 
+  const { data: disbursementMethodsSetting } = useProjectSettingsGet(
+    projectId,
+    'DISBURSHMENT_METHODS',
+  );
+
+  const disbursementMethodOptions: Option[] = useMemo(() => {
+    const methods: string[] = disbursementMethodsSetting?.value || [];
+    return methods.map((m: string) => ({
+      value: m,
+      label: m,
+    }));
+  }, [disbursementMethodsSetting]);
+
   const payoutEnabledPhase = useMemo(
     () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
     [phasesData],
   );
-
-  useEffect(() => {
-    if (!payoutEnabledPhase) return;
-    form.setValue('canTriggerPayout', false, { shouldValidate: true });
-  }, [payoutEnabledPhase, form]);
 
   const handleAddPhase = async (data: AddPhaseFormValues) => {
     const trimmedName = data.name.trim().toUpperCase();
@@ -99,6 +109,7 @@ export default function AddPhaseView() {
       });
       return;
     }
+    const canTriggerPayout = !!data.canTriggerPayout;
     const payload = {
       name: trimmedName,
       source: phaseSource,
@@ -107,7 +118,8 @@ export default function AddPhaseView() {
       requiredMandatoryTriggers: data.requiredMandatoryTriggers,
       requiredOptionalTriggers: data.requiredOptionalTriggers,
       canRevert: !!data.canRevert,
-      canTriggerPayout: payoutEnabledPhase ? false : !!data.canTriggerPayout,
+      canTriggerPayout,
+      disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
     };
     try {
       await createPhase.mutateAsync({
@@ -147,6 +159,8 @@ export default function AddPhaseView() {
         resetLabel="Clear"
         payoutEnabledPhase={payoutEnabledPhase}
         stationHeading={stationHeading}
+        disbursementMethodOptions={disbursementMethodOptions}
+        allPhases={phasesData}
       />
     </>
   );

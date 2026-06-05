@@ -33,10 +33,11 @@ export default function AddToQueue({
   const mappedData =
     data.length > 0
       ? data.map((d: any) => {
-          const { rawData, ...rest } = d;
-          return rest;
-        })
-      : []; // Omit rawData
+        const { rawData, ...rest } = d;
+        return rest;
+      })
+      : [];
+
   const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
 
   function renderItemKey(item: any, key: string) {
@@ -57,9 +58,14 @@ export default function AddToQueue({
 
   const enableDisableImportButton = () => {
     if (hasUUID) return false;
+
     if (invalidFields.length || hasDuplicates) return true;
+
     if (loading) return true;
+
+    return false;
   };
+
   return (
     <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
@@ -69,6 +75,7 @@ export default function AddToQueue({
         >
           <ArrowBigLeft size={18} strokeWidth={2} /> Back
         </Button>
+
         <div>
           <Button
             disabled={!invalidFields.length && !hasDuplicates}
@@ -88,17 +95,19 @@ export default function AddToQueue({
           </Button>
         </div>
       </div>
+
       <hr />
-      <div
-        // style={{ maxWidth: 1900 }}
-        className="table-wrp block h-screen import-container overflow-x-auto"
-      >
+
+      <div className="table-wrp block h-screen import-container overflow-x-auto">
         <table className="ml-2 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="bg-white border-b sticky top-0">
             <tr>
-              {/* Dynamically generated table headers */}
               {headerKeys.map((key) => (
-                <th style={{ minWidth: 150 }} className="px-2 py-1" key={key}>
+                <th
+                  style={{ minWidth: 150 }}
+                  className="px-2 py-1"
+                  key={key}
+                >
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
@@ -117,45 +126,111 @@ export default function AddToQueue({
 
           <tbody className="h-screen overflow-y-auto">
             {data.map((item: any, index: number) => (
-              <TooltipProvider key={index}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <tr
-                      className={`${
-                        item.isDuplicate
-                          ? 'bg-orange-100 border-b'
-                          : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
-                      }`}
-                      key={index}
+              <tr
+                key={index}
+                className={`${item.isDuplicate
+                  ? 'bg-orange-100 border-b'
+                  : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
+                  }`}
+              >
+                {headerKeys.map((key) => {
+                  const errorData = invalidFields.find(
+                    (err: any) =>
+                      err.uuid === item['uuid'] &&
+                      err.value === item[key] &&
+                      key === err.fieldName,
+                  );
+
+                  const isInvalid = !!errorData;
+
+                  const cellContent = renderItemKey(item, key);
+
+                  // DUPLICATE + INVALID
+                  if (item.isDuplicate && isInvalid) {
+                    return (
+                      <td
+                        className="px-4 py-1.5 bg-red-100"
+                        key={key}
+                      >
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="w-full h-full cursor-pointer">
+                                {cellContent}
+                              </div>
+                            </TooltipTrigger>
+
+                            <TooltipContent align="start">
+                              <div className="space-y-1">
+                                <p>This row is duplicate!</p>
+                                <p>{errorData?.message}</p>
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </td>
+                    );
+                  }
+
+                  // INVALID STATUS
+                  if (isInvalid) {
+                    return (
+                      <td
+                        className="px-4 py-1.5 bg-red-100"
+                        key={key}
+                      >
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="w-full h-full cursor-pointer">
+                                {cellContent}
+                              </div>
+                            </TooltipTrigger>
+
+                            <TooltipContent align="start">
+                              <p>{errorData?.message}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </td>
+                    );
+                  }
+
+                  // DUPLICATE ROW
+                  if (item.isDuplicate) {
+                    return (
+                      <td
+                        className="px-4 py-1.5"
+                        key={key}
+                      >
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="w-full h-full cursor-pointer">
+                                {cellContent}
+                              </div>
+                            </TooltipTrigger>
+
+                            <TooltipContent align="start">
+                              <p>This row is duplicate!</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </td>
+                    );
+                  }
+
+                  // NORMAL CELL
+                  return (
+                    <td
+                      className="px-4 py-1.5"
+                      key={key}
                     >
-                      {/* Dynamically generated table cells */}
-                      {headerKeys.map((key) =>
-                        invalidFields.find(
-                          (err: any) =>
-                            err.uuid === item['uuid'] &&
-                            err.value === item[key] &&
-                            key === err.fieldName,
-                        ) ? (
-                          <td className="px-4 bg-red-100 py-1.5" key={key}>
-                            {renderItemKey(item, key)}
-                          </td>
-                        ) : (
-                          <td className="px-4 py-1.5" key={key}>
-                            {renderItemKey(item, key)}
-                          </td>
-                        ),
-                      )}
-                    </tr>
-                  </TooltipTrigger>
-                  {item.isDuplicate ? (
-                    <TooltipContent align="start">
-                      <p>This row is duplicate!</p>
-                    </TooltipContent>
-                  ) : (
-                    ''
-                  )}
-                </Tooltip>
-              </TooltipProvider>
+                      {cellContent}
+                    </td>
+                  );
+                })}
+              </tr>
             ))}
           </tbody>
         </table>

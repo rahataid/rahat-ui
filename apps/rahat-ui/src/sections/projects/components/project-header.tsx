@@ -21,7 +21,7 @@ import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { toast } from 'react-toastify';
-import { SidebarTrigger } from '@rahat-ui/shadcn/src/components/ui/sidebar';
+// SidebarTrigger moved into the sidebar header; no top-header trigger needed here.
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 
@@ -69,10 +69,7 @@ export function ProjectNav({
 
   return (
     <div className="sticky top-0 z-50 h-14 w-full flex items-center pl-2 pr-6 py-2 bg-card border-b">
-      <div className="flex items-center space-x-4">
-        <SidebarTrigger />
-        {component}
-      </div>
+      <div className="flex items-center space-x-4">{component}</div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
         <ConnectWallet />
         {showNotification && <NotificationButton unreadCount={0} />}

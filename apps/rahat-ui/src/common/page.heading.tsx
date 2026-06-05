@@ -41,7 +41,8 @@ export function Heading({
       <div
         className={cn(
           'font-bold mb-1 flex items-center gap-2',
-          !titleStyle && 'text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl',
+          !titleStyle &&
+            'text-lg md:text-xl lg:text-2xl xl:text-2xl 2xl:text-3xl',
           titleStyle,
         )}
       >

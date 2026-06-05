@@ -8,6 +8,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarTrigger,
   SidebarRail,
 } from 'libs/shadcn/src/components/ui/sidebar';
 import { NavMain } from './nav-main';
@@ -25,16 +26,27 @@ type ProjectNavViewProps = {
 export function ProjectSidebar(menuItems: ProjectNavViewProps) {
   const router = useRouter();
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      style={
+        {
+          '--sidebar-width': 'clamp(13rem, 15vw, 16rem)',
+        } as React.CSSProperties
+      }
+    >
+      {' '}
       <SidebarHeader>
-        <Image
-          src="/rahat-logo.png"
-          alt="logo"
-          height={20}
-          width={30}
-          onClick={() => router.push('/dashboard')}
-          className="hover:cursor-pointer"
-        />
+        <div className="flex items-center justify-between w-full">
+          <Image
+            src="/rahat-logo.png"
+            alt="logo"
+            height={20}
+            width={30}
+            onClick={() => router.push('/dashboard')}
+            className="hover:cursor-pointer"
+          />
+          <SidebarTrigger />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         {menuItems?.isLoading ? (
@@ -48,10 +60,20 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
         )}
       </SidebarContent>
       <SidebarFooter>
-        <LogOut
-          className="cursor-pointer"
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => router.push('/projects')}
-        />
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') router.push('/projects');
+          }}
+          className="flex items-center gap-2 p-2 cursor-pointer text-sidebar-foreground hover:text-sidebar-accent-foreground"
+        >
+          <LogOut />
+          <span className="text-sm group-data-[collapsible=icon]:hidden">
+            Exit project
+          </span>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

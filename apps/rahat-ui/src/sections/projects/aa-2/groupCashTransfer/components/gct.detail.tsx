@@ -248,6 +248,23 @@ export default function GctDetail() {
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Bank Details
               </CardTitle>
+              <Button
+                size="sm"
+                className="gap-1.5 rounded-sm"
+                onClick={handleValidateBankAccount}
+                disabled={validateBank.isPending || !bankDetails?.accountNumber}
+              >
+                {validateBank.isPending ? (
+                  <>
+                    <Loader2 size={12} className="animate-spin" />
+                    Validating bank account…
+                  </>
+                ) : (
+                  <>
+                    Validate Bank Details
+                  </>
+                )}
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="px-4 pb-4">
@@ -259,11 +276,6 @@ export default function GctDetail() {
                     : 'bg-red-50 text-red-600'
                 }`}
               >
-                {validationResult.success ? (
-                  <CheckCircle2 size={14} />
-                ) : (
-                  <XCircle size={14} />
-                )}
                 {validationResult.message}
               </div>
             )}

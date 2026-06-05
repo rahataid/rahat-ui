@@ -24,16 +24,21 @@ function Req() {
 
 export function SectionCard({
   title,
+  action,
   children,
 }: {
   title: string;
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="p-4 rounded-sm border bg-card space-y-4">
-      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-        {title}
-      </h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          {title}
+        </h3>
+        {action}
+      </div>
       {children}
     </div>
   );

@@ -97,7 +97,7 @@ export default function AssignCashGct() {
       <HeaderWithBack
         title="Assign Cash"
         subtitle="Fill the form below to assign cash to a GCT Group"
-        path={`/projects/aa/${id}/group-cash-transfer`}
+        path={`/projects/aa/${id}/group-cash-transfer?tab=gctManagementList`}
       />
 
       <Form {...form}>

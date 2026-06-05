@@ -60,19 +60,12 @@ export default function GctRecordDetail() {
 
   return (
     <div className="p-4">
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <Back />
-          <h1 className="text-2xl font-semibold">{record?.title ?? 'Fund Record'}</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">
-            Group Cash Transfer fund record details
-          </p>
-        </div>
-        <Badge
-          className={`text-xs mt-1 ${GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'}`}
-        >
-          {status.replace(/_/g, ' ')}
-        </Badge>
+      <div className="mb-6">
+        <Back />
+        <h1 className="text-2xl font-semibold">{record?.title ?? 'Fund Record'}</h1>
+        <p className="text-muted-foreground text-sm mt-0.5">
+          Group Cash Transfer fund record details
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -81,8 +74,15 @@ export default function GctRecordDetail() {
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
               Record Information
             </p>
-           <DetailRow label="Amount" value={record?.amount?.toLocaleString()} />
-            <DetailRow label="Status" value={status.replace(/_/g, ' ')} />
+            <DetailRow label="Amount" value={record?.amount?.toLocaleString()} />
+            <div className="flex flex-col gap-0.5 py-2.5 border-b">
+              <span className="text-xs text-muted-foreground">Status</span>
+              <Badge
+                className={`w-fit text-xs ${GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'}`}
+              >
+                {status.replace(/_/g, ' ')}
+              </Badge>
+            </div>
             <DetailRow label="Created By" value={record?.createdBy} />
             <DetailRow label="Created At" value={fmt(record?.createdAt)} />
             <DetailRow label="Updated At" value={fmt(record?.updatedAt)} />

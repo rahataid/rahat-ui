@@ -51,15 +51,13 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
     return disbursementMethodOptions.map((opt) => {
       const usedByPhase = allPhases.find(
         (p: any) =>
-          p.id !== currentPhaseId &&
-          p.disbursementMethods?.includes(opt.value),
+          p.uuid !== currentPhaseId &&
+          p.disbursementConfig?.disbursementMethods?.includes(opt.value),
       );
       return {
         ...opt,
         disable: !!usedByPhase,
-        label: usedByPhase
-          ? `${opt.label} - Already used by ${usedByPhase.name}`
-          : opt.label,
+        title: usedByPhase ? `Already used by ${usedByPhase.name}` : undefined,
       };
     });
   }, [disbursementMethodOptions, allPhases, currentPhaseId]);
@@ -75,7 +73,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
     },
     [disbursementMethodOptions],
   );
-
+  console.log(allPhases, 'all phases');
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -183,7 +181,9 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="font-medium">Can Revert</FormLabel>
+                        <FormLabel className="font-medium">
+                          Can Revert
+                        </FormLabel>
                       </FormItem>
                     )}
                   />
@@ -227,9 +227,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                             <MultipleSelector
                               value={filterSelectedOptions(field.value)}
                               onChange={(options: Option[]) => {
-                                field.onChange(
-                                  options.map((o) => o.value),
-                                );
+                                field.onChange(options.map((o) => o.value));
                               }}
                               options={methodOptions}
                               placeholder="Select disbursement methods"

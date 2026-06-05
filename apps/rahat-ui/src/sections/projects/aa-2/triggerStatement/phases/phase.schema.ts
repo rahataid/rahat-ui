@@ -75,7 +75,7 @@ export const getAddPhaseDefaultValues = (
   riverBasin: riverBasin || '',
   requiredMandatoryTriggers: undefined,
   requiredOptionalTriggers: undefined,
-  canRevert: false,
+  canRevert: true,
   canTriggerPayout: false,
   disbursementMethods: [],
 });

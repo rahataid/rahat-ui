@@ -260,46 +260,53 @@ export default function EditTrigger() {
     },
   });
 
-  const handleSubmitManualTrigger = async (
-    data: z.infer<typeof ManualFormSchema>,
-  ) => {
-    handleUpdate(data);
-  };
+  type ManualFormValues = z.infer<typeof ManualFormSchema>;
+  type AutomatedFormValues = z.infer<typeof AutomatedFormSchema>;
+  type TriggerFormValues = ManualFormValues | AutomatedFormValues;
 
-  const handleSubmitAutomatedTrigger = async (
-    data: z.infer<typeof AutomatedFormSchema>,
-  ) => {
-    handleUpdate(data);
-  };
+  const isAutomatedFormData = (
+    data: TriggerFormValues,
+  ): data is AutomatedFormValues =>
+    'source' in data && 'triggerStatement' in data;
 
-  const handleUpdate = async (data: any) => {
-    const payload = {
+  const buildUpdatePayload = (data: TriggerFormValues) => {
+    const basePayload = {
       title: data.title,
-      source: data?.source.split(':')[0].toUpperCase(),
       description: data.description,
-      triggerStatement: data.triggerStatement,
       phaseId: trigger?.phaseId,
       uuid: trigger?.uuid,
       isMandatory: !data?.isMandatory,
     };
+
+    if (!isAutomatedFormData(data)) {
+      return basePayload;
+    }
+
+    return {
+      ...basePayload,
+      source: data.source.split(':')[0].toUpperCase(),
+      triggerStatement: data.triggerStatement,
+    };
+  };
+
+  const handleUpdate = async (data: TriggerFormValues) => {
+    const payload = buildUpdatePayload(data);
+
     await updateTrigger.mutateAsync({
       projectUUID: projectId,
       triggerUpdatePayload: payload,
     });
+
     router.back();
   };
 
   const handleEditTriggers = () => {
-    const formHandlers: { [key in 'manual' | 'automated']: () => void } = {
-      manual: () => {
-        manualForm.handleSubmit(handleSubmitManualTrigger)();
-      },
-      automated: () => {
-        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)();
-      },
-    };
+    const submit =
+      triggerType === 'automated'
+        ? automatedForm.handleSubmit(handleUpdate)
+        : manualForm.handleSubmit(handleUpdate);
 
-    formHandlers[triggerType as 'manual' | 'automated']?.();
+    submit();
   };
 
   const getOriginalFormData = () => {

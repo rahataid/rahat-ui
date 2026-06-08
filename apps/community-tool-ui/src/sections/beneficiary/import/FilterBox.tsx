@@ -87,11 +87,6 @@ export default function FilterBox({
       {importSource === IMPORT_SOURCE.EXCEL && (
         <div>
           <ExcelUploader handleFileSelect={handleFileSelect} />
-          {/* 
-          <Button className=" text-blue-700 bg-gray-300 hover:bg-gray-300 ">
-            <DownloadCloud size={18} strokeWidth={1.5} className="mr-1" />
-            Download Sample
-          </Button> */}
         </div>
       )}
     </>

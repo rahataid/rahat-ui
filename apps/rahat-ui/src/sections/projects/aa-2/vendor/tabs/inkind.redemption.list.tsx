@@ -159,6 +159,22 @@ export const InkindRedemptionList = ({
           }
           className="flex-[1]"
         />
+        {/* <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <IconLabelBtn
+                Icon={CloudDownloadIcon}
+                // handleClick={handleDownloadReport}
+                // name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
+                name={'Export'}
+                variant="outline"
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Export In-kind Logs</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider> */}
       </div>
       <DemoTable
         table={table}

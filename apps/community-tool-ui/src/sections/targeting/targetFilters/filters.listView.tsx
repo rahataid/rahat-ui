@@ -152,18 +152,16 @@ export default function ListView({
                 {/* Divider */}
                 <div className="border-t my-2"></div>
                 {/* New group creation */}
-                <div className="mt-2">
-                  <Input
-                    placeholder="Enter new group name"
-                    value={newGroup}
-                    disabled={label !== ''}
-                    onChange={(e) => {
-                      setNewGroup(e.target.value);
-                      setLabel('');
-                      setSearchLabel('');
-                    }}
-                  />
-                </div>
+                <Input
+                  placeholder="Enter new group name"
+                  value={newGroup}
+                  disabled={label !== ''}
+                  onChange={(e) => {
+                    setNewGroup(e.target.value);
+                    setLabel('');
+                    setSearchLabel('');
+                  }}
+                />
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -201,13 +199,10 @@ export default function ListView({
                   </TableRow>
                 ))}
               </TableHeader>
-              {loading ? (
+              {loading && table.getRowModel().rows.length === 0 ? (
                 <TableBody>
                   <TableRow>
-                    <TableCell
-                      colSpan={table.getAllColumns().length}
-                      className="h-24 text-center"
-                    >
+                    <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
                       <div style={{ marginLeft: '48%' }}>
                         <CircleEllipsisIcon className="animate-spin h-8 w-8" />
                       </div>
@@ -217,30 +212,20 @@ export default function ListView({
                 </TableBody>
               ) : (
                 <TableBody>
-                  {table.getRowModel().rows?.length > 0 ? (
+                  {table.getRowModel().rows.length > 0 ? (
                     table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                      >
+                      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell
-                        colSpan={table.getAllColumns().length}
-                        className="h-24 text-center text-md"
-                      >
-                        No results found. Select filter options to list
-                        targeting beneficiaries.
+                      <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center text-md">
+                        No results found. Select filter options to list targeting beneficiaries.
                       </TableCell>
                     </TableRow>
                   )}

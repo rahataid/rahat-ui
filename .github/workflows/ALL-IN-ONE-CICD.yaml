@@ -53,6 +53,19 @@ env:
   IMAGE_NAMESPACE: ${{ secrets.DOCKERHUB_USERNAME }}
 
 jobs:
+  zizmor:
+    name: GitHub Actions Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run zizmor
+        uses: woodruffw/zizmor-action@v1
+        with:
+          config: .github/zizmor.yml
   setup:
     name: Setup Build Matrix
     runs-on: ubuntu-latest

@@ -156,7 +156,7 @@ export default function GctDetail() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Back path={`/projects/aa/${id}/group-cash-transfer`} />
+          <Back path={`/projects/aa/${id}/group-cash-transfer?tab=gctGroupList`} />
           <div>
             <h1 className="text-2xl font-semibold">{item?.name ?? '—'}</h1>
             <p className="text-muted-foreground text-sm mt-0.5">

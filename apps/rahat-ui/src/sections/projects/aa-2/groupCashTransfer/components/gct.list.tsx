@@ -25,6 +25,7 @@ import {
   DemoTable,
   SearchInput,
   CustomPagination,
+  Heading,
 } from 'apps/rahat-ui/src/common';
 import { usePagination, useGroupCashTransfers } from '@rahat-ui/query';
 import GctDeleteDialog from './gct.delete.dialog';
@@ -72,11 +73,11 @@ export default function GctList() {
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
-    ...(debouncedFilters.search ? { search: debouncedFilters.search } : {}),
-    ...(debouncedFilters.phone ? { phone: debouncedFilters.phone } : {}),
-    ...(debouncedFilters.ward ? { ward: debouncedFilters.ward } : {}),
-    ...(debouncedFilters.supportArea
-      ? { supportArea: debouncedFilters.supportArea }
+    ...(debouncedFilters.search.trim() ? { search: debouncedFilters.search.trim() } : {}),
+    ...(debouncedFilters.phone.trim() ? { phone: debouncedFilters.phone.trim() } : {}),
+    ...(debouncedFilters.ward.trim() ? { ward: debouncedFilters.ward.trim() } : {}),
+    ...(debouncedFilters.supportArea.trim()
+      ? { supportArea: debouncedFilters.supportArea.trim() }
       : {}),
   });
 
@@ -218,13 +219,19 @@ export default function GctList() {
 
   return (
     <div>
+      <Heading
+        title="Group Cash Transfer Group List"
+        titleStyle="font-medium text-lg"
+        description="List of all the Group Cash Transfer Groups"
+      />
+
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <SearchInput
           className="flex-1 min-w-[140px]"
           name="name"
           value={nameFilter}
           onSearch={(e) => {
-            setNameFilter(e.target.value.trim());
+            setNameFilter(e.target.value);
             setPagination({ ...pagination, page: 1 });
           }}
         />
@@ -233,7 +240,7 @@ export default function GctList() {
           name="phone"
           value={phoneFilter}
           onSearch={(e) => {
-            setPhoneFilter(e.target.value.trim());
+            setPhoneFilter(e.target.value);
             setPagination({ ...pagination, page: 1 });
           }}
         />
@@ -242,7 +249,7 @@ export default function GctList() {
           name="Ward (Community)"
           value={wardFilter}
           onSearch={(e) => {
-            setWardFilter(e.target.value.trim());
+            setWardFilter(e.target.value);
             setPagination({ ...pagination, page: 1 });
           }}
         />
@@ -251,7 +258,7 @@ export default function GctList() {
           name="support area"
           value={supportAreaFilter}
           onSearch={(e) => {
-            setSupportAreaFilter(e.target.value.trim());
+            setSupportAreaFilter(e.target.value);
             setPagination({ ...pagination, page: 1 });
           }}
         />

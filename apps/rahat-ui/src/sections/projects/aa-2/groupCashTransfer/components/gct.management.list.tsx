@@ -99,8 +99,8 @@ export default function GctManagementList() {
     perPage: pagination.perPage,
     sort: 'createdAt',
     order: 'desc',
-    ...(debouncedFilters.title ? { search: debouncedFilters.title } : {}),
-    ...(debouncedFilters.group ? { groupCashTransferName: debouncedFilters.group } : {}),
+    ...(debouncedFilters.title.trim() ? { search: debouncedFilters.title.trim() } : {}),
+    ...(debouncedFilters.group.trim() ? { groupCashTransferName: debouncedFilters.group.trim() } : {}),
     ...(statusFilter ? { status: statusFilter } : {}),
   });
 

@@ -63,7 +63,6 @@ export const useTargetedBeneficiaryList = (
     {
       queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid, payload],
       queryFn: () =>
-        //@ts-ignore
         targetingClient.listByTargetUuid({
           target_uuid: target_uuid,
           query: payload,

@@ -111,7 +111,7 @@ export default function FiltersTargetingView() {
   return (
     <Tabs defaultValue="list" className="h-full">
       <FilterTargetingListView
-        loading={targetingLoading || beneficiaryLoading}
+        loading={beneficiaryLoading}
         table={table}
         handleSaveTargetResults={handleSaveTargetResults}
         targetUUID={targetUUID as string}

@@ -65,7 +65,6 @@ jobs:
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@main
         with:
-          config: .github/zizmor.yml
           advanced-security: false
           annotations: true
   setup:

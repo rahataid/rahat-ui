@@ -164,14 +164,14 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <p className="text-sm font-medium">Other Options:</p>
-                <div className="flex w-full items-start  ">
+                <div className="flex gap-20 items-start ">
                   <FormField
                     control={form.control}
                     name="canRevert"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-2 space-y-0 w-full ">
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0  ">
                         <FormControl>
                           <Checkbox
                             checked={field.value === true}
@@ -191,7 +191,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                     control={form.control}
                     name="canTriggerPayout"
                     render={({ field }) => (
-                      <FormItem className="space-y-1 w-full">
+                      <FormItem className="space-y-1 ">
                         <div className="flex flex-row  space-x-2  ">
                           <FormControl>
                             <Checkbox
@@ -215,14 +215,14 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                       </FormItem>
                     )}
                   />
-
-                  {/* <div className="w-full"> */}
+                </div>
+                <div className="mt-4 ">
                   {watchCanTriggerPayout && (
                     <FormField
                       control={form.control}
                       name="disbursementMethods"
                       render={({ field }) => (
-                        <FormItem className=" flex  flex-col items-start w-full">
+                        <FormItem className=" flex  flex-col items-start w-full ">
                           <FormLabel>Disbursement Methods</FormLabel>
                           <FormControl>
                             <MultipleSelector
@@ -240,7 +240,6 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                       )}
                     />
                   )}
-                  {/* </div> */}
                 </div>
               </div>
 

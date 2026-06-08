@@ -161,7 +161,7 @@ export default function AddPhaseView() {
         onSubmit={handleAddPhase}
         onReset={handleReset}
         loading={createPhase.isPending}
-        submitLabel="Add"
+        submitLabel="Confirm"
         resetLabel="Clear"
         payoutEnabledPhase={payoutEnabledPhase}
         stationHeading={stationHeading}

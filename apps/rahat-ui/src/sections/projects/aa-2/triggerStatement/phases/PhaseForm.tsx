@@ -10,13 +10,13 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import MultipleSelector, {
   Option,
 } from '@rahat-ui/shadcn/src/components/custom/multi-select';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 
 interface PhaseFormProps {
   form: UseFormReturn<AddPhaseFormInputValues, unknown, AddPhaseFormValues>;
@@ -164,85 +164,97 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 />
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4  pt-3">
                 <p className="text-sm font-medium">Other Options:</p>
-                <div className="flex gap-20 items-start ">
+                {/* Can Revert Toggle */}
+                <div className="flex items-start justify-between pb-6 border-b">
+                  <div className="flex-1 pr-4">
+                    <h4 className="font-semibold text-slate-900 text-sm mb-1">
+                      Can Revert
+                    </h4>
+                    <p className="text-slate-600 text-sm">
+                      Allow user to manually revert this phase if conditions
+                      drop below thresholds.
+                    </p>
+                  </div>
                   <FormField
                     control={form.control}
                     name="canRevert"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center space-x-2 space-y-0  ">
                         <FormControl>
-                          <Checkbox
+                          <Switch
+                            id="canRevert"
                             checked={field.value === true}
                             onCheckedChange={(checked) => {
                               field.onChange(checked === true);
                             }}
+                            className="flex-shrink-0"
                           />
                         </FormControl>
-                        <FormLabel className="font-medium">
-                          Can Revert
-                        </FormLabel>
                       </FormItem>
                     )}
                   />
+                </div>
 
+                {/* Can Trigger Payout Toggle */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 pr-4">
+                    <h4 className="font-semibold text-slate-900 text-sm mb-1">
+                      Can Trigger Payout
+                    </h4>
+                    <p className="text-slate-600 text-sm">
+                      Authorize initiation of disbursements upon the activation
+                      of this phase.
+                    </p>
+                  </div>
                   <FormField
                     control={form.control}
                     name="canTriggerPayout"
                     render={({ field }) => (
-                      <FormItem className="space-y-1 ">
-                        <div className="flex flex-row  space-x-2  ">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value === true}
-                              disabled={allMethodsTaken}
-                              onCheckedChange={(checked) => {
-                                field.onChange(checked === true);
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="font-medium">
-                            Can Trigger Payout
-                          </FormLabel>
-                        </div>
-                        {allMethodsTaken ? (
-                          <p className="text-sm text-yellow-600 ml-2">
-                            All disbursement methods already used - no options
-                            left to select
-                          </p>
-                        ) : null}
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0  ">
+                        <FormControl>
+                          <Switch
+                            id="canTriggerPayout"
+                            checked={field.value === true}
+                            disabled={allMethodsTaken}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked === true);
+                            }}
+                            className="flex-shrink-0"
+                          />
+                        </FormControl>
                       </FormItem>
                     )}
                   />
                 </div>
-                <div className="mt-4 ">
-                  {watchCanTriggerPayout && (
-                    <FormField
-                      control={form.control}
-                      name="disbursementMethods"
-                      render={({ field }) => (
-                        <FormItem className=" flex  flex-col items-start w-full ">
-                          <FormLabel>Disbursement Methods</FormLabel>
-                          <FormControl>
-                            <MultipleSelector
-                              value={filterSelectedOptions(field.value)}
-                              onChange={(options: Option[]) => {
-                                field.onChange(options.map((o) => o.value));
-                              }}
-                              options={methodOptions}
-                              placeholder="Select disbursement methods"
-                              hideClearAllButton
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-                </div>
               </div>
-
+              {/* Disbursement Methods - Separate Section */}
+              <div className="mt-4 ">
+                {watchCanTriggerPayout && (
+                  <FormField
+                    control={form.control}
+                    name="disbursementMethods"
+                    render={({ field }) => (
+                      <FormItem className=" flex  flex-col items-start w-full ">
+                        <FormLabel>Disbursement Methods</FormLabel>
+                        <FormControl>
+                          <MultipleSelector
+                            value={filterSelectedOptions(field.value)}
+                            onChange={(options: Option[]) => {
+                              field.onChange(options.map((o) => o.value));
+                            }}
+                            options={methodOptions}
+                            placeholder="Select disbursement methods"
+                            hideClearAllButton
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button
                   type="button"

@@ -61,9 +61,13 @@ export default function ListView({
   communityGroup,
 }: IProps) {
 
+  const [open, setOpen] = useState(false);
   const [label, setLabel] = useState<string>('');
   const [newGroup, setNewGroup] = useState<string>('');
-  const [open, setOpen] = useState(false);
+  const [searchLabel, setSearchLabel] = useState<string>(''); // input for existing groups search
+  // Enable Assign button when either an existing group is selected or a new group name is entered, but not both
+  const canAssign = (label !== '' && newGroup.trim() === '') || (newGroup.trim() !== '' && label === '');
+
   return (
     <>
       <div className="w-full mt-1 p-2 bg-secondary">
@@ -112,14 +116,17 @@ export default function ListView({
               </AlertDialogTitle>
 
               <AlertDialogDescription>
-                {/* Existing groups selection */}
+
                 <div className="mb-4">
                   <Command className="h-48">
                     <CommandInput
                       placeholder={'Search existing groups...'}
                       autoFocus={true}
-                      value={label}
-                      onInput={(e) => setLabel(e.currentTarget.value)}
+                      value={searchLabel}
+                      onInput={(e) => {
+                        setSearchLabel(e.currentTarget.value);
+                        setNewGroup('');
+                      }}
                     />
                     <CommandList className="no-scrollbar">
                       <CommandGroup>
@@ -129,6 +136,7 @@ export default function ListView({
                             value={item.name}
                             onSelect={() => {
                               setLabel(item.name);
+                              setSearchLabel(item.name);
                               setNewGroup('');
                             }}
                           >
@@ -149,6 +157,7 @@ export default function ListView({
                     onChange={(e) => {
                       setNewGroup(e.target.value);
                       setLabel('');
+                      setSearchLabel('');
                     }}
                   />
                 </div>
@@ -160,7 +169,7 @@ export default function ListView({
                   const groupName = newGroup.trim() !== '' ? newGroup : label;
                   handleSaveTargetResults(groupName as string);
                 }}
-                disabled={label === '' && newGroup.trim() === ''}
+                disabled={!canAssign}
               >
                 Assign
               </AlertDialogAction>

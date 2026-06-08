@@ -124,7 +124,9 @@ export default function ListView({
                       autoFocus={true}
                       value={searchLabel}
                       onInput={(e) => {
-                        setSearchLabel(e.currentTarget.value);
+                        const val = e.currentTarget.value;
+                        setSearchLabel(val);
+                        if (val === '') setLabel('');
                         setNewGroup('');
                       }}
                     />
@@ -154,6 +156,7 @@ export default function ListView({
                   <Input
                     placeholder="Enter new group name"
                     value={newGroup}
+                    disabled={label !== ''}
                     onChange={(e) => {
                       setNewGroup(e.target.value);
                       setLabel('');

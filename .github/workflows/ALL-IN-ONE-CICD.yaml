@@ -39,6 +39,7 @@ on:
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
           - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
+          - "[PROD-DEMO] github/data/rahat/rahat-ui/prod/aa/demo"
 
       vault_secret_key:
         description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"
@@ -52,6 +53,20 @@ env:
   IMAGE_NAMESPACE: ${{ secrets.DOCKERHUB_USERNAME }}
 
 jobs:
+  izmor:
+    name: GitHub Actions Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@main
+        with:
+          advanced-security: false
+          annotations: true
   setup:
     name: Setup Build Matrix
     runs-on: ubuntu-latest

@@ -28,6 +28,8 @@ import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
 import FilterBox from './FilterBox';
 import InfoBox from './InfoBox';
+import Samples from './sample.json';
+import * as XLSX from 'xlsx';
 
 import {
   useBeneficiaryImportStore,
@@ -233,7 +235,9 @@ export default function BenImp({ fieldDefinitions }: IProps) {
           icon: 'error',
           title: 'Failed to fetch kobotool data',
         });
-      const sanitized = trimWhitespace(removeFieldsWithUnderscore(koboData.data.results));
+      const sanitized = trimWhitespace(
+        removeFieldsWithUnderscore(koboData.data.results),
+      );
       setRawData(sanitized);
       await fetchExistingMapping(found.imported);
       setLoading(false);
@@ -296,7 +300,9 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               defval: '',
               raw: isCsv,
             }) as any;
-            const sanitized = trimWhitespace(removeFieldsWithUnderscore(json || []));
+            const sanitized = trimWhitespace(
+              removeFieldsWithUnderscore(json || []),
+            );
             setRawData(sanitized);
             await fetchAiMappingSuggestions(file);
             resolve();
@@ -532,6 +538,15 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
+  const handleSampleDownload = (e) => {
+    e.preventDefault();
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(Samples);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, 'beneficiary_sample.xlsx');
+  };
 
   return (
     <div className="h-custom">
@@ -547,6 +562,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               koboForms={koboForms}
               handleKoboFormChange={handleKoboFormChange}
               handleGoClick={handleGoClick}
+              handleSampleDownload={handleSampleDownload}
               loading={loading}
             />
             <div className="pt-10">{loading && <Loader />}</div>

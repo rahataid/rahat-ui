@@ -229,6 +229,17 @@ query RedeemedBeneficiaries {
   offlineClaimProcesseds(first: 1000, orderBy: blockTimestamp, orderDirection: desc) {
     beneficiary
   }
+  claimDetails(
+    first: 1000
+    orderBy: blockTimestamp
+    orderDirection: desc
+    where: { isProcessed: true }
+  ) {
+    beneficiary
+  }
+  otpVerifieds(first: 1000, orderBy: blockTimestamp, orderDirection: desc) {
+    beneficiary
+  }
 }
 `;
 

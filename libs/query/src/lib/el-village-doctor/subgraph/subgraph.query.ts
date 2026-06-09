@@ -45,8 +45,9 @@ function collectVendorRelatedBeneficiaryAddresses(
     add(c?.beneficiary);
   for (const c of (payload['claimDetails'] as { beneficiary?: string }[]) ?? [])
     add(c?.beneficiary);
-  for (const c of
-    (payload['offlineClaimProcesseds'] as { beneficiary?: string }[]) ?? [])
+  for (const c of (payload['offlineClaimProcesseds'] as {
+    beneficiary?: string;
+  }[]) ?? [])
     add(c?.beneficiary);
   for (const c of (payload['otpVerifieds'] as { beneficiary?: string }[]) ?? [])
     add(c?.beneficiary);
@@ -299,11 +300,31 @@ export const useVillageDoctorRedeemedBeneficiaries = () => {
           );
         }
         const addresses = new Set<string>();
-        for (const item of (data?.claimProcesseds as { beneficiary?: string }[]) ?? []) {
-          if (item.beneficiary) addresses.add(item.beneficiary.toLowerCase());
+        const addBeneficiary = (addr: unknown) => {
+          const normalized = normalizeEvmAddressForSubgraph(
+            typeof addr === 'string' ? addr : String(addr ?? ''),
+          );
+          if (normalized && isCanonicalSubgraphVendorAddress(normalized)) {
+            addresses.add(normalized);
+          }
+        };
+        for (const item of (data?.claimProcesseds as {
+          beneficiary?: string;
+        }[]) ?? []) {
+          addBeneficiary(item.beneficiary);
         }
-        for (const item of (data?.offlineClaimProcesseds as { beneficiary?: string }[]) ?? []) {
-          if (item.beneficiary) addresses.add(item.beneficiary.toLowerCase());
+        for (const item of (data?.offlineClaimProcesseds as {
+          beneficiary?: string;
+        }[]) ?? []) {
+          addBeneficiary(item.beneficiary);
+        }
+        for (const item of (data?.claimDetails as { beneficiary?: string }[]) ??
+          []) {
+          addBeneficiary(item.beneficiary);
+        }
+        for (const item of (data?.otpVerifieds as { beneficiary?: string }[]) ??
+          []) {
+          addBeneficiary(item.beneficiary);
         }
         return addresses;
       },

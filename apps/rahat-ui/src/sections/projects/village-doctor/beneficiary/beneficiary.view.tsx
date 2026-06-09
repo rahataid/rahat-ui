@@ -66,6 +66,19 @@ export default function ELVillageDoctorVillagerView() {
 
   const { data: redeemedAddresses } = useVillageDoctorRedeemedBeneficiaries();
 
+  const isRedeemedBeneficiary = (benef: {
+    hasRedeemed?: boolean;
+    walletAddress?: string;
+  }) => {
+    if (typeof benef?.hasRedeemed === 'boolean') {
+      return benef.hasRedeemed;
+    }
+    const wallet = benef?.walletAddress?.trim().toLowerCase();
+    if (!wallet || !redeemedAddresses) return false;
+    const normalized = wallet.startsWith('0x') ? wallet : `0x${wallet}`;
+    return redeemedAddresses.has(normalized);
+  };
+
   const { data, isLoading } = useCambodiaBeneficiaries({
     ...(debouncedSearch as any),
     page: pagination.page,
@@ -89,9 +102,7 @@ export default function ELVillageDoctorVillagerView() {
       data?.data?.map((benef: any) => ({
         ...benef,
         name: benef?.piiData?.name,
-        hasRedeemed: benef?.walletAddress && redeemedAddresses
-          ? redeemedAddresses.has(benef.walletAddress.toLowerCase())
-          : false,
+        hasRedeemed: isRedeemedBeneficiary(benef),
       })) ?? [],
   };
   const handleFilterChange = (event: any) => {
@@ -168,6 +179,9 @@ export default function ELVillageDoctorVillagerView() {
           Phone: item.piiData?.phone,
           'Village Doctor': vd === '-' ? '' : vd,
           'Eye Partner': ep === '-' ? '' : ep,
+          'Has Redeemed': isRedeemedBeneficiary(item)
+            ? 'Redeemed'
+            : 'Not Redeemed',
           TimeStamp: new Date(item.createdAt).toLocaleDateString(),
         };
       });

@@ -60,8 +60,14 @@ export default function ListView({
   targetUUID,
   communityGroup,
 }: IProps) {
-  const [label, setLabel] = useState<string>('');
+
   const [open, setOpen] = useState(false);
+  const [label, setLabel] = useState<string>('');
+  const [newGroup, setNewGroup] = useState<string>('');
+  const [searchLabel, setSearchLabel] = useState<string>(''); // input for existing groups search
+  // Enable Assign button when either an existing group is selected or a new group name is entered, but not both
+  const canAssign = (label !== '' && newGroup.trim() === '') || (newGroup.trim() !== '' && label === '');
+
   return (
     <>
       <div className="w-full mt-1 p-2 bg-secondary">
@@ -83,26 +89,16 @@ export default function ListView({
             <AlertDialogHeader>
               <AlertDialogTitle>
                 <div className="flex justify-between items-center pb-1 gap-4">
-                  <TooltipProvider delayDuration={100}>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Label className="text-lg font-medium">
-                          Assign beneficiary to the group
-                          {/* {communityGroup?.filter((item) =>
-                            item.name.includes(label),
-                          ).length > 0
-                            ? 'Assign beneficiary to the group'
-                            : 'Add new Group to save the result'} */}
-                        </Label>
-                      </TooltipTrigger>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Label className="text-lg font-medium">
+                    Assign beneficiary to a group
+                  </Label>
                   <TooltipProvider delayDuration={100}>
                     <Tooltip>
                       <TooltipTrigger
                         onClick={() => {
                           setOpen(false);
                           setLabel('');
+                          setNewGroup('');
                         }}
                       >
                         <X
@@ -120,33 +116,61 @@ export default function ListView({
               </AlertDialogTitle>
 
               <AlertDialogDescription>
-                <Command className="h-52">
-                  <CommandInput
-                    placeholder={'Search Group...'}
-                    autoFocus={true}
-                    value={label}
-                    onInput={(e) => setLabel(e.currentTarget.value)}
-                  />
-                  <CommandList className="no-scrollbar">
-                    <CommandGroup>
-                      {communityGroup?.map((item) => (
-                        <CommandItem
-                          key={item.uuid}
-                          value={item.name}
-                          onSelect={() => setLabel(item.name)}
-                        >
-                          {item.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
+
+                <div className="mb-4">
+                  <Command className="h-48">
+                    <CommandInput
+                      placeholder={'Search existing groups...'}
+                      autoFocus={true}
+                      value={searchLabel}
+                      onInput={(e) => {
+                        const val = e.currentTarget.value;
+                        setSearchLabel(val);
+                        if (val === '') setLabel('');
+                        setNewGroup('');
+                      }}
+                    />
+                    <CommandList className="no-scrollbar">
+                      <CommandGroup>
+                        {communityGroup?.map((item) => (
+                          <CommandItem
+                            key={item.uuid}
+                            value={item.name}
+                            onSelect={() => {
+                              setLabel(item.name);
+                              setSearchLabel(item.name);
+                              setNewGroup('');
+                            }}
+                          >
+                            {item.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </div>
+                {/* Divider */}
+                <div className="border-t my-2"></div>
+                {/* New group creation */}
+                <Input
+                  placeholder="Enter new group name"
+                  value={newGroup}
+                  disabled={label !== ''}
+                  onChange={(e) => {
+                    setNewGroup(e.target.value);
+                    setLabel('');
+                    setSearchLabel('');
+                  }}
+                />
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogAction
-                onClick={() => handleSaveTargetResults(label as string)}
-                disabled={label === ''}
+                onClick={() => {
+                  const groupName = newGroup.trim() !== '' ? newGroup : label;
+                  handleSaveTargetResults(groupName as string);
+                }}
+                disabled={!canAssign}
               >
                 Assign
               </AlertDialogAction>
@@ -166,22 +190,19 @@ export default function ListView({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}
                   </TableRow>
                 ))}
               </TableHeader>
-              {loading ? (
+              {loading && table.getRowModel().rows.length === 0 ? (
                 <TableBody>
                   <TableRow>
-                    <TableCell
-                      colSpan={table.getAllColumns().length}
-                      className="h-24 text-center"
-                    >
+                    <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
                       <div style={{ marginLeft: '48%' }}>
                         <CircleEllipsisIcon className="animate-spin h-8 w-8" />
                       </div>
@@ -191,30 +212,20 @@ export default function ListView({
                 </TableBody>
               ) : (
                 <TableBody>
-                  {table.getRowModel().rows?.length > 0 ? (
+                  {table.getRowModel().rows.length > 0 ? (
                     table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                      >
+                      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell
-                        colSpan={table.getAllColumns().length}
-                        className="h-24 text-center text-md"
-                      >
-                        No results found. Select filter options to list
-                        targeting beneficiaries.
+                      <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center text-md">
+                        No results found. Select filter options to list targeting beneficiaries.
                       </TableCell>
                     </TableRow>
                   )}

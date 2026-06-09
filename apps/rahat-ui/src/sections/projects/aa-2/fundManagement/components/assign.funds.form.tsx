@@ -149,6 +149,7 @@ export default function AssignFundsForm({
     handleStepChange(1);
   };
 
+  console.log('test');
   // Recompute total token amount whenever per-beneficiary amount or selected group changes
   useEffect(() => {
     const selectedGroup = benGroups?.data.find(
@@ -156,7 +157,7 @@ export default function AssignFundsForm({
     );
     const count = selectedGroup?._count?.beneficiaries ?? 0;
     const total = tokenPerBenef * count;
-    
+
     if (!isNaN(total)) {
       setValue('totalTokenAmount', total);
     }

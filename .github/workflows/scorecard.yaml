@@ -1,0 +1,48 @@
+name: Scorecard
+
+on:
+  push:
+    branches: [dev-v2]
+  schedule:
+    - cron: '0 4 * * 1'  # Weekly on Mondays at 04:00 UTC
+  workflow_dispatch:     # Added so you can trigger and test it manually
+
+jobs:
+  scorecard:
+    name: OpenSSF Scorecard Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      # Required to upload artifacts to GitHub Security tab (SARIF format)
+      security-events: write
+      # Required to fetch metadata for analysis
+      contents: read
+      # Required for keyless signing via Sigstore
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run Scorecard
+        uses: ossf/scorecard-action@v2.4.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Publishes results to the public OpenSSF REST API/dashboard
+          publish_results: true
+
+      # Upload the results to GitHub's repository artifact storage
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      # Upload the results to GitHub's Code Scanning dashboard
+      - name: Upload to code-scanning
+        uses: github/code-scanning-upload-sarif@v3
+        with:
+          sarif_file: results.sarif

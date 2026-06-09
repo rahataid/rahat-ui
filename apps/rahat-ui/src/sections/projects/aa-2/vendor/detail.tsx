@@ -27,6 +27,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
+import { InkindRedemptionList } from './tabs/inkind.redemption.list';
 
 const TabsTriggerStats = [
   { title: 'Vendor Overview', value: 'vendorOverview', module: 'all' },
@@ -39,6 +40,11 @@ const TabsTriggerStats = [
     module: 'inkind',
   },
   { title: 'In-Kind Logs', value: 'inKindLogs', module: 'inkind' },
+  {
+    title: 'Inkind Redemption List',
+    value: 'inkindRedemptionList',
+    module: 'inkind',
+  },
 ];
 
 export default function Detail() {
@@ -177,6 +183,11 @@ export default function Detail() {
         {shouldRenderTab('inKindLogs') && (
           <TabsContent value="inKindLogs">
             <InKindLogs />
+          </TabsContent>
+        )}
+        {shouldRenderTab('inkindRedemptionList') && (
+          <TabsContent value="inkindRedemptionList">
+            <InkindRedemptionList id={id} vendorId={vendorId} showActions={false} />
           </TabsContent>
         )}
       </Tabs>

@@ -18,12 +18,7 @@ import { usePagination, useGetInkindRedemptionLogs } from '@rahat-ui/query';
 import { useInkindRedemptionColumn } from '../columns/useInkindRedemptionColumn';
 import { InkindType } from '../../inkindManagement/schemas/inkind.validation';
 import * as XLSX from 'xlsx';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
 import { CloudDownloadIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 

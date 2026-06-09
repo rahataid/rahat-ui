@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Heading } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';

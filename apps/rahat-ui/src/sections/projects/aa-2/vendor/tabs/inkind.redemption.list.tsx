@@ -6,16 +6,26 @@ import {
 import {
   CustomPagination,
   DemoTable,
+  IconLabelBtn,
   SearchInput,
   SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 import { usePagination, useGetInkindRedemptionLogs } from '@rahat-ui/query';
 import { useInkindRedemptionColumn } from '../columns/useInkindRedemptionColumn';
 import { InkindType } from '../../inkindManagement/schemas/inkind.validation';
+import * as XLSX from 'xlsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { CloudDownloadIcon } from 'lucide-react';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export type InkindRedemptionData = {
   uuid: UUID;
@@ -90,6 +100,50 @@ export const InkindRedemptionList = ({
 
   const columns = useInkindRedemptionColumn(id, showActions);
 
+  const [exportTrigger, setExportTrigger] = useState<UUID | undefined>();
+
+  const exportQuery = useGetInkindRedemptionLogs({
+    projectUuid: exportTrigger as UUID,
+    page: 1,
+    perPage: 100000,
+    ...(vendorId ? { vendorUuid: vendorId } : {}),
+    vendorName: filters.vendorName,
+    inkindName: filters.inkindName,
+    status: filters.status,
+    inkindType: filters.inkindType,
+  });
+
+  const handleExport = useCallback(() => {
+    if (!exportTrigger) setExportTrigger(id);
+  }, [exportTrigger, id]);
+
+  useEffect(() => {
+    if (exportQuery.data && exportTrigger) {
+      const rows = (exportQuery.data as any)?.data || [];
+      if (rows.length > 0) {
+        const flattened = rows.map((row: InkindRedemptionData) => ({
+          'Vendor Name': row.vendor?.name || '',
+          'Inkind Name': row.inkind?.name || '',
+          'Inkind Type': row.inkind?.type || '',
+          Quantity: row.quantity,
+          'Approved At': row.approvedAt
+            ? new Date(row.approvedAt).toISOString()
+            : '',
+          'Approved By': row.approvedBy || '',
+          Status: row.redemptionStatus,
+          'Tx Hash': row.transactionHash || '',
+        }));
+        const ws = XLSX.utils.json_to_sheet(flattened);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Redemptions');
+        XLSX.writeFile(wb, 'vendor_inkind_redemption_logs.csv', {
+          bookType: 'csv',
+        });
+      }
+      setExportTrigger(undefined);
+    }
+  }, [exportQuery.data, exportTrigger]);
+
   const table = useReactTable({
     manualPagination: true,
     data: queryData?.data || [],
@@ -146,7 +200,7 @@ export const InkindRedemptionList = ({
               ? filters.status
               : ''
           }
-          className="flex-[1]"
+          className="flex-[2]"
         />
         <SelectComponent
           name="Inkind Type"
@@ -157,24 +211,27 @@ export const InkindRedemptionList = ({
               ? filters.inkindType
               : ''
           }
-          className="flex-[1]"
+          className="flex-[2]"
         />
-        {/* <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <IconLabelBtn
-                Icon={CloudDownloadIcon}
-                // handleClick={handleDownloadReport}
-                // name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
-                name={'Export'}
-                variant="outline"
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Export In-kind Logs</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider> */}
+        <div className="h-full">
+          <TooltipWrapper
+            tip={
+              queryData?.data?.length
+                ? 'Export to CSV'
+                : 'No data available to export'
+            }
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              name="Export Logs"
+              handleClick={handleExport}
+              disabled={!queryData?.data?.length}
+              variant="outline"
+              className="cursor-pointer"
+              size=""
+            />
+          </TooltipWrapper>
+        </div>
       </div>
       <DemoTable
         table={table}

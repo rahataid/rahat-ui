@@ -14,9 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
+  Back,
   CustomPagination,
   DemoTable,
-  HeaderWithBack,
   Heading,
 } from 'apps/rahat-ui/src/common';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -228,19 +228,47 @@ const UpdateOrAddStakeholdersGroup = () => {
       <Form {...form}>
         <form onSubmit={handleSubmit(handleCreateGroup)}>
           <div className="flex flex-col">
-            <HeaderWithBack
-              title={
-                isEditing
-                  ? 'Update Stakeholder Group Details'
-                  : 'Create Stakeholder Group'
-              }
-              subtitle={isEditing ? '' : 'Fill the form below to create a new'}
-              path={
-                isEditing
-                  ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
-                  : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
-              }
-            />
+            <div className="mb-1">
+              <Back
+                path={
+                  isEditing
+                    ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
+                    : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
+                }
+              />
+              <div className="flex items-center justify-between">
+                <h1 className="font-semibold text-[28px]">
+                  {isEditing
+                    ? 'Update Stakeholder Group Details'
+                    : 'Create Stakeholder Group'}
+                </h1>
+                <div className="flex gap-4 items-end">
+                  <Button
+                    type="button"
+                    className="w-48 rounded-md"
+                    onClick={() => {
+                      reset();
+                      resetSelectedListItems();
+                    }}
+                    variant="outline"
+                  >
+                    Clear
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="w-48 rounded-md"
+                    onClick={handleButtonClick}
+                  >
+                    {isEditing ? 'Update' : 'Add'}
+                    {Object.keys(selectedListItems).length > 0 &&
+                      ` (${Object.keys(selectedListItems).length} stakeholders)`}
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <p className="text-muted-foreground text-base mb-3">
+              {isEditing ? '' : 'Fill the form below to create a new'}
+            </p>
             <div className="ml-1 mb-1">
               <FormField
                 control={control}
@@ -262,16 +290,14 @@ const UpdateOrAddStakeholdersGroup = () => {
             </div>
           </div>
 
-          <div className="rounded-md border p-4 ml-1">
-            <div className="">
+          <div className="rounded-md border p-3 ml-1">
               <Heading
-                title="Select Stakeholders"
+                title=" "
                 description={`Select stakeholders from the list below to ${
                   isEditing ? 'update' : 'create'
                 } group`}
                 titleStyle="text-xl"
               />
-            </div>
 
             <StakeholdersTableFilters
               projectID={projectId}
@@ -279,7 +305,10 @@ const UpdateOrAddStakeholdersGroup = () => {
               setFilters={setFilters}
             />
 
-            <DemoTable table={table} tableHeight="h-[calc(100vh-520px)]" />
+            <DemoTable
+              table={table}
+              tableHeight="h-[max(50vh,calc(90vh-230px))]"
+            />
 
             {stakeholdersError && (
               <p className="text-sm text-red-500 mt-2">
@@ -307,28 +336,7 @@ const UpdateOrAddStakeholdersGroup = () => {
               total={stakeholdersMeta?.lastPage || 0}
             />
 
-            <div className="flex justify-end gap-4 mt-4">
-              <Button
-                type="button"
-                className="w-48 rounded-md"
-                onClick={() => {
-                  reset();
-                  resetSelectedListItems();
-                }}
-                variant="outline"
-              >
-                Clear
-              </Button>
-              <Button
-                type="submit"
-                className="w-48 rounded-md"
-                onClick={handleButtonClick}
-              >
-                {isEditing ? 'Update' : 'Add'}
-                {Object.keys(selectedListItems).length > 0 &&
-                  ` (${Object.keys(selectedListItems).length} stakeholders)`}
-              </Button>
-            </div>
+
           </div>
         </form>
       </Form>

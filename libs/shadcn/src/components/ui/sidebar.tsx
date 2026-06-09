@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
-import { PanelLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { Button } from './button';
 import { Input } from './input';
@@ -186,6 +186,7 @@ const Sidebar = React.forwardRef<
       variant = 'sidebar',
       collapsible = 'offcanvas',
       className,
+      style,
       children,
       ...props
     },
@@ -200,6 +201,7 @@ const Sidebar = React.forwardRef<
             'flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground',
             className,
           )}
+          style={style}
           ref={ref}
           {...props}
         >
@@ -235,6 +237,7 @@ const Sidebar = React.forwardRef<
     return (
       <div
         ref={ref}
+        style={style}
         className="group peer hidden text-sidebar-foreground md:block"
         data-state={state}
         data-collapsible={state === 'collapsed' ? collapsible : ''}
@@ -283,7 +286,7 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, open } = useSidebar();
 
   return (
     <Button
@@ -298,7 +301,7 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <PanelLeft />
+      {open ? <ChevronLeft /> : <ChevronRight />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

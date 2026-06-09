@@ -1,15 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarTrigger,
-  SidebarRail,
+  useSidebar,
 } from 'libs/shadcn/src/components/ui/sidebar';
 import { NavMain } from './nav-main';
 import Image from 'next/image';
@@ -23,6 +22,19 @@ type ProjectNavViewProps = {
   items?: NavItem[];
 };
 
+function SidebarToggle() {
+  const { toggleSidebar, open } = useSidebar();
+  return (
+    <button
+      onClick={toggleSidebar}
+      className="absolute top-4 -right-3 z-30 bg-background border border-sidebar-border text-sidebar-foreground hover:text-sidebar-accent-foreground rounded-full p-1 transition-colors shadow-sm"
+      aria-label="Toggle Sidebar"
+    >
+      {open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+    </button>
+  );
+}
+
 export function ProjectSidebar(menuItems: ProjectNavViewProps) {
   const router = useRouter();
   return (
@@ -34,7 +46,6 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
         } as React.CSSProperties
       }
     >
-      {' '}
       <SidebarHeader>
         <div className="flex items-center justify-between w-full">
           <Image
@@ -45,7 +56,6 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
             onClick={() => router.push('/dashboard')}
             className="hover:cursor-pointer"
           />
-          <SidebarTrigger />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -75,7 +85,7 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
           </span>
         </div>
       </SidebarFooter>
-      <SidebarRail />
+      <SidebarToggle />
     </Sidebar>
   );
 }

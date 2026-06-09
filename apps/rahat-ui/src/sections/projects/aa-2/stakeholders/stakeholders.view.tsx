@@ -31,6 +31,7 @@ import {
   ClientSidePagination,
   CustomPagination,
   DemoTable,
+  Heading,
   IconLabelBtn,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
@@ -126,35 +127,34 @@ function StakeholdersView() {
         stakeholderName={conflictStakeholderName}
         conflictType="stakeholder"
       />
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-        <TabsContent value="stakeholders">
-          <div>
-            <h1 className="font-bold text-2xl text-label pl-4">Stakeholders</h1>
-          </div>
-        </TabsContent>
-        <TabsContent value="stakeholdersGroup">
-          <div>
-            <h1 className="font-bold text-2xl text-label pl-4">
-              Stakeholders Groups
-            </h1>
-          </div>
-        </TabsContent>
-        <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
-          Track all the stakeholders in the project
-        </p>
+      <div className="px-4">
+        <Heading
+          title={
+            activeTab === 'stakeholders'
+              ? 'Stakeholders'
+              : 'Stakeholders Groups'
+          }
+          description={
+            activeTab === 'stakeholders'
+              ? 'Track all the stakeholders in the project'
+              : 'Track all stakeholder groups in the project'
+          }
+        />
+      </div>
 
-        <div className="flex justify-between items-center p-4">
-          <TabsList className="border bg-secondary rounded">
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <div className="flex flex-row flex-wrap justify-between items-center gap-2 px-2 md:px-4 mb-2">
+          <TabsList className="border bg-secondary rounded h-[clamp(28px,3vw,36px)]">
             <TabsTrigger
               id="stakeholders"
-              className="w-full data-[state=active]:bg-white"
+              className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] "
               value="stakeholders"
             >
               Stakeholders
             </TabsTrigger>
             <TabsTrigger
               id="stakeholdersGroup"
-              className="w-full data-[state=active]:bg-white"
+              className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] ]"
               value="stakeholdersGroup"
             >
               Stakeholders Groups
@@ -172,33 +172,39 @@ function StakeholdersView() {
                 router.replace(`/projects/aa/${projectId}/stakeholders/import`)
               }
               variant="outline"
+              className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
             />
           </RoleAuth>
         </div>
+
         <TabsContent value="stakeholders">
-          <div className="px-4">
-            <div className="p-4 rounded-sm border">
-              <div className="flex mb-2 gap-2">
+          <div className="px-2 md:px-4">
+            <div className="p-3 md:p-2 rounded-sm border">
+              <div className="flex flex-wrap gap-2 mb-2">
                 <SearchInput
-                  className="w-full"
+                  className="flex-1 min-w-[120px]"
+                  inputClassName="h-[clamp(28px,3vw,36px)]"
                   name="name"
                   onSearch={(e) => handleSearch(e, 'name')}
                   value={filters?.name || ''}
                 />
                 <SearchInput
-                  className="w-full"
+                  className="hidden xl:block flex-1 min-w-[120px]"
+                  inputClassName="h-[clamp(28px,3vw,36px)]"
                   name="municipality"
                   onSearch={(e) => handleSearch(e, 'municipality')}
                   value={filters?.municipality || ''}
                 />
                 <SearchInput
-                  className="w-full"
+                  className="flex-1 min-w-[120px]"
+                  inputClassName="h-[clamp(28px,3vw,36px)]"
                   name="organization"
                   onSearch={(e) => handleSearch(e, 'organization')}
                   value={filters?.organization || ''}
                 />
                 <SearchInput
-                  className="w-full"
+                  className="flex-1 min-w-[120px]"
+                  inputClassName="h-[clamp(28px,3vw,36px)]"
                   name="support area"
                   onSearch={(e) => handleSearch(e, 'supportArea')}
                   value={filters?.supportArea || ''}
@@ -210,35 +216,43 @@ function StakeholdersView() {
                   <AddButton
                     path={`/projects/aa/${projectId}/stakeholders/add`}
                     name="Stakeholder"
+                    className='h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]'
                   />
                 </RoleAuth>
               </div>
-              <DemoTable table={table} message="No Stakeholders Available" />
-
-              <CustomPagination
-                meta={
-                  stakeholdersMeta || {
-                    total: 0,
-                    currentPage: 0,
-                    lastPage: 0,
-                    perPage: 0,
-                    next: null,
-                    prev: null,
-                  }
-                }
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                currentPage={pagination.page}
-                perPage={pagination.perPage}
-                setPagination={setPagination}
-                total={stakeholdersMeta?.lastPage || 0}
+              <DemoTable
+                table={table}
+                message="No Stakeholders Available"
+                tableHeight="h-[max(50vh,calc(90vh-230px))]"
               />
+
+              <div className="[&_button]:h-[clamp(28px,3vw,34px)] [&_button_svg]:size-[clamp(14px,1.4vw,18px)] [&_[role=combobox]]:h-[clamp(28px,3vw,34px)] [&_div]:text-[clamp(11px,1vw,14px)]">
+                <CustomPagination
+                  meta={
+                    stakeholdersMeta || {
+                      total: 0,
+                      currentPage: 0,
+                      lastPage: 0,
+                      perPage: 0,
+                      next: null,
+                      prev: null,
+                    }
+                  }
+                  handleNextPage={setNextPage}
+                  handlePrevPage={setPrevPage}
+                  handlePageSizeChange={setPerPage}
+                  currentPage={pagination.page}
+                  perPage={pagination.perPage}
+                  setPagination={setPagination}
+                  total={stakeholdersMeta?.lastPage || 0}
+                />
+              </div>
             </div>
           </div>
         </TabsContent>
+
         <TabsContent value="stakeholdersGroup">
-          <div className="px-4">
+          <div className="px-2 md:px-4">
             <StakeGoldersGroups />
           </div>
         </TabsContent>

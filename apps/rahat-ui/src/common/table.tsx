@@ -2,10 +2,6 @@ import React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
 import { NoResult } from './noResults';
 import {
-  ScrollArea,
-  ScrollBar,
-} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
   Table as TableComponent,
   TableBody,
   TableCell,
@@ -23,6 +19,10 @@ type IProps = {
   height?: string;
 };
 
+type ColumnMeta = {
+  className?: string;
+};
+
 export function DemoTable({
   table,
   tableHeight,
@@ -31,25 +31,27 @@ export function DemoTable({
   height = '340px',
 }: IProps) {
   const hasRows = table.getRowModel().rows?.length > 0;
+  const containerClass = tableHeight ?? `h-[max(280px,calc(100vh-${height}))]`;
 
   return (
-    <ScrollArea className={tableHeight ?? `h-[calc(100vh-${height})]`}>
-      <TableComponent className="min-w-full">
-        <TableHeader className="sticky top-0 bg-gray-100 z-5">
+    <div className={`overflow-auto ${containerClass}`}>
+      <TableComponent className="w-full table-fixed">
+        <TableHeader className="sticky top-0 z-10 border-b [&_th]:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className={(header.column.columnDef.meta as ColumnMeta | undefined)?.className}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
@@ -70,7 +72,10 @@ export function DemoTable({
                 data-state={row.getIsSelected() && 'selected'}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={(cell.column.columnDef.meta as ColumnMeta | undefined)?.className}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -88,7 +93,6 @@ export function DemoTable({
           )}
         </TableBody>
       </TableComponent>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+    </div>
   );
 }

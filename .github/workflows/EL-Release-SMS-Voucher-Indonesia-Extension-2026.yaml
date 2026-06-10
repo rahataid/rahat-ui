@@ -61,6 +61,9 @@ jobs:
           context: .
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'workflow_dispatch' }}
+          build-args: |
+            NEXT_PUBLIC_API_HOST_URL=${{ env.NEXT_PUBLIC_API_HOST_URL }}
+            NEXT_PUBLIC_API_COMMUNICATION_URL=${{ env.NEXT_PUBLIC_API_COMMUNICATION_URL }}
           tags: |
             esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026
             esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026-${{ env.VERSION  }}

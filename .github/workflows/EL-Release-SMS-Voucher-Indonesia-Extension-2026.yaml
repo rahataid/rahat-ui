@@ -4,7 +4,6 @@ on:
 
 env:
   CI: false
-  env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_INDONESIA_EXTENSION_2026 }}
 
 jobs:
   rahat-ui:
@@ -16,8 +15,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: import env file
+        env:
+          env_release: ${{ secrets.ENV_EL_RELEASE_CHINA_VD_EXTENSION_2026 }}
         run: |
           touch ./.env && echo "$env_release" >> ./.env
+          grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV  
 
       - uses: actions/setup-node@v3
         with:

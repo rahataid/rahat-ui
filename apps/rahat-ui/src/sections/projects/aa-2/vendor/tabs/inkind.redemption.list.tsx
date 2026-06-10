@@ -18,27 +18,28 @@ import { usePagination, useGetInkindRedemptionLogs } from '@rahat-ui/query';
 import { useInkindRedemptionColumn } from '../columns/useInkindRedemptionColumn';
 import { InkindType } from '../../inkindManagement/schemas/inkind.validation';
 import * as XLSX from 'xlsx';
-
 import { CloudDownloadIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export type InkindRedemptionData = {
   uuid: UUID;
-  vendor: {
-    name: string;
-  };
+  vendor: { name: string };
   beneficiaryName: string;
   beneficiaryWallet: string;
-  inkind: {
-    name: string;
-    type: InkindType;
-  };
+  inkind: { name: string; type: InkindType };
   quantity: number;
   approvedAt: Date;
   approvedBy: string;
   redemptionStatus: string;
   redeemedAt: string;
   transactionHash: string | null;
+};
+
+type ExportParams = {
+  vendorName: string;
+  inkindName: string;
+  status: string;
+  inkindType: string;
 };
 
 export const InkindRedemptionList = ({
@@ -95,49 +96,56 @@ export const InkindRedemptionList = ({
 
   const columns = useInkindRedemptionColumn(id, showActions);
 
-  const [exportTrigger, setExportTrigger] = useState<UUID | undefined>();
+  const [exportParams, setExportParams] = useState<ExportParams | null>(null);
 
   const exportQuery = useGetInkindRedemptionLogs({
-    projectUuid: exportTrigger as UUID,
+    projectUuid: exportParams ? id : (undefined as any),
     page: 1,
     perPage: 100000,
     ...(vendorId ? { vendorUuid: vendorId } : {}),
-    vendorName: filters.vendorName,
-    inkindName: filters.inkindName,
-    status: filters.status,
-    inkindType: filters.inkindType,
+    vendorName: exportParams?.vendorName ?? '',
+    inkindName: exportParams?.inkindName ?? '',
+    status: exportParams?.status ?? '',
+    inkindType: exportParams?.inkindType ?? '',
   });
 
   const handleExport = useCallback(() => {
-    if (!exportTrigger) setExportTrigger(id);
-  }, [exportTrigger, id]);
+    setExportParams({
+      vendorName: debounceSearch.vendorName ?? '',
+      inkindName: debounceSearch.inkindName ?? '',
+      status: filters.status ?? '',
+      inkindType: filters.inkindType ?? '',
+    });
+  }, [debounceSearch, filters]);
 
   useEffect(() => {
-    if (exportQuery.data && exportTrigger) {
-      const rows = (exportQuery.data as any)?.data || [];
-      if (rows.length > 0) {
-        const flattened = rows.map((row: InkindRedemptionData) => ({
-          'Vendor Name': row.vendor?.name || '',
-          'Inkind Name': row.inkind?.name || '',
-          'Inkind Type': row.inkind?.type || '',
-          Quantity: row.quantity,
-          'Approved At': row.approvedAt
-            ? new Date(row.approvedAt).toISOString()
-            : '',
-          'Approved By': row.approvedBy || '',
-          Status: row.redemptionStatus,
-          'Tx Hash': row.transactionHash || '',
-        }));
-        const ws = XLSX.utils.json_to_sheet(flattened);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Redemptions');
-        XLSX.writeFile(wb, 'vendor_inkind_redemption_logs.csv', {
-          bookType: 'csv',
-        });
-      }
-      setExportTrigger(undefined);
+    if (!exportQuery.data || !exportParams) return;
+    if (exportQuery.isFetching) return;
+
+    const rows = (exportQuery.data as any)?.data || [];
+    if (rows.length > 0) {
+      const flattened = rows.map((row: InkindRedemptionData) => ({
+        'Vendor Name': row.vendor?.name || '',
+        'Inkind Name': row.inkind?.name || '',
+        'Inkind Type': row.inkind?.type || '',
+        Quantity: row.quantity,
+        'Approved At': row.approvedAt
+          ? new Date(row.approvedAt).toISOString()
+          : '',
+        'Approved By': row.approvedBy || '',
+        Status: row.redemptionStatus,
+        'Tx Hash': row.transactionHash || '',
+      }));
+      const ws = XLSX.utils.json_to_sheet(flattened);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Redemptions');
+      XLSX.writeFile(wb, 'vendor_inkind_redemption_logs.csv', {
+        bookType: 'csv',
+      });
     }
-  }, [exportQuery.data, exportTrigger]);
+
+    setExportParams(null);
+  }, [exportQuery.data, exportQuery.isFetching, exportParams]);
 
   const table = useReactTable({
     manualPagination: true,
@@ -145,9 +153,7 @@ export const InkindRedemptionList = ({
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    state: {
-      columnVisibility,
-    },
+    state: { columnVisibility },
   });
 
   const handleSearch = React.useCallback(
@@ -171,6 +177,7 @@ export const InkindRedemptionList = ({
   if (isPending) {
     return <SpinnerLoader />;
   }
+
   return (
     <div className="rounded border bg-card p-4">
       <div className="flex justify-between space-x-2 mb-2">
@@ -218,9 +225,9 @@ export const InkindRedemptionList = ({
           >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
-              name="Export Logs"
+              name={exportQuery.isFetching ? 'Exporting...' : 'Export Logs'}
               handleClick={handleExport}
-              disabled={!queryData?.data?.length}
+              disabled={!queryData?.data?.length || exportQuery.isFetching}
               variant="outline"
               className="cursor-pointer"
               size=""
@@ -232,7 +239,6 @@ export const InkindRedemptionList = ({
         table={table}
         tableHeight="h-[500px]"
         message="No In-kind Redemption Records"
-        // loading={isPending}
       />
       <CustomPagination
         currentPage={pagination.page}

@@ -319,6 +319,7 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'email',
       header: 'Email',
+      meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={14} />
       ),

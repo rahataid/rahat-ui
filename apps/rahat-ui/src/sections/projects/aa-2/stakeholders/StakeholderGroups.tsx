@@ -69,7 +69,9 @@ const StakeGoldersGroups = () => {
             />
           </RoleAuth>
         </div>
-        <ScrollArea className="h-[max(200px,calc(100vh-380px))] mb-2">
+        {/* <ScrollArea className="h-[max(250px,calc(100vh-380px))] mb-2"> */}
+        <ScrollArea className="h-[clamp(300px,calc(100vh-260px),700px)] mb-2 mt-2">
+
           {isLoading ? (
             <SpinnerLoader />
           ) : stakeholdersGroups.length > 0 ? (

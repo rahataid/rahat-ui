@@ -226,27 +226,25 @@ function StakeholdersView() {
                 tableHeight="h-[max(50vh,calc(90vh-230px))]"
               />
 
-              <div className="[&_button]:h-[clamp(28px,3vw,34px)] [&_button_svg]:size-[clamp(14px,1.4vw,18px)] [&_[role=combobox]]:h-[clamp(28px,3vw,34px)] [&_div]:text-[clamp(11px,1vw,14px)]">
-                <CustomPagination
-                  meta={
-                    stakeholdersMeta || {
-                      total: 0,
-                      currentPage: 0,
-                      lastPage: 0,
-                      perPage: 0,
-                      next: null,
-                      prev: null,
-                    }
+              <CustomPagination
+                meta={
+                  stakeholdersMeta || {
+                    total: 0,
+                    currentPage: 0,
+                    lastPage: 0,
+                    perPage: 0,
+                    next: null,
+                    prev: null,
                   }
-                  handleNextPage={setNextPage}
-                  handlePrevPage={setPrevPage}
-                  handlePageSizeChange={setPerPage}
-                  currentPage={pagination.page}
-                  perPage={pagination.perPage}
-                  setPagination={setPagination}
-                  total={stakeholdersMeta?.lastPage || 0}
-                />
-              </div>
+                }
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                setPagination={setPagination}
+                total={stakeholdersMeta?.lastPage || 0}
+              />
             </div>
           </div>
         </TabsContent>

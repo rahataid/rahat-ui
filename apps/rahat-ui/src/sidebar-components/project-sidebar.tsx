@@ -30,7 +30,11 @@ function SidebarToggle() {
       className="absolute top-4 -right-3 z-30 bg-background border border-sidebar-border text-sidebar-foreground hover:text-sidebar-accent-foreground rounded-full p-1 transition-colors shadow-sm"
       aria-label="Toggle Sidebar"
     >
-      {open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+      {open ? (
+        <ChevronLeft className="size-[clamp(12px,1.2vw,16px)]" />
+      ) : (
+        <ChevronRight className="size-[clamp(12px,1.2vw,16px)]" />
+      )}
     </button>
   );
 }
@@ -42,11 +46,11 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
       collapsible="icon"
       style={
         {
-          '--sidebar-width': 'clamp(13rem, 15vw, 16rem)',
+          '--sidebar-width': 'clamp(11rem, 15vw, 16rem)',
         } as React.CSSProperties
       }
     >
-      <SidebarHeader>
+      <SidebarHeader className="p-[clamp(4px,0.6vw,8px)]">
         <div className="flex items-center justify-between w-full">
           <Image
             src="/rahat-logo.png"
@@ -69,7 +73,7 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
           <NavMain items={menuItems?.items} />
         )}
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="p-[clamp(4px,0.6vw,8px)]">
         <div
           role="button"
           tabIndex={0}
@@ -77,10 +81,10 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') router.push('/projects');
           }}
-          className="flex items-center gap-2 p-2 cursor-pointer text-sidebar-foreground hover:text-sidebar-accent-foreground"
+          className="flex items-center gap-[clamp(4px,0.6vw,8px)] p-[clamp(4px,0.6vw,8px)] cursor-pointer text-sidebar-foreground hover:text-sidebar-accent-foreground"
         >
-          <LogOut />
-          <span className="text-sm group-data-[collapsible=icon]:hidden">
+          <LogOut className="size-[clamp(16px,1.6vw,20px)]" />
+          <span className="text-[clamp(11px,1vw,14px)] group-data-[collapsible=icon]:hidden">
             Exit project
           </span>
         </div>

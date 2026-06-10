@@ -33,9 +33,8 @@ export function SearchInput({
   return (
     <div className={cn('relative', className)}>
       <Search
-        size={18}
         strokeWidth={2.5}
-        className="absolute left-2 top-2 text-muted-foreground"
+        className="absolute left-2 top-1/2 -translate-y-1/2 size-[clamp(14px,1.4vw,18px)] text-muted-foreground"
       />
       <Input
         name={name}
@@ -49,10 +48,9 @@ export function SearchInput({
       />
       {value && (
         <X
-          size={18}
           strokeWidth={2.5}
           color="black"
-          className="absolute right-2 top-3 text-muted-foreground cursor-pointer border rounded-full "
+          className="absolute right-2 top-1/2 -translate-y-1/2 size-[clamp(14px,1.4vw,18px)] text-muted-foreground cursor-pointer border rounded-full"
           onClick={handleClear}
         />
       )}

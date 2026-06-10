@@ -64,25 +64,32 @@ export function CustomPagination({
     }));
   }, []);
 
+  const buttonClassName =
+    'h-[clamp(28px,3vw,36px)] w-[clamp(28px,3vw,36px)] p-0 [&_svg]:size-[clamp(14px,1.4vw,18px)]';
+
   return (
-    <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2  bg-card">
+    <div className="flex items-center justify-end gap-[clamp(8px,1.2vw,16px)] p-[clamp(2px,0.4vw,4px)] px-[clamp(4px,0.6vw,8px)] bg-card text-[clamp(11px,1vw,14px)]">
       {/* <div className="flex-1 text-sm text-muted-foreground">
         {currentPage} of {total} row(s) selected.
       </div> */}
       {handlePageSizeChange && (
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
+        <div className="flex items-center gap-[clamp(4px,0.6vw,8px)]">
+          <div className="font-medium">Rows per page</div>
           <Select
             defaultValue={String(perPage)}
             onValueChange={handlePageSizeChange}
           >
-            <SelectTrigger className="w-16">
+            <SelectTrigger className="w-[clamp(48px,5vw,64px)] h-[clamp(28px,3vw,36px)] px-[clamp(6px,0.8vw,12px)] py-0 text-[clamp(11px,1vw,14px)] [&>svg]:size-[clamp(12px,1.2vw,16px)]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 {pageSizes.map((size) => (
-                  <SelectItem key={size} value={size}>
+                  <SelectItem
+                    key={size}
+                    value={size}
+                    className="text-[clamp(11px,1vw,14px)]"
+                  >
                     {size}
                   </SelectItem>
                 ))}
@@ -91,7 +98,7 @@ export function CustomPagination({
           </Select>
         </div>
       )}
-      <div className="text-sm">
+      <div>
         {meta?.total && meta.total > 0 ? (
           <>
             Page {currentPage} of {lastPage}
@@ -100,11 +107,12 @@ export function CustomPagination({
           <>Page {currentPage}</>
         )}
       </div>
-      <div className="space-x-2 items-center justify-center">
+      <div className="flex gap-[clamp(4px,0.6vw,8px)] items-center justify-center">
         {showChevrons && (
           <Button
             variant="outline"
             size="sm"
+            className={buttonClassName}
             onClick={setBackwardPage}
             disabled={currentPage === 1}
           >
@@ -115,6 +123,7 @@ export function CustomPagination({
         <Button
           variant="outline"
           size="sm"
+          className={buttonClassName}
           onClick={handlePrevPage}
           // disabled={meta && meta?.prev === null && currentPage === 1}
           disabled={currentPage === 1}
@@ -126,6 +135,7 @@ export function CustomPagination({
         <Button
           variant="outline"
           size="sm"
+          className={buttonClassName}
           onClick={handleNextPage}
           type="button"
           // disabled={!table.getCanNextPage()}
@@ -140,6 +150,7 @@ export function CustomPagination({
           <Button
             variant="outline"
             size="sm"
+            className={buttonClassName}
             onClick={setForwardPage}
             disabled={currentPage === meta?.lastPage}
           >

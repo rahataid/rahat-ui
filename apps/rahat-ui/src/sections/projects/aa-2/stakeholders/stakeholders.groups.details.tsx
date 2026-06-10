@@ -84,7 +84,7 @@ const StakeholdersGroupsDetails = () => {
   };
 
   return (
-    <div className="p-4 ">
+    <div className="p-4 flex flex-col h-[calc(100vh-65px)] overflow-hidden">
       {isDeleting && (
         <div className="absolute inset-0 bg-gray-900 bg-opacity-30 flex items-center justify-center z-50">
           <Loader />
@@ -119,7 +119,7 @@ const StakeholdersGroupsDetails = () => {
           </RoleAuth>
         </div>
       </div>
-      <div className="p-3 md:p-2 rounded-sm border">
+      <div className="p-3 md:p-2 rounded-sm border flex flex-col flex-1 min-h-0 overflow-hidden">
         <div className="flex justify-between space-x-2 items-center mb-3 ">
           <SearchInput
             className="w-full"
@@ -191,14 +191,14 @@ const StakeholdersGroupsDetails = () => {
 
         <DemoTable
           table={table}
-          tableHeight="h-[max(50vh,calc(90vh-230px))]"
+          tableHeight="flex-1 min-h-0"
           loading={isLoading}
         />
 
-        <p className="px-4 pt-2 text-[clamp(11px,1vw,14px)] text-muted-foreground">
-          Total Stakeholders : {groupDetails?.stakeholders?.length || 0}
-        </p>
-        <div className="[&_button]:h-[clamp(28px,3vw,34px)] [&_button_svg]:size-[clamp(14px,1.4vw,18px)] [&_[role=combobox]]:h-[clamp(28px,3vw,34px)] [&_div]:text-[clamp(11px,1vw,14px)]">
+        <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
+          <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
+            Total Stakeholders : {groupDetails?.stakeholders?.length || 0}
+          </p>
           <ClientSidePagination table={table} />
         </div>
       </div>

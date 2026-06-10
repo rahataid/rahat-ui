@@ -224,7 +224,7 @@ const UpdateOrAddStakeholdersGroup = () => {
   const { stakeholders: stakeholdersError } = formState.errors;
 
   return (
-    <div className="p-4">
+    <div className="px-4 pt-1 pb-4">
       <Form {...form}>
         <form onSubmit={handleSubmit(handleCreateGroup)}>
           <div className="flex flex-col">
@@ -237,15 +237,15 @@ const UpdateOrAddStakeholdersGroup = () => {
                 }
               />
               <div className="flex items-center justify-between">
-                <h1 className="font-semibold text-[28px]">
+                <h1 className="font-semibold text-[clamp(16px,2vw,28px)]">
                   {isEditing
                     ? 'Update Stakeholder Group Details'
                     : 'Create Stakeholder Group'}
                 </h1>
-                <div className="flex gap-4 items-end">
+                <div className="flex gap-2 items-center">
                   <Button
                     type="button"
-                    className="w-48 rounded-md"
+                    className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
                     onClick={() => {
                       reset();
                       resetSelectedListItems();
@@ -256,7 +256,7 @@ const UpdateOrAddStakeholdersGroup = () => {
                   </Button>
                   <Button
                     type="submit"
-                    className="w-48 rounded-md"
+                    className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
                     onClick={handleButtonClick}
                   >
                     {isEditing ? 'Update' : 'Add'}
@@ -266,10 +266,10 @@ const UpdateOrAddStakeholdersGroup = () => {
                 </div>
               </div>
             </div>
-            <p className="text-muted-foreground text-base mb-3">
+            {/* <p className="text-muted-foreground text-[clamp(11px,1vw,14px)] mb-1">
               {isEditing ? '' : 'Fill the form below to create a new'}
-            </p>
-            <div className="ml-1 mb-1">
+            </p> */}
+            <div className="mb-1">
               <FormField
                 control={control}
                 name="name"
@@ -279,7 +279,7 @@ const UpdateOrAddStakeholdersGroup = () => {
                     <FormControl>
                       <Input
                         placeholder="Write stakeholder group name"
-                        className="w-full rounded-md"
+                        className="w-full rounded-md text-[clamp(11px,1vw,14px)]"
                         {...field}
                       />
                     </FormControl>
@@ -290,7 +290,7 @@ const UpdateOrAddStakeholdersGroup = () => {
             </div>
           </div>
 
-          <div className="rounded-md border p-3 ml-1">
+          <div className="rounded-md border p-3">
               <Heading
                 title=" "
                 description={`Select stakeholders from the list below to ${
@@ -308,6 +308,7 @@ const UpdateOrAddStakeholdersGroup = () => {
             <DemoTable
               table={table}
               tableHeight="h-[max(50vh,calc(90vh-230px))]"
+              fixedLayout={false}
             />
 
             {stakeholdersError && (
@@ -316,26 +317,25 @@ const UpdateOrAddStakeholdersGroup = () => {
               </p>
             )}
 
-            <CustomPagination
-              meta={
-                stakeholdersMeta || {
-                  total: 0,
-                  currentPage: 0,
-                  lastPage: 0,
-                  perPage: 0,
-                  next: null,
-                  prev: null,
-                }
-              }
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              setPagination={setPagination}
-              total={stakeholdersMeta?.lastPage || 0}
-            />
-
+      <CustomPagination
+        meta={
+          stakeholdersMeta || {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }
+        }
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        setPagination={setPagination}
+        total={stakeholdersMeta?.lastPage || 0}
+      />
 
           </div>
         </form>

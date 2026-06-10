@@ -17,6 +17,7 @@ type IProps = {
   loading?: boolean;
   message?: string;
   height?: string;
+  fixedLayout?: boolean;
 };
 
 type ColumnMeta = {
@@ -29,13 +30,14 @@ export function DemoTable({
   loading,
   message,
   height = '340px',
+  fixedLayout = true,
 }: IProps) {
   const hasRows = table.getRowModel().rows?.length > 0;
   const containerClass = tableHeight ?? `h-[max(280px,calc(100vh-${height}))]`;
 
   return (
     <div className={`overflow-auto ${containerClass}`}>
-      <TableComponent className="w-full table-fixed">
+      <TableComponent className={`w-full ${fixedLayout ? 'table-fixed' : 'table-auto'}`}>
         <TableHeader className="sticky top-0 z-10 border-b [&_th]:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

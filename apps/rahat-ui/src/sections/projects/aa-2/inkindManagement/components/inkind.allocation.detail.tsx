@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -148,9 +148,11 @@ export default function InkindAllocationDetail() {
     { enabled: false },
   );
 
-  // console.log('entireLogsData', entireLogsData);
+  const exportTriggeredRef = useRef(false);
+
   useEffect(() => {
-    if (!entireLogsData) return;
+    if (!entireLogsData || !exportTriggeredRef.current) return;
+    exportTriggeredRef.current = false;
     const raw = (entireLogsData as any)?.data?.logs;
     if (!Array.isArray(raw) || raw.length === 0) return;
 
@@ -219,6 +221,7 @@ export default function InkindAllocationDetail() {
   ]);
 
   const handleDownloadReport = () => {
+    exportTriggeredRef.current = true;
     fetchEntireLogs();
   };
 

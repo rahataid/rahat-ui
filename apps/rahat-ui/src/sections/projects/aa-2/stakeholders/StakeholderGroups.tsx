@@ -88,12 +88,12 @@ const StakeGoldersGroups = () => {
                           );
                         }}
                       >
-                        <div className="bg-[#667085] text-white p-2 rounded-full [&_svg]:size-[clamp(14px,1.6vw,20px)]">
+                        <div className="bg-[#667085] text-white p-[clamp(4px,0.8vw,8px)] rounded-full [&_svg]:size-[clamp(14px,1.6vw,20px)]">
                           <Users size={20} strokeWidth={2.5} />
                         </div>
                       </div>
 
-                      <p className="text-[clamp(12px,1.4vw,16px)] mb-1">{i?.name ?? 'N/A'}</p>
+                      <p className="text-[clamp(11px,1vw,14px)] mb-1">{i?.name ?? 'N/A'}</p>
                       <div className="flex gap-2 items-center text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(12px,1.4vw,18px)]">
                         <Users size={18} strokeWidth={2} />
                         {i?._count?.stakeholders || 0}

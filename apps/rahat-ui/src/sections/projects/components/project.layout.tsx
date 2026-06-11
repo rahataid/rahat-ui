@@ -85,9 +85,9 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
             items={item.children}
           />
         ))}
-        <div className="w-full">
+        <div className="w-full min-w-0">
           <ProjectNav component={headerNav} />
-          <div className="">{children}</div>
+          <div className="min-w-0">{children}</div>
         </div>
       </SidebarProvider>
     </>

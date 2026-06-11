@@ -761,9 +761,9 @@ export default function ImportStakeholder() {
 
   return (
     <>
-      <div className="flex flex-col h-[calc(100vh-200px)] overflow-hidden">
-        <div className="p-4 flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between items-start mb-2 shrink-0">
+      <div className="flex flex-col min-h-[calc(100vh-200px)] min-w-0">
+        <div className="p-4 flex flex-col flex-1 min-w-0">
+          <div className="flex justify-between items-start mb-2">
           <HeaderWithBack
             title="Import Stakeholders"
             subtitle="List of all stakeholders you can import"
@@ -836,7 +836,7 @@ export default function ImportStakeholder() {
           </div>
         </div>
 
-        <div className="p-[clamp(8px,1vw,12px)] border bg-card rounded-sm shrink-0">
+        <div className="p-[clamp(8px,1vw,12px)] border bg-card rounded-sm">
           <div className="flex items-center gap-4 w-full">
             {/* File Input */}
             <div className="relative w-full">
@@ -870,9 +870,9 @@ export default function ImportStakeholder() {
         </div>
 
         {data.length > 1 && (
-          <div className="flex flex-col flex-1 min-h-0 mt-4">
-            <div className="border-2 border-dashed border-black mx-auto w-full flex-1 min-h-0">
-              <ScrollArea className="h-full w-full">
+          <div className="flex flex-col min-w-0 mt-4">
+            <div className="border-2 border-dashed border-black w-full min-w-0">
+              <ScrollArea className="w-full max-h-[50vh]">
                 <Table className="table-auto w-full">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -926,7 +926,7 @@ export default function ImportStakeholder() {
           </div>
         )}
       </div>
-      <div className="flex justify-between items-center py-2 px-4 border-t shrink-0">
+      <div className="flex justify-between items-center py-2 px-4 border-t mt-4 sticky bottom-0 bg-background z-10">
         <div>{data?.length > 0 && <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">Total Count: {data.length - 1}</p>}</div>
         <div className="flex gap-2">
           <Button

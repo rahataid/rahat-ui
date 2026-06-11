@@ -75,7 +75,7 @@ export const useProjectStakeholdersTableColumns = (
         <TruncatedCell
           text={row.getValue('name')}
           maxLength={10}
-          className="text-foreground font-medium"
+          className="text-foreground"
         />
       ),
     },

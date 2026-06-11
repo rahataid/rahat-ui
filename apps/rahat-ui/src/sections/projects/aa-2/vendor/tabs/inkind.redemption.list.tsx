@@ -100,8 +100,7 @@ export const InkindRedemptionList = ({
 
   const exportQuery = useGetInkindRedemptionLogs({
     projectUuid: exportParams ? id : (undefined as any),
-    page: 1,
-    perPage: 100000,
+
     ...(vendorId ? { vendorUuid: vendorId } : {}),
     vendorName: exportParams?.vendorName ?? '',
     inkindName: exportParams?.inkindName ?? '',

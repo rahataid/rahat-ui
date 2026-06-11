@@ -61,10 +61,6 @@ export function ProjectNav({
     if (triggerPinPhase)
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
-    if (pinnedPhases) {
-      localStorage.setItem('aa_pinned_phases', pinnedPhases);
-    }
-    if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
     toast.success('Logged out successfully.');
     // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);

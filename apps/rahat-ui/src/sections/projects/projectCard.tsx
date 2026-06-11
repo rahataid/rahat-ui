@@ -94,15 +94,11 @@ export default function CommonCard({
         </Badge>
         <div>
           <TruncatedCell
-            text={
-              subTitle +
-              'Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker'
-            }
+            text={subTitle}
             maxLength={40}
             className="text-sm text-gray-500 w-[300px]"
           />
         </div>
-        {/* <p className="text-sm text-gray-500">{subTitle}</p> */}
       </CardContent>
     </Card>
   );

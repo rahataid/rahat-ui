@@ -176,5 +176,14 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_COLOR: '#ff0000'
-          SLACK_MESSAGE: 'The production build job has failed! Please check logs.'
-          SLACK_TITLE: 'Deployment Failure Alert'
+          SLACK_TITLE: 'Build Failed — ${{ matrix.app }}'
+          SLACK_MESSAGE: |
+            *App:* `${{ matrix.app }}`
+            *Tag:* `${{ inputs.tag_suffix }}`
+            *Branch:* `${{ github.ref_name }}`
+            *Actor:* `${{ github.actor }}`
+            *Vault path:* `${{ steps.vault-path.outputs.VAULT_PATH }}`
+      
+            :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
+          SLACK_FOOTER: ''
+          

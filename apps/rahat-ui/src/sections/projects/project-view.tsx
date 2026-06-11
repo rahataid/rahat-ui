@@ -58,8 +58,6 @@ export default function ProjectListView() {
     setFilterValue(project as any);
   };
 
-  console.log(data?.data, 'project data');
-
   useEffect(() => {
     setFilterValue(data?.data as any);
   }, [data?.data]);

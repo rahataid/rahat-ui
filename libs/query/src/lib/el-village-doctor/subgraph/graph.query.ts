@@ -221,6 +221,28 @@ query VendorTransactions($vendor: String!) {
 }
 `;
 
+export const VillageDoctorRedeemedBeneficiaries = `
+query RedeemedBeneficiaries {
+  claimProcesseds(first: 1000, orderBy: blockTimestamp, orderDirection: desc) {
+    beneficiary
+  }
+  offlineClaimProcesseds(first: 1000, orderBy: blockTimestamp, orderDirection: desc) {
+    beneficiary
+  }
+  claimDetails(
+    first: 1000
+    orderBy: blockTimestamp
+    orderDirection: desc
+    where: { isProcessed: true }
+  ) {
+    beneficiary
+  }
+  otpVerifieds(first: 1000, orderBy: blockTimestamp, orderDirection: desc) {
+    beneficiary
+  }
+}
+`;
+
 export const CambodiaBeneficiaryTransactions = `
 query beneficiaryTransactions($beneficiaryAddress:String!){
 

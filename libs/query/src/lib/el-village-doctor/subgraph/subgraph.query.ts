@@ -8,6 +8,7 @@ import {
   CambodiaProjectTransactions,
   VillageDoctorVendorTransactions,
   VillageDoctorVendorTokensAllocatedForBeneficiaries,
+  VillageDoctorRedeemedBeneficiaries,
 } from './graph.query';
 import { useEffect } from 'react';
 import { useCambodiaProjectSubgraphStore } from './stores/cambodia-project.store';
@@ -44,8 +45,9 @@ function collectVendorRelatedBeneficiaryAddresses(
     add(c?.beneficiary);
   for (const c of (payload['claimDetails'] as { beneficiary?: string }[]) ?? [])
     add(c?.beneficiary);
-  for (const c of
-    (payload['offlineClaimProcesseds'] as { beneficiary?: string }[]) ?? [])
+  for (const c of (payload['offlineClaimProcesseds'] as {
+    beneficiary?: string;
+  }[]) ?? [])
     add(c?.beneficiary);
   for (const c of (payload['otpVerifieds'] as { beneficiary?: string }[]) ?? [])
     add(c?.beneficiary);
@@ -273,6 +275,58 @@ export const useVillageDoctorVendorTransactions = (vendorAddress: string) => {
           ...formatted,
           ...claimDetailsFormatted,
         ]);
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useVillageDoctorRedeemedBeneficiaries = () => {
+  const { subgraphClient } = useCambodiaSubgraph();
+  const { queryClient } = useRSQuery();
+
+  return useQuery(
+    {
+      queryKey: ['VillageDoctorRedeemedBeneficiaries'],
+      queryFn: async () => {
+        const { data, error } = await subgraphClient.query(
+          VillageDoctorRedeemedBeneficiaries,
+          {},
+        );
+        if (error) {
+          throw new Error(
+            error.message ||
+              'Could not reach the blockchain subgraph (GraphQL).',
+          );
+        }
+        const addresses = new Set<string>();
+        const addBeneficiary = (addr: unknown) => {
+          const normalized = normalizeEvmAddressForSubgraph(
+            typeof addr === 'string' ? addr : String(addr ?? ''),
+          );
+          if (normalized && isCanonicalSubgraphVendorAddress(normalized)) {
+            addresses.add(normalized);
+          }
+        };
+        for (const item of (data?.claimProcesseds as {
+          beneficiary?: string;
+        }[]) ?? []) {
+          addBeneficiary(item.beneficiary);
+        }
+        for (const item of (data?.offlineClaimProcesseds as {
+          beneficiary?: string;
+        }[]) ?? []) {
+          addBeneficiary(item.beneficiary);
+        }
+        for (const item of (data?.claimDetails as { beneficiary?: string }[]) ??
+          []) {
+          addBeneficiary(item.beneficiary);
+        }
+        for (const item of (data?.otpVerifieds as { beneficiary?: string }[]) ??
+          []) {
+          addBeneficiary(item.beneficiary);
+        }
+        return addresses;
       },
     },
     queryClient,

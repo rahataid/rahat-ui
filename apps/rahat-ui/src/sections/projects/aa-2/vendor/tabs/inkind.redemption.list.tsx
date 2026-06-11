@@ -6,34 +6,40 @@ import {
 import {
   CustomPagination,
   DemoTable,
+  IconLabelBtn,
   SearchInput,
   SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 import { usePagination, useGetInkindRedemptionLogs } from '@rahat-ui/query';
 import { useInkindRedemptionColumn } from '../columns/useInkindRedemptionColumn';
 import { InkindType } from '../../inkindManagement/schemas/inkind.validation';
+import * as XLSX from 'xlsx';
+import { CloudDownloadIcon } from 'lucide-react';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export type InkindRedemptionData = {
   uuid: UUID;
-  vendor: {
-    name: string;
-  };
+  vendor: { name: string };
   beneficiaryName: string;
   beneficiaryWallet: string;
-  inkind: {
-    name: string;
-    type: InkindType;
-  };
+  inkind: { name: string; type: InkindType };
   quantity: number;
   approvedAt: Date;
   approvedBy: string;
   redemptionStatus: string;
   redeemedAt: string;
   transactionHash: string | null;
+};
+
+type ExportParams = {
+  vendorName: string;
+  inkindName: string;
+  status: string;
+  inkindType: string;
 };
 
 export const InkindRedemptionList = ({
@@ -90,15 +96,63 @@ export const InkindRedemptionList = ({
 
   const columns = useInkindRedemptionColumn(id, showActions);
 
+  const [exportParams, setExportParams] = useState<ExportParams | null>(null);
+
+  const exportQuery = useGetInkindRedemptionLogs({
+    projectUuid: exportParams ? id : (undefined as any),
+
+    ...(vendorId ? { vendorUuid: vendorId } : {}),
+    vendorName: exportParams?.vendorName ?? '',
+    inkindName: exportParams?.inkindName ?? '',
+    status: exportParams?.status ?? '',
+    inkindType: exportParams?.inkindType ?? '',
+  });
+
+  const handleExport = useCallback(() => {
+    setExportParams({
+      vendorName: debounceSearch.vendorName ?? '',
+      inkindName: debounceSearch.inkindName ?? '',
+      status: filters.status ?? '',
+      inkindType: filters.inkindType ?? '',
+    });
+  }, [debounceSearch, filters]);
+
+  useEffect(() => {
+    if (!exportQuery.data || !exportParams) return;
+    if (exportQuery.isFetching) return;
+
+    const rows = (exportQuery.data as any)?.data || [];
+    if (rows.length > 0) {
+      const flattened = rows.map((row: InkindRedemptionData) => ({
+        'Vendor Name': row.vendor?.name || '',
+        'Inkind Name': row.inkind?.name || '',
+        'Inkind Type': row.inkind?.type || '',
+        Quantity: row.quantity,
+        'Approved At': row.approvedAt
+          ? new Date(row.approvedAt).toISOString()
+          : '',
+        'Approved By': row.approvedBy || '',
+        Status: row.redemptionStatus,
+        'Tx Hash': row.transactionHash || '',
+      }));
+      const ws = XLSX.utils.json_to_sheet(flattened);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Redemptions');
+      XLSX.writeFile(wb, 'vendor_inkind_redemption_logs.csv', {
+        bookType: 'csv',
+      });
+    }
+
+    setExportParams(null);
+  }, [exportQuery.data, exportQuery.isFetching, exportParams]);
+
   const table = useReactTable({
     manualPagination: true,
     data: queryData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    state: {
-      columnVisibility,
-    },
+    state: { columnVisibility },
   });
 
   const handleSearch = React.useCallback(
@@ -122,6 +176,7 @@ export const InkindRedemptionList = ({
   if (isPending) {
     return <SpinnerLoader />;
   }
+
   return (
     <div className="rounded border bg-card p-4">
       <div className="flex justify-between space-x-2 mb-2">
@@ -146,7 +201,7 @@ export const InkindRedemptionList = ({
               ? filters.status
               : ''
           }
-          className="flex-[1]"
+          className="flex-[2]"
         />
         <SelectComponent
           name="Inkind Type"
@@ -157,14 +212,32 @@ export const InkindRedemptionList = ({
               ? filters.inkindType
               : ''
           }
-          className="flex-[1]"
+          className="flex-[2]"
         />
+        <div className="h-full">
+          <TooltipWrapper
+            tip={
+              queryData?.data?.length
+                ? 'Export to CSV'
+                : 'No data available to export'
+            }
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              name={exportQuery.isFetching ? 'Exporting...' : 'Export Logs'}
+              handleClick={handleExport}
+              disabled={!queryData?.data?.length || exportQuery.isFetching}
+              variant="outline"
+              className="cursor-pointer"
+              size=""
+            />
+          </TooltipWrapper>
+        </div>
       </div>
       <DemoTable
         table={table}
         tableHeight="h-[500px]"
         message="No In-kind Redemption Records"
-        // loading={isPending}
       />
       <CustomPagination
         currentPage={pagination.page}

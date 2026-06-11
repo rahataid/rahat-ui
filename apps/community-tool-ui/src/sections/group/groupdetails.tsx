@@ -10,6 +10,7 @@ import {
   Download,
   MoreVertical,
   Share,
+  Upload,
   Trash,
   Wallet,
   X,
@@ -187,9 +188,9 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
-          acc[value] = key;
-          return acc;
-        }, {} as { [key: string]: string })
+        acc[value] = key;
+        return acc;
+      }, {} as { [key: string]: string })
       : {};
     const payload = {
       groupUUID: uuid as string,
@@ -282,6 +283,11 @@ export default function GroupDetail({ uuid }: IProps) {
       }
     });
   };
+
+  const handleUpload = () => {
+    console.log('Upload clicked');
+    // TODO: implement upload functionality
+  };
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
@@ -338,6 +344,10 @@ export default function GroupDetail({ uuid }: IProps) {
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Download
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleUpload}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Bulk Update
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
@@ -396,9 +406,8 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${
-                        labels.length < 10 ? 'h-32' : 'h-52'
-                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
+                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {

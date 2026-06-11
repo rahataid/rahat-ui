@@ -53,14 +53,3 @@ export const getPlasgateSmsInfo = (text: string): PlasgateSmsInfo => {
     exceeded: length > limit,
   };
 };
-
-// Truncate `text` to the largest prefix that fits the Plasgate per-SMS limit
-// under its detected encoding. Used to enforce the cap from textarea onChange.
-export const truncateToPlasgateLimit = (text: string) => {
-  const chars = [...text];
-  const limit = isGsm7Message(text)
-    ? PLASGATE_GSM7_LIMIT
-    : PLASGATE_UNICODE_LIMIT;
-  if (chars.length <= limit) return text;
-  return chars.slice(0, limit).join('');
-};

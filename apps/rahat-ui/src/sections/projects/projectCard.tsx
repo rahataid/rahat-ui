@@ -3,7 +3,9 @@ import Image from 'next/image';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
+import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 
 type CardProps = {
   address: UUID;
@@ -12,6 +14,9 @@ type CardProps = {
   image: string;
   badge: string;
   status: string;
+  isPinned?: boolean;
+  onTogglePin?: () => void;
+  hidePin?: boolean;
 };
 
 export default function CommonCard({
@@ -21,11 +26,13 @@ export default function CommonCard({
   image,
   badge,
   status,
+  isPinned = false,
+  onTogglePin,
+  hidePin = false,
 }: CardProps) {
   const router = useRouter();
 
   const handleClick = () => {
-    // if(status === 'NOT_READY') return alert("Project not ready")
     router.push(`/projects/${badge.toLowerCase()}/${address}`);
   };
 
@@ -46,14 +53,56 @@ export default function CommonCard({
         </div>
       </div>
       <CardContent>
-        <p className="font-bold text-md text-primary mb-1">{title} </p>
+        <div className="flex items-start justify-between">
+          <p className="font-bold text-md text-primary mb-1">{title}</p>
+          {!hidePin && (
+            <Button
+              variant="secondary"
+              onClick={(e) => {
+                e.stopPropagation();
+                onTogglePin?.();
+              }}
+              className="mt-1 p-0 bg-transparent w-6 h-6"
+            >
+              {isPinned ? (
+                <Image
+                  src="/svg/pin-on.svg"
+                  alt="Unpin project"
+                  title="Unpin project"
+                  className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
+                  width={25}
+                  height={25}
+                />
+              ) : (
+                <Image
+                  src="/svg/pin-off.svg"
+                  alt="Pin project"
+                  title="Pin project"
+                  className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
+                  width={25}
+                  height={25}
+                />
+              )}
+            </Button>
+          )}
+        </div>
         <Badge
           variant="outline"
           className="border-primary text-primary cursor-auto bg-secondary mb-2"
         >
           {badge}
         </Badge>
-        <p className="text-sm text-gray-500">{subTitle}</p>
+        <div>
+          <TruncatedCell
+            text={
+              subTitle +
+              'Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker Inkind Distribution for the flood victims with Cash Tracker'
+            }
+            maxLength={40}
+            className="text-sm text-gray-500 w-[300px]"
+          />
+        </div>
+        {/* <p className="text-sm text-gray-500">{subTitle}</p> */}
       </CardContent>
     </Card>
   );

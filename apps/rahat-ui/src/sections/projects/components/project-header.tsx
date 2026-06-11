@@ -54,14 +54,17 @@ export function ProjectNav({
   const handleLogout = () => {
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
+    const projectPin = localStorage.getItem('PROJECT_PIN');
     clearUser();
     clearAuth();
     if (pinnedPhases) localStorage.setItem('aa_pinned_phases', pinnedPhases);
     if (triggerPinPhase)
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
+    if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
     if (pinnedPhases) {
       localStorage.setItem('aa_pinned_phases', pinnedPhases);
     }
+    if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
     toast.success('Logged out successfully.');
     // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);

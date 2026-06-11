@@ -55,11 +55,7 @@ import {
   useListElCrmTemplate,
   useListElCrmTransport,
 } from '@rahat-ui/query';
-import {
-  getPlasgateSmsInfo,
-  isPlasgateChannel,
-  truncateToPlasgateLimit,
-} from '../../const';
+import { getPlasgateSmsInfo, isPlasgateChannel } from '../../const';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -478,30 +474,34 @@ export default function ComposeMessageView() {
                         <Textarea
                           placeholder="Type your message here…"
                           value={messageContent}
-                          onChange={(e) =>
-                            setMessageContent(
-                              isPlasgate
-                                ? truncateToPlasgateLimit(e.target.value)
-                                : e.target.value,
-                            )
-                          }
+                          onChange={(e) => setMessageContent(e.target.value)}
                           rows={4}
                         />
                         {isPlasgate && plasgateSmsInfo && (
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>
-                              {plasgateSmsInfo.encoding === 'GSM-7'
-                                ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
-                                : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
-                            </span>
-                            <span
-                              className={cn(
-                                plasgateSmsInfo.remaining <= 10 &&
-                                  'text-destructive font-medium',
-                              )}
-                            >
-                              {plasgateSmsInfo.length} / {plasgateSmsInfo.limit}
-                            </span>
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <span>
+                                {plasgateSmsInfo.encoding === 'GSM-7'
+                                  ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
+                                  : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
+                              </span>
+                              <span
+                                className={cn(
+                                  (plasgateSmsInfo.exceeded ||
+                                    plasgateSmsInfo.remaining <= 10) &&
+                                    'text-destructive font-medium',
+                                )}
+                              >
+                                {plasgateSmsInfo.length} / {plasgateSmsInfo.limit}
+                              </span>
+                            </div>
+                            {plasgateSmsInfo.exceeded && (
+                              <p className="text-xs text-destructive">
+                                Message exceeds the {plasgateSmsInfo.limit}-character
+                                limit for {plasgateSmsInfo.encoding} encoding and
+                                will be sent as multiple SMS segments.
+                              </p>
+                            )}
                           </div>
                         )}
                       </>

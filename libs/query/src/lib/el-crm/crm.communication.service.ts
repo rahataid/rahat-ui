@@ -286,9 +286,16 @@ export const useDeleteTemplate = (projectUUID: UUID) => {
         queryKey: [queryKeys.elCrmListTemplate],
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message;
       toast.fire({
-        title: 'Error while deleting template.',
+        title:
+          typeof apiMessage === 'string' && apiMessage.length > 0
+            ? apiMessage
+            : 'Error while deleting template.',
         icon: 'error',
       });
     },

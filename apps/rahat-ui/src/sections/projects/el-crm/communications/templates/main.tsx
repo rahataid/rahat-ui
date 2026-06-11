@@ -561,6 +561,24 @@ export default function TemplatesView() {
                                     Ready
                                   </span>
                                 )}
+
+                                {template.inUse && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Badge
+                                        variant="secondary"
+                                        className="cursor-default"
+                                      >
+                                        In use
+                                      </Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      This template is referenced by an existing
+                                      campaign. It cannot be deleted until the
+                                      campaign is removed.
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
                               </div>
                             </CardHeader>
 
@@ -639,93 +657,114 @@ export default function TemplatesView() {
                               )}
 
                               <div className="mt-auto flex items-center justify-between gap-2 border-t pt-3">
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                    >
-                                      <Trash2 className="mr-2 h-4 w-4" />
-                                      Delete
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>
-                                        Delete template
-                                        {' '}
-                                        <span className="text-foreground">
-                                          &quot;{template.name}&quot;
-                                        </span>
-                                        ?
-                                      </AlertDialogTitle>
-                                      <AlertDialogDescription asChild>
-                                        <div className="space-y-3 text-sm">
-                                          <p>
-                                            This action cannot be undone. The
-                                            template will be removed from this
-                                            project and can no longer be used
-                                            in new messages.
-                                          </p>
-                                          <div className="rounded-md border bg-muted/40 p-3 text-xs space-y-1">
-                                            <div className="flex justify-between gap-3">
-                                              <span className="text-muted-foreground">
-                                                Channel
-                                              </span>
-                                              <span className="font-medium text-foreground">
-                                                {channelName}
-                                              </span>
-                                            </div>
-                                            <div className="flex justify-between gap-3">
-                                              <span className="text-muted-foreground">
-                                                Status
-                                              </span>
-                                              <span className="font-medium text-foreground">
-                                                {template.status || 'UNKNOWN'}
-                                              </span>
-                                            </div>
-                                            <div className="flex justify-between gap-3">
-                                              <span className="text-muted-foreground">
-                                                Type
-                                              </span>
-                                              <span className="font-medium text-foreground">
-                                                {template?.type || 'TEXT'}
-                                              </span>
+                                {template.inUse ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span
+                                        tabIndex={0}
+                                        className="inline-flex"
+                                      >
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          disabled
+                                          className="text-muted-foreground"
+                                        >
+                                          <Trash2 className="mr-2 h-4 w-4" />
+                                          Delete
+                                        </Button>
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      In use by a campaign. Remove or update the
+                                      referencing campaign before deleting this
+                                      template.
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ) : (
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                      >
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                          Delete template{' '}
+                                          <span className="text-foreground">
+                                            &quot;{template.name}&quot;
+                                          </span>
+                                          ?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription asChild>
+                                          <div className="space-y-3 text-sm">
+                                            <p>
+                                              This action cannot be undone. The
+                                              template will be removed from this
+                                              project and can no longer be used
+                                              in new messages.
+                                            </p>
+                                            <div className="rounded-md border bg-muted/40 p-3 text-xs space-y-1">
+                                              <div className="flex justify-between gap-3">
+                                                <span className="text-muted-foreground">
+                                                  Channel
+                                                </span>
+                                                <span className="font-medium text-foreground">
+                                                  {channelName}
+                                                </span>
+                                              </div>
+                                              <div className="flex justify-between gap-3">
+                                                <span className="text-muted-foreground">
+                                                  Status
+                                                </span>
+                                                <span className="font-medium text-foreground">
+                                                  {template.status || 'UNKNOWN'}
+                                                </span>
+                                              </div>
+                                              <div className="flex justify-between gap-3">
+                                                <span className="text-muted-foreground">
+                                                  Type
+                                                </span>
+                                                <span className="font-medium text-foreground">
+                                                  {template?.type || 'TEXT'}
+                                                </span>
+                                              </div>
                                             </div>
                                           </div>
-                                          {template.status === 'APPROVED' && (
-                                            <p className="text-xs text-warning">
-                                              Heads up: any scheduled or
-                                              automatic campaigns referencing
-                                              this template will fail to send
-                                              after deletion.
-                                            </p>
-                                          )}
-                                        </div>
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>
-                                        Cancel
-                                      </AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={() =>
-                                          handleDelete(template.cuid)
-                                        }
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                      >
-                                        Delete template
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                          Cancel
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                          onClick={() =>
+                                            handleDelete(template.cuid)
+                                          }
+                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                          Delete template
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                )}
 
                                 {template.status === 'APPROVED' && (
                                   <Tooltip>
                                     <TooltipTrigger asChild>
                                       <Link
-                                        href={`/projects/el-crm/${projectUUID}/communications/messages/compose?templateId=${encodeURIComponent(template.externalId || template.cuid)}&channel=${encodeURIComponent(channelName)}`}
+                                        href={`/projects/el-crm/${projectUUID}/communications/messages/compose?templateId=${encodeURIComponent(
+                                          template.externalId || template.cuid,
+                                        )}&channel=${encodeURIComponent(
+                                          channelName,
+                                        )}`}
                                       >
                                         <Button size="sm" className="gap-2">
                                           <Send className="h-4 w-4" />

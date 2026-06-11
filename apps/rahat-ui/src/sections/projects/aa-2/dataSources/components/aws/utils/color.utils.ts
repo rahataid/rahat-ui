@@ -12,6 +12,11 @@ export const roundValue = (value: number | undefined): string => {
   return parseFloat(value.toFixed(1)).toString();
 };
 
+export const getLatestValue = (history: any[]) => {
+  if (!history || !Array.isArray(history) || history.length === 0) return null;
+  return history[history.length - 1];
+};
+
 const unknownColor: WatchColors = {
   bg: 'bg-gray-50',
   border: 'border-gray-200',
@@ -158,7 +163,7 @@ export const getTemperatureColor = (value: number | undefined): WatchColors => {
 // Humidity Colors
 export const getHumidityColor = (value: number | undefined): WatchColors => {
   if (value === undefined || value === null) return unknownColor;
-  
+
   if (value >= 100)
     return {
       bg: 'bg-blue-100',

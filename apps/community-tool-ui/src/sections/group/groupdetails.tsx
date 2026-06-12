@@ -34,6 +34,7 @@ import {
   useCommunitySettingList,
   useExportPinnedListBeneficiary,
   usePurgeGroupedBeneficiary,
+  useUploadBulkBeneficiaryUpdate
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
@@ -98,6 +99,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
+  const updateBulkBeneficiary = useUploadBulkBeneficiaryUpdate();
   const purgeCommunityGroup = usePurgeGroupedBeneficiary();
   const { data: settingsData } = useCommunitySettingList({
     page: 1,
@@ -127,8 +129,14 @@ export default function GroupDetail({ uuid }: IProps) {
   });
 
   const [labels, setLabels] = React.useState<any[]>([]);
+  // State for the main field selection dialog
   const [open, setOpen] = React.useState(false);
-
+  // State for Bulk Update (Upload) dialog
+  const [uploadOpen, setUploadOpen] = React.useState(false);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  // State for Download dialog (file selection)
+  const [downloadOpen, setDownloadOpen] = React.useState(false);
+  const [downloadFile, setDownloadFile] = React.useState<File | null>(null);
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
     setLabels(filtered);
@@ -284,9 +292,23 @@ export default function GroupDetail({ uuid }: IProps) {
     });
   };
 
-  const handleUpload = () => {
-    console.log('Upload clicked');
-    // TODO: implement upload functionality
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      Swal.fire('Please select a file', '', 'warning');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      // Assuming the mutation expects FormData
+      await updateBulkBeneficiary.mutateAsync(formData);
+      Swal.fire('File uploaded successfully', '', 'success');
+      setUploadOpen(false);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error('Upload error:', error);
+      Swal.fire('Upload failed', (error as any)?.message || 'Unknown error', 'error');
+    }
   };
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
@@ -299,6 +321,12 @@ export default function GroupDetail({ uuid }: IProps) {
       resetSelectedListItems();
     }
   }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
+
+  useEffect(() => {
+    if (uploadOpen && selectedFile) {
+      handleUpload();
+    }
+  }, [uploadOpen, selectedFile]);
 
   return (
     <>
@@ -336,16 +364,14 @@ export default function GroupDetail({ uuid }: IProps) {
                   <Share className="mr-2 h-4 w-4" />
                   Export
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setOpen(true)}
+                <DropdownMenuItem onClick={() => setDownloadOpen(true)}
                   disabled={
                     responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
-                >
+                  }>
                   <Download className="mr-2 h-4 w-4" />
                   Download
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleUpload}>
+                <DropdownMenuItem onClick={() => setUploadOpen(true)}>
                   <Upload className="mr-2 h-4 w-4" />
                   Bulk Update
                 </DropdownMenuItem>
@@ -474,6 +500,76 @@ export default function GroupDetail({ uuid }: IProps) {
                   >
                     Download
                   </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            {/* Upload Dialog */}
+            <AlertDialog open={uploadOpen} onOpenChange={setUploadOpen}>
+              <AlertDialogContent className="w-full max-w-md">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Upload File</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <div className="flex flex-col space-y-4">
+                      <input
+                        type="file"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setSelectedFile(e.target.files[0]);
+                          }
+                        }}
+                        className="border rounded p-2"
+                      />
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <Button variant="outline" onClick={() => setUploadOpen(false)}>
+                    Cancel
+                  </Button>
+                    <Button
+                      onClick={handleUpload}
+                    >
+                      Update
+                    </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            {/* Download Dialog */}
+            <AlertDialog open={downloadOpen} onOpenChange={setDownloadOpen}>
+              <AlertDialogContent className="w-full max-w-md">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Download File</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <div className="flex flex-col space-y-4">
+                      <input
+                        type="file"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setDownloadFile(e.target.files[0]);
+                          }
+                        }}
+                        className="border rounded p-2"
+                      />
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <Button variant="outline" onClick={() => setDownloadOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (downloadFile) {
+                        console.log('Downloading with file', downloadFile.name);
+                        // TODO: implement actual download logic using selected file if needed
+                        setDownloadOpen(false);
+                      } else {
+                        Swal.fire('Please select a file', '', 'warning');
+                      }
+                    }}
+                  >
+                    nothing
+                  </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

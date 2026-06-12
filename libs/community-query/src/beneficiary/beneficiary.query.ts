@@ -232,3 +232,35 @@ export const useGenerateVerificationLink = () => {
     queryClient,
   );
 };
+
+
+export const useUploadBulkBeneficiaryUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.UPDATE_BULK_BENEFICIARY],
+      mutationFn: benClient.uploadBenificiary,
+      onSuccess: () => {
+        Swal.fire('Beneficiary Created Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Creating Data',
+        });
+      },
+    },
+    queryClient,
+  );
+};

@@ -382,6 +382,118 @@ export const useListElCrmSessionBroadcast = (
   });
 };
 
+// Pages through every broadcast for a session, optionally narrowed by the
+// same filters (status, address) used by the delivery logs table. Used for
+// bulk export and for finding WhatsApp deliveries that failed because the
+// recipient has no WhatsApp account.
+export const useFetchSessionBroadcasts = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      filters,
+    }: {
+      sessionId: string;
+      filters?: Record<string, string | undefined>;
+    }) => {
+      const perPage = 100;
+      let page = 1;
+      let total = Infinity;
+      const results: any[] = [];
+
+      while (results.length < total) {
+        const res = await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: SESSION_BROADCAST,
+            payload: { session: sessionId, ...filters, page, perPage },
+          },
+        });
+        const data = res?.data ?? [];
+        if (!data.length) break;
+        results.push(...data);
+        total = res?.response?.meta?.['total'] ?? results.length;
+        page += 1;
+      }
+
+      return results;
+    },
+  });
+};
+
+// Creates a new SMS campaign targeting the given phone numbers and sends it
+// immediately. Used to retry WhatsApp deliveries that failed because the
+// recipient has no WhatsApp account.
+export const useRetryFailedViaCampaign = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (data: {
+      name: string;
+      targetType: string;
+      transportId: string;
+      message: string;
+      phoneNumbers: string[];
+    }) => {
+      const createRes = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: CREATE_CAMPAIGN,
+          payload: {
+            name: data.name,
+            targetType: data.targetType,
+            transportId: data.transportId,
+            message: data.message,
+            options: { phoneNumbers: data.phoneNumbers },
+            isAutomatic: false,
+          },
+        },
+      });
+
+      const created = createRes?.data;
+      if (created?.uuid) {
+        await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: TRIGGER_CAMPAIGN,
+            payload: { uuid: created.uuid },
+          },
+        });
+      }
+      return created;
+    },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Retry campaign created and sent via SMS',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmCampaignList],
+      });
+    },
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message || error?.message;
+      toast.fire({
+        title:
+          typeof apiMessage === 'string' && apiMessage.length > 0
+            ? apiMessage
+            : 'Failed to create retry campaign.',
+        icon: 'error',
+      });
+    },
+  });
+};
+
 export const useListElCrmBroadCastCount = (
   projectUUID: UUID,
   payload: { sessionId: string },

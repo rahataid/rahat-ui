@@ -169,6 +169,15 @@ function ImportDetailView() {
                       </span>
                     </div>
                   </div>
+                  <div className="flex gap-2 rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
+                    <AlertCircle size={16} className="mt-0.5 shrink-0 text-yellow-600" />
+                    <p>
+                      If this group is assigned to any project, the beneficiaries will be
+                      automatically synced to those projects after import. Any existing beneficiary
+                      records in those projects will be updated with the latest imported data.
+                      Please ensure the imported data is accurate before proceeding.
+                    </p>
+                  </div>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleStartImport}>

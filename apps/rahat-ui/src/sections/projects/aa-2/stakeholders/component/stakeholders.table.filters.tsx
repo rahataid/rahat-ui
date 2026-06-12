@@ -43,7 +43,8 @@ export default function StakeholdersTableFilters({
     <div className="flex justify-between space-x-2 items-center mb-2">
       {/* Search Stakeholder */}
       <SearchInput
-        className="w-full"
+        className="flex-1 min-w-[120px]"
+        inputClassName="h-[clamp(28px,3vw,36px)]"
         name="name"
         value={stakeholderSearchText}
         onSearch={(e) => handleSearch(e, 'name')}
@@ -51,7 +52,8 @@ export default function StakeholdersTableFilters({
 
       {/* Search Organization */}
       <SearchInput
-        className="w-full"
+        className="flex-1 min-w-[120px]"
+        inputClassName="h-[clamp(28px,3vw,36px)]"
         name="organization"
         value={organizationSearchText}
         onSearch={(e) => handleSearch(e, 'organization')}
@@ -59,7 +61,8 @@ export default function StakeholdersTableFilters({
 
       {/* Search Municipality */}
       <SearchInput
-        className="w-full"
+        className="flex-1 min-w-[120px]"
+        inputClassName="h-[clamp(28px,3vw,36px)]"
         name="municipality"
         value={municipalitySearchText}
         onSearch={(e) => handleSearch(e, 'municipality')}
@@ -67,7 +70,8 @@ export default function StakeholdersTableFilters({
 
       {/* Search support area */}
       <SearchInput
-        className="w-full"
+        className="flex-1 min-w-[120px]"
+        inputClassName="h-[clamp(28px,3vw,36px)]"
         name="support area"
         value={supportAreaText}
         onSearch={(e) => handleSearch(e, 'supportArea')}

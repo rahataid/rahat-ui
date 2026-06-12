@@ -61,7 +61,7 @@ const StakeholdersDetail = () => {
         stakeholderName={details?.data?.name || 'Stakeholder'}
         conflictType="stakeholder"
       />
-      <div className="flex justify-between items-center p-4 ">
+      <div className="flex justify-between items-center">
         <HeaderWithBack
           title={'Stakeholders Details'}
           subtitle="Detailed view of the selected stakeholder"
@@ -70,24 +70,15 @@ const StakeholdersDetail = () => {
         <RoleAuth
           roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
         >
-          <div className=" flex flex-end justify-end gap-3 mt-auto">
-            {/* <Button
-            variant="outline"
-            style={{ borderColor: 'red' }}
-            className="flex items-center gap-3 rounded-md w-36 text-red-600"
-          >
-            <Trash2 size={16} />
-            <span className="text-lg font-thin">Delete</span>
-          </Button> */}
-
+          <div className="flex flex-end justify-end gap-[clamp(4px,0.6vw,12px)] mt-auto">
             <DeleteButton
-              className="rounded flex gap-1 items-center text-sm font-medium"
+              className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
               name="stakeholder"
               label="Delete"
               handleContinueClick={handleDelete}
             />
             <EditButton
-              className="rounded flex gap-1 items-center text-sm font-medium"
+              className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
               label="Edit"
               onFallback={() =>
                 router.push(
@@ -95,20 +86,12 @@ const StakeholdersDetail = () => {
                 )
               }
             />
-
-            {/* <Button
-            variant="outline"
-            className="flex  rounded-md  items-center gap-3 w-36"
-          >
-            <Edit2 size={16} />
-            <span className="text-lg font-thin">Edit</span>
-          </Button> */}
           </div>
         </RoleAuth>
       </div>
 
       <div className="flex">
-        <div className="flex border rounded-sm flex-col gap-4 p-4 mx-4  w-full">
+        <div className="flex border rounded-sm flex-col gap-[clamp(8px,1vw,16px)] p-[clamp(8px,1.5vw,16px)] mt-[clamp(4px,0.6vw,8px)] w-full">
           <StakeHolderInfo stakeholder={details} />
         </div>
       </div>

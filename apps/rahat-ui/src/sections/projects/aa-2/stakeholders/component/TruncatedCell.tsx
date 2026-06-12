@@ -24,19 +24,21 @@ export function TruncatedCell({
 
   // 🔹 No tooltip if truncation not needed
   if (!shouldTruncate) {
-    return <span className={className}>{text}</span>;
+    return <span className={cn('block truncate', className)}>{text}</span>;
   }
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className={cn('cursor-pointer truncate', className)}>
+          <span className={cn('block cursor-pointer truncate', className)}>
             {displayText}
           </span>
         </TooltipTrigger>
-        <TooltipContent className={cn('rounded-sm', className)}>
-          <p className="whitespace-pre-line flex wrap break-words">{text}</p>
+        <TooltipContent className="rounded-sm max-w-[200px]">
+          <p className="whitespace-pre-line flex wrap break-words text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
+            {text}
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

@@ -47,15 +47,16 @@ const StakeGoldersGroups = () => {
   }, [searchParams]);
   return (
     <>
-      <div className="p-4 rounded-sm border">
-        <div className="flex justify-between space-x-2 items-center mb-4">
+      <div className="p-3 md:p-2 rounded-sm border">
+        <div className="flex flex-row flex-wrap gap-2 mb-2">
           <SearchInput
-            className="w-full"
+            className="flex-1 min-w-[180px]"
+            // inputClassName="h-7 md:h-7 lg:h-9 "
+            inputClassName="h-[clamp(28px,3vw,36px)]"
             name="stakeholders group"
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
-
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
@@ -63,33 +64,37 @@ const StakeGoldersGroups = () => {
             <AddButton
               path={`/projects/aa/${id}/stakeholders/groups/add`}
               name="Stakeholder Group"
+              // className="text-xs sm:text-sm h-9"
+              className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             />
           </RoleAuth>
         </div>
-        <ScrollArea className="h-[calc(100vh-360px)] mb-2">
+        {/* <ScrollArea className="h-[max(250px,calc(100vh-380px))] mb-2"> */}
+        <ScrollArea className="h-[clamp(300px,calc(100vh-260px),700px)] mb-2 mt-2">
+
           {isLoading ? (
             <SpinnerLoader />
           ) : stakeholdersGroups.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {stakeholdersGroups?.map((i: any, index: number) => {
                 return (
-                  <div key={index} className="rounded-sm border shadow p-4">
+                  <div key={index} className="rounded-sm border shadow p-[clamp(8px,1.5vw,16px)]">
                     <div className="flex flex-col space-y-2">
                       <div
-                        className="cursor-pointer rounded-sm bg-secondary grid place-items-center h-28"
+                        className="cursor-pointer rounded-sm bg-secondary grid place-items-center h-[clamp(64px,10vw,112px)]"
                         onClick={() => {
                           router.push(
                             `/projects/aa/${id}/stakeholders/groups/${i.uuid}`,
                           );
                         }}
                       >
-                        <div className="bg-[#667085] text-white p-2 rounded-full">
+                        <div className="bg-[#667085] text-white p-[clamp(4px,0.8vw,8px)] rounded-full [&_svg]:size-[clamp(14px,1.6vw,20px)]">
                           <Users size={20} strokeWidth={2.5} />
                         </div>
                       </div>
 
-                      <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
-                      <div className="flex gap-2 items-center">
+                      <p className="text-[clamp(11px,1vw,14px)] mb-1">{i?.name ?? 'N/A'}</p>
+                      <div className="flex gap-2 items-center text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(12px,1.4vw,18px)]">
                         <Users size={18} strokeWidth={2} />
                         {i?._count?.stakeholders || 0}
                       </div>

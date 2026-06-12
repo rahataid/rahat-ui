@@ -4,17 +4,39 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CirclePlus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import { ProjectCard } from '../../sections/projects';
 import AddProjectConfirmModal from './addProject.confirm';
-// import CustomPagination from '../../components/customPagination';
+
+const PROJECT_PIN_KEY = 'PROJECT_PIN';
+
+const loadPinnedProjects = (): string[] => {
+  try {
+    const stored = localStorage.getItem(PROJECT_PIN_KEY);
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const savePinnedProjects = (ids: string[]) => {
+  try {
+    localStorage.setItem(PROJECT_PIN_KEY, JSON.stringify(ids));
+  } catch {
+    console.error('Failed to save pinned projects');
+  }
+};
 
 export default function ProjectListView() {
-  // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
   const [filterValue, setFilterValue] = useState([]);
+  const [pinnedIds, setPinnedIds] = useState<string[]>(() =>
+    loadPinnedProjects(),
+  );
 
   const openAddProjectModal = () => {
     AddProjectModal.onTrue();
@@ -25,7 +47,6 @@ export default function ProjectListView() {
   };
 
   const handleFilterChange = (event) => {
-    // setFilterValue(event.target.value);
     const name = event.target.value;
     const project = data?.data?.filter((project) => {
       if (
@@ -40,6 +61,24 @@ export default function ProjectListView() {
   useEffect(() => {
     setFilterValue(data?.data as any);
   }, [data?.data]);
+
+  const sortedProjects = useMemo(() => {
+    if (!filterValue?.length) return [];
+    return [
+      ...filterValue.filter((p) => pinnedIds.includes(p.uuid)),
+      ...filterValue.filter((p) => !pinnedIds.includes(p.uuid)),
+    ];
+  }, [filterValue, pinnedIds]);
+
+  const togglePin = (projectId: string) => {
+    setPinnedIds((prev) => {
+      const updated = prev.includes(projectId)
+        ? prev.filter((id) => id !== projectId)
+        : [projectId, ...prev];
+      savePinnedProjects(updated);
+      return updated;
+    });
+  };
 
   return (
     <div className=" p-4 bg-card mt-14">
@@ -58,7 +97,6 @@ export default function ProjectListView() {
           <Input
             placeholder="Search Project by Name..."
             className="rounded"
-            // value={filterValue}
             onChange={handleFilterChange}
           />
           <Button
@@ -71,9 +109,9 @@ export default function ProjectListView() {
           </Button>
         </div>
         <ScrollArea className="pb-2 h-[calc(100vh-253px)]">
-          {filterValue && filterValue?.length > 0 ? (
+          {sortedProjects.length > 0 ? (
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {filterValue?.map((project) => (
+              {sortedProjects.map((project) => (
                 <ProjectCard
                   address={project?.uuid}
                   key={project.uuid}
@@ -82,6 +120,8 @@ export default function ProjectListView() {
                   subTitle={project.description as string}
                   badge={project.type}
                   status={project.status}
+                  isPinned={pinnedIds.includes(project.uuid)}
+                  onTogglePin={() => togglePin(project.uuid)}
                 />
               ))}
             </div>
@@ -92,16 +132,6 @@ export default function ProjectListView() {
           )}
         </ScrollArea>
       </div>
-      {/* TODO:fix project list meta */}
-      {/* <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={{ total: 0, currentPage: 0 }}
-        perPage={pagination.perPage}
-        total={0}
-      /> */}
     </div>
   );
 }

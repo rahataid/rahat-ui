@@ -1,14 +1,16 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 
 type IProps = {
   path?: string;
   isLoading?: boolean;
   onBack?: () => void;
+  className?: string;
 };
 
-export function Back({ path, isLoading, onBack }: IProps) {
+export function Back({ path, isLoading, onBack, className }: IProps) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -26,16 +28,18 @@ export function Back({ path, isLoading, onBack }: IProps) {
 
   return (
     <div
-      className={`inline-flex gap-2 mb-4 w-16 items-center ${isLoading ? 'cursor-progress' : 'cursor-pointer '
-        } `}
+      className={cn(
+        'inline-flex gap-1 mb-2 w-fit items-center',
+        isLoading ? 'cursor-progress' : 'cursor-pointer',
+        className,
+      )}
       onClick={handleClick}
     >
       <ArrowLeft
-        size={25}
         strokeWidth={2}
-        className="opacity-70 hover:opacity-100"
+        className="size-[clamp(14px,1.4vw,20px)] opacity-70 hover:opacity-100"
       />
-      <span> Back</span>
+      <span className="text-[clamp(11px,1vw,16px)]">Back</span>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import MultipleSelector, {
 } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 interface PhaseFormProps {
   form: UseFormReturn<AddPhaseFormInputValues, unknown, AddPhaseFormValues>;
@@ -26,7 +27,6 @@ interface PhaseFormProps {
   loading: boolean;
   submitLabel: string;
   resetLabel?: string;
-  payoutEnabledPhase?: { name?: string } | null;
   stationHeading: string;
   disbursementMethodOptions?: Option[];
   allPhases?: any[];
@@ -40,7 +40,6 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
   loading,
   submitLabel,
   resetLabel = 'Clear',
-  payoutEnabledPhase = null,
   stationHeading,
   disbursementMethodOptions = [],
   allPhases = [],
@@ -215,15 +214,23 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center space-x-2 space-y-0  ">
                         <FormControl>
-                          <Switch
-                            id="canTriggerPayout"
-                            checked={field.value === true}
-                            disabled={allMethodsTaken}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked === true);
-                            }}
-                            className="flex-shrink-0"
-                          />
+                          <TooltipWrapper
+                            tip={
+                              allMethodsTaken
+                                ? 'All disbursement methods already used - no options left to select'
+                                : ''
+                            }
+                          >
+                            <Switch
+                              id="canTriggerPayout"
+                              checked={field.value === true}
+                              disabled={allMethodsTaken}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked === true);
+                              }}
+                              className="flex-shrink-0"
+                            />
+                          </TooltipWrapper>
                         </FormControl>
                       </FormItem>
                     )}

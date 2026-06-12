@@ -20,14 +20,14 @@ export function HeaderWithBack({
   onBack,
 }: IProps) {
   return (
-    <div className="mb-3">
-      <div className="flex flex-col justify-center ml-1">
-        <Back path={path} onBack={onBack} />
-        <h1 className="font-semibold text-[28px]">
+    <div className="mb-[clamp(2px,0.4vw,8px)]">
+      <div className="flex flex-col justify-center ml-1 ">
+        <Back path={path} onBack={onBack} className="mb-1" />
+        <h1 className="font-semibold text-[28px] text-[clamp(16px,2vw,28px)]">
           {title} {status && <Badge className={badgeClassName}>{status}</Badge>}
         </h1>
       </div>
-      <p className="ml-1 text-muted-foreground text-base">{subtitle}</p>
+      <p className="ml-1 text-muted-foreground text-[clamp(11px,1vw,14px)] leading-4">{subtitle}</p>
     </div>
   );
 }

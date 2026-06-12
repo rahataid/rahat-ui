@@ -27,30 +27,43 @@ const baseActivityFormSchema = z.object({
 });
 
 export const createActivityFormSchema = (
-  phases: Array<{ uuid: string; name: string }>,
+  phases: Array<{
+    uuid: string;
+    name: string;
+    isRequiredLeadTime?: boolean;
+    isAutomatedActivity?: boolean;
+  }>,
 ) => {
   return baseActivityFormSchema.superRefine((data, ctx) => {
     const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
-    if (selectedPhase?.name !== 'PREPAREDNESS') {
+    if (!selectedPhase) return;
+
+    if (selectedPhase.isRequiredLeadTime) {
       if (!data.leadTime) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Lead time is required for this phase',
           path: ['leadTime'],
         });
-        return;
+      } else {
+        const parts = data.leadTime.split(' ');
+        const valuePart = parts[0]?.trim();
+        if (!valuePart) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Lead time is required for this phase',
+            path: ['leadTime'],
+          });
+        }
       }
+    }
 
-      const parts = data.leadTime.split(' ');
-      const valuePart = parts[0]?.trim();
-
-      if (!valuePart) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Lead time is required for this phase',
-          path: ['leadTime'],
-        });
-      }
+    if (selectedPhase.isAutomatedActivity && !data.isAutomated) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'This field is required',
+        path: ['isAutomated'],
+      });
     }
   });
 };

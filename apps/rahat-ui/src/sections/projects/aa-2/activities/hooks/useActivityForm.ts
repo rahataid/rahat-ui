@@ -9,7 +9,12 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export const useActivityForm = (
-  phases: Array<{ uuid: string; name: string }>,
+  phases: Array<{
+    uuid: string;
+    name: string;
+    isRequiredLeadTime?: boolean;
+    isAutomatedActivity?: boolean;
+  }>,
   appTransports?: Transport[],
 ) => {
   const FormSchema = useMemo(() => createActivityFormSchema(phases), [phases]);

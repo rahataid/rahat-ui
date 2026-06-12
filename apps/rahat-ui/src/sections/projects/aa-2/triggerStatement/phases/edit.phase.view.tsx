@@ -97,6 +97,8 @@ export default function EditPhaseView() {
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
       disbursementMethods: phase?.disbursementConfig?.disbursementMethods || [],
+      isAutomatedActivity: !!phase?.isAutomatedActivity,
+      isRequiredLeadTime: !!phase?.isRequiredLeadTime,
     });
   }, [phase, form, riverBasin]);
 
@@ -110,6 +112,8 @@ export default function EditPhaseView() {
       requiredMandatoryTriggers: Number(data.requiredMandatoryTriggers),
       requiredOptionalTriggers: Number(data.requiredOptionalTriggers),
       disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
+      isAutomatedActivity: !!data.isAutomatedActivity,
+      isRequiredLeadTime: !!data.isRequiredLeadTime,
     };
 
     try {
@@ -140,6 +144,8 @@ export default function EditPhaseView() {
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
       disbursementMethods: phase?.disbursementConfig?.disbursementMethods || [],
+      isAutomatedActivity: !!phase?.isAutomated,
+      isRequiredLeadTime: !!phase?.isRequiredLeadTime,
     });
   };
 

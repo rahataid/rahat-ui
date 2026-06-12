@@ -126,6 +126,8 @@ export default function AddPhaseView() {
       canRevert: !!data.canRevert,
       canTriggerPayout,
       disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
+      isAutomatedActivity: !!data.isAutomatedActivity,
+      isRequiredLeadTime: !!data.isRequiredLeadTime,
     };
     try {
       await createPhase.mutateAsync({

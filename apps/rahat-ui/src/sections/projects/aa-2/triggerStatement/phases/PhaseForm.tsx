@@ -1,22 +1,23 @@
 import React, { useMemo, useCallback } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AddPhaseFormInputValues, AddPhaseFormValues } from './phase.schema';
+
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import {
   Form,
-  FormControl,
   FormField,
-  FormItem,
   FormLabel,
   FormMessage,
+  FormControl,
+  FormItem,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import MultipleSelector, {
   Option,
 } from '@rahat-ui/shadcn/src/components/custom/multi-select';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 interface PhaseFormProps {
   form: UseFormReturn<AddPhaseFormInputValues, unknown, AddPhaseFormValues>;
@@ -167,7 +168,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
               <div className="space-y-4  pt-3">
                 <p className="text-sm font-medium">Other Options:</p>
                 {/* Can Revert Toggle */}
-                <div className="flex items-start justify-between pb-6 border-b">
+                <div className="flex items-start justify-between border-b pb-4 ">
                   <div className="flex-1 pr-4">
                     <h4 className="font-semibold text-slate-900 text-sm mb-1">
                       Can Revert
@@ -198,7 +199,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 </div>
 
                 {/* Can Trigger Payout Toggle */}
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between border-b pb-4">
                   <div className="flex-1 pr-4">
                     <h4 className="font-semibold text-slate-900 text-sm mb-1">
                       Can Trigger Payout
@@ -222,6 +223,63 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                               field.onChange(checked === true);
                             }}
                             className="flex-shrink-0"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Is Automated Activity Switch */}
+                <div className="flex items-start justify-between pb-4 border-b">
+                  <div className="flex-1 pr-4">
+                    <h4 className="font-semibold text-slate-900 text-sm mb-1">
+                      Is Automated Activity
+                    </h4>
+                    <p className="text-slate-600 text-sm">
+                      Enable automated activities for this phase.
+                    </p>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="isAutomatedActivity"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <Switch
+                            checked={field.value === true}
+                            onCheckedChange={(checked) =>
+                              field.onChange(checked === true)
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Lead Time */}
+                <div className="flex items-start justify-between pb-4 border-b">
+                  <div className="flex-1 pr-4">
+                    <h4 className="font-semibold text-slate-900 text-sm mb-1">
+                      Is Lead Time Required
+                    </h4>
+                    <p className="text-slate-600 text-sm">
+                      Enable lead time for activities in this phase.
+                    </p>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="isRequiredLeadTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center  space-x-2 space-y-0 ">
+                        <FormControl>
+                          <Switch
+                            checked={field.value === true}
+                            onCheckedChange={(checked) =>
+                              field.onChange(checked === true)
+                            }
                           />
                         </FormControl>
                       </FormItem>

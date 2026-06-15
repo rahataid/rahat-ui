@@ -135,8 +135,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   // State for Download dialog (file selection)
-  const [downloadOpen, setDownloadOpen] = React.useState(false);
-  const [downloadFile, setDownloadFile] = React.useState<File | null>(null);
+
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
     setLabels(filtered);
@@ -326,11 +325,7 @@ export default function GroupDetail({ uuid }: IProps) {
     }
   }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
 
-  useEffect(() => {
-    if (uploadOpen && selectedFile) {
-      handleUpload();
-    }
-  }, [uploadOpen, selectedFile]);
+
 
   return (
     <>
@@ -613,18 +608,18 @@ export default function GroupDetail({ uuid }: IProps) {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            {/* Download Dialog */}
+            {/* Upload Dialog */}
             <AlertDialog open={uploadOpen} onOpenChange={setUploadOpen}>
               <AlertDialogContent className="w-full max-w-md">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Download File</AlertDialogTitle>
+                  <AlertDialogTitle>Upload File</AlertDialogTitle>
                   <AlertDialogDescription>
                     <div className="flex flex-col space-y-4">
                       <input
                         type="file"
                         onChange={(e) => {
                           if (e.target.files && e.target.files[0]) {
-                            setDownloadFile(e.target.files[0]);
+                            setSelectedFile(e.target.files[0]);
                           }
                         }}
                         className="border rounded p-2"
@@ -633,24 +628,13 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setDownloadOpen(false)}
-                  >
-                    Cancel
+                  <Button variant="outline" onClick={() => setUploadOpen(false)}>
+                    Close
                   </Button>
-                  <Button
-                    onClick={() => {
-                      if (downloadFile) {
-                        console.log('Downloading with file', downloadFile.name);
-                        // TODO: implement actual download logic using selected file if needed
-                        setDownloadOpen(false);
-                      } else {
-                        Swal.fire('Please select a file', '', 'warning');
-                      }
-                    }}
-                  >
-                    Upload to Upate
+                  <Button onClick={async () => {
+                    await handleUpload();
+                  }}>
+                    Upload
                   </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>

@@ -364,7 +364,7 @@ export default function GroupDetail({ uuid }: IProps) {
                   <Share className="mr-2 h-4 w-4" />
                   Export
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setDownloadOpen(true)}
+                <DropdownMenuItem onClick={() => setOpen(true)}
                   disabled={
                     responseByUUID?.data?.beneficiariesGroup.length === 0
                   }>
@@ -504,33 +504,106 @@ export default function GroupDetail({ uuid }: IProps) {
               </AlertDialogContent>
             </AlertDialog>
             {/* Upload Dialog */}
-            <AlertDialog open={uploadOpen} onOpenChange={setUploadOpen}>
-              <AlertDialogContent className="w-full max-w-md">
+            <AlertDialog open={open} onOpenChange={setOpen}>
+              <AlertDialogContent className="w-full">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Upload File</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    <div className="flex flex-col space-y-4">
-                      <input
-                        type="file"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            setSelectedFile(e.target.files[0]);
-                          }
-                        }}
-                        className="border rounded p-2"
-                      />
+                  <AlertDialogTitle>
+                    <div className="flex justify-between items-center pb-1 gap-4">
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Label className="text-lg font-medium">
+                              Select fields to download
+                            </Label>
+                          </TooltipTrigger>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger onClick={() => setOpen(false)}>
+                            <X
+                              className="text-muted-foreground hover:text-foreground text-red-700"
+                              size={23}
+                              strokeWidth={1.9}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Close</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <ScrollArea
+                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
+                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      hidden={labels.length === 0}
+                    >
+                      {labels.map((item) => {
+                        return (
+                          <Badge key={item} variant="secondary" className="m-1">
+                            {item}
+                            <button
+                              className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleUnselect(item);
+                                }
+                              }}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }}
+                              onClick={() => handleUnselect(item)}
+                            >
+                              <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                            </button>
+                          </Badge>
+                        );
+                      })}
+
+                      {labels.length === 0 && (
+                        <h1 className="text-center ">No fields selected</h1>
+                      )}
+                    </ScrollArea>
+
+                    <Command className="h-52">
+                      <CommandInput
+                        placeholder={'Search field...'}
+                        autoFocus={true}
+                      />
+                      <CommandList className="no-scrollbar">
+                        <CommandEmpty>No field found.</CommandEmpty>
+                        <CommandGroup>
+                          {sortedSelectables?.map((item) => (
+                            <CommandItem
+                              key={item.uuid}
+                              value={item.name}
+                              onSelect={() => handleSelectChange(item.name)}
+                            >
+                              {simpleString(item.name)}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <Button variant="outline" onClick={() => setUploadOpen(false)}>
-                    Cancel
+                  <Button
+                    variant="outline"
+                    onClick={() => setLabels([])}
+                    disabled={labels.length === 0}
+                  >
+                    Clear All
                   </Button>
-                    <Button
-                      onClick={handleUpload}
-                    >
-                      Update
-                    </Button>
+                  <AlertDialogAction
+                    onClick={handleDownload}
+                    disabled={labels.length === 0}
+                  >
+                    Download
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

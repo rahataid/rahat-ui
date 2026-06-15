@@ -34,7 +34,7 @@ import {
   useCommunitySettingList,
   useExportPinnedListBeneficiary,
   usePurgeGroupedBeneficiary,
-  useUploadBulkBeneficiaryUpdate
+  useUploadBulkBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
@@ -307,7 +307,11 @@ export default function GroupDetail({ uuid }: IProps) {
       setSelectedFile(null);
     } catch (error) {
       console.error('Upload error:', error);
-      Swal.fire('Upload failed', (error as any)?.message || 'Unknown error', 'error');
+      Swal.fire(
+        'Upload failed',
+        (error as any)?.message || 'Unknown error',
+        'error',
+      );
     }
   };
   useEffect(() => {
@@ -364,10 +368,12 @@ export default function GroupDetail({ uuid }: IProps) {
                   <Share className="mr-2 h-4 w-4" />
                   Export
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setOpen(true)}
+                <DropdownMenuItem
+                  onClick={() => setOpen(true)}
                   disabled={
                     responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }>
+                  }
+                >
                   <Download className="mr-2 h-4 w-4" />
                   Download
                 </DropdownMenuItem>
@@ -608,7 +614,7 @@ export default function GroupDetail({ uuid }: IProps) {
               </AlertDialogContent>
             </AlertDialog>
             {/* Download Dialog */}
-            <AlertDialog open={downloadOpen} onOpenChange={setDownloadOpen}>
+            <AlertDialog open={uploadOpen} onOpenChange={setUploadOpen}>
               <AlertDialogContent className="w-full max-w-md">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Download File</AlertDialogTitle>
@@ -627,7 +633,10 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <Button variant="outline" onClick={() => setDownloadOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setDownloadOpen(false)}
+                  >
                     Cancel
                   </Button>
                   <Button
@@ -641,7 +650,7 @@ export default function GroupDetail({ uuid }: IProps) {
                       }
                     }}
                   >
-                    nothing
+                    Upload to Upate
                   </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>

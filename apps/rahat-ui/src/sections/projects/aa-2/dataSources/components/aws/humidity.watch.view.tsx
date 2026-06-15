@@ -9,7 +9,7 @@ import React, { useMemo } from 'react';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
-import { getHumidityColor } from './utils/color.utils';
+import { getHumidityColor, getLatestValue } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
 
 export default function HumidityWatchView() {
@@ -53,7 +53,9 @@ export default function HumidityWatchView() {
   return (
     <div className="flex flex-col space-y-6">
       {rh1hData.map((humInfo: any, index: number) => {
-        const colors = getHumidityColor(humInfo?.value);
+        const latestEntry = getLatestValue(humInfo?.history);
+        const latestValue = latestEntry?.value ?? humInfo?.value;
+        const colors = getHumidityColor(latestValue);
         const seriesId = humInfo?.series_id || humInfo?.id || String(index);
 
         return (
@@ -116,7 +118,7 @@ export default function HumidityWatchView() {
             </div>
 
             <TemperatureValueCard
-              value={humInfo?.value}
+              value={latestValue}
               unit={humInfo?.unit ?? '%'}
               updatedAt={updatedAt}
               label="Relative Humidity"

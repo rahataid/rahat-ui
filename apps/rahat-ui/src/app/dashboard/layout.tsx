@@ -20,7 +20,7 @@ export default function DashboardLayout({
         {hasDefaultHeader && <SideNav />}
         <div className="w-full h-screen">
           <Nav hasDefaultHeader={hasDefaultHeader} />
-          <div className={margin}>{children}</div>
+          <div className={`border-0 bg-green ${margin}`}>{children}</div>
         </div>
       </div>
     </AuthGuard>

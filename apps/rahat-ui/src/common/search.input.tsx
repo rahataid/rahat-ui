@@ -6,6 +6,7 @@ import { cn } from 'libs/shadcn/src';
 type IProps = {
   name: string;
   className?: string;
+  inputClassName?: string;
   placeholder?: string;
   onSearch:
     | VoidFunction
@@ -17,6 +18,7 @@ type IProps = {
 export function SearchInput({
   name,
   className,
+  inputClassName,
   placeholder,
   onSearch,
   isDisabled = false,
@@ -31,27 +33,28 @@ export function SearchInput({
   return (
     <div className={cn('relative', className)}>
       <Search
-        size={18}
         strokeWidth={2.5}
-        className="absolute left-2 top-3 text-muted-foreground"
+        className="absolute left-2 top-1/2 -translate-y-1/2 size-[clamp(14px,1.4vw,18px)] text-muted-foreground"
       />
       <Input
         name={name}
         placeholder={placeholder || `Search ${name}...`}
-        className="pl-8"
+        className={cn(
+          'pl-8 h-[clamp(32px,3.5vw,40px)] text-[clamp(11px,1vw,14px)]',
+          inputClassName,
+        )}
         value={value}
         onChange={onSearch}
-        disabled={isDisabled}
       />
       {value && (
         <X
-          size={18}
           strokeWidth={2.5}
           color="black"
-          className="absolute right-2 top-3 text-muted-foreground cursor-pointer border rounded-full "
+          className="absolute right-2 top-1/2 -translate-y-1/2 size-[clamp(14px,1.4vw,18px)] text-muted-foreground cursor-pointer border rounded-full"
           onClick={handleClear}
         />
       )}
-    </div>
+      </div>
   );
 }
+

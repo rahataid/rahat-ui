@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -33,13 +33,9 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 type LogRow = {
   uuid: string;
@@ -122,7 +118,7 @@ export default function InkindAllocationDetail() {
   );
 
   const groupInkind = logsData?.data?.groupInkind ?? null;
-  const meta = logsData?.meta ?? null;
+  const meta = logsData?.response?.meta ?? null;
 
   const groupName = groupInkind?.groupName ?? qGroupName;
   const inkindName = groupInkind?.inkindName ?? 'N/A';
@@ -152,9 +148,11 @@ export default function InkindAllocationDetail() {
     { enabled: false },
   );
 
-  // console.log('entireLogsData', entireLogsData);
+  const exportTriggeredRef = useRef(false);
+
   useEffect(() => {
-    if (!entireLogsData) return;
+    if (!entireLogsData || !exportTriggeredRef.current) return;
+    exportTriggeredRef.current = false;
     const raw = (entireLogsData as any)?.data?.logs;
     if (!Array.isArray(raw) || raw.length === 0) return;
 
@@ -223,6 +221,7 @@ export default function InkindAllocationDetail() {
   ]);
 
   const handleDownloadReport = () => {
+    exportTriggeredRef.current = true;
     fetchEntireLogs();
   };
 
@@ -377,24 +376,17 @@ export default function InkindAllocationDetail() {
         />
         <div className="flex gap-4">
           <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <IconLabelBtn
-                    Icon={CloudDownloadIcon}
-                    handleClick={handleDownloadReport}
-                    name={
-                      isDownloading ? 'Exporting...' : 'Export In-kind Logs'
-                    }
-                    variant="outline"
-                    disabled={isDownloading}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Export In-kind Logs</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <TooltipWrapper
+              tip={meta?.total ? 'Export In-kind Logs' : 'No data available'}
+            >
+              <IconLabelBtn
+                Icon={CloudDownloadIcon}
+                handleClick={handleDownloadReport}
+                name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
+                variant="outline"
+                disabled={isDownloading || !meta?.total}
+              />
+            </TooltipWrapper>
           </RoleAuth>
         </div>
       </div>

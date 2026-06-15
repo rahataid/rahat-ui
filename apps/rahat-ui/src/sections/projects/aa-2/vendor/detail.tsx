@@ -1,5 +1,4 @@
 import {
-  useGetLogsByVendor,
   useGetVendorRedemptionStats,
   useGetVendorStellarStats,
   useLogsDetailsByVendor,
@@ -187,7 +186,11 @@ export default function Detail() {
         )}
         {shouldRenderTab('inkindRedemptionList') && (
           <TabsContent value="inkindRedemptionList">
-            <InkindRedemptionList id={id} vendorId={vendorId} showActions={false} />
+            <InkindRedemptionList
+              id={id}
+              vendorId={vendorId}
+              showActions={false}
+            />
           </TabsContent>
         )}
       </Tabs>

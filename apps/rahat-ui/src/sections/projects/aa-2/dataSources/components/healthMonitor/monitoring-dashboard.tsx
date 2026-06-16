@@ -17,6 +17,7 @@ import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useMemo } from 'react';
 import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
+import { ADAPTER_ID_FILTERS } from './utils/getAdapterIds';
 
 
 export default function MonitoringDashboard() {
@@ -45,25 +46,14 @@ export default function MonitoringDashboard() {
 
 
   const newFilteredSources = useMemo(() => {
-    if (!sources || !newTabsList.length) return [];
+    if (!sources?.length || !newTabsList.length) return [];
 
-    if (projectType === "HEAT_WAVE") {
-      return sources.filter(
-        (item: SourceHealthData) =>
-          item?.adapterId === "DHM:TEMPERATURE" ||
-          item?.adapterId === "DHM:HUMIDITY",
-      );
-    }
-
-    if (projectType === "FLOOD") {
-      return sources.filter(
-        (item: SourceHealthData) =>
-          item?.adapterId === "DHM:RAINFALL" ||
-          item?.adapterId === "DHM:WATER_LEVEL" ||
-          item?.adapterId === "GLOFAS",
-      );
-    }
-    return sources;
+    const adapterIds = ADAPTER_ID_FILTERS[projectType];
+    return adapterIds
+      ? sources.filter((item: SourceHealthData) =>
+        adapterIds.includes(item?.adapterId),
+      )
+      : sources;
   }, [sources, newTabsList, projectType]);
 
 
@@ -94,6 +84,7 @@ export default function MonitoringDashboard() {
           sources={newFilteredSources}
         />
       )}
+
       {!newFilteredSources.length && !loading ? (
         <div className="mt-5 p-6 text-center text-muted-foreground ">
           No data sources available for this project type.

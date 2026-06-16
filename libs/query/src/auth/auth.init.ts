@@ -10,20 +10,30 @@ import {
 } from '@rumsan/react-query';
 import { toast } from 'react-toastify';
 import { generateRoleObject } from '../utils/currentRole';
+import { accessToken } from '../utils/tokens';
 
 export type UseAuthInitializationReturn = [boolean, boolean, any];
 
 export const useAuthInitialization = (): UseAuthInitializationReturn => {
-  const { isAuthenticated, isInitialized, token, setInitialization } =
-    useAuthStore((state) => ({
-      isAuthenticated: state.isAuthenticated,
-      token: state.token,
-      isInitialized: state.isInitialized,
-      setInitialization: state.setInitialization,
-    }));
+  const {
+    isAuthenticated,
+    isInitialized,
+    token,
+    setInitialization,
+    clearAuth,
+  } = useAuthStore((state) => ({
+    isAuthenticated: state.isAuthenticated,
+    token: state.token,
+    isInitialized: state.isInitialized,
+    setInitialization: state.setInitialization,
+    clearAuth: state.clearAuth,
+  }));
   const currentUser = useUserCurrentUser(!!token);
 
-  const setUser = useUserStore((state) => state.setUser);
+  const { clearUser, setUser } = useUserStore((state) => ({
+    clearUser: state.clearUser,
+    setUser: state.setUser,
+  }));
   const currentUserRole = useUserRoleList(currentUser?.data?.data?.uuid);
   const currentRole = useMemo(
     () => generateRoleObject(currentUserRole?.data?.data || []),
@@ -32,6 +42,16 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
 
   useEffect(() => {
     if (token) {
+      if (currentUser.isFetched) {
+        if (currentUser.error || !currentUser.data?.data?.uuid) {
+          clearAuth();
+          clearUser();
+          accessToken.remove();
+          window.location.replace('/auth/login');
+          return;
+        }
+      }
+
       try {
         const decodedToken = decode(token) as JwtPayload;
         const currentTime = Date.now() / 1000;
@@ -49,8 +69,10 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
           });
         } else {
           toast.error('Token is expired');
-          window.location.reload();
-          throw new Error('Token is expired');
+          clearAuth();
+          clearUser();
+          accessToken.remove();
+          window.location.replace('/auth/login');
         }
       } catch (error) {
         console.error('Invalid token:', error);
@@ -69,7 +91,7 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
       });
       setUser(null);
     }
-  }, [token, setInitialization]);
+  }, [token, setInitialization, currentUser.isFetched, currentUser.error, currentUser.data?.data?.uuid]);
 
   return [isAuthenticated, isInitialized, currentUser];
 };

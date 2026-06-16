@@ -90,9 +90,9 @@ export function ProjectNav({
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
                 <span className="font-medium">
-                  {user?.data?.name ?? 'John Doe'}{' '}
+                  {user?.data?.name}
                 </span>
-                <span>{user?.data?.email ?? 'doe@john.com'}</span>
+                <span>{user?.data?.email}</span>
               </div>
               <Separator />
               <Link

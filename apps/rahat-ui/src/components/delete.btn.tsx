@@ -22,47 +22,58 @@ type IProps = {
   name: string;
   handleContinueClick: VoidFunction;
   className?: string;
+  disabled?: boolean;
 };
 
 export default function DeleteButton({
   name,
   handleContinueClick,
   className,
+  disabled,
 }: IProps) {
+  const trigger = (
+    <div
+      className={cn(
+        'rounded-full border border-red-500 text-red-500 bg-card p-2 shadow-md',
+        disabled && 'opacity-50 cursor-not-allowed',
+        className,
+      )}
+    >
+      <Trash2 size={20} strokeWidth={1.5} />
+    </div>
+  );
+
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
-        <TooltipTrigger>
-          <AlertDialog>
-            <AlertDialogTrigger className="flex items-center">
-              <div
-                className={cn(
-                  'rounded-full border border-red-500 text-red-500 bg-card p-2 shadow-md',
-                  className,
-                )}
-              >
-                <Trash2 size={20} strokeWidth={1.5} />
-              </div>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  this {name}.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleContinueClick}>
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        <TooltipTrigger asChild>
+          {disabled ? (
+            trigger
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger className="flex items items-center">
+                {trigger}
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    this {name}.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleContinueClick}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </TooltipTrigger>
-        <TooltipContent className="bg-secondary ">
-          <p className="text-xs font-medium">Delete</p>
+        <TooltipContent className="bg-secondary">
+          <p className="text-xs font-medium">{disabled ? 'Cannot delete yourself' : 'Delete'}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

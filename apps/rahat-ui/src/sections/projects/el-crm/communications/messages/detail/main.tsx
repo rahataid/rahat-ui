@@ -60,6 +60,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
+import CampaignBroadcastActions from '../../campaign-broadcast-actions';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -276,6 +277,9 @@ export default function MessageDetailPage() {
       ? Math.round((deliveredCount / totalRecipients) * 100)
       : 0;
   const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;
+  const isWhatsApp = !!campaign.transportName
+    ?.toLowerCase()
+    .includes('whatsapp');
 
   const statCards = [
     {
@@ -381,6 +385,17 @@ export default function MessageDetailPage() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              {isSent && (
+                <CampaignBroadcastActions
+                  projectUUID={projectUUID}
+                  sessionIds={[campaign.sessionId]}
+                  campaignName={campaign.name}
+                  targetType={campaign.targetType}
+                  messageBody={campaign.body}
+                  isWhatsApp={isWhatsApp}
+                  filters={{ status: filters?.status, address: filters?.address }}
+                />
+              )}
               {showRetryButton && !isAutomatic && (
                 <Tooltip>
                   <TooltipTrigger asChild>

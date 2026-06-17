@@ -265,11 +265,20 @@ export default function MessageDetailPage() {
   };
 
   const meta = logsMetaRaw || { total: 0, currentPage: 0 };
-  const isSent = !!campaign.sessionId;
-  const deliveredCount = count?.SUCCESS ?? 0;
-  const failedCount = count?.FAIL ?? 0;
+  const automationCounts = automationDetail?.counts as
+    | { success?: number; failed?: number; sent?: number; total?: number }
+    | undefined;
+  const isSent = isAutomatic
+    ? (automationCounts?.sent ?? 0) > 0
+    : !!campaign.sessionId;
+  const deliveredCount = isAutomatic
+    ? automationCounts?.success ?? 0
+    : count?.SUCCESS ?? 0;
+  const failedCount = isAutomatic
+    ? automationCounts?.failed ?? 0
+    : count?.FAIL ?? 0;
   const totalRecipients = isAutomatic
-    ? meta?.total ?? 0
+    ? automationCounts?.sent ?? meta?.total ?? 0
     : campaign?.recipientCount || 0;
   const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
   const deliveryRate =

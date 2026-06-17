@@ -13,10 +13,10 @@ import {
 import { formatDateTime } from '../../../../../utils';
 
 export const useMsgTableColumn = (
-  options: { hideRecipientCount?: boolean } = {},
+  options: { hideRecipientCount?: boolean; isAutomatic?: boolean } = {},
 ) => {
   const { id } = useParams();
-  const { hideRecipientCount = false } = options;
+  const { hideRecipientCount = false, isAutomatic = false } = options;
 
   const getChannelVariant = (channel: string) => {
     switch (channel) {
@@ -121,6 +121,20 @@ export const useMsgTableColumn = (
         </span>
       ),
       cell: ({ row }) => {
+        if (isAutomatic) {
+          const rules = (row.original?.automationRules ?? []) as Array<{
+            isEnabled?: boolean;
+          }>;
+          if (rules.length === 0) {
+            return <Badge variant="outline">No Rule</Badge>;
+          }
+          const enabled = rules.some((r) => r.isEnabled);
+          return (
+            <Badge variant={enabled ? 'success' : 'secondary'}>
+              {enabled ? 'Active' : 'Paused'}
+            </Badge>
+          );
+        }
         const isSent = !!row.getValue('sessionId');
         return (
           <Badge variant={isSent ? 'success' : 'secondary'}>

@@ -481,8 +481,7 @@ export const useRetryFailedViaCampaign = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const apiMessage =
-        error?.response?.data?.message || error?.message;
+      const apiMessage = error?.response?.data?.message || error?.message;
       toast.fire({
         title:
           typeof apiMessage === 'string' && apiMessage.length > 0
@@ -759,7 +758,9 @@ export const useAutomationDetail = (
           payload: { uuid: automationId, ...pagination },
         },
       });
-      return res.data ?? null;
+      const data = res.data ?? null;
+      if (!data) return null;
+      return { ...data, meta: res.response?.meta ?? (data as any).meta };
     },
     enabled: !!automationId,
   });

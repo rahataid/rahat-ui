@@ -86,8 +86,12 @@ export default function MonitoringDashboard() {
       )}
 
       {!newFilteredSources.length && !loading ? (
-        <div className="mt-5 p-6 text-center text-muted-foreground ">
-          No data sources available for this project type.
+        <div className="mt-5 p-6 text-center text-muted-foreground space-y-1">
+          <p className="font-medium text-foreground">No data available right now</p>
+          <p className="text-sm text-muted-foreground">
+            Health data for this project type may not have been fetched yet. Data is refreshed
+            approximately every hour — please check back later.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">

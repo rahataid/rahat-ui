@@ -57,3 +57,41 @@ export const useCommunityBeneficiaryGroupCreate = () => {
     },
   });
 };
+export const useUploadBulkBeneficiaryUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+
+  const beneficiaryGroupClient = getBeneficiaryGroupClient(
+    rumsanService.client,
+  );
+
+  return useMutation({
+    mutationKey: [TAGS.UPDATE_BULK_BENEFICIARY],
+
+    mutationFn: async ({
+      groupUUID,
+      data,
+    }: {
+      groupUUID: string;
+      data: FormData;
+    }) => {
+      return beneficiaryGroupClient.updateInBulk(groupUUID, data);
+    },
+
+    onSuccess: () => {
+      Swal.fire('Beneficiary Updated Successfully', '', 'success');
+
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+      });
+    },
+
+    onError: (error: any) => {
+      Swal.fire({
+        icon: 'error',
+        title:
+          error?.response?.data?.message ||
+          'Encountered an error while updating data',
+      });
+    },
+  });
+};

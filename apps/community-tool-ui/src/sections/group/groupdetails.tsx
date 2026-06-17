@@ -195,9 +195,9 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
-        acc[value] = key;
-        return acc;
-      }, {} as { [key: string]: string })
+          acc[value] = key;
+          return acc;
+        }, {} as { [key: string]: string })
       : {};
     const payload = {
       groupUUID: uuid as string,
@@ -300,7 +300,10 @@ export default function GroupDetail({ uuid }: IProps) {
       const formData = new FormData();
       formData.append('file', selectedFile);
       // Assuming the mutation expects FormData
-      await updateBulkBeneficiary.mutateAsync(formData);
+      await updateBulkBeneficiary.mutateAsync({
+        groupUUID: uuid,
+        data: formData,
+      });
       Swal.fire('File uploaded successfully', '', 'success');
       setUploadOpen(false);
       setSelectedFile(null);
@@ -324,8 +327,6 @@ export default function GroupDetail({ uuid }: IProps) {
       resetSelectedListItems();
     }
   }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
-
-
 
   return (
     <>
@@ -433,8 +434,9 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
-                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {
@@ -537,8 +539,9 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
-                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {
@@ -628,12 +631,17 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <Button variant="outline" onClick={() => setUploadOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setUploadOpen(false)}
+                  >
                     Close
                   </Button>
-                  <Button onClick={async () => {
-                    await handleUpload();
-                  }}>
+                  <Button
+                    onClick={async () => {
+                      await handleUpload();
+                    }}
+                  >
                     Upload
                   </Button>
                 </AlertDialogFooter>

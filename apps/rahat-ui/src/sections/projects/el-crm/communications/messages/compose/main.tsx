@@ -55,11 +55,7 @@ import {
   useListElCrmTemplate,
   useListElCrmTransport,
 } from '@rahat-ui/query';
-import {
-  getPlasgateSmsInfo,
-  isPlasgateChannel,
-  truncateToPlasgateLimit,
-} from '../../const';
+import { getPlasgateSmsInfo, isPlasgateChannel } from '../../const';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -216,6 +212,13 @@ export default function ComposeMessageView() {
     perPage: 1,
   });
 
+  const recipientReachableEstimate = useCustomers(projectUUID, {
+    ...filtersForCount,
+    hasPhone: 'true',
+    page: 1,
+    perPage: 1,
+  });
+
   const beneficiaryFiltersForCount = useMemo(() => {
     const f: Record<string, string> = {};
     // Consumer count endpoint matches a single name string (contains).
@@ -232,8 +235,17 @@ export default function ComposeMessageView() {
     perPage: 1,
   });
 
+  const consumerReachableEstimate = useConsumers(projectUUID, {
+    ...beneficiaryFiltersForCount,
+    hasPhone: 'true',
+    page: 1,
+    perPage: 1,
+  });
+
   const audienceEstimate =
     selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
+  const reachableEstimate =
+    selectedGroup === 'BENEFICIARY' ? consumerReachableEstimate : recipientReachableEstimate;
   const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
@@ -478,30 +490,34 @@ export default function ComposeMessageView() {
                         <Textarea
                           placeholder="Type your message here…"
                           value={messageContent}
-                          onChange={(e) =>
-                            setMessageContent(
-                              isPlasgate
-                                ? truncateToPlasgateLimit(e.target.value)
-                                : e.target.value,
-                            )
-                          }
+                          onChange={(e) => setMessageContent(e.target.value)}
                           rows={4}
                         />
                         {isPlasgate && plasgateSmsInfo && (
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>
-                              {plasgateSmsInfo.encoding === 'GSM-7'
-                                ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
-                                : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
-                            </span>
-                            <span
-                              className={cn(
-                                plasgateSmsInfo.remaining <= 10 &&
-                                  'text-destructive font-medium',
-                              )}
-                            >
-                              {plasgateSmsInfo.length} / {plasgateSmsInfo.limit}
-                            </span>
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <span>
+                                {plasgateSmsInfo.encoding === 'GSM-7'
+                                  ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
+                                  : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
+                              </span>
+                              <span
+                                className={cn(
+                                  (plasgateSmsInfo.exceeded ||
+                                    plasgateSmsInfo.remaining <= 10) &&
+                                    'text-destructive font-medium',
+                                )}
+                              >
+                                {plasgateSmsInfo.length} / {plasgateSmsInfo.limit}
+                              </span>
+                            </div>
+                            {plasgateSmsInfo.exceeded && (
+                              <p className="text-xs text-destructive">
+                                Message exceeds the {plasgateSmsInfo.limit}-character
+                                limit for {plasgateSmsInfo.encoding} encoding and
+                                will be sent as multiple SMS segments.
+                              </p>
+                            )}
                           </div>
                         )}
                       </>
@@ -719,15 +735,29 @@ export default function ComposeMessageView() {
                               <Users className="h-4 w-4" />
                               <span>
                                 Estimated recipients:{' '}
-                                {audienceEstimate.isLoading ? (
+                                {audienceEstimate.isLoading || reachableEstimate.isLoading ? (
                                   <span className="italic">calculating…</span>
                                 ) : (
-                                  <>
-                                    <strong className="text-foreground">
-                                      {audienceEstimate.meta?.total ?? 0}
-                                    </strong>{' '}
-                                    {audienceNoun}
-                                  </>
+                                  (() => {
+                                    const matched = audienceEstimate.meta?.total ?? 0;
+                                    const reachable = reachableEstimate.meta?.total ?? 0;
+                                    return (
+                                      <>
+                                        <strong className="text-foreground">{matched}</strong>{' '}
+                                        {audienceNoun} matched,{' '}
+                                        <strong
+                                          className={
+                                            reachable < matched
+                                              ? 'text-amber-600'
+                                              : 'text-foreground'
+                                          }
+                                        >
+                                          {reachable}
+                                        </strong>{' '}
+                                        reachable
+                                      </>
+                                    );
+                                  })()
                                 )}
                               </span>
                             </div>
@@ -845,9 +875,11 @@ export default function ComposeMessageView() {
             <DetailRow
               label="Estimated Recipients"
               value={
-                audienceEstimate.isLoading
+                audienceEstimate.isLoading || reachableEstimate.isLoading
                   ? 'Calculating...'
-                  : String(audienceEstimate.meta?.total ?? 0)
+                  : `${audienceEstimate.meta?.total ?? 0} matched, ${
+                      reachableEstimate.meta?.total ?? 0
+                    } reachable`
               }
             />
           </div>

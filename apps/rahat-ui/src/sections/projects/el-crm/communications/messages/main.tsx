@@ -74,6 +74,7 @@ export default function MessagesView() {
   } = usePagination();
   const columns = useMsgTableColumn({
     hideRecipientCount: activeTab === 'automatic',
+    isAutomatic: activeTab === 'automatic',
   });
   const { data, meta, isLoading } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,

@@ -46,6 +46,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import CampaignBroadcastActions from '../../campaign-broadcast-actions';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {
@@ -215,6 +216,9 @@ export default function MessageDetailPage() {
   const isSent = !!campaign.sessionId;
   const deliveredCount = count?.SUCCESS ?? 0;
   const failedCount = count?.FAIL ?? 0;
+  const isWhatsApp = !!campaign.transportName
+    ?.toLowerCase()
+    .includes('whatsapp');
   const totalRecipients = campaign?.recipientCount || 0;
   const deliveryRate =
     totalRecipients > 0
@@ -317,6 +321,20 @@ export default function MessageDetailPage() {
                 </div>
               </div>
             </div>
+
+            {isSent && (
+              <div className="flex items-center gap-2 shrink-0">
+                <CampaignBroadcastActions
+                  projectUUID={projectUUID}
+                  sessionIds={[campaign.sessionId]}
+                  campaignName={campaign.name}
+                  targetType={campaign.targetType}
+                  messageBody={campaign.body}
+                  isWhatsApp={isWhatsApp}
+                  filters={{ status: filters?.status, address: filters?.address }}
+                />
+              </div>
+            )}
           </div>
         </div>
 

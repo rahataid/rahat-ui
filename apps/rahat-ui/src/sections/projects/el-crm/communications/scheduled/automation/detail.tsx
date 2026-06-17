@@ -10,7 +10,11 @@ import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { ArrowLeft, FilterX, Hash, Zap } from 'lucide-react';
 import Link from 'next/link';
-import { useAutomationDetail, usePagination } from '@rahat-ui/query';
+import {
+  useAutomationDetail,
+  useListElCrmTransport,
+  usePagination,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
@@ -19,6 +23,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import SelectComponent from '../../../../cambodia/select.component';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import CampaignBroadcastActions from '../../campaign-broadcast-actions';
 
 const STATUS_OPTIONS = ['ALL', 'SUCCESS', 'PENDING', 'FAIL', 'SCHEDULED'];
 
@@ -44,6 +49,13 @@ export default function AutomationDetailPage() {
 
   const rule = data?.rule;
   const logs = data?.logs || [];
+  const sessionIds: string[] = data?.sessionIds || [];
+
+  const transport = useListElCrmTransport(projectUUID);
+  const transportName = (transport.data || []).find(
+    (t: { cuid: string; name: string }) => t.cuid === rule?.campaign?.transportId,
+  )?.name;
+  const isWhatsApp = !!transportName?.toLowerCase().includes('whatsapp');
   const meta: PaginatedResult<any>['meta'] = data?.meta || {
     total: 0,
     lastPage: 1,
@@ -104,6 +116,19 @@ export default function AutomationDetailPage() {
               Automation Details
             </h1>
           </div>
+          {!!sessionIds.length && (
+            <div className="flex items-center gap-2 shrink-0">
+              <CampaignBroadcastActions
+                projectUUID={projectUUID}
+                sessionIds={sessionIds}
+                campaignName={rule.campaign?.name || rule.name}
+                targetType={rule.campaign?.targetType || rule.targetType}
+                messageBody={rule.campaign?.body || ''}
+                isWhatsApp={isWhatsApp}
+                filters={{ status: activeStatus }}
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex-1 p-6 space-y-6 overflow-auto">

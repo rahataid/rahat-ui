@@ -54,13 +54,23 @@ export const getPlasgateSmsInfo = (text: string): PlasgateSmsInfo => {
   };
 };
 
-// Truncate `text` to the largest prefix that fits the Plasgate per-SMS limit
-// under its detected encoding. Used to enforce the cap from textarea onChange.
-export const truncateToPlasgateLimit = (text: string) => {
-  const chars = [...text];
-  const limit = isGsm7Message(text)
-    ? PLASGATE_GSM7_LIMIT
-    : PLASGATE_UNICODE_LIMIT;
-  if (chars.length <= limit) return text;
-  return chars.slice(0, limit).join('');
+// ─── WhatsApp "no account" failure helpers ──────────────────────────────────
+
+// Twilio error code returned when the destination number doesn't have a
+// WhatsApp account.
+export const WHATSAPP_NO_ACCOUNT_ERROR_CODE = '63024';
+
+export const isInvalidWhatsAppRecipient = (disposition?: Record<string, any> | null) => {
+  if (!disposition) return false;
+  const errorCode = String(
+    disposition?.errorCode ??
+      disposition?.lastWebhookPayload?.ErrorCode ??
+      '',
+  );
+  return errorCode === WHATSAPP_NO_ACCOUNT_ERROR_CODE;
 };
+
+// Strips the `whatsapp:` scheme prefix Twilio uses for WhatsApp addresses,
+// e.g. "whatsapp:+6282253523295" -> "+6282253523295".
+export const normalizePhoneAddress = (address?: string | null) =>
+  (address ?? '').replace(/^whatsapp:/i, '').trim();

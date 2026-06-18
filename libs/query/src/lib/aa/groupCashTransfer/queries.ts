@@ -1,7 +1,8 @@
 'use client';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
-import { useProjectAction } from '../../projects';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { runAction, ACTION_NS } from './utils';
 import { ListGroupCashTransferParams, ListGctRecordsParams } from './types';
 
@@ -20,18 +21,14 @@ export const useGroupCashTransfers = (
   });
 };
 
-export const useGetOneGroupCashTransfer = (
-  projectUUID: UUID,
-  uuid: string,
-) => {
+export const useGetOneGroupCashTransfer = (projectUUID: UUID, uuid: string) => {
   const q = useProjectAction();
 
   return useQuery({
     queryKey: [ACTION_NS + '.getOne', projectUUID, uuid],
     enabled: !!uuid,
     refetchOnMount: true,
-    queryFn: () =>
-      runAction(q, projectUUID, ACTION_NS + '.getOne', { uuid }),
+    queryFn: () => runAction(q, projectUUID, ACTION_NS + '.getOne', { uuid }),
   });
 };
 
@@ -57,15 +54,11 @@ export const useGetAllValidGroupCashTransfers = (projectUUID: UUID) => {
   return useQuery({
     queryKey: [ACTION_NS + '.getAllValid', projectUUID],
     staleTime: 0,
-    queryFn: () =>
-      runAction(q, projectUUID, ACTION_NS + '.getAllValid', {}),
+    queryFn: () => runAction(q, projectUUID, ACTION_NS + '.getAllValid', {}),
   });
 };
 
-export const useGetOneGctRecord = (
-  projectUUID: UUID,
-  recordUuid: string,
-) => {
+export const useGetOneGctRecord = (projectUUID: UUID, recordUuid: string) => {
   const q = useProjectAction();
 
   return useQuery({
@@ -73,7 +66,44 @@ export const useGetOneGctRecord = (
     enabled: !!recordUuid,
     refetchOnMount: true,
     queryFn: () =>
-      runAction(q, projectUUID, ACTION_NS + '.getOneRecord', { uuid: recordUuid }),
+      runAction(q, projectUUID, ACTION_NS + '.getOneRecord', {
+        uuid: recordUuid,
+      }),
+  });
+};
+
+export const usePhasePayoutStatus = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
+
+  const activeYear =
+    settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+      'active_year'
+    ];
+  const riverBasin =
+    settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+      'river_basin'
+    ];
+
+  return useQuery({
+    queryKey: ['phasePayoutStatus', projectUUID, activeYear, riverBasin],
+    enabled: !!(projectUUID && activeYear && riverBasin),
+    queryFn: async () => {
+      const res = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.phase.getPhasePayoutStatus',
+          payload: {
+            activeYear,
+            riverBasin,
+            disbursementMethod: 'GROUP_TOKEN',
+          },
+        },
+      });
+      return res.data;
+    },
   });
 };
 

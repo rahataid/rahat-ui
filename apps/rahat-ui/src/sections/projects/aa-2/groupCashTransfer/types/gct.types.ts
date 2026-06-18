@@ -36,7 +36,13 @@ export type GctFundRecord = {
   createdAt?: string;
   updatedAt?: string;
   disbursedAt?: string;
-  groupCashTransfer?: { uuid: string; name: string; phone?: string; bankDetails?: GctBankDetails };
+  groupCashTransfer?: {
+    uuid: string;
+    name: string;
+    phone?: string;
+    bankDetails?: GctBankDetails;
+    extras?: GctExtras;
+  };
 };
 
 export type GctRecordStatus = 'NOT_STARTED' | 'PENDING' | 'STARTED' | 'COMPLETED';

@@ -984,7 +984,9 @@ export default function DashboardView() {
                             {campaign.name}
                           </span>
                           <span className="text-right tabular-nums text-muted-foreground">
-                            {campaign.recipientCount}
+                            {campaign.isAutomatic
+                              ? '—'
+                              : campaign.recipientCount}
                           </span>
                           <span className="text-right text-muted-foreground text-xs">
                             {formatDate(campaign.createdAt)}

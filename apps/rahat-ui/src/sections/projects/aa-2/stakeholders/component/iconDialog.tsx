@@ -79,21 +79,25 @@ export function IconDialogComponent({
         )}
       </DialogTrigger>
       <DialogContent
-        className="!rounded-sm"
+        className="!rounded-sm max-w-[clamp(240px,26vw,420px)] p-[clamp(10px,1.6vw,20px)] gap-[clamp(6px,1vw,12px)]"
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
       >
         <DialogHeader className="!text-center">
-          <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>{dialogDescription}</DialogDescription>
+          <DialogTitle className="text-[clamp(14px,1.6vw,18px)]">
+            {dialogTitle}
+          </DialogTitle>
+          <DialogDescription className="text-[clamp(11px,1vw,14px)]">
+            {dialogDescription}
+          </DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="flex justify-between">
           <Button
             type="button"
             onClick={() => setOpen(false)}
-            className="w-full rounded-sm"
+            className="w-full rounded-sm h-[clamp(26px,2.6vw,36px)] px-[clamp(10px,1.2vw,14px)] text-[clamp(11px,0.9vw,13px)]"
             variant="outline"
           >
             Cancel
@@ -101,7 +105,10 @@ export function IconDialogComponent({
           <Button
             type="submit"
             onClick={handleClick}
-            className={cn(confirmButtonClassName, 'w-full rounded-sm')}
+            className={cn(
+              confirmButtonClassName,
+              'w-full rounded-sm h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]',
+            )}
             variant={variant}
           >
             {confirmButtonText}

@@ -152,15 +152,15 @@ export default function EditStakeholders() {
   };
   if (!stakeholder) {
     return (
-      <div className="space-y-4 p-4 rounded-sm shadow border bg-card gap-3">
-        <Skeleton className="h-10 w-full" />
-        <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
+      <div className="space-y-[clamp(4px,0.6vw,8px)] p-[clamp(6px,1vw,10px)] rounded-sm shadow border bg-card gap-3">
+        <Skeleton className="h-[clamp(28px,3vw,36px)] w-full" />
+        <div className="grid grid-cols-2 gap-[clamp(6px,0.8vw,12px)] mb-[clamp(6px,0.8vw,12px)] mt-[clamp(6px,0.8vw,12px)]">
+          <Skeleton className="h-[clamp(28px,3vw,36px)] w-full" />
+          <Skeleton className="h-[clamp(28px,3vw,36px)] w-full" />
+          <Skeleton className="h-[clamp(28px,3vw,36px)] w-full" />
+          <Skeleton className="h-[clamp(28px,3vw,36px)] w-full" />
+          <Skeleton className="h-[clamp(28px,3vw,36px)] w-full" />
+          <Skeleton className="h-[clamp(28px,3vw,36px)] w-full" />
         </div>
       </div>
     );
@@ -174,19 +174,22 @@ export default function EditStakeholders() {
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditStakeholders)}>
-          <div className="p-4 rounded-sm shadow border bg-card gap-3">
-            <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
+          <div className="p-[clamp(6px,1vw,10px)] rounded-sm shadow border bg-card gap-3">
+            <div className="grid grid-cols-2 gap-[clamp(6px,0.8vw,12px)]  ">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label>Stakeholders Name</Label>
+                    <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
+                      <Label className="text-[clamp(11px,1vw,14px)]">
+                        Stakeholders Name
+                      </Label>
                       <FormControl>
                         <Input
                           type="text"
                           placeholder="Enter a Stakeholder Name"
+                          className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
                       </FormControl>
@@ -201,11 +204,11 @@ export default function EditStakeholders() {
                 name="supportArea"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label className="flex gap-2 items-center ">
+                    <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
+                      <Label className="flex gap-2 items-center text-[clamp(11px,1vw,14px)]">
                         Support Area{' '}
                         {unsavedSupportAreaInput && (
-                          <span className="text-sm text-red-400 ml-1">
+                          <span className="text-[clamp(11px,1vw,14px)] text-red-400 ml-1">
                             Press Enter to add.
                           </span>
                         )}
@@ -225,14 +228,14 @@ export default function EditStakeholders() {
                           className="min-h-[23px]"
                           styleClasses={{
                             inlineTagsContainer:
-                              'border-input rounded shadow-xs p-1 gap-1 ' +
+                              'border-input rounded shadow-xs p-1 gap-1 min-h-[clamp(28px,3vw,36px)] ' +
                               'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
                             input:
-                              'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
+                              'w-full rounded-sm min-w-[80px] shadow-none px-2 h-[clamp(22px,2.4vw,28px)] text-[clamp(11px,1vw,14px)]',
                             tag: {
-                              body: 'h-7 relative rounded-sm border border-input font-medium text-xs ps-2 pe-7',
+                              body: 'h-[clamp(22px,2.4vw,28px)] relative rounded-sm border border-input font-medium text-[clamp(10px,0.9vw,12px)] ps-2 pe-7',
                               closeButton:
-                                'absolute -inset-y-px -end-px p-0 rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-muted-foreground/80 hover:text-foreground',
+                                'absolute -inset-y-px -end-px p-0 rounded-e-md flex size-[clamp(22px,2.4vw,28px)] transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-muted-foreground/80 hover:text-foreground',
                             },
                           }}
                           activeTagIndex={activeTagIndex}
@@ -253,17 +256,20 @@ export default function EditStakeholders() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
+            <div className="grid grid-cols-2 gap-[clamp(6px,0.8vw,12px)] mb-[clamp(6px,0.8vw,12px)] mt-[clamp(6px,0.8vw,12px)]">
               <FormField
                 control={form.control}
                 name="phone"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label>Phone Number</Label>
+                    <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
+                      <Label className="text-[clamp(11px,1vw,14px)]">
+                        Phone Number
+                      </Label>
                       <FormControl>
                         <PhoneInput
                           placeholder="Enter a Phone Number"
+                          className="[&_input]:h-[clamp(28px,3vw,36px)] [&_input]:text-[clamp(11px,1vw,14px)] [&_button]:h-[clamp(28px,3vw,36px)]"
                           {...field}
                         />
                       </FormControl>
@@ -277,12 +283,15 @@ export default function EditStakeholders() {
                 name="email"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label>Email</Label>
+                    <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
+                      <Label className="text-[clamp(11px,1vw,14px)]">
+                        Email
+                      </Label>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder="Enter a Email Address"
+                          className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
                       </FormControl>
@@ -296,12 +305,15 @@ export default function EditStakeholders() {
                 name="designation"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label>Designation</Label>
+                    <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
+                      <Label className="text-[clamp(11px,1vw,14px)]">
+                        Designation
+                      </Label>
                       <FormControl>
                         <Input
                           type="text"
                           placeholder="Enter a Designation"
+                          className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
                       </FormControl>
@@ -315,12 +327,15 @@ export default function EditStakeholders() {
                 name="organization"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label>Organization</Label>
+                    <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
+                      <Label className="text-[clamp(11px,1vw,14px)]">
+                        Organization
+                      </Label>
                       <FormControl>
                         <Input
                           type="text"
                           placeholder="Enter an Organization"
+                          className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
                       </FormControl>
@@ -335,12 +350,15 @@ export default function EditStakeholders() {
                 name="district"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label>District</Label>
+                    <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
+                      <Label className="text-[clamp(11px,1vw,14px)]">
+                        District
+                      </Label>
                       <FormControl>
                         <Input
                           type="text"
                           placeholder="Enter a District"
+                          className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
                       </FormControl>
@@ -355,12 +373,15 @@ export default function EditStakeholders() {
                 name="municipality"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <Label>Municipality</Label>
+                    <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
+                      <Label className="text-[clamp(11px,1vw,14px)]">
+                        Municipality
+                      </Label>
                       <FormControl>
                         <Input
                           type="text"
                           placeholder="Enter a Municipality"
+                          className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
                       </FormControl>
@@ -374,7 +395,7 @@ export default function EditStakeholders() {
               <Button
                 type="button"
                 variant="secondary"
-                className=" px-8"
+                className="h-[clamp(28px,3vw,36px)] px-[clamp(16px,2vw,32px)] text-[clamp(11px,1vw,14px)]"
                 onClick={() => {
                   form.reset();
 
@@ -384,7 +405,7 @@ export default function EditStakeholders() {
                 Reset
               </Button>
               <Button
-                className="w-32"
+                className="h-[clamp(28px,3vw,36px)] min-w-[clamp(80px,8vw,128px)] text-[clamp(11px,1vw,14px)]"
                 disabled={
                   form.formState.isSubmitting ||
                   unsavedSupportAreaInput.trim() !== ''

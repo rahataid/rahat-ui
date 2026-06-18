@@ -54,21 +54,34 @@ export function EditButton({
             <AlertDialogTrigger className="flex items-center">
               <div
                 className={cn(
-                  'rounded-full border border-primary text-primary bg-card p-2 hover:shadow-md',
+                  'rounded-full border border-primary text-primary bg-card p-[clamp(3px,0.6vw,8px)] hover:shadow-md',
                   className,
                 )}
               >
-                <Pencil size={18} strokeWidth={1.5} /> {label}
+                <Pencil
+                  className="size-[clamp(14px,1.4vw,18px)]"
+                  strokeWidth={1.5}
+                />{' '}
+                {label}
               </div>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-w-[clamp(260px,30vw,512px)] p-[clamp(10px,2vw,24px)] gap-[clamp(6px,1.2vw,16px)]">
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>{description}</AlertDialogDescription>
+                <AlertDialogTitle className="text-[clamp(14px,1.6vw,18px)]">
+                  Are you absolutely sure?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-[clamp(11px,1vw,14px)]">
+                  {description}
+                </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleClick}>
+                <AlertDialogCancel className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleClick}
+                  className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]"
+                >
                   Continue
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -76,7 +89,7 @@ export function EditButton({
           </AlertDialog>
         </TooltipTrigger>
         <TooltipContent className="bg-secondary">
-          <p className="text-xs font-medium">Edit</p>
+          <p className="text-[clamp(10px,0.9vw,12px)] font-medium">Edit</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

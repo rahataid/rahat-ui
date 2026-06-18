@@ -674,6 +674,11 @@ const MultipleSelector = ({
                             key={option.value}
                             value={option.value}
                             disabled={option.disable}
+                            title={
+                              option.disable
+                                ? (option.title as string) || option.label
+                                : undefined
+                            }
                             onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -696,7 +701,7 @@ const MultipleSelector = ({
                             className={cn(
                               'cursor-pointer',
                               option.disable &&
-                                'pointer-events-none cursor-not-allowed opacity-50',
+                                'cursor-not-allowed opacity-50',
                             )}
                           >
                             {option.label}

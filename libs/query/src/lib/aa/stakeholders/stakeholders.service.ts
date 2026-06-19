@@ -40,6 +40,11 @@ export const useStakeholders = (uuid: UUID, payload: any) => {
     }),
   );
 
+  useEffect(() => {
+    setStakeholders([]);
+    setStakeholdersMeta({});
+  }, [uuid]);
+
   const query = useQuery({
     queryKey: ['stakeholders', uuid, payload],
     queryFn: async () => {

@@ -28,6 +28,10 @@ export const useActivitiesCategories = (uuid: UUID) => {
     setCategories: state.setCategories,
   }));
 
+  useEffect(() => {
+    setCategories([]);
+  }, [uuid]);
+
   const query = useQuery({
     queryKey: ['categories', uuid],
     queryFn: async () => {
@@ -75,6 +79,7 @@ export const useAddActivityCategory = () => {
 
 export const useActivities = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
+  const qc = useQueryClient();
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
@@ -82,6 +87,12 @@ export const useActivities = (uuid: UUID, payload: any) => {
     setActivities: state.setActivities,
     setActivitiesMeta: state.setActivitiesMeta,
   }));
+
+  useEffect(() => {
+    setActivities([]);
+    setActivitiesMeta({});
+    qc.removeQueries({ queryKey: ['activities'], exact: false });
+  }, [uuid]);
 
   const query = useQuery({
     queryKey: ['activities', uuid, payload],

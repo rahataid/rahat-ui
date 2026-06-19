@@ -240,6 +240,11 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
       setStakeholdersGroupsMeta: state.setStakeholdersGroupsMeta,
     }));
 
+  useEffect(() => {
+    setStakeholdersGroups([]);
+    setStakeholdersGroupsMeta({});
+  }, [uuid]);
+
   const query = useQuery({
     queryKey: ['stakeholdersGroups', uuid, payload],
     queryFn: async () => {
@@ -270,6 +275,10 @@ export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
   const { setBeneficiaryGroups } = useBeneficiaryGroupsStore((state) => ({
     setBeneficiaryGroups: state.setBeneficiaryGroups,
   }));
+
+  useEffect(() => {
+    setBeneficiaryGroups([]);
+  }, [uuid]);
 
   const query = useQuery({
     queryKey: ['stakeholdersGroups', uuid, payload],
@@ -382,6 +391,11 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any, options?: { sta
       setBeneficiariesGroups: state.setBeneficiariesGroup,
       setBeneficiariesGroupsMeta: state.setBeneficiariesGroupMeta,
     }));
+
+  useEffect(() => {
+    setBeneficiariesGroups([]);
+    setBeneficiariesGroupsMeta({});
+  }, [uuid]);
 
   const query = useQuery({
     queryKey: ['beneficiaryGroups', uuid, payload],

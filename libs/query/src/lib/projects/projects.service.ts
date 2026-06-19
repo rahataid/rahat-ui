@@ -635,13 +635,8 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
 
   const restPayloadString = JSON.stringify(restPayload);
 
-  const queryKey = useMemo(
-    () => [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
-    [restPayloadString],
-  );
-
   const query = useQuery({
-    queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
+    queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, projectUUID, restPayloadString],
     refetchOnMount: true,
     staleTime: 20 * 60 * 1000, // 20 minutes
     queryFn: async () => {

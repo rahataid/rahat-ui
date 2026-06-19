@@ -51,7 +51,7 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
 
   const query = useQuery(
     {
-      queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, debouncedPayload],
+      queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, projectUUID, debouncedPayload],
       enabled: !!debouncedPayload, // Only run query when we have a debounced payload
       refetchOnMount: true,
       refetchOnWindowFocus: true,

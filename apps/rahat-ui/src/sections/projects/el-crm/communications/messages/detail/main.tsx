@@ -286,9 +286,6 @@ export default function MessageDetailPage() {
       ? Math.round((deliveredCount / totalRecipients) * 100)
       : 0;
   const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;
-  const isWhatsApp = !!campaign.transportName
-    ?.toLowerCase()
-    .includes('whatsapp');
 
   const statCards = [
     {
@@ -399,9 +396,6 @@ export default function MessageDetailPage() {
                   projectUUID={projectUUID}
                   sessionIds={[campaign.sessionId]}
                   campaignName={campaign.name}
-                  targetType={campaign.targetType}
-                  messageBody={campaign.body}
-                  isWhatsApp={isWhatsApp}
                   filters={{ status: filters?.status, address: filters?.address }}
                 />
               )}

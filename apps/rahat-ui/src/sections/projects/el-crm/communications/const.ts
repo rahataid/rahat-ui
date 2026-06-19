@@ -54,22 +54,6 @@ export const getPlasgateSmsInfo = (text: string): PlasgateSmsInfo => {
   };
 };
 
-// ─── WhatsApp "no account" failure helpers ──────────────────────────────────
-
-// Twilio error code returned when the destination number doesn't have a
-// WhatsApp account.
-export const WHATSAPP_NO_ACCOUNT_ERROR_CODE = '63024';
-
-export const isInvalidWhatsAppRecipient = (disposition?: Record<string, any> | null) => {
-  if (!disposition) return false;
-  const errorCode = String(
-    disposition?.errorCode ??
-      disposition?.lastWebhookPayload?.ErrorCode ??
-      '',
-  );
-  return errorCode === WHATSAPP_NO_ACCOUNT_ERROR_CODE;
-};
-
 // Strips the `whatsapp:` scheme prefix Twilio uses for WhatsApp addresses,
 // e.g. "whatsapp:+6282253523295" -> "+6282253523295".
 export const normalizePhoneAddress = (address?: string | null) =>

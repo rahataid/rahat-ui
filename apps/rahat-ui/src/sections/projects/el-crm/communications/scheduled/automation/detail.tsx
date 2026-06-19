@@ -12,7 +12,6 @@ import { ArrowLeft, FilterX, Hash, Zap } from 'lucide-react';
 import Link from 'next/link';
 import {
   useAutomationDetail,
-  useListElCrmTransport,
   usePagination,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
@@ -51,11 +50,6 @@ export default function AutomationDetailPage() {
   const logs = data?.logs || [];
   const sessionIds: string[] = data?.sessionIds || [];
 
-  const transport = useListElCrmTransport(projectUUID);
-  const transportName = (transport.data || []).find(
-    (t: { cuid: string; name: string }) => t.cuid === rule?.campaign?.transportId,
-  )?.name;
-  const isWhatsApp = !!transportName?.toLowerCase().includes('whatsapp');
   const meta: PaginatedResult<any>['meta'] = data?.meta || {
     total: 0,
     lastPage: 1,
@@ -122,9 +116,6 @@ export default function AutomationDetailPage() {
                 projectUUID={projectUUID}
                 sessionIds={sessionIds}
                 campaignName={rule.campaign?.name || rule.name}
-                targetType={rule.campaign?.targetType || rule.targetType}
-                messageBody={rule.campaign?.body || ''}
-                isWhatsApp={isWhatsApp}
                 filters={{ status: activeStatus }}
               />
             </div>

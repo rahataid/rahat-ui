@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import {
   useReactTable,
   getCoreRowModel,
-  getPaginationRowModel,
 } from '@tanstack/react-table';
 import {
   Card,
@@ -36,6 +35,8 @@ type CreditUsageSectionProps = {
   onXrefChange: (xref: string | null) => void;
   onDateChange: (dateRange: { from?: string; to?: string }) => void;
   onDateClear: () => void;
+  defaultFrom?: Date;
+  defaultTo?: Date;
 };
 
 function transformCreditsForChart(credits: CreditData[]) {
@@ -76,6 +77,8 @@ export default function CreditUsageSection({
   onXrefChange,
   onDateChange,
   onDateClear,
+  defaultFrom,
+  defaultTo,
 }: CreditUsageSectionProps) {
   const chartData = useMemo(
     () => transformCreditsForChart(credits ?? []),
@@ -99,7 +102,6 @@ export default function CreditUsageSection({
     data: tableData,
     columns: creditColumns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
@@ -111,6 +113,8 @@ export default function CreditUsageSection({
           onXrefChange={onXrefChange}
           onDateChange={onDateChange}
           onDateClear={onDateClear}
+          defaultFrom={defaultFrom}
+          defaultTo={defaultTo}
         />
       </div>
 

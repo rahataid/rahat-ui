@@ -314,7 +314,6 @@ export default function GroupDetail({ uuid }: IProps) {
         groupUUID: uuid,
         data: formData,
       });
-      Swal.fire('File uploaded successfully', '', 'success');
       setUploadOpen(false);
       setSelectedFile(null);
       router.push('/group');

@@ -36,16 +36,16 @@ export const useCommunityBeneficiaryGroupCreate = () => {
 
         data?.data?.info === false
           ? await Swal.fire({
-              text: data?.data?.finalMessage,
-              icon: 'success',
-            })
+            text: data?.data?.finalMessage,
+            icon: 'success',
+          })
           : await Swal.fire({
-              title: data?.data?.finalMessage,
-              titleText: data?.data?.finalMessage,
-              text: data?.data?.info,
+            title: data?.data?.finalMessage,
+            titleText: data?.data?.finalMessage,
+            text: data?.data?.info,
 
-              icon: 'success',
-            });
+            icon: 'success',
+          });
       }
     },
     onError: (error: any) => {
@@ -78,8 +78,6 @@ export const useUploadBulkBeneficiaryUpdate = () => {
     },
 
     onSuccess: () => {
-      Swal.fire('Beneficiary Updated Successfully', '', 'success');
-
       queryClient.invalidateQueries({
         queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
       });

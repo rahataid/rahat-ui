@@ -1,6 +1,5 @@
 'use client';
 
-import { DataCard } from '../../common/data.card';
 import {
   MessageSquare,
   Mail,
@@ -10,13 +9,6 @@ import {
   CreditCard,
   CheckCircle,
 } from 'lucide-react';
-
-type Transport = {
-  id: number;
-  cuid: string;
-  name: string;
-  type: string;
-};
 
 type TransportUsage = {
   transportCuid: string;
@@ -33,7 +25,6 @@ type TransportUsage = {
 };
 
 type TransportDetailCardsProps = {
-  transports?: Transport[];
   byTransport?: TransportUsage[];
   loading?: boolean;
 };
@@ -57,40 +48,36 @@ function formatDuration(seconds: number): string {
 }
 
 export default function TransportDetailCards({
-  transports,
   byTransport,
   loading,
 }: TransportDetailCardsProps) {
-  if (!transports || transports.length === 0) return null;
-
-  const usageMap = new Map(
-    byTransport?.map((t) => [t.transportCuid, t]) ?? [],
-  );
+  if (!byTransport || byTransport.length === 0) return null;
 
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Transport Details</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {transports.map((transport) => {
-          const usage = usageMap.get(transport.cuid);
-          const Icon = getTransportIcon(transport.type);
+        {byTransport.map((transport) => {
+          const Icon = getTransportIcon(transport.transportType);
           const successRate =
-            usage && usage.broadcasts > 0
-              ? ((usage.success / usage.broadcasts) * 100).toFixed(1)
+            transport.broadcasts > 0
+              ? ((transport.success / transport.broadcasts) * 100).toFixed(1)
               : '0';
 
           return (
             <div
-              key={transport.cuid}
+              key={transport.transportCuid}
               className="border rounded-lg p-4 space-y-3"
             >
               <div className="flex items-center gap-2">
                 <div className="bg-secondary rounded-full h-8 w-8 flex items-center justify-center text-primary">
                   <Icon size={18} />
                 </div>
-                <h4 className="font-semibold text-sm">{transport.name}</h4>
+                <h4 className="font-semibold text-sm">
+                  {transport.transportName}
+                </h4>
                 <span className="text-xs text-muted-foreground ml-auto">
-                  {transport.type}
+                  {transport.transportType}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -100,7 +87,7 @@ export default function TransportDetailCards({
                     Broadcasts
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {usage?.broadcasts ?? 0}
+                    {transport.broadcasts}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -118,21 +105,21 @@ export default function TransportDetailCards({
                     Credits
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {usage?.credits ?? 0}
+                    {transport.credits}
                   </span>
                 </div>
-                {transport.type === 'VOICE' && (
+                {transport.transportType === 'VOICE' && (
                   <div className="flex items-center gap-1.5">
                     <Clock size={14} className="text-muted-foreground" />
                     <span className="text-xs text-muted-foreground">
                       Duration
                     </span>
                     <span className="text-sm font-medium ml-auto">
-                      {formatDuration(usage?.duration ?? 0)}
+                      {formatDuration(transport.duration)}
                     </span>
                   </div>
                 )}
-                {transport.type === 'API' && (
+                {transport.transportType === 'API' && (
                   <div className="flex items-center gap-1.5">
                     <MessageSquare
                       size={14}
@@ -142,18 +129,7 @@ export default function TransportDetailCards({
                       Segments
                     </span>
                     <span className="text-sm font-medium ml-auto">
-                      {usage?.segments ?? 0}
-                    </span>
-                  </div>
-                )}
-                {transport.type === 'SMTP' && (
-                  <div className="flex items-center gap-1.5">
-                    <Mail size={14} className="text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      Calls
-                    </span>
-                    <span className="text-sm font-medium ml-auto">
-                      {usage?.calls ?? 0}
+                      {transport.segments}
                     </span>
                   </div>
                 )}

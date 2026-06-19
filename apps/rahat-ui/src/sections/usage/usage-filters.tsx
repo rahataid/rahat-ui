@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { format } from 'date-fns';
-import { DateRange } from 'react-day-picker';
+import { X } from 'lucide-react';
 import { useProjectList } from '@rahat-ui/query';
 import {
   Select,
@@ -10,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { DateRangePicker } from '../../components/datePickerRange';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { DatePicker } from '../../components/datePicker';
 
 type UsageFiltersProps = {
   selectedXref: string | null;
@@ -26,14 +28,32 @@ export default function UsageFilters({
   onDateClear,
 }: UsageFiltersProps) {
   const { data: projects } = useProjectList();
+  const [fromDate, setFromDate] = useState<Date | undefined>();
+  const [toDate, setToDate] = useState<Date | undefined>();
 
-  const handleDateChange = (range: DateRange | undefined) => {
-    if (!range) return;
+  const handleFromChange = (date: Date | undefined) => {
+    setFromDate(date);
     onDateChange({
-      from: range.from ? format(range.from, 'yyyy-MM-dd') : undefined,
-      to: range.to ? format(range.to, 'yyyy-MM-dd') : undefined,
+      from: date ? format(date, 'yyyy-MM-dd') : undefined,
+      to: toDate ? format(toDate, 'yyyy-MM-dd') : undefined,
     });
   };
+
+  const handleToChange = (date: Date | undefined) => {
+    setToDate(date);
+    onDateChange({
+      from: fromDate ? format(fromDate, 'yyyy-MM-dd') : undefined,
+      to: date ? format(date, 'yyyy-MM-dd') : undefined,
+    });
+  };
+
+  const handleClear = () => {
+    setFromDate(undefined);
+    setToDate(undefined);
+    onDateClear();
+  };
+
+  const hasDateSelected = fromDate || toDate;
 
   return (
     <div className="flex items-center gap-3">
@@ -54,12 +74,35 @@ export default function UsageFilters({
         </SelectContent>
       </Select>
 
-      <DateRangePicker
-        placeholder="Select date range"
-        type="usage"
-        handleDateChange={handleDateChange}
-        handleClearDate={onDateClear}
-      />
+      <div className="flex items-center gap-2">
+        <DatePicker
+          placeholder="From"
+          type="from"
+          handleDateChange={(date: Date | undefined) => handleFromChange(date)}
+          selectedDate={fromDate}
+          maxDate={toDate}
+          className="w-[160px]"
+        />
+        <span className="text-muted-foreground text-sm">to</span>
+        <DatePicker
+          placeholder="To"
+          type="to"
+          handleDateChange={(date: Date | undefined) => handleToChange(date)}
+          selectedDate={toDate}
+          minDate={fromDate}
+          className="w-[160px]"
+        />
+        {hasDateSelected && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleClear}
+            className="h-8 w-8"
+          >
+            <X size={16} />
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

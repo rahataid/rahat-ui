@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import {
-  useCommsTransports,
   useCommsUsage,
   useCommsUsageByXref,
   useCommsCredits,
@@ -23,8 +22,6 @@ export default function UsageView() {
   const [usageDateRange, setUsageDateRange] = useState<DateRangeQuery>({});
   const [creditXref, setCreditXref] = useState<string | null>(null);
   const [creditDateRange, setCreditDateRange] = useState<DateRangeQuery>({});
-
-  const { data: transportsData } = useCommsTransports();
 
   const { data: usageData, isPending: usageLoading } =
     useCommsUsage(usageXref ? undefined : usageDateRange);
@@ -47,7 +44,6 @@ export default function UsageView() {
   const totals = activeUsage?.data?.totals;
   const byTransport = activeUsage?.data?.byTransport;
   const credits = activeCredits?.data;
-  const transports = transportsData?.data;
 
   return (
     <ScrollArea className="h-[calc(100vh-80px)]">
@@ -69,7 +65,6 @@ export default function UsageView() {
         <UsageByTransport byTransport={byTransport} />
 
         <TransportDetailCards
-          transports={transports}
           byTransport={byTransport}
           loading={activeUsageLoading}
         />

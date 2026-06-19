@@ -129,12 +129,12 @@ export default function GroupDetail({ uuid }: IProps) {
   });
 
   const [labels, setLabels] = React.useState<any[]>([]);
-  // State for the main field selection dialog
+
   const [open, setOpen] = React.useState(false);
-  // State for Bulk Update (Upload) dialog
+
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  // State for Download dialog (file selection)
+
 
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
@@ -309,7 +309,7 @@ export default function GroupDetail({ uuid }: IProps) {
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
-      // Assuming the mutation expects FormData
+
       await updateBulkBeneficiary.mutateAsync({
         groupUUID: uuid,
         data: formData,
@@ -317,6 +317,7 @@ export default function GroupDetail({ uuid }: IProps) {
       Swal.fire('File uploaded successfully', '', 'success');
       setUploadOpen(false);
       setSelectedFile(null);
+      router.push('/group');
     } catch (error) {
       console.error('Upload error:', error);
       Swal.fire(

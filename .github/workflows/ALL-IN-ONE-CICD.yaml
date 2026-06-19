@@ -33,13 +33,15 @@ on:
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
 
           # Main folder
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
           - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
-          - "[PROD-DEMO] github/data/rahat/rahat-ui/prod/aa/demo"
+          - "[MAIN] github/data/rahat/rahat-ui/prod/aa/demo"
+
 
       vault_secret_key:
         description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"

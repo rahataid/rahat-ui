@@ -105,9 +105,11 @@ export default function CreditUsageSection({
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Credit Consumption</h3>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardTitle className="text-lg font-semibold">
+          Credit Consumption
+        </CardTitle>
         <UsageFilters
           selectedXref={xref}
           onXrefChange={onXrefChange}
@@ -116,39 +118,40 @@ export default function CreditUsageSection({
           defaultFrom={defaultFrom}
           defaultTo={defaultTo}
         />
-      </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {chartData.series.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Credits Over Time
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-[350px]">
+              <ChartLine
+                series={chartData.series}
+                categories={chartData.categories}
+              />
+            </CardContent>
+          </Card>
+        )}
 
-      {chartData.series.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Credits Over Time
+              Daily Credit Breakdown
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-[350px]">
-            <ChartLine
-              series={chartData.series}
-              categories={chartData.categories}
+          <CardContent>
+            <DemoTable
+              table={table}
+              loading={loading}
+              tableHeight="h-[400px]"
+              fixedLayout={false}
             />
           </CardContent>
         </Card>
-      )}
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Daily Credit Breakdown
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DemoTable
-            table={table}
-            loading={loading}
-            tableHeight="h-[400px]"
-            fixedLayout={false}
-          />
-        </CardContent>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -3,7 +3,12 @@
 import { useMemo, useState } from 'react';
 import { format, subDays } from 'date-fns';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   useCommsUsage,
   useCommsUsageByXref,
@@ -55,28 +60,29 @@ export default function UsageView() {
   return (
     <ScrollArea className="h-[calc(100vh-80px)]">
       <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold">Communication Usage</h2>
+        <h2 className="text-2xl font-bold">Usage</h2>
 
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Usage Overview</h3>
-          <UsageFilters
-            selectedXref={usageXref}
-            onXrefChange={setUsageXref}
-            onDateChange={setUsageDateRange}
-            onDateClear={() => setUsageDateRange({})}
-          />
-        </div>
-
-        <UsageOverviewCards totals={totals} loading={activeUsageLoading} />
-
-        <UsageByTransport byTransport={byTransport} />
-
-        <TransportDetailCards
-          byTransport={byTransport}
-          loading={activeUsageLoading}
-        />
-
-        <Separator />
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-lg font-semibold">
+              Communication Usage
+            </CardTitle>
+            <UsageFilters
+              selectedXref={usageXref}
+              onXrefChange={setUsageXref}
+              onDateChange={setUsageDateRange}
+              onDateClear={() => setUsageDateRange({})}
+            />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <UsageOverviewCards totals={totals} loading={activeUsageLoading} />
+            <UsageByTransport byTransport={byTransport} />
+            <TransportDetailCards
+              byTransport={byTransport}
+              loading={activeUsageLoading}
+            />
+          </CardContent>
+        </Card>
 
         <CreditUsageSection
           credits={credits}

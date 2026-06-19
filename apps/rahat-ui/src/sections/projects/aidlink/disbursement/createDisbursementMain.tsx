@@ -56,7 +56,9 @@ export default function CreateDisbursementMain({ type }: IProps) {
 
   const validGroups = groups?.filter(
     (group: any) =>
-      group?._count?.groupedBeneficiaries || group?.totalBeneficiaries > 0,
+      group?._count?.beneficiaries ||
+      group?._count?.groupedBeneficiaries ||
+      group?.totalBeneficiaries > 0,
   );
 
   const handleCreateDisbursement = async ({

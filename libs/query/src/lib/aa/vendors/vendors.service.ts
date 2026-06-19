@@ -334,3 +334,117 @@ export const useLogsDetailsByVendor = (payload: {
 
   return query;
 };
+export const useGetInkindRedemptionLogs = (payload: {
+  projectUuid: UUID;
+  page?: number;
+  perPage?: number;
+  search?: string;
+  vendorName?: string;
+  inkindName?: string;
+  status?: string;
+  inkindType?: string;
+  vendorUuid?: UUID;
+}) => {
+  const q = useProjectAction<any[]>();
+  const {
+    projectUuid,
+    page = 1,
+    perPage = 10,
+    search = '',
+    vendorName = '',
+    inkindName = '',
+    status = '',
+    inkindType = '',
+    vendorUuid,
+  } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aa.vendor.inkind_redemption.get_redemption_logs',
+      projectUuid,
+      page,
+      perPage,
+      search,
+      vendorName,
+      inkindName,
+      status,
+      inkindType,
+      vendorUuid,
+    ],
+    placeholderData: keepPreviousData,
+    enabled: !!projectUuid,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.inkinds.getVendorRedemptions',
+          payload: {
+            page,
+            perPage,
+            search: search ?? '',
+            ...(vendorName ? { vendorName } : {}),
+            ...(inkindName ? { inkindName } : {}),
+            ...(status ? { status } : {}),
+            ...(inkindType ? { inkindType } : {}),
+            ...(vendorUuid ? { vendorUuid } : {}),
+          },
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};
+
+export const useUpdateVendorRedemptionStatus = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const qc = useQueryClient();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        status: string;
+        uuid: UUID;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.inkinds.updateVendorRedemptionStatus',
+          payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({
+        queryKey: ['aa.vendor.inkind_redemption.get_redemption_logs'],
+      });
+
+      toast.fire({
+        title: 'Vendor redemption status updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating inkind redemption status.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};

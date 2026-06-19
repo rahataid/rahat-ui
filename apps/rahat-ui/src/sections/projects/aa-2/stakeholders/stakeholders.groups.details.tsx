@@ -15,14 +15,13 @@ import {
 } from '@tanstack/react-table';
 import {
   ClientSidePagination,
-  DataCard,
   DeleteButton,
   DemoTable,
   HeaderWithBack,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { RefreshCw, User } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
@@ -85,7 +84,7 @@ const StakeholdersGroupsDetails = () => {
   };
 
   return (
-    <div className="p-4 ">
+    <div className="p-4 flex flex-col h-[calc(100vh-65px)] overflow-hidden">
       {isDeleting && (
         <div className="absolute inset-0 bg-gray-900 bg-opacity-30 flex items-center justify-center z-50">
           <Loader />
@@ -113,26 +112,18 @@ const StakeholdersGroupsDetails = () => {
             <DeleteButton
               name="stakeholders group"
               handleContinueClick={handleDeleteClick}
-              className="rounded-sm w-full flex gap-1 items-center p-1"
+              className="rounded-sm w-full flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
               label="Delete Group"
               disabled={isDeleting}
             />
           </RoleAuth>
         </div>
       </div>
-      <div className="flex gap-6 mb-3">
-        <DataCard
-          className="border-solid w-1/4  h-1/4 rounded-sm"
-          iconStyle="bg-white text-secondary-muted"
-          title="Total Stakeholders"
-          Icon={User}
-          number={groupDetails?.stakeholders?.length}
-        />
-      </div>
-      <div className="p-4 rounded-sm border">
+      <div className="p-3 md:p-2 rounded-sm border flex flex-col flex-1 min-h-0 overflow-hidden">
         <div className="flex justify-between space-x-2 items-center mb-3 ">
           <SearchInput
             className="w-full"
+            inputClassName="h-[clamp(28px,3vw,36px)]"
             name="stakeholders name"
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -141,6 +132,7 @@ const StakeholdersGroupsDetails = () => {
           />
           <SearchInput
             className="w-full"
+            inputClassName="h-[clamp(28px,3vw,36px)]"
             name="organization"
             value={
               (table.getColumn('organization')?.getFilterValue() as string) ??
@@ -153,7 +145,7 @@ const StakeholdersGroupsDetails = () => {
             }
           />
           <SearchInput
-            className="w-full"
+            className="w-full hidden xl:block "
             name="municipality"
             value={
               (table.getColumn('municipality')?.getFilterValue() as string) ??
@@ -168,6 +160,7 @@ const StakeholdersGroupsDetails = () => {
 
           <SearchInput
             className="w-full"
+            inputClassName="h-[clamp(28px,3vw,36px)]"
             name="supportArea"
             value={
               (table.getColumn('supportArea')?.getFilterValue() as string) ?? ''
@@ -189,7 +182,7 @@ const StakeholdersGroupsDetails = () => {
                   `/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`,
                 )
               }
-              className=""
+              className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             >
               <RefreshCw size={18} className="mr-1" /> Update StakeHolder Group
             </Button>
@@ -198,11 +191,16 @@ const StakeholdersGroupsDetails = () => {
 
         <DemoTable
           table={table}
-          tableHeight="h-[calc(100vh-500px)]"
+          tableHeight="flex-1 min-h-0"
           loading={isLoading}
         />
 
-        <ClientSidePagination table={table} />
+        <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
+          <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
+            Total Stakeholders : {groupDetails?.stakeholders?.length || 0}
+          </p>
+          <ClientSidePagination table={table} />
+        </div>
       </div>
     </div>
   );

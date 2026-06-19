@@ -24,21 +24,28 @@ export function ClientSidePagination({ table }: IProps) {
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
 
+  const buttonClassName =
+    'h-[clamp(28px,3vw,36px)] w-[clamp(28px,3vw,36px)] p-0 [&_svg]:size-[clamp(14px,1.4vw,18px)]';
+
   return (
-    <div className="flex items-center justify-end space-x-8 border-t px-4 pt-2">
-      <div className="flex items-center gap-2">
-        <div className="text-sm font-medium">Rows per page</div>
+    <div className="flex items-center justify-end gap-[clamp(8px,1.2vw,16px)] border-t px-[clamp(8px,1vw,16px)] pt-[clamp(4px,0.6vw,8px)] text-[clamp(11px,1vw,14px)]">
+      <div className="flex items-center gap-[clamp(4px,0.6vw,8px)]">
+        <div className="font-medium">Rows per page</div>
         <Select
           defaultValue={String(table.getState().pagination.pageSize)}
           onValueChange={(value) => table.setPageSize(Number(value))}
         >
-          <SelectTrigger className="w-16">
+          <SelectTrigger className="w-[clamp(48px,5vw,64px)] h-[clamp(28px,3vw,36px)] px-[clamp(6px,0.8vw,12px)] py-0 text-[clamp(11px,1vw,14px)] [&>svg]:size-[clamp(12px,1.2vw,16px)]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {['2', '10', '20', '30', '40', '50'].map((size) => (
-                <SelectItem key={size} value={size}>
+                <SelectItem
+                  key={size}
+                  value={size}
+                  className="text-[clamp(11px,1vw,14px)]"
+                >
                   {size}
                 </SelectItem>
               ))}
@@ -49,10 +56,11 @@ export function ClientSidePagination({ table }: IProps) {
       <div>
         Page {pageIndex + 1} of {pageCount}
       </div>
-      <div className="space-x-4">
+      <div className="flex gap-[clamp(4px,0.6vw,8px)]">
         <Button
           variant="outline"
           size="sm"
+          className={buttonClassName}
           onClick={() => table.setPageIndex(0)} // First page
           disabled={pageIndex === 0}
         >
@@ -61,6 +69,7 @@ export function ClientSidePagination({ table }: IProps) {
         <Button
           variant="outline"
           size="sm"
+          className={buttonClassName}
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
@@ -69,6 +78,7 @@ export function ClientSidePagination({ table }: IProps) {
         <Button
           variant="outline"
           size="sm"
+          className={buttonClassName}
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
@@ -77,6 +87,7 @@ export function ClientSidePagination({ table }: IProps) {
         <Button
           variant="outline"
           size="sm"
+          className={buttonClassName}
           onClick={() => table.setPageIndex(pageCount - 1)} // Last page
           disabled={pageIndex >= pageCount - 1}
         >

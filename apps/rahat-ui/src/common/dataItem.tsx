@@ -16,16 +16,18 @@ export const DataItem = ({
 }: DataItemProps) => {
   return (
     <div>
-      <h1 className="text-lg text-black">{label}</h1>
+      <h1 className="text-[clamp(12px,1.2vw,18px)] text-black">{label}</h1>
       {isBadge ? (
         <Badge
           variant={badgeVariant}
-          className="text-sm text-muted-foreground font-medium"
+          className="text-[clamp(11px,1vw,14px)] text-muted-foreground font-medium"
         >
           {value}
         </Badge>
       ) : (
-        <p className=" text-sm text-muted-foreground font-medium">{value}</p>
+        <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground font-medium">
+          {value}
+        </p>
       )}
     </div>
   );

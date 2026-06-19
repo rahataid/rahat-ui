@@ -37,11 +37,11 @@ export function Heading({
     }
   };
   return (
-    <div className="mb-4">
+    <div className="mb-2">
       <div
         className={cn(
           'font-bold mb-1 flex items-center gap-2',
-          !titleStyle && 'text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl',
+          !titleStyle && 'text-[clamp(16px,2vw,28px)]',
           titleStyle,
         )}
       >
@@ -56,7 +56,9 @@ export function Heading({
         {title}
         {status && <Badge className={badgeClassName}>{status}</Badge>}
       </div>
-      <p className="text-sm/4 text-muted-foreground">{description}</p>
+      <p className="text-[clamp(11px,1vw,14px)] leading-4 text-muted-foreground">
+        {description}
+      </p>
 
       {updatedAt && (
         <div className="flex items-center gap-1 text-xs text-green-500 mt-1 whitespace-nowrap">

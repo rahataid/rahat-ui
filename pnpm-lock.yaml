@@ -90,8 +90,8 @@ importers:
         specifier: 0.0.14
         version: 0.0.14
       '@rahataid/sdk':
-        specifier: 0.0.36
-        version: 0.0.36
+        specifier: 0.0.37
+        version: 0.0.37
       '@rumsan/communication':
         specifier: ^0.0.23
         version: 0.0.23
@@ -3157,8 +3157,8 @@ packages:
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
 
-  '@rahataid/sdk@0.0.36':
-    resolution: {integrity: sha512-GAtsrZbZuLekwV684/b0/w2JIKzoRdT8qrOO4rdbH13agAyZxbs24+ETeR0KBLczjOYvCMgI5ddZ8a3lwGihkA==}
+  '@rahataid/sdk@0.0.37':
+    resolution: {integrity: sha512-h/2zxGSIJ8vwvki9TmrFvzb+Z5K9gEKIemPtEgYvAjGaN047ezkiot0UPzKi1CFNsXBSZENZgvOu430DHLHsfw==}
 
   '@react-leaflet/core@2.1.0':
     resolution: {integrity: sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==}
@@ -11155,8 +11155,8 @@ packages:
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
 
-  tailwind-merge@3.5.0:
-    resolution: {integrity: sha512-I8K9wewnVDkL1NTGoqWmVEIlUcB9gFriAEkXkfCjX5ib8ezGxtR3xD7iZIxrfArjEsH7F1CHD4RFUtxefdqV/A==}
+  tailwind-merge@3.6.0:
+    resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
 
   tailwind@4.0.0:
     resolution: {integrity: sha512-LlUNoD/5maFG1h5kQ6/hXfFPdcnYw+1Z7z+kUD/W/E71CUMwcnrskxiBM8c3G8wmPsD1VvCuqGYMHviI8+yrmg==}
@@ -15664,7 +15664,7 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
-  '@rahataid/sdk@0.0.36': {}
+  '@rahataid/sdk@0.0.37': {}
 
   '@react-leaflet/core@2.1.0(leaflet@1.9.4)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -20670,7 +20670,7 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      tailwind-merge: 3.5.0
+      tailwind-merge: 3.6.0
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -26472,7 +26472,7 @@ snapshots:
 
   tailwind-merge@2.6.0: {}
 
-  tailwind-merge@3.5.0: {}
+  tailwind-merge@3.6.0: {}
 
   tailwind@4.0.0(bufferutil@4.0.9):
     dependencies:

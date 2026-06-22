@@ -243,9 +243,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           type="text"
                           placeholder="Wallet Address"
                           {...field}
-                          onChange={(e) => {
-                            form.setValue('walletAddress', e.target.value);
-                          }}
                         />
                       </div>
                     </FormControl>
@@ -266,9 +263,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="First Name"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('firstName', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -288,9 +282,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="Last Name"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('lastName', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -307,7 +298,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <Label className="text-xs font-medium">Gender</Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -338,9 +329,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="Email"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('email', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -357,7 +345,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <Label className="text-xs font-medium">Phone Status</Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -396,9 +384,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="Phone"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('phone', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -417,7 +402,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     </Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -453,7 +438,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <Label className="text-xs font-medium">Banked Status</Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -535,7 +520,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           if (isNaN(numericValue)) {
                             numericValue = 0;
                           }
-                          form.setValue('latitude', numericValue);
+                          form.setValue('latitude', numericValue, { shouldDirty: true });
                         }}
                       />
                     </FormControl>
@@ -606,7 +591,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           if (isNaN(numericValue)) {
                             numericValue = 0;
                           }
-                          form.setValue('longitude', numericValue);
+                          form.setValue('longitude', numericValue, { shouldDirty: true });
                         }}
                       />
                     </FormControl>

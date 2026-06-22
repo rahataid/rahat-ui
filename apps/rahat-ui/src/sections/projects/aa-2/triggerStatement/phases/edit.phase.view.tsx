@@ -12,11 +12,13 @@ import {
 import { Option } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { PhaseForm } from './PhaseForm';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { Trash } from 'lucide-react';
 import { DialogComponent } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/details/dialog.reuse';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
@@ -36,6 +38,8 @@ export default function EditPhaseView() {
   const updatePhase = useUpdatePhase();
   const deletePhase = useDeletePhase();
   const [isDeleted, setIsDeleted] = useState(false);
+  const editPhaseConfirmDialog = useBoolean(false);
+  const pendingPhaseData = useRef<AddPhaseFormValues | null>(null);
 
   const { data: phasesData = [] } = usePhases(projectId);
 
@@ -102,7 +106,14 @@ export default function EditPhaseView() {
     });
   }, [phase, form, riverBasin]);
 
-  const handleUpdatePhase = async (data: AddPhaseFormValues) => {
+  const handleFormSubmit = async (data: AddPhaseFormValues) => {
+    pendingPhaseData.current = data;
+    editPhaseConfirmDialog.onTrue();
+  };
+
+  const handleConfirmUpdate = async () => {
+    const data = pendingPhaseData.current;
+    if (!data) return;
     const canTriggerPayout = !!data.canTriggerPayout;
     const payload = {
       uuid: phaseId,
@@ -121,12 +132,19 @@ export default function EditPhaseView() {
         projectUUID: projectId,
         phasePayload: payload,
       });
+      editPhaseConfirmDialog.onFalse();
       router.push(
         `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`,
       );
     } catch (error) {
       console.error('Update phase error:', error);
+      editPhaseConfirmDialog.onFalse();
     }
+  };
+
+  const handleCancelUpdate = () => {
+    editPhaseConfirmDialog.onFalse();
+    pendingPhaseData.current = null;
   };
 
   const handleReset = () => {
@@ -202,7 +220,7 @@ export default function EditPhaseView() {
       </div>
       <PhaseForm
         form={form}
-        onSubmit={handleUpdatePhase}
+        onSubmit={handleFormSubmit}
         onReset={handleReset}
         loading={updatePhase.isPending}
         submitLabel="Update"
@@ -212,6 +230,13 @@ export default function EditPhaseView() {
         disbursementMethodOptions={disbursementMethodOptions}
         allPhases={phasesData}
         currentPhaseId={phaseId}
+      />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={editPhaseConfirmDialog.value}
+        onCancel={handleCancelUpdate}
+        onConfirm={handleConfirmUpdate}
+        dialogTitle="Confirm Update Phase"
+        dialogMessage="Are you sure you want to update this phase?"
       />
     </>
   );

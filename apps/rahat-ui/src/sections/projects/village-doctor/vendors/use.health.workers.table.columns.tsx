@@ -28,7 +28,7 @@ export const useHealthWorkersTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Health Worker Name',
+      header: 'Village Doctor Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     // {

@@ -158,16 +158,43 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
       formData.bankedStatus = BankedStatus.BANKED;
     }
-    const nonEmptyFields = selectNonEmptyFields(formData);
     if (extras.hasOwnProperty('isDuplicate')) {
       delete extras.isDuplicate;
     }
+
+    const dirtyFields = form.formState.dirtyFields;
+    const dirtyPayload: Record<string, any> = {};
+
+    Object.keys(dirtyFields).forEach((key) => {
+      dirtyPayload[key] = formData[key as keyof typeof formData];
+    });
+
+    if (dirtyFields.phone && formData.phone) {
+      dirtyPayload.phoneStatus = PhoneStatus.SMART_PHONE;
+    }
+    if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
+      dirtyPayload.bankedStatus = BankedStatus.BANKED;
+    }
+    if (dirtyFields.birthDate && formData.birthDate) {
+      dirtyPayload.birthDate = formData.birthDate;
+    }
+
+    const nonEmptyFields = selectNonEmptyFields(dirtyPayload);
+
+    const originalExtras = data.extras || {};
+    const hasExtrasChanged = JSON.stringify(extras) !== JSON.stringify(originalExtras);
+
+    const finalPayload: Record<string, any> = {
+      ...nonEmptyFields,
+    };
+
+    if (hasExtrasChanged) {
+      finalPayload.extras = extras;
+    }
+
     await updateBeneficiaryClient.mutateAsync({
       uuid: data.uuid as UUID,
-      payload: {
-        ...nonEmptyFields,
-        extras,
-      },
+      payload: finalPayload,
     });
     closeSecondPanel();
   };
@@ -611,8 +638,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             <br />
             {filteredDefinitions && filteredDefinitions.length > 0
               ? filteredDefinitions.map((definition: any) => {
-                  return <FormBuilder formField={definition} />;
-                })
+                return <FormBuilder formField={definition} />;
+              })
               : 'No field definitions found!'}
           </div>
 

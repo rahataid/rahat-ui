@@ -12,7 +12,7 @@ const Y_AXIS_LABEL_BY_REPORT: Record<string, string> = {
   'Villagers Referred': 'Villagers referred (count)',
   'Total Sales Amount in EP (in RMB)': 'Sales amount (RMB)',
   'Successful Referrals in EP': 'Successful referrals (count)',
-  'Total Number of Villagers in EP': 'Cumulative villagers in EP (count)',
+  'Total Number of Eye Wear Sold in EP': 'Eye Wear Sold (count)',
 };
 
 const AXIS_LABEL_STYLE = {
@@ -42,10 +42,10 @@ function yAxisTitleForReport(chartTitle: string): string {
     return 'Villagers referred (count)';
   }
   if (
-    n.includes('total number of villagers') ||
-    (n.includes('villagers') && n.includes('ep') && n.includes('cumulative'))
+    n.includes('total number of eye wear sold') ||
+    (n.includes('villagers') && n.includes('ep') && n.includes('eye wear sold'))
   ) {
-    return 'Cumulative villagers in EP (count)';
+    return 'Eye Wear Sold (count)';
   }
   return 'Value';
 }

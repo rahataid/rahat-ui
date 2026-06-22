@@ -55,6 +55,7 @@ export default function HumidityWatchView() {
       {rh1hData.map((humInfo: any, index: number) => {
         const latestEntry = getLatestValue(humInfo?.history);
         const latestValue = latestEntry?.value ?? humInfo?.value;
+        const latestDate = latestEntry?.datetime ?? humInfo?.updatedAt;
         const colors = getHumidityColor(latestValue);
         const seriesId = humInfo?.series_id || humInfo?.id || String(index);
 
@@ -120,7 +121,7 @@ export default function HumidityWatchView() {
             <TemperatureValueCard
               value={latestValue}
               unit={humInfo?.unit ?? '%'}
-              updatedAt={updatedAt}
+              updatedAt={latestDate}
               label="Relative Humidity"
               colors={colors}
             />

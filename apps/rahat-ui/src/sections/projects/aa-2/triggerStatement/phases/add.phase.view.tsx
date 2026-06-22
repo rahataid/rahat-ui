@@ -98,11 +98,6 @@ export default function AddPhaseView() {
     }));
   }, [disbursementMethodsSetting]);
 
-  const payoutEnabledPhase = useMemo(
-    () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
-    [phasesData],
-  );
-
   const handleAddPhase = async (data: AddPhaseFormValues) => {
     const trimmedName = data.name.trim().toUpperCase();
     const isDuplicate = phasesData.some(
@@ -126,6 +121,8 @@ export default function AddPhaseView() {
       canRevert: !!data.canRevert,
       canTriggerPayout,
       disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
+      isAutomatedActivity: !!data.isAutomatedActivity,
+      isRequiredLeadTime: !!data.isRequiredLeadTime,
     };
     try {
       await createPhase.mutateAsync({
@@ -163,7 +160,6 @@ export default function AddPhaseView() {
         loading={createPhase.isPending}
         submitLabel="Confirm"
         resetLabel="Clear"
-        payoutEnabledPhase={payoutEnabledPhase}
         stationHeading={stationHeading}
         disbursementMethodOptions={disbursementMethodOptions}
         allPhases={phasesData}

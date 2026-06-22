@@ -6,7 +6,11 @@ import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { getHumidityColor, getLatestValue, roundValue } from './utils/color.utils';
+import {
+  getHumidityColor,
+  getLatestValue,
+  roundValue,
+} from './utils/color.utils';
 import React, { useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
 import TemperatureWatchMap from './temperature.watch.map';
@@ -31,6 +35,10 @@ export default function HumidityWatchDetails() {
     () => humidityInfo?.history ?? [],
     [humidityInfo?.history],
   );
+
+  const latestEntry = getLatestValue(history);
+  const latestValue = latestEntry?.value ?? humidityInfo?.value;
+  const latestDate = latestEntry?.datetime ?? humidityInfo?.updatedAt;
 
   const isNoDataError = useMemo(() => {
     if (!error) return false;
@@ -140,9 +148,9 @@ export default function HumidityWatchDetails() {
               </div>
 
               <TemperatureValueCard
-                value={getLatestValue(history)?.value ?? humidityInfo?.value}
+                value={latestValue}
                 unit={humidityInfo?.unit ?? '%'}
-                updatedAt={updatedAt}
+                updatedAt={latestDate}
                 label="Relative Humidity"
                 colors={colors}
               />

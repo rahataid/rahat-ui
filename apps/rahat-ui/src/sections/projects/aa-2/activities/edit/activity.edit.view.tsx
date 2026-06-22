@@ -116,7 +116,7 @@ export default function EditActivity() {
     perPage: 100,
   });
   useBeneficiariesGroups(projectID as UUID, {
-     excludeGroupPurpose: GroupPurpose.GENERAL,
+    excludeGroupPurpose: GroupPurpose.GENERAL,
     page: 1,
     perPage: 100,
   });
@@ -511,7 +511,7 @@ export default function EditActivity() {
                           key={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger disabled>
                               <SelectValue placeholder="Select phase" />
                             </SelectTrigger>
                           </FormControl>
@@ -556,7 +556,7 @@ export default function EditActivity() {
                     )}
                   />
 
-                  {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                  {selectedPhase && selectedPhase.isAutomatedActivity && (
                     <FormField
                       control={form.control}
                       name="isAutomated"
@@ -581,65 +581,64 @@ export default function EditActivity() {
                     />
                   )}
 
-                  {selectedPhaseId &&
-                    selectedPhase?.name !== 'PREPAREDNESS' && (
-                      <FormField
-                        control={form.control}
-                        name="leadTime"
-                        render={({ field }) => {
-                          const [lead, unitValue] = field.value?.split(' ') ?? [
-                            '',
-                            '',
-                          ];
-                          // Default unit to 'days' if not set
-                          const unit = !unitValue ? 'days' : unitValue;
-                          return (
-                            <FormItem>
-                              <FormLabel>Lead Time</FormLabel>
-                              <div className="grid grid-cols-4">
-                                <Input
-                                  type="text"
-                                  placeholder="Enter lead time"
-                                  className="col-span-3 rounded-r-none "
-                                  value={lead}
-                                  onChange={(e) => {
-                                    const newLead = e.target.value;
-                                    field.onChange(
-                                      newLead ? `${newLead} ${unit}` : '',
-                                    );
-                                  }}
-                                />
-                                <Select
-                                  value={unit}
-                                  onValueChange={(val) => {
-                                    field.onChange(
-                                      lead ? `${lead} ${val}` : ` ${val}`,
-                                    );
-                                  }}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="rounded-l-none">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {DurationData.map((item) => (
-                                      <SelectItem
-                                        key={item.value}
-                                        value={item.value}
-                                      >
-                                        {item.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    )}
+                  {selectedPhaseId && selectedPhase?.isRequiredLeadTime && (
+                    <FormField
+                      control={form.control}
+                      name="leadTime"
+                      render={({ field }) => {
+                        const [lead, unitValue] = field.value?.split(' ') ?? [
+                          '',
+                          '',
+                        ];
+                        // Default unit to 'days' if not set
+                        const unit = !unitValue ? 'days' : unitValue;
+                        return (
+                          <FormItem>
+                            <FormLabel>Lead Time</FormLabel>
+                            <div className="grid grid-cols-4">
+                              <Input
+                                type="text"
+                                placeholder="Enter lead time"
+                                className="col-span-3 rounded-r-none "
+                                value={lead}
+                                onChange={(e) => {
+                                  const newLead = e.target.value;
+                                  field.onChange(
+                                    newLead ? `${newLead} ${unit}` : '',
+                                  );
+                                }}
+                              />
+                              <Select
+                                value={unit}
+                                onValueChange={(val) => {
+                                  field.onChange(
+                                    lead ? `${lead} ${val}` : ` ${val}`,
+                                  );
+                                }}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="rounded-l-none">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {DurationData.map((item) => (
+                                    <SelectItem
+                                      key={item.value}
+                                      value={item.value}
+                                    >
+                                      {item.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  )}
 
                   <FormField
                     control={form.control}

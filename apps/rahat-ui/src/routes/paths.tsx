@@ -12,6 +12,7 @@ const ROOTS = {
   COMMUNITYBENEFICIARY: '/community-beneficiary',
   IMPORTBENEFICIARY: '/import-beneficiary',
   SETTINGS: '/settings',
+  USAGE: '/usage',
   APPAUTHENTICATION: '/auth-apps',
 };
 
@@ -53,6 +54,9 @@ export const paths = {
   },
   settings: {
     root: ROOTS.SETTINGS,
+  },
+  usage: {
+    root: ROOTS.USAGE,
   },
 };
 

@@ -57,7 +57,7 @@ export const AutomatedFormSchema = z.object({
 });
 
 export default function AddTriggerView() {
-  const [activeTab, setActiveTab] = React.useState<string>('automated');
+  const [activeTab, setActiveTab] = React.useState<string>('manual');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
   const [isManualDataValid, setIsManualDataValid] =
@@ -277,15 +277,15 @@ export default function AddTriggerView() {
               <TabsList className="border bg-secondary rounded mb-2">
                 <TabsTrigger
                   className="w-full data-[state=active]:bg-white"
-                  value="automated"
-                >
-                  Automated trigger
-                </TabsTrigger>
-                <TabsTrigger
-                  className="w-full data-[state=active]:bg-white"
                   value="manual"
                 >
                   Manual trigger
+                </TabsTrigger>
+                <TabsTrigger
+                  className="w-full data-[state=active]:bg-white"
+                  value="automated"
+                >
+                  Automated trigger
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="automated">

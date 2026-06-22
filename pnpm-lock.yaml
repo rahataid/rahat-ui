@@ -90,8 +90,8 @@ importers:
         specifier: 0.0.14
         version: 0.0.14
       '@rahataid/sdk':
-        specifier: 0.0.36
-        version: 0.0.36
+        specifier: 0.0.37
+        version: 0.0.37
       '@rumsan/communication':
         specifier: ^0.0.23
         version: 0.0.23
@@ -3157,8 +3157,8 @@ packages:
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
 
-  '@rahataid/sdk@0.0.36':
-    resolution: {integrity: sha512-GAtsrZbZuLekwV684/b0/w2JIKzoRdT8qrOO4rdbH13agAyZxbs24+ETeR0KBLczjOYvCMgI5ddZ8a3lwGihkA==}
+  '@rahataid/sdk@0.0.37':
+    resolution: {integrity: sha512-h/2zxGSIJ8vwvki9TmrFvzb+Z5K9gEKIemPtEgYvAjGaN047ezkiot0UPzKi1CFNsXBSZENZgvOu430DHLHsfw==}
 
   '@react-leaflet/core@2.1.0':
     resolution: {integrity: sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==}
@@ -15664,7 +15664,7 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
-  '@rahataid/sdk@0.0.36': {}
+  '@rahataid/sdk@0.0.37': {}
 
   '@react-leaflet/core@2.1.0(leaflet@1.9.4)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:

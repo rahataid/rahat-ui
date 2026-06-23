@@ -36,16 +36,16 @@ export const useCommunityBeneficiaryGroupCreate = () => {
 
         data?.data?.info === false
           ? await Swal.fire({
-            text: data?.data?.finalMessage,
-            icon: 'success',
-          })
+              text: data?.data?.finalMessage,
+              icon: 'success',
+            })
           : await Swal.fire({
-            title: data?.data?.finalMessage,
-            titleText: data?.data?.finalMessage,
-            text: data?.data?.info,
+              title: data?.data?.finalMessage,
+              titleText: data?.data?.finalMessage,
+              text: data?.data?.info,
 
-            icon: 'success',
-          });
+              icon: 'success',
+            });
       }
     },
     onError: (error: any) => {
@@ -53,42 +53,6 @@ export const useCommunityBeneficiaryGroupCreate = () => {
         icon: 'error',
         title:
           error.response.data.message || 'Encounter error on Creating Data',
-      });
-    },
-  });
-};
-export const useUploadBulkBeneficiaryUpdate = () => {
-  const { queryClient, rumsanService } = useRSQuery();
-
-  const beneficiaryGroupClient = getBeneficiaryGroupClient(
-    rumsanService.client,
-  );
-
-  return useMutation({
-    mutationKey: [TAGS.UPDATE_BULK_BENEFICIARY],
-
-    mutationFn: async ({
-      groupUUID,
-      data,
-    }: {
-      groupUUID: string;
-      data: FormData;
-    }) => {
-      return beneficiaryGroupClient.updateInBulk(groupUUID, data);
-    },
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
-      });
-    },
-
-    onError: (error: any) => {
-      Swal.fire({
-        icon: 'error',
-        title:
-          error?.response?.data?.message ||
-          'Encountered an error while updating data',
       });
     },
   });

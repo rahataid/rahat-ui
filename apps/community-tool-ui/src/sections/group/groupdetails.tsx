@@ -135,7 +135,6 @@ export default function GroupDetail({ uuid }: IProps) {
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
-
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
     setLabels(filtered);
@@ -195,9 +194,9 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
-        acc[value] = key;
-        return acc;
-      }, {} as { [key: string]: string })
+          acc[value] = key;
+          return acc;
+        }, {} as { [key: string]: string })
       : {};
     const payload = {
       groupUUID: uuid as string,
@@ -208,7 +207,6 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const handleSelectChange = (item) => {
     if (item === 'Select All') {
-
       const rdata = listFieldDef?.data?.map((item: any) =>
         simpleString(item.name),
       );
@@ -246,14 +244,15 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const rawData = response?.data?.data;
 
-
-
-
     const filteredData = rawData.map((item: Record<string, any>) => {
       const filteredItem: Record<string, any> = {};
       labels.forEach((key) => {
         const dehumanizedString = deHumanizeString(key as string);
-        if (dehumanizedString === 'firstName' || dehumanizedString === 'lastName') return;
+        if (
+          dehumanizedString === 'firstName' ||
+          dehumanizedString === 'lastName'
+        )
+          return;
 
         if (item.hasOwnProperty(dehumanizedString)) {
           filteredItem[dehumanizedString] = item[dehumanizedString];
@@ -263,7 +262,6 @@ export default function GroupDetail({ uuid }: IProps) {
       });
       return filteredItem;
     });
-
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(filteredData);
@@ -444,8 +442,9 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
-                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {
@@ -548,8 +547,9 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
-                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {

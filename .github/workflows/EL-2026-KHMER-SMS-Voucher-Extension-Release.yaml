@@ -55,6 +55,9 @@ jobs:
           context: .
           file: Dockerfile.rahat-ui
           push: true
+          build-args: |
+            NEXT_PUBLIC_API_HOST_URL=${{ env.NEXT_PUBLIC_API_HOST_URL }}
+            NEXT_PUBLIC_API_COMMUNICATION_URL=${{ env.NEXT_PUBLIC_API_COMMUNICATION_URL }}
           no-cache: true
           tags: |
             esatya/rahat-ui:el-release-smsvoucher-Khmer-extension-2026

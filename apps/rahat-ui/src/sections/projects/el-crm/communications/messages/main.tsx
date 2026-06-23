@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -34,7 +34,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   useListElCrmCampaign,
   useListElCrmTemplate,
@@ -59,67 +59,102 @@ type CampaignTab = 'regular' | 'automatic';
 
 export default function MessagesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
-  const [activeTab, setActiveTab] = useState<CampaignTab>('regular');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const tabFromUrl =
+    searchParams.get('tab') === 'automatic' ? 'automatic' : 'regular';
+  const [activeTab, setActiveTab] = useState<CampaignTab>(tabFromUrl);
+  useEffect(() => {
+    if (tabFromUrl !== activeTab) setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'SENT' | 'DRAFT'>(
     'ALL',
   );
+  // Separate from Sent/Draft because the Automatic tab's badges (Active /
+  // Paused / No Rule) come from the linked automation rule, not the campaign
+  // sessionId. Filter is reset on tab change so it can't leak across.
+  const [automationStatusFilter, setAutomationStatusFilter] = useState<
+    'ALL' | 'ACTIVE' | 'PAUSED' | 'NO_RULE'
+  >('ALL');
 
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    resetPagination,
-  } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage, resetPagination } =
+    usePagination();
   const columns = useMsgTableColumn({
     hideRecipientCount: activeTab === 'automatic',
     isAutomatic: activeTab === 'automatic',
   });
+
+  // Debounce the search input so we don't hit the server on every keystroke.
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // Snap back to page 1 whenever filters change so the user can't be stranded
+  // on a page index that no longer exists once the total shrinks.
+  useEffect(() => {
+    resetPagination();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, statusFilter, automationStatusFilter, activeTab]);
+
+  // Status filter only applies to the Regular tab.
+  const serverStatus =
+    activeTab === 'automatic'
+      ? undefined
+      : statusFilter === 'SENT'
+      ? 'Sent'
+      : statusFilter === 'DRAFT'
+      ? 'Draft'
+      : undefined;
+
+  // Automation status filter only applies to the Automatic tab.
+  const serverAutomationStatus =
+    activeTab !== 'automatic'
+      ? undefined
+      : automationStatusFilter === 'ACTIVE'
+      ? 'Active'
+      : automationStatusFilter === 'PAUSED'
+      ? 'Paused'
+      : automationStatusFilter === 'NO_RULE'
+      ? 'NoRule'
+      : undefined;
+
   const { data, meta, isLoading } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     isScheduled: false,
     isAutomatic: activeTab === 'automatic',
+    ...(debouncedSearch ? { name: debouncedSearch } : {}),
+    ...(serverStatus ? { status: serverStatus } : {}),
+    ...(serverAutomationStatus
+      ? { automationStatus: serverAutomationStatus }
+      : {}),
   });
   const { data: approvedTemplates } = useListElCrmTemplate(projectUUID, {
     status: 'APPROVED',
   });
   const quickStartTemplates = (approvedTemplates || []).slice(0, 3);
 
-  const filteredData = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    return (data || []).filter((item: any) => {
-      const matchesQuery = q
-        ? [item?.name, item?.transportName]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase()
-            .includes(q)
-        : true;
-      const isSent = !!item?.sessionId;
-      const matchesStatus =
-        statusFilter === 'ALL'
-          ? true
-          : statusFilter === 'SENT'
-          ? isSent
-          : !isSent;
-      return matchesQuery && matchesStatus;
-    });
-  }, [data, searchQuery, statusFilter]);
-
   const activeFilterCount =
-    (searchQuery.trim() !== '' ? 1 : 0) + (statusFilter !== 'ALL' ? 1 : 0);
+    (debouncedSearch !== '' ? 1 : 0) +
+    (activeTab !== 'automatic' && statusFilter !== 'ALL' ? 1 : 0) +
+    (activeTab === 'automatic' && automationStatusFilter !== 'ALL' ? 1 : 0);
+  const hasActiveFilters = activeFilterCount > 0;
 
   const resetFilters = () => {
     setSearchQuery('');
     setStatusFilter('ALL');
+    setAutomationStatusFilter('ALL');
   };
 
   const table = useReactTable({
     manualPagination: true,
-    data: filteredData,
+    data: data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -158,8 +193,15 @@ export default function MessagesView() {
           <Tabs
             value={activeTab}
             onValueChange={(value) => {
-              setActiveTab(value as CampaignTab);
+              const next = value as CampaignTab;
+              setActiveTab(next);
+              setStatusFilter('ALL');
+              setAutomationStatusFilter('ALL');
               resetPagination();
+              router.replace(
+                `/projects/el-crm/${projectUUID}/communications/messages?tab=${next}`,
+                { scroll: false },
+              );
             }}
             className="w-full"
           >
@@ -181,7 +223,7 @@ export default function MessagesView() {
                     <TableSkeleton rows={8} />
                   </CardContent>
                 </Card>
-              ) : data.length === 0 ? (
+              ) : data.length === 0 && !hasActiveFilters ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center px-6">
                   <div className="rounded-full bg-muted p-4 mb-4">
                     {activeTab === 'automatic' ? (
@@ -214,12 +256,17 @@ export default function MessagesView() {
                           return (
                             <Link
                               key={tpl.cuid || tpl.id}
-                              href={`/projects/el-crm/${projectUUID}/communications/messages/compose?templateId=${encodeURIComponent(tpl.externalId || tpl.cuid)}&channel=${encodeURIComponent(channel)}`}
+                              href={`/projects/el-crm/${projectUUID}/communications/messages/compose?templateId=${encodeURIComponent(
+                                tpl.externalId || tpl.cuid,
+                              )}&channel=${encodeURIComponent(channel)}`}
                               className="group flex flex-col gap-2 rounded-lg border p-3 text-left hover:border-primary hover:bg-primary/5 transition-colors"
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <FileText className="h-4 w-4 text-muted-foreground" />
-                                <Badge variant="secondary" className="text-[10px]">
+                                <Badge
+                                  variant="secondary"
+                                  className="text-[10px]"
+                                >
                                   {channel}
                                 </Badge>
                               </div>
@@ -315,36 +362,63 @@ export default function MessagesView() {
                           />
                         </div>
                       </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">
-                          Status
-                        </Label>
-                        <Select
-                          value={statusFilter}
-                          onValueChange={(v) =>
-                            setStatusFilter(v as typeof statusFilter)
-                          }
-                        >
-                          <SelectTrigger className="w-[150px] h-9 text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ALL">All Statuses</SelectItem>
-                            <SelectItem value="SENT">Sent</SelectItem>
-                            <SelectItem value="DRAFT">Draft</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {activeTab === 'automatic' ? (
+                        <div className="space-y-1.5">
+                          <Label className="text-xs text-muted-foreground">
+                            Status
+                          </Label>
+                          <Select
+                            value={automationStatusFilter}
+                            onValueChange={(v) =>
+                              setAutomationStatusFilter(
+                                v as typeof automationStatusFilter,
+                              )
+                            }
+                          >
+                            <SelectTrigger className="w-[160px] h-9 text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ALL">All Statuses</SelectItem>
+                              <SelectItem value="ACTIVE">Active</SelectItem>
+                              <SelectItem value="PAUSED">Paused</SelectItem>
+                              <SelectItem value="NO_RULE">No Rule</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <Label className="text-xs text-muted-foreground">
+                            Status
+                          </Label>
+                          <Select
+                            value={statusFilter}
+                            onValueChange={(v) =>
+                              setStatusFilter(v as typeof statusFilter)
+                            }
+                          >
+                            <SelectTrigger className="w-[150px] h-9 text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ALL">All Statuses</SelectItem>
+                              <SelectItem value="SENT">Sent</SelectItem>
+                              <SelectItem value="DRAFT">Draft</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                     </div>
                     {activeFilterCount > 0 && (
                       <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border/50">
-                        Showing {filteredData.length} of {data.length} message
-                        {data.length === 1 ? '' : 's'} on this page
+                        {meta?.total ?? 0} message
+                        {(meta?.total ?? 0) === 1 ? '' : 's'} match the active
+                        filters
                       </p>
                     )}
                   </div>
                   <CardContent className="p-0">
-                    {filteredData.length === 0 ? (
+                    {data.length === 0 ? (
                       <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
                         <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground" />
                         <h3 className="text-lg font-semibold text-foreground">

@@ -10,8 +10,18 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 
 const MONTHS = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 function toYM(year: number, month: number): string {
@@ -31,7 +41,13 @@ type Props = {
   maxMonth?: string;
 };
 
-export function MonthRangePicker({ fromMonth, toMonth, onChange, minMonth, maxMonth }: Props) {
+export function MonthRangePicker({
+  fromMonth,
+  toMonth,
+  onChange,
+  minMonth,
+  maxMonth,
+}: Props) {
   const [open, setOpen] = React.useState(false);
   const currentYear = new Date().getFullYear();
   const [viewYear, setViewYear] = React.useState<number>(() => {
@@ -51,7 +67,7 @@ export function MonthRangePicker({ fromMonth, toMonth, onChange, minMonth, maxMo
 
   const handleMonthClick = (ym: string) => {
     if (selecting === 'from') {
-      onChange(ym, ym);          // reset to; user will pick "to" next
+      onChange(ym, ym); // reset to; user will pick "to" next
       setSelecting('to');
     } else {
       const from = fromMonth || ym;
@@ -69,12 +85,18 @@ export function MonthRangePicker({ fromMonth, toMonth, onChange, minMonth, maxMo
   };
 
   const isInRange = (ym: string) => {
-    const lo = selecting === 'to' && hovered
-      ? (hovered < (fromMonth || '') ? hovered : (fromMonth || ''))
-      : fromMonth;
-    const hi = selecting === 'to' && hovered
-      ? (hovered < (fromMonth || '') ? (fromMonth || '') : hovered)
-      : toMonth;
+    const lo =
+      selecting === 'to' && hovered
+        ? hovered < (fromMonth || '')
+          ? hovered
+          : fromMonth || ''
+        : fromMonth;
+    const hi =
+      selecting === 'to' && hovered
+        ? hovered < (fromMonth || '')
+          ? fromMonth || ''
+          : hovered
+        : toMonth;
     return ym > lo && ym < hi;
   };
 
@@ -91,7 +113,9 @@ export function MonthRangePicker({ fromMonth, toMonth, onChange, minMonth, maxMo
           <CalendarIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
           {fromMonth ? (
             toMonth && toMonth !== fromMonth ? (
-              <span>{formatLabel(fromMonth)} – {formatLabel(toMonth)}</span>
+              <span>
+                {formatLabel(fromMonth)} – {formatLabel(toMonth)}
+              </span>
             ) : (
               <span>{formatLabel(fromMonth)}</span>
             )
@@ -160,7 +184,11 @@ export function MonthRangePicker({ fromMonth, toMonth, onChange, minMonth, maxMo
         {/* Clear */}
         {(fromMonth || toMonth) && (
           <button
-            onClick={() => { onChange('', ''); setOpen(false); setSelecting('from'); }}
+            onClick={() => {
+              onChange('', '');
+              setOpen(false);
+              setSelecting('from');
+            }}
             className="mt-3 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear

@@ -47,7 +47,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
-import { computeRate, formatRate } from '../../const';
+import { computeRate, formatRate, targetTypeMap } from '../../const';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {
@@ -407,7 +407,9 @@ export default function MessageDetailPage() {
                       Group
                     </span>
                     <span className="text-sm font-medium text-foreground">
-                      {campaign.targetType}
+                      {targetTypeMap[
+                        campaign.targetType as keyof typeof targetTypeMap
+                      ] || campaign.targetType}
                     </span>
                   </div>
 

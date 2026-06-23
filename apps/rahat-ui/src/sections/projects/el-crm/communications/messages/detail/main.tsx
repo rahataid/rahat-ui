@@ -61,7 +61,7 @@ import {
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
-import { computeRate, formatRate } from '../../const';
+import { computeRate, formatRate, targetTypeMap } from '../../const';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -519,7 +519,9 @@ export default function MessageDetailPage() {
                       Group
                     </span>
                     <span className="text-sm font-medium text-foreground">
-                      {campaign.targetType}
+                      {targetTypeMap[
+                        campaign.targetType as keyof typeof targetTypeMap
+                      ] || campaign.targetType}
                     </span>
                   </div>
 
@@ -701,7 +703,9 @@ export default function MessageDetailPage() {
                   Group
                 </Label>
                 <p className="mt-1 text-sm font-medium text-foreground">
-                  {campaign.targetType}
+                  {targetTypeMap[
+                    campaign.targetType as keyof typeof targetTypeMap
+                  ] || campaign.targetType}
                 </p>
               </div>
               <div>

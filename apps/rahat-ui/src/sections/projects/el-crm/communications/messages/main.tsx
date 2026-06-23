@@ -73,6 +73,12 @@ export default function MessagesView() {
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'SENT' | 'DRAFT'>(
     'ALL',
   );
+  // Separate from Sent/Draft because the Automatic tab's badges (Active /
+  // Paused / No Rule) come from the linked automation rule, not the campaign
+  // sessionId. Filter is reset on tab change so it can't leak across.
+  const [automationStatusFilter, setAutomationStatusFilter] = useState<
+    'ALL' | 'ACTIVE' | 'PAUSED' | 'NO_RULE'
+  >('ALL');
 
   const { pagination, setNextPage, setPrevPage, setPerPage, resetPagination } =
     usePagination();
@@ -93,7 +99,7 @@ export default function MessagesView() {
   useEffect(() => {
     resetPagination();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, statusFilter, activeTab]);
+  }, [debouncedSearch, statusFilter, automationStatusFilter, activeTab]);
 
   // Status filter only applies to the Regular tab.
   const serverStatus =
@@ -105,6 +111,18 @@ export default function MessagesView() {
       ? 'Draft'
       : undefined;
 
+  // Automation status filter only applies to the Automatic tab.
+  const serverAutomationStatus =
+    activeTab !== 'automatic'
+      ? undefined
+      : automationStatusFilter === 'ACTIVE'
+      ? 'Active'
+      : automationStatusFilter === 'PAUSED'
+      ? 'Paused'
+      : automationStatusFilter === 'NO_RULE'
+      ? 'NoRule'
+      : undefined;
+
   const { data, meta, isLoading } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
@@ -113,6 +131,9 @@ export default function MessagesView() {
     isAutomatic: activeTab === 'automatic',
     ...(debouncedSearch ? { name: debouncedSearch } : {}),
     ...(serverStatus ? { status: serverStatus } : {}),
+    ...(serverAutomationStatus
+      ? { automationStatus: serverAutomationStatus }
+      : {}),
   });
   const { data: approvedTemplates } = useListElCrmTemplate(projectUUID, {
     status: 'APPROVED',
@@ -121,12 +142,14 @@ export default function MessagesView() {
 
   const activeFilterCount =
     (debouncedSearch !== '' ? 1 : 0) +
-    (activeTab !== 'automatic' && statusFilter !== 'ALL' ? 1 : 0);
+    (activeTab !== 'automatic' && statusFilter !== 'ALL' ? 1 : 0) +
+    (activeTab === 'automatic' && automationStatusFilter !== 'ALL' ? 1 : 0);
   const hasActiveFilters = activeFilterCount > 0;
 
   const resetFilters = () => {
     setSearchQuery('');
     setStatusFilter('ALL');
+    setAutomationStatusFilter('ALL');
   };
 
   const table = useReactTable({
@@ -173,6 +196,7 @@ export default function MessagesView() {
               const next = value as CampaignTab;
               setActiveTab(next);
               setStatusFilter('ALL');
+              setAutomationStatusFilter('ALL');
               resetPagination();
               router.replace(
                 `/projects/el-crm/${projectUUID}/communications/messages?tab=${next}`,
@@ -338,7 +362,31 @@ export default function MessagesView() {
                           />
                         </div>
                       </div>
-                      {activeTab !== 'automatic' && (
+                      {activeTab === 'automatic' ? (
+                        <div className="space-y-1.5">
+                          <Label className="text-xs text-muted-foreground">
+                            Status
+                          </Label>
+                          <Select
+                            value={automationStatusFilter}
+                            onValueChange={(v) =>
+                              setAutomationStatusFilter(
+                                v as typeof automationStatusFilter,
+                              )
+                            }
+                          >
+                            <SelectTrigger className="w-[160px] h-9 text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ALL">All Statuses</SelectItem>
+                              <SelectItem value="ACTIVE">Active</SelectItem>
+                              <SelectItem value="PAUSED">Paused</SelectItem>
+                              <SelectItem value="NO_RULE">No Rule</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : (
                         <div className="space-y-1.5">
                           <Label className="text-xs text-muted-foreground">
                             Status

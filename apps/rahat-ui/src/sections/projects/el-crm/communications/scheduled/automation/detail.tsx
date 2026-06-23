@@ -23,6 +23,7 @@ import DemoTable from 'apps/rahat-ui/src/components/table';
 import SelectComponent from '../../../../cambodia/select.component';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { targetTypeMap } from '../../const';
 
 const STATUS_OPTIONS = ['ALL', 'SUCCESS', 'PENDING', 'FAIL', 'SCHEDULED'];
 
@@ -147,7 +148,11 @@ export default function AutomationDetailPage() {
               </div>
               <div>
                 <Label>Target Group</Label>
-                <div>{rule.targetType}</div>
+                <div>
+                  {targetTypeMap[
+                    rule.targetType as keyof typeof targetTypeMap
+                  ] || rule.targetType}
+                </div>
               </div>
               <div>
                 <Label>Fire Once Per Target</Label>

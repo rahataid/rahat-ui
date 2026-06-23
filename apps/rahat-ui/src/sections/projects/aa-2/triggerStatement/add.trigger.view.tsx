@@ -88,6 +88,8 @@ export default function AddTriggerView() {
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
   const sourceOptions = buildSourceOptions(SOURCES);
   const subtypeOptionsBySource = buildSubtypeOptions(SOURCES);
+  // console.log('sourceOptions', sourceOptions);
+  console.log('subtypeOptionsBySource', subtypeOptionsBySource);
   // Generating source options ends //
 
   const addTriggers = useCreateTriggerStatement();
@@ -195,7 +197,7 @@ export default function AddTriggerView() {
       isMandatory: !trigger?.isMandatory,
       source: triggerSource
         ? REVERSE_SOURCE_MAPPING[triggerSource] ||
-          trigger?.source?.toLowerCase()
+        trigger?.source?.toLowerCase()
         : trigger?.source?.toLowerCase(),
     };
     const manualData = {

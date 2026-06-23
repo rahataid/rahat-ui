@@ -104,6 +104,9 @@ export default function AddAutomatedTriggerForm({
     selectedSource.type?.toUpperCase() || '',
     triggerSourceSubType || '',
   );
+  console.log("subTypeOptions:", subTypeOptions);
+
+  console.log('Series List:', seriesList);
 
   // Filter source options based on project type
   const filteredSourceOptions = React.useMemo(() => {
@@ -130,7 +133,10 @@ export default function AddAutomatedTriggerForm({
       const [dataSource, type] = source.includes(':')
         ? source.split(':')
         : [source, null];
-      const mappedType = type === 'waterlevel' ? 'water_level' : type;
+      console.log("type:", type);
+      const mappedType =
+        dataSource === 'gfh' ? 'discharge' :
+          type === 'waterlevel' ? 'water_level' : type;
       const currentSourceKey = `${selectedSource.dataSource}:${selectedSource.type}`;
       const newSourceKey = `${dataSource}:${mappedType}`;
 
@@ -155,6 +161,7 @@ export default function AddAutomatedTriggerForm({
   }, [triggerSourceSubType, triggerOperator, triggerValue]);
 
   const handleSourceChange = (value: string) => {
+    console.log('Selected source:', value);
     form.setValue('triggerStatement.sourceSubType', '');
     form.setValue('triggerStatement.stationId', '');
     form.setValue('triggerStatement.stationName', '');
@@ -162,10 +169,17 @@ export default function AddAutomatedTriggerForm({
     form.setValue('triggerStatement.value', '');
     form.setValue('triggerStatement.expression', '');
 
+    console.log("value in handleSourceChange:", value);
     const [dataSource, type] = value.includes(':')
       ? value.split(':')
       : [value, null];
-    const mappedType = type === 'waterlevel' ? 'water_level' : type;
+
+    console.log("dataSource and type:", dataSource, type);
+
+    const mappedType = dataSource === 'gfh' ? 'water_level' : type;
+
+    // dataSource === 'gfh' ? 'water_level' :
+    //   type === 'waterlevel' ? 'water_level' : type;
     setSelectedSource({ dataSource, type: mappedType });
   };
 
@@ -317,8 +331,8 @@ export default function AddAutomatedTriggerForm({
                           {/* for heatwave */}
                           {(triggerSource === 'prob_humidity' ||
                             triggerSource === 'temperature_c') && (
-                            <SourceSubTypeField label="Measurement Period" />
-                          )}
+                              <SourceSubTypeField label="Measurement Period" />
+                            )}
                         </Select>
                         <FormMessage />
                       </FormItem>
@@ -345,7 +359,7 @@ export default function AddAutomatedTriggerForm({
                             }}
                             value={field.value}
                             key={field.value}
-                            // disabled={false}
+                          // disabled={false}
                           >
                             <FormLabel>Station</FormLabel>
                             <FormControl>
@@ -430,8 +444,8 @@ export default function AddAutomatedTriggerForm({
                           const meta =
                             triggerSource && triggerSource in SOURCE_META
                               ? SOURCE_META[
-                                  triggerSource as keyof typeof SOURCE_META
-                                ]
+                              triggerSource as keyof typeof SOURCE_META
+                              ]
                               : undefined;
                           return (
                             <FormItem>
@@ -473,12 +487,12 @@ export default function AddAutomatedTriggerForm({
                     {triggerSource === 'water_level_m'
                       ? 'm'
                       : triggerSource === 'discharge_m3s'
-                      ? 'm³/s'
-                      : triggerSource === 'rainfall_mm'
-                      ? 'mm'
-                      : triggerSource === 'prob_flood'
-                      ? '%'
-                      : ''}
+                        ? 'm³/s'
+                        : triggerSource === 'rainfall_mm'
+                          ? 'mm'
+                          : triggerSource === 'prob_flood'
+                            ? '%'
+                            : ''}
                     )
                   </p>
                 </div>

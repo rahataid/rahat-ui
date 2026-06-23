@@ -14,7 +14,7 @@ import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
@@ -30,7 +30,6 @@ export default function AddPhaseView() {
   const projectId = params.id as UUID;
   const searchParams = useSearchParams();
   const addPhaseConfirmDialog = useBoolean(false);
-  const pendingPhaseData = useRef<AddPhaseFormValues | null>(null);
 
   const navigation = searchParams.get('from');
 
@@ -113,21 +112,19 @@ export default function AddPhaseView() {
       });
       return;
     }
-    pendingPhaseData.current = data;
     addPhaseConfirmDialog.onTrue();
   };
 
   const handleConfirmAdd = async () => {
-    const data = pendingPhaseData.current;
-    if (!data) return;
+    const data = form.getValues();
     const canTriggerPayout = !!data.canTriggerPayout;
     const payload = {
       name: data.name.trim().toUpperCase(),
       source: phaseSource,
       river_basin: data.riverBasin,
       activeYear: String(activeYear || ''),
-      requiredMandatoryTriggers: data.requiredMandatoryTriggers,
-      requiredOptionalTriggers: data.requiredOptionalTriggers,
+      requiredMandatoryTriggers: Number(data.requiredMandatoryTriggers),
+      requiredOptionalTriggers: Number(data.requiredOptionalTriggers),
       canRevert: !!data.canRevert,
       canTriggerPayout,
       disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
@@ -149,7 +146,6 @@ export default function AddPhaseView() {
 
   const handleCancelAdd = () => {
     addPhaseConfirmDialog.onFalse();
-    pendingPhaseData.current = null;
   };
 
   const handleReset = () => {

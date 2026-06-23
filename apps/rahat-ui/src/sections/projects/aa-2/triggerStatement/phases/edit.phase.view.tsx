@@ -18,7 +18,7 @@ import { Trash } from 'lucide-react';
 import { DialogComponent } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/details/dialog.reuse';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
@@ -39,7 +39,6 @@ export default function EditPhaseView() {
   const deletePhase = useDeletePhase();
   const [isDeleted, setIsDeleted] = useState(false);
   const editPhaseConfirmDialog = useBoolean(false);
-  const pendingPhaseData = useRef<AddPhaseFormValues | null>(null);
 
   const { data: phasesData = [] } = usePhases(projectId);
 
@@ -52,7 +51,7 @@ export default function EditPhaseView() {
   });
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-      'river_basin'
+    'river_basin'
     ];
   const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
     projectId as UUID,
@@ -79,10 +78,6 @@ export default function EditPhaseView() {
     }));
   }, [disbursementMethodsSetting]);
 
-  const payoutEnabledPhase = useMemo(
-    () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
-    [phasesData],
-  );
   const triggerStatementPath = `/projects/aa/${projectId}/trigger-statements`;
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
@@ -106,14 +101,12 @@ export default function EditPhaseView() {
     });
   }, [phase, form, riverBasin]);
 
-  const handleFormSubmit = async (data: AddPhaseFormValues) => {
-    pendingPhaseData.current = data;
+  const handleFormSubmit = async (_data: AddPhaseFormValues) => {
     editPhaseConfirmDialog.onTrue();
   };
 
   const handleConfirmUpdate = async () => {
-    const data = pendingPhaseData.current;
-    if (!data) return;
+    const data = form.getValues();
     const canTriggerPayout = !!data.canTriggerPayout;
     const payload = {
       uuid: phaseId,
@@ -144,7 +137,6 @@ export default function EditPhaseView() {
 
   const handleCancelUpdate = () => {
     editPhaseConfirmDialog.onFalse();
-    pendingPhaseData.current = null;
   };
 
   const handleReset = () => {
@@ -225,7 +217,6 @@ export default function EditPhaseView() {
         loading={updatePhase.isPending}
         submitLabel="Update"
         resetLabel="Reset"
-        payoutEnabledPhase={payoutEnabledPhase}
         stationHeading={stationHeading}
         disbursementMethodOptions={disbursementMethodOptions}
         allPhases={phasesData}

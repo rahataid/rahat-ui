@@ -47,6 +47,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { computeRate, formatRate } from '../../const';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {
@@ -217,17 +218,17 @@ export default function MessageDetailPage() {
   const deliveredCount = count?.SUCCESS ?? 0;
   const failedCount = count?.FAIL ?? 0;
   const totalRecipients = campaign?.recipientCount || 0;
-  const deliveryRate =
-    totalRecipients > 0
-      ? Math.round((deliveredCount / totalRecipients) * 100)
-      : 0;
+  const deliveryRate = computeRate(deliveredCount, totalRecipients);
+  const failureRate = computeRate(failedCount, totalRecipients);
 
   const statCards = [
     {
       title: 'Successfully Delivered',
       value: deliveredCount.toLocaleString(),
       subtitle:
-        totalRecipients > 0 ? `${deliveryRate}% delivery rate` : undefined,
+        totalRecipients > 0
+          ? `${formatRate(deliveryRate)} delivery rate`
+          : undefined,
       icon: CheckCircle2,
       iconColor: 'text-emerald-600',
       bgColor: 'bg-emerald-500/10',
@@ -238,7 +239,7 @@ export default function MessageDetailPage() {
       value: failedCount.toLocaleString(),
       subtitle:
         totalRecipients > 0
-          ? `${Math.round((failedCount / totalRecipients) * 100)}% failure rate`
+          ? `${formatRate(failureRate)} failure rate`
           : undefined,
       icon: XCircle,
       iconColor: 'text-red-600',
@@ -434,7 +435,7 @@ export default function MessageDetailPage() {
                               : 'text-red-600'
                           }`}
                         >
-                          {deliveryRate}%
+                          {formatRate(deliveryRate)}
                         </span>
                       </div>
                       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">

@@ -34,7 +34,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   useListElCrmCampaign,
   useListElCrmTemplate,
@@ -59,7 +59,16 @@ type CampaignTab = 'regular' | 'automatic';
 
 export default function MessagesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
-  const [activeTab, setActiveTab] = useState<CampaignTab>('regular');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const tabFromUrl =
+    searchParams.get('tab') === 'automatic' ? 'automatic' : 'regular';
+  const [activeTab, setActiveTab] = useState<CampaignTab>(tabFromUrl);
+  useEffect(() => {
+    if (tabFromUrl !== activeTab) setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'SENT' | 'DRAFT'>(
     'ALL',
@@ -161,9 +170,14 @@ export default function MessagesView() {
           <Tabs
             value={activeTab}
             onValueChange={(value) => {
-              setActiveTab(value as CampaignTab);
+              const next = value as CampaignTab;
+              setActiveTab(next);
               setStatusFilter('ALL');
               resetPagination();
+              router.replace(
+                `/projects/el-crm/${projectUUID}/communications/messages?tab=${next}`,
+                { scroll: false },
+              );
             }}
             className="w-full"
           >

@@ -61,6 +61,7 @@ import {
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { computeRate, formatRate } from '../../const';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -167,6 +168,10 @@ export default function MessageDetailPage() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const listHref = `/projects/el-crm/${projectUUID}/communications/messages${
+    isAutomatic ? '?tab=automatic' : ''
+  }`;
+
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
@@ -217,9 +222,7 @@ export default function MessageDetailPage() {
       <div className="flex flex-col h-full">
         <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-center gap-4">
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
-            >
+            <Link href={listHref}>
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -237,9 +240,7 @@ export default function MessageDetailPage() {
             <p className="text-sm text-muted-foreground">
               The message you&apos;re looking for doesn&apos;t exist.
             </p>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
-            >
+            <Link href={listHref}>
               <Button size="sm" variant="outline" className="mt-2">
                 <ArrowLeft className="mr-2 h-3.5 w-3.5" />
                 Back to Messages
@@ -281,10 +282,8 @@ export default function MessageDetailPage() {
     ? automationCounts?.sent ?? meta?.total ?? 0
     : campaign?.recipientCount || 0;
   const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
-  const deliveryRate =
-    totalRecipients > 0
-      ? Math.round((deliveredCount / totalRecipients) * 100)
-      : 0;
+  const deliveryRate = computeRate(deliveredCount, totalRecipients);
+  const failureRate = computeRate(failedCount, totalRecipients);
   const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;
 
   const statCards = [
@@ -292,7 +291,9 @@ export default function MessageDetailPage() {
       title: 'Successfully Delivered',
       value: deliveredCount.toLocaleString(),
       subtitle:
-        totalRecipients > 0 ? `${deliveryRate}% delivery rate` : undefined,
+        totalRecipients > 0
+          ? `${formatRate(deliveryRate)} delivery rate`
+          : undefined,
       icon: CheckCircle2,
       iconColor: 'text-emerald-600',
       bgColor: 'bg-emerald-500/10',
@@ -303,7 +304,7 @@ export default function MessageDetailPage() {
       value: failedCount.toLocaleString(),
       subtitle:
         totalRecipients > 0
-          ? `${Math.round((failedCount / totalRecipients) * 100)}% failure rate`
+          ? `${formatRate(failureRate)} failure rate`
           : undefined,
       icon: XCircle,
       iconColor: 'text-red-600',
@@ -333,9 +334,7 @@ export default function MessageDetailPage() {
             <div className="flex items-start gap-3 min-w-0 flex-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href={`/projects/el-crm/${projectUUID}/communications/messages`}
-                  >
+                  <Link href={listHref}>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -396,7 +395,10 @@ export default function MessageDetailPage() {
                   projectUUID={projectUUID}
                   sessionIds={[campaign.sessionId]}
                   campaignName={campaign.name}
-                  filters={{ status: filters?.status, address: filters?.address }}
+                  filters={{
+                    status: filters?.status,
+                    address: filters?.address,
+                  }}
                 />
               )}
               {showRetryButton && !isAutomatic && (
@@ -547,7 +549,7 @@ export default function MessageDetailPage() {
                               : 'text-red-600'
                           }`}
                         >
-                          {deliveryRate}%
+                          {formatRate(deliveryRate)}
                         </span>
                       </div>
                       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
@@ -587,7 +589,9 @@ export default function MessageDetailPage() {
                       <div className="rounded-md bg-primary/10 p-1.5">
                         <Hash className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      {isAutomatic ? 'Automation Session Logs' : 'Delivery Logs'}
+                      {isAutomatic
+                        ? 'Automation Session Logs'
+                        : 'Delivery Logs'}
                       <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
                         {meta?.total || 0}
                       </span>

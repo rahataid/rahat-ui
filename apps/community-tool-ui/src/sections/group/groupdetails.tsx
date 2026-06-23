@@ -318,10 +318,10 @@ export default function GroupDetail({ uuid }: IProps) {
       setSelectedFile(null);
       router.push('/group');
     } catch (error) {
-      console.error('Upload error:', error);
+      setUploadOpen(false);
       Swal.fire(
         'Upload failed',
-        (error as any)?.message || 'Unknown error',
+        (error as any)?.response?.data?.message || 'Unknown error',
         'error',
       );
     }

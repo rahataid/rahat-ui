@@ -33,6 +33,7 @@ on:
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/ct-demo"
 
           # Main folder
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"

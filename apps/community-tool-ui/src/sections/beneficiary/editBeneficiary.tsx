@@ -147,17 +147,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
-    if (formData.birthDate) {
-      const formattedDate = formatDate(formData.birthDate as Date);
-      formData.birthDate = formattedDate;
-    }
-    if (formData.phone) {
-      formData.phoneStatus = PhoneStatus.SMART_PHONE;
-    }
 
-    if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
-      formData.bankedStatus = BankedStatus.BANKED;
-    }
     if (extras.hasOwnProperty('isDuplicate')) {
       delete extras.isDuplicate;
     }
@@ -170,13 +160,14 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     });
 
     if (dirtyFields.phone && formData.phone) {
-      dirtyPayload.phoneStatus = PhoneStatus.SMART_PHONE;
+      dirtyPayload.phone = formData.phone;
     }
     if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
       dirtyPayload.bankedStatus = BankedStatus.BANKED;
     }
     if (dirtyFields.birthDate && formData.birthDate) {
-      dirtyPayload.birthDate = formData.birthDate;
+      const formattedDate = formatDate(formData.birthDate as Date);
+      dirtyPayload.birthDate = formattedDate;
     }
 
     const nonEmptyFields = selectNonEmptyFields(dirtyPayload);

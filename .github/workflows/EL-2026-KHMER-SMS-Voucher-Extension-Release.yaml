@@ -18,6 +18,7 @@ jobs:
           env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_KHMER_EXTENSION_2026 }}
         run: |
           touch ./.env && echo "$env_release" >> ./.env
+          grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV 
 
       - uses: actions/setup-node@v3
         with:

@@ -10,6 +10,8 @@ import {
 import { Option } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { PhaseForm } from './PhaseForm';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo } from 'react';
@@ -27,6 +29,7 @@ export default function AddPhaseView() {
   const router = useRouter();
   const projectId = params.id as UUID;
   const searchParams = useSearchParams();
+  const addPhaseConfirmDialog = useBoolean(false);
 
   const navigation = searchParams.get('from');
 
@@ -55,17 +58,16 @@ export default function AddPhaseView() {
 
   const activeYear =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-      'active_year'
+    'active_year'
     ];
 
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-      'river_basin'
+    'river_basin'
     ];
 
-  const triggerStatementPath = `/projects/aa/${projectId}/${
-    navigation || 'trigger-statements'
-  }`;
+  const triggerStatementPath = `/projects/aa/${projectId}/${navigation || 'trigger-statements'
+    }`;
 
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
@@ -98,7 +100,7 @@ export default function AddPhaseView() {
     }));
   }, [disbursementMethodsSetting]);
 
-  const handleAddPhase = async (data: AddPhaseFormValues) => {
+  const handleFormSubmit = async (data: AddPhaseFormValues) => {
     const trimmedName = data.name.trim().toUpperCase();
     const isDuplicate = phasesData.some(
       (phase: any) => phase?.name?.trim().toUpperCase() === trimmedName,
@@ -110,14 +112,19 @@ export default function AddPhaseView() {
       });
       return;
     }
+    addPhaseConfirmDialog.onTrue();
+  };
+
+  const handleConfirmAdd = async () => {
+    const data = form.getValues();
     const canTriggerPayout = !!data.canTriggerPayout;
     const payload = {
-      name: trimmedName,
+      name: data.name.trim().toUpperCase(),
       source: phaseSource,
       river_basin: data.riverBasin,
       activeYear: String(activeYear || ''),
-      requiredMandatoryTriggers: data.requiredMandatoryTriggers,
-      requiredOptionalTriggers: data.requiredOptionalTriggers,
+      requiredMandatoryTriggers: Number(data.requiredMandatoryTriggers),
+      requiredOptionalTriggers: Number(data.requiredOptionalTriggers),
       canRevert: !!data.canRevert,
       canTriggerPayout,
       disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
@@ -129,10 +136,16 @@ export default function AddPhaseView() {
         projectUUID: projectId,
         phasePayload: payload,
       });
+      addPhaseConfirmDialog.onFalse();
       router.push(triggerStatementPath);
     } catch (error) {
       console.error('Error creating phase:', error);
+      addPhaseConfirmDialog.onFalse();
     }
+  };
+
+  const handleCancelAdd = () => {
+    addPhaseConfirmDialog.onFalse();
   };
 
   const handleReset = () => {
@@ -155,14 +168,21 @@ export default function AddPhaseView() {
       </div>
       <PhaseForm
         form={form}
-        onSubmit={handleAddPhase}
+        onSubmit={handleFormSubmit}
         onReset={handleReset}
         loading={createPhase.isPending}
-        submitLabel="Confirm"
+        submitLabel="Add"
         resetLabel="Clear"
         stationHeading={stationHeading}
         disbursementMethodOptions={disbursementMethodOptions}
         allPhases={phasesData}
+      />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={addPhaseConfirmDialog.value}
+        onCancel={handleCancelAdd}
+        onConfirm={handleConfirmAdd}
+        dialogTitle="Confirm Add Phase"
+        dialogMessage="Are you sure you want to add this phase?"
       />
     </>
   );

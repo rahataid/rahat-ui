@@ -70,6 +70,7 @@ import {
   CommandList,
 } from '@rahat-ui/shadcn/src/components/ui/command';
 import {
+  useConsumers,
   useCreateElCrmCampaign,
   useCreateElCrmAutomationRule,
   useDeleteElCrmAutomationRule,
@@ -81,6 +82,7 @@ import {
   useToggleElCrmAutomation,
   useTriggerElCrmCampaign,
 } from '@rahat-ui/query';
+import { getPlasgateSmsInfo, isPlasgateChannel } from '../../const';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -104,7 +106,10 @@ type FilterField =
   | 'source'
   | 'location'
   | 'isVerified'
-  | 'customerCode';
+  | 'customerCode'
+  | 'name'
+  | 'vendorName'
+  | 'channel';
 type FilterRow = { id: string; field: FilterField | ''; value: string };
 
 const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
@@ -118,12 +123,16 @@ const FILTER_FIELD_OPTIONS: { value: FilterField; label: string }[] = [
   { value: 'source', label: 'Source' },
   { value: 'location', label: 'Location' },
   { value: 'customerCode', label: 'Customer Code' },
+  { value: 'channel', label: 'Channel' },
 ];
 
 const BENEFICIARY_FILTER_FIELD_OPTIONS: {
   value: FilterField;
   label: string;
-}[] = [{ value: 'isVerified', label: 'Verified' }];
+}[] = [
+  { value: 'name', label: 'Beneficiary Name' },
+  { value: 'vendorName', label: 'Vendor Name' },
+];
 
 const FILTER_VALUE_OPTIONS: Partial<
   Record<FilterField, { value: string; label: string }[]>
@@ -303,6 +312,20 @@ const VENDOR_CONDITION_FIELDS: ConditionFieldConfig[] = [
 ];
 
 const BENEFICIARY_CONDITION_FIELDS: ConditionFieldConfig[] = [
+  {
+    value: 'extras.name',
+    label: 'Beneficiary Name',
+    valueType: 'STRING',
+    operators: ['CONTAINS', 'NOT_CONTAINS', 'IS_NULL', 'IS_NOT_NULL'],
+    placeholder: 'e.g. Jessica',
+  },
+  {
+    value: 'extras.vendorName',
+    label: 'Vendor Name',
+    valueType: 'STRING',
+    operators: ['CONTAINS', 'NOT_CONTAINS', 'IS_NULL', 'IS_NOT_NULL'],
+    placeholder: 'e.g. Apple Store',
+  },
   {
     value: 'isVerified',
     label: 'Verified Status',
@@ -623,16 +646,18 @@ export default function ComposeScheduleView() {
 
   // Build filter payload for estimated recipients count
   const filtersForCount = useMemo(() => {
-    const f: Record<string, string[]> = {};
+    const f: Record<string, string | string[]> = {};
     const categories = collectFilterValues(filterRows, 'category');
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
     const customerCodes = collectFilterValues(filterRows, 'customerCode');
+    const channels = collectFilterValues(filterRows, 'channel');
 
     if (categories.length) f.category = categories;
     if (sources.length) f.source = sources;
     if (locations.length) f.location = locations;
     if (customerCodes.length) f.customerCode = customerCodes;
+    if (channels.length) f.channel = channels;
 
     return f;
   }, [filterRows]);
@@ -643,7 +668,32 @@ export default function ComposeScheduleView() {
     perPage: 1,
   });
 
+  const beneficiaryFiltersForCount = useMemo(() => {
+    const f: Record<string, string> = {};
+    // Consumer count endpoint matches a single name string (contains).
+    const names = collectFilterValues(filterRows, 'name');
+    if (names.length) f.name = names[0];
+    const vendorNames = collectFilterValues(filterRows, 'vendorName');
+    if (vendorNames.length) f.vendorName = vendorNames[0];
+    return f;
+  }, [filterRows]);
+
+  const consumerEstimate = useConsumers(projectUUID, {
+    ...beneficiaryFiltersForCount,
+    page: 1,
+    perPage: 1,
+  });
+
+  const audienceEstimate =
+    selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
+  const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
+
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
+  const isPlasgate = isPlasgateChannel(selectedTransportName);
+  const plasgateSmsInfo = useMemo(
+    () => (isPlasgate ? getPlasgateSmsInfo(messageContent) : null),
+    [isPlasgate, messageContent],
+  );
 
   // Derive current active step
   const currentStep = useMemo(() => {
@@ -723,20 +773,23 @@ export default function ComposeScheduleView() {
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
     const customerCodes = collectFilterValues(filterRows, 'customerCode');
-    const verified = Array.from(
-      new Set(
-        collectFilterValues(filterRows, 'isVerified').map(
-          (value) => value === 'true',
-        ),
-      ),
-    );
+    const names = collectFilterValues(filterRows, 'name');
+    const vendorNames = collectFilterValues(filterRows, 'vendorName');
+    const channels = collectFilterValues(filterRows, 'channel');
 
     if (categories.length) options.vendorStatus = categories;
     if (sources.length) options.vendorSource = sources;
     if (locations.length) options.location = locations;
     if (customerCodes.length) options.customerCode = customerCodes;
-    if (verified.length === 1) options.beneficiaryIsVerified = verified[0];
-    if (verified.length > 1) options.beneficiaryIsVerified = verified;
+    if (names.length && selectedGroup === 'BENEFICIARY') {
+      options.beneficiaryName = names;
+    }
+    if (vendorNames.length && selectedGroup === 'BENEFICIARY') {
+      options.beneficiaryVendorName = vendorNames;
+    }
+    if (channels.length && selectedGroup === 'VENDOR') {
+      options.vendorChannel = channels;
+    }
 
     if (scheduleDate && scheduleTime) {
       const scheduledDate = zonedDateTimeToDate(
@@ -960,12 +1013,43 @@ export default function ComposeScheduleView() {
                             </Select>
                           )
                         ) : (
-                          <Textarea
-                            placeholder="Type your message here…"
-                            value={messageContent}
-                            onChange={(e) => setMessageContent(e.target.value)}
-                            rows={4}
-                          />
+                          <>
+                            <Textarea
+                              placeholder="Type your message here…"
+                              value={messageContent}
+                              onChange={(e) => setMessageContent(e.target.value)}
+                              rows={4}
+                            />
+                            {isPlasgate && plasgateSmsInfo && (
+                              <div className="space-y-1 mt-2">
+                                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                  <span>
+                                    {plasgateSmsInfo.encoding === 'GSM-7'
+                                      ? 'GSM-7 (English / standard) — up to 160 chars per SMS'
+                                      : 'Unicode (symbols, emoji, Khmer, etc.) — up to 70 chars per SMS'}
+                                  </span>
+                                  <span
+                                    className={cn(
+                                      (plasgateSmsInfo.exceeded ||
+                                        plasgateSmsInfo.remaining <= 10) &&
+                                        'text-destructive font-medium',
+                                    )}
+                                  >
+                                    {plasgateSmsInfo.length} /{' '}
+                                    {plasgateSmsInfo.limit}
+                                  </span>
+                                </div>
+                                {plasgateSmsInfo.exceeded && (
+                                  <p className="text-xs text-destructive">
+                                    Message exceeds the {plasgateSmsInfo.limit}
+                                    -character limit for {plasgateSmsInfo.encoding}{' '}
+                                    encoding and will be sent as multiple SMS
+                                    segments.
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </StepCard>
@@ -1126,6 +1210,12 @@ export default function ComposeScheduleView() {
                                           placeholder={
                                             row.field === 'location'
                                               ? 'e.g., Kathmandu'
+                                              : row.field === 'name'
+                                              ? 'e.g., John Doe'
+                                              : row.field === 'vendorName'
+                                              ? 'e.g., Apple Store'
+                                              : row.field === 'channel'
+                                              ? 'e.g., Wholesale'
                                               : 'Value'
                                           }
                                           value={row.value}
@@ -1161,26 +1251,24 @@ export default function ComposeScheduleView() {
                                 </Button>
 
                                 {/* Estimated recipients */}
-                                {selectedGroup === 'VENDOR' && (
-                                  <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-                                    <Users className="h-4 w-4" />
-                                    <span>
-                                      Estimated recipients:{' '}
-                                      {recipientEstimate.isLoading ? (
-                                        <span className="italic">
-                                          calculating…
-                                        </span>
-                                      ) : (
-                                        <>
-                                          <strong className="text-foreground">
-                                            {recipientEstimate.meta?.total ?? 0}
-                                          </strong>{' '}
-                                          customers
-                                        </>
-                                      )}
-                                    </span>
-                                  </div>
-                                )}
+                                <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                                  <Users className="h-4 w-4" />
+                                  <span>
+                                    Estimated recipients:{' '}
+                                    {audienceEstimate.isLoading ? (
+                                      <span className="italic">
+                                        calculating…
+                                      </span>
+                                    ) : (
+                                      <>
+                                        <strong className="text-foreground">
+                                          {audienceEstimate.meta?.total ?? 0}
+                                        </strong>{' '}
+                                        {audienceNoun}
+                                      </>
+                                    )}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           );
@@ -1822,9 +1910,9 @@ export default function ComposeScheduleView() {
                 <div>
                   <p className="text-muted-foreground">Estimated recipients</p>
                   <p className="font-medium">
-                    {selectedGroup === 'VENDOR'
-                      ? recipientEstimate.meta?.total ?? 0
-                      : 'Calculated by trigger'}
+                    {audienceEstimate.isLoading
+                      ? 'Calculating...'
+                      : audienceEstimate.meta?.total ?? 0}
                   </p>
                 </div>
               </div>

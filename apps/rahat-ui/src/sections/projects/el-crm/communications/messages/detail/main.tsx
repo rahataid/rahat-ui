@@ -42,6 +42,8 @@ import {
   useListElCrmSessionBroadcast,
   usePagination,
   useRetryFailedSession,
+  useListElCrmAutomation,
+  useAutomationDetail,
 } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import SearchInput from '../../../../components/search.input';
@@ -58,6 +60,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
+import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { computeRate, formatRate, targetTypeMap } from '../../const';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -102,6 +106,8 @@ export default function MessageDetailPage() {
     setFilters,
   } = usePagination();
 
+  const isAutomatic = !!campaign?.isAutomatic;
+
   const { data: logs, isLoading: isLogsLoading } = useListElCrmSessionBroadcast(
     projectUUID,
     {
@@ -111,14 +117,41 @@ export default function MessageDetailPage() {
     },
     {
       queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
-      enabled: !!campaign?.sessionId,
+      enabled: !!campaign?.sessionId && !isAutomatic,
     },
   );
 
+  const automations = useListElCrmAutomation(projectUUID, {
+    page: 1,
+    perPage: 100,
+  });
+
+  const automationRuleUuid = React.useMemo(() => {
+    if (!isAutomatic || !campaign?.uuid) return '';
+    const rules = (automations.data ?? []) as Array<{
+      uuid: string;
+      campaign?: { uuid?: string } | null;
+    }>;
+    return rules.find((r) => r.campaign?.uuid === campaign.uuid)?.uuid ?? '';
+  }, [automations.data, isAutomatic, campaign?.uuid]);
+
+  const { data: automationDetail, isLoading: isAutomationLoading } =
+    useAutomationDetail(projectUUID, automationRuleUuid, pagination);
+
+  const logsData: any[] = isAutomatic
+    ? automationDetail?.logs ?? []
+    : logs?.data ?? [];
+  const logsMetaRaw = isAutomatic
+    ? automationDetail?.meta
+    : logs?.response?.meta;
+  const isLogsTableLoading = isAutomatic
+    ? automations.isLoading || isAutomationLoading
+    : isLogsLoading;
+
   // Calculate total price from logs
   const totalPrice = React.useMemo(() => {
-    if (!logs?.data) return 0;
-    return logs.data.reduce((sum: number, log: any) => {
+    if (!logsData.length) return 0;
+    return logsData.reduce((sum: number, log: any) => {
       let price = log?.disposition?.price;
       if (typeof price === 'string' && price.startsWith('-')) {
         price = price.substring(1);
@@ -126,14 +159,18 @@ export default function MessageDetailPage() {
       const num = parseFloat(price);
       return sum + (isNaN(num) ? 0 : num);
     }, 0);
-  }, [logs]);
+  }, [logsData]);
 
   const table = useReactTable({
     manualPagination: true,
-    data: logs?.data || [],
+    data: logsData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const listHref = `/projects/el-crm/${projectUUID}/communications/messages${
+    isAutomatic ? '?tab=automatic' : ''
+  }`;
 
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
@@ -185,9 +222,7 @@ export default function MessageDetailPage() {
       <div className="flex flex-col h-full">
         <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-center gap-4">
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
-            >
+            <Link href={listHref}>
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -205,9 +240,7 @@ export default function MessageDetailPage() {
             <p className="text-sm text-muted-foreground">
               The message you&apos;re looking for doesn&apos;t exist.
             </p>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
-            >
+            <Link href={listHref}>
               <Button size="sm" variant="outline" className="mt-2">
                 <ArrowLeft className="mr-2 h-3.5 w-3.5" />
                 Back to Messages
@@ -232,15 +265,25 @@ export default function MessageDetailPage() {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const meta = logs?.response.meta || { total: 0, currentPage: 0 };
-  const isSent = !!campaign.sessionId;
-  const deliveredCount = count?.SUCCESS ?? 0;
-  const failedCount = count?.FAIL ?? 0;
-  const totalRecipients = campaign?.recipientCount || 0;
-  const deliveryRate =
-    totalRecipients > 0
-      ? Math.round((deliveredCount / totalRecipients) * 100)
-      : 0;
+  const meta = logsMetaRaw || { total: 0, currentPage: 0 };
+  const automationCounts = automationDetail?.counts as
+    | { success?: number; failed?: number; sent?: number; total?: number }
+    | undefined;
+  const isSent = isAutomatic
+    ? (automationCounts?.sent ?? 0) > 0
+    : !!campaign.sessionId;
+  const deliveredCount = isAutomatic
+    ? automationCounts?.success ?? 0
+    : count?.SUCCESS ?? 0;
+  const failedCount = isAutomatic
+    ? automationCounts?.failed ?? 0
+    : count?.FAIL ?? 0;
+  const totalRecipients = isAutomatic
+    ? automationCounts?.sent ?? meta?.total ?? 0
+    : campaign?.recipientCount || 0;
+  const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
+  const deliveryRate = computeRate(deliveredCount, totalRecipients);
+  const failureRate = computeRate(failedCount, totalRecipients);
   const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;
 
   const statCards = [
@@ -248,7 +291,9 @@ export default function MessageDetailPage() {
       title: 'Successfully Delivered',
       value: deliveredCount.toLocaleString(),
       subtitle:
-        totalRecipients > 0 ? `${deliveryRate}% delivery rate` : undefined,
+        totalRecipients > 0
+          ? `${formatRate(deliveryRate)} delivery rate`
+          : undefined,
       icon: CheckCircle2,
       iconColor: 'text-emerald-600',
       bgColor: 'bg-emerald-500/10',
@@ -259,7 +304,7 @@ export default function MessageDetailPage() {
       value: failedCount.toLocaleString(),
       subtitle:
         totalRecipients > 0
-          ? `${Math.round((failedCount / totalRecipients) * 100)}% failure rate`
+          ? `${formatRate(failureRate)} failure rate`
           : undefined,
       icon: XCircle,
       iconColor: 'text-red-600',
@@ -289,9 +334,7 @@ export default function MessageDetailPage() {
             <div className="flex items-start gap-3 min-w-0 flex-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href={`/projects/el-crm/${projectUUID}/communications/messages`}
-                  >
+                  <Link href={listHref}>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -331,7 +374,8 @@ export default function MessageDetailPage() {
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
                     <Users className="h-3 w-3" />
-                    {totalRecipients.toLocaleString()} recipients
+                    {totalRecipients.toLocaleString()}{' '}
+                    {recipientsLabel.toLowerCase()}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <CalendarDays className="h-3 w-3" />
@@ -346,7 +390,18 @@ export default function MessageDetailPage() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              {showRetryButton && (
+              {isSent && (
+                <CampaignBroadcastActions
+                  projectUUID={projectUUID}
+                  sessionIds={[campaign.sessionId]}
+                  campaignName={campaign.name}
+                  filters={{
+                    status: filters?.status,
+                    address: filters?.address,
+                  }}
+                />
+              )}
+              {showRetryButton && !isAutomatic && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -363,22 +418,24 @@ export default function MessageDetailPage() {
                   <TooltipContent>Retry all failed deliveries</TooltipContent>
                 </Tooltip>
               )}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    disabled={isSent || trigger.isPending}
-                    onClick={() => setIsConfirmDialogOpen(true)}
-                    className="gap-2"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                    {trigger.isPending ? 'Sending…' : 'Send Message'}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isSent ? 'Message already sent' : 'Send this message now'}
-                </TooltipContent>
-              </Tooltip>
+              {!campaign.isAutomatic && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      disabled={isSent || trigger.isPending}
+                      onClick={() => setIsConfirmDialogOpen(true)}
+                      className="gap-2"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      {trigger.isPending ? 'Sending…' : 'Send Message'}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isSent ? 'Message already sent' : 'Send this message now'}
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
           </div>
         </div>
@@ -462,14 +519,16 @@ export default function MessageDetailPage() {
                       Group
                     </span>
                     <span className="text-sm font-medium text-foreground">
-                      {campaign.targetType}
+                      {targetTypeMap[
+                        campaign.targetType as keyof typeof targetTypeMap
+                      ] || campaign.targetType}
                     </span>
                   </div>
 
-                  {/* Recipients */}
+                  {/* Recipients / Sent */}
                   <div className="flex items-center justify-between px-5 py-3.5">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Recipients
+                      {recipientsLabel}
                     </span>
                     <span className="text-sm font-semibold tabular-nums text-foreground">
                       {totalRecipients.toLocaleString()}
@@ -492,7 +551,7 @@ export default function MessageDetailPage() {
                               : 'text-red-600'
                           }`}
                         >
-                          {deliveryRate}%
+                          {formatRate(deliveryRate)}
                         </span>
                       </div>
                       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
@@ -532,12 +591,14 @@ export default function MessageDetailPage() {
                       <div className="rounded-md bg-primary/10 p-1.5">
                         <Hash className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      Delivery Logs
+                      {isAutomatic
+                        ? 'Automation Session Logs'
+                        : 'Delivery Logs'}
                       <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
                         {meta?.total || 0}
                       </span>
                     </CardTitle>
-                    {hasActiveFilters && (
+                    {!isAutomatic && hasActiveFilters && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -551,33 +612,39 @@ export default function MessageDetailPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
-                    <div className="md:col-span-3">
-                      <SearchInput
-                        value={filters.address}
-                        name="Audience"
-                        onSearch={(e) => handleSearch(e, 'address')}
-                      />
-                    </div>
+                  {!isAutomatic && (
+                    <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
+                      <div className="md:col-span-3">
+                        <SearchInput
+                          value={filters.address}
+                          name="Audience"
+                          onSearch={(e) => handleSearch(e, 'address')}
+                        />
+                      </div>
 
-                    <div className="md:col-span-1 !mt-0">
-                      <SelectComponent
-                        name="Status"
-                        options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                        onChange={(value) =>
-                          handleFilterChange('status', value)
-                        }
-                        value={filters?.status ?? 'ALL'}
-                      />
+                      <div className="md:col-span-1 !mt-0">
+                        <SelectComponent
+                          name="Status"
+                          options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                          onChange={(value) =>
+                            handleFilterChange('status', value)
+                          }
+                          value={filters?.status ?? 'ALL'}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </CardHeader>
 
                 <CardContent className="p-0">
                   <DemoTable
                     table={table}
-                    loading={isLogsLoading}
-                    tableHeight="h-[calc(100vh-535px)]"
+                    loading={isLogsTableLoading}
+                    tableHeight={
+                      isAutomatic
+                        ? 'h-[calc(100vh-475px)]'
+                        : 'h-[calc(100vh-535px)]'
+                    }
                   />
                   <CustomPagination
                     meta={meta}
@@ -636,7 +703,9 @@ export default function MessageDetailPage() {
                   Group
                 </Label>
                 <p className="mt-1 text-sm font-medium text-foreground">
-                  {campaign.targetType}
+                  {targetTypeMap[
+                    campaign.targetType as keyof typeof targetTypeMap
+                  ] || campaign.targetType}
                 </p>
               </div>
               <div>

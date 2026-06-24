@@ -118,21 +118,32 @@ export default function useCommsLogsTableColumns() {
       },
     },
     {
-      accessorKey: 'timeStamp',
+      accessorKey: 'lastAttempt',
       header: () => (
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Timestamp
+          Triggered At
         </span>
       ),
       cell: ({ row }) => {
-        const date = row?.original?.createdAt as string;
+        const date = (row?.original?.lastAttempt ||
+          row?.original?.createdAt) as string | undefined;
         if (!date) return <span className="text-sm">\u2014</span>;
         const { dateStr, timeStr } = formatDateTime(date);
+        const isFallback = !row?.original?.lastAttempt;
         return (
-          <span className="text-sm tabular-nums whitespace-nowrap">
-            {dateStr}
-            <span className="text-muted-foreground ml-1">{timeStr}</span>
-          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm tabular-nums whitespace-nowrap">
+                {dateStr}
+                <span className="text-muted-foreground ml-1">{timeStr}</span>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent className="text-xs">
+              {isFallback
+                ? 'No send attempt yet \u2014 showing time queued'
+                : 'Time the most recent send attempt was made'}
+            </TooltipContent>
+          </Tooltip>
         );
       },
     },

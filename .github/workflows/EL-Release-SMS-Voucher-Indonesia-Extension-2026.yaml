@@ -3,19 +3,19 @@ on:
   workflow_dispatch:
 
 env:
-  CI: true
+  CI: false
+  env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_INDONESIA_EXTENSION_2026 }}
 
 jobs:
   rahat-ui:
     name: rahat-ui
     runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'release/') && github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
 
       - name: import env file
-        env:
-          env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_INDONESIA_EXTENSION_2026 }}
         run: |
           touch ./.env && echo "$env_release" >> ./.env
 
@@ -24,13 +24,15 @@ jobs:
           node-version: 20.10.0
 
       - name: Install pnpm
-        run: npm install -g pnpm@8.14.1
+        run: |
+          npm install -g pnpm@8.14.1
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Build apps
-        run: pnpm build:all
+        run: |
+          pnpm build:all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -42,21 +44,24 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract version from package.json
+        id: extract_version
         run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
 
       - name: Extract Timestamp
+        id: extract-timestamp
         run: |
           TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")
           echo "timestamp=$TIMESTAMP" >> $GITHUB_ENV
 
+      # Rahat-UI Image
       - name: build && push rahat-ui
+        id: build-push-rahat-ui
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.rahat-ui
-          push: true
-          no-cache: true
+          push: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
             esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026
-            esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026-${{ env.VERSION }}
-            esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026-${{ env.VERSION }}-${{ env.timestamp }}
+            esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026-${{ env.VERSION  }}
+            esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026-${{ env.VERSION  }}-${{ env.timestamp }}

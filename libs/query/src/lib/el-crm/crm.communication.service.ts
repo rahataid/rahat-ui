@@ -286,9 +286,16 @@ export const useDeleteTemplate = (projectUUID: UUID) => {
         queryKey: [queryKeys.elCrmListTemplate],
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message;
       toast.fire({
-        title: 'Error while deleting template.',
+        title:
+          typeof apiMessage === 'string' && apiMessage.length > 0
+            ? apiMessage
+            : 'Error while deleting template.',
         icon: 'error',
       });
     },
@@ -371,6 +378,46 @@ export const useListElCrmSessionBroadcast = (
         },
       });
       return res;
+    },
+  });
+};
+
+// Pages through every broadcast for a session, optionally narrowed by the
+// same filters (status, address) used by the delivery logs table. Used for
+// bulk export and for finding WhatsApp deliveries that failed because the
+// recipient has no WhatsApp account.
+export const useFetchSessionBroadcasts = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      filters,
+    }: {
+      sessionId: string;
+      filters?: Record<string, string | undefined>;
+    }) => {
+      const perPage = 100;
+      let page = 1;
+      let total = Infinity;
+      const results: any[] = [];
+
+      while (results.length < total) {
+        const res = await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: SESSION_BROADCAST,
+            payload: { session: sessionId, ...filters, page, perPage },
+          },
+        });
+        const data = res?.data ?? [];
+        if (!data.length) break;
+        results.push(...data);
+        total = res?.response?.meta?.['total'] ?? results.length;
+        page += 1;
+      }
+
+      return results;
     },
   });
 };
@@ -621,16 +668,28 @@ export const useDeleteElCrmAutomationRule = (projectUUID: UUID) => {
 export const useAutomationDetail = (
   projectUUID: UUID,
   automationId: string,
+  pagination?: {
+    page?: number;
+    perPage?: number;
+    sort?: string;
+    order?: 'asc' | 'desc';
+    status?: string;
+  },
 ) => {
   const action = useProjectAction();
   return useQuery({
-    queryKey: ['automation-detail', automationId],
+    queryKey: ['automation-detail', automationId, pagination],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
-        data: { action: AUTOMATION_DETAIL, payload: { uuid: automationId } },
+        data: {
+          action: AUTOMATION_DETAIL,
+          payload: { uuid: automationId, ...pagination },
+        },
       });
-      return res.data ?? null;
+      const data = res.data ?? null;
+      if (!data) return null;
+      return { ...data, meta: res.response?.meta ?? (data as any).meta };
     },
     enabled: !!automationId,
   });

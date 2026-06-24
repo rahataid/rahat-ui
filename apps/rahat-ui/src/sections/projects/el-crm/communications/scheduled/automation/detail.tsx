@@ -8,21 +8,24 @@ import {
 } from '@rahat-ui/shadcn/components/card';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { ArrowLeft, Zap } from 'lucide-react';
+import { ArrowLeft, FilterX, Hash, Zap } from 'lucide-react';
 import Link from 'next/link';
 import {
   useAutomationDetail,
-  useListElCrmSessionBroadcast,
+  usePagination,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { PaginatedResult } from '@rumsan/sdk/types';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
-import CommsLogsTable from 'apps/rahat-ui/src/sections/projects/aa/communication-logs/comms.logs.table';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-} from '@tanstack/react-table';
-import ClientSidePagination from '../../../../components/client.side.pagination';
+import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import DemoTable from 'apps/rahat-ui/src/components/table';
+import SelectComponent from '../../../../cambodia/select.component';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { targetTypeMap } from '../../const';
+
+const STATUS_OPTIONS = ['ALL', 'SUCCESS', 'PENDING', 'FAIL', 'SCHEDULED'];
 
 export default function AutomationDetailPage() {
   const { id: projectUUID, automationId } = useParams() as {
@@ -30,13 +33,33 @@ export default function AutomationDetailPage() {
     automationId: string;
   };
 
+  const { pagination, setNextPage, setPrevPage, setPerPage, filters, setFilters, setPagination } =
+    usePagination();
+
+  const activeStatus = filters?.status;
+
   const { data, isLoading, error } = useAutomationDetail(
     projectUUID,
     automationId,
+    {
+      ...pagination,
+      ...(activeStatus ? { status: activeStatus } : {}),
+    },
   );
 
   const rule = data?.rule;
   const logs = data?.logs || [];
+  const sessionIds: string[] = data?.sessionIds || [];
+
+  const meta: PaginatedResult<any>['meta'] = data?.meta || {
+    total: 0,
+    lastPage: 1,
+    currentPage: pagination.page,
+    perPage: pagination.perPage,
+    prev: null,
+    next: null,
+  };
+
   const showsRecurringConfig =
     Boolean(rule?.isRecurring) && Boolean(rule?.recurrenceCooldownDays);
   const showsMaxSends =
@@ -44,11 +67,29 @@ export default function AutomationDetailPage() {
 
   const columns = useCommsLogsTableColumns();
   const table = useReactTable({
+    manualPagination: true,
     data: logs,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const handleStatusChange = (value: string) => {
+    setFilters((prev: any) => {
+      const updated = { ...prev };
+      if (value === 'ALL') delete updated.status;
+      else updated.status = value;
+      return updated;
+    });
+    setPagination({ ...pagination, page: 1 });
+  };
+
+  const hasActiveFilters = !!activeStatus;
+
+  const clearFilters = () => {
+    setFilters({});
+    setPagination({ ...pagination, page: 1 });
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (error)
     return (
@@ -70,6 +111,16 @@ export default function AutomationDetailPage() {
               Automation Details
             </h1>
           </div>
+          {!!sessionIds.length && (
+            <div className="flex items-center gap-2 shrink-0">
+              <CampaignBroadcastActions
+                projectUUID={projectUUID}
+                sessionIds={sessionIds}
+                campaignName={rule.campaign?.name || rule.name}
+                filters={{ status: activeStatus }}
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex-1 p-6 space-y-6 overflow-auto">
@@ -78,12 +129,11 @@ export default function AutomationDetailPage() {
             <CardTitle>
               <Zap className="inline-block mr-2 text-yellow-500" />
               {rule.name}
-              {rule.isEnabled && (
+              {rule.isEnabled ? (
                 <Badge className="ml-2" variant="success">
                   Active
                 </Badge>
-              )}
-              {!rule.isEnabled && (
+              ) : (
                 <Badge className="ml-2" variant="secondary">
                   Inactive
                 </Badge>
@@ -98,7 +148,11 @@ export default function AutomationDetailPage() {
               </div>
               <div>
                 <Label>Target Group</Label>
-                <div>{rule.targetType}</div>
+                <div>
+                  {targetTypeMap[
+                    rule.targetType as keyof typeof targetTypeMap
+                  ] || rule.targetType}
+                </div>
               </div>
               <div>
                 <Label>Fire Once Per Target</Label>
@@ -137,21 +191,52 @@ export default function AutomationDetailPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Automation Session Logs</CardTitle>
+
+        <Card className="overflow-hidden">
+          <CardHeader className="space-y-3 border-b px-5 py-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <div className="rounded-md bg-primary/10 p-1.5">
+                  <Hash className="h-3.5 w-3.5 text-primary" />
+                </div>
+                Automation Session Logs
+                <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                  {meta?.total || 0}
+                </span>
+              </CardTitle>
+              {hasActiveFilters && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                  onClick={clearFilters}
+                >
+                  <FilterX className="mr-1.5 h-3.5 w-3.5" />
+                  Clear
+                </Button>
+              )}
+            </div>
+            <div className="w-48">
+              <SelectComponent
+                name="Status"
+                options={STATUS_OPTIONS}
+                onChange={handleStatusChange}
+                value={activeStatus ?? 'ALL'}
+              />
+            </div>
           </CardHeader>
-          <CardContent>
-            {Array.isArray(logs) && logs.length === 0 ? (
-              <div>No session logs found.</div>
-            ) : (
-              table && (
-                <>
-                  <CommsLogsTable table={table} />
-                  <ClientSidePagination table={table} />
-                </>
-              )
-            )}
+          <CardContent className="p-0">
+            <DemoTable table={table} loading={isLoading} />
+            <CustomPagination
+              meta={meta}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              total={meta?.total}
+            />
           </CardContent>
         </Card>
       </div>

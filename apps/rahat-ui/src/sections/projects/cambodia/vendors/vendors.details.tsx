@@ -130,7 +130,7 @@ export default function VendorsDetail() {
           className="border-solid rounded h-24 pt-2"
           title="Sales"
           Icon={Coins}
-          number={vendorsStats?.data?.sales || 0}
+          number={vendorsStats?.data?.totalPurchaseAmountRmb ?? 0}
         />
 
         <DataCard

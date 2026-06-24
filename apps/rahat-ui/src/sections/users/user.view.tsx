@@ -24,7 +24,11 @@ export default function UserView() {
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useUserTableColumns();
-  const { data: users, isSuccess, isLoading } = useUserList(pagination);
+  const {
+    data: users,
+    isSuccess,
+    isLoading,
+  } = useUserList({ ...pagination, roles: 'Admin,Manager,User' });
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =

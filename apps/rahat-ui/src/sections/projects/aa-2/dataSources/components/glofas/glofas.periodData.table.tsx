@@ -21,7 +21,7 @@ const GlofasPeriodDataTable = ({
       <div className="flex justify-between items-center mb-4">
         <h1 className="font-semibold text-lg capitalize">{title}</h1>
       </div>
-      <div className="overflow-auto">
+      <div className="overflow-auto pb-2">
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr>

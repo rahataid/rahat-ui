@@ -44,6 +44,13 @@ export const TAGS = {
     LIST_TRANSPORTS: 'new_comms.list_transports',
     RETRY_FAILED: 'new_comms.retry_failed',
   },
+  COMMS_USAGE: {
+    LIST_TRANSPORTS: 'comms_usage.list_transports',
+    GET_USAGE: 'comms_usage.get_usage',
+    GET_USAGE_BY_XREF: 'comms_usage.get_usage_by_xref',
+    GET_CREDITS: 'comms_usage.get_credits',
+    GET_CREDITS_BY_XREF: 'comms_usage.get_credits_by_xref',
+  },
   ALL_NOTIFICATIONS: 'all_notifications',
   VERFIY_MANUAL_PAYOUT: 'verify_manual_payout',
 };

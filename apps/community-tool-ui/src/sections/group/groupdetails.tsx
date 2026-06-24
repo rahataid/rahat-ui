@@ -248,11 +248,6 @@ export default function GroupDetail({ uuid }: IProps) {
       const filteredItem: Record<string, any> = {};
       labels.forEach((key) => {
         const dehumanizedString = deHumanizeString(key as string);
-        if (
-          dehumanizedString === 'firstName' ||
-          dehumanizedString === 'lastName'
-        )
-          return;
 
         if (item.hasOwnProperty(dehumanizedString)) {
           filteredItem[dehumanizedString] = item[dehumanizedString];

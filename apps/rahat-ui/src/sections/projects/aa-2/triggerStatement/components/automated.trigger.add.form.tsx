@@ -135,8 +135,7 @@ export default function AddAutomatedTriggerForm({
         : [source, null];
       console.log("type:", type);
       const mappedType = dataSource === 'gfh' ? 'water_level' : type;
-      // dataSource === 'gfh' ? 'discharge' :
-      //   type === 'waterlevel' ? 'water_level' : type;
+
       const currentSourceKey = `${selectedSource.dataSource}:${selectedSource.type}`;
       const newSourceKey = `${dataSource}:${mappedType}`;
 
@@ -178,8 +177,6 @@ export default function AddAutomatedTriggerForm({
 
     const mappedType = dataSource === 'gfh' ? 'water_level' : type;
 
-    // dataSource === 'gfh' ? 'water_level' :
-    //   type === 'waterlevel' ? 'water_level' : type;
     setSelectedSource({ dataSource, type: mappedType });
   };
 

@@ -125,7 +125,8 @@ export default function RiverWatchView() {
           )}`}
         >
           <p className="text-primary w-full font-semibold text-3xl/10">
-            {roundValue(primaryRiverWatchInfo?.waterLevel?.value)}
+            {roundValue(primaryRiverWatchInfo?.waterLevel?.value, 3)}
+            {primaryRiverWatchInfo?.unit}
           </p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">

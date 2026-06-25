@@ -1,4 +1,4 @@
-name: EL Release SMS Voucher Zambia CI/CD
+name: EL Release SMS Voucher Zambia 2025 CI/CD
 on:
   workflow_dispatch:
 

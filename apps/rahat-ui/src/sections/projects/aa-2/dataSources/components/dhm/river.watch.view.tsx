@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
-import { roundValue } from '../aws/utils/color.utils';
+import { truncateValue } from '../aws/utils/color.utils';
 
 export default function RiverWatchView() {
   const router = useRouter();
@@ -125,7 +125,7 @@ export default function RiverWatchView() {
           )}`}
         >
           <p className="text-primary w-full font-semibold text-3xl/10">
-            {roundValue(primaryRiverWatchInfo?.waterLevel?.value, 3)}
+            {truncateValue(primaryRiverWatchInfo?.waterLevel?.value, 2)}
             {primaryRiverWatchInfo?.unit}
           </p>
           <p className="text-sm/6 font-medium">Water Level</p>

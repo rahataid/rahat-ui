@@ -7,9 +7,19 @@ export type WatchColors = {
 };
 
 //Shared Utility
-export const roundValue = (value: number | undefined, decimals = 1): string => {
+export const roundValue = (value: number | undefined): string => {
   if (value === undefined || value === null) return '--';
-  return parseFloat(value.toFixed(decimals)).toString();
+  return parseFloat(value.toFixed(1)).toString();
+};
+
+export const truncateValue = (
+  value: number | undefined,
+  decimals = 2,
+): string => {
+  if (value == null) return '--';
+
+  const factor = 10 ** decimals;
+  return (Math.trunc(value * factor) / factor).toString();
 };
 
 export const getLatestValue = (history: any[]) => {

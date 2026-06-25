@@ -68,6 +68,7 @@ export default function BulkUploadActivities() {
 
   const isValid = !!results && results.every((r) => !r.error);
 
+  // Used only to re-find a row's title after validation merges server errors back in.
   const colIndex = useCallback(
     (label: string) =>
       headers.findIndex((h) => h?.toLowerCase().trim() === label.toLowerCase()),

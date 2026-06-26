@@ -138,6 +138,9 @@ export default function ActivitiesList() {
         const localeTime = d.toLocaleTimeString();
         timeStamp = `${localeDate} ${localeTime}`;
       }
+      // leadTime is stored server-side as "<value> <unit>" (e.g. "3 days"),
+      // split back into two columns to match the bulk-upload sheet format.
+      const [leadTimeValue, leadTimeUnit] = (item.leadTime || '').split(' ');
       return {
         'Activity Title': item.title || 'N/A',
         Category: item.category || 'N/A',
@@ -145,6 +148,8 @@ export default function ActivitiesList() {
         Type: item.isAutomated ? 'Automated' : 'Manual',
         Responsibility: item.responsibility,
         'Responsible Station': item.responsibleStation || 'N/A',
+        'Lead Time': leadTimeValue || 'N/A',
+        'Time Frame': leadTimeUnit || 'N/A',
         Status: item.status || 'N/A',
         Timestamp: timeStamp || 'N/A',
         'Completed by': item.completedBy || 'N/A',

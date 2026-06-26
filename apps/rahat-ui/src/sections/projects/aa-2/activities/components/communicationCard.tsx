@@ -143,7 +143,7 @@ export function CommunicationCard({
               <TooltipWrapper
                 tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
               >
-                <h3 className="font-medium text-gray-900 truncate">
+                <h3 className="font-medium text-gray-900 truncate w-[360px]">
                   {activityCommunication?.communicationTitle}
                 </h3>
               </TooltipWrapper>

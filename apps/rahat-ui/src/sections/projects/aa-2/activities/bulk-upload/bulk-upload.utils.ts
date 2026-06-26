@@ -93,7 +93,7 @@ export const buildActivityPayload = (
   return {
     title: get('Activity Title'),
     responsibleStation: get('Responsible Station'),
-    leadTime: leadTimeValue ? `${leadTimeValue} ${timeFrame}`.trim() : undefined,
+    leadTime: leadTimeValue ? `${leadTimeValue} ${timeFrame}`.trim() : '',
     description: get('Description'),
     isAutomated: hasTypeCol ? get('Type').toLowerCase() === 'automatic' : false,
     isTemplate: false,

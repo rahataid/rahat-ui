@@ -5,10 +5,10 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import {
   Collapsible,
   CollapsibleContent,
@@ -119,13 +119,13 @@ export const useFundManagementTableColumns = () => {
               handleOnClick={() => handleViewClick(row.original.uuid)}
             />
             {(status === FundStatus.FAILED || status === FundStatus.ERROR) && (
-              <Popover>
-                <PopoverTrigger asChild>
+              <HoverCard openDelay={100}>
+                <HoverCardTrigger asChild>
                   <button type="button" aria-label="View failure details">
                     <TriangleAlert size={16} strokeWidth={1.5} color="red" />
                   </button>
-                </PopoverTrigger>
-                <PopoverContent side="left" className="rounded-sm w-72">
+                </HoverCardTrigger>
+                <HoverCardContent side="left" className="rounded-sm w-72">
                   <div className="flex space-x-2 items-center">
                     <TriangleAlert size={16} strokeWidth={1.5} color="red" />
                     <span className="font-semibold text-sm/6">
@@ -144,8 +144,8 @@ export const useFundManagementTableColumns = () => {
                       </p>
                     </CollapsibleContent>
                   </Collapsible>
-                </PopoverContent>
-              </Popover>
+                </HoverCardContent>
+              </HoverCard>
             )}
           </div>
         );

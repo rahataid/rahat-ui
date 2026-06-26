@@ -28,7 +28,6 @@ import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import {
   RowResult,
   buildActivityPayload,
-  checkPhaseSupport,
   downloadBlob,
   downloadErrorsSheet,
   generateSampleWorkbook,
@@ -131,27 +130,18 @@ export default function BulkUploadActivities() {
   }, []);
 
   const handleValidate = useCallback(async () => {
-    // Unsupported-phase rows are flagged client-side (phases already in memory,
-    // no extra request) and skipped from the server validation call entirely.
-    const phaseSupportErrors = rows.map((row) => checkPhaseSupport(row, headers, phases));
-    const supportedRows = rows.filter((_, i) => !phaseSupportErrors[i]);
-
     try {
-      const payload = supportedRows.map((row) =>
+      const payload = rows.map((row) =>
         buildActivityPayload(row, headers, { users: users?.data, phases, categories }),
       );
-      const res = supportedRows.length
+      const res = rows.length
         ? await validateActivities({ projectUUID: projectID, activities: payload })
         : { data: { errors: [] } };
       const errors: any[] = res?.data?.errors ?? [];
       // errors[] holds only failing rows; match back to source rows by title
       const errorByTitle = new Map(errors.map((e) => [e.title, e.error]));
-      let supportedIdx = 0;
       const rowResults: RowResult[] = rows.map((row, i) => {
-        if (phaseSupportErrors[i]) {
-          return { row, error: phaseSupportErrors[i], payload: null };
-        }
-        const rowPayload = payload[supportedIdx++];
+        const rowPayload = payload[i];
         const title = row[colIndex('Activity Title')]?.toString().trim();
         const error = errorByTitle.get(title) ?? null;
         return { row, error, payload: error ? null : rowPayload };

@@ -111,25 +111,6 @@ export const buildActivityPayload = (
   };
 };
 
-/**
- * A phase that requires neither lead-time tracking nor automation can't
- * accept activities at all. Checked client-side (phases are already in
- * memory from the Zustand store, no extra request) so these rows never hit
- * the server validation endpoint.
- */
-export const checkPhaseSupport = (
-  row: string[],
-  headers: string[],
-  phases: { name: string; isRequiredLeadTime?: boolean; isAutomatedActivity?: boolean }[],
-) => {
-  const phaseName = getCellValue(row, headers, 'Phase');
-  const phase = phases.find((p) => p.name === phaseName);
-  if (phase && !phase.isRequiredLeadTime && !phase.isAutomatedActivity) {
-    return `Phase "${phaseName}" does not support activity upload (no lead time or automation enabled).`;
-  }
-  return null;
-};
-
 type SampleSheetOptions = {
   showLeadTime: boolean;
   showType: boolean;

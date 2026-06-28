@@ -33,6 +33,17 @@ export const useSettingFieldDefinitionNavItems = () => {
         },
       ],
     },
+    {
+      title: 'Project Info',
+      children: [
+        {
+          title: 'List',
+          path: '/project-info',
+          icon: <List size={18} strokeWidth={1.5} />,
+        },
+
+      ],
+    },
   ];
   return menuItems;
 };

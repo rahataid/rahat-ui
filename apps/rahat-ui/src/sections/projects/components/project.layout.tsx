@@ -96,10 +96,10 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
         <div className="w-full min-w-0">
           <ProjectNav component={headerNav} />
           {isClosed && (
-            <Alert className="sticky top-14 z-10 rounded-none border-x-0 border-t-0 bg-red-50 border-red-300 text-red-800 py-2 px-4">
-              <ShieldAlert className="h-4 w-4 !text-red-600" />
-              <AlertTitle className="text-red-700">Project Closed</AlertTitle>
-              <AlertDescription className="text-red-600">
+            <Alert className="sticky top-14 z-10 rounded-none border-x-0 border-t-0 bg-red-50 border-red-300 text-red-800 py-3 px-4">
+              <ShieldAlert className="h-6 w-6 !text-red-600" />
+              <AlertTitle className="text-red-700 text-base">Project Closed</AlertTitle>
+              <AlertDescription className="text-red-600 text-sm">
                 This project has been closed. You can view the data but cannot perform any create, update, or delete operations.
               </AlertDescription>
             </Alert>

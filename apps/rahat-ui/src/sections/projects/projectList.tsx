@@ -24,18 +24,18 @@ import {
 } from '@tanstack/react-table';
 import { DemoTable, SearchInput } from '../../common';
 import { CircleX } from 'lucide-react';
-import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useState } from 'react';
 import SelectComponent from './comms/select.component';
 import CustomPagination from '../../components/customPagination';
+import TooltipWrapper from '../../components/tooltip.wrapper';
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+export const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   NOT_READY: { label: 'Not Ready', className: 'bg-yellow-100 text-yellow-700 border-yellow-300' },
   ACTIVE: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-300' },
   CLOSED: { label: 'Closed', className: 'bg-red-100 text-red-700 border-red-300' },
 };
 
-function StatusBadge({ status }: { status?: string }) {
+export function StatusBadge({ status }: { status?: string }) {
   const config = STATUS_CONFIG[status ?? ''];
   return (
     <Badge className={`border ${config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'}`}>
@@ -71,7 +71,7 @@ export default function ListProject() {
     });
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<Project>[] = [
     {
       header: 'Name',
       accessorKey: 'name',
@@ -107,14 +107,19 @@ export default function ListProject() {
       header: 'Actions',
       cell: ({ row }) => {
         const project = row.original;
+        console.log('project in actions', project);
         return (
-          <TooltipComponent
-            Icon={CircleX}
-            tip="Close Project"
-            iconStyle="text-red-500 hover:text-red-700 cursor-pointer"
-            disable={project.status === 'CLOSED'}
-            handleOnClick={() => setSelectedProject(project)}
-          />
+
+          <TooltipWrapper tip={project.status === 'CLOSED' ? 'Project is Closed' : 'Close Project'} >
+
+            <button
+              onClick={() => setSelectedProject(project)}
+              className="text-red-500 hover:text-red-700 cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
+              disabled={project.status === 'CLOSED'}
+            >
+              <CircleX />
+            </button>
+          </TooltipWrapper>
         );
       },
     },

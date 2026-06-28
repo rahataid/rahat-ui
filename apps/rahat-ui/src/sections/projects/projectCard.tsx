@@ -6,6 +6,11 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
+import { StatusBadge } from './projectList';
+
+
+
+
 
 type CardProps = {
   address: UUID;
@@ -86,12 +91,15 @@ export default function CommonCard({
             </Button>
           )}
         </div>
-        <Badge
-          variant="outline"
-          className="border-primary text-primary cursor-auto bg-secondary mb-2"
-        >
-          {badge}
-        </Badge>
+        <div className="flex items-center gap-2 mb-2">
+          <Badge
+            variant="outline"
+            className="border-primary text-primary cursor-auto bg-secondary"
+          >
+            {badge}
+          </Badge>
+          <StatusBadge status={status} />
+        </div>
         <div>
           <TruncatedCell
             text={subTitle}

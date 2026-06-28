@@ -924,9 +924,7 @@ export const useProjectClose = () => {
           title: 'Project closed successfully',
           icon: 'success',
         });
-        queryClient.invalidateQueries({
-          queryKey: [TAGS.GET_PROJECT_DETAILS],
-        });
+        queryClient.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
       },
       onError: () => {
         toast.fire({

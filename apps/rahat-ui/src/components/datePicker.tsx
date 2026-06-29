@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type DatePickerType = {
   placeholder: string;
@@ -28,6 +28,10 @@ export function DatePicker({
   value,
 }: DatePickerType) {
   const [internalDate, setInternalDate] = useState<Date | undefined>();
+
+  useEffect(() => {
+    setInternalDate(value);
+  }, [value]);
 
   const date = value ?? internalDate;
 

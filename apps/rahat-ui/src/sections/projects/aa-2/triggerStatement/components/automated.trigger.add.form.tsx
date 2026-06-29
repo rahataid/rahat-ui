@@ -104,9 +104,6 @@ export default function AddAutomatedTriggerForm({
     selectedSource.type?.toUpperCase() || '',
     triggerSourceSubType || '',
   );
-  console.log("subTypeOptions:", subTypeOptions);
-
-  console.log('Series List:', seriesList);
 
   // Filter source options based on project type
   const filteredSourceOptions = React.useMemo(() => {
@@ -133,7 +130,6 @@ export default function AddAutomatedTriggerForm({
       const [dataSource, type] = source.includes(':')
         ? source.split(':')
         : [source, null];
-      console.log("type:", type);
       const mappedType = dataSource === 'gfh' ? 'water_level' : type;
 
       const currentSourceKey = `${selectedSource.dataSource}:${selectedSource.type}`;
@@ -160,7 +156,6 @@ export default function AddAutomatedTriggerForm({
   }, [triggerSourceSubType, triggerOperator, triggerValue]);
 
   const handleSourceChange = (value: string) => {
-    console.log('Selected source:', value);
     form.setValue('triggerStatement.sourceSubType', '');
     form.setValue('triggerStatement.stationId', '');
     form.setValue('triggerStatement.stationName', '');
@@ -168,12 +163,10 @@ export default function AddAutomatedTriggerForm({
     form.setValue('triggerStatement.value', '');
     form.setValue('triggerStatement.expression', '');
 
-    console.log("value in handleSourceChange:", value);
     const [dataSource, type] = value.includes(':')
       ? value.split(':')
       : [value, null];
 
-    console.log("dataSource and type:", dataSource, type);
 
     const mappedType = dataSource === 'gfh' ? 'water_level' : type;
 

@@ -393,7 +393,11 @@ export default function MessageDetailPage() {
               {isSent && (
                 <CampaignBroadcastActions
                   projectUUID={projectUUID}
-                  sessionIds={[campaign.sessionId]}
+                  sessionIds={
+                    isAutomatic
+                      ? (automationDetail?.sessionIds as string[]) ?? []
+                      : [campaign.sessionId]
+                  }
                   campaignName={campaign.name}
                   filters={{
                     status: filters?.status,

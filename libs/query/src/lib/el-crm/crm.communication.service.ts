@@ -83,11 +83,26 @@ export const useCreateElCrmCampaign = (projectUUID: UUID) => {
         queryKey: [queryKeys.elCrmCampaignList],
       });
     },
-    onError: (error) => {
-      toast.fire({
-        title: `Error while creating campaign. ${error?.message || ''}`,
-        icon: 'error',
-      });
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        '';
+      const normalized =
+        typeof apiMessage === 'string' ? apiMessage.toLowerCase() : '';
+
+      let title: string;
+      if (normalized.includes('no recipients found')) {
+        title =
+          'No matching recipients found for the selected criteria. Adjust your audience filters and try again.';
+      } else if (apiMessage) {
+        title = `Could not create campaign: ${apiMessage}`;
+      } else {
+        title = 'Could not create campaign. Please try again.';
+      }
+
+      toast.fire({ title, icon: 'error' });
     },
   });
 };

@@ -163,17 +163,25 @@ export default function BulkUploadActivities() {
   const submitRows = useCallback(
     async (rowsToSubmit: RowResult[]) => {
       try {
+        toast.loading('Uploading activity details...', { autoClose: false });
         await submitActivities({
           projectUUID: projectID,
           activities: rowsToSubmit.map((r) => r.payload),
         });
-        toast.success('Activities bulk add submitted successfully and sync is in progress.');
-        router.push(`/projects/aa/${projectID}/activities`);
-      } catch {
-        // toast already shown by useBulkAddActivities's onError
+        toast.dismiss();
+        toast.success('Activities uploaded successfully.');
+        const phaseParam = searchParams.get('phase');
+        router.push(
+          phaseParam
+            ? `/projects/aa/${projectID}/activities/list/${phaseParam.toLowerCase()}`
+            : `/projects/aa/${projectID}/activities`,
+        );
+      } catch (error) {
+        toast.dismiss();
+        toast.error('Failed to upload activities. Please try again.');
       }
     },
-    [submitActivities, projectID, router],
+    [submitActivities, projectID, router, searchParams],
   );
 
   const handleSubmit = useCallback(() => {

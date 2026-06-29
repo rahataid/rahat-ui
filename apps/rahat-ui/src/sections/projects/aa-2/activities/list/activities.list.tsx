@@ -217,7 +217,7 @@ export default function ActivitiesList() {
                     decodeURIComponent(title as string).toUpperCase(),
                 );
                 router.push(
-                  `/projects/aa/${projectID}/activities/bulk-upload?isRequiredLeadTime=${!!phase?.isRequiredLeadTime}&isAutomatedActivity=${!!phase?.isAutomatedActivity}`,
+                  `/projects/aa/${projectID}/activities/bulk-upload?isRequiredLeadTime=${!!phase?.isRequiredLeadTime}&isAutomatedActivity=${!!phase?.isAutomatedActivity}&phase=${decodeURIComponent(title as string)}`,
                 );
               }}
               name="Bulk Upload"

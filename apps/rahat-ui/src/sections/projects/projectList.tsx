@@ -28,6 +28,8 @@ import { useState } from 'react';
 import SelectComponent from './comms/select.component';
 import CustomPagination from '../../components/customPagination';
 import TooltipWrapper from '../../components/tooltip.wrapper';
+import { dateFormat } from '../../utils/dateFormate';
+import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 
 export const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   NOT_READY: { label: 'Not Ready', className: 'bg-yellow-100 text-yellow-700 border-yellow-300' },
@@ -81,7 +83,9 @@ export default function ListProject() {
     {
       header: 'Description',
       accessorKey: 'description',
-      cell: ({ row }) => <div>{row.getValue('description')}</div>,
+      cell: ({ row }) => <div>
+        <TruncatedCell text={row.getValue('description')} />
+      </div>,
     },
     {
       header: 'Type',
@@ -99,7 +103,7 @@ export default function ListProject() {
       accessorKey: 'createdAt',
       cell: ({ row }) =>
         row.original.createdAt
-          ? new Date(row.original.createdAt).toLocaleDateString()
+          ? dateFormat(row.original.createdAt)
           : '—',
     },
     {

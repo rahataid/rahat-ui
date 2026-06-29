@@ -28,9 +28,14 @@ export const useProjectBeneficiaryTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'gender',
       header: 'Gender',
-      cell: ({ row }) => <div> {row.getValue('gender')}</div>,
+      cell: ({ row }) => {
+        const gender =
+          row.original?.projectData?.gender?.trim() ||
+          row.original?.gender?.trim() ||
+          'N/A';
+        return <div>{gender}</div>;
+      }
     },
     {
       id: 'actions',

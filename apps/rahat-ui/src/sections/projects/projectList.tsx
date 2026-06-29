@@ -23,7 +23,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { DemoTable, SearchInput } from '../../common';
-import { CircleX } from 'lucide-react';
+import { LockKeyhole, LockKeyholeOpen } from 'lucide-react';
 import { useState } from 'react';
 import SelectComponent from './comms/select.component';
 import CustomPagination from '../../components/customPagination';
@@ -118,10 +118,13 @@ export default function ListProject() {
 
             <button
               onClick={() => setSelectedProject(project)}
-              className="text-red-500 hover:text-red-700 cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
+              className=" cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
               disabled={project.status === 'CLOSED'}
             >
-              <CircleX />
+
+              {
+                project.status === 'CLOSED' ? <LockKeyhole /> :
+                  <LockKeyholeOpen />}
             </button>
           </TooltipWrapper>
         );

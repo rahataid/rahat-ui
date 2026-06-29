@@ -7,6 +7,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 import { StatusBadge } from './projectList';
+import { toast } from 'react-toastify';
 
 
 
@@ -37,14 +38,20 @@ export default function CommonCard({
 }: CardProps) {
   const router = useRouter();
 
+  const isNotReady = status === 'NOT_READY';
+
   const handleClick = () => {
+    if (isNotReady) {
+      toast.warn('This project is not ready yet. You cannot enter into it.');
+      return;
+    }
     router.push(`/projects/${badge.toLowerCase()}/${address}`);
   };
 
   return (
     <Card
       onClick={handleClick}
-      className={`cursor-pointer rounded-md border shadow`}
+      className="rounded-md border shadow  cursor-pointer"
     >
       <div className="p-4">
         <div className="rounded-md bg-secondary flex justify-center">

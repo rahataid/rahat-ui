@@ -26,17 +26,11 @@ import { NotificationButton } from 'apps/rahat-ui/src/components/notification-bu
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 
 export function ProjectNav({
-  //   data = [],
-  //   subData = [],
   component,
+  isClosed = false,
 }: {
-  //   data?: {
-  //     title: string;
-  //     path: string;
-  //     children?: { title: string; path: string }[];
-  //   }[];
-  //   subData?: { title: string; path: string }[];
   component?: React.ReactNode;
+  isClosed?: boolean;
 }) {
   const currentPath = usePathname();
   const params = useParams();
@@ -70,7 +64,7 @@ export function ProjectNav({
     <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
       <div className="flex items-center space-x-4">{component}</div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
-        <ConnectWallet />
+        {!isClosed && <ConnectWallet />}
         {showNotification && <NotificationButton unreadCount={0} />}
         <DropdownMenu>
           <DropdownMenuTrigger>

@@ -1,11 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
@@ -79,7 +74,6 @@ export const useAddActivityCategory = () => {
 
 export const useActivities = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
-  const qc = useQueryClient();
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
@@ -87,12 +81,6 @@ export const useActivities = (uuid: UUID, payload: any) => {
     setActivities: state.setActivities,
     setActivitiesMeta: state.setActivitiesMeta,
   }));
-
-  useEffect(() => {
-    setActivities([]);
-    setActivitiesMeta({});
-    qc.removeQueries({ queryKey: ['activities'], exact: false });
-  }, [uuid]);
 
   const query = useQuery({
     queryKey: ['activities', uuid, payload],
@@ -117,7 +105,8 @@ export const useActivities = (uuid: UUID, payload: any) => {
       return mutate.response;
     },
     staleTime: 30 * 60 * 1000, // 30 minutes
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === uuid ? previousData : undefined,
   });
 
   useEffect(() => {

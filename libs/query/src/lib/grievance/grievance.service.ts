@@ -55,6 +55,7 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
       enabled: !!debouncedPayload, // Only run query when we have a debounced payload
       refetchOnMount: true,
       refetchOnWindowFocus: true,
+      staleTime: 15 * 60 * 1000, // 15 minutes
       queryFn: async () => {
         return q.mutateAsync({
           uuid: projectUUID,

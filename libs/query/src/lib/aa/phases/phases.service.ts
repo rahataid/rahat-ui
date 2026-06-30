@@ -167,6 +167,7 @@ export const usePhases = (uuid: UUID) => {
       return mutate.data;
     },
     enabled: !!(uuid && activeYear && riverBasin),
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
   React.useEffect(() => {
     if (query.data) {

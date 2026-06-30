@@ -1,5 +1,5 @@
 'use client';
-import { useActivities, usePhases, usePhasesStore } from '@rahat-ui/query';
+import { useActivities, usePhases } from '@rahat-ui/query';
 import { Heading, IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
@@ -22,11 +22,8 @@ export default function ActivitiesView() {
     perPage: 9999,
   });
 
-  usePhases(projectID as UUID);
-
-  const { phases } = usePhasesStore((state) => ({
-    phases: state.phases,
-  }));
+  const { data: phasesData } = usePhases(projectID as UUID);
+  const phases = phasesData ?? [];
   const PINNED_PHASES_KEY = 'aa_pinned_phases';
 
   const [pinnedPhases, setPinnedPhases] = useState<string[]>([]);
@@ -78,11 +75,11 @@ export default function ActivitiesView() {
   );
 
   const uniquePhaseNames = Array.from(
-    new Set(phases.map((phase) => phase.name)),
+    new Set(phases.map((phase: any) => phase.name)),
   );
 
   const PHASE_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
-    uniquePhaseNames.map((name) => [
+    uniquePhaseNames.map((name: string) => [
       name,
       `Overview of ${name.toLowerCase()} phase`,
     ]),

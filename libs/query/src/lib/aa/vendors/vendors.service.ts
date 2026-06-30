@@ -26,9 +26,11 @@ export const useAAVendorsList = (payload: any) => {
 
   const query = useQuery({
     queryKey: ['vendor.list_with_project_data', projectUUID, restPayloadString],
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === projectUUID ? previousData : undefined,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -185,9 +187,11 @@ export const useGetVendorTokenRedemptionList = (payload: any) => {
 
   const query = useQuery({
     queryKey: ['aa.vendor.token_redemption.list', projectUUID, restPayloadString],
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === projectUUID ? previousData : undefined,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -377,8 +381,10 @@ export const useGetInkindRedemptionLogs = (payload: {
       inkindType,
       vendorUuid,
     ],
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === projectUuid ? previousData : undefined,
     enabled: !!projectUuid,
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUuid,

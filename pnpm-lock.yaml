@@ -84,8 +84,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@rahataid/community-tool-sdk':
-        specifier: 0.0.37
-        version: 0.0.37
+        specifier: 0.0.40
+        version: 0.0.40
       '@rahataid/el-subgraph':
         specifier: 0.0.14
         version: 0.0.14
@@ -3160,8 +3160,8 @@ packages:
   '@rahataid/c2c-query@0.0.9':
     resolution: {integrity: sha512-ci7/VCXpea5aYeg0BSrnsBRetED0/l5RHk1/ANhTKbS1Z4VcogmZo2b28roMGe5cIKJXnX9F8pwgcyMaPC5dBg==}
 
-  '@rahataid/community-tool-sdk@0.0.37':
-    resolution: {integrity: sha512-P/X9NF74dp/f1MS6QLSGQZwC2EKMPeAfMWlb1286f3NHfDgmd6pWo86+QTD+9rzGYpUkWoK2hIIdMjfxkoOb9g==}
+  '@rahataid/community-tool-sdk@0.0.40':
+    resolution: {integrity: sha512-X78Ymwo3D556KjCmksHUG7RlgNRrb2nUWI3UmAzfdZ6bCGhclgO/VA9HVA7GMZ4FGqGeFV9aV6hy6m6MVd/z+Q==}
 
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
@@ -15807,7 +15807,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.17
 
-  '@rahataid/community-tool-sdk@0.0.37':
+  '@rahataid/community-tool-sdk@0.0.40':
     dependencies:
       tslib: 2.8.1
 

@@ -10,6 +10,7 @@ import {
   Download,
   MoreVertical,
   Share,
+  Upload,
   Trash,
   Wallet,
   X,
@@ -33,6 +34,7 @@ import {
   useCommunitySettingList,
   useExportPinnedListBeneficiary,
   usePurgeGroupedBeneficiary,
+  useUploadBulkBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
@@ -97,6 +99,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
+  const updateBulkBeneficiary = useUploadBulkBeneficiaryUpdate();
   const purgeCommunityGroup = usePurgeGroupedBeneficiary();
   const { data: settingsData } = useCommunitySettingList({
     page: 1,
@@ -126,7 +129,11 @@ export default function GroupDetail({ uuid }: IProps) {
   });
 
   const [labels, setLabels] = React.useState<any[]>([]);
+
   const [open, setOpen] = React.useState(false);
+
+  const [uploadOpen, setUploadOpen] = React.useState(false);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
@@ -203,7 +210,9 @@ export default function GroupDetail({ uuid }: IProps) {
       const rdata = listFieldDef?.data?.map((item: any) =>
         simpleString(item.name),
       );
+
       setLabels(rdata);
+
       return;
     }
     const merged = [...labels, simpleString(item)];
@@ -242,6 +251,8 @@ export default function GroupDetail({ uuid }: IProps) {
 
         if (item.hasOwnProperty(dehumanizedString)) {
           filteredItem[dehumanizedString] = item[dehumanizedString];
+        } else {
+          filteredItem[dehumanizedString] = '';
         }
       });
       return filteredItem;
@@ -281,6 +292,32 @@ export default function GroupDetail({ uuid }: IProps) {
         );
       }
     });
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      Swal.fire('Please select a file', '', 'warning');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      await updateBulkBeneficiary.mutateAsync({
+        groupUUID: uuid,
+        data: formData,
+      });
+      setUploadOpen(false);
+      setSelectedFile(null);
+      router.push('/group');
+    } catch (error) {
+      setUploadOpen(false);
+      Swal.fire(
+        'Upload failed',
+        (error as any)?.response?.data?.message || 'Unknown error',
+        'error',
+      );
+    }
   };
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
@@ -338,6 +375,10 @@ export default function GroupDetail({ uuid }: IProps) {
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Download
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setUploadOpen(true)}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Bulk Update
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
@@ -465,6 +506,147 @@ export default function GroupDetail({ uuid }: IProps) {
                   >
                     Download
                   </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            {/* Upload Dialog */}
+            <AlertDialog open={open} onOpenChange={setOpen}>
+              <AlertDialogContent className="w-full">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    <div className="flex justify-between items-center pb-1 gap-4">
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Label className="text-lg font-medium">
+                              Select fields to download
+                            </Label>
+                          </TooltipTrigger>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger onClick={() => setOpen(false)}>
+                            <X
+                              className="text-muted-foreground hover:text-foreground text-red-700"
+                              size={23}
+                              strokeWidth={1.9}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Close</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <ScrollArea
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      hidden={labels.length === 0}
+                    >
+                      {labels.map((item) => {
+                        return (
+                          <Badge key={item} variant="secondary" className="m-1">
+                            {item}
+                            <button
+                              className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleUnselect(item);
+                                }
+                              }}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }}
+                              onClick={() => handleUnselect(item)}
+                            >
+                              <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                            </button>
+                          </Badge>
+                        );
+                      })}
+
+                      {labels.length === 0 && (
+                        <h1 className="text-center ">No fields selected</h1>
+                      )}
+                    </ScrollArea>
+
+                    <Command className="h-52">
+                      <CommandInput
+                        placeholder={'Search field...'}
+                        autoFocus={true}
+                      />
+                      <CommandList className="no-scrollbar">
+                        <CommandEmpty>No field found.</CommandEmpty>
+                        <CommandGroup>
+                          {sortedSelectables?.map((item) => (
+                            <CommandItem
+                              key={item.uuid}
+                              value={item.name}
+                              onSelect={() => handleSelectChange(item.name)}
+                            >
+                              {simpleString(item.name)}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setLabels([])}
+                    disabled={labels.length === 0}
+                  >
+                    Clear All
+                  </Button>
+                  <AlertDialogAction
+                    onClick={handleDownload}
+                    disabled={labels.length === 0}
+                  >
+                    Download
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            {/* Upload Dialog */}
+            <AlertDialog open={uploadOpen} onOpenChange={setUploadOpen}>
+              <AlertDialogContent className="w-full max-w-md">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Upload File</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <div className="flex flex-col space-y-4">
+                      <input
+                        type="file"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setSelectedFile(e.target.files[0]);
+                          }
+                        }}
+                        className="border rounded p-2"
+                      />
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setUploadOpen(false)}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await handleUpload();
+                    }}
+                  >
+                    Upload
+                  </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

@@ -50,6 +50,29 @@ export const useActivitiesCategories = (uuid: UUID) => {
   return query;
 };
 
+export const useAddActivityCategory = () => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      uuid,
+      name,
+    }: {
+      uuid: UUID;
+      name: string;
+    }) => {
+      const result = await q.mutateAsync({
+        uuid,
+        data: { action: 'ms.activityCategories.add', payload: { name } },
+      });
+      return result.data;
+    },
+    onSuccess: (_, { uuid }) => {
+      queryClient.invalidateQueries({ queryKey: ['categories', uuid] });
+    },
+  });
+};
+
 export const useActivities = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { settings } = useProjectSettingsStore((state) => ({
@@ -250,6 +273,88 @@ export const useCreateActivities = () => {
       q.reset();
       toast.fire({
         title: 'Error while adding activity.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useValidateBulkAddActivities = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activities,
+    }: {
+      projectUUID: UUID;
+      activities: any[];
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.activities.validateBulkAdd',
+          payload: { data: activities },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while validating activities.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useBulkAddActivities = () => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activities,
+    }: {
+      projectUUID: UUID;
+      activities: any[];
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.activities.bulkAdd',
+          payload: { data: activities },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['activities'] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while submitting activities.',
         icon: 'error',
         text: errorMessage,
       });

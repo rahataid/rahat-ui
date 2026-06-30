@@ -43,9 +43,9 @@ export default function FiltersTargetingView() {
     setPerPage,
     filters,
   } = usePagination();
-  const { loading, setTargetUUID } = useCommunityTargetingStore();
+  const { loading: targetingLoading, setTargetUUID } = useCommunityTargetingStore();
 
-  const { data: beneficiaryData } = useTargetedBeneficiaryList(
+  const { data: beneficiaryData, isLoading: beneficiaryLoading } = useTargetedBeneficiaryList(
     targetUUID as string,
     {
       ...pagination,
@@ -111,7 +111,7 @@ export default function FiltersTargetingView() {
   return (
     <Tabs defaultValue="list" className="h-full">
       <FilterTargetingListView
-        loading={loading}
+        loading={beneficiaryLoading}
         table={table}
         handleSaveTargetResults={handleSaveTargetResults}
         targetUUID={targetUUID as string}

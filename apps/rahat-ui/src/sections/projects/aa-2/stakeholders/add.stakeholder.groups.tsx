@@ -14,9 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
+  Back,
   CustomPagination,
   DemoTable,
-  HeaderWithBack,
   Heading,
 } from 'apps/rahat-ui/src/common';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -224,24 +224,52 @@ const UpdateOrAddStakeholdersGroup = () => {
   const { stakeholders: stakeholdersError } = formState.errors;
 
   return (
-    <div className="p-4">
+    <div className="px-4 pt-1 pb-4">
       <Form {...form}>
         <form onSubmit={handleSubmit(handleCreateGroup)}>
           <div className="flex flex-col">
-            <HeaderWithBack
-              title={
-                isEditing
-                  ? 'Update Stakeholder Group Details'
-                  : 'Create Stakeholder Group'
-              }
-              subtitle={isEditing ? '' : 'Fill the form below to create a new'}
-              path={
-                isEditing
-                  ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
-                  : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
-              }
-            />
-            <div className="ml-1 mb-1">
+            <div className="mb-1">
+              <Back
+                path={
+                  isEditing
+                    ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
+                    : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
+                }
+              />
+              <div className="flex items-center justify-between">
+                <h1 className="font-semibold text-[clamp(16px,2vw,28px)]">
+                  {isEditing
+                    ? 'Update Stakeholder Group Details'
+                    : 'Create Stakeholder Group'}
+                </h1>
+                <div className="flex gap-2 items-center">
+                  <Button
+                    type="button"
+                    className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
+                    onClick={() => {
+                      reset();
+                      resetSelectedListItems();
+                    }}
+                    variant="outline"
+                  >
+                    Clear
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
+                    onClick={handleButtonClick}
+                  >
+                    {isEditing ? 'Update' : 'Add'}
+                    {Object.keys(selectedListItems).length > 0 &&
+                      ` (${Object.keys(selectedListItems).length} stakeholders)`}
+                  </Button>
+                </div>
+              </div>
+            </div>
+            {/* <p className="text-muted-foreground text-[clamp(11px,1vw,14px)] mb-1">
+              {isEditing ? '' : 'Fill the form below to create a new'}
+            </p> */}
+            <div className="mb-1">
               <FormField
                 control={control}
                 name="name"
@@ -251,7 +279,7 @@ const UpdateOrAddStakeholdersGroup = () => {
                     <FormControl>
                       <Input
                         placeholder="Write stakeholder group name"
-                        className="w-full rounded-md"
+                        className="w-full rounded-md text-[clamp(11px,1vw,14px)]"
                         {...field}
                       />
                     </FormControl>
@@ -262,16 +290,14 @@ const UpdateOrAddStakeholdersGroup = () => {
             </div>
           </div>
 
-          <div className="rounded-md border p-4 ml-1">
-            <div className="">
+          <div className="rounded-md border p-3">
               <Heading
-                title="Select Stakeholders"
+                title=" "
                 description={`Select stakeholders from the list below to ${
                   isEditing ? 'update' : 'create'
                 } group`}
                 titleStyle="text-xl"
               />
-            </div>
 
             <StakeholdersTableFilters
               projectID={projectId}
@@ -279,7 +305,11 @@ const UpdateOrAddStakeholdersGroup = () => {
               setFilters={setFilters}
             />
 
-            <DemoTable table={table} tableHeight="h-[calc(100vh-520px)]" />
+            <DemoTable
+              table={table}
+              tableHeight="h-[max(50vh,calc(90vh-230px))]"
+              fixedLayout={false}
+            />
 
             {stakeholdersError && (
               <p className="text-sm text-red-500 mt-2">
@@ -287,48 +317,26 @@ const UpdateOrAddStakeholdersGroup = () => {
               </p>
             )}
 
-            <CustomPagination
-              meta={
-                stakeholdersMeta || {
-                  total: 0,
-                  currentPage: 0,
-                  lastPage: 0,
-                  perPage: 0,
-                  next: null,
-                  prev: null,
-                }
-              }
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              setPagination={setPagination}
-              total={stakeholdersMeta?.lastPage || 0}
-            />
+      <CustomPagination
+        meta={
+          stakeholdersMeta || {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }
+        }
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        setPagination={setPagination}
+        total={stakeholdersMeta?.lastPage || 0}
+      />
 
-            <div className="flex justify-end gap-4 mt-4">
-              <Button
-                type="button"
-                className="w-48 rounded-md"
-                onClick={() => {
-                  reset();
-                  resetSelectedListItems();
-                }}
-                variant="outline"
-              >
-                Clear
-              </Button>
-              <Button
-                type="submit"
-                className="w-48 rounded-md"
-                onClick={handleButtonClick}
-              >
-                {isEditing ? 'Update' : 'Add'}
-                {Object.keys(selectedListItems).length > 0 &&
-                  ` (${Object.keys(selectedListItems).length} stakeholders)`}
-              </Button>
-            </div>
           </div>
         </form>
       </Form>

@@ -23,7 +23,7 @@ const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   return (
     <div className="flex flex-wrap gap-1 items-center">
       {visibleItems.map((area, index) => (
-        <Badge key={index} className="w-auto">
+        <Badge key={index} className="w-auto text-[clamp(9px,0.8vw,12px)]">
           <TruncatedCell text={area} maxLength={14} />
         </Badge>
       ))}
@@ -33,7 +33,7 @@ const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
             e.stopPropagation();
             setShowAll((prev) => !prev);
           }}
-          className="text-xs text-primary hover:underline whitespace-nowrap"
+          className="text-[clamp(8px,0.6vw,10px)] text-primary hover:underline whitespace-nowrap"
         >
           {showAll ? 'Show less' : `+${supportArea.length - 1} more`}
         </button>
@@ -75,7 +75,7 @@ export const useProjectStakeholdersTableColumns = (
         <TruncatedCell
           text={row.getValue('name')}
           maxLength={10}
-          className="font-medium"
+          className="text-foreground"
         />
       ),
     },
@@ -100,7 +100,6 @@ export const useProjectStakeholdersTableColumns = (
         <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
     },
-
     {
       accessorKey: 'organization',
       header: 'Organization',
@@ -119,6 +118,7 @@ export const useProjectStakeholdersTableColumns = (
     {
       accessorKey: 'municipality',
       header: 'Municipality',
+      meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
       ),
@@ -128,13 +128,14 @@ export const useProjectStakeholdersTableColumns = (
       id: 'actions',
       header: 'Action',
       enableHiding: false,
+      meta: { className: 'w-20 lg:w-28' },
       cell: ({ row }) => {
         return (
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
               <IconDialogComponent
                 Icon={Edit2}
                 buttonText=""
@@ -235,6 +236,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'municipality',
       header: 'Municipality',
+      meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
       ),
@@ -244,13 +246,14 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       id: 'actions',
       header: 'Action',
       enableHiding: false,
+      meta: { className: 'w-15 lg:w-20' },
       cell: ({ row }) => {
         return (
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
               <TooltipComponent
                 Icon={Eye}
                 tip="View Details"
@@ -316,6 +319,7 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'email',
       header: 'Email',
+      meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={14} />
       ),

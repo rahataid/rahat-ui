@@ -141,13 +141,18 @@ export default function ActivitiesView() {
           const localeTime = d.toLocaleTimeString();
           timeStamp = `${localeDate} ${localeTime}`;
         }
+        // leadTime is stored server-side as "<value> <unit>" (e.g. "3 days"),
+        // split back into two columns to match the bulk-upload sheet format.
+        const [leadTimeValue, leadTimeUnit] = (item.leadTime || '').split(' ');
         return {
-          Title: item.title || 'N/A',
-          'Early Action': item.category || 'N/A',
+          'Activity Title': item.title || 'N/A',
+          'Category': item.category || 'N/A',
           Phase: item.phase || 'N/A',
           Type: item.isAutomated ? 'Automated' : 'Manual',
           Responsibility: item.responsibility,
-          'Responsible Station': item.source || 'N/A',
+          'Responsible Station': item.responsibleStation || 'N/A',
+          'Lead Time': leadTimeValue || 'N/A',
+          'Time Frame': leadTimeUnit || 'N/A',
           Status: item.status || 'N/A',
           Timestamp: timeStamp || 'N/A',
           'Completed by': item.completedBy || 'N/A',
@@ -227,31 +232,36 @@ export default function ActivitiesView() {
             </div>
           ))}
           {sortedPhases.length === 2 && (
-            <div className="min-w-[320px]">
-              <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
-                <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
-                  <div className="flex flex-col gap-1 items-center ">
-                    <Button
-                      onClick={handleAddPhase}
-                      className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
-                    >
-                      <div className="flex items-center justify-center w-4 h-4">
-                        <Plus
-                          className="  text-blue-500 hover:text-white"
-                          size={'2rem'}
-                        />
-                      </div>
-                    </Button>
-                    <p className="text-base font-medium text-blue-500 ">
-                      Add Phase
-                    </p>
-                    <p className="text-sm text-blue-400">
-                      Click here to add new phase
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <div className="min-w-[320px]">
+                <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
+                  <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
+                    <div className="flex flex-col gap-1 items-center ">
+                      <Button
+                        onClick={handleAddPhase}
+                        className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
+                      >
+                        <div className="flex items-center justify-center w-4 h-4">
+                          <Plus
+                            className="  text-blue-500 hover:text-white"
+                            size={'2rem'}
+                          />
+                        </div>
+                      </Button>
+                      <p className="text-base font-medium text-blue-500 ">
+                        Add Phase
+                      </p>
+                      <p className="text-sm text-blue-400">
+                        Click here to add new phase
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </RoleAuth>
           )}
         </div>
       </div>

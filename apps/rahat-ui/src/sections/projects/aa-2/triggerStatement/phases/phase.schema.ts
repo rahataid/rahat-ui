@@ -38,18 +38,34 @@ const requiredOptionalTriggerNumber = z.preprocess(
     .nonnegative('Value must be greater than or equal to 0.'),
 );
 
-export const AddPhaseSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, { message: 'Please enter phase name.' })
-    .max(50, { message: 'Phase name must be less than 50 characters.' }),
-  riverBasin: z.string().min(1, { message: 'River basin is required.' }),
-  requiredMandatoryTriggers: requiredMandatoryTriggerNumber,
-  requiredOptionalTriggers: requiredOptionalTriggerNumber,
-  canRevert: z.boolean().optional(),
-  canTriggerPayout: z.boolean().optional(),
-});
+export const AddPhaseSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(2, { message: 'Please enter phase name.' })
+      .max(50, { message: 'Phase name must be less than 50 characters.' }),
+    riverBasin: z.string().min(1, { message: 'River basin is required.' }),
+    requiredMandatoryTriggers: requiredMandatoryTriggerNumber,
+    requiredOptionalTriggers: requiredOptionalTriggerNumber,
+    canRevert: z.boolean().optional(),
+    canTriggerPayout: z.boolean().optional(),
+    disbursementMethods: z.array(z.string()).optional(),
+    isAutomatedActivity: z.boolean().optional(),
+    isRequiredLeadTime: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.canTriggerPayout &&
+      (!data.disbursementMethods || data.disbursementMethods.length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'At least one disbursement method must be selected.',
+        path: ['disbursementMethods'],
+      });
+    }
+  });
 
 export type AddPhaseFormValues = z.output<typeof AddPhaseSchema>;
 export type AddPhaseFormInputValues = z.input<typeof AddPhaseSchema>;
@@ -61,6 +77,9 @@ export const getAddPhaseDefaultValues = (
   riverBasin: riverBasin || '',
   requiredMandatoryTriggers: undefined,
   requiredOptionalTriggers: undefined,
-  canRevert: false,
+  canRevert: true,
   canTriggerPayout: false,
+  disbursementMethods: [],
+  isAutomatedActivity: false,
+  isRequiredLeadTime: false,
 });

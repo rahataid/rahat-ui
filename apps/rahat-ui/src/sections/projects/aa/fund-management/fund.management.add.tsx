@@ -91,7 +91,7 @@ export default function AddFundManagementView() {
     );
 
     if (selectedGroup && numberOfTokens) {
-      const groupMembers = selectedGroup?._count?.groupedBeneficiaries;
+      const groupMembers = selectedGroup?._count?.beneficiaries;
 
       form.setValue('totalTokensReserved', numberOfTokens * groupMembers);
     } else {

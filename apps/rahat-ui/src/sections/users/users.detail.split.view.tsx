@@ -6,7 +6,7 @@ import { Copy, CopyCheck, X, Expand, Wallet, Phone, Mail } from 'lucide-react';
 import Image from 'next/image';
 import TooltipComponent from '../../components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useUserRemove } from '@rumsan/react-query';
+import { useUserCurrentUser, useUserRemove } from '@rumsan/react-query';
 import { User } from '@rumsan/sdk/types';
 import { useRouter } from 'next/navigation';
 import {
@@ -33,6 +33,8 @@ export default function UsersDetailSplitView({
 }: IProps) {
   const router = useRouter();
   const removeUser = useUserRemove();
+  const currentUser = useUserCurrentUser();
+  const isSelf = currentUser?.data?.data?.uuid === userDetail.uuid;
 
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<boolean>(false);
@@ -56,6 +58,7 @@ export default function UsersDetailSplitView({
             className="border-none p-0 shadow-none"
             name="user"
             handleContinueClick={handleDeleteUser}
+            disabled={isSelf}
           />
           <EditButton
             path={`/users/${userDetail?.uuid}/edit?split=true`}

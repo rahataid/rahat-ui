@@ -761,8 +761,9 @@ export default function ImportStakeholder() {
 
   return (
     <>
-      <div className="p-4  h-[calc(100vh-120px)]">
-        <div className="flex justify-between items-start mb-2">
+      <div className="flex flex-col min-h-[calc(100vh-200px)] min-w-0">
+        <div className="p-4 flex flex-col flex-1 min-w-0">
+          <div className="flex justify-between items-start mb-2">
           <HeaderWithBack
             title="Import Stakeholders"
             subtitle="List of all stakeholders you can import"
@@ -775,8 +776,9 @@ export default function ImportStakeholder() {
                   onClick={handleDownloadErrors}
                   type="button"
                   variant="outline"
+                  className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
                 >
-                  <FileWarning size={22} className="mr-1" />
+                  <FileWarning className="mr-1" />
                   Download Errors
                 </Button>
               )}
@@ -784,8 +786,9 @@ export default function ImportStakeholder() {
                 onClick={handleSampleDownload}
                 type="button"
                 variant="outline"
+                className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
               >
-                <CloudDownload size={22} className="mr-1" />
+                <CloudDownload className="mr-1" />
                 Download Sample
               </Button>
             </div>
@@ -833,7 +836,7 @@ export default function ImportStakeholder() {
           </div>
         </div>
 
-        <div className="p-4 border bg-card rounded-sm">
+        <div className="p-[clamp(8px,1vw,12px)] border bg-card rounded-sm">
           <div className="flex items-center gap-4 w-full">
             {/* File Input */}
             <div className="relative w-full">
@@ -848,89 +851,87 @@ export default function ImportStakeholder() {
                 className="flex items-center border rounded-sm cursor-pointer w-full"
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
+                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-[clamp(8px,1vw,12px)] h-[clamp(28px,3vw,36px)] font-semibold text-[clamp(11px,1vw,14px)] hover:bg-gray-200 transition-colors whitespace-nowrap [&_svg]:size-[clamp(14px,1.4vw,18px)]">
                   {selectedFile ? (
                     <>
-                      <Repeat2 size={18} className="mr-1" /> Replace
+                      <Repeat2 className="mr-1" /> Replace
                     </>
                   ) : (
                     <>
-                      <Share size={18} className="mr-1" />
+                      <Share className="mr-1" />
                       Choose File
                     </>
                   )}
                 </span>
-                <span className="px-3 py-2 truncate w-full">{fileName}</span>
+                <span className="px-3 text-[clamp(11px,1vw,14px)] truncate w-full">{fileName}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <>
-          {data.length > 1 && (
-            <>
-              <div className="border-2 border-dashed border-black mt-4 mx-auto w-full">
-                <ScrollArea className="h-[calc(100vh-430px)] w-full">
-                  <Table className="table-auto w-full">
-                    <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => (
-                            <TableHead
-                              key={header.id}
-                              className="truncate max-w-[150px] sticky top-0 bg-card"
-                            >
+        {data.length > 1 && (
+          <div className="flex flex-col min-w-0 mt-4">
+            <div className="border-2 border-dashed border-black w-full min-w-0">
+              <ScrollArea className="w-full max-h-[50vh]">
+                <Table className="table-auto w-full">
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <TableHead
+                            key={header.id}
+                            className="truncate max-w-[150px] sticky top-0 bg-card"
+                          >
+                            {
+                              flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              ) as React.ReactNode
+                            }
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows.map((row) => {
+                      const rowPhone = getRowPhone(row.original);
+                      const isUpdateRow =
+                        updateStakeholderPhones.has(rowPhone);
+                      return (
+                        <TableRow
+                          key={row.id}
+                          className={isUpdateRow ? 'bg-yellow-50' : ''}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <React.Fragment key={cell.id}>
                               {
                                 flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
+                                  cell.column.columnDef.cell,
+                                  cell.getContext(),
                                 ) as React.ReactNode
                               }
-                            </TableHead>
+                            </React.Fragment>
                           ))}
                         </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      {table.getRowModel().rows.map((row) => {
-                        const rowPhone = getRowPhone(row.original);
-                        const isUpdateRow =
-                          updateStakeholderPhones.has(rowPhone);
-                        return (
-                          <TableRow
-                            key={row.id}
-                            className={isUpdateRow ? 'bg-yellow-50' : ''}
-                          >
-                            {row.getVisibleCells().map((cell) => (
-                              <React.Fragment key={cell.id}>
-                                {
-                                  flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
-                                  ) as React.ReactNode
-                                }
-                              </React.Fragment>
-                            ))}
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
 
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </div>
-              <ClientSidePagination table={table} />
-            </>
-          )}
-        </>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+            <ClientSidePagination table={table} />
+          </div>
+        )}
       </div>
-      <div className="flex justify-between items-center py-2 px-4 border-t">
-        <div>{data?.length > 0 && <p>Total Count: {data.length - 1}</p>}</div>
-        <div className="flex space-x-2">
+      <div className="flex justify-between items-center py-2 px-4 border-t mt-4 sticky bottom-0 bg-background z-10">
+        <div>{data?.length > 0 && <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">Total Count: {data.length - 1}</p>}</div>
+        <div className="flex gap-2">
           <Button
             type="button"
-            className="w-48"
+            className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
             variant="outline"
             onClick={handleClear}
           >
@@ -939,7 +940,7 @@ export default function ImportStakeholder() {
 
           {isValidated ? (
             <Button
-              className="w-48 bg-primary hover:ring-2 ring-primary"
+              className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] bg-primary hover:ring-2 ring-primary"
               onClick={handleUpload}
               disabled={isImportDisabled}
             >
@@ -947,7 +948,7 @@ export default function ImportStakeholder() {
             </Button>
           ) : (
             <Button
-              className="w-48 bg-primary hover:ring-2 ring-primary"
+              className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] bg-primary hover:ring-2 ring-primary"
               onClick={handleValidate}
               disabled={isValidateDisabled}
             >
@@ -955,6 +956,7 @@ export default function ImportStakeholder() {
             </Button>
           )}
         </div>
+      </div>
       </div>
 
       <Dialog

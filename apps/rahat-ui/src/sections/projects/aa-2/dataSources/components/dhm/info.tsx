@@ -16,6 +16,7 @@ interface InfoProp {
     elevation: number;
     district: string;
     name: string;
+    basin: string;
     steady: string;
     status: string;
     waterLevel: { value: number; datetime: string };
@@ -60,9 +61,9 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
       <div className="p-4 rounded-sm border shadow w-full">
         <div className="flex justify-between gap-4">
           <Heading
-            title={riverWatch?.name}
+            title={riverWatch?.basin}
             titleStyle="text-xl/6 font-semibold"
-            description={riverWatch?.description}
+            description={riverWatch?.name}
             updatedAt={updatedAt}
           />
           <div>

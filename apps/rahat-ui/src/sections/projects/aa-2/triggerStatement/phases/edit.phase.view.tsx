@@ -5,11 +5,15 @@ import {
   usePhases,
   useProjectInfo,
   useProjectSettingsStore,
+  useProjectSettingsGet,
   useSinglePhase,
   useUpdatePhase,
 } from '@rahat-ui/query';
+import { Option } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { PhaseForm } from './PhaseForm';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { Trash } from 'lucide-react';
 import { DialogComponent } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/details/dialog.reuse';
 import { UUID } from 'crypto';
@@ -34,6 +38,7 @@ export default function EditPhaseView() {
   const updatePhase = useUpdatePhase();
   const deletePhase = useDeletePhase();
   const [isDeleted, setIsDeleted] = useState(false);
+  const editPhaseConfirmDialog = useBoolean(false);
 
   const { data: phasesData = [] } = usePhases(projectId);
 
@@ -46,7 +51,7 @@ export default function EditPhaseView() {
   });
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-      'river_basin'
+    'river_basin'
     ];
   const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
     projectId as UUID,
@@ -54,10 +59,25 @@ export default function EditPhaseView() {
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
   );
-  const payoutEnabledPhase = useMemo(
-    () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
-    [phasesData],
+  const { data: disbursementMethodsSetting } = useProjectSettingsGet(
+    projectId,
+    'DISBURSHMENT_METHODS',
   );
+
+  const disbursementMethodLabels: Record<string, string> = {
+    GROUP_TOKEN: 'Group Cash Token',
+    TOKEN: 'Token',
+    INKIND: 'Inkind',
+  };
+
+  const disbursementMethodOptions: Option[] = useMemo(() => {
+    const methods: string[] = disbursementMethodsSetting?.value || [];
+    return methods.map((m: string) => ({
+      value: m,
+      label: disbursementMethodLabels[m] || m,
+    }));
+  }, [disbursementMethodsSetting]);
+
   const triggerStatementPath = `/projects/aa/${projectId}/trigger-statements`;
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
@@ -75,17 +95,29 @@ export default function EditPhaseView() {
       requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
+      disbursementMethods: phase?.disbursementConfig?.disbursementMethods || [],
+      isAutomatedActivity: !!phase?.isAutomatedActivity,
+      isRequiredLeadTime: !!phase?.isRequiredLeadTime,
     });
   }, [phase, form, riverBasin]);
 
-  const handleUpdatePhase = async (data: AddPhaseFormValues) => {
+  const handleFormSubmit = async (_data: AddPhaseFormValues) => {
+    editPhaseConfirmDialog.onTrue();
+  };
+
+  const handleConfirmUpdate = async () => {
+    const data = form.getValues();
+    const canTriggerPayout = !!data.canTriggerPayout;
     const payload = {
       uuid: phaseId,
       name: data.name.trim().toUpperCase(),
       canRevert: !!data.canRevert,
-      canTriggerPayout: !!data.canTriggerPayout,
+      canTriggerPayout,
       requiredMandatoryTriggers: Number(data.requiredMandatoryTriggers),
       requiredOptionalTriggers: Number(data.requiredOptionalTriggers),
+      disbursementMethods: canTriggerPayout ? data.disbursementMethods : [],
+      isAutomatedActivity: !!data.isAutomatedActivity,
+      isRequiredLeadTime: !!data.isRequiredLeadTime,
     };
 
     try {
@@ -93,12 +125,18 @@ export default function EditPhaseView() {
         projectUUID: projectId,
         phasePayload: payload,
       });
+      editPhaseConfirmDialog.onFalse();
       router.push(
         `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`,
       );
     } catch (error) {
       console.error('Update phase error:', error);
+      editPhaseConfirmDialog.onFalse();
     }
+  };
+
+  const handleCancelUpdate = () => {
+    editPhaseConfirmDialog.onFalse();
   };
 
   const handleReset = () => {
@@ -115,6 +153,9 @@ export default function EditPhaseView() {
       requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
+      disbursementMethods: phase?.disbursementConfig?.disbursementMethods || [],
+      isAutomatedActivity: !!phase?.isAutomated,
+      isRequiredLeadTime: !!phase?.isRequiredLeadTime,
     });
   };
 
@@ -171,13 +212,22 @@ export default function EditPhaseView() {
       </div>
       <PhaseForm
         form={form}
-        onSubmit={handleUpdatePhase}
+        onSubmit={handleFormSubmit}
         onReset={handleReset}
         loading={updatePhase.isPending}
         submitLabel="Update"
         resetLabel="Reset"
-        payoutEnabledPhase={payoutEnabledPhase}
         stationHeading={stationHeading}
+        disbursementMethodOptions={disbursementMethodOptions}
+        allPhases={phasesData}
+        currentPhaseId={phaseId}
+      />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={editPhaseConfirmDialog.value}
+        onCancel={handleCancelUpdate}
+        onConfirm={handleConfirmUpdate}
+        dialogTitle="Confirm Update Phase"
+        dialogMessage="Are you sure you want to update this phase?"
       />
     </>
   );

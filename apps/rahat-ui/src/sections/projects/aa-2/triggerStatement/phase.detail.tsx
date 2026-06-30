@@ -17,7 +17,11 @@ import { TriggersListTabs, TriggersPhaseCard } from './components';
 import ExtendedTriggerLogicCard from './components/extended-trigger-logic.card';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useProjectSettingsGet, useRevertPhase, useSinglePhase } from '@rahat-ui/query';
+import {
+  useProjectSettingsGet,
+  useRevertPhase,
+  useSinglePhase,
+} from '@rahat-ui/query';
 import {
   Alert,
   AlertDescription,
@@ -26,6 +30,7 @@ import {
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function PhaseDetail() {
   const router = useRouter();
@@ -35,9 +40,14 @@ export default function PhaseDetail() {
 
   const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
   const revertPhase = useRevertPhase();
-  const { data: triggerLogicSetting } = useProjectSettingsGet(projectId, 'ENABLE_TRIGGER_LOGIC');
+  const { data: triggerLogicSetting } = useProjectSettingsGet(
+    projectId,
+    'ENABLE_TRIGGER_LOGIC',
+  );
   console.log('triggerLogicSetting', triggerLogicSetting);
-  const isTriggerLogicEnabled = triggerLogicSetting?.value === true || triggerLogicSetting?.value === 'true';
+  const isTriggerLogicEnabled =
+    triggerLogicSetting?.value === true ||
+    triggerLogicSetting?.value === 'true';
 
   const handleAddTriggerClick = () => {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
@@ -186,52 +196,55 @@ export default function PhaseDetail() {
           </Alert>
         </div>
       )}
-
-      <div className="flex gap-4">
-        <div className="flex-shrink-0 w-1/3">
-          <TriggersPhaseCard
-            title="Phase Overview"
-            subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
-            chartLabels={['Mandatory', 'Optional']}
-            chartSeries={[
-              phase?.totalMandatoryTriggers,
-              phase?.totalOptionalTriggers,
-            ]}
-            requiredMandatoryTriggers={phase?.requiredMandatoryTriggers}
-            requiredOptionalTriggers={phase?.requiredOptionalTriggers}
-            mandatoryTriggers={phase?.totalMandatoryTriggers}
-            optionalTriggers={phase?.totalOptionalTriggers}
-            triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}
-            triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
-            hideAddTrigger={true}
-            hideViewDetails={true}
-            isActive={phase?.isActive}
-            chartType="donut"
-            hidePin={true}
-          />
-          {isTriggerLogicEnabled && (
-            <ExtendedTriggerLogicCard
-              extendedTriggerLogic={phase?.extendedTriggerLogic}
-              triggers={phase?.triggers}
-              onConfigure={handleConfigureExtendedLogic}
+      <ScrollArea className="h-[calc(100vh-250px)]">
+        <div className="flex gap-4">
+          <div className="flex-shrink-0 w-1/3">
+            <TriggersPhaseCard
+              title="Phase Overview"
+              subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
+              chartLabels={['Mandatory', 'Optional']}
+              chartSeries={[
+                phase?.totalMandatoryTriggers,
+                phase?.totalOptionalTriggers,
+              ]}
+              requiredMandatoryTriggers={phase?.requiredMandatoryTriggers}
+              requiredOptionalTriggers={phase?.requiredOptionalTriggers}
+              mandatoryTriggers={phase?.totalMandatoryTriggers}
+              optionalTriggers={phase?.totalOptionalTriggers}
+              triggeredMandatoryTriggers={
+                phase?.totalMandatoryTriggersTriggered
+              }
+              triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
+              hideAddTrigger={true}
+              hideViewDetails={true}
+              isActive={phase?.isActive}
+              chartType="donut"
+              hidePin={true}
             />
-          )}
-        </div>
+            {isTriggerLogicEnabled && (
+              <ExtendedTriggerLogicCard
+                extendedTriggerLogic={phase?.extendedTriggerLogic}
+                triggers={phase?.triggers}
+                onConfigure={handleConfigureExtendedLogic}
+              />
+            )}
+          </div>
 
-        <div className="p-4 border rounded-sm shadow flex-grow">
-          <Heading
-            title="Triggers"
-            titleStyle="text-xl/6"
-            description={`List of all triggers in the ${phase?.name?.toLowerCase()} phase`}
-          />
-          <TriggersListTabs
-            projectId={projectId}
-            phaseId={phaseId}
-            triggers={phase?.triggers}
-            riverBasin={phase?.source.riverBasin}
-          />
+          <div className="p-4 border rounded-sm shadow flex-grow">
+            <Heading
+              title="Triggers"
+              titleStyle="text-xl/6"
+              description={`List of all triggers in the ${phase?.name?.toLowerCase()} phase`}
+            />
+            <TriggersListTabs
+              projectId={projectId}
+              phaseId={phaseId}
+              triggers={phase?.triggers}
+              riverBasin={phase?.source.riverBasin}
+            />
+          </div>
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 }

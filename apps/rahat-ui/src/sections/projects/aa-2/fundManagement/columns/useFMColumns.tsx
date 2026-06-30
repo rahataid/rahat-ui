@@ -1,15 +1,19 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, TriangleAlert } from 'lucide-react';
+import { ChevronDown, Eye, TriangleAlert } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/hover-card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/collapsible';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 export enum FundStatus {
@@ -115,24 +119,33 @@ export const useFundManagementTableColumns = () => {
               handleOnClick={() => handleViewClick(row.original.uuid)}
             />
             {(status === FundStatus.FAILED || status === FundStatus.ERROR) && (
-              <TooltipProvider delayDuration={200}>
-                <Tooltip>
-                  <TooltipTrigger>
+              <HoverCard openDelay={100}>
+                <HoverCardTrigger asChild>
+                  <button type="button" aria-label="View failure details">
                     <TriangleAlert size={16} strokeWidth={1.5} color="red" />
-                  </TooltipTrigger>
-                  <TooltipContent side="left" className="rounded-sm w-64">
-                    <div className="flex space-x-2 items-center">
-                      <TriangleAlert size={16} strokeWidth={1.5} color="red" />
-                      <span className="font-semibold text-sm/6">
-                        Transaction Failed
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-sm mt-1">
-                      {row.original?.info?.error ?? 'Something went wrong!!'}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent side="left" className="rounded-sm w-72">
+                  <div className="flex space-x-2 items-center">
+                    <TriangleAlert size={16} strokeWidth={1.5} color="red" />
+                    <span className="font-semibold text-sm/6">
+                      Token disbursement failed for this group. Contact
+                      admin for assistance.
+                    </span>
+                  </div>
+                  <Collapsible className="mt-2">
+                    <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary">
+                      <ChevronDown size={12} />
+                      View technical details
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <p className="text-gray-500 text-xs mt-2 break-words">
+                        {row.original?.info?.error ?? 'Something went wrong!!'}
+                      </p>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </HoverCardContent>
+              </HoverCard>
             )}
           </div>
         );

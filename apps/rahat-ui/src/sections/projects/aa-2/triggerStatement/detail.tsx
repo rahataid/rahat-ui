@@ -32,6 +32,7 @@ import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -177,7 +178,7 @@ export default function TriggerStatementDetail() {
             </TooltipWrapper>
           </RoleAuth>
           <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
             {source === 'MANUAL' &&
@@ -234,20 +235,21 @@ export default function TriggerStatementDetail() {
               <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
             </div>
 
-            <div className="flex-1 min-w-0">
-              <p className="mb-1">TxHash</p>
-              {trigger?.transactionHash ? (
+            {trigger?.transactionHash && (
+              <div className="flex-1 min-w-0">
+                <p className="mb-1">TxHash</p>
                 <Link
                   href={txnUrl || '#'}
                   target="_blank"
                   className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
                 >
-                  {trigger.transactionHash}
+                  <TruncatedCell
+                    text={trigger.transactionHash || 'N/A'}
+                    maxLength={10}
+                  />
                 </Link>
-              ) : (
-                <p className="text-red-500">N/A</p>
-              )}
-            </div>
+              </div>
+            )}
             {trigger?.createdBy && (
               <div>
                 <p className="mb-1">Created By</p>

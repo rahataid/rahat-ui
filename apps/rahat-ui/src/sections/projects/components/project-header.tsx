@@ -12,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
@@ -20,25 +21,24 @@ import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { toast } from 'react-toastify';
-import { SidebarTrigger } from '@rahat-ui/shadcn/src/components/ui/sidebar';
+// SidebarTrigger moved into the sidebar header; no top-header trigger needed here.
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 
 export function ProjectNav({
-  //   data = [],
-  //   subData = [],
   component,
+  isClosed = false,
 }: {
-  //   data?: {
-  //     title: string;
-  //     path: string;
-  //     children?: { title: string; path: string }[];
-  //   }[];
-  //   subData?: { title: string; path: string }[];
   component?: React.ReactNode;
+  isClosed?: boolean;
 }) {
   const currentPath = usePathname();
+  const params = useParams();
   const showNotification = currentPath.split('/').includes('aa');
+  const isAAProject = currentPath.split('/').includes('aa') && params?.id;
+  const settingsPath = isAAProject
+    ? `/projects/aa/${params.id}/update-aa-settings`
+    : null;
 
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
@@ -48,27 +48,23 @@ export function ProjectNav({
   const handleLogout = () => {
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
+    const projectPin = localStorage.getItem('PROJECT_PIN');
     clearUser();
     clearAuth();
     if (pinnedPhases) localStorage.setItem('aa_pinned_phases', pinnedPhases);
     if (triggerPinPhase)
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
-    if (pinnedPhases) {
-      localStorage.setItem('aa_pinned_phases', pinnedPhases);
-    }
+    if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
     toast.success('Logged out successfully.');
     // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
   return (
-    <div className="sticky top-0 z-50 h-14 w-full flex items-center pl-2 pr-6 py-2 bg-card border-b">
-      <div className="flex items-center space-x-4">
-        <SidebarTrigger />
-        {component}
-      </div>
+    <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
+      <div className="flex items-center space-x-4">{component}</div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
-        <ConnectWallet />
+        {!isClosed && <ConnectWallet />}
         {showNotification && <NotificationButton unreadCount={0} />}
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -88,9 +84,9 @@ export function ProjectNav({
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
                 <span className="font-medium">
-                  {user?.data?.name ?? 'John Doe'}{' '}
+                  {user?.data?.name}
                 </span>
-                <span>{user?.data?.email ?? 'doe@john.com'}</span>
+                <span>{user?.data?.email}</span>
               </div>
               <Separator />
               <Link
@@ -105,6 +101,16 @@ export function ProjectNav({
               >
                 Home
               </Link>
+              {settingsPath && (
+                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                  <Link
+                    className="p-1 hover:bg-secondary rounded"
+                    href={settingsPath}
+                  >
+                    Settings
+                  </Link>
+                </RoleAuth>
+              )}
               {/* <ThemeSwitch /> */}
               <Badge
                 className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"

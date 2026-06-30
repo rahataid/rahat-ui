@@ -6,7 +6,11 @@ import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { getHumidityColor, roundValue } from './utils/color.utils';
+import {
+  getHumidityColor,
+  getLatestValue,
+  roundValue,
+} from './utils/color.utils';
 import React, { useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
 import TemperatureWatchMap from './temperature.watch.map';
@@ -31,6 +35,10 @@ export default function HumidityWatchDetails() {
     () => humidityInfo?.history ?? [],
     [humidityInfo?.history],
   );
+
+  const latestEntry = getLatestValue(history);
+  const latestValue = latestEntry?.value ?? humidityInfo?.value;
+  const latestDate = latestEntry?.datetime ?? humidityInfo?.updatedAt;
 
   const isNoDataError = useMemo(() => {
     if (!error) return false;
@@ -61,19 +69,19 @@ export default function HumidityWatchDetails() {
     [humidityInfo],
   );
 
-  const colors = useMemo(
-    () =>
-      humidityInfo?.value != null
-        ? getHumidityColor(humidityInfo.value)
-        : {
-            statusColor: 'bg-gray-400',
-            bg: 'bg-gray-50',
-            textValue: 'text-gray-500',
-            border: 'border-gray-200',
-            badge: 'bg-gray-400',
-          },
-    [humidityInfo?.value],
-  );
+  const colors = useMemo(() => {
+    const latestEntry = getLatestValue(history);
+    const latestValue = latestEntry?.value ?? humidityInfo?.value;
+    return latestValue != null
+      ? getHumidityColor(latestValue)
+      : {
+          statusColor: 'bg-gray-400',
+          bg: 'bg-gray-50',
+          textValue: 'text-gray-500',
+          border: 'border-gray-200',
+          badge: 'bg-gray-400',
+        };
+  }, [humidityInfo?.value, history]);
 
   const mapCoordinates = useMemo(
     () =>
@@ -84,14 +92,14 @@ export default function HumidityWatchDetails() {
               latitude: humidityInfo.latitude,
               longitude: humidityInfo.longitude,
               stationIndex: humidityInfo.stationIndex,
-              value: humidityInfo.value,
+              value: getLatestValue(history)?.value ?? humidityInfo.value,
               unit: humidityInfo.unit ?? '%',
               statusColor: colors.statusColor,
               bgColor: colors.bg,
             },
           ]
         : [],
-    [humidityInfo, colors],
+    [humidityInfo, history, colors],
   );
 
   if (isLoading) return <TableLoader />;
@@ -140,9 +148,9 @@ export default function HumidityWatchDetails() {
               </div>
 
               <TemperatureValueCard
-                value={humidityInfo?.value}
+                value={latestValue}
                 unit={humidityInfo?.unit ?? '%'}
-                updatedAt={updatedAt}
+                updatedAt={latestDate}
                 label="Relative Humidity"
                 colors={colors}
               />

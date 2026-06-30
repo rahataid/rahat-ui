@@ -124,12 +124,11 @@ export default function EditActivity() {
 
   const redirectUpdatePath = redirectTo
     ? `/projects/aa/${projectID}/activities/${activityID}`
-    : `/projects/aa/${projectID}/activities/${activityID}${
-        backFrom ? `?from=${backFrom}` : ''
-      }`;
+    : `/projects/aa/${projectID}/activities/${activityID}${backFrom ? `?from=${backFrom}` : ''
+    }`;
 
   const { FormSchema, form, communicationForm, defaultCommunicationValues } =
-    useActivityForm(phases, appTransports);
+    useActivityForm(appTransports);
 
   // Handlers goes here
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -699,7 +698,7 @@ export default function EditActivity() {
                               className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
                             >
                               {uploadFile.isPending &&
-                              uploadingFileName === file.fileName ? (
+                                uploadingFileName === file.fileName ? (
                                 <LoaderCircle className="text-green-600 animate-spin w-9 h-9" />
                               ) : (
                                 <FileCheck className="w-9 h-9 text-green-600" />

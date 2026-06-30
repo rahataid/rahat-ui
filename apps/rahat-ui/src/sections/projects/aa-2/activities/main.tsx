@@ -141,13 +141,18 @@ export default function ActivitiesView() {
           const localeTime = d.toLocaleTimeString();
           timeStamp = `${localeDate} ${localeTime}`;
         }
+        // leadTime is stored server-side as "<value> <unit>" (e.g. "3 days"),
+        // split back into two columns to match the bulk-upload sheet format.
+        const [leadTimeValue, leadTimeUnit] = (item.leadTime || '').split(' ');
         return {
-          Title: item.title || 'N/A',
-          'Early Action': item.category || 'N/A',
+          'Activity Title': item.title || 'N/A',
+          'Category': item.category || 'N/A',
           Phase: item.phase || 'N/A',
           Type: item.isAutomated ? 'Automated' : 'Manual',
           Responsibility: item.responsibility,
-          'Responsible Station': item.source || 'N/A',
+          'Responsible Station': item.responsibleStation || 'N/A',
+          'Lead Time': leadTimeValue || 'N/A',
+          'Time Frame': leadTimeUnit || 'N/A',
           Status: item.status || 'N/A',
           Timestamp: timeStamp || 'N/A',
           'Completed by': item.completedBy || 'N/A',

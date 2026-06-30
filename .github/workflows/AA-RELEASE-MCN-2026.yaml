@@ -51,9 +51,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: install dependencies and build apps
-        run: |
-          pnpm build:all
+      # - name: install dependencies and build apps
+      #   run: |
+      #     pnpm build:all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

@@ -89,7 +89,14 @@ export default function MessageDetailPage() {
 
   const retryFailed = async () => {
     try {
-      const res = await mutateRetry.mutateAsync(campaign?.sessionId || '');
+      if (isAutomatic) {
+        const sessionIds = (automationDetail?.sessionIds as string[]) ?? [];
+        for (const sessionId of sessionIds) {
+          await mutateRetry.mutateAsync(sessionId);
+        }
+      } else {
+        await mutateRetry.mutateAsync(campaign?.sessionId || '');
+      }
     } catch (error) {
       console.error('Retry failed:', error);
     }
@@ -405,7 +412,7 @@ export default function MessageDetailPage() {
                   }}
                 />
               )}
-              {showRetryButton && !isAutomatic && (
+              {showRetryButton && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button

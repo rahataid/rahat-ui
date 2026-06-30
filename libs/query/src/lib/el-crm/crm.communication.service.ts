@@ -83,11 +83,26 @@ export const useCreateElCrmCampaign = (projectUUID: UUID) => {
         queryKey: [queryKeys.elCrmCampaignList],
       });
     },
-    onError: (error) => {
-      toast.fire({
-        title: `Error while creating campaign. ${error?.message || ''}`,
-        icon: 'error',
-      });
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        '';
+      const normalized =
+        typeof apiMessage === 'string' ? apiMessage.toLowerCase() : '';
+
+      let title: string;
+      if (normalized.includes('no recipients found')) {
+        title =
+          'No matching recipients found for the selected criteria. Adjust your audience filters and try again.';
+      } else if (apiMessage) {
+        title = `Could not create campaign: ${apiMessage}`;
+      } else {
+        title = 'Could not create campaign. Please try again.';
+      }
+
+      toast.fire({ title, icon: 'error' });
     },
   });
 };
@@ -418,77 +433,6 @@ export const useFetchSessionBroadcasts = (projectUUID: UUID) => {
       }
 
       return results;
-    },
-  });
-};
-
-// Creates a new SMS campaign targeting the given phone numbers and sends it
-// immediately. Used to retry WhatsApp deliveries that failed because the
-// recipient has no WhatsApp account.
-export const useRetryFailedViaCampaign = (projectUUID: UUID) => {
-  const action = useProjectAction();
-  const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-
-  return useMutation({
-    mutationFn: async (data: {
-      name: string;
-      targetType: string;
-      transportId: string;
-      message: string;
-      phoneNumbers: string[];
-    }) => {
-      const createRes = await action.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: CREATE_CAMPAIGN,
-          payload: {
-            name: data.name,
-            targetType: data.targetType,
-            transportId: data.transportId,
-            message: data.message,
-            options: { phoneNumbers: data.phoneNumbers },
-            isAutomatic: false,
-          },
-        },
-      });
-
-      const created = createRes?.data;
-      if (created?.uuid) {
-        await action.mutateAsync({
-          uuid: projectUUID,
-          data: {
-            action: TRIGGER_CAMPAIGN,
-            payload: { uuid: created.uuid },
-          },
-        });
-      }
-      return created;
-    },
-    onSuccess: () => {
-      toast.fire({
-        title: 'Retry campaign created and sent via SMS',
-        icon: 'success',
-      });
-      queryClient.invalidateQueries({
-        queryKey: [queryKeys.elCrmCampaignList],
-      });
-    },
-    onError: (error: any) => {
-      const apiMessage = error?.response?.data?.message || error?.message;
-      toast.fire({
-        title:
-          typeof apiMessage === 'string' && apiMessage.length > 0
-            ? apiMessage
-            : 'Failed to create retry campaign.',
-        icon: 'error',
-      });
     },
   });
 };

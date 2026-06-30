@@ -40,6 +40,7 @@ import {
   usePagination,
 } from '@rahat-ui/query';
 import { useMsgTableColumn } from '../messages/useMsgTableColumns';
+import { computeRate, formatRate } from '../const';
 
 const numberFormatter = new Intl.NumberFormat();
 
@@ -100,7 +101,7 @@ export default function SummaryView() {
     const consumers = getStatNumber('MESSAGES_TO_CONSUMERS');
     const customers = getStatNumber('MESSAGES_TO_CUSTOMERS');
 
-    const rate = total > 0 ? Math.round((sent / total) * 100) : 0;
+    const rate = computeRate(sent, total);
 
     return {
       totalMessagesSent: total,
@@ -185,7 +186,7 @@ export default function SummaryView() {
               },
               {
                 title: 'Delivery Rate',
-                value: `${deliveryRate}%`,
+                value: formatRate(deliveryRate),
                 icon: Gauge,
                 color:
                   deliveryRate >= 90
@@ -286,7 +287,7 @@ export default function SummaryView() {
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary">Delivery Rate</Badge>
                     <span className="font-semibold tabular-nums text-primary">
-                      {deliveryRate}%
+                      {formatRate(deliveryRate)}
                     </span>
                   </div>
                 </div>

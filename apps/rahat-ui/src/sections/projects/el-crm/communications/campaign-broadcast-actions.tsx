@@ -9,26 +9,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Download, RefreshCcw } from 'lucide-react';
-import {
-  useFetchSessionBroadcasts,
-  useListElCrmTransport,
-  useRetryFailedViaCampaign,
-} from '@rahat-ui/query';
-import {
-  CHANNELS,
-  isInvalidWhatsAppRecipient,
-  isPlasgateChannel,
-  normalizePhoneAddress,
-} from './const';
+import { Download } from 'lucide-react';
+import { useFetchSessionBroadcasts } from '@rahat-ui/query';
+import { normalizePhoneAddress } from './const';
 
 type CampaignBroadcastActionsProps = {
   projectUUID: UUID;
   sessionIds: string[];
   campaignName: string;
-  targetType: string;
-  messageBody: string;
-  isWhatsApp: boolean;
   filters?: { status?: string; address?: string };
 };
 
@@ -36,14 +24,9 @@ export default function CampaignBroadcastActions({
   projectUUID,
   sessionIds,
   campaignName,
-  targetType,
-  messageBody,
-  isWhatsApp,
   filters,
 }: CampaignBroadcastActionsProps) {
   const fetchSessionBroadcasts = useFetchSessionBroadcasts(projectUUID);
-  const retryViaCampaign = useRetryFailedViaCampaign(projectUUID);
-  const transport = useListElCrmTransport(projectUUID);
 
   const validSessionIds = sessionIds.filter(Boolean);
 
@@ -94,101 +77,29 @@ export default function CampaignBroadcastActions({
     );
   };
 
-  const [hasRetryableFailures, setHasRetryableFailures] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!isWhatsApp || !validSessionIds.length) {
-      setHasRetryableFailures(false);
-      return;
-    }
-
-    let cancelled = false;
-    (async () => {
-      const failed = await collectBroadcasts({ status: 'FAIL' });
-      const retryable = failed.some(
-        (b) =>
-          isInvalidWhatsAppRecipient(b?.disposition) &&
-          normalizePhoneAddress(b.address),
-      );
-      if (!cancelled) setHasRetryableFailures(retryable);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWhatsApp, validSessionIds.join(',')]);
-
-  const handleRetryViaSms = async () => {
-    const failed = await collectBroadcasts({ status: 'FAIL' });
-    const invalid = failed.filter((b) => isInvalidWhatsAppRecipient(b?.disposition));
-    if (!invalid.length) return;
-
-    const phoneNumbers = Array.from(
-      new Set(invalid.map((b) => normalizePhoneAddress(b.address)).filter(Boolean)),
-    );
-    if (!phoneNumbers.length) return;
-
-    const plasgateTransport = (transport.data || []).find((t: { name: string }) =>
-      isPlasgateChannel(t.name),
-    );
-    if (!plasgateTransport) return;
-
-    await retryViaCampaign.mutateAsync({
-      name: `${campaignName} - WhatsApp Retry (SMS)`,
-      targetType,
-      transportId: plasgateTransport.cuid,
-      message: messageBody,
-      phoneNumbers,
-    });
-  };
-
   if (!validSessionIds.length) return null;
 
-  const isBusy = fetchSessionBroadcasts.isPending || retryViaCampaign.isPending;
+  const isBusy = fetchSessionBroadcasts.isPending;
 
   return (
-    <>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={handleExport}
-            disabled={isBusy}
-            className="gap-2"
-          >
-            <Download className="h-3.5 w-3.5" />
-            Export
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          Download all delivery logs for this campaign
-          {filters?.status || filters?.address ? ' (current filters applied)' : ''}
-        </TooltipContent>
-      </Tooltip>
-
-      {isWhatsApp && hasRetryableFailures && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={handleRetryViaSms}
-              disabled={isBusy}
-              className="gap-2"
-            >
-              <RefreshCcw className="h-3.5 w-3.5" />
-              Retry via SMS ({CHANNELS.PLASGATE})
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Create and send a new SMS campaign to recipients without WhatsApp
-          </TooltipContent>
-        </Tooltip>
-      )}
-    </>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={handleExport}
+          disabled={isBusy}
+          className="gap-2"
+        >
+          <Download className="h-3.5 w-3.5" />
+          Export
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        Download all delivery logs for this campaign
+        {filters?.status || filters?.address ? ' (current filters applied)' : ''}
+      </TooltipContent>
+    </Tooltip>
   );
 }

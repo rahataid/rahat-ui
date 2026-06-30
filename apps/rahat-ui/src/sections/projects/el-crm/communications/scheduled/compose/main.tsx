@@ -657,8 +657,7 @@ export default function ComposeScheduleView() {
     if (sources.length) f.source = sources;
     if (locations.length) f.location = locations;
     if (customerCodes.length) f.customerCode = customerCodes;
-    // Channel lives in vendor extras; count matches a single value (contains).
-    if (channels.length) f.channel = channels[0];
+    if (channels.length) f.channel = channels;
 
     return f;
   }, [filterRows]);

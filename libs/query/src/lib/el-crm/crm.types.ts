@@ -66,6 +66,7 @@ export interface RecentCampaign {
   recipientCount: number;
   createdAt: string;
   sessionId: string | null;
+  isAutomatic: boolean;
 }
 
 export interface RecentImport {

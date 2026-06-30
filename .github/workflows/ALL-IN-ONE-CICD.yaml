@@ -25,6 +25,7 @@ on:
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"
           - "[DEV] github/data/rahat/rahat-ui/dev/el/crm"
           - "[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink"
+          - "[DEV] github/data/rahat/rahat-ui/demo/aa/stellar"
 
           # Demo folder
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
@@ -34,6 +35,7 @@ on:
           - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
 
           # Main folder
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"

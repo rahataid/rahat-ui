@@ -654,7 +654,7 @@ export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
   });
 
   const query = useQuery({
-    queryKey: ['glofas_prob_flood_details', uuid],
+    queryKey: ['glofas_prob_flood_details', uuid, payload?.returnPeriod],
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({

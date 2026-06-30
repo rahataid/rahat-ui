@@ -104,6 +104,12 @@ export function Nav({ hasDefaultHeader = true }) {
                 >
                   Settings
                 </Link>
+                <Link
+                  className="p-1 hover:bg-secondary rounded"
+                  href={paths.usage.root}
+                >
+                  Usage
+                </Link>
                 {/* <ThemeSwitch /> */}
                 <Badge
                   className="mt-2 rounded bg-primary text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"

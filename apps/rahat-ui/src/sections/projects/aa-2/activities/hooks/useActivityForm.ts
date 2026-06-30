@@ -1,19 +1,14 @@
 import { useMemo } from 'react';
 import { Transport } from '@rumsan/connect/src/types';
 import {
-  createActivityFormSchema,
+  activityFormSchema,
   createCommunicationFormSchema,
 } from '../schemas/activity.schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export const useActivityForm = (
-  phases: Array<{ uuid: string; name: string }>,
-  appTransports?: Transport[],
-) => {
-  const FormSchema = useMemo(() => createActivityFormSchema(phases), [phases]);
-
+export const useActivityForm = (appTransports?: Transport[]) => {
   const CommunicationFormSchema = useMemo(
     () => createCommunicationFormSchema(appTransports),
     [appTransports],
@@ -40,8 +35,8 @@ export const useActivityForm = (
     defaultValues: defaultCommunicationValues,
   });
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof activityFormSchema>>({
+    resolver: zodResolver(activityFormSchema),
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -58,7 +53,7 @@ export const useActivityForm = (
   });
 
   return {
-    FormSchema,
+    FormSchema: activityFormSchema,
     CommunicationFormSchema,
     form,
     communicationForm,

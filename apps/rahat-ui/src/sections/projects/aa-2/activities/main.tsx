@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
@@ -21,6 +22,7 @@ export default function ActivitiesView() {
   const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
+  const hasActivities = (activitiesData?.length ?? 0) > 0;
 
   usePhases(projectID as UUID);
 
@@ -115,7 +117,7 @@ export default function ActivitiesView() {
     const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
     return [...pinned, ...unpinned];
   }, [pinnedPhases, uniquePhases]);
-
+  const hasPhases = sortedPhases.length > 0;
   const phaseDataMap = useMemo(() => {
     const map: Record<string, IActivitiesItem[]> = {};
     if (!activitiesData) return map;
@@ -146,7 +148,7 @@ export default function ActivitiesView() {
         const [leadTimeValue, leadTimeUnit] = (item.leadTime || '').split(' ');
         return {
           'Activity Title': item.title || 'N/A',
-          'Category': item.category || 'N/A',
+          Category: item.category || 'N/A',
           Phase: item.phase || 'N/A',
           Type: item.isAutomated ? 'Automated' : 'Manual',
           Responsibility: item.responsibility,
@@ -184,27 +186,43 @@ export default function ActivitiesView() {
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <IconLabelBtn
-                Icon={CloudDownloadIcon}
-                handleClick={handleDownloadReport}
-                name="Download Report"
-                variant="outline"
-              />
+              <TooltipWrapper
+                tip={
+                  !hasActivities
+                    ? 'Create an activity before downloading the report.'
+                    : ''
+                }
+              >
+                <IconLabelBtn
+                  Icon={CloudDownloadIcon}
+                  handleClick={handleDownloadReport}
+                  name="Download Report"
+                  variant="outline"
+                  disabled={!hasActivities}
+                />
+              </TooltipWrapper>
             </RoleAuth>
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <IconLabelBtn
-                Icon={Plus}
-                handleClick={() =>
-                  router.push(
-                    `/projects/aa/${projectID}/activities/add?nav=mainPage`,
-                  )
+              <TooltipWrapper
+                tip={
+                  !hasPhases ? 'Create a phase before adding activities.' : ''
                 }
-                name="Add Activity"
-                variant="default"
-              />
+              >
+                <IconLabelBtn
+                  Icon={Plus}
+                  handleClick={() =>
+                    router.push(
+                      `/projects/aa/${projectID}/activities/add?nav=mainPage`,
+                    )
+                  }
+                  name="Add Activity"
+                  variant="default"
+                  disabled={!hasPhases}
+                />
+              </TooltipWrapper>
             </RoleAuth>
           </div>
         </div>

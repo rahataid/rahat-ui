@@ -10,6 +10,7 @@ import {
 import React from 'react';
 import {
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -17,6 +18,7 @@ import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function SelectBeneficiaryView() {
   const { Id } = useParams() as { Id: UUID };
@@ -50,6 +52,7 @@ export default function SelectBeneficiaryView() {
     data: Beneficiaries?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
@@ -112,7 +115,16 @@ export default function SelectBeneficiaryView() {
             type="end"
           /> */}
           </div>
-          <DemoTable table={table} tableHeight="h-[calc(100vh-307px)]" />
+          <DemoTable table={table} tableHeight="h-[calc(100vh-355px)]" />
+          <CustomPagination
+            meta={Beneficiaries?.response?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={Beneficiaries?.response?.meta.total || 0}
+          />
         </div>
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">

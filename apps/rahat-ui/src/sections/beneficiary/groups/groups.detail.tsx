@@ -14,6 +14,7 @@ import MembersTable from './members.table';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
   VisibilityState,
@@ -127,6 +128,7 @@ export default function GroupDetailView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
@@ -365,12 +367,22 @@ export default function GroupDetailView() {
                     <Loader2 className="w-3 h-3 animate-spin" />
                     Bank validation in progress
                   </p>
-                  <p>Current status: <span className="font-medium">{bankCheckStatus.total - bankCheckStatus.pending}/{bankCheckStatus.total}</span></p>
+                  <p>
+                    Current status:
+                    <span className="font-medium">
+                      {bankCheckStatus.total - bankCheckStatus.pending}/
+                      {bankCheckStatus.total}
+                    </span>
+                  </p>
                 </>
               ) : (
-                <p className="text-muted-foreground font-medium mb-1">Bank validation completed</p>
+                <p className="text-muted-foreground font-medium mb-1">
+                  Bank validation completed
+                </p>
               )}
-              <p className="text-green-600">Success: {bankCheckStatus.success}</p>
+              <p className="text-green-600">
+                Success: {bankCheckStatus.success}
+              </p>
               <p className="text-red-500">Failed: {bankCheckStatus.failed}</p>
             </div>
           )}

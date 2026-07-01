@@ -746,14 +746,15 @@ const getBankCheckStatus = async (uuid: UUID) => {
   return response?.data?.data;
 };
 
-export const useGetBankCheckStatus = (uuid: UUID, isBankTransfer: boolean) => {
+export const useGetBankCheckStatus = (uuid: UUID, isBankTransfer: boolean, clickedValidateBankAccount: boolean) => {
   const qc = useQueryClient();
 
   const query = useQuery({
     queryKey: ['BANK_CHECK_STATUS', uuid],
     queryFn: () => getBankCheckStatus(uuid),
-    enabled: !!uuid && isBankTransfer,
+    enabled: !!uuid && isBankTransfer,  // always fetch once on mount
     refetchInterval: (q) => {
+      if (!clickedValidateBankAccount) return false;  // only poll after button clicked
       const d = q.state.data;
       if (!d || d.pending === 0) return false;
       return 5000;

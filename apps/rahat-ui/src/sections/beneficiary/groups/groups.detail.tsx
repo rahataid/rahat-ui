@@ -46,6 +46,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
+import { useState } from 'react';
 
 type BenProjectType = {
   Project: {
@@ -84,11 +85,18 @@ export default function GroupDetailView() {
   const columns = useBeneficiaryTableColumns();
   const { data } = useExportBeneficiariesFailedBankAccount(Id);
 
+  const [clickedValidateBankAccount, setClickedValidateBankAccount] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(`bank_validation_${Id}`) === 'true';
+    }
+    return false;
+  });
+
   const groupedBeneficiaries = [] as any;
   const { data: group, isLoading } = useGetBeneficiaryGroup(Id);
 
   const isBankTransfer = group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER;
-  const { data: bankCheckStatus } = useGetBankCheckStatus(Id, isBankTransfer);
+  const { data: bankCheckStatus } = useGetBankCheckStatus(Id, isBankTransfer, clickedValidateBankAccount);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const tableData = React.useMemo(() => {
@@ -171,6 +179,7 @@ export default function GroupDetailView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
+
   return isLoading ? (
     <LoaderRahat />
   ) : (
@@ -182,6 +191,10 @@ export default function GroupDetailView() {
       <ValidateBenefBankAccountByGroupUuid
         beneficiaryGroupDetail={group?.data}
         validateModal={validateModal}
+        onConfirm={() => {
+          sessionStorage.setItem(`bank_validation_${Id}`, 'true');
+          setClickedValidateBankAccount(true);
+        }}
       />
       <UpdateGroupProposeModal
         beneficiaryGroupDetail={group?.data}
@@ -265,7 +278,9 @@ export default function GroupDetailView() {
                 <Button
                   variant="outline"
                   className="gap-2 text-gray-700 rounded-sm"
-                  onClick={handleAssignModalClick}
+                  onClick={() => {
+                    handleAssignModalClick();
+                  }}
                 >
                   {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
                     <>
@@ -342,7 +357,7 @@ export default function GroupDetailView() {
               </div>
             </DataCard>
           )}
-          {isBankTransfer && bankCheckStatus && (
+          {isBankTransfer && bankCheckStatus && (bankCheckStatus.pending === 0 || clickedValidateBankAccount) && (
             <div className="border-solid w-1/3 rounded-xl border p-4 text-sm leading-snug">
               {bankCheckStatus.pending > 0 ? (
                 <>

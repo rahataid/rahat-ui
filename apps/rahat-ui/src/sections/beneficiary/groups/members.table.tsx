@@ -28,6 +28,9 @@ export default function MembersTable({
   groupUUID,
   name,
 }: IProps) {
+  const isSearching =
+    ((table.getColumn('name')?.getFilterValue() as string) ?? '').trim() !== '';
+
   return (
     <>
       <div className="p-4 border rounded-md mt-5">
@@ -72,7 +75,7 @@ export default function MembersTable({
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -92,23 +95,37 @@ export default function MembersTable({
                   <TableRow>
                     <TableCell
                       colSpan={table.getAllColumns().length}
-                      className="h-72 text-center "
+                      className="h-72 text-center"
                     >
-                      <div className="grid place-items-center space-y-2">
-                        <div className="bg-secondary rounded-full p-3 w-min">
-                          <FileWarning size={18} strokeWidth={1.5} />
+                      {isSearching ? (
+                        <div className="grid place-items-center space-y-2">
+                          <div className="bg-secondary rounded-full p-3 w-min">
+                            <FileWarning size={18} strokeWidth={1.5} />
+                          </div>
+                          <p className="font-medium text-lg">
+                            No results found
+                          </p>
+                          <p className="text-muted-foreground text-base">
+                            No beneficiaries match your search.
+                          </p>
                         </div>
-                        <p className="font-medium text-lg">
-                          No beneficiary added
-                        </p>
-                        <p className="text-muted-foreground text-base">
-                          Add beneficiary to the group to display data
-                        </p>
-                        <AddButton
-                          name="Beneficiary"
-                          path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
-                        />
-                      </div>
+                      ) : (
+                        <div className="grid place-items-center space-y-2">
+                          <div className="bg-secondary rounded-full p-3 w-min">
+                            <FileWarning size={18} strokeWidth={1.5} />
+                          </div>
+                          <p className="font-medium text-lg">
+                            No beneficiary added
+                          </p>
+                          <p className="text-muted-foreground text-base">
+                            Add beneficiary to the group to display data
+                          </p>
+                          <AddButton
+                            name="Beneficiary"
+                            path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
+                          />
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

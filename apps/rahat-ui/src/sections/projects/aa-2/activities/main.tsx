@@ -1,6 +1,6 @@
 'use client';
 import { useActivities, usePhases, usePhasesStore } from '@rahat-ui/query';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Heading, IconLabelBtn, NoResult } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { UUID } from 'crypto';
@@ -226,62 +226,68 @@ export default function ActivitiesView() {
             </RoleAuth>
           </div>
         </div>
-        <div
-          className={`flex gap-4 ${
-            state === 'expanded'
-              ? 'w-[calc(100vw-18rem)]'
-              : 'w-[calc(100vw-5rem)]'
-          } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
-          style={{ scrollbarGutter: 'stable' }}
-        >
-          {sortedPhases.map((phase) => (
-            <div key={phase} className="min-w-[320px] w-full">
-              <PhaseContent
-                title={phase.charAt(0) + phase.slice(1).toLowerCase()}
-                description={
-                  PHASE_DESCRIPTIONS[phase] ??
-                  `Overview of ${phase.toLowerCase()} phase`
-                }
-                phases={phaseDataMap[phase] ?? []}
-                loading={isLoading}
-                isPinned={pinnedPhases.includes(phase)}
-                onTogglePin={() => togglePin(phase)}
-              />
-            </div>
-          ))}
-          {sortedPhases.length === 2 && (
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.Municipality]}
-              hasContent={false}
-            >
-              <div className="min-w-[320px]">
-                <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
-                  <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
-                    <div className="flex flex-col gap-1 items-center ">
-                      <Button
-                        onClick={handleAddPhase}
-                        className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
-                      >
-                        <div className="flex items-center justify-center w-4 h-4">
-                          <Plus
-                            className="  text-blue-500 hover:text-white"
-                            size={'2rem'}
-                          />
-                        </div>
-                      </Button>
-                      <p className="text-base font-medium text-blue-500 ">
-                        Add Phase
-                      </p>
-                      <p className="text-sm text-blue-400">
-                        Click here to add new phase
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+        {!hasPhases ? (
+          <div className="w-full flex items-center justify-center h-[calc(100vh-180px)]">
+            <NoResult message="No Data Available" />
+          </div>
+        ) : (
+          <div
+            className={`flex gap-4 ${
+              state === 'expanded'
+                ? 'w-[calc(100vw-18rem)]'
+                : 'w-[calc(100vw-5rem)]'
+            } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+            style={{ scrollbarGutter: 'stable' }}
+          >
+            {sortedPhases.map((phase) => (
+              <div key={phase} className="min-w-[320px] w-full">
+                <PhaseContent
+                  title={phase.charAt(0) + phase.slice(1).toLowerCase()}
+                  description={
+                    PHASE_DESCRIPTIONS[phase] ??
+                    `Overview of ${phase.toLowerCase()} phase`
+                  }
+                  phases={phaseDataMap[phase] ?? []}
+                  loading={isLoading}
+                  isPinned={pinnedPhases.includes(phase)}
+                  onTogglePin={() => togglePin(phase)}
+                />
               </div>
-            </RoleAuth>
-          )}
-        </div>
+            ))}
+            {sortedPhases.length === 2 && (
+              <RoleAuth
+                roles={[AARoles.ADMIN, AARoles.Municipality]}
+                hasContent={false}
+              >
+                <div className="min-w-[320px]">
+                  <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
+                    <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
+                      <div className="flex flex-col gap-1 items-center ">
+                        <Button
+                          onClick={handleAddPhase}
+                          className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
+                        >
+                          <div className="flex items-center justify-center w-4 h-4">
+                            <Plus
+                              className="  text-blue-500 hover:text-white"
+                              size={'2rem'}
+                            />
+                          </div>
+                        </Button>
+                        <p className="text-base font-medium text-blue-500 ">
+                          Add Phase
+                        </p>
+                        <p className="text-sm text-blue-400">
+                          Click here to add new phase
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </RoleAuth>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

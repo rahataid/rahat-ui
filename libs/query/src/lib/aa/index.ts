@@ -13,3 +13,4 @@ export * from './vendors';
 export * from './payout';
 export * from './inkinds';
 export * from './beneficiaries';
+export * from './groupCashTransfer';

@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   CloudDownloadIcon,
   LandmarkIcon,
+  Loader2,
   Trash2Icon,
   UsersRound,
   Phone,
@@ -19,6 +20,7 @@ import {
 } from '@tanstack/react-table';
 import {
   useExportBeneficiariesFailedBankAccount,
+  useGetBankCheckStatus,
   useGetBeneficiaryGroup,
   usePagination,
 } from '@rahat-ui/query';
@@ -44,6 +46,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
+import { useState } from 'react';
 
 type BenProjectType = {
   Project: {
@@ -82,8 +85,18 @@ export default function GroupDetailView() {
   const columns = useBeneficiaryTableColumns();
   const { data } = useExportBeneficiariesFailedBankAccount(Id);
 
+  const [clickedValidateBankAccount, setClickedValidateBankAccount] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(`bank_validation_${Id}`) === 'true';
+    }
+    return false;
+  });
+
   const groupedBeneficiaries = [] as any;
   const { data: group, isLoading } = useGetBeneficiaryGroup(Id);
+
+  const isBankTransfer = group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER;
+  const { data: bankCheckStatus } = useGetBankCheckStatus(Id, isBankTransfer, clickedValidateBankAccount);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const tableData = React.useMemo(() => {
@@ -166,6 +179,7 @@ export default function GroupDetailView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
+
   return isLoading ? (
     <LoaderRahat />
   ) : (
@@ -177,6 +191,10 @@ export default function GroupDetailView() {
       <ValidateBenefBankAccountByGroupUuid
         beneficiaryGroupDetail={group?.data}
         validateModal={validateModal}
+        onConfirm={() => {
+          sessionStorage.setItem(`bank_validation_${Id}`, 'true');
+          setClickedValidateBankAccount(true);
+        }}
       />
       <UpdateGroupProposeModal
         beneficiaryGroupDetail={group?.data}
@@ -260,7 +278,9 @@ export default function GroupDetailView() {
                 <Button
                   variant="outline"
                   className="gap-2 text-gray-700 rounded-sm"
-                  onClick={handleAssignModalClick}
+                  onClick={() => {
+                    handleAssignModalClick();
+                  }}
                 >
                   {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
                     <>
@@ -308,7 +328,7 @@ export default function GroupDetailView() {
               )}
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-start">
           <DataCard
             className="border-solid w-1/3 rounded-xl"
             iconStyle="bg-white text-secondary-muted"
@@ -336,6 +356,23 @@ export default function GroupDetailView() {
                 )}
               </div>
             </DataCard>
+          )}
+          {isBankTransfer && bankCheckStatus && (bankCheckStatus.pending === 0 || clickedValidateBankAccount) && (
+            <div className="border-solid w-1/3 rounded-xl border p-4 text-sm leading-snug">
+              {bankCheckStatus.pending > 0 ? (
+                <>
+                  <p className="text-muted-foreground font-medium mb-1 flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Bank validation in progress
+                  </p>
+                  <p>Current status: <span className="font-medium">{bankCheckStatus.total - bankCheckStatus.pending}/{bankCheckStatus.total}</span></p>
+                </>
+              ) : (
+                <p className="text-muted-foreground font-medium mb-1">Bank validation completed</p>
+              )}
+              <p className="text-green-600">Success: {bankCheckStatus.success}</p>
+              <p className="text-red-500">Failed: {bankCheckStatus.failed}</p>
+            </div>
           )}
         </div>
 

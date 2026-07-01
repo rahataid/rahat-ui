@@ -96,11 +96,10 @@ function ActionButton({
         <button
           onClick={onClick}
           disabled={disabled}
-          className={`p-1.5 rounded transition-colors ${
-            disabled
-              ? 'opacity-35 cursor-not-allowed text-muted-foreground'
-              : hoverClass
-          }`}
+          className={`p-1.5 rounded transition-colors ${disabled
+            ? 'opacity-35 cursor-not-allowed text-muted-foreground'
+            : hoverClass
+            }`}
         >
           {icon}
         </button>
@@ -232,9 +231,8 @@ export default function InkindList() {
       if (qty > available) {
         setStockDialog((prev) => ({
           ...prev,
-          error: `Cannot remove ${qty}. Only ${available} unit${
-            available !== 1 ? 's' : ''
-          } available.`,
+          error: `Cannot remove ${qty}. Only ${available} unit${available !== 1 ? 's' : ''
+            } available.`,
         }));
         return;
       }
@@ -451,7 +449,7 @@ export default function InkindList() {
           description="List of all budget items"
         />
         <RoleAuth
-          roles={[AARoles.ADMIN, ]}
+          roles={[AARoles.ADMIN,]}
           hasContent={false}
         >
           <Button
@@ -635,11 +633,10 @@ export default function InkindList() {
                   Name
                 </Label>
                 <span
-                  className={`text-xs ${
-                    updateDialog.name.length >= NAME_MAX
-                      ? 'text-destructive'
-                      : 'text-muted-foreground'
-                  }`}
+                  className={`text-xs ${updateDialog.name.length >= NAME_MAX
+                    ? 'text-destructive'
+                    : 'text-muted-foreground'
+                    }`}
                 >
                   {updateDialog.name.length}/{NAME_MAX}
                 </span>
@@ -675,11 +672,10 @@ export default function InkindList() {
                   Description
                 </Label>
                 <span
-                  className={`text-xs ${
-                    updateDialog.description.length >= DESCRIPTION_MAX
-                      ? 'text-destructive'
-                      : 'text-muted-foreground'
-                  }`}
+                  className={`text-xs ${updateDialog.description.length >= DESCRIPTION_MAX
+                    ? 'text-destructive'
+                    : 'text-muted-foreground'
+                    }`}
                 >
                   {updateDialog.description.length}/{DESCRIPTION_MAX}
                 </span>
@@ -729,9 +725,9 @@ export default function InkindList() {
                 !updateDialog.description.trim() ||
                 (updateDialog.item !== null &&
                   updateDialog.name.trim() ===
-                    (updateDialog.item.name ?? '').trim() &&
+                  (updateDialog.item.name ?? '').trim() &&
                   updateDialog.description.trim() ===
-                    (updateDialog.item.description ?? '').trim())
+                  (updateDialog.item.description ?? '').trim())
               }
             >
               Continue
@@ -769,7 +765,7 @@ export default function InkindList() {
                 </span>
                 <TruncatedCell
                   text={confirmDialog.description}
-                  maxLength={50}
+                  maxLength={40}
                 />
               </div>
             </div>

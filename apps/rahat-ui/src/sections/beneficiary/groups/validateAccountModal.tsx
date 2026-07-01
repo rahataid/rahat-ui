@@ -37,14 +37,17 @@ type ValidateModalType = {
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
   validateModal: ValidateModalType;
+  onConfirm?: () => void;
 };
 
 export default function ValidateBenefBankAccountByGroupUuid({
   validateModal,
   beneficiaryGroupDetail,
+  onConfirm,
 }: IProps) {
   const validateBenefGroup = useValidateBeneficaryBankAccount();
   const handleValidateBankAccount = async () => {
+    onConfirm?.();
     await validateBenefGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
   };
 

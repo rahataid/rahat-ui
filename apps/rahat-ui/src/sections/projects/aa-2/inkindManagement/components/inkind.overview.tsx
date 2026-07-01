@@ -34,6 +34,7 @@ import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 
 type Movement = {
   id: number;
@@ -148,7 +149,7 @@ export default function InkindOverview() {
     { page, perPage },
   );
 
-  const inkindItemsSummary: any[] = summaryData?.data ?? [];
+  const inkindItemsSummary = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
   const meta = txData?.response?.meta;
   const [selectedMovement, setSelectedMovement] = useState<Movement | null>(
@@ -171,7 +172,7 @@ export default function InkindOverview() {
         description="Overview of all in-kind items and stock movements"
       />
 
-      <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
+      <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
         <DataCard
           className="rounded-sm"
           title="Total Inkind Types"
@@ -194,16 +195,6 @@ export default function InkindOverview() {
         />
         <DataCard
           className="rounded-sm"
-          title="Assigned Stock"
-          number={String(
-            inkindItemsSummary?.totalAssignedStock
-              ? inkindItemsSummary.totalAssignedStock
-              : 0,
-          )}
-          subtitle="Units currently assigned"
-        />
-        <DataCard
-          className="rounded-sm"
           title="Redeemed Stock"
           number={String(
             inkindItemsSummary?.totalRedeemedStock
@@ -214,16 +205,83 @@ export default function InkindOverview() {
         />
       </div>
 
-      <div className="flex flex-col flex-[2] border rounded-sm p-4 min-h-0">
-        <div className="flex items-start justify-between mb-0.5">
-          <h1 className="text-lg font-medium">Overall Inkind Flow</h1>
+      {/* Row 1: Redemption Type + Redemption Status */}
+      <div className="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-3 mb-3">
+        <div className="border rounded-sm p-4">
+          <h3 className="text-sm font-medium mb-3">Redemption Type</h3>
+          <div className="w-full h-48">
+            <DynamicPieChart
+              pieData={[
+                { label: 'Predefined', value: inkindItemsSummary?.chartData?.redemptionType?.predefined || 0 },
+                { label: 'Walk-in', value: inkindItemsSummary?.chartData?.redemptionType?.walkIn || 0 },
+              ]}
+              colors={['#F4A462', '#2A9D90']}
+            />
+          </div>
         </div>
-        {movements.length !== 0 && (
-          <p className="text-xs text-muted-foreground mb-3">
-            Click on any logs to view details
-          </p>
-        )}
-        <div className="relative flex-1 min-h-[150px]">
+
+        <div className="border rounded-sm p-4">
+          <h3 className="text-sm font-medium mb-3">Redemption Status</h3>
+          <div className="w-full h-48">
+            <DynamicPieChart
+              pieData={[
+                { label: 'Redeemed', value: inkindItemsSummary?.totalRedeemedStock || 0 },
+                { label: 'Not Redeemed', value: Math.max(0, (inkindItemsSummary?.totalAssignedStock || 0) - (inkindItemsSummary?.totalRedeemedStock || 0)) },
+              ]}
+              colors={['#8B5CF6', '#D1D5DB']}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Row 2 & 3: Column 1 (OTP Status + Skip Reasons) + Column 2 (Overall Inkind Flow) */}
+      <div className="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-3 mb-3">
+        {/* Left Column: OTP Status + OTP Skip Reasons */}
+        <div className="flex flex-col gap-3">
+          <div className="border rounded-sm p-4">
+            <h3 className="text-sm font-medium mb-3">OTP Status</h3>
+            <div className="w-full h-48">
+              <DynamicPieChart
+                pieData={[
+                  { label: 'Skipped', value: inkindItemsSummary?.chartData?.otpStatus?.skipped || 0 },
+                  { label: 'Not Skipped', value: inkindItemsSummary?.chartData?.otpStatus?.notSkipped || 0 },
+                ]}
+                colors={['#FFA500', '#10B981']}
+              />
+            </div>
+          </div>
+
+          <div className="border rounded-sm p-4">
+            <h3 className="text-sm font-medium mb-3">OTP Skip Reasons</h3>
+            <div className="w-full h-48">
+              {inkindItemsSummary?.chartData?.otpSkipReasons && inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (
+                <DynamicPieChart
+                  pieData={inkindItemsSummary.chartData.otpSkipReasons.map((r: {reason: string; count: number}) => ({
+                    label: r.reason,
+                    value: r.count,
+                  }))}
+                  colors={['#6366F1', '#14B8A6', '#F43F5E', '#EAB308', '#A855F7']}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                  No data available
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Overall Inkind Flow */}
+        <div className="border rounded-sm p-4 flex flex-col">
+          <div className="flex items-start justify-between mb-0.5">
+            <h1 className="text-lg font-medium">Overall Inkind Flow</h1>
+          </div>
+          {movements.length !== 0 && (
+            <p className="text-xs text-muted-foreground mb-3">
+              Click on any logs to view details
+            </p>
+          )}
+          <div className="relative flex-1 min-h-[150px]">
           {txFetching && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 rounded-sm">
               <div className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -307,27 +365,28 @@ export default function InkindOverview() {
             )}
           </ScrollArea>
         </div>
+        <CustomPagination
+          currentPage={page}
+          handleNextPage={() =>
+            setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))
+          }
+          handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
+          handlePageSizeChange={(size) => {
+            setPerPage(size as number);
+            setPage(1);
+          }}
+          meta={{
+            total: meta?.total ?? 0,
+            currentPage: page,
+            lastPage: meta?.lastPage ?? 1,
+            perPage,
+            next: meta?.next ?? null,
+            prev: meta?.prev ?? null,
+          }}
+          perPage={perPage}
+        />
+        </div>
       </div>
-      <CustomPagination
-        currentPage={page}
-        handleNextPage={() =>
-          setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))
-        }
-        handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
-        handlePageSizeChange={(size) => {
-          setPerPage(size as number);
-          setPage(1);
-        }}
-        meta={{
-          total: meta?.total ?? 0,
-          currentPage: page,
-          lastPage: meta?.lastPage ?? 1,
-          perPage,
-          next: meta?.next ?? null,
-          prev: meta?.prev ?? null,
-        }}
-        perPage={perPage}
-      />
 
       <Sheet
         open={!!selectedMovement}

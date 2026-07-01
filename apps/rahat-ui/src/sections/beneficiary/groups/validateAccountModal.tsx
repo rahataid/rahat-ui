@@ -49,8 +49,8 @@ export default function ValidateBenefBankAccountByGroupUuid({
   };
 
   React.useEffect(() => {
-    validateBenefGroup.isSuccess && validateModal.onFalse();
-  }, [validateBenefGroup]);
+    if (validateBenefGroup.isSuccess) validateModal.onFalse();
+  }, [validateBenefGroup.isSuccess]);
 
   return (
     <Dialog open={validateModal.value} onOpenChange={validateModal.onToggle}>

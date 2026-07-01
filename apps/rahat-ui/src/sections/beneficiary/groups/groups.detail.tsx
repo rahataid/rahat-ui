@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   CloudDownloadIcon,
   LandmarkIcon,
+  Loader2,
   Trash2Icon,
   UsersRound,
   Phone,
@@ -19,6 +20,7 @@ import {
 } from '@tanstack/react-table';
 import {
   useExportBeneficiariesFailedBankAccount,
+  useGetBankCheckStatus,
   useGetBeneficiaryGroup,
   usePagination,
 } from '@rahat-ui/query';
@@ -84,6 +86,9 @@ export default function GroupDetailView() {
 
   const groupedBeneficiaries = [] as any;
   const { data: group, isLoading } = useGetBeneficiaryGroup(Id);
+
+  const isBankTransfer = group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER;
+  const { data: bankCheckStatus } = useGetBankCheckStatus(Id, isBankTransfer);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const tableData = React.useMemo(() => {
@@ -308,7 +313,7 @@ export default function GroupDetailView() {
               )}
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-start">
           <DataCard
             className="border-solid w-1/3 rounded-xl"
             iconStyle="bg-white text-secondary-muted"
@@ -336,6 +341,23 @@ export default function GroupDetailView() {
                 )}
               </div>
             </DataCard>
+          )}
+          {isBankTransfer && bankCheckStatus && (
+            <div className="border-solid w-1/3 rounded-xl border p-4 text-sm leading-snug">
+              {bankCheckStatus.pending > 0 ? (
+                <>
+                  <p className="text-muted-foreground font-medium mb-1 flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Bank validation in progress
+                  </p>
+                  <p>Current status: <span className="font-medium">{bankCheckStatus.total - bankCheckStatus.pending}/{bankCheckStatus.total}</span></p>
+                </>
+              ) : (
+                <p className="text-muted-foreground font-medium mb-1">Bank validation completed</p>
+              )}
+              <p className="text-green-600">Success: {bankCheckStatus.success}</p>
+              <p className="text-red-500">Failed: {bankCheckStatus.failed}</p>
+            </div>
           )}
         </div>
 

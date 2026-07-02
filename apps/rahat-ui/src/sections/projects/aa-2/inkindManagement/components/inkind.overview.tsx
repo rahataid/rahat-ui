@@ -35,6 +35,12 @@ import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type Movement = {
   id: number;
@@ -228,7 +234,7 @@ export default function InkindOverview() {
                 { label: 'Redeemed', value: inkindItemsSummary?.totalRedeemedStock || 0 },
                 { label: 'Not Redeemed', value: Math.max(0, (inkindItemsSummary?.totalAssignedStock || 0) - (inkindItemsSummary?.totalRedeemedStock || 0)) },
               ]}
-              colors={['#8B5CF6', '#D1D5DB']}
+              colors={['#FFA500', '#10B981']}
             />
           </div>
         </div>
@@ -253,21 +259,42 @@ export default function InkindOverview() {
 
           <div className="border rounded-sm p-4">
             <h3 className="text-sm font-medium mb-3">OTP Skip Reasons</h3>
-            <div className="w-full h-48">
-              {inkindItemsSummary?.chartData?.otpSkipReasons && inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (
-                <DynamicPieChart
-                  pieData={inkindItemsSummary.chartData.otpSkipReasons.map((r: {reason: string; count: number}) => ({
-                    label: r.reason,
-                    value: r.count,
-                  }))}
-                  colors={['#6366F1', '#14B8A6', '#F43F5E', '#EAB308', '#A855F7']}
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                  No data available
-                </div>
-              )}
-            </div>
+            {inkindItemsSummary?.chartData?.otpSkipReasons && inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (() => {
+              const reasons: {reason: string; count: number}[] = [...inkindItemsSummary.chartData.otpSkipReasons].sort((a, b) => b.count - a.count);
+              const max = reasons[0].count;
+              return (
+                <TooltipProvider>
+                  <ScrollArea className="h-48">
+                    <div className="space-y-2 pr-2">
+                      {reasons.map((r, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <div className="w-4 text-xs text-muted-foreground shrink-0 text-right">{i + 1}</div>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="w-32 shrink-0 truncate text-xs cursor-default">{r.reason}</div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs whitespace-normal">
+                              {r.reason}
+                            </TooltipContent>
+                          </Tooltip>
+                          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-indigo-500"
+                              style={{ width: `${(r.count / max) * 100}%` }}
+                            />
+                          </div>
+                          <div className="text-xs font-medium w-6 shrink-0 text-right">{r.count}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </TooltipProvider>
+              );
+            })() : (
+              <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">
+                No data available
+              </div>
+            )}
           </div>
         </div>
 

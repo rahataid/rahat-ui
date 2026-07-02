@@ -84,13 +84,17 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     const beneficiaryCount =
       payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ||
       1;
+    const amountDisbursed = Number(
+      (
+        (payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE) /
+        beneficiaryCount
+      ).toFixed(2),
+    );
     const correctedLogs = (exportPayoutLogs || []).map((row: Record<string, unknown>) => {
       const { 'Actual Budget': _, ...rest } = row;
       return {
         ...rest,
-        'Amount Disbursed': Number(
-          (Number(row['Actual Budget']) / beneficiaryCount).toFixed(2),
-        ),
+        'Amount Disbursed': amountDisbursed,
       };
     });
     const workbook = XLSX.utils.book_new();

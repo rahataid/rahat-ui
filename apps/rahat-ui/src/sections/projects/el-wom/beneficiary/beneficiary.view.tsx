@@ -13,7 +13,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useElkenyaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
 import React, { useEffect } from 'react';
 import ElkenyaTable from '../table.component';
@@ -65,6 +65,19 @@ function buildConsumerDetailQuery(rowData: any): string {
     p.set('createdAt', String(rowData.createdAt));
   }
   return p.toString();
+}
+
+function buildBackPathQuery(): string {
+  if (typeof window !== 'undefined' && window.location.hash) {
+    return `listHash=${encodeURIComponent(window.location.hash)}`;
+  }
+  return '';
+}
+
+function clearListHashFromUrl(): void {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('listHash');
+  window.history.replaceState(null, '', url.pathname + (url.search || ''));
 }
 
 const BENEFICIARY_EXPORT_CONFIG = {
@@ -125,6 +138,7 @@ export default function BeneficiaryView() {
     pagination,
     filters,
     setFilters,
+    setPagination,
     setNextPage,
     setPrevPage,
     setFirstPage,
@@ -134,9 +148,28 @@ export default function BeneficiaryView() {
     setSelectedListItems,
   } = usePagination();
 
+  const searchParams = useSearchParams();
+
+  const handleClearListHash = React.useCallback(() => clearListHashFromUrl(), []);
+
   React.useEffect(() => {
-    setFilters({});
-  }, [setFilters]);
+    const listHash = searchParams.get('listHash');
+    if (!listHash) return;
+    const hashParams = new URLSearchParams(listHash.replace(/^#/, ''));
+    const storedFilters = hashParams.get('filters');
+    const storedPagination = hashParams.get('pagination');
+    try {
+      if (storedFilters) setFilters(JSON.parse(storedFilters));
+    } catch {}
+    if (storedPagination) {
+      setTimeout(() => {
+        try {
+          setPagination(JSON.parse(storedPagination));
+        } catch {}
+      }, 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDateChange = (range: DateRange | undefined) => {
     setDateRange(range);
@@ -206,7 +239,9 @@ export default function BeneficiaryView() {
 
   const handleViewClick = (rowData: any) => {
     const qs = buildConsumerDetailQuery(rowData);
-    router.push(`/projects/el-wom/${id}/beneficiary/${rowData.uuid}?${qs}`);
+    const backQs = buildBackPathQuery();
+    const query = backQs ? `${qs}&${backQs}` : qs;
+    router.push(`/projects/el-wom/${id}/beneficiary/${rowData.uuid}?${query}`);
   };
 
   const columns = useElkenyaBeneficiaryTableColumns({ handleViewClick });
@@ -487,6 +522,7 @@ export default function BeneficiaryView() {
               noOfReferrals: 'No. of Referrals',
             }}
             setDateRange={setDateRange}
+            onClearAll={handleClearListHash}
           />
         )}
 

@@ -1,6 +1,6 @@
 'use client';
 import { useActivities, usePhases, usePhasesStore } from '@rahat-ui/query';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Heading, IconLabelBtn, NoResult } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { UUID } from 'crypto';
@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
@@ -21,6 +22,7 @@ export default function ActivitiesView() {
   const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
+  const hasActivities = (activitiesData?.length ?? 0) > 0;
 
   usePhases(projectID as UUID);
 
@@ -115,7 +117,7 @@ export default function ActivitiesView() {
     const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
     return [...pinned, ...unpinned];
   }, [pinnedPhases, uniquePhases]);
-
+  const hasPhases = sortedPhases.length > 0;
   const phaseDataMap = useMemo(() => {
     const map: Record<string, IActivitiesItem[]> = {};
     if (!activitiesData) return map;
@@ -146,7 +148,7 @@ export default function ActivitiesView() {
         const [leadTimeValue, leadTimeUnit] = (item.leadTime || '').split(' ');
         return {
           'Activity Title': item.title || 'N/A',
-          'Category': item.category || 'N/A',
+          Category: item.category || 'N/A',
           Phase: item.phase || 'N/A',
           Type: item.isAutomated ? 'Automated' : 'Manual',
           Responsibility: item.responsibility,
@@ -184,86 +186,108 @@ export default function ActivitiesView() {
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <IconLabelBtn
-                Icon={CloudDownloadIcon}
-                handleClick={handleDownloadReport}
-                name="Download Report"
-                variant="outline"
-              />
+              <TooltipWrapper
+                tip={
+                  !hasActivities
+                    ? 'Create an activity before downloading the report.'
+                    : ''
+                }
+              >
+                <IconLabelBtn
+                  Icon={CloudDownloadIcon}
+                  handleClick={handleDownloadReport}
+                  name="Download Report"
+                  variant="outline"
+                  disabled={!hasActivities}
+                />
+              </TooltipWrapper>
             </RoleAuth>
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <IconLabelBtn
-                Icon={Plus}
-                handleClick={() =>
-                  router.push(
-                    `/projects/aa/${projectID}/activities/add?nav=mainPage`,
-                  )
+              <TooltipWrapper
+                tip={
+                  !hasPhases ? 'Create a phase before adding activities.' : ''
                 }
-                name="Add Activity"
-                variant="default"
-              />
+              >
+                <IconLabelBtn
+                  Icon={Plus}
+                  handleClick={() =>
+                    router.push(
+                      `/projects/aa/${projectID}/activities/add?nav=mainPage`,
+                    )
+                  }
+                  name="Add Activity"
+                  variant="default"
+                  disabled={!hasPhases}
+                />
+              </TooltipWrapper>
             </RoleAuth>
           </div>
         </div>
-        <div
-          className={`flex gap-4 ${
-            state === 'expanded'
-              ? 'w-[calc(100vw-18rem)]'
-              : 'w-[calc(100vw-5rem)]'
-          } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
-          style={{ scrollbarGutter: 'stable' }}
-        >
-          {sortedPhases.map((phase) => (
-            <div key={phase} className="min-w-[320px] w-full">
-              <PhaseContent
-                title={phase.charAt(0) + phase.slice(1).toLowerCase()}
-                description={
-                  PHASE_DESCRIPTIONS[phase] ??
-                  `Overview of ${phase.toLowerCase()} phase`
-                }
-                phases={phaseDataMap[phase] ?? []}
-                loading={isLoading}
-                isPinned={pinnedPhases.includes(phase)}
-                onTogglePin={() => togglePin(phase)}
-              />
-            </div>
-          ))}
-          {sortedPhases.length === 2 && (
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.Municipality]}
-              hasContent={false}
-            >
-              <div className="min-w-[320px]">
-                <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
-                  <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
-                    <div className="flex flex-col gap-1 items-center ">
-                      <Button
-                        onClick={handleAddPhase}
-                        className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
-                      >
-                        <div className="flex items-center justify-center w-4 h-4">
-                          <Plus
-                            className="  text-blue-500 hover:text-white"
-                            size={'2rem'}
-                          />
-                        </div>
-                      </Button>
-                      <p className="text-base font-medium text-blue-500 ">
-                        Add Phase
-                      </p>
-                      <p className="text-sm text-blue-400">
-                        Click here to add new phase
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+        {!hasPhases ? (
+          <div className="w-full flex items-center justify-center h-[calc(100vh-180px)]">
+            <NoResult message="No Data Available" />
+          </div>
+        ) : (
+          <div
+            className={`flex gap-4 ${
+              state === 'expanded'
+                ? 'w-[calc(100vw-18rem)]'
+                : 'w-[calc(100vw-5rem)]'
+            } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+            style={{ scrollbarGutter: 'stable' }}
+          >
+            {sortedPhases.map((phase) => (
+              <div key={phase} className="min-w-[320px] w-full">
+                <PhaseContent
+                  title={phase.charAt(0) + phase.slice(1).toLowerCase()}
+                  description={
+                    PHASE_DESCRIPTIONS[phase] ??
+                    `Overview of ${phase.toLowerCase()} phase`
+                  }
+                  phases={phaseDataMap[phase] ?? []}
+                  loading={isLoading}
+                  isPinned={pinnedPhases.includes(phase)}
+                  onTogglePin={() => togglePin(phase)}
+                />
               </div>
-            </RoleAuth>
-          )}
-        </div>
+            ))}
+            {sortedPhases.length === 2 && (
+              <RoleAuth
+                roles={[AARoles.ADMIN, AARoles.Municipality]}
+                hasContent={false}
+              >
+                <div className="min-w-[320px]">
+                  <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
+                    <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
+                      <div className="flex flex-col gap-1 items-center ">
+                        <Button
+                          onClick={handleAddPhase}
+                          className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
+                        >
+                          <div className="flex items-center justify-center w-4 h-4">
+                            <Plus
+                              className="  text-blue-500 hover:text-white"
+                              size={'2rem'}
+                            />
+                          </div>
+                        </Button>
+                        <p className="text-base font-medium text-blue-500 ">
+                          Add Phase
+                        </p>
+                        <p className="text-sm text-blue-400">
+                          Click here to add new phase
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </RoleAuth>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

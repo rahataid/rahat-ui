@@ -12,7 +12,7 @@ import {
 } from 'apps/rahat-ui/src/utils/getColorCard';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
-import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
+import { Info, MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { roundValue } from '../aws/utils/color.utils';
@@ -42,6 +42,10 @@ export default function RiverWatchView() {
 
   // modification required to handle multiple rivers
   const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
+
+  const hasHistory =
+    Array.isArray(primaryRiverWatchInfo?.history) &&
+    primaryRiverWatchInfo.history.length > 0;
 
   const cardData = React.useMemo(
     () => [
@@ -83,12 +87,18 @@ export default function RiverWatchView() {
   return (
     <div className="flex flex-col space-y-4">
       <div
-        className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"
-        onClick={() =>
+        className={`p-4 rounded-sm border shadow flex justify-between space-x-4 ${
+          hasHistory
+            ? 'cursor-pointer hover:shadow-md'
+            : 'cursor-not-allowed opacity-80'
+        }`}
+        onClick={() => {
+          if (!hasHistory) return;
+
           router.push(
             `/projects/aa/${projectId}/data-sources/dhm/river-watch/${primaryRiverWatchInfo?.series_id}`,
-          )
-        }
+          );
+        }}
       >
         <div className="w-full">
           <div className="flex justify-between gap-4">
@@ -119,28 +129,46 @@ export default function RiverWatchView() {
             })}
           </div>
         </div>
-        <div
-          className={`p-4 rounded-sm border shadow text-center w-80 ${renderCardColor(
-            primaryRiverWatchInfo?.status,
-          )}`}
-        >
-          <p className="text-primary w-full font-semibold text-3xl/10">
-            {roundValue(primaryRiverWatchInfo?.waterLevel?.value)}
-          </p>
-          <p className="text-sm/6 font-medium">Water Level</p>
-          <p className="text-gray-500 text-sm/6">
-            {dateFormat(
-              primaryRiverWatchInfo?.waterLevel?.datetime,
-              'eee, MMM d yyyy, hh:mm:ss a',
-            )}
-          </p>
-          <Badge
-            className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
+        {hasHistory && (
+          <div
+            className={`p-4 rounded-sm border shadow text-center w-80 ${renderCardColor(
+              primaryRiverWatchInfo?.status,
+            )}`}
           >
-            {primaryRiverWatchInfo?.status}
-          </Badge>
-        </div>
+            <p className="text-primary w-full font-semibold text-3xl/10">
+              {roundValue(primaryRiverWatchInfo?.waterLevel?.value)}
+            </p>
+            <p className="text-sm/6 font-medium">Water Level</p>
+            <p className="text-gray-500 text-sm/6">
+              {dateFormat(
+                primaryRiverWatchInfo?.waterLevel?.datetime,
+                'eee, MMM d yyyy, hh:mm:ss a',
+              )}
+            </p>
+            <Badge
+              className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
+            >
+              {primaryRiverWatchInfo?.status}
+            </Badge>
+          </div>
+        )}
       </div>
+      {!hasHistory && (
+        <div className="flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-3">
+          <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+
+          <div>
+            <p className="text-sm font-medium text-amber-900">
+              Historical data is currently unavailable.
+            </p>
+
+            <p className="text-sm text-amber-700">
+              The details page cannot be viewed at this time. Please try again
+              later.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -34,6 +34,7 @@ import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLo
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -79,24 +80,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   });
 
   const handleDownload = () => {
-    // quick fix for dividing the amount disbursed by the number of beneficiaries in the group
-    // we have to fixed latter from backed site 
-    const beneficiaryCount =
-      payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ||
-      1;
-    const amountDisbursed = Number(
-      (
-        (payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE) /
-        beneficiaryCount
-      ).toFixed(2),
+    const correctedLogs = (exportPayoutLogs || []).map(
+      (row: Record<string, unknown>) => {
+        return {
+          ...row,
+          'Updated At': dateFormat(row['Updated At'] as string),
+        };
+      },
     );
-    const correctedLogs = (exportPayoutLogs || []).map((row: Record<string, unknown>) => {
-      const { 'Actual Budget': _, ...rest } = row;
-      return {
-        ...rest,
-        'Amount Disbursed': amountDisbursed,
-      };
-    });
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(correctedLogs);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');

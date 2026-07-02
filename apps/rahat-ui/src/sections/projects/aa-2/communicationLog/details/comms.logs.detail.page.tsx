@@ -194,7 +194,6 @@ export default function CommsLogsDetailPage() {
       }
       const logsData = sessionLogs?.httpReponse?.data?.data;
       const total = logsMeta?.total ?? 0;
-
       exportAllLogs(logsData, logs, activityDetail, count.data.data, total);
       toast.success('Communication logs exported successfully!');
     } catch (error) {
@@ -218,9 +217,8 @@ export default function CommsLogsDetailPage() {
     }
 
     return from === 'activities'
-      ? `/projects/aa/${projectID}/activities/${activityId}${
-          backFrom ? `?from=${backFrom}` : ''
-        }`
+      ? `/projects/aa/${projectID}/activities/${activityId}${backFrom ? `?from=${backFrom}` : ''
+      }`
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
   }, [from, projectID, activityId, tab, subTab, backFrom]);
 
@@ -438,13 +436,12 @@ export default function CommsLogsDetailPage() {
                   </div>
 
                   <Badge
-                    className={`${
-                      logs?.sessionDetails?.status === 'COMPLETED'
-                        ? 'bg-green-100 text-green-600 hover:bg-green-100'
-                        : logs?.sessionDetails?.status === 'PENDING'
+                    className={`${logs?.sessionDetails?.status === 'COMPLETED'
+                      ? 'bg-green-100 text-green-600 hover:bg-green-100'
+                      : logs?.sessionDetails?.status === 'PENDING'
                         ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
                         : 'bg-red-100 text-red-600 hover:bg-red-100'
-                    } rounded-full px-3`}
+                      } rounded-full px-3`}
                   >
                     {logs?.sessionDetails?.status}
                   </Badge>

@@ -284,29 +284,25 @@ export default function EditActivity() {
     if (typeof window === 'undefined') return;
     if (isActivityLoading) return;
 
-    if (isAddComm) {
-      // Wait till the component is fully rendered before opening the form and scrolling
-      setTimeout(() => {
-        setOpen(true);
-      }, 100);
+    const shouldOpen = isAddComm || editCommunicationForm.value;
 
-      setTimeout(() => {
-        if (!scrollAreaRef.current) return;
+    if (!shouldOpen) return;
+    if (shouldOpen) {
+      if (!scrollAreaRef.current) return;
 
-        // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
-        const viewport = scrollAreaRef.current.closest(
-          '[data-radix-scroll-area-viewport]',
-        );
+      // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
+      const viewport = scrollAreaRef.current.closest(
+        '[data-radix-scroll-area-viewport]',
+      );
 
-        if (viewport) {
-          viewport.scrollTo({
-            top: scrollAreaRef.current.offsetTop,
-            behavior: 'smooth',
-          });
-        }
-      }, 500);
+      if (viewport) {
+        viewport.scrollTo({
+          top: scrollAreaRef.current.offsetTop,
+          behavior: 'smooth',
+        });
+      }
     }
-  }, [isActivityLoading, isAddComm]);
+  }, [isActivityLoading, isAddComm, editCommunicationForm.value]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {

@@ -468,6 +468,60 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
   return query;
 };
 
+export const useSyncForecastData = (uuid: UUID) => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({ projectUUID }: { projectUUID: UUID }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.jobs.sources-data.syncForecastData',
+          payload: {},
+        },
+      });
+    },
+
+    onSuccess: () => {
+      q.reset();
+      const forecastQueryKeys = new Set([
+        'dhmwaterlevels', 'dhmrainfalllevels', 'dhmsingleserieswaterlevels',
+        'dhmtemperaturelevels', 'dhmhumiditylevels', 'dhmsingleseriestemperaturelevels',
+        'dhmsingleserieshumiditylevels', 'glofas_prob_flood_all', 'glofas_prob_flood_details',
+        'gfhwaterlevels',
+      ]);
+      qc.invalidateQueries({
+        predicate: (query) => {
+          const [key, queryUuid] = query.queryKey as [string, UUID];
+          return queryUuid === uuid && forecastQueryKeys.has(key);
+        },
+      });
+      toast.fire({
+        title: 'Forecast data synced successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while syncing forecast data.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+}
+
+
 export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -737,11 +791,11 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
             ...payload,
             activeYear:
               settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-                'active_year'
+              'active_year'
               ],
             riverBasin:
               settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-                'river_basin'
+              'river_basin'
               ],
           },
         },
@@ -775,11 +829,11 @@ export const useSingleTriggerStatement = (
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
     ? {
-        id: triggerId,
-      }
+      id: triggerId,
+    }
     : {
-        uuid: triggerId,
-      };
+      uuid: triggerId,
+    };
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
     queryFn: async () => {
@@ -795,8 +849,7 @@ export const useSingleTriggerStatement = (
       } catch (error: any) {
         const errorMessage =
           error?.response?.data?.message ||
-          `Failed to fetch ${
-            version ? 'version' : 'trigger statement'
+          `Failed to fetch ${version ? 'version' : 'trigger statement'
           } details`;
 
         toast.fire({
@@ -996,7 +1049,7 @@ export const useGetSeriesByDataSource = (
               levelType,
               riverBasin:
                 settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-                  'river_basin'
+                'river_basin'
                 ],
             },
           },

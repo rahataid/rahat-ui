@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { format } from 'date-fns';
-import { Activity, CalendarIcon, Trash2 } from 'lucide-react';
+import { Activity, CalendarIcon, Trash2, CloudCheck } from 'lucide-react';
 
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
@@ -32,6 +32,7 @@ import { useParams, useRouter } from 'next/navigation';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectInfo,
+  useSyncForecastData,
   useTabConfiguration,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
@@ -114,6 +115,7 @@ export default function DataSources() {
   const { data: projectInfo, isLoading: isProjectLoading } = useProjectInfo(
     projectID as UUID,
   );
+  const syncData = useSyncForecastData(projectID as UUID);
 
   const projectType = projectInfo?.value?.project_type;
   const isHeatWave = projectType === 'HEAT_WAVE';
@@ -186,18 +188,29 @@ export default function DataSources() {
           title="Forecast Data"
           description="Track all the data sources reports here"
         />
-        <IconLabelBtn
-          Icon={Activity}
-          className="ml-auto px-4 text-xs mt-5"
-          variant="outline"
-          name="Data Health Monitor"
-          size="xs"
-          handleClick={() => {
-            router.push(
-              `/projects/aa/${projectID}/data-sources/health-monitor`,
-            );
-          }}
-        />
+        <div className='flex gap-4 ml-auto '>
+          <IconLabelBtn
+            Icon={Activity}
+            className="px-4 text-xs mt-5"
+            variant="outline"
+            name="Data Health Monitor"
+            size="xs"
+            handleClick={() => {
+              router.push(
+                `/projects/aa/${projectID}/data-sources/health-monitor`,
+              );
+            }}
+          />
+          <IconLabelBtn
+            Icon={CloudCheck}
+            className="px-4  cursor-pointer text-xs mt-5 "
+            variant="outline"
+            name={syncData.isPending ? "Syncing Data" : "Data Sync"}
+            size="xs"
+            disabled={syncData.isPending}
+            handleClick={() => syncData.mutateAsync({ projectUUID: projectID as UUID })}
+          />
+        </div>
       </div>
 
       {isLoading ? (

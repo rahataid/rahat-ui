@@ -93,9 +93,9 @@ export default function RiverWatchView() {
         <div className="w-full">
           <div className="flex justify-between gap-4">
             <Heading
-              title={primaryRiverWatchInfo?.name}
+              title={primaryRiverWatchInfo?.basin}
               titleStyle="text-xl/6 font-semibold"
-              description={primaryRiverWatchInfo?.basin}
+              description={primaryRiverWatchInfo?.name}
               updatedAt={updatedAt}
             />
             <div>

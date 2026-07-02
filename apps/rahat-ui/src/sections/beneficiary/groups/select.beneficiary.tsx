@@ -10,7 +10,6 @@ import {
 import React from 'react';
 import {
   getCoreRowModel,
-  getFilteredRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -34,10 +33,12 @@ export default function SelectBeneficiaryView() {
     setPagination,
     setFilters,
     filters,
+    resetFilters,
   } = usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
+    resetFilters();
   }, []);
   const { data: Beneficiaries } = useBeneficiaryList({
     ...pagination,
@@ -52,7 +53,6 @@ export default function SelectBeneficiaryView() {
     data: Beneficiaries?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
@@ -95,11 +95,9 @@ export default function SelectBeneficiaryView() {
           <div className="flex space-x-2 items-center mb-2">
             <SearchInput
               name="beneficiary"
-              value={
-                (table.getColumn('name')?.getFilterValue() as string) ?? ''
-              }
+              value={filters?.name ?? ''}
               onSearch={(event) =>
-                table.getColumn('name')?.setFilterValue(event.target.value)
+                setFilters({ ...filters, name: event.target.value })
               }
               className="rounded w-full"
             />

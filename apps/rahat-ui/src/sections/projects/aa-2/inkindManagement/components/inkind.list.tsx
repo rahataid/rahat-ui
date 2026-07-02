@@ -228,6 +228,13 @@ export default function InkindList() {
 
     if (mode === 'remove') {
       const available = item.availableStock ?? 0;
+      if (available <= 0) {
+        setStockDialog((prev) => ({
+          ...prev,
+          error: 'No stock available to remove.',
+        }));
+        return;
+      }
       if (qty > available) {
         setStockDialog((prev) => ({
           ...prev,

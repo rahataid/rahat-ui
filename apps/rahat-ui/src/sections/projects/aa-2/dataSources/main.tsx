@@ -205,7 +205,7 @@ export default function DataSources() {
             Icon={CloudCheck}
             className="px-4  cursor-pointer text-xs mt-5 "
             variant="outline"
-            name={syncData.isPending ? "Syncing Data" : "Data Sync"}
+            name={syncData.isPending ? "Syncing Data" : "Sync Data"}
             size="xs"
             disabled={syncData.isPending}
             handleClick={() => syncData.mutateAsync({ projectUUID: projectID as UUID })}

@@ -80,8 +80,16 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   });
 
   const handleDownload = () => {
+    const correctedLogs = (exportPayoutLogs || []).map(
+      (row: Record<string, unknown>) => {
+        return {
+          ...row,
+          'Updated At': dateFormat(row['Updated At'] as string),
+        };
+      },
+    );
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(exportPayoutLogs);
+    const worksheet = XLSX.utils.json_to_sheet(correctedLogs);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };

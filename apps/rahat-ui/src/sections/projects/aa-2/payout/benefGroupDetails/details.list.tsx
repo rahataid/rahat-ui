@@ -79,8 +79,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   });
 
   const handleDownload = () => {
+    // quick fix for dividing the amount disbursed by the number of beneficiaries in the group
+    // we have to fixed latter from backed site 
+    const beneficiaryCount =
+      payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ||
+      1;
+    const correctedLogs = (exportPayoutLogs || []).map((row: Record<string, unknown>) => {
+      const { 'Actual Budget': _, ...rest } = row;
+      return {
+        ...rest,
+        'Amount Disbursed': Number(
+          (Number(row['Actual Budget']) / beneficiaryCount).toFixed(2),
+        ),
+      };
+    });
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(exportPayoutLogs);
+    const worksheet = XLSX.utils.json_to_sheet(correctedLogs);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };

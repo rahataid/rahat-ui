@@ -300,13 +300,63 @@ export default function GroupDetail({ uuid }: IProps) {
       return;
     }
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
+      const buffer = await selectedFile.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const rows: Record<string, string | number | boolean>[] =
+        XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
-      await updateBulkBeneficiary.mutateAsync({
-        groupUUID: uuid,
-        data: formData,
-      });
+      if (rows.length > 0) {
+        const allColumns = Object.keys(rows[0]);
+        const nonEmptyColumns = allColumns.filter((col) =>
+          rows.some(
+            (row) =>
+              row[col] !== '' && row[col] !== null && row[col] !== undefined,
+          ),
+        );
+        const cleanedRows = rows.map((row) =>
+          nonEmptyColumns.reduce((acc, col) => {
+            acc[col] = row[col];
+            return acc;
+          }, {} as Record<string, string | number | boolean>),
+        );
+
+        const newWorkbook = XLSX.utils.book_new();
+        const newWorksheet = XLSX.utils.json_to_sheet(cleanedRows);
+        XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, sheetName);
+        const excelBuffer = XLSX.write(newWorkbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+        const cleanedFile = new File(
+          [
+            new Blob([excelBuffer], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            }),
+          ],
+          selectedFile.name,
+          {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          },
+        );
+
+        const formData = new FormData();
+        formData.append('file', cleanedFile);
+
+        await updateBulkBeneficiary.mutateAsync({
+          groupUUID: uuid,
+          data: formData,
+        });
+      } else {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        await updateBulkBeneficiary.mutateAsync({
+          groupUUID: uuid,
+          data: formData,
+        });
+      }
+
       setUploadOpen(false);
       setSelectedFile(null);
       router.push('/group');

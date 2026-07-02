@@ -9,6 +9,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -55,6 +62,7 @@ export default function VerificationPayout() {
   const inputRef = useRef<HTMLInputElement>(null);
   const verifyManualPayout = useVerifyManualPayout();
   const [globalFilter, setGlobalFilter] = useState('');
+  const [matchBy, setMatchBy] = useState<'bankAccount' | 'phoneNumber'>('bankAccount');
   const columns = React.useMemo<ColumnDef<any>[]>(
     () =>
       data[0]?.map((header: any, index: number) => {
@@ -193,6 +201,20 @@ export default function VerificationPayout() {
 
     const doctype = allowedExtensions[extension];
 
+    if (matchBy === 'phoneNumber' && data.length > 1) {
+      const headers: string[] = (data[0] ?? []).map((h: unknown) =>
+        h?.toString().toLowerCase().replace(/\s+/g, '_') ?? '',
+      );
+      const phoneIdx = headers.indexOf('phone_number');
+      if (phoneIdx === -1) {
+        return toast.error('Phone Number column not found in the uploaded file.');
+      }
+      const missingPhone = data.slice(1).some((row) => !row[phoneIdx]);
+      if (missingPhone) {
+        return toast.error('Some rows are missing a Phone Number value.');
+      }
+    }
+
     try {
       await verifyManualPayout.mutateAsync({
         selectedFile,
@@ -200,6 +222,7 @@ export default function VerificationPayout() {
         projectId: id,
         payload: {
           payoutUUID: payoutId,
+          matchBy,
         },
       });
 
@@ -212,7 +235,7 @@ export default function VerificationPayout() {
     }
   };
 
-  const handleSampleDownload = (e) => {
+  const handleSampleDownload = (_e: React.MouseEvent) => {
     fetch(DOWNLOAD_FILE_URL)
       .then((response) => response.blob())
       .then((blob) => {
@@ -251,6 +274,18 @@ export default function VerificationPayout() {
 
         <div className=" p-4 border bg-card rounded-sm">
           <div className="flex justify-between space-x-2">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Match records by:</span>
+              <Select value={matchBy} onValueChange={(v) => setMatchBy(v as 'bankAccount' | 'phoneNumber')}>
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bankAccount">Bank Account</SelectItem>
+                  <SelectItem value="phoneNumber">Phone Number</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="relative w-full">
               <Input
                 type="file"

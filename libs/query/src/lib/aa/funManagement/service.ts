@@ -35,9 +35,14 @@ export const useFetchTokenStatsStellar = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
 
+  useEffect(() => {
+    setStellarTokenStats([]);
+    setStellarTransaction([]);
+  }, [projectUUID]);
+
   const query = useQuery({
     // queryKey: ['aa.stellar.getStellarStats', restPayloadString],
-    queryKey: ['aa.chain.getDisbursementStats', restPayloadString],
+    queryKey: ['aa.chain.getDisbursementStats', projectUUID, restPayloadString],
     refetchOnMount: true,
     staleTime: 20 * 60 * 1000, // 20 minutes
     queryFn: async () => {

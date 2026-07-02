@@ -1,6 +1,6 @@
 'use client';
-import { useActivities, usePhases, usePhasesStore } from '@rahat-ui/query';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { useActivities, usePhases } from '@rahat-ui/query';
+import { Heading, IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { UUID } from 'crypto';
@@ -22,11 +22,8 @@ export default function ActivitiesView() {
     perPage: 9999,
   });
 
-  usePhases(projectID as UUID);
-
-  const { phases } = usePhasesStore((state) => ({
-    phases: state.phases,
-  }));
+  const { data: phasesData } = usePhases(projectID as UUID);
+  const phases = phasesData ?? [];
   const PINNED_PHASES_KEY = 'aa_pinned_phases';
 
   const [pinnedPhases, setPinnedPhases] = useState<string[]>([]);
@@ -78,11 +75,11 @@ export default function ActivitiesView() {
   );
 
   const uniquePhaseNames = Array.from(
-    new Set(phases.map((phase) => phase.name)),
+    new Set(phases.map((phase: any) => phase.name)),
   );
 
   const PHASE_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
-    uniquePhaseNames.map((name) => [
+    uniquePhaseNames.map((name: string) => [
       name,
       `Overview of ${name.toLowerCase()} phase`,
     ]),
@@ -101,14 +98,6 @@ export default function ActivitiesView() {
     return Array.from(phaseSet);
   }, [activitiesData]);
 
-  // For testing the design
-  // const sortedPhases = [
-  //   'PREPAREDNESS',
-  //   'ACTIVATION',
-  //     'READINESS',
-  //     'POST-ACTIVATION',
-  //     'PRE-ACTIVATION',
-  // ];
 
   const sortedPhases = useMemo(() => {
     const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
@@ -169,6 +158,15 @@ export default function ActivitiesView() {
       `/projects/aa/${projectID}/trigger-statements/phase/add?from=activities`,
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-200px)] flex justify-center items-center">
+        <SpinnerLoader />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="p-4">
@@ -209,11 +207,10 @@ export default function ActivitiesView() {
           </div>
         </div>
         <div
-          className={`flex gap-4 ${
-            state === 'expanded'
-              ? 'w-[calc(100vw-18rem)]'
-              : 'w-[calc(100vw-5rem)]'
-          } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+          className={`flex gap-4 ${state === 'expanded'
+            ? 'w-[calc(100vw-18rem)]'
+            : 'w-[calc(100vw-5rem)]'
+            } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
           style={{ scrollbarGutter: 'stable' }}
         >
           {sortedPhases.map((phase) => (

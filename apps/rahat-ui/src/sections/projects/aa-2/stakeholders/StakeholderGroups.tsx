@@ -8,10 +8,7 @@ import {
 import { Users } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback } from 'react';
-import {
-  useStakeholdersGroups,
-  useStakeholdersGroupsStore,
-} from '@rahat-ui/query';
+import { useStakeholdersGroups } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 
@@ -21,16 +18,14 @@ const StakeGoldersGroups = () => {
   const searchParams = useSearchParams();
   const [filters, setFilters] = React.useState({ search: '' });
 
-  const { isLoading } = useStakeholdersGroups(id as UUID, {
+  const { isLoading, data } = useStakeholdersGroups(id as UUID, {
     sort: 'createdAt',
     order: 'desc',
     perPage: 1000,
     ...filters,
   });
 
-  const { stakeholdersGroups } = useStakeholdersGroupsStore((state) => ({
-    stakeholdersGroups: state.stakeholdersGroups,
-  }));
+  const stakeholdersGroups = data?.data ?? [];
 
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {

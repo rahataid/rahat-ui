@@ -12,6 +12,10 @@ export const usePhasesStats = (uuid: UUID) => {
     setPhasesStats: state.setPhasesStats,
   }));
 
+  useEffect(() => {
+    setPhasesStats({});
+  }, [uuid]);
+
   const query = useQuery({
     queryKey: ['phasesStats', uuid],
     queryFn: async () => {

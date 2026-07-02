@@ -141,6 +141,10 @@ export const usePhases = (uuid: UUID) => {
     settings: state.settings,
   }));
 
+  useEffect(() => {
+    setPhase([]);
+  }, [uuid]);
+
   const activeYear =
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['active_year'];
 
@@ -163,6 +167,7 @@ export const usePhases = (uuid: UUID) => {
       return mutate.data;
     },
     enabled: !!(uuid && activeYear && riverBasin),
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
   React.useEffect(() => {
     if (query.data) {

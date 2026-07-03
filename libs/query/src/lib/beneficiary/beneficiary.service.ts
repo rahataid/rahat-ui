@@ -320,8 +320,9 @@ export const useValidateBeneficaryBankAccount = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => validateBeneficiaryBankAccount(payload),
-    onSuccess: async () => {
+    onSuccess: async (_data, uuid) => {
       await qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
+      qc.removeQueries({ queryKey: ['BANK_CHECK_STATUS', uuid] });
       toast.fire({
         title: 'Accounts check in progress. Data will be listed soon',
         icon: 'success',
@@ -738,6 +739,35 @@ export const useGetBeneficiaryGroup = (
     },
     queryClient,
   );
+};
+
+const getBankCheckStatus = async (uuid: UUID) => {
+  const response = await api.get(`/beneficiaries/groups/${uuid}/bank-check-status`);
+  return response?.data?.data;
+};
+
+export const useGetBankCheckStatus = (uuid: UUID, isBankTransfer: boolean, clickedValidateBankAccount: boolean) => {
+  const qc = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['BANK_CHECK_STATUS', uuid],
+    queryFn: () => getBankCheckStatus(uuid),
+    enabled: !!uuid && isBankTransfer,  // always fetch once on mount
+    refetchInterval: (q) => {
+      if (!clickedValidateBankAccount) return false;  // only poll after button clicked
+      const d = q.state.data;
+      if (!d || d.pending === 0) return false;
+      return 5000;
+    },
+  });
+
+  useEffect(() => {
+    if (query.data) {
+      qc.invalidateQueries({ queryKey: [GET_BENEFICIARY_GROUP, uuid] });
+    }
+  }, [query.data]);
+
+  return query;
 };
 
 export const useExportBeneficiariesFailedBankAccount = (

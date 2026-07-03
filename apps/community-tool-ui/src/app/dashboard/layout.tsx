@@ -3,16 +3,30 @@
 import * as React from 'react';
 import { Nav } from '../../components/nav';
 import AuthGuard from '../../guards/auth-guard';
+import { socket } from 'apps/community-tool-ui/src/socket';
 import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
+import { useQueryClient } from '@rumsan/react-query';
+import { toast } from 'react-toastify';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+
+  React.useEffect(() => {
+    const handleGroupUpdated = (groupUuid: any) => {
+      toast.success('All beneficiaries have been updated successfully.');
+    };
+    socket.on('beneficiary-group-updated', handleGroupUpdated);
+    return () => {
+      socket.off('beneficiary-group-updated', handleGroupUpdated);
+    };
+  }, []);
   return (
     <AuthGuard>
       <Nav />

@@ -220,6 +220,7 @@ export default function PhaseDetail() {
               isActive={phase?.isActive}
               chartType="donut"
               hidePin={true}
+              disbursementMethods={phase?.disbursementConfig?.disbursementMethods}
             />
             {isTriggerLogicEnabled && (
               <ExtendedTriggerLogicCard

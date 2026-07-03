@@ -157,6 +157,7 @@ export default function TriggerStatementView() {
                 isPinned={pinnedPhaseIds.includes(d.uuid)}
                 onTogglePin={() => togglePinPhase(d.uuid)}
                 hasExtendedLogic={!!d?.extendedTriggerLogic}
+                disbursementMethods={d?.disbursementConfig?.disbursementMethods}
               />
             ))}
 

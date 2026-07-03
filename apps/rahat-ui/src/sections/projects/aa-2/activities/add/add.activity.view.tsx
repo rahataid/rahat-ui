@@ -145,7 +145,7 @@ export default function AddActivities() {
   const appTransports = useListAllTransports();
 
   const { FormSchema, form, communicationForm, defaultCommunicationValues } =
-    useActivityForm(phases, appTransports);
+    useActivityForm(appTransports);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -244,8 +244,11 @@ export default function AddActivities() {
   );
 
   useEffect(() => {
-    if (selectedPhase?.name === 'PREPAREDNESS') {
+    if (!selectedPhase?.isAutomatedActivity) {
       form.setValue('isAutomated', false);
+    }
+    if (!selectedPhase?.isRequiredLeadTime) {
+      form.setValue('leadTime', '');
     }
   }, [selectedPhase, form]);
 

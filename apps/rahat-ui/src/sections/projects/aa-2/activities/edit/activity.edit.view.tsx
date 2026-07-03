@@ -87,7 +87,6 @@ export default function EditActivity() {
   const redirectTo = searchParams.get('from');
   const editCommunicationForm = useBoolean();
 
-  const isAddComm = window.location.hash === '#comm';
   // Query goes here
   const { data: users } = useUserList({
     page: 1,
@@ -284,9 +283,8 @@ export default function EditActivity() {
     if (typeof window === 'undefined') return;
     if (isActivityLoading) return;
 
-    const shouldOpen = isAddComm || editCommunicationForm.value;
+    const shouldOpen = open || editCommunicationForm.value;
 
-    if (!shouldOpen) return;
     if (shouldOpen) {
       if (!scrollAreaRef.current) return;
 
@@ -302,7 +300,7 @@ export default function EditActivity() {
         });
       }
     }
-  }, [isActivityLoading, isAddComm, editCommunicationForm.value]);
+  }, [isActivityLoading, open, editCommunicationForm.value]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -329,6 +327,14 @@ export default function EditActivity() {
       setCommunicationData(transformedData);
     }
   }, [activityDetail, form, appTransports]);
+
+  const isSubmitButtonDisabled =
+    updateActivity?.isPending ||
+    uploadFile?.isPending ||
+    audioUploading ||
+    open ||
+    editCommunicationForm.value ||
+    !!form.formState.errors.responsibility;
 
   // this code need to be removed after testing
   // const isVoiceAudioMissing = communicationData.some((comm) => {
@@ -408,14 +414,7 @@ export default function EditActivity() {
                     <Button
                       className="  w-36"
                       type="submit"
-                      disabled={
-                        updateActivity?.isPending ||
-                        uploadFile?.isPending ||
-                        audioUploading ||
-                        open ||
-                        editCommunicationForm.value ||
-                        !!form.formState.errors.responsibility
-                      }
+                      disabled={isSubmitButtonDisabled}
                     >
                       Update
                     </Button>
@@ -748,7 +747,7 @@ export default function EditActivity() {
                     onSave={handleSave}
                     setLoading={setAudioUploading}
                     appTransports={appTransports}
-                    isMultiSelect={isAddComm}
+                    isMultiSelect={open}
                     editMode={editCommunicationForm}
                   />
                 )}

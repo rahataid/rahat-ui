@@ -341,6 +341,19 @@ export default function GroupDetail({ uuid }: IProps) {
           },
         );
 
+        // Download the cleaned file for verification
+        const url = URL.createObjectURL(cleanedFile);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cleaned-${selectedFile.name}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        //continue with payload
+        
+
         const formData = new FormData();
         formData.append('file', cleanedFile);
 

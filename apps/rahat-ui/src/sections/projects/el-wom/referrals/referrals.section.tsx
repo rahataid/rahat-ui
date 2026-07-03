@@ -38,6 +38,9 @@ import {
   UserCheck,
   Trophy,
   Layers,
+  Store,
+  Users2,
+  ShieldCheck,
 } from 'lucide-react';
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
@@ -131,6 +134,28 @@ export default function ReferralsSection({ projectUUID }: Props) {
       stats,
       REFERRAL_STAT_NAMES.REFEREE_VOUCHER_USAGE,
     ) ?? [];
+  const totalVendors =
+    getReferralStat<number>(stats, REFERRAL_STAT_NAMES.TOTAL_VENDORS) ?? 0;
+  const newConsumersGender =
+    getReferralStat<HistogramEntry[]>(
+      stats,
+      REFERRAL_STAT_NAMES.NEW_CONSUMERS_GENDER,
+    ) ?? [];
+  const newConsumersConsent =
+    getReferralStat<HistogramEntry[]>(
+      stats,
+      REFERRAL_STAT_NAMES.NEW_CONSUMERS_CONSENT,
+    ) ?? [];
+  const AGE_GROUP_ORDER = ['0-20', '21-40', '41-60', '61-80', '80 above'];
+  const rawHistogramByAgeGroup =
+    getReferralStat<HistogramEntry[]>(
+      stats,
+      REFERRAL_STAT_NAMES.HISTOGRAM_BY_AGE_GROUP,
+    ) ?? [];
+  const histogramByAgeGroup = [...rawHistogramByAgeGroup].sort(
+    (a, b) =>
+      AGE_GROUP_ORDER.indexOf(a.id) - AGE_GROUP_ORDER.indexOf(b.id),
+  );
 
   const kpiCards = [
     // {
@@ -181,6 +206,14 @@ export default function ReferralsSection({ projectUUID }: Props) {
       iconColor: 'text-amber-500',
       subtitle: null,
     },
+    {
+      title: 'Total Vendors',
+      value: totalVendors,
+      icon: Store,
+      bgColor: 'bg-sky-500/10',
+      iconColor: 'text-sky-500',
+      subtitle: null,
+    },
   ];
 
   const voucherChartData = useMemo(
@@ -199,6 +232,24 @@ export default function ReferralsSection({ projectUUID }: Props) {
         fill: COLORS.voucherTypes[idx % COLORS.voucherTypes.length],
       })),
     [voucherUsageBreakdown],
+  );
+
+  const newConsumersGenderChartData = useMemo(
+    () =>
+      newConsumersGender.map((entry, idx) => ({
+        ...entry,
+        fill: COLORS.voucherTypes[idx % COLORS.voucherTypes.length],
+      })),
+    [newConsumersGender],
+  );
+
+  const newConsumersConsentChartData = useMemo(
+    () =>
+      newConsumersConsent.map((entry, idx) => ({
+        ...entry,
+        fill: COLORS.voucherTypes[idx % COLORS.voucherTypes.length],
+      })),
+    [newConsumersConsent],
   );
 
   return (
@@ -232,7 +283,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
       )} */}
       <ScrollArea className="h-[calc(100vh-160px)]">
         {/* KPI cards */}
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {kpiCards.map((card) => (
             <Card
               key={card.title}
@@ -444,6 +495,126 @@ export default function ReferralsSection({ projectUUID }: Props) {
             </CardContent>
           </Card>
 
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg p-2 bg-fuchsia-500/10">
+                  <Users2 className="h-4 w-4 text-fuchsia-500" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    New Consumers by Gender
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Gender distribution among newly onboarded consumers
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {newConsumersGenderChartData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <Users2 className="h-8 w-8 mb-2 opacity-30" />
+                  <p className="text-sm">No gender data yet</p>
+                </div>
+              ) : (
+                <ChartContainer
+                  config={Object.fromEntries(
+                    newConsumersGenderChartData.map((v) => [
+                      v.id,
+                      { label: v.id, color: v.fill },
+                    ]),
+                  )}
+                  className="h-[260px] w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={newConsumersGenderChartData}
+                        dataKey="count"
+                        nameKey="id"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={90}
+                        paddingAngle={3}
+                        strokeWidth={0}
+                      >
+                        {newConsumersGenderChartData.map((entry, idx) => (
+                          <Cell key={`g-${idx}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip
+                        content={<ChartTooltipContent nameKey="id" />}
+                      />
+                      <ChartLegend content={<ChartLegendContent />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg p-2 bg-teal-500/10">
+                  <ShieldCheck className="h-4 w-4 text-teal-500" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    New Consumers by Consent
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Consent status among newly onboarded consumers
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {newConsumersConsentChartData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <ShieldCheck className="h-8 w-8 mb-2 opacity-30" />
+                  <p className="text-sm">No consent data yet</p>
+                </div>
+              ) : (
+                <ChartContainer
+                  config={Object.fromEntries(
+                    newConsumersConsentChartData.map((v) => [
+                      v.id,
+                      { label: v.id, color: v.fill },
+                    ]),
+                  )}
+                  className="h-[260px] w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={newConsumersConsentChartData}
+                        dataKey="count"
+                        nameKey="id"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={90}
+                        paddingAngle={3}
+                        strokeWidth={0}
+                      >
+                        {newConsumersConsentChartData.map((entry, idx) => (
+                          <Cell key={`c-${idx}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip
+                        content={<ChartTooltipContent nameKey="id" />}
+                      />
+                      <ChartLegend content={<ChartLegendContent />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              )}
+            </CardContent>
+          </Card>
+
           {/* <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
@@ -592,6 +763,74 @@ export default function ReferralsSection({ projectUUID }: Props) {
                       <Bar
                         dataKey="count"
                         fill={COLORS.primary}
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Referrals histogram by age group */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg p-2 bg-orange-500/10">
+                  <TrendingUp className="h-4 w-4 text-orange-500" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Referrals by Age Group
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Distribution of referred consumers across age groups
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {histogramByAgeGroup.every((h) => h.count === 0) ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <TrendingUp className="h-8 w-8 mb-2 opacity-30" />
+                  <p className="text-sm">No referral activity yet</p>
+                </div>
+              ) : (
+                <ChartContainer
+                  config={{
+                    count: { label: 'Referrals', color: COLORS.warning },
+                  }}
+                  className="h-[240px] w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={histogramByAgeGroup}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        vertical={false}
+                        stroke="hsl(var(--border))"
+                        strokeOpacity={0.5}
+                      />
+                      <XAxis
+                        dataKey="id"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11 }}
+                        dy={8}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11 }}
+                        width={40}
+                        allowDecimals={false}
+                      />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar
+                        dataKey="count"
+                        fill={COLORS.warning}
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>

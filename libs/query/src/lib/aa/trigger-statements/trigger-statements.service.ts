@@ -9,6 +9,8 @@ import { useProjectSettingsStore } from '../../projects';
 import { MS_TRIGGERS_KEYS, PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useSettingsStore } from '../../settings';
 
+export const FORECAST_QUERY_KEY_PREFIX = 'forecast-data';
+
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -390,7 +392,7 @@ export const useDhmWaterLevels = (
   const { from, to } = payload;
 
   const query = useQuery({
-    queryKey: ['dhmwaterlevels', uuid, activeTab, from, to],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmwaterlevels', uuid, activeTab, from, to],
     staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -425,7 +427,7 @@ export const useDhmSingleSeriesWaterLevels = (
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
 
   const query = useQuery({
-    queryKey: ['dhmsingleserieswaterlevels', uuid, activeTab, payload],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmsingleserieswaterlevels', uuid, activeTab, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -451,7 +453,7 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['dhmrainfalllevels', uuid],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmrainfalllevels', uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -484,7 +486,7 @@ export const useSyncForecastData = (uuid: UUID) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'ms.jobs.sources-data.syncForecastData',
+          action: 'ms.sources-data.syncForecastData',
           payload: {},
         },
       });
@@ -492,16 +494,10 @@ export const useSyncForecastData = (uuid: UUID) => {
 
     onSuccess: () => {
       q.reset();
-      const forecastQueryKeys = new Set([
-        'dhmwaterlevels', 'dhmrainfalllevels', 'dhmsingleserieswaterlevels',
-        'dhmtemperaturelevels', 'dhmhumiditylevels', 'dhmsingleseriestemperaturelevels',
-        'dhmsingleserieshumiditylevels', 'glofas_prob_flood_all', 'glofas_prob_flood_details',
-        'gfhwaterlevels',
-      ]);
       qc.invalidateQueries({
         predicate: (query) => {
-          const [key, queryUuid] = query.queryKey as [string, UUID];
-          return queryUuid === uuid && forecastQueryKeys.has(key);
+          const [prefix, , queryUuid] = query.queryKey as [string, string, UUID];
+          return prefix === FORECAST_QUERY_KEY_PREFIX && queryUuid === uuid;
         },
       });
       toast.fire({
@@ -519,8 +515,7 @@ export const useSyncForecastData = (uuid: UUID) => {
       });
     },
   });
-}
-
+};
 
 export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
@@ -533,7 +528,7 @@ export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
   });
 
   return useQuery({
-    queryKey: ['dhmtemperaturelevels', uuid, payload.riverBasin, payload.from],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmtemperaturelevels', uuid, payload.riverBasin, payload.from],
     enabled: !!payload.riverBasin,
     queryFn: async () => {
       try {
@@ -571,7 +566,7 @@ export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
   });
 
   return useQuery({
-    queryKey: ['dhmhumiditylevels', uuid, payload.riverBasin, payload.from],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmhumiditylevels', uuid, payload.riverBasin, payload.from],
     enabled: !!payload.riverBasin,
     queryFn: async () => {
       try {
@@ -613,7 +608,7 @@ export const useDhmSingleSeriesTemperatureLevels = (
   const parameter = payload.type === 'daily' ? 'TX_1D' : 'T_1H';
 
   return useQuery({
-    queryKey: ['dhmsingleseriestemperaturelevels', uuid, parameter],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmsingleseriestemperaturelevels', uuid, parameter],
     enabled: !!riverBasin,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -642,7 +637,7 @@ export const useDhmSingleSeriesHumidityLevels = (uuid: UUID) => {
   const parameter = 'RH_1H';
 
   return useQuery({
-    queryKey: ['dhmsingleserieshumiditylevels', uuid, parameter],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmsingleserieshumiditylevels', uuid, parameter],
     enabled: !!riverBasin,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -672,7 +667,7 @@ export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
   });
 
   const query = useQuery({
-    queryKey: ['glofas_prob_flood_all', uuid],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'glofas_prob_flood_all', uuid],
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({
@@ -708,7 +703,7 @@ export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
   });
 
   const query = useQuery({
-    queryKey: ['glofas_prob_flood_details', uuid, payload?.returnPeriod],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'glofas_prob_flood_details', uuid, payload?.returnPeriod],
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({
@@ -744,7 +739,7 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
   });
 
   const query = useQuery({
-    queryKey: ['gfhwaterlevels', uuid],
+    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'gfhwaterlevels', uuid],
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({
@@ -791,11 +786,11 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
             ...payload,
             activeYear:
               settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-              'active_year'
+                'active_year'
               ],
             riverBasin:
               settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-              'river_basin'
+                'river_basin'
               ],
           },
         },
@@ -829,11 +824,11 @@ export const useSingleTriggerStatement = (
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
     ? {
-      id: triggerId,
-    }
+        id: triggerId,
+      }
     : {
-      uuid: triggerId,
-    };
+        uuid: triggerId,
+      };
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
     queryFn: async () => {
@@ -849,7 +844,8 @@ export const useSingleTriggerStatement = (
       } catch (error: any) {
         const errorMessage =
           error?.response?.data?.message ||
-          `Failed to fetch ${version ? 'version' : 'trigger statement'
+          `Failed to fetch ${
+            version ? 'version' : 'trigger statement'
           } details`;
 
         toast.fire({
@@ -1049,7 +1045,7 @@ export const useGetSeriesByDataSource = (
               levelType,
               riverBasin:
                 settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-                'river_basin'
+                  'river_basin'
                 ],
             },
           },

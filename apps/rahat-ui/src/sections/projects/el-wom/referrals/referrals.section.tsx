@@ -153,8 +153,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
       REFERRAL_STAT_NAMES.HISTOGRAM_BY_AGE_GROUP,
     ) ?? [];
   const histogramByAgeGroup = [...rawHistogramByAgeGroup].sort(
-    (a, b) =>
-      AGE_GROUP_ORDER.indexOf(a.id) - AGE_GROUP_ORDER.indexOf(b.id),
+    (a, b) => AGE_GROUP_ORDER.indexOf(a.id) - AGE_GROUP_ORDER.indexOf(b.id),
   );
 
   const kpiCards = [
@@ -705,7 +704,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
           </Card> */}
 
           {/* Referrals per referrer histogram */}
-          <Card className='lg:col-span-2'>
+          <Card className="lg:col-span-2">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <div className="rounded-lg p-2 bg-emerald-500/10">
@@ -732,12 +731,12 @@ export default function ReferralsSection({ projectUUID }: Props) {
                   config={{
                     count: { label: 'Referrers', color: COLORS.primary },
                   }}
-                  className="h-[240px] w-full"
+                  className="h-[280px] w-full"
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={histogram}
-                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                      margin={{ top: 10, right: 30, left: 10, bottom: 24 }}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -751,6 +750,12 @@ export default function ReferralsSection({ projectUUID }: Props) {
                         tickLine={false}
                         tick={{ fontSize: 11 }}
                         dy={8}
+                        label={{
+                          value: 'Referrals',
+                          position: 'insideBottom',
+                          offset: -16,
+                          style: { fontSize: 12, fill: 'hsl(var(--muted-foreground))' },
+                        }}
                       />
                       <YAxis
                         axisLine={false}
@@ -758,6 +763,12 @@ export default function ReferralsSection({ projectUUID }: Props) {
                         tick={{ fontSize: 11 }}
                         width={40}
                         allowDecimals={false}
+                        label={{
+                          value: 'Referrers',
+                          angle: -90,
+                          position: 'insideLeft',
+                          style: { fontSize: 12, textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' },
+                        }}
                       />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar
@@ -800,12 +811,12 @@ export default function ReferralsSection({ projectUUID }: Props) {
                   config={{
                     count: { label: 'Referrals', color: COLORS.warning },
                   }}
-                  className="h-[240px] w-full"
+                  className="h-[280px] w-full"
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={histogramByAgeGroup}
-                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                      margin={{ top: 10, right: 30, left: 10, bottom: 24 }}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -819,6 +830,12 @@ export default function ReferralsSection({ projectUUID }: Props) {
                         tickLine={false}
                         tick={{ fontSize: 11 }}
                         dy={8}
+                        label={{
+                          value: 'Age Group',
+                          position: 'insideBottom',
+                          offset: -16,
+                          style: { fontSize: 12, fill: 'hsl(var(--muted-foreground))' },
+                        }}
                       />
                       <YAxis
                         axisLine={false}
@@ -826,6 +843,12 @@ export default function ReferralsSection({ projectUUID }: Props) {
                         tick={{ fontSize: 11 }}
                         width={40}
                         allowDecimals={false}
+                        label={{
+                          value: 'Referrals',
+                          angle: -90,
+                          position: 'insideLeft',
+                          style: { fontSize: 12, textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' },
+                        }}
                       />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar

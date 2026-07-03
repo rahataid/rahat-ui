@@ -190,14 +190,6 @@ export default function ReferralsSection({ projectUUID }: Props) {
       subtitle: null,
     },
     {
-      title: 'Avg Referrals',
-      value: avgPerReferrer,
-      icon: TrendingUp,
-      bgColor: 'bg-violet-500/10',
-      iconColor: 'text-violet-500',
-      subtitle: null,
-    },
-    {
       title: 'Total Inactive Consumers',
       value: totalNonRedeemedNewConsumers,
       icon: AlertTriangle,
@@ -211,6 +203,14 @@ export default function ReferralsSection({ projectUUID }: Props) {
       icon: Store,
       bgColor: 'bg-sky-500/10',
       iconColor: 'text-sky-500',
+      subtitle: null,
+    },
+    {
+      title: 'Average Referrals',
+      value: avgPerReferrer,
+      icon: TrendingUp,
+      bgColor: 'bg-violet-500/10',
+      iconColor: 'text-violet-500',
       subtitle: null,
     },
   ];
@@ -255,10 +255,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold tracking-tight">
-          Referral Program
+          WOM Referral Program
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Real-time stats for beneficiary referrals and redemptions
+          Your Hub for Real-Time Analytics and Data Visualization of the project
         </p>
       </div>
 
@@ -385,7 +385,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
                     Voucher Usage Type
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Eye checkup and glasses purchase among new consumers
+                    Eye checkup and purchase of glasses among referrals
                   </CardDescription>
                 </div>
               </div>
@@ -442,10 +442,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold">
-                    Glass Purchase Type
+                    Glasses Purchase Type
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Glass purchase type distribution across new consumers
+                    Glasses purchase type distribution among referrals
                   </CardDescription>
                 </div>
               </div>
@@ -502,10 +502,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold">
-                    New Consumers by Gender
+                    Consumers Gender
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Gender distribution among newly onboarded consumers
+                    Gender distribution of consumers
                   </CardDescription>
                 </div>
               </div>
@@ -562,10 +562,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold">
-                    New Consumers by Consent
+                    Consent Provided
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Consent status among newly onboarded consumers
+                    Consumers consent breakdown
                   </CardDescription>
                 </div>
               </div>
@@ -703,86 +703,6 @@ export default function ReferralsSection({ projectUUID }: Props) {
             </CardContent>
           </Card> */}
 
-          {/* Referrals per referrer histogram */}
-          <Card className="lg:col-span-2">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <div className="rounded-lg p-2 bg-emerald-500/10">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                </div>
-                <div>
-                  <CardTitle className="text-base font-semibold">
-                    Referrals per Referrer
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    Distribution of how many referees each referrer onboarded
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {histogram.every((h) => h.count === 0) ? (
-                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                  <CheckCircle2 className="h-8 w-8 mb-2 opacity-30" />
-                  <p className="text-sm">No referral activity yet</p>
-                </div>
-              ) : (
-                <ChartContainer
-                  config={{
-                    count: { label: 'Referrers', color: COLORS.primary },
-                  }}
-                  className="h-[280px] w-full"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={histogram}
-                      margin={{ top: 10, right: 30, left: 10, bottom: 24 }}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        vertical={false}
-                        stroke="hsl(var(--border))"
-                        strokeOpacity={0.5}
-                      />
-                      <XAxis
-                        dataKey="id"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11 }}
-                        dy={8}
-                        label={{
-                          value: 'Referrals',
-                          position: 'insideBottom',
-                          offset: -16,
-                          style: { fontSize: 12, fill: 'hsl(var(--muted-foreground))' },
-                        }}
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11 }}
-                        width={40}
-                        allowDecimals={false}
-                        label={{
-                          value: 'Referrers',
-                          angle: -90,
-                          position: 'insideLeft',
-                          style: { fontSize: 12, textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' },
-                        }}
-                      />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar
-                        dataKey="count"
-                        fill={COLORS.primary}
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Referrals histogram by age group */}
           <Card className="lg:col-span-2">
             <CardHeader className="pb-2">
@@ -792,10 +712,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold">
-                    Referrals by Age Group
+                    Consumer Age Group
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Distribution of referred consumers across age groups
+                    Distribution of referrals by age range
                   </CardDescription>
                 </div>
               </div>
@@ -834,7 +754,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
                           value: 'Age Group',
                           position: 'insideBottom',
                           offset: -16,
-                          style: { fontSize: 12, fill: 'hsl(var(--muted-foreground))' },
+                          style: {
+                            fontSize: 12,
+                            fill: 'hsl(var(--muted-foreground))',
+                          },
                         }}
                       />
                       <YAxis
@@ -847,13 +770,104 @@ export default function ReferralsSection({ projectUUID }: Props) {
                           value: 'Referrals',
                           angle: -90,
                           position: 'insideLeft',
-                          style: { fontSize: 12, textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' },
+                          style: {
+                            fontSize: 12,
+                            textAnchor: 'middle',
+                            fill: 'hsl(var(--muted-foreground))',
+                          },
                         }}
                       />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar
                         dataKey="count"
                         fill={COLORS.warning}
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Referrals per referrer histogram */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg p-2 bg-emerald-500/10">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Referrals per Referrer
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Distribution of referrers by referral
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {histogram.every((h) => h.count === 0) ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <CheckCircle2 className="h-8 w-8 mb-2 opacity-30" />
+                  <p className="text-sm">No referral activity yet</p>
+                </div>
+              ) : (
+                <ChartContainer
+                  config={{
+                    count: { label: 'Referrers', color: COLORS.primary },
+                  }}
+                  className="h-[280px] w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={histogram}
+                      margin={{ top: 10, right: 30, left: 10, bottom: 24 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        vertical={false}
+                        stroke="hsl(var(--border))"
+                        strokeOpacity={0.5}
+                      />
+                      <XAxis
+                        dataKey="id"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11 }}
+                        dy={8}
+                        label={{
+                          value: 'Referrals',
+                          position: 'insideBottom',
+                          offset: -16,
+                          style: {
+                            fontSize: 12,
+                            fill: 'hsl(var(--muted-foreground))',
+                          },
+                        }}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11 }}
+                        width={40}
+                        allowDecimals={false}
+                        label={{
+                          value: 'Referrers',
+                          angle: -90,
+                          position: 'insideLeft',
+                          style: {
+                            fontSize: 12,
+                            textAnchor: 'middle',
+                            fill: 'hsl(var(--muted-foreground))',
+                          },
+                        }}
+                      />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar
+                        dataKey="count"
+                        fill={COLORS.primary}
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>

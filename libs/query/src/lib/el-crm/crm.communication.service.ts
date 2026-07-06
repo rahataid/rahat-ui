@@ -83,11 +83,26 @@ export const useCreateElCrmCampaign = (projectUUID: UUID) => {
         queryKey: [queryKeys.elCrmCampaignList],
       });
     },
-    onError: (error) => {
-      toast.fire({
-        title: `Error while creating campaign. ${error?.message || ''}`,
-        icon: 'error',
-      });
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        '';
+      const normalized =
+        typeof apiMessage === 'string' ? apiMessage.toLowerCase() : '';
+
+      let title: string;
+      if (normalized.includes('no recipients found')) {
+        title =
+          'No matching recipients found for the selected criteria. Adjust your audience filters and try again.';
+      } else if (apiMessage) {
+        title = `Could not create campaign: ${apiMessage}`;
+      } else {
+        title = 'Could not create campaign. Please try again.';
+      }
+
+      toast.fire({ title, icon: 'error' });
     },
   });
 };
@@ -382,6 +397,46 @@ export const useListElCrmSessionBroadcast = (
   });
 };
 
+// Pages through every broadcast for a session, optionally narrowed by the
+// same filters (status, address) used by the delivery logs table. Used for
+// bulk export and for finding WhatsApp deliveries that failed because the
+// recipient has no WhatsApp account.
+export const useFetchSessionBroadcasts = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      filters,
+    }: {
+      sessionId: string;
+      filters?: Record<string, string | undefined>;
+    }) => {
+      const perPage = 100;
+      let page = 1;
+      let total = Infinity;
+      const results: any[] = [];
+
+      while (results.length < total) {
+        const res = await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: SESSION_BROADCAST,
+            payload: { session: sessionId, ...filters, page, perPage },
+          },
+        });
+        const data = res?.data ?? [];
+        if (!data.length) break;
+        results.push(...data);
+        total = res?.response?.meta?.['total'] ?? results.length;
+        page += 1;
+      }
+
+      return results;
+    },
+  });
+};
+
 export const useListElCrmBroadCastCount = (
   projectUUID: UUID,
   payload: { sessionId: string },
@@ -647,7 +702,9 @@ export const useAutomationDetail = (
           payload: { uuid: automationId, ...pagination },
         },
       });
-      return res.data ?? null;
+      const data = res.data ?? null;
+      if (!data) return null;
+      return { ...data, meta: res.response?.meta ?? (data as any).meta };
     },
     enabled: !!automationId,
   });

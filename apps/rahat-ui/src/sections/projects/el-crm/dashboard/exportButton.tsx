@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Download, FileText, FileSpreadsheet } from 'lucide-react';
+import { formatRate } from '../communications/const';
 import type {
   CommunicationStats,
   AutomationHealth,
@@ -89,7 +90,7 @@ function buildReportData(props: ExportButtonProps) {
     ['Messages Delivered', commStats.sent, ''],
     ['Messages Failed', commStats.failed, ''],
     ['Messages Skipped', commStats.skipped, ''],
-    ['Delivery Rate', `${commStats.deliveryRate}%`, ''],
+    ['Delivery Rate', formatRate(commStats.deliveryRate), ''],
     [],
     ['Automation Health', '', ''],
     ['Total Rules', automationHealth.totalRules, ''],

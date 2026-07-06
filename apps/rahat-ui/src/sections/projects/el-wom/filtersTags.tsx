@@ -14,6 +14,7 @@ const SmsVoucherFiltersTags = ({
   total,
   labelMapping,
   setDateRange,
+  onClearAll,
 }: any) => {
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
@@ -60,6 +61,7 @@ const SmsVoucherFiltersTags = ({
   const handleClearFilter = () => {
     setFilters({});
     setDateRange(undefined);
+    onClearAll?.();
   };
 
   return (

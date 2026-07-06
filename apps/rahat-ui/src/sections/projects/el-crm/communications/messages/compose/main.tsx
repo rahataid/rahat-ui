@@ -200,14 +200,20 @@ export default function ComposeMessageView() {
     if (sources.length) f.source = sources;
     if (locations.length) f.location = locations;
     if (customerCodes.length) f.customerCode = customerCodes;
-    // Channel lives in vendor extras; count matches a single value (contains).
-    if (channels.length) f.channel = channels[0];
+    if (channels.length) f.channel = channels;
 
     return f;
   }, [filterRows]);
 
   const recipientEstimate = useCustomers(projectUUID, {
     ...filtersForCount,
+    page: 1,
+    perPage: 1,
+  });
+
+  const recipientReachableEstimate = useCustomers(projectUUID, {
+    ...filtersForCount,
+    hasPhone: 'true',
     page: 1,
     perPage: 1,
   });
@@ -228,8 +234,17 @@ export default function ComposeMessageView() {
     perPage: 1,
   });
 
+  const consumerReachableEstimate = useConsumers(projectUUID, {
+    ...beneficiaryFiltersForCount,
+    hasPhone: 'true',
+    page: 1,
+    perPage: 1,
+  });
+
   const audienceEstimate =
     selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
+  const reachableEstimate =
+    selectedGroup === 'BENEFICIARY' ? consumerReachableEstimate : recipientReachableEstimate;
   const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
@@ -719,15 +734,29 @@ export default function ComposeMessageView() {
                               <Users className="h-4 w-4" />
                               <span>
                                 Estimated recipients:{' '}
-                                {audienceEstimate.isLoading ? (
+                                {audienceEstimate.isLoading || reachableEstimate.isLoading ? (
                                   <span className="italic">calculating…</span>
                                 ) : (
-                                  <>
-                                    <strong className="text-foreground">
-                                      {audienceEstimate.meta?.total ?? 0}
-                                    </strong>{' '}
-                                    {audienceNoun}
-                                  </>
+                                  (() => {
+                                    const matched = audienceEstimate.meta?.total ?? 0;
+                                    const reachable = reachableEstimate.meta?.total ?? 0;
+                                    return (
+                                      <>
+                                        <strong className="text-foreground">{matched}</strong>{' '}
+                                        {audienceNoun} matched,{' '}
+                                        <strong
+                                          className={
+                                            reachable < matched
+                                              ? 'text-amber-600'
+                                              : 'text-foreground'
+                                          }
+                                        >
+                                          {reachable}
+                                        </strong>{' '}
+                                        reachable
+                                      </>
+                                    );
+                                  })()
                                 )}
                               </span>
                             </div>
@@ -845,9 +874,11 @@ export default function ComposeMessageView() {
             <DetailRow
               label="Estimated Recipients"
               value={
-                audienceEstimate.isLoading
+                audienceEstimate.isLoading || reachableEstimate.isLoading
                   ? 'Calculating...'
-                  : String(audienceEstimate.meta?.total ?? 0)
+                  : `${audienceEstimate.meta?.total ?? 0} matched, ${
+                      reachableEstimate.meta?.total ?? 0
+                    } reachable`
               }
             />
           </div>

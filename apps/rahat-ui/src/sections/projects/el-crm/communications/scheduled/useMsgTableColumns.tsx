@@ -14,8 +14,8 @@ import {
 export function getStatus(row: any) {
   const scheduledTime = row?.options?.scheduledTimestamp;
   const sessionId = row?.sessionId;
-  if (scheduledTime && new Date(scheduledTime) > new Date()) return 'Scheduled';
   if (sessionId) return 'Sent';
+  if (scheduledTime && new Date(scheduledTime) > new Date()) return 'Scheduled';
   return 'Draft';
 }
 

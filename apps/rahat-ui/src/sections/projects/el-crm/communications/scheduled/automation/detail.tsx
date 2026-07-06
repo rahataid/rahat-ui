@@ -10,7 +10,10 @@ import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { ArrowLeft, FilterX, Hash, Zap } from 'lucide-react';
 import Link from 'next/link';
-import { useAutomationDetail, usePagination } from '@rahat-ui/query';
+import {
+  useAutomationDetail,
+  usePagination,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
@@ -19,6 +22,8 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import SelectComponent from '../../../../cambodia/select.component';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { targetTypeMap } from '../../const';
 
 const STATUS_OPTIONS = ['ALL', 'SUCCESS', 'PENDING', 'FAIL', 'SCHEDULED'];
 
@@ -44,6 +49,8 @@ export default function AutomationDetailPage() {
 
   const rule = data?.rule;
   const logs = data?.logs || [];
+  const sessionIds: string[] = data?.sessionIds || [];
+
   const meta: PaginatedResult<any>['meta'] = data?.meta || {
     total: 0,
     lastPage: 1,
@@ -104,6 +111,16 @@ export default function AutomationDetailPage() {
               Automation Details
             </h1>
           </div>
+          {!!sessionIds.length && (
+            <div className="flex items-center gap-2 shrink-0">
+              <CampaignBroadcastActions
+                projectUUID={projectUUID}
+                sessionIds={sessionIds}
+                campaignName={rule.campaign?.name || rule.name}
+                filters={{ status: activeStatus }}
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex-1 p-6 space-y-6 overflow-auto">
@@ -131,7 +148,11 @@ export default function AutomationDetailPage() {
               </div>
               <div>
                 <Label>Target Group</Label>
-                <div>{rule.targetType}</div>
+                <div>
+                  {targetTypeMap[
+                    rule.targetType as keyof typeof targetTypeMap
+                  ] || rule.targetType}
+                </div>
               </div>
               <div>
                 <Label>Fire Once Per Target</Label>

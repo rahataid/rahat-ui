@@ -60,6 +60,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
+import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { computeRate, formatRate, targetTypeMap } from '../../const';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -87,7 +89,14 @@ export default function MessageDetailPage() {
 
   const retryFailed = async () => {
     try {
-      const res = await mutateRetry.mutateAsync(campaign?.sessionId || '');
+      if (isAutomatic) {
+        const sessionIds = (automationDetail?.sessionIds as string[]) ?? [];
+        for (const sessionId of sessionIds) {
+          await mutateRetry.mutateAsync(sessionId);
+        }
+      } else {
+        await mutateRetry.mutateAsync(campaign?.sessionId || '');
+      }
     } catch (error) {
       console.error('Retry failed:', error);
     }
@@ -166,6 +175,10 @@ export default function MessageDetailPage() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const listHref = `/projects/el-crm/${projectUUID}/communications/messages${
+    isAutomatic ? '?tab=automatic' : ''
+  }`;
+
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
@@ -216,9 +229,7 @@ export default function MessageDetailPage() {
       <div className="flex flex-col h-full">
         <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-center gap-4">
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
-            >
+            <Link href={listHref}>
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -236,9 +247,7 @@ export default function MessageDetailPage() {
             <p className="text-sm text-muted-foreground">
               The message you&apos;re looking for doesn&apos;t exist.
             </p>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
-            >
+            <Link href={listHref}>
               <Button size="sm" variant="outline" className="mt-2">
                 <ArrowLeft className="mr-2 h-3.5 w-3.5" />
                 Back to Messages
@@ -264,17 +273,24 @@ export default function MessageDetailPage() {
   };
 
   const meta = logsMetaRaw || { total: 0, currentPage: 0 };
-  const isSent = !!campaign.sessionId;
-  const deliveredCount = count?.SUCCESS ?? 0;
-  const failedCount = count?.FAIL ?? 0;
+  const automationCounts = automationDetail?.counts as
+    | { success?: number; failed?: number; sent?: number; total?: number }
+    | undefined;
+  const isSent = isAutomatic
+    ? (automationCounts?.sent ?? 0) > 0
+    : !!campaign.sessionId;
+  const deliveredCount = isAutomatic
+    ? automationCounts?.success ?? 0
+    : count?.SUCCESS ?? 0;
+  const failedCount = isAutomatic
+    ? automationCounts?.failed ?? 0
+    : count?.FAIL ?? 0;
   const totalRecipients = isAutomatic
-    ? meta?.total ?? 0
+    ? automationCounts?.sent ?? meta?.total ?? 0
     : campaign?.recipientCount || 0;
   const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
-  const deliveryRate =
-    totalRecipients > 0
-      ? Math.round((deliveredCount / totalRecipients) * 100)
-      : 0;
+  const deliveryRate = computeRate(deliveredCount, totalRecipients);
+  const failureRate = computeRate(failedCount, totalRecipients);
   const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;
 
   const statCards = [
@@ -282,7 +298,9 @@ export default function MessageDetailPage() {
       title: 'Successfully Delivered',
       value: deliveredCount.toLocaleString(),
       subtitle:
-        totalRecipients > 0 ? `${deliveryRate}% delivery rate` : undefined,
+        totalRecipients > 0
+          ? `${formatRate(deliveryRate)} delivery rate`
+          : undefined,
       icon: CheckCircle2,
       iconColor: 'text-emerald-600',
       bgColor: 'bg-emerald-500/10',
@@ -293,7 +311,7 @@ export default function MessageDetailPage() {
       value: failedCount.toLocaleString(),
       subtitle:
         totalRecipients > 0
-          ? `${Math.round((failedCount / totalRecipients) * 100)}% failure rate`
+          ? `${formatRate(failureRate)} failure rate`
           : undefined,
       icon: XCircle,
       iconColor: 'text-red-600',
@@ -323,9 +341,7 @@ export default function MessageDetailPage() {
             <div className="flex items-start gap-3 min-w-0 flex-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href={`/projects/el-crm/${projectUUID}/communications/messages`}
-                  >
+                  <Link href={listHref}>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -381,7 +397,22 @@ export default function MessageDetailPage() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              {showRetryButton && !isAutomatic && (
+              {isSent && (
+                <CampaignBroadcastActions
+                  projectUUID={projectUUID}
+                  sessionIds={
+                    isAutomatic
+                      ? (automationDetail?.sessionIds as string[]) ?? []
+                      : [campaign.sessionId]
+                  }
+                  campaignName={campaign.name}
+                  filters={{
+                    status: filters?.status,
+                    address: filters?.address,
+                  }}
+                />
+              )}
+              {showRetryButton && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -499,7 +530,9 @@ export default function MessageDetailPage() {
                       Group
                     </span>
                     <span className="text-sm font-medium text-foreground">
-                      {campaign.targetType}
+                      {targetTypeMap[
+                        campaign.targetType as keyof typeof targetTypeMap
+                      ] || campaign.targetType}
                     </span>
                   </div>
 
@@ -529,7 +562,7 @@ export default function MessageDetailPage() {
                               : 'text-red-600'
                           }`}
                         >
-                          {deliveryRate}%
+                          {formatRate(deliveryRate)}
                         </span>
                       </div>
                       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
@@ -569,7 +602,9 @@ export default function MessageDetailPage() {
                       <div className="rounded-md bg-primary/10 p-1.5">
                         <Hash className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      {isAutomatic ? 'Automation Session Logs' : 'Delivery Logs'}
+                      {isAutomatic
+                        ? 'Automation Session Logs'
+                        : 'Delivery Logs'}
                       <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
                         {meta?.total || 0}
                       </span>
@@ -679,7 +714,9 @@ export default function MessageDetailPage() {
                   Group
                 </Label>
                 <p className="mt-1 text-sm font-medium text-foreground">
-                  {campaign.targetType}
+                  {targetTypeMap[
+                    campaign.targetType as keyof typeof targetTypeMap
+                  ] || campaign.targetType}
                 </p>
               </div>
               <div>

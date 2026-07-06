@@ -54,23 +54,26 @@ export const getPlasgateSmsInfo = (text: string): PlasgateSmsInfo => {
   };
 };
 
-// ─── WhatsApp "no account" failure helpers ──────────────────────────────────
-
-// Twilio error code returned when the destination number doesn't have a
-// WhatsApp account.
-export const WHATSAPP_NO_ACCOUNT_ERROR_CODE = '63024';
-
-export const isInvalidWhatsAppRecipient = (disposition?: Record<string, any> | null) => {
-  if (!disposition) return false;
-  const errorCode = String(
-    disposition?.errorCode ??
-      disposition?.lastWebhookPayload?.ErrorCode ??
-      '',
-  );
-  return errorCode === WHATSAPP_NO_ACCOUNT_ERROR_CODE;
-};
-
 // Strips the `whatsapp:` scheme prefix Twilio uses for WhatsApp addresses,
 // e.g. "whatsapp:+6282253523295" -> "+6282253523295".
 export const normalizePhoneAddress = (address?: string | null) =>
   (address ?? '').replace(/^whatsapp:/i, '').trim();
+
+// `computeRate` returns the raw percentage as a float — useful for threshold
+// comparisons (e.g. >= 80 → green). `formatRate` formats either a precomputed
+// raw rate or the part/total pair into a display string.
+
+export const computeRate = (part: number, total: number): number => {
+  if (!Number.isFinite(part) || !Number.isFinite(total) || total <= 0) return 0;
+  return (part / total) * 100;
+};
+
+export const formatRate = (partOrRate: number, total?: number): string => {
+  const rate =
+    typeof total === 'number' ? computeRate(partOrRate, total) : partOrRate;
+  if (!Number.isFinite(rate) || rate <= 0) return '0%';
+  if (rate >= 100) return '100%';
+  if (rate < 1) return '<1%';
+  if (rate > 99) return '>99%';
+  return `${Math.round(rate)}%`;
+};

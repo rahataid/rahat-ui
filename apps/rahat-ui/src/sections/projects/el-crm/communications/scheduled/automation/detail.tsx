@@ -12,7 +12,6 @@ import { ArrowLeft, FilterX, Hash, Zap } from 'lucide-react';
 import Link from 'next/link';
 import {
   useAutomationDetail,
-  useListElCrmTransport,
   usePagination,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
@@ -24,6 +23,7 @@ import DemoTable from 'apps/rahat-ui/src/components/table';
 import SelectComponent from '../../../../cambodia/select.component';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { targetTypeMap } from '../../const';
 
 const STATUS_OPTIONS = ['ALL', 'SUCCESS', 'PENDING', 'FAIL', 'SCHEDULED'];
 
@@ -51,11 +51,6 @@ export default function AutomationDetailPage() {
   const logs = data?.logs || [];
   const sessionIds: string[] = data?.sessionIds || [];
 
-  const transport = useListElCrmTransport(projectUUID);
-  const transportName = (transport.data || []).find(
-    (t: { cuid: string; name: string }) => t.cuid === rule?.campaign?.transportId,
-  )?.name;
-  const isWhatsApp = !!transportName?.toLowerCase().includes('whatsapp');
   const meta: PaginatedResult<any>['meta'] = data?.meta || {
     total: 0,
     lastPage: 1,
@@ -122,9 +117,6 @@ export default function AutomationDetailPage() {
                 projectUUID={projectUUID}
                 sessionIds={sessionIds}
                 campaignName={rule.campaign?.name || rule.name}
-                targetType={rule.campaign?.targetType || rule.targetType}
-                messageBody={rule.campaign?.body || ''}
-                isWhatsApp={isWhatsApp}
                 filters={{ status: activeStatus }}
               />
             </div>
@@ -156,7 +148,11 @@ export default function AutomationDetailPage() {
               </div>
               <div>
                 <Label>Target Group</Label>
-                <div>{rule.targetType}</div>
+                <div>
+                  {targetTypeMap[
+                    rule.targetType as keyof typeof targetTypeMap
+                  ] || rule.targetType}
+                </div>
               </div>
               <div>
                 <Label>Fire Once Per Target</Label>

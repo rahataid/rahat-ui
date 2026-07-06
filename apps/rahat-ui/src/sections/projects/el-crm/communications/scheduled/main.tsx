@@ -73,11 +73,7 @@ export default function ScheduledView() {
   });
   const transport = useListElCrmTransport(projectUUID);
 
-  const messageIds = new Set(data?.map((d: any) => d.message));
-
-  const scheduledTemplates =
-    templates?.filter((template: any) => messageIds.has(template.externalId)) ||
-    [];
+  const scheduledTemplates = templates ?? [];
 
   const hasActiveFilters = Object.values(filters || {}).some(
     (value) => value !== undefined && value !== null && value !== '',
@@ -261,33 +257,38 @@ export default function ScheduledView() {
           )}
 
           {/* Automation Info Bar */}
-          {(meta?.automation?.activeRules ?? 0) > 0 && (() => {
-            const nextRun = getNextAutomationRun();
-            return (
-              <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>
-                    Next automation run in{' '}
-                    <span className="font-medium text-foreground">
-                      {nextRun.distance}
-                    </span>{' '}
-                    <span className="text-xs">
-                      ({nextRun.localTime} · runs daily at midnight UTC)
+          {(meta?.automation?.activeRules ?? 0) > 0 &&
+            (() => {
+              const nextRun = getNextAutomationRun();
+              return (
+                <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>
+                      Next automation run in{' '}
+                      <span className="font-medium text-foreground">
+                        {nextRun.distance}
+                      </span>{' '}
+                      <span className="text-xs">
+                        ({nextRun.localTime} · runs daily at midnight UTC)
+                      </span>
                     </span>
-                  </span>
+                  </div>
+                  <Link
+                    href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose?tab=automatic`}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1.5 h-7 text-xs"
+                    >
+                      <Zap className="h-3.5 w-3.5" />
+                      View Automation
+                    </Button>
+                  </Link>
                 </div>
-                <Link
-                  href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose?tab=automatic`}
-                >
-                  <Button variant="ghost" size="sm" className="gap-1.5 h-7 text-xs">
-                    <Zap className="h-3.5 w-3.5" />
-                    View Automation
-                  </Button>
-                </Link>
-              </div>
-            );
-          })()}
+              );
+            })()}
 
           {/* Scheduled Table Card */}
           <Card className="flex flex-col">
@@ -425,9 +426,7 @@ export default function ScheduledView() {
                       handleDateChange={handleDateChange}
                       type="end"
                       value={
-                        filters?.endDate
-                          ? new Date(filters.endDate)
-                          : undefined
+                        filters?.endDate ? new Date(filters.endDate) : undefined
                       }
                     />
                   </div>
@@ -443,11 +442,17 @@ export default function ScheduledView() {
                   </span>
                   {filters?.message && (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                      Template: {scheduledTemplates.find((t: any) => t.externalId === filters.message)?.name || filters.message}
+                      Template:{' '}
+                      {scheduledTemplates.find(
+                        (t: any) => t.externalId === filters.message,
+                      )?.name || filters.message}
                       <button
                         type="button"
                         onClick={() =>
-                          setFilters((prev) => ({ ...prev, message: undefined }))
+                          setFilters((prev) => ({
+                            ...prev,
+                            message: undefined,
+                          }))
                         }
                         className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
                       >
@@ -457,11 +462,17 @@ export default function ScheduledView() {
                   )}
                   {filters?.transportId && (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                      Channel: {transport?.data?.find((c: any) => c.cuid === filters.transportId)?.name || filters.transportId}
+                      Channel:{' '}
+                      {transport?.data?.find(
+                        (c: any) => c.cuid === filters.transportId,
+                      )?.name || filters.transportId}
                       <button
                         type="button"
                         onClick={() =>
-                          setFilters((prev) => ({ ...prev, transportId: undefined }))
+                          setFilters((prev) => ({
+                            ...prev,
+                            transportId: undefined,
+                          }))
                         }
                         className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
                       >
@@ -485,7 +496,14 @@ export default function ScheduledView() {
                   )}
                   {(filters?.startDate || filters?.endDate) && (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                      Date: {filters.startDate ? new Date(filters.startDate).toLocaleDateString() : '...'} – {filters.endDate ? new Date(filters.endDate).toLocaleDateString() : '...'}
+                      Date:{' '}
+                      {filters.startDate
+                        ? new Date(filters.startDate).toLocaleDateString()
+                        : '...'}{' '}
+                      –{' '}
+                      {filters.endDate
+                        ? new Date(filters.endDate).toLocaleDateString()
+                        : '...'}
                       <button
                         type="button"
                         onClick={() =>

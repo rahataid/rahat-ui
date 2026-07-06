@@ -88,11 +88,16 @@ export const useMsgTableColumn = (
           Recipients
         </span>
       ),
-      cell: ({ row }) => (
-        <span className="text-sm tabular-nums">
-          {row.getValue('recipientCount') || '\u2014'}
-        </span>
-      ),
+      cell: ({ row }) => {
+        if (row.original?.isAutomatic) {
+          return <span className="text-sm text-muted-foreground">\u2014</span>;
+        }
+        return (
+          <span className="text-sm tabular-nums">
+            {row.getValue('recipientCount') || '\u2014'}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'createdAt',

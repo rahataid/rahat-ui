@@ -67,6 +67,7 @@ import {
   type CustomersByMonthEntry,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
+import { formatRate } from '../communications/const';
 import { UUID } from 'crypto';
 import { useMemo, useState } from 'react';
 import { DashboardExportButton } from './exportButton';
@@ -170,9 +171,10 @@ export default function DashboardView() {
     failed: totalMessagesFailed,
     skipped: totalMessagesSkipped,
     totalMessages: totalMessagesSent,
+    // Keep raw float so consumers can apply their own thresholds / formatters.
     deliveryRate:
       totalMessagesSent > 0
-        ? Math.round((totalMessagesSuccess / totalMessagesSent) * 100)
+        ? (totalMessagesSuccess / totalMessagesSent) * 100
         : 0,
   };
 
@@ -326,7 +328,7 @@ export default function DashboardView() {
     },
     {
       title: 'Delivery Rate',
-      value: `${commStats.deliveryRate}%`,
+      value: formatRate(commStats.deliveryRate),
       icon: Activity,
       bgColor:
         commStats.deliveryRate >= 80
@@ -681,7 +683,7 @@ export default function DashboardView() {
                   </div>
                   <div className="-mt-8 text-center">
                     <p className="text-3xl font-bold text-foreground">
-                      {commStats.deliveryRate}%
+                      {formatRate(commStats.deliveryRate)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {commStats.sent.toLocaleString()} delivered /{' '}
@@ -984,7 +986,9 @@ export default function DashboardView() {
                             {campaign.name}
                           </span>
                           <span className="text-right tabular-nums text-muted-foreground">
-                            {campaign.recipientCount}
+                            {campaign.isAutomatic
+                              ? '—'
+                              : campaign.recipientCount}
                           </span>
                           <span className="text-right text-muted-foreground text-xs">
                             {formatDate(campaign.createdAt)}

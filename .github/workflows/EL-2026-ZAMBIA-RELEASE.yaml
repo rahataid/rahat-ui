@@ -1,4 +1,4 @@
-name: EL Release SMS Voucher Khmer Extension 2026 CI/CD
+name: EL Release Zambia 2026 CI/CD
 on:
   workflow_dispatch:
 
@@ -15,10 +15,10 @@ jobs:
 
       - name: import env file
         env:
-          env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_KHMER_EXTENSION_2026 }}
+          env_release: ${{ secrets.ENV_EL_RELEASE_ZAMBIA_EXTENSION_2026 }}
         run: |
           touch ./.env && echo "$env_release" >> ./.env
-          grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV 
+          grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV  
 
       - uses: actions/setup-node@v3
         with:
@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build apps
-        run: pnpm build:all
+      # - name: Build apps
+      #   run: pnpm build:all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -59,8 +59,7 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_HOST_URL=${{ env.NEXT_PUBLIC_API_HOST_URL }}
             NEXT_PUBLIC_API_COMMUNICATION_URL=${{ env.NEXT_PUBLIC_API_COMMUNICATION_URL }}
-          no-cache: true
           tags: |
-            esatya/rahat-ui:el-release-smsvoucher-Khmer-extension-2026
-            esatya/rahat-ui:el-release-smsvoucher-Khmer-extension-2026-${{ env.VERSION }}
-            esatya/rahat-ui:el-release-smsvoucher-Khmer-extension-2026-${{ env.VERSION }}-${{ env.timestamp }}
+            esatya/rahat-ui:el-release-zambia-2026
+            esatya/rahat-ui:el-release-zambia-2026-${{ env.VERSION }}
+            esatya/rahat-ui:el-release-zambia-2026-${{ env.VERSION }}-${{ env.timestamp }}

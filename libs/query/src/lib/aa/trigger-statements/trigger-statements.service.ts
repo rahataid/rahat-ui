@@ -9,7 +9,18 @@ import { useProjectSettingsStore } from '../../projects';
 import { MS_TRIGGERS_KEYS, PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useSettingsStore } from '../../settings';
 
-export const FORECAST_QUERY_KEY_PREFIX = 'forecast-data';
+export const FORECAST_QUERY_KEYS = {
+  DHM_WATER_LEVELS: 'dhmwaterlevels',
+  DHM_SINGLE_SERIES_WATER_LEVELS: 'dhmsingleserieswaterlevels',
+  DHM_RAINFALL_LEVELS: 'dhmrainfalllevels',
+  DHM_TEMPERATURE_LEVELS: 'dhmtemperaturelevels',
+  DHM_HUMIDITY_LEVELS: 'dhmhumiditylevels',
+  DHM_SINGLE_SERIES_TEMPERATURE_LEVELS: 'dhmsingleseriestemperaturelevels',
+  DHM_SINGLE_SERIES_HUMIDITY_LEVELS: 'dhmsingleserieshumiditylevels',
+  GLOFAS_PROB_FLOOD_ALL: 'glofas_prob_flood_all',
+  GLOFAS_PROB_FLOOD_DETAILS: 'glofas_prob_flood_details',
+  GFH_WATER_LEVELS: 'gfhwaterlevels',
+} as const;
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -393,8 +404,7 @@ export const useDhmWaterLevels = (
 
   const query = useQuery({
     queryKey: [
-      FORECAST_QUERY_KEY_PREFIX,
-      'dhmwaterlevels',
+      FORECAST_QUERY_KEYS.DHM_WATER_LEVELS,
       uuid,
       activeTab,
       from,
@@ -435,8 +445,7 @@ export const useDhmSingleSeriesWaterLevels = (
 
   const query = useQuery({
     queryKey: [
-      FORECAST_QUERY_KEY_PREFIX,
-      'dhmsingleserieswaterlevels',
+      FORECAST_QUERY_KEYS.DHM_SINGLE_SERIES_WATER_LEVELS,
       uuid,
       activeTab,
       payload,
@@ -466,7 +475,7 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'dhmrainfalllevels', uuid],
+    queryKey: [FORECAST_QUERY_KEYS.DHM_RAINFALL_LEVELS, uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -519,15 +528,10 @@ export const useSyncForecastData = (uuid: UUID) => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({
-        predicate: (query) => {
-          const [prefix, , queryUuid] = query.queryKey as [
-            string,
-            string,
-            UUID,
-          ];
-          return prefix === FORECAST_QUERY_KEY_PREFIX && queryUuid === uuid;
-        },
+      Object.values(FORECAST_QUERY_KEYS).forEach((key) => {
+        qc.invalidateQueries({
+          queryKey: [key, uuid],
+        });
       });
       toast.fire({
         title: 'Forecast data synced successfully.',
@@ -558,8 +562,7 @@ export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
 
   return useQuery({
     queryKey: [
-      FORECAST_QUERY_KEY_PREFIX,
-      'dhmtemperaturelevels',
+      FORECAST_QUERY_KEYS.DHM_TEMPERATURE_LEVELS,
       uuid,
       payload.riverBasin,
       payload.from,
@@ -602,8 +605,7 @@ export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
 
   return useQuery({
     queryKey: [
-      FORECAST_QUERY_KEY_PREFIX,
-      'dhmhumiditylevels',
+      FORECAST_QUERY_KEYS.DHM_HUMIDITY_LEVELS,
       uuid,
       payload.riverBasin,
       payload.from,
@@ -650,8 +652,7 @@ export const useDhmSingleSeriesTemperatureLevels = (
 
   return useQuery({
     queryKey: [
-      FORECAST_QUERY_KEY_PREFIX,
-      'dhmsingleseriestemperaturelevels',
+      FORECAST_QUERY_KEYS.DHM_SINGLE_SERIES_TEMPERATURE_LEVELS,
       uuid,
       parameter,
     ],
@@ -684,8 +685,7 @@ export const useDhmSingleSeriesHumidityLevels = (uuid: UUID) => {
 
   return useQuery({
     queryKey: [
-      FORECAST_QUERY_KEY_PREFIX,
-      'dhmsingleserieshumiditylevels',
+      FORECAST_QUERY_KEYS.DHM_SINGLE_SERIES_HUMIDITY_LEVELS,
       uuid,
       parameter,
     ],
@@ -718,7 +718,7 @@ export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
   });
 
   const query = useQuery({
-    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'glofas_prob_flood_all', uuid],
+    queryKey: [FORECAST_QUERY_KEYS.GLOFAS_PROB_FLOOD_ALL, uuid],
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({
@@ -755,8 +755,7 @@ export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
 
   const query = useQuery({
     queryKey: [
-      FORECAST_QUERY_KEY_PREFIX,
-      'glofas_prob_flood_details',
+      FORECAST_QUERY_KEYS.GLOFAS_PROB_FLOOD_DETAILS,
       uuid,
       payload?.returnPeriod,
     ],
@@ -795,7 +794,7 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
   });
 
   const query = useQuery({
-    queryKey: [FORECAST_QUERY_KEY_PREFIX, 'gfhwaterlevels', uuid],
+    queryKey: [FORECAST_QUERY_KEYS.GFH_WATER_LEVELS, uuid],
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({

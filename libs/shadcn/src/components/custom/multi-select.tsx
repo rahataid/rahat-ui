@@ -10,7 +10,6 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { cn } from '../../index';
-import { TooltipArrow } from '@radix-ui/react-tooltip';
 
 // TODO: this component have some bad UX issues, we need to fix them later.
 
@@ -721,7 +720,8 @@ const MultipleSelector = ({
                               </TooltipTrigger>
                               <TooltipContent
                                 className="bg-secondary"
-                                side="left"
+                                side="top"
+                                align="start"
                               >
                                 <p className="text-xs font-medium">
                                   {(option.title as string) || option.label}

@@ -52,7 +52,6 @@ export default function TriggerStatementView() {
 
   useAATriggerStatements(projectId, { perPage: 9999 });
   const triggers = useAAStationsStore((state) => state.triggers);
-  console.log('triggers', triggers);
   const [pinnedPhaseIds, setPinnedPhaseIds] = React.useState<string[]>(() =>
     loadPinnedPhases(projectId),
   );

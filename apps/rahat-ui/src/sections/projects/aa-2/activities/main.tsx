@@ -228,7 +228,7 @@ export default function ActivitiesView() {
         </div>
         {!hasPhases ? (
           <div className="w-full flex items-center justify-center h-[calc(100vh-180px)]">
-            <NoResult message="No Data Available" />
+            <NoResult message="No phases available. Create a phase to add activities." />
           </div>
         ) : (
           <div

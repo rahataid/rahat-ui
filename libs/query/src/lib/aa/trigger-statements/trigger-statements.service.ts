@@ -8,19 +8,7 @@ import { useSwal } from '../../../swal';
 import { useProjectSettingsStore } from '../../projects';
 import { MS_TRIGGERS_KEYS, PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useSettingsStore } from '../../settings';
-
-export const FORECAST_QUERY_KEYS = {
-  DHM_WATER_LEVELS: 'dhmwaterlevels',
-  DHM_SINGLE_SERIES_WATER_LEVELS: 'dhmsingleserieswaterlevels',
-  DHM_RAINFALL_LEVELS: 'dhmrainfalllevels',
-  DHM_TEMPERATURE_LEVELS: 'dhmtemperaturelevels',
-  DHM_HUMIDITY_LEVELS: 'dhmhumiditylevels',
-  DHM_SINGLE_SERIES_TEMPERATURE_LEVELS: 'dhmsingleseriestemperaturelevels',
-  DHM_SINGLE_SERIES_HUMIDITY_LEVELS: 'dhmsingleserieshumiditylevels',
-  GLOFAS_PROB_FLOOD_ALL: 'glofas_prob_flood_all',
-  GLOFAS_PROB_FLOOD_DETAILS: 'glofas_prob_flood_details',
-  GFH_WATER_LEVELS: 'gfhwaterlevels',
-} as const;
+import { FORECAST_QUERY_KEYS } from './trigger-statements.constants';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();

@@ -7,6 +7,7 @@ import {
 } from 'apps/rahat-ui/src/utils/getColorCard';
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
+import { truncateValue } from '../aws/utils/color.utils';
 interface InfoProp {
   riverWatch: {
     stationIndex: number;
@@ -19,6 +20,7 @@ interface InfoProp {
     basin: string;
     steady: string;
     status: string;
+    unit: string;
     waterLevel: { value: number; datetime: string };
   };
   updatedAt: string;
@@ -93,7 +95,8 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
         )}`}
       >
         <p className="text-primary font-semibold text-3xl/10">
-          {riverWatch?.waterLevel?.value}
+          {truncateValue(riverWatch?.waterLevel?.value, 2)}
+          {riverWatch?.unit}
         </p>
         <p className="text-sm/6 font-medium">Water Level</p>
         <p className="text-gray-500 text-sm/6">

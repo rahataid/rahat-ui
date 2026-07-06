@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Download } from 'lucide-react';
-import { useFetchSessionBroadcasts } from '@rahat-ui/query';
+import { useFetchBulkSessionBroadcasts } from '@rahat-ui/query';
 import { normalizePhoneAddress } from './const';
 
 type CampaignBroadcastActionsProps = {
@@ -26,23 +26,18 @@ export default function CampaignBroadcastActions({
   campaignName,
   filters,
 }: CampaignBroadcastActionsProps) {
-  const fetchSessionBroadcasts = useFetchSessionBroadcasts(projectUUID);
+  const fetchBulkBroadcasts = useFetchBulkSessionBroadcasts(projectUUID);
 
   const validSessionIds = sessionIds.filter(Boolean);
 
   const collectBroadcasts = React.useCallback(
     async (extraFilters?: Record<string, string | undefined>) => {
-      const all: any[] = [];
-      for (const sessionId of validSessionIds) {
-        const broadcasts = await fetchSessionBroadcasts.mutateAsync({
-          sessionId,
-          filters: extraFilters,
-        });
-        all.push(...broadcasts);
-      }
-      return all;
+      return fetchBulkBroadcasts.mutateAsync({
+        sessions: validSessionIds,
+        filters: extraFilters,
+      });
     },
-    [validSessionIds, fetchSessionBroadcasts],
+    [validSessionIds, fetchBulkBroadcasts],
   );
 
   const handleExport = async () => {
@@ -71,15 +66,15 @@ export default function CampaignBroadcastActions({
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Delivery Logs');
     XLSX.writeFile(
       workbook,
-      `${campaignName.replace(/\s+/g, '-').toLowerCase()}-delivery-logs-${new Date()
-        .toISOString()
-        .split('T')[0]}.xlsx`,
+      `${campaignName.replace(/\s+/g, '-').toLowerCase()}-delivery-logs-${
+        new Date().toISOString().split('T')[0]
+      }.xlsx`,
     );
   };
 
   if (!validSessionIds.length) return null;
 
-  const isBusy = fetchSessionBroadcasts.isPending;
+  const isBusy = fetchBulkBroadcasts.isPending;
 
   return (
     <Tooltip>
@@ -98,7 +93,9 @@ export default function CampaignBroadcastActions({
       </TooltipTrigger>
       <TooltipContent>
         Download all delivery logs for this campaign
-        {filters?.status || filters?.address ? ' (current filters applied)' : ''}
+        {filters?.status || filters?.address
+          ? ' (current filters applied)'
+          : ''}
       </TooltipContent>
     </Tooltip>
   );

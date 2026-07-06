@@ -210,10 +210,6 @@ export default function GroupDetail({ uuid }: IProps) {
       const rdata = listFieldDef?.data?.map((item: any) =>
         simpleString(item.name),
       );
-      // const withUuid = rdata?.includes('uuid')
-      //   ? rdata
-      //   : ['uuid', ...(rdata || [])];
-      // setLabels(withUuid);
       setLabels(rdata);
       return;
     }

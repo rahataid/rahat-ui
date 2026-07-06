@@ -9,7 +9,7 @@ import React, { useMemo } from 'react';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
-import { getTemperatureColor } from './utils/color.utils';
+import { getTemperatureColor, getLatestValue } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
 
 export default function TemperatureWatchView() {
@@ -53,7 +53,10 @@ export default function TemperatureWatchView() {
   return (
     <div className="flex flex-col space-y-6">
       {tn1hData.map((tempInfo: any, index: number) => {
-        const colors = getTemperatureColor(tempInfo?.value);
+        const latestEntry = getLatestValue(tempInfo?.history);
+        const latestValue = latestEntry?.value ?? tempInfo?.value;
+        const latestDate = latestEntry?.datetime ?? tempInfo?.updatedAt;
+        const colors = getTemperatureColor(latestValue);
         const seriesId = tempInfo?.series_id || tempInfo?.id || String(index);
 
         const stationInfo = [
@@ -115,9 +118,9 @@ export default function TemperatureWatchView() {
             </div>
 
             <TemperatureValueCard
-              value={tempInfo?.value}
+              value={latestValue}
               unit={tempInfo?.unit ?? '°C'}
-              updatedAt={updatedAt}
+              updatedAt={latestDate}
               label="Hourly Temperature"
               colors={colors}
             />

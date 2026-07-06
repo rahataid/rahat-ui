@@ -6,8 +6,8 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import Image from 'next/image';
 import GlofasPeriodDataTable from '../glofas.periodData.table';
+import GlofasHydrographChart from '../glofas.hydrograph.chart';
 import { Back, Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -61,16 +61,7 @@ const GlofasDetails = () => {
           title={`ECMWF-ENS > ${returnPeriod} RP`}
         />
 
-        <div className="bg-card overflow-hidden p-4 border shadow rounded-sm mt-4">
-          <div className="relative w-full min-h-[600px] overflow-hidden">
-            <Image
-              src={data?.info?.hydrographImageUrl}
-              alt="hydrograph-chart"
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>
+        <GlofasHydrographChart series={data?.info?.dischargeSeries} />
       </ScrollArea>
     </div>
   );

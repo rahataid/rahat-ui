@@ -51,6 +51,8 @@ export const AddPhaseSchema = z
     canRevert: z.boolean().optional(),
     canTriggerPayout: z.boolean().optional(),
     disbursementMethods: z.array(z.string()).optional(),
+    isAutomatedActivity: z.boolean().optional(),
+    isRequiredLeadTime: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (
@@ -78,4 +80,6 @@ export const getAddPhaseDefaultValues = (
   canRevert: true,
   canTriggerPayout: false,
   disbursementMethods: [],
+  isAutomatedActivity: false,
+  isRequiredLeadTime: false,
 });

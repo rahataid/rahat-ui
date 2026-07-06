@@ -179,7 +179,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                       >
                         {field.value
                           ? inkindItems.find((i) => i.uuid === field.value)
-                              ?.name
+                            ?.name
                           : 'Select InKind Item'}
                         <ChevronDown className="opacity-50" />
                       </Button>
@@ -328,14 +328,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                     <FormLabel className="mt-1 text-base font-medium">
                       Select Vendor
                     </FormLabel>
-                    {selectedVendor && (
-                      <p className="text-xs text-muted-foreground">
-                        Selected:{' '}
-                        <span className="font-semibold text-primary">
-                          {selectedVendor.inkind?.name}
-                        </span>
-                      </p>
-                    )}
+
                   </div>
                   <Popover open={vendorOpen} onOpenChange={setVendorOpen}>
                     <PopoverTrigger asChild>

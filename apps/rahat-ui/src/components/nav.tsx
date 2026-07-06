@@ -81,9 +81,9 @@ export function Nav({ hasDefaultHeader = true }) {
               <DropdownMenuGroup className="p-2 flex flex-col">
                 <div className="flex flex-col mb-1">
                   <span className="font-medium">
-                    {user?.data?.name ?? 'John Doe'}
+                    {user?.data?.name}
                   </span>
-                  <span>{user?.data?.email ?? 'doe@john.com'}</span>
+                  <span>{user?.data?.email}</span>
                 </div>
                 <Separator />
                 <Link
@@ -103,6 +103,12 @@ export function Nav({ hasDefaultHeader = true }) {
                   href={paths.settings.root}
                 >
                   Settings
+                </Link>
+                <Link
+                  className="p-1 hover:bg-secondary rounded"
+                  href={paths.usage.root}
+                >
+                  Usage
                 </Link>
                 {/* <ThemeSwitch /> */}
                 <Badge

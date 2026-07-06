@@ -127,16 +127,10 @@ export const triggerStatementSchemaBase = z
     }
 
     if (typeof data.value === 'number' && !isNaN(data.value)) {
-      if (!Number.isInteger(data.value)) {
+      if (data.value <= 0) {
         ctx.addIssue({
           path: ['value'],
-          message: 'Value must be a positive integer',
-          code: z.ZodIssueCode.custom,
-        });
-      } else if (data.value <= 0) {
-        ctx.addIssue({
-          path: ['value'],
-          message: 'Value must be a positive integer',
+          message: 'Value must be a positive number',
           code: z.ZodIssueCode.custom,
         });
       }

@@ -138,12 +138,12 @@ export function CommunicationCard({
           </div>
 
           <div className="flex-1 min-w-0">
-            {/* Title Row */}
+            {/* Title */}
             <div className="flex items-center gap-2 mb-1">
               <TooltipWrapper
                 tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
               >
-                <h3 className="font-medium text-gray-900 truncate">
+                <h3 className="font-medium text-gray-900 truncate w-[360px]">
                   {activityCommunication?.communicationTitle}
                 </h3>
               </TooltipWrapper>

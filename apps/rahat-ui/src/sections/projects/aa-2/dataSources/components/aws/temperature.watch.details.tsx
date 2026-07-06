@@ -6,7 +6,7 @@ import { useDhmSingleSeriesTemperatureLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { getTemperatureColor } from './utils/color.utils';
+import { getTemperatureColor, getLatestValue } from './utils/color.utils';
 import React, { useState, useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
 import TemperatureWatchMap from './temperature.watch.map';
@@ -30,6 +30,10 @@ export default function TemperatureWatchDetails() {
   const columns = useTemperatureTableColumns(tempInfo?.unit ?? '°C');
 
   const history = useMemo(() => tempInfo?.history ?? [], [tempInfo?.history]);
+
+  const latestEntry = getLatestValue(history);
+  const latestValue = latestEntry?.value ?? tempInfo?.value;
+  const latestDate = latestEntry?.datetime ?? tempInfo?.updatedAt;
 
   const isNoDataError = useMemo(() => {
     if (!error) return false;
@@ -57,8 +61,8 @@ export default function TemperatureWatchDetails() {
 
   const colors = useMemo(
     () =>
-      tempInfo?.value != null
-        ? getTemperatureColor(tempInfo.value)
+      latestValue != null
+        ? getTemperatureColor(latestValue)
         : {
             statusColor: 'bg-gray-400',
             bg: 'bg-gray-50',
@@ -66,7 +70,7 @@ export default function TemperatureWatchDetails() {
             border: 'border-gray-200',
             badge: 'bg-gray-400',
           },
-    [tempInfo?.value],
+    [latestValue],
   );
 
   const mapCoordinates = useMemo(
@@ -78,14 +82,14 @@ export default function TemperatureWatchDetails() {
               latitude: tempInfo.latitude,
               longitude: tempInfo.longitude,
               stationIndex: tempInfo.stationIndex,
-              value: tempInfo.value,
+              value: latestValue ?? tempInfo.value,
               unit: tempInfo.unit ?? '°C',
               statusColor: colors.statusColor,
               bgColor: colors.bg,
             },
           ]
         : [],
-    [tempInfo, colors],
+    [tempInfo, colors, latestValue],
   );
 
   if (isLoading) return <TableLoader />;
@@ -155,9 +159,9 @@ export default function TemperatureWatchDetails() {
               </div>
 
               <TemperatureValueCard
-                value={tempInfo?.value}
+                value={latestValue}
                 unit={tempInfo?.unit ?? '°C'}
-                updatedAt={updatedAt}
+                updatedAt={latestDate}
                 colors={colors}
               />
             </div>

@@ -6,7 +6,7 @@ const activityDocumentSchema = z.object({
   fileName: z.string(),
 });
 
-const baseActivityFormSchema = z.object({
+export const activityFormSchema = z.object({
   title: z.string().min(2, { message: 'Title must be at least 4 character' }),
   responsibility: z.string().min(2, { message: 'Please enter responsibility' }),
   responsibleStation: z
@@ -26,34 +26,6 @@ const baseActivityFormSchema = z.object({
   activityDocuments: z.array(activityDocumentSchema).optional(),
 });
 
-export const createActivityFormSchema = (
-  phases: Array<{ uuid: string; name: string }>,
-) => {
-  return baseActivityFormSchema.superRefine((data, ctx) => {
-    const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
-    if (selectedPhase?.name !== 'PREPAREDNESS') {
-      if (!data.leadTime) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Lead time is required for this phase',
-          path: ['leadTime'],
-        });
-        return;
-      }
-
-      const parts = data.leadTime.split(' ');
-      const valuePart = parts[0]?.trim();
-
-      if (!valuePart) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Lead time is required for this phase',
-          path: ['leadTime'],
-        });
-      }
-    }
-  });
-};
 
 const baseCommunicationFormSchema = z.object({
   communicationTitle: z

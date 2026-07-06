@@ -87,7 +87,6 @@ export default function EditActivity() {
   const redirectTo = searchParams.get('from');
   const editCommunicationForm = useBoolean();
 
-  const isAddComm = window.location.hash === '#comm';
   // Query goes here
   const { data: users } = useUserList({
     page: 1,
@@ -116,7 +115,7 @@ export default function EditActivity() {
     perPage: 100,
   });
   useBeneficiariesGroups(projectID as UUID, {
-     excludeGroupPurpose: GroupPurpose.GENERAL,
+    excludeGroupPurpose: GroupPurpose.GENERAL,
     page: 1,
     perPage: 100,
   });
@@ -129,7 +128,7 @@ export default function EditActivity() {
       }`;
 
   const { FormSchema, form, communicationForm, defaultCommunicationValues } =
-    useActivityForm(phases, appTransports);
+    useActivityForm(appTransports);
 
   // Handlers goes here
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -284,29 +283,24 @@ export default function EditActivity() {
     if (typeof window === 'undefined') return;
     if (isActivityLoading) return;
 
-    if (isAddComm) {
-      // Wait till the component is fully rendered before opening the form and scrolling
-      setTimeout(() => {
-        setOpen(true);
-      }, 100);
+    const shouldOpen = open || editCommunicationForm.value;
 
-      setTimeout(() => {
-        if (!scrollAreaRef.current) return;
+    if (shouldOpen) {
+      if (!scrollAreaRef.current) return;
 
-        // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
-        const viewport = scrollAreaRef.current.closest(
-          '[data-radix-scroll-area-viewport]',
-        );
+      // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
+      const viewport = scrollAreaRef.current.closest(
+        '[data-radix-scroll-area-viewport]',
+      );
 
-        if (viewport) {
-          viewport.scrollTo({
-            top: scrollAreaRef.current.offsetTop,
-            behavior: 'smooth',
-          });
-        }
-      }, 500);
+      if (viewport) {
+        viewport.scrollTo({
+          top: scrollAreaRef.current.offsetTop,
+          behavior: 'smooth',
+        });
+      }
     }
-  }, [isActivityLoading, isAddComm]);
+  }, [isActivityLoading, open, editCommunicationForm.value]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -333,6 +327,14 @@ export default function EditActivity() {
       setCommunicationData(transformedData);
     }
   }, [activityDetail, form, appTransports]);
+
+  const isSubmitButtonDisabled =
+    updateActivity?.isPending ||
+    uploadFile?.isPending ||
+    audioUploading ||
+    open ||
+    editCommunicationForm.value ||
+    !!form.formState.errors.responsibility;
 
   // this code need to be removed after testing
   // const isVoiceAudioMissing = communicationData.some((comm) => {
@@ -412,12 +414,7 @@ export default function EditActivity() {
                     <Button
                       className="  w-36"
                       type="submit"
-                      disabled={
-                        updateActivity?.isPending ||
-                        uploadFile?.isPending ||
-                        audioUploading ||
-                        open
-                      }
+                      disabled={isSubmitButtonDisabled}
                     >
                       Update
                     </Button>
@@ -511,7 +508,7 @@ export default function EditActivity() {
                           key={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger disabled>
                               <SelectValue placeholder="Select phase" />
                             </SelectTrigger>
                           </FormControl>
@@ -556,7 +553,7 @@ export default function EditActivity() {
                     )}
                   />
 
-                  {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                  {selectedPhase && selectedPhase.isAutomatedActivity && (
                     <FormField
                       control={form.control}
                       name="isAutomated"
@@ -581,65 +578,64 @@ export default function EditActivity() {
                     />
                   )}
 
-                  {selectedPhaseId &&
-                    selectedPhase?.name !== 'PREPAREDNESS' && (
-                      <FormField
-                        control={form.control}
-                        name="leadTime"
-                        render={({ field }) => {
-                          const [lead, unitValue] = field.value?.split(' ') ?? [
-                            '',
-                            '',
-                          ];
-                          // Default unit to 'days' if not set
-                          const unit = !unitValue ? 'days' : unitValue;
-                          return (
-                            <FormItem>
-                              <FormLabel>Lead Time</FormLabel>
-                              <div className="grid grid-cols-4">
-                                <Input
-                                  type="text"
-                                  placeholder="Enter lead time"
-                                  className="col-span-3 rounded-r-none "
-                                  value={lead}
-                                  onChange={(e) => {
-                                    const newLead = e.target.value;
-                                    field.onChange(
-                                      newLead ? `${newLead} ${unit}` : '',
-                                    );
-                                  }}
-                                />
-                                <Select
-                                  value={unit}
-                                  onValueChange={(val) => {
-                                    field.onChange(
-                                      lead ? `${lead} ${val}` : ` ${val}`,
-                                    );
-                                  }}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="rounded-l-none">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {DurationData.map((item) => (
-                                      <SelectItem
-                                        key={item.value}
-                                        value={item.value}
-                                      >
-                                        {item.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    )}
+                  {selectedPhaseId && selectedPhase?.isRequiredLeadTime && (
+                    <FormField
+                      control={form.control}
+                      name="leadTime"
+                      render={({ field }) => {
+                        const [lead, unitValue] = field.value?.split(' ') ?? [
+                          '',
+                          '',
+                        ];
+                        // Default unit to 'days' if not set
+                        const unit = !unitValue ? 'days' : unitValue;
+                        return (
+                          <FormItem>
+                            <FormLabel>Lead Time</FormLabel>
+                            <div className="grid grid-cols-4">
+                              <Input
+                                type="text"
+                                placeholder="Enter lead time"
+                                className="col-span-3 rounded-r-none "
+                                value={lead}
+                                onChange={(e) => {
+                                  const newLead = e.target.value;
+                                  field.onChange(
+                                    newLead ? `${newLead} ${unit}` : '',
+                                  );
+                                }}
+                              />
+                              <Select
+                                value={unit}
+                                onValueChange={(val) => {
+                                  field.onChange(
+                                    lead ? `${lead} ${val}` : ` ${val}`,
+                                  );
+                                }}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="rounded-l-none">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {DurationData.map((item) => (
+                                    <SelectItem
+                                      key={item.value}
+                                      value={item.value}
+                                    >
+                                      {item.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  )}
 
                   <FormField
                     control={form.control}
@@ -751,7 +747,7 @@ export default function EditActivity() {
                     onSave={handleSave}
                     setLoading={setAudioUploading}
                     appTransports={appTransports}
-                    isMultiSelect={isAddComm}
+                    isMultiSelect={open}
                     editMode={editCommunicationForm}
                   />
                 )}

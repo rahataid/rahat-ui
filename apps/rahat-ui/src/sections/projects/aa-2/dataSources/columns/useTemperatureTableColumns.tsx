@@ -1,27 +1,22 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { roundValue } from '../components/aws/utils/color.utils';
 
-export const useTemperatureTableColumns = (unit = '°C', label = 'Temperature') => {
+export const useTemperatureTableColumns = (
+  unit = '°C',
+  label = 'Temperature',
+) => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
       header: 'Date & Time',
       cell: ({ row }) => {
         const getDateAndTime = row.getValue('datetime') as string;
-        const dateTransformResult = convertToLocalTimeOrMillisecond(
+        const formatted = dateFormat(
           getDateAndTime,
-          'MMM d, yyyy h:mm a',
+          'eee, MMM d yyyy, hh:mm:ss a',
         );
-
-        const formatted =
-          typeof dateTransformResult === 'object' &&
-          dateTransformResult !== null &&
-          typeof dateTransformResult.formatted === 'string' &&
-          dateTransformResult.formatted !== ''
-            ? dateTransformResult.formatted
-            : 'N/A';
 
         return <div>{formatted}</div>;
       },

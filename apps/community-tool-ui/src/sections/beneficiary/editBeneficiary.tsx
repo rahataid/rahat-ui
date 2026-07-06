@@ -147,27 +147,45 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
-    if (formData.birthDate) {
-      const formattedDate = formatDate(formData.birthDate as Date);
-      formData.birthDate = formattedDate;
-    }
-    if (formData.phone) {
-      formData.phoneStatus = PhoneStatus.SMART_PHONE;
-    }
 
-    if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
-      formData.bankedStatus = BankedStatus.BANKED;
-    }
-    const nonEmptyFields = selectNonEmptyFields(formData);
     if (extras.hasOwnProperty('isDuplicate')) {
       delete extras.isDuplicate;
     }
+
+    const dirtyFields = form.formState.dirtyFields;
+    const dirtyPayload: Record<string, any> = {};
+
+    Object.keys(dirtyFields).forEach((key) => {
+      dirtyPayload[key] = formData[key as keyof typeof formData];
+    });
+
+    if (dirtyFields.phone && formData.phone) {
+      dirtyPayload.phone = formData.phone;
+    }
+    if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
+      dirtyPayload.bankedStatus = BankedStatus.BANKED;
+    }
+    if (dirtyFields.birthDate && formData.birthDate) {
+      const formattedDate = formatDate(formData.birthDate as Date);
+      dirtyPayload.birthDate = formattedDate;
+    }
+
+    const nonEmptyFields = selectNonEmptyFields(dirtyPayload);
+
+    const originalExtras = data.extras || {};
+    const hasExtrasChanged = JSON.stringify(extras) !== JSON.stringify(originalExtras);
+
+    const finalPayload: Record<string, any> = {
+      ...nonEmptyFields,
+    };
+
+    if (hasExtrasChanged) {
+      finalPayload.extras = extras;
+    }
+
     await updateBeneficiaryClient.mutateAsync({
       uuid: data.uuid as UUID,
-      payload: {
-        ...nonEmptyFields,
-        extras,
-      },
+      payload: finalPayload,
     });
     closeSecondPanel();
   };
@@ -216,9 +234,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           type="text"
                           placeholder="Wallet Address"
                           {...field}
-                          onChange={(e) => {
-                            form.setValue('walletAddress', e.target.value);
-                          }}
                         />
                       </div>
                     </FormControl>
@@ -239,9 +254,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="First Name"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('firstName', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -261,9 +273,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="Last Name"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('lastName', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -280,7 +289,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <Label className="text-xs font-medium">Gender</Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -311,9 +320,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="Email"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('email', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -330,7 +336,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <Label className="text-xs font-medium">Phone Status</Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -369,9 +375,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         type="text"
                         placeholder="Phone"
                         {...field}
-                        onChange={(e) => {
-                          form.setValue('phone', e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -390,7 +393,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     </Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -426,7 +429,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <Label className="text-xs font-medium">Banked Status</Label>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -508,7 +511,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           if (isNaN(numericValue)) {
                             numericValue = 0;
                           }
-                          form.setValue('latitude', numericValue);
+                          form.setValue('latitude', numericValue, { shouldDirty: true });
                         }}
                       />
                     </FormControl>
@@ -579,7 +582,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           if (isNaN(numericValue)) {
                             numericValue = 0;
                           }
-                          form.setValue('longitude', numericValue);
+                          form.setValue('longitude', numericValue, { shouldDirty: true });
                         }}
                       />
                     </FormControl>
@@ -611,8 +614,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             <br />
             {filteredDefinitions && filteredDefinitions.length > 0
               ? filteredDefinitions.map((definition: any) => {
-                  return <FormBuilder formField={definition} />;
-                })
+                return <FormBuilder formField={definition} />;
+              })
               : 'No field definitions found!'}
           </div>
 

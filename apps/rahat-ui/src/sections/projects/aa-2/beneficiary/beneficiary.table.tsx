@@ -54,7 +54,6 @@ function BeneficiaryTable() {
     projectUUID: uuid,
     ...filters,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: projectBeneficiaries?.data?.data || [],

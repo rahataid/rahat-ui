@@ -10,12 +10,15 @@ import {
   PROJECT_SETTINGS_KEYS,
   SourceHealthData,
   useExternalApiHealthMonitor,
+  useProjectInfo,
   useTabConfiguration,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useMemo } from 'react';
 import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
+import { ADAPTER_ID_FILTERS } from './utils/getAdapterIds';
+
 
 export default function MonitoringDashboard() {
   const params = useParams();
@@ -29,6 +32,10 @@ export default function MonitoringDashboard() {
     projectId as UUID,
     PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
   );
+  const { data: projectInfo } = useProjectInfo(projectId);
+
+
+  const projectType = projectInfo?.value?.project_type;
 
   const newTabsList = useMemo(() => {
     const tabs = data?.value?.tabs;
@@ -37,15 +44,18 @@ export default function MonitoringDashboard() {
       : defaultForecastTab.map((t) => t.value);
   }, [data]);
 
-  const newFilteredSources = useMemo(() => {
-    if (!sources || !newTabsList.length) return [];
 
-    return sources.filter((item: any) =>
-      newTabsList.some((key: string) =>
-        item?.adapterId?.toLowerCase()?.startsWith(key.toLowerCase()),
-      ),
-    );
-  }, [sources, newTabsList]);
+  const newFilteredSources = useMemo(() => {
+    if (!sources?.length || !newTabsList.length) return [];
+
+    const adapterIds = ADAPTER_ID_FILTERS[projectType];
+    return adapterIds
+      ? sources.filter((item: SourceHealthData) =>
+        adapterIds.includes(item?.adapterId),
+      )
+      : sources;
+  }, [sources, newTabsList, projectType]);
+
 
   if (isLoading) {
     return (
@@ -74,15 +84,26 @@ export default function MonitoringDashboard() {
           sources={newFilteredSources}
         />
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-        {loading
-          ? Array.from({ length: 4 }).map((_, index) => (
+
+      {!newFilteredSources.length && !loading ? (
+        <div className="mt-5 p-6 text-center text-muted-foreground space-y-1">
+          <p className="font-medium text-foreground">No data available right now</p>
+          <p className="text-sm text-muted-foreground">
+            Health data for this project type may not have been fetched yet. Data is refreshed
+            approximately every hour — please check back later.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+          {loading
+            ? Array.from({ length: 4 }).map((_, index) => (
               <StatusCardSkeleton key={`skeleton-${index}`} />
             ))
-          : newFilteredSources.map((source) => (
-              <StatusCard key={source.source_id} data={source} />
+            : newFilteredSources.map((source: SourceHealthData) => (
+              <StatusCard key={source.adapterId} data={source} />
             ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

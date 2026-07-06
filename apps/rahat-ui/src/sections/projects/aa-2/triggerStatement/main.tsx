@@ -52,7 +52,7 @@ export default function TriggerStatementView() {
 
   useAATriggerStatements(projectId, { perPage: 9999 });
   const triggers = useAAStationsStore((state) => state.triggers);
-
+  console.log('triggers', triggers);
   const [pinnedPhaseIds, setPinnedPhaseIds] = React.useState<string[]>(() =>
     loadPinnedPhases(projectId),
   );
@@ -68,9 +68,10 @@ export default function TriggerStatementView() {
   };
 
   const sortedPhases = React.useMemo(() => {
+    const automatedPhases = phases.filter((p: any) => p?.isAutomatedActivity);
     return [
-      ...phases.filter((p) => pinnedPhaseIds.includes(p.uuid)),
-      ...phases.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
+      ...automatedPhases.filter((p) => pinnedPhaseIds.includes(p.uuid)),
+      ...automatedPhases.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
     ];
   }, [phases, pinnedPhaseIds]);
 

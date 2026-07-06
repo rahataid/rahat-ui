@@ -3,7 +3,14 @@ import { useEffect } from 'react';
 import { Command as CommandPrimitive, useCommandState } from 'cmdk';
 import { XIcon } from 'lucide-react';
 import { Command, CommandGroup, CommandItem, CommandList } from '../ui/command';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 import { cn } from '../../index';
+import { TooltipArrow } from '@radix-ui/react-tooltip';
 
 // TODO: this component have some bad UX issues, we need to fix them later.
 
@@ -669,16 +676,11 @@ const MultipleSelector = ({
                       className={cn('h-full overflow-hidden', groupClassName)}
                     >
                       {dropdowns.map((option) => {
-                        return (
+                        const item = (
                           <CommandItem
                             key={option.value}
                             value={option.value}
                             disabled={option.disable}
-                            title={
-                              option.disable
-                                ? (option.title as string) || option.label
-                                : undefined
-                            }
                             onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -700,12 +702,33 @@ const MultipleSelector = ({
                             }}
                             className={cn(
                               'cursor-pointer',
-                              option.disable &&
-                                'cursor-not-allowed opacity-50',
+                              option.disable && 'cursor-not-allowed opacity-50',
                             )}
                           >
                             {option.label}
                           </CommandItem>
+                        );
+
+                        if (!option.disable) {
+                          return item;
+                        }
+
+                        return (
+                          <TooltipProvider key={option.value} delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div>{item}</div>
+                              </TooltipTrigger>
+                              <TooltipContent
+                                className="bg-secondary"
+                                side="left"
+                              >
+                                <p className="text-xs font-medium">
+                                  {(option.title as string) || option.label}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         );
                       })}
                     </CommandGroup>

@@ -210,9 +210,7 @@ export default function GroupDetail({ uuid }: IProps) {
       const rdata = listFieldDef?.data?.map((item: any) =>
         simpleString(item.name),
       );
-
       setLabels(rdata);
-
       return;
     }
     const merged = [...labels, simpleString(item)];
@@ -255,6 +253,8 @@ export default function GroupDetail({ uuid }: IProps) {
           filteredItem[dehumanizedString] = '';
         }
       });
+      filteredItem['uuid'] =
+        item['uuid'] ?? item['beneficiary']?.['uuid'] ?? '';
       return filteredItem;
     });
 
@@ -264,7 +264,6 @@ export default function GroupDetail({ uuid }: IProps) {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
     XLSX.writeFile(wb, 'beneficiaries.xlsx');
-    setLabels([]);
   };
 
   const handleVerificationLink = async () => {
@@ -341,19 +340,6 @@ export default function GroupDetail({ uuid }: IProps) {
           },
         );
 
-        // Download the cleaned file for verification
-        const url = URL.createObjectURL(cleanedFile);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `cleaned-${selectedFile.name}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
-        //continue with payload
-        
-
         const formData = new FormData();
         formData.append('file', cleanedFile);
 
@@ -370,11 +356,9 @@ export default function GroupDetail({ uuid }: IProps) {
         });
       }
 
-      setUploadOpen(false);
       setSelectedFile(null);
       router.push('/group');
     } catch (error) {
-      setUploadOpen(false);
       Swal.fire(
         'Upload failed',
         (error as any)?.response?.data?.message || 'Unknown error',
@@ -558,113 +542,8 @@ export default function GroupDetail({ uuid }: IProps) {
                 <AlertDialogFooter>
                   <Button
                     variant="outline"
-                    onClick={() => setLabels([])}
-                    disabled={labels.length === 0}
-                  >
-                    Clear All
-                  </Button>
-                  <AlertDialogAction
-                    onClick={handleDownload}
-                    disabled={labels.length === 0}
-                  >
-                    Download
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            {/* Upload Dialog */}
-            <AlertDialog open={open} onOpenChange={setOpen}>
-              <AlertDialogContent className="w-full">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    <div className="flex justify-between items-center pb-1 gap-4">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Label className="text-lg font-medium">
-                              Select fields to download
-                            </Label>
-                          </TooltipTrigger>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger onClick={() => setOpen(false)}>
-                            <X
-                              className="text-muted-foreground hover:text-foreground text-red-700"
-                              size={23}
-                              strokeWidth={1.9}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Close</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    <ScrollArea
-                      className={`${
-                        labels.length < 10 ? 'h-32' : 'h-52'
-                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
-                      hidden={labels.length === 0}
-                    >
-                      {labels.map((item) => {
-                        return (
-                          <Badge key={item} variant="secondary" className="m-1">
-                            {item}
-                            <button
-                              className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  handleUnselect(item);
-                                }
-                              }}
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }}
-                              onClick={() => handleUnselect(item)}
-                            >
-                              <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                            </button>
-                          </Badge>
-                        );
-                      })}
-
-                      {labels.length === 0 && (
-                        <h1 className="text-center ">No fields selected</h1>
-                      )}
-                    </ScrollArea>
-
-                    <Command className="h-52">
-                      <CommandInput
-                        placeholder={'Search field...'}
-                        autoFocus={true}
-                      />
-                      <CommandList className="no-scrollbar">
-                        <CommandEmpty>No field found.</CommandEmpty>
-                        <CommandGroup>
-                          {sortedSelectables?.map((item) => (
-                            <CommandItem
-                              key={item.uuid}
-                              value={item.name}
-                              onSelect={() => handleSelectChange(item.name)}
-                            >
-                              {simpleString(item.name)}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setLabels([])}
-                    disabled={labels.length === 0}
+                    onClick={() => setLabels(['uuid'])}
+                    disabled={labels.length <= 1}
                   >
                     Clear All
                   </Button>
@@ -705,6 +584,7 @@ export default function GroupDetail({ uuid }: IProps) {
                   </Button>
                   <Button
                     onClick={async () => {
+                      setUploadOpen(false);
                       await handleUpload();
                     }}
                   >

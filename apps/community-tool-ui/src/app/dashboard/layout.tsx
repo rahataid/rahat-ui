@@ -16,11 +16,23 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-
-
   React.useEffect(() => {
-    const handleGroupUpdated = (groupUuid: any) => {
-      toast.success('All beneficiaries have been updated successfully.');
+    const handleGroupUpdated = (message: any) => {
+      const { updatedCount, failedCount } = message;
+      if (updatedCount > 0) {
+        toast.success(
+          `${updatedCount} beneficiar${
+            updatedCount === 1 ? 'y' : 'ies'
+          } updated successfully.`,
+        );
+      }
+      if (failedCount > 0) {
+        toast.error(
+          `${failedCount} beneficiar${
+            failedCount === 1 ? 'y' : 'ies'
+          } failed to update.`,
+        );
+      }
     };
     socket.on('beneficiary-group-updated', handleGroupUpdated);
     return () => {

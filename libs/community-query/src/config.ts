@@ -36,6 +36,7 @@ export const TAGS = {
   LIST_COMMUNITY_GROUP: 'list_community_group',
   LIST_COMMUNITY_GROUP_BY_ID: 'list_community_group_by_id',
   ADD_COMMUNITY_GROUP: 'add_community_group',
+  UPDATE_BULK_BENEFICIARY: 'update_bulk_beneficiary',
   ADD_COMMUNITY_BENEFICIARY_GROUP: 'add_community_beneficiary_group',
   LIST_COMMUNITY_BENEFICIARY_GROUP: 'list_community_beneficiary_group',
   LIST_ACTIVE_FIELD_DEFINITIONS: 'list_active_field_definitions',

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useCommunityGroupList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
@@ -14,6 +14,7 @@ import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '../../utils/debounceHooks';
 import GroupList from './list.group';
 import { useCommunityGroupTableColumns } from './useGroupColumns';
+import { toast } from 'react-toastify';
 
 function ViewGroup() {
   const {
@@ -29,7 +30,7 @@ function ViewGroup() {
   } = usePagination();
 
   const debouncedFilters = useDebounce(filters, 500) as any;
-  const { isLoading, data } = useCommunityGroupList({
+  const { isLoading, data, refetch } = useCommunityGroupList({
     ...pagination,
     ...(debouncedFilters as any),
   });
@@ -49,6 +50,10 @@ function ViewGroup() {
       rowSelection: selectedListItems,
     },
   });
+
+
+
+
   return (
     <Tabs defaultValue="groupList" className="h-full">
       <>

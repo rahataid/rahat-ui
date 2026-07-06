@@ -254,7 +254,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
-    console.log('handleTargetFieldChange', sourceField, targetField);
+
     // Source field as it is
     // Target field sanitized
     if (sourceField === EMPTY_SELECTION) {
@@ -303,6 +303,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
             const sanitized = trimWhitespace(
               removeFieldsWithUnderscore(json || []),
             );
+
             setRawData(sanitized);
             await fetchAiMappingSuggestions(file);
             resolve();

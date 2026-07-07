@@ -116,7 +116,7 @@ export default function TriggerStatementView() {
           title="Trigger Statement"
           description="Track all the trigger reports here"
         />
-        <RoleAuth
+        {/* <RoleAuth
           roles={[AARoles.ADMIN, AARoles.Municipality]}
           hasContent={false}
         >
@@ -125,7 +125,7 @@ export default function TriggerStatementView() {
             name="Add Phase"
             handleClick={handleAddPhase}
           />
-        </RoleAuth>
+        </RoleAuth> */}
       </div>
 
       <div className="flex gap-1 flex-1 overflow-hidden mt-4">

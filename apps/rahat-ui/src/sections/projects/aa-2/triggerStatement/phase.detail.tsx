@@ -122,7 +122,7 @@ export default function PhaseDetail() {
               />
             </TooltipWrapper>
           </RoleAuth>
-          <RoleAuth
+          {/* <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
@@ -144,7 +144,7 @@ export default function PhaseDetail() {
                 />
               </TooltipWrapper>
             )}
-          </RoleAuth>
+          </RoleAuth> */}
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
@@ -220,7 +220,9 @@ export default function PhaseDetail() {
               isActive={phase?.isActive}
               chartType="donut"
               hidePin={true}
-              disbursementMethods={phase?.disbursementConfig?.disbursementMethods}
+              disbursementMethods={
+                phase?.disbursementConfig?.disbursementMethods
+              }
             />
             {isTriggerLogicEnabled && (
               <ExtendedTriggerLogicCard

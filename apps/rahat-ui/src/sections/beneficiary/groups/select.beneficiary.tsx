@@ -18,6 +18,7 @@ import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function SelectBeneficiaryView() {
   const { Id } = useParams() as { Id: UUID };
@@ -40,9 +41,10 @@ export default function SelectBeneficiaryView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
     resetFilters();
   }, []);
+  const debouncedFilters = useDebounce(filters, 500);
   const { data: Beneficiaries } = useBeneficiaryList({
     ...pagination,
-    ...filters,
+    ...debouncedFilters,
   });
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

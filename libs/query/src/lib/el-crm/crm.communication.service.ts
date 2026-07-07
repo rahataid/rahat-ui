@@ -774,6 +774,8 @@ export const useAutomationDetail = (
     sort?: string;
     order?: 'asc' | 'desc';
     status?: string;
+    startDate?: string;
+    endDate?: string;
   },
 ) => {
   const action = useProjectAction();

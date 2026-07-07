@@ -33,7 +33,8 @@ import {
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 import { UUID } from 'crypto';
 import {
   useGetElCrmCampaign,
@@ -61,6 +62,7 @@ import {
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
+import { DateRangePicker } from '../../../customers/dateRangePicker';
 import { computeRate, formatRate, targetTypeMap } from '../../const';
 
 export default function MessageDetailPage() {
@@ -115,6 +117,29 @@ export default function MessageDetailPage() {
 
   const isAutomatic = !!campaign?.isAutomatic;
 
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
+
+  const handleDateRangeChange = React.useCallback(
+    (range: DateRange | undefined) => {
+      setDateRange(range);
+      setFilters((prev: any) => {
+        const updated = { ...prev };
+        // Both ends are required for a range query; send full-day bounds so a
+        // single-day selection still includes that whole day.
+        if (range?.from && range?.to) {
+          updated.startDate = startOfDay(range.from).toISOString();
+          updated.endDate = endOfDay(range.to).toISOString();
+        } else {
+          delete updated.startDate;
+          delete updated.endDate;
+        }
+        return updated;
+      });
+      setPagination((prev) => ({ ...prev, page: 1 }));
+    },
+    [setFilters, setPagination],
+  );
+
   const { data: logs, isLoading: isLogsLoading } = useListElCrmSessionBroadcast(
     projectUUID,
     {
@@ -143,7 +168,11 @@ export default function MessageDetailPage() {
   }, [automations.data, isAutomatic, campaign?.uuid]);
 
   const { data: automationDetail, isLoading: isAutomationLoading } =
-    useAutomationDetail(projectUUID, automationRuleUuid, pagination);
+    useAutomationDetail(projectUUID, automationRuleUuid, {
+      ...pagination,
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
+    });
 
   const logsData: any[] = isAutomatic
     ? automationDetail?.logs ?? []
@@ -221,6 +250,7 @@ export default function MessageDetailPage() {
 
   const clearAllFilters = () => {
     setFilters({});
+    setDateRange(undefined);
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
@@ -409,6 +439,8 @@ export default function MessageDetailPage() {
                   filters={{
                     status: filters?.status,
                     address: filters?.address,
+                    startDate: filters?.startDate,
+                    endDate: filters?.endDate,
                   }}
                 />
               )}
@@ -609,7 +641,7 @@ export default function MessageDetailPage() {
                         {meta?.total || 0}
                       </span>
                     </CardTitle>
-                    {!isAutomatic && hasActiveFilters && (
+                    {hasActiveFilters && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -623,28 +655,35 @@ export default function MessageDetailPage() {
                     )}
                   </div>
 
-                  {!isAutomatic && (
-                    <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
-                      <div className="md:col-span-3">
-                        <SearchInput
-                          value={filters.address}
-                          name="Audience"
-                          onSearch={(e) => handleSearch(e, 'address')}
-                        />
-                      </div>
+                  <div className="flex flex-col gap-2.5 md:flex-row md:items-center">
+                    {!isAutomatic && (
+                      <>
+                        <div className="flex-1">
+                          <SearchInput
+                            value={filters.address}
+                            name="Audience"
+                            onSearch={(e) => handleSearch(e, 'address')}
+                          />
+                        </div>
 
-                      <div className="md:col-span-1 !mt-0">
-                        <SelectComponent
-                          name="Status"
-                          options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                          onChange={(value) =>
-                            handleFilterChange('status', value)
-                          }
-                          value={filters?.status ?? 'ALL'}
-                        />
-                      </div>
-                    </div>
-                  )}
+                        <div className="md:w-44 !mt-0">
+                          <SelectComponent
+                            name="Status"
+                            options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                            onChange={(value) =>
+                              handleFilterChange('status', value)
+                            }
+                            value={filters?.status ?? 'ALL'}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    <DateRangePicker
+                      value={dateRange}
+                      onChange={handleDateRangeChange}
+                    />
+                  </div>
                 </CardHeader>
 
                 <CardContent className="p-0">

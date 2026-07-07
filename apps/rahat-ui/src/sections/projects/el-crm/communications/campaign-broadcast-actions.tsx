@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Download } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { useFetchBulkSessionBroadcasts } from '@rahat-ui/query';
 import { normalizePhoneAddress } from './const';
 
@@ -17,7 +17,12 @@ type CampaignBroadcastActionsProps = {
   projectUUID: UUID;
   sessionIds: string[];
   campaignName: string;
-  filters?: { status?: string; address?: string };
+  filters?: {
+    status?: string;
+    address?: string;
+    startDate?: string;
+    endDate?: string;
+  };
 };
 
 export default function CampaignBroadcastActions({
@@ -44,6 +49,8 @@ export default function CampaignBroadcastActions({
     const broadcasts = await collectBroadcasts({
       status: filters?.status,
       address: filters?.address,
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
     });
     if (!broadcasts.length) return;
 
@@ -87,13 +94,19 @@ export default function CampaignBroadcastActions({
           disabled={isBusy}
           className="gap-2"
         >
-          <Download className="h-3.5 w-3.5" />
-          Export
+          {isBusy ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Download className="h-3.5 w-3.5" />
+          )}
+          {isBusy ? 'Exporting…' : 'Export'}
         </Button>
       </TooltipTrigger>
       <TooltipContent>
         Download all delivery logs for this campaign
-        {filters?.status || filters?.address
+        {filters?.status ||
+        filters?.address ||
+        (filters?.startDate && filters?.endDate)
           ? ' (current filters applied)'
           : ''}
       </TooltipContent>

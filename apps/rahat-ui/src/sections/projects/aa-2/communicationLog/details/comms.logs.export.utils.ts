@@ -20,7 +20,7 @@ type SessionLog = {
 };
 
 type LogsData = {
-  groupName?: string;
+  group?: { name?: string };
   communicationDetail?: {
     groupType?: string;
     communicationTitle?: string;
@@ -65,8 +65,8 @@ const TYPE_SPECIFIC_FIELDS: Record<
         ? log.disposition?.disposition || log.message || log.error || 'N/A'
         : log.disposition?.duration !== null &&
           log.disposition?.duration !== undefined
-        ? log.disposition.duration
-        : 'N/A',
+          ? log.disposition.duration
+          : 'N/A',
     Attempts: log.attempts || 0,
     'Max Attempts': log.maxAttempts || 0,
   }),
@@ -89,7 +89,7 @@ function buildRowMapper(logs: LogsData) {
     TYPE_SPECIFIC_FIELDS[communicationType] || TYPE_SPECIFIC_FIELDS.SMS;
 
   return (log: SessionLog) => ({
-    'Group Name': logs?.groupName || 'N/A',
+    'Group Name': logs?.group?.name || 'N/A',
     'Group Type': logs?.communicationDetail?.groupType || 'N/A',
     'Communication Type': communicationType,
     'Communication Title':

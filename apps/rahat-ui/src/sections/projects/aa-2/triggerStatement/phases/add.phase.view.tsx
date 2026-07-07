@@ -32,7 +32,7 @@ export default function AddPhaseView() {
   const addPhaseConfirmDialog = useBoolean(false);
 
   const navigation = searchParams.get('from');
-  const tab = searchParams.get('tab') || '';
+  const tab = searchParams.get('tab') ?? '';
 
   const createPhase = useCreatePhase();
   const { data: phasesData = [] } = usePhases(projectId);

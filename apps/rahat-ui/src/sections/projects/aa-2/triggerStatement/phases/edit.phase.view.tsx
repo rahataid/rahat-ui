@@ -41,7 +41,7 @@ export default function EditPhaseView() {
   const [isDeleted, setIsDeleted] = useState(false);
   const editPhaseConfirmDialog = useBoolean(false);
   const navigation = searchParams.get('from');
-  const tab = searchParams.get('tab') || '';
+  const tab = searchParams.get('tab') ?? '';
   const { data: phasesData = [] } = usePhases(projectId);
 
   const { settings } = useProjectSettingsStore((state) => ({

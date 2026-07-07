@@ -6,6 +6,11 @@ import { UUID } from 'crypto';
 import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
@@ -82,15 +87,15 @@ export default function FundManagementDetail() {
 
 function DataCardSkeleton() {
   return (
-    <div className="rounded-lg border flex flex-col">
-      <div className="p-4 pb-2 space-y-2">
+    <Card className="flex flex-col rounded-lg border justify-center">
+      <CardHeader className="pb-2 p-4">
         <Skeleton className="h-4 w-28" />
-        <Skeleton className="h-4 w-20" />
-      </div>
+        <Skeleton className="mt-2 h-4 w-20" />
+      </CardHeader>
 
-      <div className="px-6 pb-6">
+      <CardContent>
         <Skeleton className="h-8 w-24" />
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

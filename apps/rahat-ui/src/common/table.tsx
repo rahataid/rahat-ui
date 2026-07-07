@@ -67,7 +67,7 @@ export function DemoTable({
 
         <TableBody>
           {loading ? (
-            Array.from({ length: 8 }).map((_, rowIndex) => (
+            Array.from({ length: 5 }).map((_, rowIndex) => (
               <TableRow key={rowIndex}>
                 {visibleColumns.map((column) => (
                   <TableCell

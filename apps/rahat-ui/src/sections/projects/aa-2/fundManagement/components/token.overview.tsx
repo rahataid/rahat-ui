@@ -1,6 +1,7 @@
 // import { dFMTransactionsData } from '../static';
 import {
   PROJECT_SETTINGS_KEYS,
+  useAllStats,
   useFetchTokenStatsStellar,
   useFundAssignmentStore,
   useGroupsReservedFunds,
@@ -24,6 +25,9 @@ export default function TokensOverview() {
   const { data, isLoading } = useFetchTokenStatsStellar({
     projectUUID: uuid as '${string}-${string}-${string}-${string}-${string}',
   });
+
+  const { data: getTokenStat } = useAllStats(projectId);
+
   const chains = useChains();
   const { pagination } = usePagination();
   const { data: groupsFundsData } = useGroupsReservedFunds(projectId, {
@@ -163,8 +167,8 @@ export default function TokensOverview() {
             })}
           </div>
 
-          {/* Second Row - 3 Columns */}
-          <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+          {/* Second Row - 4 Columns */}
+          <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
             {data?.data?.slice(4).map((item, index) => {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
@@ -235,6 +239,26 @@ export default function TokensOverview() {
                 />
               );
             })}
+          </div>
+
+          {/* Third Row - Pending & Redeemed Tokens */}
+          <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+            <DataCard
+              className="rounded-sm h-[116px] p-0"
+              title="Pending Disbursement"
+              smallNumber={String(
+                getTokenStat?.tokenStats?.pendingDisbursement ?? '-',
+              )}
+              subtitle=" "
+            />
+            <DataCard
+              className="rounded-sm h-[116px] p-0"
+              title="Redeemed Tokens"
+              smallNumber={String(
+                getTokenStat?.tokenStats?.redeemedTokens ?? '-',
+              )}
+              subtitle=" "
+            />
           </div>
         </div>
       ) : (

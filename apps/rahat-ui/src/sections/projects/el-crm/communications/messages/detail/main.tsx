@@ -76,17 +76,6 @@ export default function MessageDetailPage() {
     projectUUID,
     messageId,
   );
-  const { data: count } = useListElCrmBroadCastCount(
-    projectUUID,
-    {
-      sessionId: campaign?.sessionId || '',
-    },
-    {
-      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
-      enabled: !!campaign?.sessionId,
-    },
-  );
-
   const mutateRetry = useRetryFailedSession(projectUUID);
 
   const retryFailed = async () => {
@@ -149,6 +138,18 @@ export default function MessageDetailPage() {
     },
     {
       queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
+      enabled: !!campaign?.sessionId && !isAutomatic,
+    },
+  );
+
+  const { data: count } = useListElCrmBroadCastCount(
+    projectUUID,
+    {
+      sessionId: campaign?.sessionId || '',
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
+    },
+    {
       enabled: !!campaign?.sessionId && !isAutomatic,
     },
   );
@@ -315,8 +316,14 @@ export default function MessageDetailPage() {
   const failedCount = isAutomatic
     ? automationCounts?.failed ?? 0
     : count?.FAIL ?? 0;
+  // When a date filter is active, the manual-campaign denominator must also be
+  // range-scoped (connect's TOTAL for the range) so the rate stays meaningful;
+  // otherwise keep the campaign's configured recipient count.
+  const hasDateFilter = !!(filters?.startDate && filters?.endDate);
   const totalRecipients = isAutomatic
     ? automationCounts?.sent ?? meta?.total ?? 0
+    : hasDateFilter
+    ? count?.TOTAL ?? 0
     : campaign?.recipientCount || 0;
   const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
   const deliveryRate = computeRate(deliveredCount, totalRecipients);

@@ -524,13 +524,19 @@ export const useFetchBulkSessionBroadcasts = (projectUUID: UUID) => {
 
 export const useListElCrmBroadCastCount = (
   projectUUID: UUID,
-  payload: { sessionId: string },
+  payload: { sessionId: string; startDate?: string; endDate?: string },
   options?: UseQueryOptions,
 ) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: [queryKeys.elCrmBroadcastCount, projectUUID, payload.sessionId],
+    queryKey: [
+      queryKeys.elCrmBroadcastCount,
+      projectUUID,
+      payload.sessionId,
+      payload.startDate,
+      payload.endDate,
+    ],
     enabled: options?.enabled,
     queryFn: async () => {
       const res = await action.mutateAsync({

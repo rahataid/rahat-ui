@@ -183,9 +183,7 @@ export default function EditPhaseView() {
   return (
     <>
       <div className="mt-4 px-4">
-        <Back
-          path={`/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`}
-        />
+        <Back path={`/projects/aa/${projectId}/${navigation}?tab=${tab}`} />
       </div>
       <div className="mt-4 px-4 flex items-start justify-between gap-3">
         <Heading

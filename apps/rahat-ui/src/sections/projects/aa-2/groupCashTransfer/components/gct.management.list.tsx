@@ -23,14 +23,45 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { TooltipProvider } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import * as XLSX from 'xlsx';
-import { ChevronDown, Download, Eye, Loader2, Plus } from 'lucide-react';
+import {
+  ChevronDown,
+  Download,
+  Eye,
+  Loader2,
+  Plus,
+  TriangleAlert,
+} from 'lucide-react';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/hover-card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/collapsible';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { DemoTable, SearchInput, CustomPagination, Heading } from 'apps/rahat-ui/src/common';
-import { usePagination, useGctRecords, useProjectAction } from '@rahat-ui/query';
+import {
+  DemoTable,
+  SearchInput,
+  CustomPagination,
+  Heading,
+} from 'apps/rahat-ui/src/common';
+import {
+  usePagination,
+  useGctRecords,
+  useProjectAction,
+} from '@rahat-ui/query';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import GctActionBtn from './gct.action-btn';
-import { GctFundRecord, GCT_STATUS_STYLE, GCT_RECORD_STATUSES } from '../types/gct.types';
+import {
+  GctFundRecord,
+  GCT_STATUS_STYLE,
+  GCT_RECORD_STATUSES,
+} from '../types/gct.types';
+import { CIPS_BANKS } from '../types/cips-banks';
 
 export default function GctManagementList() {
   const { id } = useParams();
@@ -42,7 +73,9 @@ export default function GctManagementList() {
 
   const [titleSearch, setTitleSearch] = useState('');
   const [groupSearch, setGroupSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined,
+  );
 
   const debouncedFilters = useDebounce(
     { title: titleSearch, group: groupSearch },
@@ -76,12 +109,34 @@ export default function GctManagementList() {
       });
       const records: GctFundRecord[] = result?.data ?? [];
       const rows = records.map((r) => ({
-        'Record Name': r.title ?? '',
-        'Amount': r.amount ?? '',
+        'GCT Record Title': r.title ?? '',
+        Amount: r.amount ?? '',
         'Group Cash Transfer Name': r.groupCashTransfer?.name ?? '',
-        'Status': r.status ?? '',
+        Status: r.status ?? '',
         'Payout Processor ID': (r as any).payoutProcessorId ?? '',
         'Disbursed At': (r as any).disbursedAt ?? '',
+        'Batch Id':
+          (r as any).disbursementInfo?.result?.transaction?.cipsBatchResponse
+            .batchId ?? '',
+        'Bank Account Number':
+          r.disbursementInfo?.result?.offrampRequest?.paymentDetails
+            ?.creditorAccount ?? '',
+
+        'Bank Account Name':
+          r.disbursementInfo?.result?.offrampRequest?.paymentDetails
+            ?.creditorName ?? '',
+
+        'Bank Name': (() => {
+            const agentId = r.disbursementInfo?.result?.offrampRequest?.paymentDetails?.creditorAgent;
+            return CIPS_BANKS.find((b) => b.bankId === agentId)?.bankName ?? agentId ?? '';
+          })(),
+        'Transaction Hash':
+          (r as any).disbursementInfo.result?.offrampRequest?.transactionHash ??
+          '',
+        Remarks:
+          (r as any).disbursementInfo?.error ??
+          (r as any).disbursementInfo?.result?.transaction?.cipsTxnResponseList?.[0]
+            ?.responseMessage ?? '',
       }));
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
@@ -99,8 +154,12 @@ export default function GctManagementList() {
     perPage: pagination.perPage,
     sort: 'createdAt',
     order: 'desc',
-    ...(debouncedFilters.title.trim() ? { search: debouncedFilters.title.trim() } : {}),
-    ...(debouncedFilters.group.trim() ? { groupCashTransferName: debouncedFilters.group.trim() } : {}),
+    ...(debouncedFilters.title.trim()
+      ? { search: debouncedFilters.title.trim() }
+      : {}),
+    ...(debouncedFilters.group.trim()
+      ? { groupCashTransferName: debouncedFilters.group.trim() }
+      : {}),
     ...(statusFilter ? { status: statusFilter } : {}),
   });
 
@@ -151,7 +210,9 @@ export default function GctManagementList() {
           const s = row.original.status;
           return (
             <Badge
-              className={`text-xs ${GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'}`}
+              className={`text-xs ${
+                GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'
+              }`}
             >
               {s?.replace(/_/g, ' ') ?? '—'}
             </Badge>
@@ -161,22 +222,62 @@ export default function GctManagementList() {
       {
         id: 'actions',
         header: 'Action',
-        cell: ({ row }) => (
-          <TooltipProvider>
-            <div className="flex items-center gap-1">
-              <GctActionBtn
-                label="View"
-                icon={<Eye size={16} strokeWidth={1.8} />}
-                hoverClass="hover:bg-gray-100 text-gray-600"
-                onClick={() =>
-                  router.push(
-                    `/projects/aa/${id}/group-cash-transfer/records/${row.original.uuid}`,
-                  )
-                }
-              />
-            </div>
-          </TooltipProvider>
-        ),
+        cell: ({ row }) => {
+          const s = row.original.status;
+          const isFailed = s === 'FAILED';
+          const isRejected = s === 'REJECTED';
+          const errorMsg = row.original.disbursementInfo?.error;
+          return (
+            <TooltipProvider>
+              <div className="flex items-center gap-1">
+                <GctActionBtn
+                  label="View"
+                  icon={<Eye size={16} strokeWidth={1.8} />}
+                  hoverClass="hover:bg-gray-100 text-gray-600"
+                  onClick={() =>
+                    router.push(
+                      `/projects/aa/${id}/group-cash-transfer/records/${row.original.uuid}`,
+                    )
+                  }
+                />
+                {(isFailed || isRejected) && (
+                  <HoverCard openDelay={100}>
+                    <HoverCardTrigger>
+                      <TriangleAlert size={16} strokeWidth={1.5} color="red" />
+                    </HoverCardTrigger>
+                    <HoverCardContent side="left" className="rounded-sm w-72">
+                      <div className="flex space-x-2 items-center">
+                        <TriangleAlert
+                          size={16}
+                          strokeWidth={1.5}
+                          color="red"
+                        />
+                        <span className="font-semibold text-sm/6">
+                          {isRejected
+                            ? 'Contact admin for assistance.'
+                            : 'Disbursement failed.'}
+                        </span>
+                      </div>
+                      {errorMsg && (
+                        <Collapsible className="mt-2">
+                          <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary">
+                            <ChevronDown size={12} />
+                            View technical details
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <p className="text-gray-500 text-xs mt-2 break-words">
+                              {errorMsg}
+                            </p>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      )}
+                    </HoverCardContent>
+                  </HoverCard>
+                )}
+              </div>
+            </TooltipProvider>
+          );
+        },
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -219,12 +320,17 @@ export default function GctManagementList() {
             )}
             Download Logs
           </Button>
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <Button
               size="sm"
               className="rounded-sm gap-1.5"
               onClick={() =>
-                router.push(`/projects/aa/${id}/group-cash-transfer/assign-cash`)
+                router.push(
+                  `/projects/aa/${id}/group-cash-transfer/assign-cash`,
+                )
               }
             >
               <Plus size={14} />

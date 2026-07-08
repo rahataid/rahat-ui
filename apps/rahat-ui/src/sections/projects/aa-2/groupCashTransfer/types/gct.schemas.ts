@@ -30,6 +30,7 @@ export const GctGroupSchema = z.object({
   municipality: z.string().min(1, 'Municipality is required'),
   ward: z.string().min(1, 'Ward is required'),
   bankName: z.string().min(1, 'Bank name is required'),
+  bankCode: z.string().min(1, 'Bank is required'),
   bankBranchName: z.string().min(1, 'Branch name is required'),
   accountName: z.string().min(1, 'Account holder name is required'),
   accountNumber: z.string().min(1, 'Account number is required'),
@@ -60,9 +61,22 @@ export function applyDuplicateErrors(
   msg: string,
   setError: (field: string, err: { message: string }) => void,
 ) {
-  if (/\bname\b/i.test(msg)) setError('name', { message: 'Group name already exists' });
-  if (/phone/i.test(msg)) setError('phone', { message: 'Phone number already exists' });
-  if (/email/i.test(msg)) setError('email', { message: 'Email already exists' });
-  if (/account.?number/i.test(msg) || /account/i.test(msg))
-    setError('accountNumber', { message: 'Account number already exists' });
+  if (/\bname\b/i.test(msg))
+    setError('name', { message: 'Group name already exists' });
+  if (/phone/i.test(msg))
+    setError('phone', { message: 'Phone number already exists' });
+  if (/email/i.test(msg))
+    setError('email', { message: 'Email already exists' });
+  const isBankAccountDuplicate =
+    /account.?number/i.test(msg) && /bank.?name/i.test(msg);
+
+  if (isBankAccountDuplicate) {
+    setError('bankName', {
+      message: 'This bank account already exists',
+    });
+
+    setError('accountNumber', {
+      message: 'This bank account already exists',
+    });
+  }
 }

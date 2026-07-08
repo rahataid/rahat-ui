@@ -30,18 +30,8 @@ import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinne
 import { Back, DemoTable } from 'apps/rahat-ui/src/common';
 import { useGetOneGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
 import GctDeleteDialog from './gct.delete.dialog';
+import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function InfoRow({ label, value }: { label: string; value?: string | null }) {
-  return (
-    <div className="flex flex-col gap-0.5 py-2">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-sm font-medium">{value || '—'}</span>
-    </div>
-  );
-}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -76,13 +66,16 @@ export default function GctDetail() {
     try {
       const result = await validateBank.mutateAsync({
         bankName: bankDetails?.bankName,
+        bankId: bankDetails?.bankCode,
         bankBranchName: bankDetails?.bankBranchName,
         accountName: bankDetails?.accountName,
         accountNumber: bankDetails?.accountNumber,
+        groupUuid: gctUUID,
       });
+      const isValid = result?.data?.valid ?? result?.valid ?? false;
       setValidationResult({
-        success: true,
-        message: result?.message || 'Bank account validated successfully.',
+        success: isValid,
+        message: result?.data?.message || result?.message || (isValid ? 'Bank account validated successfully.' : 'Validation failed.'),
       });
     } catch (error: unknown) {
       const e = error as { response?: { data?: { message?: string } }; message?: string };
@@ -211,17 +204,17 @@ export default function GctDetail() {
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <InfoRow label="Name" value={item?.name} />
+            <DetailRow label="Name" value={item?.name} />
             <Separator />
-            <InfoRow label="Phone" value={item?.phone} />
+            <DetailRow label="Phone" value={item?.phone} />
             <Separator />
-            <InfoRow label="Email" value={extras?.email} />
+            <DetailRow label="Email" value={extras?.email} />
             <Separator />
-            <InfoRow label="District" value={extras?.district} />
+            <DetailRow label="District" value={extras?.district} />
             <Separator />
-            <InfoRow label="Municipality" value={extras?.municipality} />
+            <DetailRow label="Municipality" value={extras?.municipality} />
             <Separator />
-            <InfoRow label="Ward (Community)" value={extras?.ward} />
+            <DetailRow label="Ward (Community)" value={extras?.ward} />
             <Separator />
             <div className="flex flex-col gap-1 py-2">
               <span className="text-xs text-muted-foreground">Support Area</span>
@@ -281,15 +274,15 @@ export default function GctDetail() {
                 {validationResult.message}
               </div>
             )}
-            <InfoRow label="Bank Name" value={bankDetails?.bankName} />
+            <DetailRow label="Bank Name" value={bankDetails?.bankName} />
             <Separator />
-            <InfoRow label="Bank Branch Name" value={bankDetails?.bankBranchName} />
+            <DetailRow label="Bank Branch Name" value={bankDetails?.bankBranchName} />
             <Separator />
-            <InfoRow label="Account Holder Name" value={bankDetails?.accountName} />
+            <DetailRow label="Account Holder Name" value={bankDetails?.accountName} />
             <Separator />
-            <InfoRow label="Account Number" value={bankDetails?.accountNumber} />
+            <DetailRow label="Account Number" value={bankDetails?.accountNumber} />
             <Separator />
-            <InfoRow
+            <DetailRow
               label="Total Reserved Amount"
               value={totalAssigned.toLocaleString()}
             />

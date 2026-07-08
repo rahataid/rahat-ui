@@ -2,6 +2,7 @@ export type BankDetails = {
   bankName?: string;
   bankBranchName?: string;
   accountNumber?: string;
+  bankCode?: string;
   accountName?: string;
 };
 

@@ -20,6 +20,7 @@ const DEFAULT_VALUES: GctGroupValues = {
   municipality: '',
   ward: '',
   bankName: '',
+  bankCode: '',
   bankBranchName: '',
   accountName: '',
   accountNumber: '',
@@ -45,25 +46,25 @@ export default function AddGct() {
   });
 
   const handleSubmit = async (values: GctGroupValues) => {
-    setValidating(true);
-    try {
-      await validateBank.mutateAsync({
-        bankName: values.bankName,
-        bankBranchName: values.bankBranchName,
-        accountName: values.accountName,
-        accountNumber: values.accountNumber,
-      });
-    } catch (error: any) {
-      setValidating(false);
-      form.setError('accountNumber', {
-        message:
-          error?.response?.data?.message ||
-          error?.message ||
-          'Bank account validation failed.',
-      });
-      return;
-    }
-    setValidating(false);
+    // setValidating(true);
+    // try {
+    //   await validateBank.mutateAsync({
+    //     bankName: values.bankName,
+    //     bankBranchName: values.bankBranchName,
+    //     accountName: values.accountName,
+    //     accountNumber: values.accountNumber,
+    //   });
+    // } catch (error: any) {
+    //   setValidating(false);
+    //   form.setError('accountNumber', {
+    //     message:
+    //       error?.response?.data?.message ||
+    //       error?.message ||
+    //       'Bank account validation failed.',
+    //   });
+    //   return;
+    // }
+    // setValidating(false);
 
     const supportAreaStrings = (values.supportArea ?? []).map((t) => t.text);
     try {
@@ -72,6 +73,7 @@ export default function AddGct() {
         phone: values.phone === '+977' ? undefined : values.phone,
         bankDetails: {
           bankName: values.bankName,
+          bankCode: values.bankCode,
           bankBranchName: values.bankBranchName,
           accountName: values.accountName,
           accountNumber: values.accountNumber,

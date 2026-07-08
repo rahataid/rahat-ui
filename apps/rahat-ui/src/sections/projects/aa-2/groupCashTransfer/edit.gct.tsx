@@ -49,6 +49,7 @@ export default function EditGct() {
       municipality: '',
       ward: '',
       bankName: '',
+      bankCode: '',
       bankBranchName: '',
       accountName: '',
       accountNumber: '',
@@ -73,6 +74,7 @@ export default function EditGct() {
       municipality: extras.municipality ?? '',
       ward: extras.ward ?? '',
       bankName: item.bankDetails?.bankName ?? '',
+      bankCode: item.bankDetails?.bankCode ?? '',
       bankBranchName: item.bankDetails?.bankBranchName ?? '',
       accountName: item.bankDetails?.accountName ?? '',
       accountNumber: item.bankDetails?.accountNumber ?? '',
@@ -98,6 +100,7 @@ export default function EditGct() {
         phone: pendingValues.phone === '+977' ? undefined : pendingValues.phone,
         bankDetails: {
           bankName: pendingValues.bankName,
+          bankCode: pendingValues.bankCode,
           bankBranchName: pendingValues.bankBranchName,
           accountName: pendingValues.accountName,
           accountNumber: pendingValues.accountNumber,

@@ -179,6 +179,46 @@ export const useValidateBankAccount = (projectUUID: UUID) => {
   });
 };
 
+// ponytail: sendOtp/verifyOtp stubbed — swap mutationFn to runAction once endpoints exist
+export const useSendOtp = (_projectUUID: UUID) => {
+  return useMutation({
+    mutationFn: async (_payload: { recordUuid: string; email: string }) =>
+      ({ success: true }),
+  });
+};
+
+export const useVerifyOtp = (_projectUUID: UUID) => {
+  return useMutation({
+    mutationFn: async (_payload: { recordUuid: string; otp: string }) =>
+      ({ success: true }),
+  });
+};
+
+export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: ({ uuid, paymentProviderId }: { uuid: string; paymentProviderId: string }) =>
+      runAction(q, projectUUID, ACTION_NS + '.confirmDisburse', { uuid, paymentProviderId }),
+    onSuccess: () => {
+      q.reset();
+      toast.fire({ title: 'Disbursement confirmed.', icon: 'success' });
+      queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.get', projectUUID] });
+      queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.getRecords', projectUUID] });
+    },
+    onError: (error: any) => {
+      q.reset();
+      toast.fire({
+        title: 'Error confirming disbursement.',
+        icon: 'error',
+        text: error?.response?.data?.message || 'Error',
+      });
+    },
+  });
+};
+
 export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();

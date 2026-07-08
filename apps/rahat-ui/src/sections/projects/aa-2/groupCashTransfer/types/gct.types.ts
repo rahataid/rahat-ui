@@ -43,6 +43,27 @@ export type GctFundRecord = {
     bankDetails?: GctBankDetails;
     extras?: GctExtras;
   };
+  disbursementInfo?: {
+  result?: {
+    offrampRequest?: {
+      transactionHash?: string;
+      paymentDetails?: {
+        creditorName?: string;
+        creditorAccount?: string;
+        creditorAgent?: string;
+      };
+    };
+    transaction?: {
+      cipsBatchResponse?: {
+        batchId?: string;
+      };
+      cipsTxnResponseList?: {
+        responseMessage?: string;
+      }[];
+    };
+  };
+  error?: string;
+};
 };
 
 export type GctRecordStatus = 'NOT_STARTED' | 'PENDING' | 'STARTED' | 'COMPLETED';

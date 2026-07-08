@@ -9,10 +9,27 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from 'libs/shadcn/src/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from 'libs/shadcn/src/components/ui/popover';
+import { cn } from 'libs/shadcn/src';
+import { Check, ChevronDown } from 'lucide-react';
 import { Tag } from 'emblor';
 import GctSupportAreaInput from './gct.support-area-input';
 import { GctGroupValues } from '../types/gct.schemas';
+import { CIPS_BANKS } from '../types/cips-banks';
 
 // ─── Required marker ──────────────────────────────────────────────────────────
 
@@ -167,13 +184,49 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
-          name="bankName"
+          name="bankCode"
           render={({ field }) => (
-            <FormItem>
-              <Label>Bank Name <Req /></Label>
-              <FormControl>
-                <Input placeholder="Enter Bank Name" {...field} />
-              </FormControl>
+            <FormItem className="flex flex-col space-y-3">
+              <Label className="mt-1">Bank Name <Req /></Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn('justify-between font-normal', !field.value && 'text-muted-foreground')}
+                    >
+                      {field.value
+                        ? CIPS_BANKS.find((b) => b.bankId === field.value)?.bankName
+                        : 'Select a bank'}
+                      <ChevronDown className="opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 w-[--radix-popover-trigger-width]">
+                  <Command>
+                    <CommandInput placeholder="Search bank..." className="h-9" />
+                    <CommandList>
+                      <CommandEmpty>No bank found.</CommandEmpty>
+                      <CommandGroup>
+                        {CIPS_BANKS.map((b) => (
+                          <CommandItem
+                            key={b.bankId}
+                            value={b.bankName}
+                            onSelect={() => {
+                              field.onChange(b.bankId);
+                              form.setValue('bankName', b.bankName, { shouldDirty: true });
+                            }}
+                          >
+                            {b.bankName}
+                            <Check className={cn('ml-auto', b.bankId === field.value ? 'opacity-100' : 'opacity-0')} />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}

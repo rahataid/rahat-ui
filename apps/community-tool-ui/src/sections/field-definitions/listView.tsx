@@ -24,6 +24,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import React from 'react';
+import { toast } from 'react-toastify';
 import {
   useCommunitySettingList,
   useCommunitySettingUpdate,
@@ -71,6 +72,7 @@ export default function ListView({
   const aiSetting = data?.data.find(
     (setting: { name: string }) => setting.name === 'AI_API_URL',
   );
+  console.log(aiSetting, 'aiSetting');
 
   const aiBaseurl = aiSetting?.value?.URL;
   const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
@@ -187,9 +189,6 @@ export default function ListView({
 
     try {
       if (aiStandardName) {
-        console.log(
-          'Checking existing standard fields against current field definitions...',
-        );
         const existingJson = await getStandardFields.mutateAsync({
           standardName: aiStandardName,
           baseURL: aiBaseurl,
@@ -210,10 +209,7 @@ export default function ListView({
         return;
       }
 
-      const standardName = 'community_data_standard';
-      await uploadSchemaFile(standardName);
-      await updateStandardSetting(standardName);
-      setSyncStatus('synced');
+      toast.warn('Please add a standard name in settings before syncing.');
     } catch (error) {
       console.error('Sync failed:', error);
       setSyncStatus('not-synced');

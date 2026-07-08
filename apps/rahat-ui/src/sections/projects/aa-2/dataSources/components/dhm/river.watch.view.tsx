@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 import { Info, MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
-import { roundValue } from '../aws/utils/color.utils';
+import { truncateValue } from '../aws/utils/color.utils';
 
 export default function RiverWatchView() {
   const router = useRouter();
@@ -129,29 +129,28 @@ export default function RiverWatchView() {
             })}
           </div>
         </div>
-        {hasHistory && (
-          <div
-            className={`p-4 rounded-sm border shadow text-center w-80 ${renderCardColor(
-              primaryRiverWatchInfo?.status,
-            )}`}
+        <div
+          className={`p-4 rounded-sm border shadow text-center w-80 ${renderCardColor(
+            primaryRiverWatchInfo?.status,
+          )}`}
+        >
+          <p className="text-primary w-full font-semibold text-3xl/10">
+            {truncateValue(primaryRiverWatchInfo?.waterLevel?.value, 2)}
+            {primaryRiverWatchInfo?.unit}
+          </p>
+          <p className="text-sm/6 font-medium">Water Level</p>
+          <p className="text-gray-500 text-sm/6">
+            {dateFormat(
+              primaryRiverWatchInfo?.waterLevel?.datetime,
+              'eee, MMM d yyyy, hh:mm:ss a',
+            )}
+          </p>
+          <Badge
+            className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
           >
-            <p className="text-primary w-full font-semibold text-3xl/10">
-              {roundValue(primaryRiverWatchInfo?.waterLevel?.value)}
-            </p>
-            <p className="text-sm/6 font-medium">Water Level</p>
-            <p className="text-gray-500 text-sm/6">
-              {dateFormat(
-                primaryRiverWatchInfo?.waterLevel?.datetime,
-                'eee, MMM d yyyy, hh:mm:ss a',
-              )}
-            </p>
-            <Badge
-              className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
-            >
-              {primaryRiverWatchInfo?.status}
-            </Badge>
-          </div>
-        )}
+            {primaryRiverWatchInfo?.status}
+          </Badge>
+        </div>
       </div>
       {!hasHistory && (
         <div className="flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-3">

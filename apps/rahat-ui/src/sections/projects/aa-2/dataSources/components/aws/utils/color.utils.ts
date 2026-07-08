@@ -12,6 +12,16 @@ export const roundValue = (value: number | undefined): string => {
   return parseFloat(value.toFixed(1)).toString();
 };
 
+export const truncateValue = (
+  value: number | undefined,
+  decimals = 2,
+): string => {
+  if (value == null) return '--';
+
+  const factor = 10 ** decimals;
+  return (Math.trunc(value * factor) / factor).toString();
+};
+
 export const getLatestValue = (history: any[]) => {
   if (!history || !Array.isArray(history) || history.length === 0) return null;
   return history[history.length - 1];

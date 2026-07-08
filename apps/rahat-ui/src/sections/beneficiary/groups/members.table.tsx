@@ -20,6 +20,9 @@ type IProps = {
   groupedBeneficiaries: [];
   groupUUID: string;
   name: string;
+  searchValue: string;
+  isSearching: boolean;
+  onSearch: (value: string) => void;
 };
 
 export default function MembersTable({
@@ -27,10 +30,10 @@ export default function MembersTable({
   groupedBeneficiaries,
   groupUUID,
   name,
+  searchValue,
+  isSearching,
+  onSearch,
 }: IProps) {
-  const isSearching =
-    ((table.getColumn('name')?.getFilterValue() as string) ?? '').trim() !== '';
-
   return (
     <>
       <div className="p-4 border rounded-md mt-5">
@@ -38,10 +41,8 @@ export default function MembersTable({
           <SearchInput
             name="Beneficiaries"
             className="mb-2 w-full"
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
+            value={searchValue}
+            onSearch={(e) => onSearch(e.target.value)}
           />
           <ViewColumns table={table} />
           {groupedBeneficiaries?.length ? (

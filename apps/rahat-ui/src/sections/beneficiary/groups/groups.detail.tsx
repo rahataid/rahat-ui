@@ -14,8 +14,6 @@ import MembersTable from './members.table';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -26,7 +24,6 @@ import {
   usePagination,
 } from '@rahat-ui/query';
 import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
-import ClientSidePagination from '../../projects/components/client.side.pagination';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -48,6 +45,8 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 import { useState } from 'react';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 type BenProjectType = {
   Project: {
@@ -81,23 +80,44 @@ export default function GroupDetailView() {
     projectModal.onTrue();
   };
 
-  const { selectedListItems, setSelectedListItems, setPagination } =
-    usePagination();
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
   const columns = useBeneficiaryTableColumns();
   const { data } = useExportBeneficiariesFailedBankAccount(Id);
 
-  const [clickedValidateBankAccount, setClickedValidateBankAccount] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem(`bank_validation_${Id}`) === 'true';
-    }
-    return false;
-  });
+  const [clickedValidateBankAccount, setClickedValidateBankAccount] = useState(
+    () => {
+      if (typeof window !== 'undefined') {
+        return sessionStorage.getItem(`bank_validation_${Id}`) === 'true';
+      }
+      return false;
+    },
+  );
 
   const groupedBeneficiaries = [] as any;
-  const { data: group, isLoading } = useGetBeneficiaryGroup(Id);
+  const debouncedFilters = useDebounce(filters, 500);
 
-  const isBankTransfer = group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER;
-  const { data: bankCheckStatus } = useGetBankCheckStatus(Id, isBankTransfer, clickedValidateBankAccount);
+  const { data: group, isLoading } = useGetBeneficiaryGroup(Id, {
+    ...pagination,
+    ...debouncedFilters,
+  });
+
+  const isBankTransfer =
+    group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER;
+  const { data: bankCheckStatus } = useGetBankCheckStatus(
+    Id,
+    isBankTransfer,
+    clickedValidateBankAccount,
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const tableData = React.useMemo(() => {
@@ -123,12 +143,10 @@ export default function GroupDetailView() {
   }, [group]);
 
   const table = useReactTable({
-    // manualPagination: true,
+    manualPagination: true,
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
@@ -180,7 +198,6 @@ export default function GroupDetailView() {
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
-
 
   return isLoading ? (
     <LoaderRahat />
@@ -359,33 +376,35 @@ export default function GroupDetailView() {
               </div>
             </DataCard>
           )}
-          {isBankTransfer && bankCheckStatus && (bankCheckStatus.pending === 0 || clickedValidateBankAccount) && (
-            <div className="border-solid w-1/3 rounded-xl border p-4 text-sm leading-snug">
-              {bankCheckStatus.pending > 0 ? (
-                <>
-                  <p className="text-muted-foreground font-medium mb-1 flex items-center gap-1">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    Bank validation in progress
+          {isBankTransfer &&
+            bankCheckStatus &&
+            (bankCheckStatus.pending === 0 || clickedValidateBankAccount) && (
+              <div className="border-solid w-1/3 rounded-xl border p-4 text-sm leading-snug">
+                {bankCheckStatus.pending > 0 ? (
+                  <>
+                    <p className="text-muted-foreground font-medium mb-1 flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Bank validation in progress
+                    </p>
+                    <p>
+                      Current status:
+                      <span className="font-medium">
+                        {bankCheckStatus.total - bankCheckStatus.pending}/
+                        {bankCheckStatus.total}
+                      </span>
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-muted-foreground font-medium mb-1">
+                    Bank validation completed
                   </p>
-                  <p>
-                    Current status:
-                    <span className="font-medium">
-                      {bankCheckStatus.total - bankCheckStatus.pending}/
-                      {bankCheckStatus.total}
-                    </span>
-                  </p>
-                </>
-              ) : (
-                <p className="text-muted-foreground font-medium mb-1">
-                  Bank validation completed
+                )}
+                <p className="text-green-600">
+                  Success: {bankCheckStatus.success}
                 </p>
-              )}
-              <p className="text-green-600">
-                Success: {bankCheckStatus.success}
-              </p>
-              <p className="text-red-500">Failed: {bankCheckStatus.failed}</p>
-            </div>
-          )}
+                <p className="text-red-500">Failed: {bankCheckStatus.failed}</p>
+              </div>
+            )}
         </div>
 
         <MembersTable
@@ -393,9 +412,20 @@ export default function GroupDetailView() {
           groupedBeneficiaries={groupedBeneficiaries}
           groupUUID={Id}
           name={group?.data?.name}
+          searchValue={filters.name ?? ''}
+          isSearching={Boolean(debouncedFilters.name?.trim())}
+          onSearch={(value) => setFilters({ name: value })}
         />
       </div>
-      <ClientSidePagination table={table} />,
+      <CustomPagination
+        meta={group?.data?.response?.meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={group?.data?.response?.meta.total || 0}
+      />
     </>
   );
 }

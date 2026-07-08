@@ -37,6 +37,22 @@ export default function GctRecordDetail() {
   const record = data?.data ?? data ?? null;
   const group = record?.groupCashTransfer ?? null;
 
+  
+  const status = record?.status ?? 'NOT_STARTED';
+  const canEdit = status === 'NOT_STARTED';
+  
+  const handleDisburseClick = async () => {
+    await disburse.mutateAsync({ uuid: recordUuid as string });
+    setDisburseOpen(true);
+  };
+  
+  const disabledReason =
+  status === 'FAILED' || status === 'REJECTED'
+  ? 'Disbursement failed.'
+  : status !== 'NOT_STARTED'
+  ? 'Already processed.'
+  : undefined;
+  
   if (isLoading || disburse.isPending) {
     return (
       <div className="flex flex-col items-center justify-center h-[300px] gap-3">
@@ -47,22 +63,7 @@ export default function GctRecordDetail() {
       </div>
     );
   }
-
-  const status = record?.status ?? 'NOT_STARTED';
-  const canEdit = status === 'NOT_STARTED';
-
-  const handleDisburseClick = async () => {
-    await disburse.mutateAsync({ uuid: recordUuid as string });
-    setDisburseOpen(true);
-  };
-
-  const disabledReason =
-    status === 'FAILED' || status === 'REJECTED'
-      ? 'Disbursement failed.'
-      : status !== 'NOT_STARTED'
-      ? 'Already processed.'
-      : undefined;
-
+  
   return (
     <div className="p-4">
       {/* Header */}

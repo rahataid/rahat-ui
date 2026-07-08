@@ -730,7 +730,7 @@ export const useTempBeneficiaryImport = () => {
 };
 export const useGetBeneficiaryGroup = (
   uuid: UUID,
-  payload: any,
+  payload?: any,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   return useQuery(

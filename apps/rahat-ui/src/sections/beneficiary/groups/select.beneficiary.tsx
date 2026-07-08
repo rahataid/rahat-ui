@@ -34,13 +34,12 @@ export default function SelectBeneficiaryView() {
     setPagination,
     setFilters,
     filters,
-    resetFilters,
   } = usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
-    resetFilters();
-  }, []);
+  }, [setPagination]);
+
   const debouncedFilters = useDebounce(filters, 500);
   const { data: Beneficiaries } = useBeneficiaryList({
     ...pagination,

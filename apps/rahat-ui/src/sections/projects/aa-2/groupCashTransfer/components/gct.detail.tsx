@@ -29,6 +29,12 @@ import {
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 import { Back, DemoTable } from 'apps/rahat-ui/src/common';
 import { useGetOneGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import GctDeleteDialog from './gct.delete.dialog';
 import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
@@ -243,23 +249,31 @@ export default function GctDetail() {
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Bank Details
               </CardTitle>
-              <Button
-                size="sm"
-                className="gap-1.5 rounded-sm"
-                onClick={handleValidateBankAccount}
-                disabled={validateBank.isPending || !bankDetails?.accountNumber}
-              >
-                {validateBank.isPending ? (
-                  <>
-                    <Loader2 size={12} className="animate-spin" />
-                    Validating bank account…
-                  </>
-                ) : (
-                  <>
-                    Validate Bank Details
-                  </>
-                )}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Button
+                        size="sm"
+                        className="gap-1.5 rounded-sm"
+                        onClick={handleValidateBankAccount}
+                        disabled={validateBank.isPending || !bankDetails?.accountNumber || !!extras?.isBankValidated}
+                      >
+                        {validateBank.isPending ? (
+                          <><Loader2 size={12} className="animate-spin" />Validating…</>
+                        ) : extras?.isBankValidated ? (
+                          <><CheckCircle2 size={12} className="text-green-500" />Bank Validated</>
+                        ) : (
+                          'Validate Bank Details'
+                        )}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {extras?.isBankValidated && (
+                    <TooltipContent>Bank account already validated.</TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </CardHeader>
           <CardContent className="px-4 pb-4">

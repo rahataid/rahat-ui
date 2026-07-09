@@ -8,6 +8,7 @@ export type GctExtras = {
   ward?: string;
   email?: string;
   supportArea?: string[];
+  isBankValidated?: boolean;
 };
 
 export type GctBankDetails = {

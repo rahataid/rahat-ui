@@ -13,10 +13,13 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { CheckCircle2, Eye, Pencil, Trash2 } from 'lucide-react';
 import { UUID } from 'crypto';
 import {
+  Tooltip,
+  TooltipContent,
   TooltipProvider,
+  TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
@@ -98,7 +101,19 @@ export default function GctList() {
         accessorKey: 'name',
         header: 'GCT Group Name',
         cell: ({ row }) => (
-          <TruncatedCell text={row.getValue('name') || '—'} maxLength={20} />
+          <div className="flex items-center gap-1.5">
+            <TruncatedCell text={row.getValue('name') || '—'} maxLength={20} />
+            {row.original.extras?.isBankValidated && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="flex items-center">
+                    <CheckCircle2 size={14} strokeWidth={2} className="text-green-500 shrink-0" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Bank account validated</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         ),
       },
       {

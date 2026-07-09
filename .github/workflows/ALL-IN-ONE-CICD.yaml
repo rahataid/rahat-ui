@@ -9,9 +9,9 @@ on:
         default: ""
         type: string
       tag_suffix:
-        description: "Tag suffix (e.g., test-load)"
+        description: "Tag suffix (e.g., mcn-demo,nrcs-training)"
         required: true
-        default: "aa-dev"
+        default: "mcn-training"
         type: string
       vault_secret_path:
         description: "Vault secret path"
@@ -27,6 +27,10 @@ on:
           - "[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink"
           - "[DEV] github/data/rahat/rahat-ui/demo/aa/stellar"
 
+          # Training
+          - "[TRAIN] github/data/rahat/rahat-ui/train/aa/mcn"
+          - "[TRAIN] github/data/rahat/rahat-ui/train/aa/nrcs"
+
           # Demo folder
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
@@ -36,6 +40,7 @@ on:
           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
 
           # Main folder
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"

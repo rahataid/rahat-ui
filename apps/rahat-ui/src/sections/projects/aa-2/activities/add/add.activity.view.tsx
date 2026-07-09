@@ -519,6 +519,7 @@ export default function AddActivities() {
                         uploadFile?.isPending ||
                         audioUploading.value ||
                         addCommunicationOpen.value ||
+                        editCommunicationOpen.value ||
                         !!form.formState.errors.responsibility
                       }
                     >

@@ -204,7 +204,6 @@ export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
       runAction(q, projectUUID, ACTION_NS + '.confirmDisburse', { uuid, paymentProviderId }),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: 'Disbursement confirmed.', icon: 'success' });
       queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.get', projectUUID] });
       queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.getRecords', projectUUID] });
     },
@@ -230,10 +229,6 @@ export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
       runAction(q, projectUUID, ACTION_NS + '.disburse', { uuid }),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Disbursement initiated (PENDING).',
-        icon: 'success',
-      });
       queryClient.invalidateQueries({
         queryKey: [ACTION_NS + '.get', projectUUID],
       });

@@ -40,26 +40,24 @@ export default function GctRecordDetail() {
   
   const status = record?.status ?? 'NOT_STARTED';
   const canEdit = status === 'NOT_STARTED';
-  
-  const handleDisburseClick = async () => {
-    await disburse.mutateAsync({ uuid: recordUuid as string });
+  const canDisburse = status === 'NOT_STARTED' || status === 'TOKEN_TRANSFERRED';
+
+  const handleDisburseClick = () => {
     setDisburseOpen(true);
+    disburse.mutateAsync({ uuid: recordUuid as string });
   };
-  
+
   const disabledReason =
-  status === 'FAILED' || status === 'REJECTED'
-  ? 'Disbursement failed.'
-  : status !== 'NOT_STARTED'
-  ? 'Already processed.'
-  : undefined;
-  
-  if (isLoading || disburse.isPending) {
+    status === 'FAILED' || status === 'REJECTED'
+      ? 'Disbursement failed.'
+      : !canDisburse
+      ? 'Already processed.'
+      : undefined;
+
+  if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[300px] gap-3">
+      <div className="flex items-center justify-center h-[300px]">
         <SpinnerLoader />
-        {disburse.isPending && (
-          <p className="text-sm text-muted-foreground animate-pulse">Processing disbursement…</p>
-        )}
       </div>
     );
   }
@@ -100,7 +98,7 @@ export default function GctRecordDetail() {
           <DisburseButton
             projectUUID={projectUUID}
             loading={disburse.isPending}
-            disabled={!canEdit}
+            disabled={!canDisburse}
             disabledReason={disabledReason}
             onClick={handleDisburseClick}
           />
@@ -164,6 +162,7 @@ export default function GctRecordDetail() {
         group={group}
         open={disburseOpen}
         onOpenChange={setDisburseOpen}
+        disburseLoading={disburse.isPending}
       />
     </div>
   );

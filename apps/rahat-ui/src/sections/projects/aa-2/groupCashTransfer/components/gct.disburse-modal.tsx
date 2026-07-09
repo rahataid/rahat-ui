@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Loader2, Send } from 'lucide-react';
@@ -51,6 +52,7 @@ export function DisburseModal({
   group,
   open,
   onOpenChange,
+  disburseLoading = false,
 }: {
   projectUUID: UUID;
   recordUuid: string;
@@ -58,6 +60,7 @@ export function DisburseModal({
   group: any;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  disburseLoading?: boolean;
 }) {
   const router = useRouter();
   const recordsListPath = `/projects/aa/${projectUUID}/group-cash-transfer?tab=gctManagementList`;
@@ -66,6 +69,7 @@ export function DisburseModal({
 
   const [providerId, setProviderId] = useState<string>('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const swal = useSwal();
 
   const amountFmt = `Nrs. ${record?.amount?.toLocaleString() || '—'}`;
   const selectedProvider = providers?.find((p: PaymentProvider) => String(p.id) === providerId);
@@ -78,9 +82,10 @@ export function DisburseModal({
     ['Bank Account Number', group?.bankDetails?.accountNumber || '—'],
   ];
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     setConfirmOpen(false);
-    await confirmDisburse.mutateAsync({ uuid: recordUuid, paymentProviderId: providerId });
+    confirmDisburse.mutate({ uuid: recordUuid, paymentProviderId: providerId });
+    swal.fire({ title: 'Disbursement initiated.', icon: 'success', timer: 2000, showConfirmButton: false });
     onOpenChange(false);
     router.push(recordsListPath);
   };
@@ -89,6 +94,12 @@ export function DisburseModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-lg p-0" onInteractOutside={(e) => e.preventDefault()}>
+          {disburseLoading && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground animate-pulse">Please wait, disbursement is initiating…</p>
+            </div>
+          )}
           <Card className="rounded-sm border-0 shadow-none">
             <CardContent className="p-5 space-y-4">
               <h2 className="text-xl font-semibold">Disbursement Details</h2>

@@ -9,7 +9,7 @@ on:
         default: ""
         type: string
       tag_suffix:
-        description: "Tag suffix (e.g., mcn-demo,nrcs-training)"
+        description: "Tag suffix (e.g., mcn-demo-2026,nrcs-training)"
         required: true
         default: "mcn-training"
         type: string
@@ -40,7 +40,7 @@ on:
           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026"
 
           # Main folder
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"

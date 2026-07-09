@@ -727,10 +727,6 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
     settings: state.settings,
   }));
 
-  useEffect(() => {
-    setTriggers([]);
-  }, [uuid]);
-
   const query = useQuery({
     queryKey: ['triggerstatements', uuid, payload],
     queryFn: async () => {

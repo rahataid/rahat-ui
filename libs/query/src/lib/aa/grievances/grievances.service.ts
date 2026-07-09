@@ -19,10 +19,6 @@ export const useGrievancesList = (payload: any) => {
 
   const restPayloadString = JSON.stringify(restPayload);
 
-  useEffect(() => {
-    setGrievances([]);
-  }, [projectUUID]);
-
   const query = useQuery({
     queryKey: ['grievances', projectUUID, restPayloadString],
     placeholderData: keepPreviousData,

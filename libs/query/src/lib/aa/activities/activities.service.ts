@@ -23,10 +23,6 @@ export const useActivitiesCategories = (uuid: UUID) => {
     setCategories: state.setCategories,
   }));
 
-  useEffect(() => {
-    setCategories([]);
-  }, [uuid]);
-
   const query = useQuery({
     queryKey: ['categories', uuid],
     queryFn: async () => {
@@ -53,13 +49,7 @@ export const useAddActivityCategory = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      uuid,
-      name,
-    }: {
-      uuid: UUID;
-      name: string;
-    }) => {
+    mutationFn: async ({ uuid, name }: { uuid: UUID; name: string }) => {
       const result = await q.mutateAsync({
         uuid,
         data: { action: 'ms.activityCategories.add', payload: { name } },

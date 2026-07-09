@@ -22,7 +22,7 @@ export default function TokensOverview() {
   const uuid = useParams().id;
   const projectId = uuid as UUID;
   const { data, isLoading } = useFetchTokenStatsStellar({
-    projectUUID: uuid as '${string}-${string}-${string}-${string}-${string}',
+    projectUUID: uuid,
   });
   const chains = useChains();
   const { pagination } = usePagination();

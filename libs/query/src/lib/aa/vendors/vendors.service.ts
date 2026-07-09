@@ -20,10 +20,6 @@ export const useAAVendorsList = (payload: any) => {
     setVendors: state.setVendors,
   }));
 
-  useEffect(() => {
-    setVendors([]);
-  }, [projectUUID]);
-
   const query = useQuery({
     queryKey: ['vendor.list_with_project_data', projectUUID, restPayloadString],
     placeholderData: (previousData, previousQuery) =>
@@ -110,7 +106,11 @@ export const useGetVendorRedemptionStats = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.vendor.token_redemption.get_stats', projectUUID, restPayloadString],
+    queryKey: [
+      'aa.vendor.token_redemption.get_stats',
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -136,7 +136,11 @@ export const useGetTxnRedemptionRequestList = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.stellar.getRedemptionRequest', projectUUID, restPayloadString],
+    queryKey: [
+      'aa.stellar.getRedemptionRequest',
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -186,7 +190,11 @@ export const useGetVendorTokenRedemptionList = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.vendor.token_redemption.list', projectUUID, restPayloadString],
+    queryKey: [
+      'aa.vendor.token_redemption.list',
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: (previousData, previousQuery) =>
       previousQuery?.queryKey?.[1] === projectUUID ? previousData : undefined,
     refetchOnMount: true,

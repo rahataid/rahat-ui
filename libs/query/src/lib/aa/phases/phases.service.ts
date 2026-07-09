@@ -141,10 +141,6 @@ export const usePhases = (uuid: UUID) => {
     settings: state.settings,
   }));
 
-  useEffect(() => {
-    setPhase([]);
-  }, [uuid]);
-
   const activeYear =
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['active_year'];
 

@@ -262,7 +262,7 @@ export default function GctDetail() {
                         {validateBank.isPending ? (
                           <><Loader2 size={12} className="animate-spin" />Validating…</>
                         ) : extras?.isBankValidated ? (
-                          <><CheckCircle2 size={12} className="text-green-500" />Bank Validated</>
+                          <>Bank Validated</>
                         ) : (
                           'Validate Bank Details'
                         )}

@@ -41,27 +41,32 @@ type usePaginationReturn = {
 
 // ...existing code...
 
-export const usePagination = (): usePaginationReturn => {
+export const usePagination = (namespace?: string): usePaginationReturn => {
+  const prefix = namespace ? `${namespace}:` : '';
+  const paginationKey = `${prefix}pagination`;
+  const filtersKey = `${prefix}filters`;
+  const selectedListItemsKey = `${prefix}selectedListItems`;
+
   const [pagination, setPagination] = useState<Pagination>(
     //TO DO: Need to update the perPage value
-    hashStorage.getItem('pagination') || { page: 1, perPage: 10 },
+    hashStorage.getItem(paginationKey) || { page: 1, perPage: 10 },
   );
   const [filters, setFilters] = useState<{ [key: string]: string }>(
-    hashStorage.getItem('filters') || {},
+    hashStorage.getItem(filtersKey) || {},
   );
   const [selectedListItems, setSelectedListItems] = useState<any>({});
 
   useEffect(() => {
-    const storedPagination = hashStorage.getItem('pagination');
+    const storedPagination = hashStorage.getItem(paginationKey);
     if (JSON.stringify(storedPagination) !== JSON.stringify(pagination)) {
-      hashStorage.setItem('pagination', pagination);
+      hashStorage.setItem(paginationKey, pagination);
     }
   }, [pagination]);
 
   useEffect(() => {
-    const storedFilters = hashStorage.getItem('filters');
+    const storedFilters = hashStorage.getItem(filtersKey);
     if (JSON.stringify(storedFilters) !== JSON.stringify(filters)) {
-      hashStorage.setItem('filters', filters);
+      hashStorage.setItem(filtersKey, filters);
     }
     // Use functional update to avoid stale closure on `pagination` and skip
     // the re-render entirely when the page is already 1.
@@ -69,12 +74,12 @@ export const usePagination = (): usePaginationReturn => {
   }, [filters]);
 
   useEffect(() => {
-    const storedSelectedListItems = hashStorage.getItem('selectedListItems');
+    const storedSelectedListItems = hashStorage.getItem(selectedListItemsKey);
     if (
       JSON.stringify(storedSelectedListItems) !==
       JSON.stringify(selectedListItems)
     ) {
-      hashStorage.setItem('selectedListItems', selectedListItems);
+      hashStorage.setItem(selectedListItemsKey, selectedListItems);
     }
   }, [selectedListItems]);
 

@@ -268,7 +268,7 @@ export const useUploadBulkBeneficiaryUpdate = () => {
     }: {
       groupUUID: string;
       data: FormData;
-      uniqueField: string;
+      uniqueField?: string;
     }) => {
       return beneficiaryGroupClient.updateInBulk(
         groupUUID,

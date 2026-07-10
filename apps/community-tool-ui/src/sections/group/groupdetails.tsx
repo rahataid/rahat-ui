@@ -141,7 +141,7 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [uniqueField, setUniqueField] = React.useState<string>('phone');
+  const [uniqueField, setUniqueField] = React.useState<string>('none');
 
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
@@ -354,7 +354,7 @@ export default function GroupDetail({ uuid }: IProps) {
         await updateBulkBeneficiary.mutateAsync({
           groupUUID: uuid,
           data: formData,
-          uniqueField,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
         });
       } else {
         const formData = new FormData();
@@ -362,7 +362,7 @@ export default function GroupDetail({ uuid }: IProps) {
         await updateBulkBeneficiary.mutateAsync({
           groupUUID: uuid,
           data: formData,
-          uniqueField,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
         });
       }
 
@@ -599,6 +599,8 @@ export default function GroupDetail({ uuid }: IProps) {
                               Govt ID Number
                             </SelectItem>
                             <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="kobo_id">Kobo ID</SelectItem>
+                            <SelectItem value="none">--- None ---</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

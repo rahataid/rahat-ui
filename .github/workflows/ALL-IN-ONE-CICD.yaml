@@ -28,8 +28,8 @@ on:
           - "[DEV] github/data/rahat/rahat-ui/demo/aa/stellar"
 
           # Training
-          - "[TRAIN] github/data/rahat/rahat-ui/train/aa/mcn"
-          - "[TRAIN] github/data/rahat/rahat-ui/train/aa/nrcs"
+          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn"
+          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs"
 
           # Demo folder
           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"

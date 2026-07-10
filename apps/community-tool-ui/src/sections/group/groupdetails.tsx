@@ -599,7 +599,7 @@ export default function GroupDetail({ uuid }: IProps) {
                               Govt ID Number
                             </SelectItem>
                             <SelectItem value="email">Email</SelectItem>
-                            <SelectItem value="kobo_id">Kobo ID</SelectItem>
+                            <SelectItem value="koboId">Kobo ID</SelectItem>
                             <SelectItem value="none">--- None ---</SelectItem>
                           </SelectContent>
                         </Select>

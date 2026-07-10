@@ -19,11 +19,7 @@ export function useNavData() {
       {
         title: 'Users',
         path: paths.dashboard.user,
-      },
-      {
-        title: 'Communications',
-        path: paths.dashboard.comms.root,
-      },
+      }
     ],
     [],
   );

@@ -87,7 +87,6 @@ export default function EditActivity() {
   const redirectTo = searchParams.get('from');
   const editCommunicationForm = useBoolean();
 
-  const isAddComm = window.location.hash === '#comm';
   // Query goes here
   const { data: users } = useUserList({
     page: 1,
@@ -124,8 +123,9 @@ export default function EditActivity() {
 
   const redirectUpdatePath = redirectTo
     ? `/projects/aa/${projectID}/activities/${activityID}`
-    : `/projects/aa/${projectID}/activities/${activityID}${backFrom ? `?from=${backFrom}` : ''
-    }`;
+    : `/projects/aa/${projectID}/activities/${activityID}${
+        backFrom ? `?from=${backFrom}` : ''
+      }`;
 
   const { FormSchema, form, communicationForm, defaultCommunicationValues } =
     useActivityForm(appTransports);
@@ -283,29 +283,24 @@ export default function EditActivity() {
     if (typeof window === 'undefined') return;
     if (isActivityLoading) return;
 
-    if (isAddComm) {
-      // Wait till the component is fully rendered before opening the form and scrolling
-      setTimeout(() => {
-        setOpen(true);
-      }, 100);
+    const shouldOpen = open || editCommunicationForm.value;
 
-      setTimeout(() => {
-        if (!scrollAreaRef.current) return;
+    if (shouldOpen) {
+      if (!scrollAreaRef.current) return;
 
-        // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
-        const viewport = scrollAreaRef.current.closest(
-          '[data-radix-scroll-area-viewport]',
-        );
+      // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
+      const viewport = scrollAreaRef.current.closest(
+        '[data-radix-scroll-area-viewport]',
+      );
 
-        if (viewport) {
-          viewport.scrollTo({
-            top: scrollAreaRef.current.offsetTop,
-            behavior: 'smooth',
-          });
-        }
-      }, 500);
+      if (viewport) {
+        viewport.scrollTo({
+          top: scrollAreaRef.current.offsetTop,
+          behavior: 'smooth',
+        });
+      }
     }
-  }, [isActivityLoading, isAddComm]);
+  }, [isActivityLoading, open, editCommunicationForm.value]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -332,6 +327,14 @@ export default function EditActivity() {
       setCommunicationData(transformedData);
     }
   }, [activityDetail, form, appTransports]);
+
+  const isSubmitButtonDisabled =
+    updateActivity?.isPending ||
+    uploadFile?.isPending ||
+    audioUploading ||
+    open ||
+    editCommunicationForm.value ||
+    !!form.formState.errors.responsibility;
 
   // this code need to be removed after testing
   // const isVoiceAudioMissing = communicationData.some((comm) => {
@@ -411,12 +414,7 @@ export default function EditActivity() {
                     <Button
                       className="  w-36"
                       type="submit"
-                      disabled={
-                        updateActivity?.isPending ||
-                        uploadFile?.isPending ||
-                        audioUploading ||
-                        open
-                      }
+                      disabled={isSubmitButtonDisabled}
                     >
                       Update
                     </Button>
@@ -698,7 +696,7 @@ export default function EditActivity() {
                               className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
                             >
                               {uploadFile.isPending &&
-                                uploadingFileName === file.fileName ? (
+                              uploadingFileName === file.fileName ? (
                                 <LoaderCircle className="text-green-600 animate-spin w-9 h-9" />
                               ) : (
                                 <FileCheck className="w-9 h-9 text-green-600" />
@@ -749,7 +747,7 @@ export default function EditActivity() {
                     onSave={handleSave}
                     setLoading={setAudioUploading}
                     appTransports={appTransports}
-                    isMultiSelect={isAddComm}
+                    isMultiSelect={open}
                     editMode={editCommunicationForm}
                   />
                 )}

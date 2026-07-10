@@ -254,7 +254,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
-    console.log('handleTargetFieldChange', sourceField, targetField);
     // Source field as it is
     // Target field sanitized
     if (sourceField === EMPTY_SELECTION) {
@@ -303,6 +302,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
             const sanitized = trimWhitespace(
               removeFieldsWithUnderscore(json || []),
             );
+
             setRawData(sanitized);
             await fetchAiMappingSuggestions(file);
             resolve();
@@ -341,32 +341,23 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
   };
 
-  const handleImportNowClick = async () => {
-    const msg = hasUUID
-      ? 'Duplicate data will be replaced! <b>Import Anyway?</b>'
-      : '';
-    const dialog = await Swal.fire({
-      icon: 'info',
-      title: `${processedData.length} Beneficiaries will be imported!`,
-      text: msg,
-      showCancelButton: true,
-      confirmButtonText: 'Import Now',
-      cancelButtonText: 'No',
-      html: msg,
-    });
-    if (dialog.isConfirmed) {
-      if (!validBenef.length) return validateOrImport(IMPORT_ACTION.IMPORT);
-      const sourcePayload = {
-        action: IMPORT_ACTION.IMPORT,
-        name: importSource,
-        importId,
-        fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
-      };
-      return createImportSource(sourcePayload);
-    }
+  const handleImportNowClick = async (groupName: string | null) => {
+    if (!validBenef.length)
+      return validateOrImport(IMPORT_ACTION.IMPORT, groupName);
+    const sourcePayload = {
+      action: IMPORT_ACTION.IMPORT,
+      name: importSource,
+      importId,
+      groupName,
+      fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
+    };
+    return createImportSource(sourcePayload);
   };
 
-  const validateOrImport = (action: string) => {
+  const validateOrImport = (
+    action: string,
+    groupName: string | null = null,
+  ) => {
     setValidBenef([]);
 
     const finalMappings = [...mappings];
@@ -438,13 +429,19 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         finalPayload = replaced;
       }
     }
-    return validateAndImortBeneficiary(finalPayload, selectedTargets, action);
+    return validateAndImortBeneficiary(
+      finalPayload,
+      selectedTargets,
+      action,
+      groupName,
+    );
   };
 
   const validateAndImortBeneficiary = (
     finalPayload: any,
     selectedTargets: any,
     action: string,
+    groupName: string | null = null,
   ) => {
     if (!selectedTargets.length)
       return Swal.fire({
@@ -460,6 +457,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       action,
       name: importSource,
       importId,
+      groupName,
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
@@ -632,7 +630,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               handleExportInvalidClick={handleExportInvalidClick}
               handleRetargetClick={handleRetargetClick}
               data={processedData}
-              handleImportClick={handleImportNowClick}
+              handleImportWithGroup={handleImportNowClick}
               invalidFields={invalidFields}
               loading={loading}
             />

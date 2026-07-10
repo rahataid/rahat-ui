@@ -1,3 +1,8 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 
 const headerCell = (label: string) => () =>
@@ -17,10 +22,18 @@ export const useConsumersTableColumn = () => {
       header: headerCell('Consumer Name'),
       cell: ({ row }) => {
         const name = row.original?.extras?.name as string | undefined;
+        if (!name) return dash;
         return (
-          <span className="text-sm font-medium text-foreground">
-            {name || dash}
-          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm font-medium text-foreground truncate max-w-[200px] block cursor-default">
+                {name}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{name}</p>
+            </TooltipContent>
+          </Tooltip>
         );
       },
     },

@@ -52,7 +52,7 @@ export default function ConsumersView() {
     setPagination,
     setFilters,
     filters,
-  } = usePagination();
+  } = usePagination('crm-consumers');
 
   const debouncedFilters = useDebounce(filters, 1000);
 

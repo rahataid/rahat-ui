@@ -94,11 +94,22 @@ export const useCustomersTableColumn = () => {
           Customer Name
         </span>
       ),
-      cell: ({ row }) => (
-        <span className="text-sm font-medium text-foreground">
-          {row.getValue('name')}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const name = row.getValue('name') as string;
+        if (!name) return <span className="text-muted-foreground/60">—</span>;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm font-medium text-foreground truncate max-w-[200px] block cursor-default">
+                {name}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{name}</p>
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
     },
     {
       accessorKey: 'phone',

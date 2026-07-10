@@ -263,11 +263,19 @@ export const useUploadBulkBeneficiaryUpdate = () => {
     mutationFn: async ({
       groupUUID,
       data,
+
+      uniqueField,
     }: {
       groupUUID: string;
       data: FormData;
+      uniqueField: string;
     }) => {
-      return beneficiaryGroupClient.updateInBulk(groupUUID, data);
+      return beneficiaryGroupClient.updateInBulk(
+        groupUUID,
+        data,
+        undefined,
+        uniqueField,
+      );
     },
 
     onSuccess: () => {

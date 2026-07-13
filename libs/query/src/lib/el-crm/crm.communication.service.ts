@@ -21,6 +21,7 @@ const GET_CAMPAIGN = 'elProject.campaign.getOne';
 const GET_ALL_TRANSPORT = 'elProject.campaign.get_transport';
 const GET_ALL_AUDIENCE = 'elProject.campaign.get_audience';
 const TRIGGER_CAMPAIGN = 'elProject.campaign.trigger';
+const SEND_CAMPAIGN_EXCEL = 'elProject.campaign.trigger_excel';
 const GET_ALL_COMMUNICATION_LOGS = 'elProject.campaign.communication_logs';
 const GET_ALL_COMMUNICATION_STATS = 'elProject.campaign.communication_stats';
 const GET_CAMPAIGN_LOGS = 'elProject.campaign.log';
@@ -148,6 +149,58 @@ export const useTriggerElCrmCampaign = (projectUUID: UUID) => {
       });
       queryClient.invalidateQueries({
         queryKey: [queryKeys.elCrmCampaignLogs],
+      });
+    },
+  });
+};
+
+// Create + send a campaign to an ad-hoc recipient list uploaded as an Excel/CSV
+// sheet. The file is sent base64-encoded; the CRM parses it and broadcasts.
+export const useSendElCrmCampaignExcel = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 4000,
+  });
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: SEND_CAMPAIGN_EXCEL,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: (d: any) => {
+      const sent = d?.sent ?? 0;
+      const skipped = d?.skipped ?? 0;
+      toast.fire({
+        title: `Sent to ${sent} recipient${sent === 1 ? '' : 's'}${
+          skipped ? ` · ${skipped} skipped` : ''
+        }`,
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmCampaignList],
+      });
+    },
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        '';
+      toast.fire({
+        title: apiMessage
+          ? `Could not send campaign: ${apiMessage}`
+          : 'Could not send campaign. Please try again.',
+        icon: 'error',
       });
     },
   });

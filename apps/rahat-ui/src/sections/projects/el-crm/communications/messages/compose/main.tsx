@@ -8,8 +8,11 @@ import {
   Send,
   Users,
   ArrowLeft,
+  Upload,
+  FileSpreadsheet,
   X,
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -54,8 +57,25 @@ import {
   useCustomers,
   useListElCrmTemplate,
   useListElCrmTransport,
+  useSendElCrmCampaignExcel,
 } from '@rahat-ui/query';
 import { getPlasgateSmsInfo, isPlasgateChannel } from '../../const';
+
+// Convert an ArrayBuffer to base64 in fixed-size chunks to avoid blowing the
+// call stack on large files.
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(
+      ...(bytes.subarray(i, i + chunkSize) as unknown as number[]),
+    );
+  }
+  return btoa(binary);
+}
+
+const EXCEL_MAX_ROWS = 5000;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -70,6 +90,33 @@ const AUDIENCE_GROUPS = [
     name: 'Consumers',
     description: 'Program beneficiaries',
   },
+  {
+    id: 'UPLOAD',
+    name: 'Upload List',
+    description: 'Send to an Excel / CSV of recipients',
+  },
+];
+
+type ParsedSheet = {
+  fileName: string;
+  fileBase64: string;
+  headers: string[];
+  rows: Record<string, any>[];
+  totalRows: number;
+};
+
+// Transports in this project are phone-based, so an uploaded list only ever
+// needs a phone number.
+const isValidPhone = (value: string) => /^\+?\d{6,}$/.test(value);
+
+const PHONE_HEADER_HINTS = [
+  'phone',
+  'phonenumber',
+  'phone number',
+  'mobile',
+  'msisdn',
+  'contact',
+  'number',
 ];
 
 type FilterField =
@@ -154,10 +201,31 @@ export default function ComposeMessageView() {
   const [isAutomatic, setIsAutomatic] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
+  // Upload-list mode state
+  const [parsedSheet, setParsedSheet] = useState<ParsedSheet | null>(null);
+  const [excelColumn, setExcelColumn] = useState('');
+  const [excelError, setExcelError] = useState('');
+
+  const isUpload = selectedGroup === 'UPLOAD';
+
   // Data hooks
   const transport = useListElCrmTransport(projectUUID);
   const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
+  const sendExcel = useSendElCrmCampaignExcel(projectUUID);
+
+  // Count unique, valid phone numbers in the chosen column.
+  const excelValidCount = useMemo(() => {
+    if (!parsedSheet || !excelColumn) return 0;
+    const seen = new Set<string>();
+    for (const row of parsedSheet.rows) {
+      const value = String(row[excelColumn] ?? '').trim();
+      if (value && isValidPhone(value) && !seen.has(value)) {
+        seen.add(value);
+      }
+    }
+    return seen.size;
+  }, [parsedSheet, excelColumn]);
 
   // Apply deep-link prefill (e.g. /compose?templateId=...&channel=WhatsApp)
   useEffect(() => {
@@ -244,8 +312,11 @@ export default function ComposeMessageView() {
   const audienceEstimate =
     selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
   const reachableEstimate =
-    selectedGroup === 'BENEFICIARY' ? consumerReachableEstimate : recipientReachableEstimate;
-  const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
+    selectedGroup === 'BENEFICIARY'
+      ? consumerReachableEstimate
+      : recipientReachableEstimate;
+  const audienceNoun =
+    selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
   const isPlasgate = isPlasgateChannel(selectedTransportName);
@@ -279,7 +350,10 @@ export default function ComposeMessageView() {
     !!campaignName &&
     !!selectedGroup &&
     !!messageContent &&
-    !!selectedTransportId;
+    !!selectedTransportId &&
+    (!isUpload || (!!parsedSheet && !!excelColumn && excelValidCount > 0));
+
+  const isSending = createCampaign.isPending || sendExcel.isPending;
 
   const selectedTemplateName = useMemo(() => {
     if (!isWhatsApp || !messageContent) return '';
@@ -293,7 +367,64 @@ export default function ComposeMessageView() {
   const selectedGroupName =
     AUDIENCE_GROUPS.find((g) => g.id === selectedGroup)?.name ?? '';
 
+  const handleFileSelect = async (file: File | undefined) => {
+    setExcelError('');
+    setParsedSheet(null);
+    setExcelColumn('');
+    if (!file) return;
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      if (!sheet) throw new Error('The file has no readable sheet');
+      const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet, {
+        defval: '',
+      });
+      if (!rows.length) throw new Error('The sheet is empty');
+      if (rows.length > EXCEL_MAX_ROWS) {
+        throw new Error(
+          `The sheet has ${rows.length} rows; the limit is ${EXCEL_MAX_ROWS}`,
+        );
+      }
+      const headers = Object.keys(rows[0] ?? {});
+
+      // Auto-pick the phone column so the common case is zero-click.
+      const autoColumn =
+        headers.find((h) =>
+          PHONE_HEADER_HINTS.includes(h.trim().toLowerCase()),
+        ) ??
+        headers[0] ??
+        '';
+
+      setParsedSheet({
+        fileName: file.name,
+        fileBase64: arrayBufferToBase64(buffer),
+        headers,
+        rows,
+        totalRows: rows.length,
+      });
+      setExcelColumn(autoColumn);
+    } catch (err: any) {
+      setExcelError(err?.message ?? 'Could not read the file');
+    }
+  };
+
   const handleSubmit = async () => {
+    if (isUpload) {
+      if (!parsedSheet) return;
+      await sendExcel.mutateAsync({
+        name: campaignName,
+        message: messageContent,
+        transportId: selectedTransportId,
+        targetType: 'BENEFICIARY',
+        fileBase64: parsedSheet.fileBase64,
+        column: excelColumn || undefined,
+      });
+      router.push(`/projects/el-crm/${projectUUID}/communications/messages`);
+      return;
+    }
+
     const options: Record<
       string,
       string | string[] | boolean | boolean[] | undefined
@@ -340,6 +471,9 @@ export default function ComposeMessageView() {
     setSelectedGroup('');
     setFilterRows([]);
     setCampaignName('');
+    setParsedSheet(null);
+    setExcelColumn('');
+    setExcelError('');
   };
 
   const addFilterRow = () =>
@@ -507,14 +641,16 @@ export default function ComposeMessageView() {
                                     'text-destructive font-medium',
                                 )}
                               >
-                                {plasgateSmsInfo.length} / {plasgateSmsInfo.limit}
+                                {plasgateSmsInfo.length} /{' '}
+                                {plasgateSmsInfo.limit}
                               </span>
                             </div>
                             {plasgateSmsInfo.exceeded && (
                               <p className="text-xs text-destructive">
-                                Message exceeds the {plasgateSmsInfo.limit}-character
-                                limit for {plasgateSmsInfo.encoding} encoding and
-                                will be sent as multiple SMS segments.
+                                Message exceeds the {plasgateSmsInfo.limit}
+                                -character limit for {plasgateSmsInfo.encoding}{' '}
+                                encoding and will be sent as multiple SMS
+                                segments.
                               </p>
                             )}
                           </div>
@@ -536,7 +672,7 @@ export default function ComposeMessageView() {
                     AUDIENCE_GROUPS.find((g) => g.id === selectedGroup)?.name
                   }
                 >
-                  <div className="grid grid-cols-2 gap-3 ml-10">
+                  <div className="grid grid-cols-3 gap-3 ml-10">
                     {AUDIENCE_GROUPS.map((group) => (
                       <button
                         key={group.id}
@@ -544,6 +680,10 @@ export default function ComposeMessageView() {
                         onClick={() => {
                           setSelectedGroup(group.id);
                           setFilterRows([]);
+                          setParsedSheet(null);
+                          setExcelColumn('');
+                          setExcelError('');
+                          if (group.id === 'UPLOAD') setIsAutomatic(false);
                         }}
                         className={cn(
                           'flex flex-col items-start gap-1 rounded-lg border-2 p-4 transition-all hover:border-primary/50',
@@ -570,23 +710,144 @@ export default function ComposeMessageView() {
               {/* Step 4: Campaign Details */}
               {selectedGroup && (
                 <div className="space-y-4">
-                  {/* Automatic Switch */}
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      id="automatic-switch"
-                      checked={isAutomatic}
-                      onCheckedChange={setIsAutomatic}
-                    />
-                    <Label
-                      htmlFor="automatic-switch"
-                      className="text-xs cursor-pointer"
-                    >
-                      Automatic Campaign
-                    </Label>
-                  </div>
+                  {/* Automatic Switch (not applicable to uploaded lists) */}
+                  {!isUpload && (
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        id="automatic-switch"
+                        checked={isAutomatic}
+                        onCheckedChange={setIsAutomatic}
+                      />
+                      <Label
+                        htmlFor="automatic-switch"
+                        className="text-xs cursor-pointer"
+                      >
+                        Automatic Campaign
+                      </Label>
+                    </div>
+                  )}
+
+                  {/* Upload recipient list */}
+                  {isUpload && (
+                    <div className="rounded-lg border p-4">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
+                          4
+                        </div>
+                        <div>
+                          <span className="font-medium">
+                            Upload Recipient List
+                          </span>
+                          <p className="text-xs text-muted-foreground">
+                            Excel (.xlsx) or CSV with a phone column
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="ml-10 space-y-3">
+                        <label
+                          htmlFor="excel-upload"
+                          className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border p-6 cursor-pointer hover:border-primary/50 transition-colors"
+                        >
+                          {parsedSheet ? (
+                            <>
+                              <FileSpreadsheet className="h-6 w-6 text-primary" />
+                              <span className="text-sm font-medium">
+                                {parsedSheet.fileName}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {parsedSheet.totalRows} rows · click to replace
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="h-6 w-6 text-muted-foreground" />
+                              <span className="text-sm font-medium">
+                                Drop a file or click to browse
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                Up to {EXCEL_MAX_ROWS} rows
+                              </span>
+                            </>
+                          )}
+                          <input
+                            id="excel-upload"
+                            type="file"
+                            accept=".xlsx,.xls,.csv"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleFileSelect(e.target.files?.[0])
+                            }
+                          />
+                        </label>
+
+                        <p className="text-xs text-muted-foreground">
+                          Need a starting point?{' '}
+                          <a
+                            href="/files/campaign_recipients_sample.xlsx"
+                            download
+                            className="text-primary underline underline-offset-2 hover:text-primary/80"
+                          >
+                            Download the sample template
+                          </a>{' '}
+                          (columns: name, phone, email).
+                        </p>
+
+                        {excelError && (
+                          <p className="text-xs text-destructive">
+                            {excelError}
+                          </p>
+                        )}
+
+                        {parsedSheet && (
+                          <>
+                            <div className="space-y-2">
+                              <Label>Address Column</Label>
+                              <Select
+                                value={excelColumn}
+                                onValueChange={setExcelColumn}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select the column" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {parsedSheet.headers.map((h) => (
+                                    <SelectItem key={h} value={h}>
+                                      {h}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Users className="h-4 w-4" />
+                              <span>
+                                <strong
+                                  className={
+                                    excelValidCount === 0
+                                      ? 'text-destructive'
+                                      : 'text-foreground'
+                                  }
+                                >
+                                  {excelValidCount}
+                                </strong>{' '}
+                                valid phone numbers,{' '}
+                                <strong className="text-foreground">
+                                  {parsedSheet.totalRows - excelValidCount}
+                                </strong>{' '}
+                                skipped
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Audience filters (optional) */}
                   {!isAutomatic &&
+                    !isUpload &&
                     (() => {
                       const activeFieldOptions =
                         selectedGroup === 'VENDOR'
@@ -734,15 +995,20 @@ export default function ComposeMessageView() {
                               <Users className="h-4 w-4" />
                               <span>
                                 Estimated recipients:{' '}
-                                {audienceEstimate.isLoading || reachableEstimate.isLoading ? (
+                                {audienceEstimate.isLoading ||
+                                reachableEstimate.isLoading ? (
                                   <span className="italic">calculating…</span>
                                 ) : (
                                   (() => {
-                                    const matched = audienceEstimate.meta?.total ?? 0;
-                                    const reachable = reachableEstimate.meta?.total ?? 0;
+                                    const matched =
+                                      audienceEstimate.meta?.total ?? 0;
+                                    const reachable =
+                                      reachableEstimate.meta?.total ?? 0;
                                     return (
                                       <>
-                                        <strong className="text-foreground">{matched}</strong>{' '}
+                                        <strong className="text-foreground">
+                                          {matched}
+                                        </strong>{' '}
                                         {audienceNoun} matched,{' '}
                                         <strong
                                           className={
@@ -794,13 +1060,15 @@ export default function ComposeMessageView() {
                       <TooltipTrigger asChild>
                         <Button
                           size="sm"
-                          disabled={!canSubmit || createCampaign.isPending}
+                          disabled={!canSubmit || isSending}
                           onClick={() => setIsConfirmDialogOpen(true)}
                           className="gap-2"
                         >
                           <Send className="h-4 w-4" />
-                          {createCampaign.isPending
+                          {isSending
                             ? 'Sending…'
+                            : isUpload
+                            ? 'Send Campaign'
                             : 'Create Message'}
                         </Button>
                       </TooltipTrigger>
@@ -853,34 +1121,53 @@ export default function ComposeMessageView() {
               />
             )}
             <DetailRow label="Audience" value={selectedGroupName || '-'} />
-            <DetailRow
-              label="Campaign Mode"
-              value={isAutomatic ? 'Automatic' : 'Manual'}
-            />
-            {!isAutomatic && (
-              <DetailRow
-                label="Filters"
-                value={
-                  filterRows.filter((row) => row.field && row.value).length > 0
-                    ? filterRows
-                        .filter((row) => row.field && row.value)
-                        .map((row) => `${row.field}=${row.value}`)
-                        .join(', ')
-                    : 'No filters applied'
-                }
-                multiline
-              />
+            {isUpload ? (
+              <>
+                <DetailRow
+                  label="Uploaded File"
+                  value={parsedSheet?.fileName || '-'}
+                />
+                <DetailRow label="Address Column" value={excelColumn || '-'} />
+                <DetailRow
+                  label="Recipients"
+                  value={`${excelValidCount} valid, ${
+                    (parsedSheet?.totalRows ?? 0) - excelValidCount
+                  } skipped`}
+                />
+              </>
+            ) : (
+              <>
+                <DetailRow
+                  label="Campaign Mode"
+                  value={isAutomatic ? 'Automatic' : 'Manual'}
+                />
+                {!isAutomatic && (
+                  <DetailRow
+                    label="Filters"
+                    value={
+                      filterRows.filter((row) => row.field && row.value)
+                        .length > 0
+                        ? filterRows
+                            .filter((row) => row.field && row.value)
+                            .map((row) => `${row.field}=${row.value}`)
+                            .join(', ')
+                        : 'No filters applied'
+                    }
+                    multiline
+                  />
+                )}
+                <DetailRow
+                  label="Estimated Recipients"
+                  value={
+                    audienceEstimate.isLoading || reachableEstimate.isLoading
+                      ? 'Calculating...'
+                      : `${audienceEstimate.meta?.total ?? 0} matched, ${
+                          reachableEstimate.meta?.total ?? 0
+                        } reachable`
+                  }
+                />
+              </>
             )}
-            <DetailRow
-              label="Estimated Recipients"
-              value={
-                audienceEstimate.isLoading || reachableEstimate.isLoading
-                  ? 'Calculating...'
-                  : `${audienceEstimate.meta?.total ?? 0} matched, ${
-                      reachableEstimate.meta?.total ?? 0
-                    } reachable`
-              }
-            />
           </div>
 
           <DialogFooter className="gap-2">
@@ -908,11 +1195,15 @@ export default function ComposeMessageView() {
             <Button
               type="button"
               onClick={handleSubmit}
-              disabled={createCampaign.isPending}
+              disabled={isSending}
               className="gap-2"
             >
               <Send className="h-4 w-4" />
-              {createCampaign.isPending ? 'Sending…' : 'Create Message'}
+              {isSending
+                ? 'Sending…'
+                : isUpload
+                ? 'Send Campaign'
+                : 'Create Message'}
             </Button>
           </DialogFooter>
         </DialogContent>

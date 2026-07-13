@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
-import { SpinnerLoader } from './spinner.loader';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 type IProps = {
   table: Table<any>;
@@ -32,19 +32,26 @@ export function DemoTable({
   height = '340px',
   fixedLayout = true,
 }: IProps) {
-  const hasRows = table.getRowModel().rows?.length > 0;
+  const hasRows = table.getRowModel().rows.length > 0;
   const containerClass = tableHeight ?? `h-[max(280px,calc(100vh-${height}))]`;
+
+  const visibleColumns = table.getVisibleLeafColumns();
 
   return (
     <div className={`overflow-auto ${containerClass}`}>
-      <TableComponent className={`w-full ${fixedLayout ? 'table-fixed' : 'table-auto'}`}>
+      <TableComponent
+        className={`w-full ${fixedLayout ? 'table-fixed' : 'table-auto'}`}
+      >
         <TableHeader className="sticky top-0 z-10 border-b [&_th]:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={(header.column.columnDef.meta as ColumnMeta | undefined)?.className}
+                  className={
+                    (header.column.columnDef.meta as ColumnMeta | undefined)
+                      ?.className
+                  }
                 >
                   {header.isPlaceholder
                     ? null
@@ -57,16 +64,24 @@ export function DemoTable({
             </TableRow>
           ))}
         </TableHeader>
+
         <TableBody>
           {loading ? (
-            <TableRow>
-              <TableCell
-                colSpan={table.getAllColumns().length}
-                className="h-24 text-center"
-              >
-                <SpinnerLoader />
-              </TableCell>
-            </TableRow>
+            Array.from({ length: 5 }).map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {visibleColumns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    className={
+                      (column.columnDef.meta as ColumnMeta | undefined)
+                        ?.className
+                    }
+                  >
+                    <Skeleton className="h-4 w-full rounded" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
           ) : hasRows ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -76,7 +91,10 @@ export function DemoTable({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className={(cell.column.columnDef.meta as ColumnMeta | undefined)?.className}
+                    className={
+                      (cell.column.columnDef.meta as ColumnMeta | undefined)
+                        ?.className
+                    }
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -86,7 +104,7 @@ export function DemoTable({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={table.getAllColumns().length}
+                colSpan={visibleColumns.length}
                 className="h-24 text-center"
               >
                 <NoResult message={message} />

@@ -15,9 +15,9 @@ export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
 };
 
 export const attachedRawData = (payload: any, rawDataSource: []) => {
-  let result = [] as any[];
+  const result = [] as any[];
   for (let i = 0; i < payload.length; i++) {
-    let newItem = { ...payload[i], rawData: rawDataSource[i] };
+    const newItem = { ...payload[i], rawData: rawDataSource[i] };
     result.push(newItem);
   }
   return result;
@@ -88,15 +88,12 @@ export const trimWhitespace = (dataArray: any[]) => {
   });
 };
 
-
-
-
 export const truncatedText = (text: string, maxLen: number) => {
   return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
 };
 
 function moveErrorMsgToFirstKey(data: any) {
-  let result = [] as any;
+  const result = [] as any;
   data.forEach((obj: any) => {
     if ('errorMessage' in obj) {
       const val = obj.errorMessage;
@@ -117,7 +114,7 @@ function checkPropertyAndDelete(item: any, propertyName: string) {
 }
 
 function cleanupNonDuplicateFields(payload: any[]) {
-  let data = [];
+  const data = [];
   for (let p of payload) {
     p = checkPropertyAndDelete(p, 'isDuplicate');
     p = checkPropertyAndDelete(p, 'exportOnly');
@@ -158,8 +155,9 @@ export const splitValidAndDuplicates = (
 
 function createInvalidFieldError(errFields: any, isDuplicate: boolean) {
   const errFieldsArr = errFields.map((err: any) => err.fieldName);
-  return `Invalid fields: ${errFieldsArr.join(', ')} ${isDuplicate ? 'and This row is duplicate!' : ''
-    }`;
+  return `Invalid fields: ${errFieldsArr.join(', ')} ${
+    isDuplicate ? 'and This row is duplicate!' : ''
+  }`;
 }
 
 // Export both error and duplicate data to excel
@@ -206,11 +204,14 @@ export const exportDataToExcel = (data: any[]) => {
 
 export const formatNameString = (inputString: string) => {
   // Replace spaces with underscores
-  let stringWithUnderscores = inputString.replace(/ /g, '_');
+  const stringWithUnderscores = inputString.replace(/ /g, '_');
   // Replace '.' with underscore
-  let stringWithUnderscoresAndDots = stringWithUnderscores.replace(/\./g, '_');
+  const stringWithUnderscoresAndDots = stringWithUnderscores.replace(
+    /\./g,
+    '_',
+  );
   // Remove special characters using regex
-  let stringWithoutSpecialChars = stringWithUnderscoresAndDots.replace(
+  const stringWithoutSpecialChars = stringWithUnderscoresAndDots.replace(
     /[^\w\s]/gi,
     '',
   );
@@ -218,7 +219,7 @@ export const formatNameString = (inputString: string) => {
 };
 
 export const isURL = (value: string) => {
-  let urlPattern = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+  const urlPattern = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
   return urlPattern.test(value);
 };
 
@@ -226,7 +227,7 @@ export const humanizeString = (inputString: string) => {
   // Replace underscore with space
   inputString = inputString?.replace(/_/g, ' ');
 
-  let words = inputString?.toLowerCase().split(' ');
+  const words = inputString?.toLowerCase().split(' ');
   // Capitalize the first letter of each word
   for (let i = 0; i < words?.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
@@ -263,8 +264,6 @@ export function formatDate(date: Date) {
 
   return formattedDate;
 }
-
-
 
 export const selectNonEmptyFields = (data: any) => {
   const nonEmptyFields: any = {};
@@ -347,11 +346,11 @@ export const transformExportKeys = (array: []) => {
   if (!array.length) return [];
   return array.map((obj: any) => {
     const transformedObj = {} as any;
-    for (let key in obj) {
+    for (const key in obj) {
       if (key === 'govtIDNumber') {
         transformedObj[key] = obj[key];
       } else {
-        let newKey = key
+        const newKey = key
           .toLowerCase()
           .replace(/_/g, ' ')
           .replace(/\b\w/g, (char) => char.toUpperCase());

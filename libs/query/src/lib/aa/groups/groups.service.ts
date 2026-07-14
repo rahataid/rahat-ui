@@ -272,7 +272,7 @@ export const useBeneficiaryGroups = (uuid: UUID, payload: any, options?: Omit<Us
     setBeneficiaryGroups: state.setBeneficiaryGroups,
   }));
 
-  const query = useQuery({
+  const query = useQuery<any>({
     queryKey: ['stakeholdersGroups', uuid, payload],
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,

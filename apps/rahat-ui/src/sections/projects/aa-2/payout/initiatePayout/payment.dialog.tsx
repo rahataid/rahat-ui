@@ -86,7 +86,7 @@ export function PaymentDialog({
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">Total Beneficiaries</div>
             <div className="font-medium text-muted-foreground">
-              {formState?.group?.groupedBeneficiaries?.length}
+              {formState?.group?._count?.beneficiaries}
             </div>
           </div>
 

@@ -8,9 +8,9 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
-import ElkenyaTable from '../table.component';
 import { useElkenyaVendorsBeneficiaryTableColumns } from './columns/use.vendors.beneficiary.table.columns';
 import { ClientSidePagination } from '../clientSidePagination';
+import DemoTable from 'apps/rahat-ui/src/components/table';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryList: any;
@@ -62,10 +62,10 @@ export default function VendorsBeneficiaryList({
     },
   });
   return (
-    <div className="p-4 border rounded-sm">
-      <ElkenyaTable
+    <div className="border rounded-sm">
+      <DemoTable
         table={table}
-        tableHeight="h-[calc(100vh-500px)] sm:h-[calc(100vh-450px)]"
+        tableHeight="h-[calc(100vh-520px)] sm:h-[calc(100vh-450px)]"
         loading={loading}
       />
       <ClientSidePagination table={table} />

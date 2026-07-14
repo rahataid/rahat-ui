@@ -10,13 +10,13 @@ import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useElkenyaVendorsTableColumns } from './columns/use.vendors.table.columns';
 import React from 'react';
-import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import ViewColumns from '../../components/view.columns';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { ClientSidePagination } from '../clientSidePagination';
+import DemoTable from 'apps/rahat-ui/src/components/table';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
@@ -100,7 +100,7 @@ export default function VendorsView() {
             />
             <ViewColumns table={table} />
           </div>
-          <ElkenyaTable
+          <DemoTable
             table={table}
             tableHeight="h-[calc(100vh-316px)]"
             loading={getVendors?.isPending}

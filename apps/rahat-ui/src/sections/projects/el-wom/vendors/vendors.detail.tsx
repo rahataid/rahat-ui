@@ -68,7 +68,7 @@ export default function VendorsDetail() {
           path={`/projects/el-wom/${id}/vendors`}
         />
       </div>
-      <ScrollArea className="h-[calc(100vh-150px)]">
+      {/* <ScrollArea className="h-[calc(100vh-150px)]"> */}
         {/* Responsive Grid Layout */}
         <div className="my-2 rounded grid grid-cols-1 lg:grid-cols-2 gap-2">
           <div className="border rounded-sm shadow flex items-center gap-4 p-5">
@@ -136,7 +136,7 @@ export default function VendorsDetail() {
             />
           </TabsContent>
         </Tabs>
-      </ScrollArea>
+      {/* </ScrollArea> */}
     </div>
   );
 }

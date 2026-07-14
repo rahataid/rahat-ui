@@ -16,7 +16,6 @@ import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useElkenyaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
 import React, { useEffect } from 'react';
-import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
 import ViewColumns from '../../components/view.columns';
@@ -45,6 +44,7 @@ import { cn } from '@rahat-ui/shadcn/src';
 import { toast } from 'react-toastify';
 import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from '../../el-crm/customers/dateRangePicker';
+import DemoTable from 'apps/rahat-ui/src/components/table';
 
 function buildConsumerDetailQuery(rowData: any): string {
   const p = new URLSearchParams();
@@ -150,7 +150,10 @@ export default function BeneficiaryView() {
 
   const searchParams = useSearchParams();
 
-  const handleClearListHash = React.useCallback(() => clearListHashFromUrl(), []);
+  const handleClearListHash = React.useCallback(
+    () => clearListHashFromUrl(),
+    [],
+  );
 
   React.useEffect(() => {
     const listHash = searchParams.get('listHash');
@@ -340,7 +343,7 @@ export default function BeneficiaryView() {
   };
 
   const filterFields = (
-    <div className="flex gap-2">
+    <div className="flex gap-2 overflow-auto sm:overflow-visible">
       <DateRangePicker value={dateRange} onChange={handleDateChange} />
 
       <SelectComponent
@@ -433,119 +436,117 @@ export default function BeneficiaryView() {
           Search and filter consumer records; open a row to see full details.
         </p>
       </div>
-
-      <div className="rounded-lg border bg-card p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 mb-4">
-          <SearchInput
-            className="w-full sm:flex-1 min-w-0"
-            name="phone number"
-            value={filters?.phoneNumber || ''}
-            onSearch={(event) =>
-              setFilters({ ...filters, phoneNumber: event.target.value })
-            }
-          />
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <ViewColumns table={table} />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleDownload}
-              disabled={enabled}
-              className="rounded-sm"
-            >
-              <CloudDownload size={18} className="mr-1" />
-              {enabled ? 'Downloading...' : 'Download Referrals'}
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="p-0"
-                  aria-label="More actions"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={handleSyncLegacyImport}
-                  disabled={isSyncingLegacy}
-                >
-                  {isSyncingLegacy ? 'Syncing...' : 'Sync Legacy'}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+      <div className="h-[calc(100vh-170px)] overflow-auto">
+        <div className="rounded-lg border bg-card p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 mb-4">
+            <SearchInput
+              className="w-full sm:flex-1 min-w-0"
+              name="phone number"
+              value={filters?.phoneNumber || ''}
+              onSearch={(event) =>
+                setFilters({ ...filters, phoneNumber: event.target.value })
+              }
+            />
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <ViewColumns table={table} />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDownload}
+                disabled={enabled}
+                className="rounded-sm"
+              >
+                <CloudDownload size={18} className="mr-1" />
+                {enabled ? 'Downloading...' : 'Download Referrals'}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="p-0"
+                    aria-label="More actions"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={handleSyncLegacyImport}
+                    disabled={isSyncingLegacy}
+                  >
+                    {isSyncingLegacy ? 'Syncing...' : 'Sync Legacy'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
+
+          <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
+            <CollapsibleTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  'lg:hidden mb-2 -ml-2 text-muted-foreground',
+                  filtersOpen && 'text-foreground',
+                )}
+              >
+                {filtersOpen ? (
+                  <ChevronUp className="mr-1 h-4 w-4" />
+                ) : (
+                  <ChevronDown className="mr-1 h-4 w-4" />
+                )}
+                Filters
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="lg:hidden mb-4 space-y-2">
+              {filterFields}
+            </CollapsibleContent>
+          </Collapsible>
+
+          <div className="hidden lg:block mb-4">{filterFields}</div>
+
+          {hasServerFilters && (
+            <SmsVoucherFiltersTags
+              filters={filters}
+              setFilters={setFilters}
+              total={meta?.total || 0}
+              labelMapping={{
+                phoneNumber: 'Phone Number',
+                startDate: 'Start Date',
+                endDate: 'End Date',
+                isImported: 'Imported',
+                consentStatus: 'Consent',
+                voucherStatus: 'Voucher Status',
+                eyeCheckupStatus: 'Voucher Usage',
+                voucherType: 'Glass Type',
+                noOfReferrals: 'No. of Referrals',
+              }}
+              setDateRange={setDateRange}
+              onClearAll={handleClearListHash}
+            />
+          )}
+          <DemoTable
+            table={table}
+            tableHeight="h-[calc(100vh-450px)] sm:h-[calc(100vh-365px)]"
+            loading={isLoading || isFetching}
+          />
         </div>
 
-        <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
-          <CollapsibleTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className={cn(
-                'lg:hidden mb-2 -ml-2 text-muted-foreground',
-                filtersOpen && 'text-foreground',
-              )}
-            >
-              {filtersOpen ? (
-                <ChevronUp className="mr-1 h-4 w-4" />
-              ) : (
-                <ChevronDown className="mr-1 h-4 w-4" />
-              )}
-              Filters
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="lg:hidden mb-4 space-y-2">
-            {filterFields}
-          </CollapsibleContent>
-        </Collapsible>
-
-        <div className="hidden lg:block mb-4">{filterFields}</div>
-
-        {hasServerFilters && (
-          <SmsVoucherFiltersTags
-            filters={filters}
-            setFilters={setFilters}
-            total={meta?.total || 0}
-            labelMapping={{
-              phoneNumber: 'Phone Number',
-              startDate: 'Start Date',
-              endDate: 'End Date',
-              isImported: 'Imported',
-              consentStatus: 'Consent',
-              voucherStatus: 'Voucher Status',
-              eyeCheckupStatus: 'Voucher Usage',
-              voucherType: 'Glass Type',
-              noOfReferrals: 'No. of Referrals',
-            }}
-            setDateRange={setDateRange}
-            onClearAll={handleClearListHash}
-          />
-        )}
-
-        <ElkenyaTable
-          table={table}
-          tableHeight={
-            hasServerFilters ? 'h-[calc(100vh-420px)]' : 'h-[calc(100vh-360px)]'
-          }
-          loading={isLoading || isFetching}
+        <DataTablePagination
+          meta={meta || { total: 0, currentPage: 0 }}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handleFirstPage={setFirstPage}
+          handleLastPage={setLastPage}
+          handlePageSizeChange={setPerPage}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={0}
         />
       </div>
-
-      <DataTablePagination
-        meta={meta || { total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handleFirstPage={setFirstPage}
-        handleLastPage={setLastPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
-      />
     </div>
   );
 }

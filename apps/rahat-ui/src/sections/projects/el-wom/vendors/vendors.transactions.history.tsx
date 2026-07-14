@@ -9,8 +9,8 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useElkenyaVendorsTransactionsTableColumns } from './columns/use.vendors.transactions.table.columns';
 import React from 'react';
-import ElkenyaTable from '../table.component';
 import { ClientSidePagination } from '../clientSidePagination';
+import DemoTable from 'apps/rahat-ui/src/components/table';
 
 export default function VendorsTransactionsHistory({
   tableData,
@@ -37,10 +37,10 @@ export default function VendorsTransactionsHistory({
     },
   });
   return (
-    <div className="p-4 border rounded-sm">
-      <ElkenyaTable
+    <div className="border rounded-sm">
+      <DemoTable
         table={table}
-        tableHeight="h-[calc(100vh-500px)] sm:h-[calc(100vh-450px)]"
+        tableHeight="h-[calc(100vh-520px)] sm:h-[calc(100vh-450px)]"
         loading={loading}
       />
       <ClientSidePagination table={table} />

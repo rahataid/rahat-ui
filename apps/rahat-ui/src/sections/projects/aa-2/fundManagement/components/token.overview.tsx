@@ -1,11 +1,11 @@
 // import { dFMTransactionsData } from '../static';
 import {
   PROJECT_SETTINGS_KEYS,
-  useAllStats,
   useFetchTokenStatsStellar,
   useFundAssignmentStore,
   useGroupsReservedFunds,
   usePagination,
+  useProjectDashboardReporting,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
@@ -26,7 +26,7 @@ export default function TokensOverview() {
     projectUUID: uuid as '${string}-${string}-${string}-${string}-${string}',
   });
 
-  const { data: getTokenStat } = useAllStats(projectId);
+  const { data: getTokenStat } = useProjectDashboardReporting(projectId);
 
   const chains = useChains();
   const { pagination } = usePagination();

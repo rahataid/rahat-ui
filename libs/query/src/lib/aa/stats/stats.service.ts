@@ -45,7 +45,7 @@ export const useAllStats = (uuid: UUID) => {
         uuid,
         data: {
           action: 'aaProject.stats.getAll',
-          payload: { appId: uuid },
+          payload: {},
         },
       });
       return mutate.data;

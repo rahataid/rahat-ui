@@ -282,7 +282,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
       )} */}
       <ScrollArea className="h-[calc(100vh-160px)]">
         {/* KPI cards */}
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {kpiCards.map((card) => (
             <Card
               key={card.title}
@@ -313,7 +313,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
         </div>
 
         {/* Top referrers + voucher-type breakdown + Weekly referrals trend */}
-        <div className="grid gap-6 lg:grid-cols-2 mt-6">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 mt-6">
           {/* <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
@@ -702,9 +702,10 @@ export default function ReferralsSection({ projectUUID }: Props) {
               )}
             </CardContent>
           </Card> */}
-
+        </div>
+        <div className='mt-6 space-y-6 grid grid-cols-1'>
           {/* Referrals histogram by age group */}
-          <Card className="lg:col-span-2">
+          <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <div className="rounded-lg p-2 bg-orange-500/10">
@@ -791,7 +792,7 @@ export default function ReferralsSection({ projectUUID }: Props) {
           </Card>
 
           {/* Referrals per referrer histogram */}
-          <Card className="lg:col-span-2">
+          <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <div className="rounded-lg p-2 bg-emerald-500/10">

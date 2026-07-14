@@ -17,6 +17,7 @@ import HeaderWithBack from '../../components/header.with.back';
 import VendorsBeneficiaryList from './vendors.beneficiary.list';
 import VendorsTransactionsHistory from './vendors.transactions.history';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function VendorsDetail() {
   const { id } = useParams() as { id: UUID };
@@ -59,7 +60,7 @@ export default function VendorsDetail() {
   };
 
   return (
-    <div className="h-[calc(100vh-95px)] m-4">
+    <div className="m-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title="Vendor details"
@@ -67,70 +68,75 @@ export default function VendorsDetail() {
           path={`/projects/el-wom/${id}/vendors`}
         />
       </div>
-
-      {/* Responsive Grid Layout */}
-      <div className="my-2 rounded grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-        <div className="border rounded-sm shadow flex items-center gap-4 p-5">
-          <div className="rounded-full h-8 w-8 flex items-center justify-center">
-            <Store />
-          </div>
-          <div>
-            <p className="font-medium">{name}</p>
-            <div
-              className="flex items-center space-x-2 cursor-pointer"
-              onClick={() => clickToCopy(vendorWallet)}
-            >
-              <p className="text-muted-foreground">
-                {truncateEthAddress(vendorWallet.trimEnd())}
-              </p>
-              {walletAddressCopied === vendorWallet ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
+      <ScrollArea className="h-[calc(100vh-150px)]">
+        {/* Responsive Grid Layout */}
+        <div className="my-2 rounded grid grid-cols-1 lg:grid-cols-2 gap-2">
+          <div className="border rounded-sm shadow flex items-center gap-4 p-5">
+            <div className="rounded-full h-8 w-8 flex items-center justify-center">
+              <Store />
             </div>
-            <p className="font-medium text-muted-foreground">{phone}</p>
-            <p className="font-medium text-muted-foreground">{email}</p>
+            <div>
+              <p className="font-medium">{name}</p>
+              <div
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => clickToCopy(vendorWallet)}
+              >
+                <p className="text-muted-foreground">
+                  {truncateEthAddress(vendorWallet.trimEnd())}
+                </p>
+                {walletAddressCopied === vendorWallet ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </div>
+              <p className="font-medium text-muted-foreground">{phone}</p>
+              <p className="font-medium text-muted-foreground">{email}</p>
+            </div>
+          </div>
+
+          <div className="border rounded-sm shadow flex flex-col justify-between gap-2 p-5">
+            <p className="font-medium">Voucher Redeemed</p>
+            <p className="text-4xl font-semibold text-primary truncate w-full sm:w-52">
+              {voucherReedeemed}
+            </p>
           </div>
         </div>
 
-        <div className="border rounded-sm shadow flex flex-col justify-between gap-2 p-5">
-          <p className="font-medium">Voucher Redeemed</p>
-          <p className="text-4xl font-semibold text-primary truncate w-full sm:w-52">
-            {voucherReedeemed}
-          </p>
-        </div>
-      </div>
-
-      {/* Tabs - Scrollable on Mobile */}
-      <Tabs defaultValue="transactionHistory">
-        <TabsList className="border bg-secondary rounded mb-2 flex">
-          <TabsTrigger
-            className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
-            value="transactionHistory"
-          >
-            Transaction History
-          </TabsTrigger>
-          <TabsTrigger
-            className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
-            value="beneficiaryList"
-          >
-            Consumer List
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="transactionHistory">
-          <VendorsTransactionsHistory
-            tableData={vendorTransactions}
-            loading={isLoading}
-          />
-        </TabsContent>
-        <TabsContent value="beneficiaryList">
-          <VendorsBeneficiaryList
-            beneficiaryList={[...(data?.beneficiaryRedemption || [])]}
-            loading={isVendorLoading}
-          />
-        </TabsContent>
-      </Tabs>
+        {/* Tabs - Scrollable on Mobile */}
+        <Tabs defaultValue="transactionHistory">
+          <TabsList className="border bg-secondary rounded mb-2 flex">
+            <TabsTrigger
+              className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
+              value="transactionHistory"
+            >
+              Transaction History
+            </TabsTrigger>
+            <TabsTrigger
+              className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
+              value="beneficiaryList"
+            >
+              Consumer List
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="transactionHistory">
+            <VendorsTransactionsHistory
+              tableData={vendorTransactions}
+              loading={isLoading}
+            />
+          </TabsContent>
+          <TabsContent value="beneficiaryList">
+            <VendorsBeneficiaryList
+              beneficiaryList={[...(data?.beneficiaryRedemption || [])]}
+              loading={isVendorLoading}
+            />
+          </TabsContent>
+        </Tabs>
+      </ScrollArea>
     </div>
   );
 }

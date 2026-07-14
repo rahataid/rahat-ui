@@ -76,11 +76,11 @@ export default function AssignFundsForm({
 
   const { control, handleSubmit, watch, reset, trigger, setValue } = form;
 
-  const benGroups = useBeneficiaryGroups(projectId, {
-    page: 1,
-    perPage: 100,
-    tokenAssigned: false,
-  });
+  const benGroups = useBeneficiaryGroups(
+    projectId,
+    { page: 1, perPage: 100, tokenAssigned: false },
+    { refetchOnMount: 'always' },
+  );
 
   const projectBalance = useProjectBalance(projectId);
 

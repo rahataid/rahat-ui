@@ -124,7 +124,7 @@ export default function PaymentInitiation() {
     const group = formState.group;
     if (!group?.groupedBeneficiaries?.length) return [];
 
-    const totalTokens = group.tokensReserved?.numberOfTokens || 0;
+    const totalTokens = group.tokensReserved?.[0]?.numberOfTokens || 0;
     const beneficiaryCount = group.groupedBeneficiaries.length;
     const tokensPerBeneficiary = totalTokens / beneficiaryCount;
 
@@ -150,7 +150,7 @@ export default function PaymentInitiation() {
     const payload: any = {
       type: formState.method === 'CVA' ? PayoutType.VENDOR : formState.method,
       mode: formState.mode,
-      groupId: formState.group?.tokensReserved?.uuid,
+      groupId: formState.group?.tokensReserved?.[0]?.uuid,
     };
 
     if (formState.paymentProvider?.id) {

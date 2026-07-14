@@ -25,6 +25,9 @@ export const INFO_TOOL_TIPS: Record<string, string> = {
     'Average time taken for the token to be disbursed to the beneficiary wallet',
   'Average Duration':
     'Gap between Activation phase triggered and successful disbursement',
+  'Pending Disbursement':
+    'Total number of tokens pending disbursement to beneficiaries.',
+  'Redeemed Tokens': 'Total number of tokens redeemed by beneficiaries.',
 };
 
 export const PHASE = [

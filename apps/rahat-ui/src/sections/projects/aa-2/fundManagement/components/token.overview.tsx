@@ -245,6 +245,8 @@ export default function TokensOverview() {
               smallNumber={String(
                 getTokenStat?.tokenStats?.pendingDisbursement ?? '-',
               )}
+              infoIcon={!!INFO_TOOL_TIPS['Pending Disbursement']}
+              infoTooltip={INFO_TOOL_TIPS['Pending Disbursement']}
               subtitle=" "
             />
             <DataCard
@@ -253,6 +255,8 @@ export default function TokensOverview() {
               smallNumber={String(
                 getTokenStat?.tokenStats?.redeemedTokens ?? '-',
               )}
+              infoIcon={!!INFO_TOOL_TIPS['Redeemed Tokens']}
+              infoTooltip={INFO_TOOL_TIPS['Redeemed Tokens']}
               subtitle=" "
             />
           </div>

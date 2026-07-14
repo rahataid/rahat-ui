@@ -26,9 +26,8 @@ const Main = () => {
   useProjectInfo(projectId);
 
   const { data, isLoading } = useProjectDashboardReporting(projectId);
-
   if (isLoading) return <DashboardSkeleton />;
-
+  console.log('data:', data);
   return (
     <>
       <div className="space-y-3 p-5">

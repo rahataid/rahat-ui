@@ -1,10 +1,11 @@
 'use client';
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useProjectAction } from '../../projects';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useStatsStore } from './stats.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const usePhasesStats = (uuid: UUID) => {
   const q = useProjectAction();
@@ -122,11 +123,18 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
 };
 
 export const useProjectDashboardReporting = (uuid: UUID) => {
-  const q = useProjectAction();
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
+  console.log(settings, 'settings in useProjectDashboar hooks');
+  const projectType =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.project_type;
 
+  const q = useProjectAction();
   const query = useQuery({
     queryKey: ['projectDashboard', uuid],
     staleTime: 1000 * 60 * 60 * 4,
+    enabled: !!uuid && !!projectType,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -134,6 +142,7 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
           action: 'aaProject.stats.getAll',
           payload: {
             appId: uuid,
+            projectType,
           },
         },
       });

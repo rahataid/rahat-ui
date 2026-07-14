@@ -25,19 +25,26 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { UUID } from 'crypto';
 import HeaderWithBack from '../projects/components/header.with.back';
-import {
-  Gender,
-} from '@rahataid/sdk/enums';
+import { Gender } from '@rahataid/sdk/enums';
 import { useGetVendor, useUpdateVendor } from '@rahat-ui/query';
+import TableLoader from '../../components/table.loader';
 
 export default function EditVendors() {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
 
-  const { data: vendorDetails, isLoading } = useGetVendor(id);
+  const { data: vendorDetail, isFetching } = useGetVendor(id);
   const vendor = React.useMemo(() => {
-    return vendorDetails?.data;
-  }, [vendorDetails]);
+    const projectVendors = vendorDetail?.data;
+    const ref = projectVendors?.[0]?.User;
+    return {
+      name: ref?.name,
+      gender: ref?.gender,
+      email: ref?.email,
+      phone: ref?.phone,
+      wallet: ref?.wallet,
+    };
+  }, [vendorDetail]);
 
   const updateVendor = useUpdateVendor();
 
@@ -77,26 +84,27 @@ export default function EditVendors() {
     }
   }, [vendor, form.reset]);
 
-
   const handleEditVendor = async (data: z.infer<typeof FormSchema>) => {
     await updateVendor.mutateAsync({
       uuid: id,
-      payload: { ...data }
-    })
+      payload: { ...data },
+    });
     router.push('/vendors');
   };
 
-  return (
+  return isFetching ? (
+    <TableLoader />
+  ) : (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditVendor)}>
           <div className="p-4 h-[calc(100vh-115px)]">
             <HeaderWithBack
               title="Edit Vendor"
-              subtitle="Edit Vendor Detail"
-              path="/vendors"
+              subtitle="Update the vendor's information"
+              path={`/vendors/${id}`}
             />
-            <div className="shadow-md p-4 rounded-sm bg-card">
+            <div className="shadow-md p-4 rounded-sm bg-card mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -231,7 +239,7 @@ export default function EditVendors() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => router.push('/vendors')}
+              onClick={() => router.push(`/vendors/${id}`)}
             >
               Cancel
             </Button>

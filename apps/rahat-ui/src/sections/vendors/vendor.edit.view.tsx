@@ -35,8 +35,8 @@ export default function EditVendors() {
 
   const { data: vendorDetail, isFetching } = useGetVendor(id);
   const vendor = React.useMemo(() => {
-    const projectVendors = vendorDetail?.data;
-    const ref = projectVendors?.[0]?.User;
+    const data = vendorDetail?.data;
+    const ref = Array.isArray(data) ? data[0]?.User : data;
     return {
       name: ref?.name,
       gender: ref?.gender,

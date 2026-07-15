@@ -28,12 +28,15 @@ export default function VendorDetail() {
   const { data: vendorDetail, isFetching } = useGetVendor(id);
 
   const vendor = React.useMemo(() => {
-    const projectVendors = vendorDetail?.data;
-    const projects = projectVendors?.map((v: any) => ({
-      id: v.Project.uuid,
-      name: v.Project.name,
-    }));
-    const ref = projectVendors?.[0]?.User;
+    const data = vendorDetail?.data;
+    if (!data) return null;
+
+    const isProjectVendorList = Array.isArray(data);
+    const ref = isProjectVendorList ? data[0]?.User : data;
+    const projects = isProjectVendorList
+      ? data.map((v: any) => ({ id: v.Project.uuid, name: v.Project.name }))
+      : undefined;
+
     return {
       name: ref?.name,
       gender: ref?.gender,
@@ -158,6 +161,6 @@ const DetailItem = ({
 }) => (
   <div>
     <h1 className="text-md text-muted-foreground">{title}</h1>
-    <p className="font-medium">{content ?? 'N/A'}</p>
+    <p className="font-medium">{content || 'N/A'}</p>
   </div>
 );

@@ -89,6 +89,7 @@ export default function EditFieldDefinition({
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
+      variations: formattedVariations,
     });
   }, [
     data?.variations,
@@ -278,25 +279,23 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-              {showLabelValue && (
-                <FormField
-                  control={form.control}
-                  name="isTargeting"
-                  render={({ field }) => (
-                    <div className="flex flex-col items-right">
-                      <Label className="text-xs font-medium mb-1">
-                        Select as targeting criteria
-                      </Label>
-                      <Switch
-                        {...field}
-                        value={field.value ? 'false' : 'true'}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
-                  )}
-                />
-              )}
+              <FormField
+                control={form.control}
+                name="isTargeting"
+                render={({ field }) => (
+                  <div className="flex flex-col items-right">
+                    <Label className="text-xs font-medium mb-1">
+                      Select as targeting criteria
+                    </Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
             </div>
 
             {showLabelValue && form.getValues('fieldPopulate')?.length > 0 && (

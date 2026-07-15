@@ -33,7 +33,8 @@ import {
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 import { UUID } from 'crypto';
 import {
   useGetElCrmCampaign,
@@ -61,7 +62,8 @@ import {
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
-import { computeRate, formatRate, targetTypeMap } from '../../const';
+import { DateRangePicker } from '../../../customers/dateRangePicker';
+import { computeRate, formatRate, getCampaignGroupLabel } from '../../const';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -74,17 +76,6 @@ export default function MessageDetailPage() {
     projectUUID,
     messageId,
   );
-  const { data: count } = useListElCrmBroadCastCount(
-    projectUUID,
-    {
-      sessionId: campaign?.sessionId || '',
-    },
-    {
-      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
-      enabled: !!campaign?.sessionId,
-    },
-  );
-
   const mutateRetry = useRetryFailedSession(projectUUID);
 
   const retryFailed = async () => {
@@ -115,6 +106,29 @@ export default function MessageDetailPage() {
 
   const isAutomatic = !!campaign?.isAutomatic;
 
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
+
+  const handleDateRangeChange = React.useCallback(
+    (range: DateRange | undefined) => {
+      setDateRange(range);
+      setFilters((prev: any) => {
+        const updated = { ...prev };
+        // Both ends are required for a range query; send full-day bounds so a
+        // single-day selection still includes that whole day.
+        if (range?.from && range?.to) {
+          updated.startDate = startOfDay(range.from).toISOString();
+          updated.endDate = endOfDay(range.to).toISOString();
+        } else {
+          delete updated.startDate;
+          delete updated.endDate;
+        }
+        return updated;
+      });
+      setPagination((prev) => ({ ...prev, page: 1 }));
+    },
+    [setFilters, setPagination],
+  );
+
   const { data: logs, isLoading: isLogsLoading } = useListElCrmSessionBroadcast(
     projectUUID,
     {
@@ -124,6 +138,18 @@ export default function MessageDetailPage() {
     },
     {
       queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
+      enabled: !!campaign?.sessionId && !isAutomatic,
+    },
+  );
+
+  const { data: count } = useListElCrmBroadCastCount(
+    projectUUID,
+    {
+      sessionId: campaign?.sessionId || '',
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
+    },
+    {
       enabled: !!campaign?.sessionId && !isAutomatic,
     },
   );
@@ -143,7 +169,11 @@ export default function MessageDetailPage() {
   }, [automations.data, isAutomatic, campaign?.uuid]);
 
   const { data: automationDetail, isLoading: isAutomationLoading } =
-    useAutomationDetail(projectUUID, automationRuleUuid, pagination);
+    useAutomationDetail(projectUUID, automationRuleUuid, {
+      ...pagination,
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
+    });
 
   const logsData: any[] = isAutomatic
     ? automationDetail?.logs ?? []
@@ -221,6 +251,7 @@ export default function MessageDetailPage() {
 
   const clearAllFilters = () => {
     setFilters({});
+    setDateRange(undefined);
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
@@ -285,8 +316,14 @@ export default function MessageDetailPage() {
   const failedCount = isAutomatic
     ? automationCounts?.failed ?? 0
     : count?.FAIL ?? 0;
+  // When a date filter is active, the manual-campaign denominator must also be
+  // range-scoped (connect's TOTAL for the range) so the rate stays meaningful;
+  // otherwise keep the campaign's configured recipient count.
+  const hasDateFilter = !!(filters?.startDate && filters?.endDate);
   const totalRecipients = isAutomatic
     ? automationCounts?.sent ?? meta?.total ?? 0
+    : hasDateFilter
+    ? count?.TOTAL ?? 0
     : campaign?.recipientCount || 0;
   const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
   const deliveryRate = computeRate(deliveredCount, totalRecipients);
@@ -409,6 +446,8 @@ export default function MessageDetailPage() {
                   filters={{
                     status: filters?.status,
                     address: filters?.address,
+                    startDate: filters?.startDate,
+                    endDate: filters?.endDate,
                   }}
                 />
               )}
@@ -530,9 +569,7 @@ export default function MessageDetailPage() {
                       Group
                     </span>
                     <span className="text-sm font-medium text-foreground">
-                      {targetTypeMap[
-                        campaign.targetType as keyof typeof targetTypeMap
-                      ] || campaign.targetType}
+                      {getCampaignGroupLabel(campaign as any)}
                     </span>
                   </div>
 
@@ -609,7 +646,7 @@ export default function MessageDetailPage() {
                         {meta?.total || 0}
                       </span>
                     </CardTitle>
-                    {!isAutomatic && hasActiveFilters && (
+                    {hasActiveFilters && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -623,28 +660,35 @@ export default function MessageDetailPage() {
                     )}
                   </div>
 
-                  {!isAutomatic && (
-                    <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
-                      <div className="md:col-span-3">
-                        <SearchInput
-                          value={filters.address}
-                          name="Audience"
-                          onSearch={(e) => handleSearch(e, 'address')}
-                        />
-                      </div>
+                  <div className="flex flex-col gap-2.5 md:flex-row md:items-center">
+                    {!isAutomatic && (
+                      <>
+                        <div className="flex-1">
+                          <SearchInput
+                            value={filters.address}
+                            name="Audience"
+                            onSearch={(e) => handleSearch(e, 'address')}
+                          />
+                        </div>
 
-                      <div className="md:col-span-1 !mt-0">
-                        <SelectComponent
-                          name="Status"
-                          options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                          onChange={(value) =>
-                            handleFilterChange('status', value)
-                          }
-                          value={filters?.status ?? 'ALL'}
-                        />
-                      </div>
-                    </div>
-                  )}
+                        <div className="md:w-44 !mt-0">
+                          <SelectComponent
+                            name="Status"
+                            options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                            onChange={(value) =>
+                              handleFilterChange('status', value)
+                            }
+                            value={filters?.status ?? 'ALL'}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    <DateRangePicker
+                      value={dateRange}
+                      onChange={handleDateRangeChange}
+                    />
+                  </div>
                 </CardHeader>
 
                 <CardContent className="p-0">
@@ -714,9 +758,7 @@ export default function MessageDetailPage() {
                   Group
                 </Label>
                 <p className="mt-1 text-sm font-medium text-foreground">
-                  {targetTypeMap[
-                    campaign.targetType as keyof typeof targetTypeMap
-                  ] || campaign.targetType}
+                  {getCampaignGroupLabel(campaign as any)}
                 </p>
               </div>
               <div>

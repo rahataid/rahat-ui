@@ -8,6 +8,15 @@ export const targetTypeMap = {
   VENDOR: 'Customer',
 };
 
+export const getCampaignGroupLabel = (campaign: {
+  targetType?: string;
+  options?: { source?: string } | null;
+}): string => {
+  if (campaign?.options?.source === 'EXCEL') return 'Uploaded List';
+  const key = campaign?.targetType as keyof typeof targetTypeMap;
+  return targetTypeMap[key] || campaign?.targetType || '—';
+};
+
 // ─── Plasgate SMS helpers ────────────────────────────────────────────────────
 
 export const PLASGATE_GSM7_LIMIT = 160;

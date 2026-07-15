@@ -21,6 +21,7 @@ const GET_CAMPAIGN = 'elProject.campaign.getOne';
 const GET_ALL_TRANSPORT = 'elProject.campaign.get_transport';
 const GET_ALL_AUDIENCE = 'elProject.campaign.get_audience';
 const TRIGGER_CAMPAIGN = 'elProject.campaign.trigger';
+const SEND_CAMPAIGN_EXCEL = 'elProject.campaign.trigger_excel';
 const GET_ALL_COMMUNICATION_LOGS = 'elProject.campaign.communication_logs';
 const GET_ALL_COMMUNICATION_STATS = 'elProject.campaign.communication_stats';
 const GET_CAMPAIGN_LOGS = 'elProject.campaign.log';
@@ -30,6 +31,7 @@ const GET_TEMPLATE = 'elProject.campaign.list_templates';
 const SYNC_TEMPLATE = 'elProject.campaign.sync_templates';
 const BROADCAST_COUNT = 'elProject.campaign.broadcast_count';
 const SESSION_BROADCAST = 'elProject.campaign.list_session_broadcasts';
+const LOGS_FOR_SESSIONS = 'elProject.campaign.list_logs_for_sessions';
 const LIST_AUTOMATION = 'elProject.campaign.automation.list';
 const TOGGLE_AUTOMATION = 'elProject.campaign.automation.toggle';
 const CREATE_AUTOMATION = 'elProject.campaign.automation.create';
@@ -147,6 +149,58 @@ export const useTriggerElCrmCampaign = (projectUUID: UUID) => {
       });
       queryClient.invalidateQueries({
         queryKey: [queryKeys.elCrmCampaignLogs],
+      });
+    },
+  });
+};
+
+// Create + send a campaign to an ad-hoc recipient list uploaded as an Excel/CSV
+// sheet. The file is sent base64-encoded; the CRM parses it and broadcasts.
+export const useSendElCrmCampaignExcel = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 4000,
+  });
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: SEND_CAMPAIGN_EXCEL,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: (d: any) => {
+      const sent = d?.sent ?? 0;
+      const skipped = d?.skipped ?? 0;
+      toast.fire({
+        title: `Sent to ${sent} recipient${sent === 1 ? '' : 's'}${
+          skipped ? ` · ${skipped} skipped` : ''
+        }`,
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmCampaignList],
+      });
+    },
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        '';
+      toast.fire({
+        title: apiMessage
+          ? `Could not send campaign: ${apiMessage}`
+          : 'Could not send campaign. Please try again.',
+        icon: 'error',
       });
     },
   });
@@ -412,12 +466,11 @@ export const useFetchSessionBroadcasts = (projectUUID: UUID) => {
       sessionId: string;
       filters?: Record<string, string | undefined>;
     }) => {
-      const perPage = 100;
-      let page = 1;
-      let total = Infinity;
-      const results: any[] = [];
+      // Large page size keeps the number of (expensive, multi-hop) round
+      // trips small — most sessions now export in a single request.
+      const perPage = 1000;
 
-      while (results.length < total) {
+      const fetchPage = async (page: number) => {
         const res = await action.mutateAsync({
           uuid: projectUUID,
           data: {
@@ -425,11 +478,96 @@ export const useFetchSessionBroadcasts = (projectUUID: UUID) => {
             payload: { session: sessionId, ...filters, page, perPage },
           },
         });
-        const data = res?.data ?? [];
-        if (!data.length) break;
-        results.push(...data);
-        total = res?.response?.meta?.['total'] ?? results.length;
-        page += 1;
+        return {
+          data: (res?.data ?? []) as any[],
+          total: res?.response?.meta?.['total'] as number | undefined,
+        };
+      };
+
+      // The first page also tells us the total, so we can request the
+      // remaining pages concurrently instead of one-at-a-time.
+      const first = await fetchPage(1);
+      const results: any[] = [...first.data];
+
+      if (typeof first.total === 'number' && first.total > perPage) {
+        const totalPages = Math.ceil(first.total / perPage);
+        const rest = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) => fetchPage(i + 2)),
+        );
+        for (const r of rest) results.push(...r.data);
+      } else if (first.total === undefined && first.data.length === perPage) {
+        // No total in the response meta — fall back to sequential draining
+        // so we never silently truncate the export.
+        let page = 2;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const next = await fetchPage(page);
+          if (!next.data.length) break;
+          results.push(...next.data);
+          if (next.data.length < perPage) break;
+          page += 1;
+        }
+      }
+
+      return results;
+    },
+  });
+};
+
+// Fetches every broadcast across ALL of a campaign's sessions in one bulk,
+export const useFetchBulkSessionBroadcasts = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  return useMutation({
+    mutationFn: async ({
+      sessions,
+      filters,
+    }: {
+      sessions: string[];
+      filters?: Record<string, string | undefined>;
+    }) => {
+      const validSessions = sessions.filter(Boolean);
+      if (!validSessions.length) return [];
+
+      const perPage = 1000;
+
+      const fetchPage = async (page: number) => {
+        const res = await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: LOGS_FOR_SESSIONS,
+            payload: { sessions: validSessions, ...filters, page, perPage },
+          },
+        });
+        return {
+          data: (res?.data ?? []) as any[],
+          total: res?.response?.meta?.['total'] as number | undefined,
+        };
+      };
+
+      // Page 1 also carries the total, so the remaining pages can be fetched
+      // concurrently rather than one-at-a-time.
+      const first = await fetchPage(1);
+      const results: any[] = [...first.data];
+
+      if (typeof first.total === 'number' && first.total > perPage) {
+        const totalPages = Math.ceil(first.total / perPage);
+        const rest = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) => fetchPage(i + 2)),
+        );
+        for (const r of rest) results.push(...r.data);
+      } else if (first.total === undefined && first.data.length === perPage) {
+        // No total in the response meta — drain sequentially so we never
+        // silently truncate the export.
+        let page = 2;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const next = await fetchPage(page);
+          if (!next.data.length) break;
+          results.push(...next.data);
+          if (next.data.length < perPage) break;
+          page += 1;
+        }
       }
 
       return results;
@@ -439,13 +577,19 @@ export const useFetchSessionBroadcasts = (projectUUID: UUID) => {
 
 export const useListElCrmBroadCastCount = (
   projectUUID: UUID,
-  payload: { sessionId: string },
+  payload: { sessionId: string; startDate?: string; endDate?: string },
   options?: UseQueryOptions,
 ) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: [queryKeys.elCrmBroadcastCount, projectUUID, payload.sessionId],
+    queryKey: [
+      queryKeys.elCrmBroadcastCount,
+      projectUUID,
+      payload.sessionId,
+      payload.startDate,
+      payload.endDate,
+    ],
     enabled: options?.enabled,
     queryFn: async () => {
       const res = await action.mutateAsync({
@@ -689,6 +833,8 @@ export const useAutomationDetail = (
     sort?: string;
     order?: 'asc' | 'desc';
     status?: string;
+    startDate?: string;
+    endDate?: string;
   },
 ) => {
   const action = useProjectAction();

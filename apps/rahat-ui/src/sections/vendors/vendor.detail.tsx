@@ -19,12 +19,31 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import TableLoader from '../../components/table.loader';
 
 export default function VendorDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
-  const { data: vendorDetail } = useGetVendor(id);
-  const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
+  const { data: vendorDetail, isFetching } = useGetVendor(id);
+
+  const vendor = React.useMemo(() => {
+    const projectVendors = vendorDetail?.data;
+    const projects = projectVendors?.map((v: any) => ({
+      id: v.Project.uuid,
+      name: v.Project.name,
+    }));
+    const ref = projectVendors?.[0]?.User;
+    return {
+      name: ref?.name,
+      gender: ref?.gender,
+      email: ref?.email,
+      phone: ref?.phone,
+      wallet: ref?.wallet,
+      projects,
+    };
+  }, [vendorDetail]);
+
   const isVendorAssigned = vendor?.projects?.length;
   const removeVendor = useRemoveVendor();
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -42,7 +61,9 @@ export default function VendorDetail() {
     router.push('/vendors');
   };
 
-  return (
+  return isFetching ? (
+    <TableLoader />
+  ) : (
     <div className="p-4">
       {/* Header and Actions */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
@@ -96,9 +117,7 @@ export default function VendorDetail() {
             vendor?.projects?.length ? (
               <div className="flex gap-2 flex-wrap">
                 {vendor.projects.map((project: any) => (
-                  <p key={project.id} className="font-medium">
-                    {project?.name}
-                  </p>
+                  <Badge key={project.id}>{project?.name}</Badge>
                 ))}
               </div>
             ) : (

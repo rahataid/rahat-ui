@@ -9,15 +9,20 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Download } from 'lucide-react';
-import { useFetchSessionBroadcasts } from '@rahat-ui/query';
+import { Download, Loader2 } from 'lucide-react';
+import { useFetchBulkSessionBroadcasts } from '@rahat-ui/query';
 import { normalizePhoneAddress } from './const';
 
 type CampaignBroadcastActionsProps = {
   projectUUID: UUID;
   sessionIds: string[];
   campaignName: string;
-  filters?: { status?: string; address?: string };
+  filters?: {
+    status?: string;
+    address?: string;
+    startDate?: string;
+    endDate?: string;
+  };
 };
 
 export default function CampaignBroadcastActions({
@@ -26,29 +31,26 @@ export default function CampaignBroadcastActions({
   campaignName,
   filters,
 }: CampaignBroadcastActionsProps) {
-  const fetchSessionBroadcasts = useFetchSessionBroadcasts(projectUUID);
+  const fetchBulkBroadcasts = useFetchBulkSessionBroadcasts(projectUUID);
 
   const validSessionIds = sessionIds.filter(Boolean);
 
   const collectBroadcasts = React.useCallback(
     async (extraFilters?: Record<string, string | undefined>) => {
-      const all: any[] = [];
-      for (const sessionId of validSessionIds) {
-        const broadcasts = await fetchSessionBroadcasts.mutateAsync({
-          sessionId,
-          filters: extraFilters,
-        });
-        all.push(...broadcasts);
-      }
-      return all;
+      return fetchBulkBroadcasts.mutateAsync({
+        sessions: validSessionIds,
+        filters: extraFilters,
+      });
     },
-    [validSessionIds, fetchSessionBroadcasts],
+    [validSessionIds, fetchBulkBroadcasts],
   );
 
   const handleExport = async () => {
     const broadcasts = await collectBroadcasts({
       status: filters?.status,
       address: filters?.address,
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
     });
     if (!broadcasts.length) return;
 
@@ -71,15 +73,15 @@ export default function CampaignBroadcastActions({
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Delivery Logs');
     XLSX.writeFile(
       workbook,
-      `${campaignName.replace(/\s+/g, '-').toLowerCase()}-delivery-logs-${new Date()
-        .toISOString()
-        .split('T')[0]}.xlsx`,
+      `${campaignName.replace(/\s+/g, '-').toLowerCase()}-delivery-logs-${
+        new Date().toISOString().split('T')[0]
+      }.xlsx`,
     );
   };
 
   if (!validSessionIds.length) return null;
 
-  const isBusy = fetchSessionBroadcasts.isPending;
+  const isBusy = fetchBulkBroadcasts.isPending;
 
   return (
     <Tooltip>
@@ -92,13 +94,21 @@ export default function CampaignBroadcastActions({
           disabled={isBusy}
           className="gap-2"
         >
-          <Download className="h-3.5 w-3.5" />
-          Export
+          {isBusy ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Download className="h-3.5 w-3.5" />
+          )}
+          {isBusy ? 'Exporting…' : 'Export'}
         </Button>
       </TooltipTrigger>
       <TooltipContent>
         Download all delivery logs for this campaign
-        {filters?.status || filters?.address ? ' (current filters applied)' : ''}
+        {filters?.status ||
+        filters?.address ||
+        (filters?.startDate && filters?.endDate)
+          ? ' (current filters applied)'
+          : ''}
       </TooltipContent>
     </Tooltip>
   );

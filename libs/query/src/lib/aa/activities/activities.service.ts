@@ -1,11 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
@@ -54,13 +49,7 @@ export const useAddActivityCategory = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      uuid,
-      name,
-    }: {
-      uuid: UUID;
-      name: string;
-    }) => {
+    mutationFn: async ({ uuid, name }: { uuid: UUID; name: string }) => {
       const result = await q.mutateAsync({
         uuid,
         data: { action: 'ms.activityCategories.add', payload: { name } },
@@ -106,7 +95,8 @@ export const useActivities = (uuid: UUID, payload: any) => {
       return mutate.response;
     },
     staleTime: 30 * 60 * 1000, // 30 minutes
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === uuid ? previousData : undefined,
   });
 
   useEffect(() => {

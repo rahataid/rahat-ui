@@ -3,12 +3,7 @@ import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  useAAStationsStore,
-  useAATriggerStatements,
-  usePhases,
-  usePhasesStore,
-} from '@rahat-ui/query';
+import { useAATriggerStatements, usePhases } from '@rahat-ui/query';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
@@ -46,11 +41,10 @@ export default function TriggerStatementView() {
   const params = useParams();
   const projectId = params.id as UUID;
 
-  usePhases(projectId);
-  const phases = usePhasesStore((state) => state.phases);
+  const { data: phases } = usePhases(projectId);
 
-  useAATriggerStatements(projectId, { perPage: 9999 });
-  const triggers = useAAStationsStore((state) => state.triggers);
+  const triggers = useAATriggerStatements(projectId, { perPage: 9999 });
+
   const [pinnedPhaseIds, setPinnedPhaseIds] = React.useState<string[]>(() =>
     loadPinnedPhases(projectId),
   );
@@ -74,7 +68,7 @@ export default function TriggerStatementView() {
   }, [phases, pinnedPhaseIds]);
 
   const triggeredTriggers = React.useMemo(
-    () => triggers?.filter((t) => t.isTriggered),
+    () => triggers?.filter((t: any) => t.isTriggered),
     [triggers],
   );
 

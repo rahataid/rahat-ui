@@ -14,12 +14,17 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { SpinnerLoader, Back } from 'apps/rahat-ui/src/common';
-import { useGetOneGctRecord, useDisburseGroupCashTransfer } from '@rahat-ui/query';
-import { useTxUrl } from '../../utils';
+import {
+  useGetOneGctRecord,
+  useDisburseGroupCashTransfer,
+  useProjectSettingsStore,
+  PROJECT_SETTINGS_KEYS,
+} from '@rahat-ui/query';
 import { GCT_STATUS_STYLE } from '../types/gct.types';
 import { fmt, DetailRow } from './gct.ui';
 import { DisburseButton, DisburseModal } from './gct.disburse-modal';
 import { DisbursementInfoCard } from './gct.disbursement-info';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 
 export default function GctRecordDetail() {
   const { id, recordUuid } = useParams();
@@ -28,19 +33,24 @@ export default function GctRecordDetail() {
   const backPath = `/projects/aa/${id}/group-cash-transfer?tab=gctManagementList`;
   const editPath = `/projects/aa/${id}/group-cash-transfer/records/${recordUuid}/edit`;
 
-  const { data, isLoading } = useGetOneGctRecord(projectUUID, recordUuid as string);
+  const { data, isLoading } = useGetOneGctRecord(
+    projectUUID,
+    recordUuid as string,
+  );
   const disburse = useDisburseGroupCashTransfer(projectUUID);
-  const getTxUrl = useTxUrl(projectUUID);
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
 
   const [disburseOpen, setDisburseOpen] = useState(false);
 
   const record = data?.data ?? data ?? null;
   const group = record?.groupCashTransfer ?? null;
 
-  
   const status = record?.status ?? 'NOT_STARTED';
   const canEdit = status === 'NOT_STARTED';
-  const canDisburse = status === 'NOT_STARTED' || status === 'TOKEN_TRANSFERRED';
+  const canDisburse =
+    status === 'NOT_STARTED' || status === 'TOKEN_TRANSFERRED';
 
   const handleDisburseClick = () => {
     setDisburseOpen(true);
@@ -54,6 +64,15 @@ export default function GctRecordDetail() {
       ? 'Already processed.'
       : undefined;
 
+  const getTxUrl = getExplorerUrl({
+    chainSettings:
+      settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+    target: 'tx',
+    value:
+      record.disbursementInfo?.result?.offrampRequest?.transactionHash ??
+      record.txHash,
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[300px]">
@@ -61,14 +80,16 @@ export default function GctRecordDetail() {
       </div>
     );
   }
-  
+
   return (
     <div className="p-4">
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
           <Back path={backPath} />
-          <h1 className="text-2xl font-semibold">{record?.title ?? 'Fund Record'}</h1>
+          <h1 className="text-2xl font-semibold">
+            {record?.title ?? 'Fund Record'}
+          </h1>
           <p className="text-muted-foreground text-sm mt-0.5">
             Group Cash Transfer fund record details
           </p>
@@ -91,7 +112,9 @@ export default function GctRecordDetail() {
                 </span>
               </TooltipTrigger>
               {!canEdit && (
-                <TooltipContent>Cannot edit after disbursement has started.</TooltipContent>
+                <TooltipContent>
+                  Cannot edit after disbursement has started.
+                </TooltipContent>
               )}
             </Tooltip>
           </TooltipProvider>
@@ -112,10 +135,17 @@ export default function GctRecordDetail() {
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
               Record Information
             </p>
-            <DetailRow label="Amount" value={record?.amount?.toLocaleString()} />
+            <DetailRow
+              label="Amount"
+              value={record?.amount?.toLocaleString()}
+            />
             <div className="flex flex-col gap-0.5 py-2.5 border-b">
               <span className="text-xs text-muted-foreground">Status</span>
-              <Badge className={`w-fit text-xs ${GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'}`}>
+              <Badge
+                className={`w-fit text-xs ${
+                  GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'
+                }`}
+              >
                 {status.replace(/_/g, ' ')}
               </Badge>
             </div>
@@ -135,10 +165,23 @@ export default function GctRecordDetail() {
             <DetailRow label="Phone" value={group?.phone} />
             {group?.bankDetails && (
               <>
-                <DetailRow label="Bank Name" value={group.bankDetails?.bankName} />
-                <DetailRow label="Bank Branch" value={group.bankDetails?.bankBranchName} />
-                <DetailRow label="Account Holder Name" value={group.bankDetails?.accountName} />
-                <DetailRow label="Account Number" value={group.bankDetails?.accountNumber} mono />
+                <DetailRow
+                  label="Bank Name"
+                  value={group.bankDetails?.bankName}
+                />
+                <DetailRow
+                  label="Bank Branch"
+                  value={group.bankDetails?.bankBranchName}
+                />
+                <DetailRow
+                  label="Account Holder Name"
+                  value={group.bankDetails?.accountName}
+                />
+                <DetailRow
+                  label="Account Number"
+                  value={group.bankDetails?.accountNumber}
+                  mono
+                />
               </>
             )}
           </CardContent>
@@ -147,12 +190,7 @@ export default function GctRecordDetail() {
 
       {/* Disbursement info (only present after disburse) */}
       {record?.disbursementInfo && (
-        <DisbursementInfoCard
-          info={record.disbursementInfo}
-          txUrl={getTxUrl(
-            record.disbursementInfo?.result?.offrampRequest?.transactionHash ?? record.txHash
-          )}
-        />
+        <DisbursementInfoCard info={record.disbursementInfo} txUrl={getTxUrl} />
       )}
 
       <DisburseModal

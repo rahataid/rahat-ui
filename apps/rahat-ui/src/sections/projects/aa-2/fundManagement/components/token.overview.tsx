@@ -5,6 +5,7 @@ import {
   useFundAssignmentStore,
   useGroupsReservedFunds,
   usePagination,
+  useProjectDashboardReporting,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
@@ -24,6 +25,9 @@ export default function TokensOverview() {
   const { data, isLoading } = useFetchTokenStatsStellar({
     projectUUID: uuid,
   });
+
+  const { data: getTokenStat } = useProjectDashboardReporting(projectId);
+
   const chains = useChains();
   const { pagination } = usePagination();
   const { data: groupsFundsData } = useGroupsReservedFunds(projectId, {
@@ -235,6 +239,26 @@ export default function TokensOverview() {
                 />
               );
             })}
+            <DataCard
+              className="rounded-sm h-[116px] p-0"
+              title="Pending Disbursement"
+              smallNumber={String(
+                getTokenStat?.tokenStats?.pendingDisbursement ?? '-',
+              )}
+              infoIcon={!!INFO_TOOL_TIPS['Pending Disbursement']}
+              infoTooltip={INFO_TOOL_TIPS['Pending Disbursement']}
+              subtitle=" "
+            />
+            <DataCard
+              className="rounded-sm h-[116px] p-0"
+              title="Redeemed Tokens"
+              smallNumber={String(
+                getTokenStat?.tokenStats?.redeemedTokens ?? '-',
+              )}
+              infoIcon={!!INFO_TOOL_TIPS['Redeemed Tokens']}
+              infoTooltip={INFO_TOOL_TIPS['Redeemed Tokens']}
+              subtitle=" "
+            />
           </div>
         </div>
       ) : (

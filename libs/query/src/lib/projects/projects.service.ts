@@ -1546,8 +1546,6 @@ export const useProjectInfo = (uuid: UUID) => {
     setSettings: state.setSettings,
   }));
 
-  console.log('123')
-
   const query = useQuery({
     queryKey: ['settings.get.project.info', uuid],
     staleTime: Infinity,

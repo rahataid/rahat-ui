@@ -1,11 +1,12 @@
 'use client';
 
 import {
+  useBackFill,
   useProjectDashboardReporting,
   useProjectInfo,
   useStellarSettings,
 } from '@rahat-ui/query';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import BeneficiaryDemographics from './component/beneficiaryDemographics';
@@ -16,6 +17,7 @@ import SocialProtectionBenefits from './component/socialProtectionBenefits';
 import DashboardSkeleton from './dashboard.skeleton';
 import DigitalAccessOverview from './component/digitalAccessOverview';
 import AccessAndResilienceOverview from './component/accessPieAndBar';
+import { RefreshCcw } from 'lucide-react';
 
 const Main = () => {
   const { id } = useParams();
@@ -23,19 +25,40 @@ const Main = () => {
 
   // useAAStations(projectId);
   useStellarSettings(projectId);
-  useProjectInfo(projectId);
+  const { data: projectInfo, isPending: isProjectInfoLoading } =
+    useProjectInfo(projectId);
 
-  const { data, isLoading } = useProjectDashboardReporting(projectId);
-  if (isLoading) return <DashboardSkeleton />;
-  console.log('data:', data);
+  const projectType = projectInfo?.value.project_type;
+  const { data, isLoading } = useProjectDashboardReporting(
+    projectId,
+    projectType,
+  );
+  const { mutate: syncStats, isPending: isSyncing } = useBackFill(projectId);
+
+  const handleBackFill = () => {
+    syncStats();
+  };
+
+  if (isProjectInfoLoading || isLoading) return <DashboardSkeleton />;
+
   return (
     <>
       <div className="space-y-3 p-5">
-        <Heading
-          title="Project Dashboard"
-          description="Overview of your system"
-          titleStyle={'text-xl xl:text-3xl'}
-        />
+        <div className="flex justify-between">
+          <Heading
+            title="Project Dashboard"
+            description="Overview of your system"
+            titleStyle={'text-xl xl:text-3xl'}
+          />
+          <IconLabelBtn
+            name={isSyncing ? 'Updating' : 'Sync Stats'}
+            Icon={RefreshCcw}
+            handleClick={handleBackFill}
+            variant="outline"
+            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+          />
+        </div>
+
         <ResilienceOverview
           benefStats={data?.benefStats}
           triggeersStats={data?.triggeersStats}

@@ -16,6 +16,7 @@ type IProps = {
 };
 
 export default function InfoCards({ data }: IProps) {
+
   return (
     // <div
     //   style={{ maxHeight: '100vh' }}
@@ -47,6 +48,18 @@ export default function InfoCards({ data }: IProps) {
 
             <div className="flex justify-between gap-8">
               <div className="flex flex-col gap-2">
+                <div>
+                  <p>{data?.firstName || 'N/A'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    First Name
+                  </p>
+                </div>
+                <div>
+                  <p>{data?.lastName || 'N/A'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Last Name
+                  </p>
+                </div>
                 <div>
                   <p>{humanizeString(data?.gender)}</p>
                   <p className="text-sm font-normal text-muted-foreground">

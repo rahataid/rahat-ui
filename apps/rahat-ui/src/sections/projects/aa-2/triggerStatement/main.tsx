@@ -10,7 +10,6 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 
 const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
@@ -61,10 +60,10 @@ export default function TriggerStatementView() {
   };
 
   const sortedPhases = React.useMemo(() => {
-    const phasesList = phases ?? [];
+    const automatedPhases = phases.filter((p: any) => p?.isAutomatedActivity);
     return [
-      ...phasesList.filter((p: any) => pinnedPhaseIds.includes(p.uuid)),
-      ...phasesList.filter((p: any) => !pinnedPhaseIds.includes(p.uuid)),
+      ...automatedPhases.filter((p) => pinnedPhaseIds.includes(p.uuid)),
+      ...automatedPhases.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
     ];
   }, [phases, pinnedPhaseIds]);
 
@@ -110,16 +109,6 @@ export default function TriggerStatementView() {
           title="Trigger Statement"
           description="Track all the trigger reports here"
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
-          <IconLabelBtn
-            Icon={Plus}
-            name="Add Phase"
-            handleClick={handleAddPhase}
-          />
-        </RoleAuth>
       </div>
 
       <div className="flex gap-1 flex-1 overflow-hidden mt-4">
@@ -157,6 +146,9 @@ export default function TriggerStatementView() {
                   isPinned={pinnedPhaseIds.includes(d.uuid)}
                   onTogglePin={() => togglePinPhase(d.uuid)}
                   hasExtendedLogic={!!d?.extendedTriggerLogic}
+                  disbursementMethods={
+                    d?.disbursementConfig?.disbursementMethods
+                  }
                 />
               ))}
 

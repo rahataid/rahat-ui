@@ -9,21 +9,20 @@ import {
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import BeneficiaryDemographics from './component/beneficiaryDemographics';
-import CommunicationAnalytics from './component/communicationAnalytics';
-import MapView from './component/mapView';
-import ResilienceOverview from './component/resilienceOverview';
-import SocialProtectionBenefits from './component/socialProtectionBenefits';
 import DashboardSkeleton from './dashboard.skeleton';
-import DigitalAccessOverview from './component/digitalAccessOverview';
-import AccessAndResilienceOverview from './component/accessPieAndBar';
 import { RefreshCcw } from 'lucide-react';
+import FloodDashboard from './flood.dashboard';
+import HeatwaveDashboard from './heatwave.dashboard';
+
+const DASHBOARDS = {
+  FLOOD: FloodDashboard,
+  HEAT_WAVE: HeatwaveDashboard,
+} as const;
 
 const Main = () => {
   const { id } = useParams();
   const projectId = id as UUID;
 
-  // useAAStations(projectId);
   useStellarSettings(projectId);
   const { data: projectInfo, isPending: isProjectInfoLoading } =
     useProjectInfo(projectId);
@@ -35,9 +34,7 @@ const Main = () => {
   );
   const { mutate: syncStats, isPending: isSyncing } = useBackFill(projectId);
 
-  const handleBackFill = () => {
-    syncStats();
-  };
+  const Dashboard = DASHBOARDS[projectType as keyof typeof DASHBOARDS];
 
   if (isProjectInfoLoading || isLoading) return <DashboardSkeleton />;
 
@@ -53,37 +50,24 @@ const Main = () => {
           <IconLabelBtn
             name={isSyncing ? 'Updating' : 'Sync Stats'}
             Icon={RefreshCcw}
-            handleClick={handleBackFill}
+            handleClick={() => syncStats()}
             variant="outline"
             className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
           />
         </div>
 
-        <ResilienceOverview
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
-        />
-        <BeneficiaryDemographics
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
-        />
-        <SocialProtectionBenefits
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
-        />
-        <DigitalAccessOverview stats={data?.benefStats} />
-        <AccessAndResilienceOverview data={data?.benefStats} />
-        <CommunicationAnalytics
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
-        />
-        <div className="mb-2 h-full w-full">
-          <MapView projectId={projectId} benefStats={data?.benefStats} />
-        </div>
+        {Dashboard ? (
+          <Dashboard
+            benefStats={data?.benefStats ?? []}
+            triggeersStats={data?.triggeersStats ?? []}
+            tokenStats={data?.tokenStats}
+            projectId={projectId}
+          />
+        ) : (
+          <div className="text-center text-muted-foreground py-8">
+            No dashboard available for this project type.
+          </div>
+        )}
       </div>
     </>
   );

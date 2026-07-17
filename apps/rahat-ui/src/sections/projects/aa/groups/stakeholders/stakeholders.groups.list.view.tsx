@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import {
-  usePagination,
-  useStakeholdersGroups,
-  useStakeholdersGroupsStore,
-} from '@rahat-ui/query';
+import { usePagination, useStakeholdersGroups } from '@rahat-ui/query';
 import StakeholdersGroupsTable from '../groups.table';
 import useStakeholdersGroupsTableColumn from './useStakeholdersGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
@@ -26,13 +22,12 @@ export default function StakeholdersGroupsListView() {
     setPagination(prevPagination);
   }, []);
 
-  const {isLoading} = useStakeholdersGroups(id as UUID, { ...pagination });
+  const { isLoading, data } = useStakeholdersGroups(id as UUID, {
+    ...pagination,
+  });
 
-  const { stakeholdersGroups, stakeholdersGroupsMeta } =
-    useStakeholdersGroupsStore((state) => ({
-      stakeholdersGroups: state.stakeholdersGroups,
-      stakeholdersGroupsMeta: state.stakeholdersGroupsMeta,
-    }));
+  const stakeholdersGroups = data?.data ?? [];
+  const stakeholdersGroupsMeta = data?.meta;
 
   const columns = useStakeholdersGroupsTableColumn();
 

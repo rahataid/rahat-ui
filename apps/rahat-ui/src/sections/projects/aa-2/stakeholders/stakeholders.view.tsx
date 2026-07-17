@@ -15,11 +15,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { useProjectStakeholdersTableColumns } from './columns';
 
-import {
-  usePagination,
-  useStakeholders,
-  useStakeholdersStore,
-} from '@rahat-ui/query';
+import { usePagination, useStakeholders } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -85,12 +81,13 @@ function StakeholdersView() {
     setPagination(prevPagination);
   }, [showStoredPagination]);
 
-  useStakeholders(projectId, { ...pagination, ...debounceSearch });
+  const { data: stakeholdersData } = useStakeholders(projectId, {
+    ...pagination,
+    ...debounceSearch,
+  });
 
-  const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
-    stakeholders: state.stakeholders,
-    stakeholdersMeta: state.stakeholdersMeta,
-  }));
+  const stakeholders = stakeholdersData?.data ?? [];
+  const stakeholdersMeta = stakeholdersData?.meta;
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useProjectStakeholdersTableColumns(handleStakeholderConflict);
 

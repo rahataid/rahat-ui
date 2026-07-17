@@ -806,3 +806,35 @@ export const getBeneficiariesGroupByUuids = (
 
   return query;
 };
+
+const syncBeneficiaryGroup = async (uuid: UUID) => {
+  const response = await api.post(`/beneficiaries/groups/${uuid}/sync`);
+  return response?.data;
+};
+
+export const useSyncBeneficiaryGroup = () => {
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (uuid: UUID) => syncBeneficiaryGroup(uuid),
+    onSuccess: () => {
+      toast.fire({
+        title: 'Beneficiary sync started for following projects',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while syncing beneficiary group.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};

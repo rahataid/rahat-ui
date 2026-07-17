@@ -95,8 +95,8 @@ function buildRowMapper(logs: LogsData) {
     'Communication Title':
       logs?.communicationDetail?.communicationTitle || 'N/A',
     ...getTypeFields(log, logs),
-    'Triggered Date': logs?.sessionDetails?.createdAt
-      ? dateFormat(logs.sessionDetails.createdAt)
+    'Triggered Date': logs?.sessionDetails?.updatedAt
+      ? dateFormat(logs.sessionDetails.updatedAt)
       : 'N/A',
     'Created Date': log.createdAt ? dateFormat(log.createdAt) : 'N/A',
     'Updated Date': log.updatedAt ? dateFormat(log.updatedAt) : 'N/A',

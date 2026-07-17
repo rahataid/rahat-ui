@@ -23,6 +23,7 @@ import {
   useGetBankCheckStatus,
   useGetBeneficiaryGroup,
   usePagination,
+  useSyncBeneficiaryGroup,
 } from '@rahat-ui/query';
 import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ClientSidePagination from '../../projects/components/client.side.pagination';
@@ -97,6 +98,7 @@ export default function GroupDetailView() {
 
   const isBankTransfer = group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER;
   const { data: bankCheckStatus } = useGetBankCheckStatus(Id, isBankTransfer, clickedValidateBankAccount);
+  const syncBeneficiaryGroup = useSyncBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const tableData = React.useMemo(() => {
@@ -217,7 +219,7 @@ export default function GroupDetailView() {
             <Heading
               title={group?.data?.name}
               description={
-                'Here is a detailed view of the selected beneficiary group'
+                'Here is a detailed view of the selected beneficiary groups'
               }
               status={capitalizeFirstLetter(groupPurposeName || '')}
             />
@@ -342,6 +344,7 @@ export default function GroupDetailView() {
               iconStyle="bg-white text-secondary-muted"
               title="Project Involved"
               Icon={FolderDot}
+              refresh={() => syncBeneficiaryGroup.mutate(Id)}
             >
               <div className="flex gap-2 flex-wrap">
                 {group?.data?.beneficiaryGroupProject?.map(

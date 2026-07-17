@@ -9,6 +9,8 @@ import Image from 'next/image';
 import { CardHeading } from 'apps/rahat-ui/src/common/card.heading';
 import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizontal-bar';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { DISBURSEMENT_COLORS, formatMethod } from '../utils';
+
 type IProps = {
   title: string;
   subtitle: string;
@@ -30,6 +32,7 @@ type IProps = {
   onTogglePin?: () => void;
   hidePin?: boolean;
   hasExtendedLogic?: boolean;
+  disbursementMethods?: string[];
 };
 
 export default function TriggersPhaseCard({
@@ -53,6 +56,7 @@ export default function TriggersPhaseCard({
   onTogglePin,
   hidePin = false,
   hasExtendedLogic = false,
+  disbursementMethods,
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
   return (
@@ -61,17 +65,7 @@ export default function TriggersPhaseCard({
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start justify-between w-full">
             {/* Pin icon in place of status — next to title */}
-            {/* <Heading
-              title={title}
-              titleStyle="text-xl "
-              description={subtitle}
-              status={isActive ? 'Triggered' : 'Not Triggered'}
-              badgeClassName={`${
-                isActive
-                  ? 'text-red-500 bg-red-100'
-                  : 'text-green-500 bg-green-100'
-              } text-xs px-1`}
-            /> */}
+
             <CardHeading
               title={title}
               titleStyle="text-xl"
@@ -112,6 +106,20 @@ export default function TriggersPhaseCard({
             )}
           </div>
         </div>
+        {!!disbursementMethods?.length && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {disbursementMethods.map((method, i) => (
+              <Badge
+                key={method}
+                className={`${
+                  DISBURSEMENT_COLORS[i % DISBURSEMENT_COLORS.length]
+                } text-[10px] font-medium px-2 py-0.5 rounded-sm`}
+              >
+                {formatMethod(method)}
+              </Badge>
+            ))}
+          </div>
+        )}
         {chartType === 'donut' && (
           <div className="flex justify-center mb-1">
             {totalCharSeries === 0 ? (

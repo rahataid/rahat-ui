@@ -17,7 +17,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { Trash } from 'lucide-react';
 import { DialogComponent } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/details/dialog.reuse';
 import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -34,12 +34,14 @@ export default function EditPhaseView() {
   const router = useRouter();
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
+  const searchParams = useSearchParams();
 
   const updatePhase = useUpdatePhase();
   const deletePhase = useDeletePhase();
   const [isDeleted, setIsDeleted] = useState(false);
   const editPhaseConfirmDialog = useBoolean(false);
-
+  const navigation = searchParams.get('from');
+  const tab = searchParams.get('tab') ?? '';
   const { data: phasesData = [] } = usePhases(projectId);
 
   const { settings } = useProjectSettingsStore((state) => ({
@@ -51,7 +53,7 @@ export default function EditPhaseView() {
   });
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-    'river_basin'
+      'river_basin'
     ];
   const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
     projectId as UUID,
@@ -78,7 +80,10 @@ export default function EditPhaseView() {
     }));
   }, [disbursementMethodsSetting]);
 
-  const triggerStatementPath = `/projects/aa/${projectId}/trigger-statements`;
+  const triggerStatementPath = `/projects/aa/${projectId}/${
+    navigation || 'trigger-statements'
+  }?tab=${tab}`;
+
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
     defaultValues: getAddPhaseDefaultValues(riverBasin || ''),
@@ -126,9 +131,7 @@ export default function EditPhaseView() {
         phasePayload: payload,
       });
       editPhaseConfirmDialog.onFalse();
-      router.push(
-        `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`,
-      );
+      router.push(`/projects/aa/${projectId}/${navigation}?tab=${tab}`);
     } catch (error) {
       console.error('Update phase error:', error);
       editPhaseConfirmDialog.onFalse();
@@ -180,9 +183,7 @@ export default function EditPhaseView() {
   return (
     <>
       <div className="mt-4 px-4">
-        <Back
-          path={`/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`}
-        />
+        <Back path={`/projects/aa/${projectId}/${navigation}?tab=${tab}`} />
       </div>
       <div className="mt-4 px-4 flex items-start justify-between gap-3">
         <Heading

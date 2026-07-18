@@ -73,8 +73,8 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:release-v5.0.0-mcn-demo-2026
-            esatya/rahat-ui:release-v5.0.0-mcn-demo-2026-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/rahat-ui:release-v5.0.0:mcn-demo-2026
+            esatya/rahat-ui:release-v5.0.0:mcn-demo-2026-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
       
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}
@@ -141,8 +141,8 @@ jobs:
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/community-tool-ui:release-v5.0.0-mcn-demo-2026
-            esatya/community-tool-ui:release-v5.0.0-mcn-demo-2026-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/community-tool-ui:release-v5.0.0:mcn-demo-2026
+            esatya/community-tool-ui:release-v5.0.0:mcn-demo-2026-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
 
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}

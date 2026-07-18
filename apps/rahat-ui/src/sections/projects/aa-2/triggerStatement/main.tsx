@@ -41,7 +41,7 @@ export default function TriggerStatementView() {
   const params = useParams();
   const projectId = params.id as UUID;
 
-  const { data: phases } = usePhases(projectId);
+  const { data: phases = [] } = usePhases(projectId);
 
   const triggers = useAATriggerStatements(projectId, { perPage: 9999 });
 

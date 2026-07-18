@@ -375,7 +375,11 @@ export const useSingleBeneficiaryGroup = (
   return query;
 };
 
-export const useBeneficiariesGroups = (uuid: UUID, payload: any, options?: { staleTime?: number }) => {
+export const useBeneficiariesGroups = (
+  uuid: UUID,
+  payload: any,
+  options?: { staleTime?: number },
+) => {
   const q = useProjectAction();
   const { setBeneficiariesGroups, setBeneficiariesGroupsMeta } =
     useBeneficiariesGroupStore((state) => ({

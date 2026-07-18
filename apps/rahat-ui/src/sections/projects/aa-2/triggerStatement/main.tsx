@@ -3,19 +3,13 @@ import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  useAAStationsStore,
-  useAATriggerStatements,
-  usePhases,
-  usePhasesStore,
-} from '@rahat-ui/query';
+import { useAATriggerStatements, usePhases } from '@rahat-ui/query';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 
 const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
@@ -47,11 +41,9 @@ export default function TriggerStatementView() {
   const params = useParams();
   const projectId = params.id as UUID;
 
-  usePhases(projectId);
-  const phases = usePhasesStore((state) => state.phases);
+  const { data: phases = [] } = usePhases(projectId);
 
-  useAATriggerStatements(projectId, { perPage: 9999 });
-  const triggers = useAAStationsStore((state) => state.triggers);
+  const triggers = useAATriggerStatements(projectId, { perPage: 9999 });
 
   const [pinnedPhaseIds, setPinnedPhaseIds] = React.useState<string[]>(() =>
     loadPinnedPhases(projectId),
@@ -68,14 +60,15 @@ export default function TriggerStatementView() {
   };
 
   const sortedPhases = React.useMemo(() => {
+    const automatedPhases = phases.filter((p: any) => p?.isAutomatedActivity);
     return [
-      ...phases.filter((p) => pinnedPhaseIds.includes(p.uuid)),
-      ...phases.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
+      ...automatedPhases.filter((p) => pinnedPhaseIds.includes(p.uuid)),
+      ...automatedPhases.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
     ];
   }, [phases, pinnedPhaseIds]);
 
   const triggeredTriggers = React.useMemo(
-    () => triggers?.filter((t) => t.isTriggered),
+    () => triggers?.filter((t: any) => t.isTriggered),
     [triggers],
   );
 
@@ -116,16 +109,6 @@ export default function TriggerStatementView() {
           title="Trigger Statement"
           description="Track all the trigger reports here"
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
-          <IconLabelBtn
-            Icon={Plus}
-            name="Add Phase"
-            handleClick={handleAddPhase}
-          />
-        </RoleAuth>
       </div>
 
       <div className="flex gap-1 flex-1 overflow-hidden mt-4">
@@ -163,6 +146,9 @@ export default function TriggerStatementView() {
                   isPinned={pinnedPhaseIds.includes(d.uuid)}
                   onTogglePin={() => togglePinPhase(d.uuid)}
                   hasExtendedLogic={!!d?.extendedTriggerLogic}
+                  disbursementMethods={
+                    d?.disbursementConfig?.disbursementMethods
+                  }
                 />
               ))}
 

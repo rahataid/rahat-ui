@@ -50,7 +50,11 @@ export const useNavItems = () => {
 
     return navItem;
   });
-
+  mappedNavItems.push({
+    title: 'IVR',
+    path: `/projects/aa/${projectId}/ivr`,
+    icon: resolveIcon('PhoneCall'),
+  });
   const navItems: NavItem[] = [
     {
       title: 'Project Details',

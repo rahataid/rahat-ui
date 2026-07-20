@@ -4,15 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { IvrFlow } from './ivr.flow.types';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  X,
-  Phone,
-  Delete,
-  ChevronLeft,
-  Play,
-  Pause,
-  Volume2,
-} from 'lucide-react';
+import { X, Play, Pause, PhoneOff } from 'lucide-react';
 
 function findNodeById(root: any, id: string): any {
   if (root.id === id) return root;
@@ -163,7 +155,7 @@ export default function SimulationModal({
   };
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-background rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-background rounded-sm shadow-lg w-full max-w-md">
         {/* Header */}
         <div className="flex justify-between items-start border-b p-4">
           <div>
@@ -173,7 +165,12 @@ export default function SimulationModal({
             </p>
           </div>
 
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-sm"
+            onClick={onClose}
+          >
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -181,7 +178,12 @@ export default function SimulationModal({
         <div className="p-4 space-y-4">
           {/* Controls */}
           <div className="flex justify-between items-center">
-            <Button variant="outline" size="sm" onClick={handleReset}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-sm"
+              onClick={handleReset}
+            >
               Reset
             </Button>
 
@@ -190,6 +192,7 @@ export default function SimulationModal({
                 <Button
                   variant="outline"
                   size="icon"
+                  className="rounded-sm"
                   onClick={() =>
                     isPlaying ? stopAudio() : playAudio(audioUrl)
                   }
@@ -201,9 +204,14 @@ export default function SimulationModal({
                   )}
                 </Button>
 
-                <Button variant="destructive" size="sm" onClick={handleHangup}>
-                  <Phone className="w-4 h-4 mr-1" />
-                  End
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-sm text-red-500 hover:text-red-600"
+                  onClick={handleHangup}
+                >
+                  <PhoneOff className="w-4 h-4 mr-1" />
+                  End Call
                 </Button>
               </div>
             )}
@@ -223,7 +231,7 @@ export default function SimulationModal({
           </div>
 
           {/* Prompt */}
-          <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
+          <div className="rounded-sm border bg-muted/30 p-3 space-y-3">
             <div>
               <div className="text-xs text-muted-foreground mb-1">
                 Current Prompt
@@ -248,7 +256,7 @@ export default function SimulationModal({
                 <Button
                   key={key}
                   variant="outline"
-                  className="h-12 text-lg font-semibold"
+                  className="h-12 text-lg font-semibold rounded-sm"
                   onClick={() => handleDTMF(key)}
                 >
                   {key}
@@ -261,7 +269,7 @@ export default function SimulationModal({
           <div>
             <div className="font-medium mb-2">Call History</div>
 
-            <div className="rounded-lg border bg-muted/30 p-3 max-h-40 overflow-y-auto space-y-2">
+            <div className="rounded-sm border bg-muted/30 p-3 max-h-40 overflow-y-auto space-y-2">
               {callLog.map((log, index) => (
                 <div
                   key={index}
@@ -284,7 +292,12 @@ export default function SimulationModal({
 
           {/* Footer */}
           <div className="flex justify-end">
-            <Button variant="outline" size="sm" onClick={onClose}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-sm"
+              onClick={onClose}
+            >
               Close
             </Button>
           </div>

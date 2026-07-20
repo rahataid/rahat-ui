@@ -100,28 +100,6 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={undo}
-              disabled={!canUndo()}
-              title="Undo"
-            >
-              <Undo2 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={redo}
-              disabled={!canRedo()}
-              title="Redo"
-            >
-              <Redo2 className="w-4 h-4" />
-            </Button>
-
-          </div>
         </div>
       </div>
 
@@ -159,7 +137,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="editor" className="flex-1 overflow-y-auto m-0 p-0">
+            <TabsContent
+              value="editor"
+              className="flex-1 overflow-y-auto m-0 p-0"
+            >
               {selectedNodeId ? (
                 <NodeEditorPanel
                   flow={flow}
@@ -173,7 +154,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               )}
             </TabsContent>
 
-            <TabsContent value="json" className="flex-1 overflow-hidden m-0 p-0">
+            <TabsContent
+              value="json"
+              className="flex-1 overflow-hidden m-0 p-0"
+            >
               <JSONPreviewPanel flow={flow} />
             </TabsContent>
           </Tabs>

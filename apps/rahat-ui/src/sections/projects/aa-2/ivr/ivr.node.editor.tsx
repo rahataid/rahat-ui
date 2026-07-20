@@ -14,7 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Link2, Mic, Upload, Play, Pencil, Square, Loader2, Pause } from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { Link2, Mic, Upload, Play, Pencil, Square, Pause } from 'lucide-react';
 
 function findNodeById(root: IvrFlowNode, id: string): IvrFlowNode | null {
   if (root.id === id) return root;
@@ -70,7 +76,10 @@ function AudioPreviewPlayer({
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
+      audioRef.current
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => {});
     }
   };
 
@@ -83,12 +92,23 @@ function AudioPreviewPlayer({
   };
 
   return (
-    <div className="p-3 border rounded-lg space-y-2">
+    <div className="p-4 border rounded-sm space-y-2">
       <div className="flex items-center gap-2">
-        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0" onClick={toggle}>
-          {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-8 w-8 p-0 shrink-0"
+          onClick={toggle}
+        >
+          {playing ? (
+            <Pause className="w-4 h-4" />
+          ) : (
+            <Play className="w-4 h-4" />
+          )}
         </Button>
-        <span className="text-xs text-muted-foreground w-10 tabular-nums shrink-0">{fmt(current)}</span>
+        <span className="text-xs text-muted-foreground w-10 tabular-nums shrink-0">
+          {fmt(current)}
+        </span>
         <input
           type="range"
           min={0}
@@ -97,11 +117,18 @@ function AudioPreviewPlayer({
           onChange={seek}
           className="flex-1 h-1 accent-primary cursor-pointer"
         />
-        <span className="text-xs text-muted-foreground w-10 tabular-nums shrink-0">{fmt(duration)}</span>
+        <span className="text-xs text-muted-foreground w-10 tabular-nums shrink-0">
+          {fmt(duration)}
+        </span>
       </div>
       <div className="text-xs text-muted-foreground truncate">{fileName}</div>
       <div className="flex gap-2">
-        <Button size="sm" variant="default" className="gap-1.5 flex-1" onClick={onUpload}>
+        <Button
+          size="sm"
+          variant="default"
+          className="gap-1.5 flex-1"
+          onClick={onUpload}
+        >
           <Upload className="w-3.5 h-3.5" />
           {uploadLabel}
         </Button>
@@ -142,7 +169,9 @@ export default function NodeEditorPanel({
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const breadcrumbPath = getBreadcrumbPath(flow.rootMenu, selectedNodeId);
 
-  const [recordingPhase, setRecordingPhase] = useState<'idle' | 'recording' | 'done'>('idle');
+  const [recordingPhase, setRecordingPhase] = useState<
+    'idle' | 'recording' | 'done'
+  >('idle');
   const [recordingTimer, setRecordingTimer] = useState(0);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [streamRef, setStreamRef] = useState<MediaStream | null>(null);
@@ -151,7 +180,9 @@ export default function NodeEditorPanel({
   const [pendingUploadUrl, setPendingUploadUrl] = useState('');
   const [pendingUploadName, setPendingUploadName] = useState('');
   const [recordedPreviewUrl, setRecordedPreviewUrl] = useState('');
-  const [promptMode, setPromptMode] = useState<'url' | 'record' | 'upload' | null>(null);
+  const [promptMode, setPromptMode] = useState<
+    'url' | 'record' | 'upload' | null
+  >(null);
 
   const resetRecordingState = () => {
     setRecordingPhase('idle');
@@ -202,7 +233,10 @@ export default function NodeEditorPanel({
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== 'inactive'
+    ) {
       mediaRecorderRef.current.stop();
     }
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
@@ -256,7 +290,10 @@ export default function NodeEditorPanel({
     previewAudioRef.current = audio;
     audio.onended = () => setIsPreviewPlaying(false);
     audio.onerror = () => setIsPreviewPlaying(false);
-    audio.play().then(() => setIsPreviewPlaying(true)).catch(() => setIsPreviewPlaying(false));
+    audio
+      .play()
+      .then(() => setIsPreviewPlaying(true))
+      .catch(() => setIsPreviewPlaying(false));
   };
 
   const formatTime = (secs: number) => {
@@ -291,7 +328,13 @@ export default function NodeEditorPanel({
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 flex-wrap">
           {breadcrumbPath.map((label, idx) => (
             <div key={idx} className="flex items-center gap-2">
-              <span className={idx === breadcrumbPath.length - 1 ? 'text-foreground font-medium' : ''}>
+              <span
+                className={
+                  idx === breadcrumbPath.length - 1
+                    ? 'text-foreground font-medium'
+                    : ''
+                }
+              >
                 {label}
               </span>
               {idx < breadcrumbPath.length - 1 && (
@@ -307,8 +350,9 @@ export default function NodeEditorPanel({
           </div>
           <Button
             variant="outline"
+            size="sm"
             onClick={() => setIsEditing(true)}
-            className="gap-2"
+            className="gap-2 rounded-sm"
           >
             <Pencil className="w-4 h-4" />
             Edit
@@ -320,10 +364,19 @@ export default function NodeEditorPanel({
         <div className="space-y-4">
           <h4 className="font-semibold">Audio Prompt</h4>
           {selectedItem.prompt ? (
-            <div className="bg-muted p-4 rounded-lg space-y-3">
+            <div className="border rounded-sm p-4 space-y-3">
               <div className="flex items-center gap-4">
-                <Button size="sm" variant="outline" className="gap-2" onClick={() => togglePreview(selectedItem.prompt)}>
-                  {isPreviewPlaying ? <Square className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => togglePreview(selectedItem.prompt)}
+                >
+                  {isPreviewPlaying ? (
+                    <Square className="w-3 h-3" />
+                  ) : (
+                    <Play className="w-3 h-3" />
+                  )}
                   {isPreviewPlaying ? 'Stop' : 'Preview'}
                 </Button>
                 <span className="text-xs text-muted-foreground truncate flex-1">
@@ -336,7 +389,7 @@ export default function NodeEditorPanel({
               </div>
             </div>
           ) : (
-            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-sm text-yellow-900">
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-sm text-sm text-yellow-900">
               No prompt set — click Edit to add one
             </div>
           )}
@@ -349,7 +402,7 @@ export default function NodeEditorPanel({
               {selectedItem.children.map((child) => (
                 <div
                   key={child.id}
-                  className="flex items-center justify-between p-3 bg-muted rounded"
+                  className="flex items-center justify-between p-3 border rounded-sm"
                 >
                   <div className="flex items-center gap-3">
                     <span className="font-mono font-bold text-lg">
@@ -371,15 +424,15 @@ export default function NodeEditorPanel({
         <div className="space-y-3">
           <h4 className="font-semibold">Settings</h4>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between p-3 border rounded-sm">
               <span className="text-sm">Hangup After Action</span>
               <span>{selectedItem.hangup ? 'Yes' : 'No'}</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between p-3 border rounded-sm">
               <span className="text-sm">Digit Key</span>
               <span className="font-mono">{selectedItem.digit || '—'}</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted rounded">
+            <div className="flex items-center justify-between p-3 border rounded-sm">
               <span className="text-sm">Webhook URL</span>
               <span className="text-sm text-muted-foreground truncate ml-2">
                 {selectedItem.webhookUrl || '—'}
@@ -396,7 +449,13 @@ export default function NodeEditorPanel({
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 flex-wrap">
         {breadcrumbPath.map((label, idx) => (
           <div key={idx} className="flex items-center gap-2">
-            <span className={idx === breadcrumbPath.length - 1 ? 'text-foreground font-medium' : ''}>
+            <span
+              className={
+                idx === breadcrumbPath.length - 1
+                  ? 'text-foreground font-medium'
+                  : ''
+              }
+            >
               {label}
             </span>
             {idx < breadcrumbPath.length - 1 && (
@@ -408,7 +467,12 @@ export default function NodeEditorPanel({
 
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Edit Node</h3>
-        <Button variant="outline" onClick={() => setIsEditing(false)}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-sm"
+          onClick={() => setIsEditing(false)}
+        >
           Done
         </Button>
       </div>
@@ -456,123 +520,131 @@ export default function NodeEditorPanel({
 
       <div className="space-y-3">
         <Label>Audio Prompt</Label>
-        <div className="flex gap-2">
-          <Button
-            variant={promptMode === 'url' ? 'default' : 'outline'}
-            size="sm"
-            className="gap-2 flex-1"
-            onClick={() => {
+        <Tabs
+          value={promptMode || ''}
+          onValueChange={(value) => {
+            const v = value as 'url' | 'record' | 'upload';
+            if (v === 'url') {
               resetRecordingState();
               setPromptMode('url');
-            }}
-          >
-            <Link2 className="w-4 h-4" />
-            URL
-          </Button>
-          <Button
-            variant={promptMode === 'record' ? 'default' : 'outline'}
-            size="sm"
-            className="gap-2 flex-1"
-            onClick={() => {
+            } else if (v === 'record') {
               setPendingUploadUrl('');
               setPendingUploadName('');
               setPromptMode('record');
-            }}
-          >
-            <Mic className="w-4 h-4" />
-            Record
-          </Button>
-          <Button
-            variant={promptMode === 'upload' ? 'default' : 'outline'}
-            size="sm"
-            className="gap-2 flex-1"
-            onClick={() => {
+            } else if (v === 'upload') {
               cancelRecording();
               setPromptMode('upload');
-            }}
-          >
-            <Upload className="w-4 h-4" />
-            Upload
-          </Button>
-        </div>
-
-        {promptMode === 'url' && (
-          <Input
-            id="prompt-url-input"
-            value={selectedItem.prompt}
-            onChange={(e) => handleUpdate({ prompt: e.target.value })}
-            placeholder="https://example.com/audio.mp3"
-            className="text-xs"
-          />
-        )}
-
-        {promptMode === 'record' && (
-          <div className="space-y-2">
-            {recordingPhase === 'idle' && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9 rounded-full"
-                onClick={startRecording}
-              >
-                <Mic className="w-4 h-4" />
-              </Button>
-            )}
-            {recordingPhase === 'recording' && (
-              <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-sm font-mono font-bold">{formatTime(recordingTimer)}</span>
-                <Button size="sm" variant="destructive" className="gap-2 ml-auto" onClick={stopRecording}>
-                  <Square className="w-4 h-4" />
-                  Stop
-                </Button>
-              </div>
-            )}
-            {recordingPhase === 'done' && recordedPreviewUrl && (
-              <AudioPreviewPlayer
-                src={recordedPreviewUrl}
-                fileName={`Recorded ${formatTime(recordingTimer)}`}
-                onUpload={uploadRecorded}
-                onCancel={cancelRecording}
-                uploadLabel={uploadLabel}
-              />
-            )}
-            {selectedItem.prompt.startsWith('blob:') && recordingPhase === 'idle' && (
-              <p className="text-xs text-green-600 text-center">Currently using recorded audio</p>
-            )}
-          </div>
-        )}
-
-        {promptMode === 'upload' && (
-          <div className="space-y-2">
-            {!pendingUploadUrl ? (
-              <div
-                className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  Click to browse or drag audio file here
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">MP3, WAV, OGG, WEBM</p>
-              </div>
-            ) : (
-              <AudioPreviewPlayer
-                src={pendingUploadUrl}
-                fileName={pendingUploadName}
-                onUpload={uploadFile}
-                onCancel={cancelUpload}
-              />
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/*"
-              className="hidden"
-              onChange={handleFileSelected}
+            }
+          }}
+        >
+          <TabsList className="border bg-secondary rounded w-full">
+            <TabsTrigger
+              className="w-full data-[state=active]:bg-white gap-2"
+              value="url"
+            >
+              <Link2 className="w-4 h-4" /> URL
+            </TabsTrigger>
+            <TabsTrigger
+              className="w-full data-[state=active]:bg-white gap-2"
+              value="record"
+            >
+              <Mic className="w-4 h-4" /> Record
+            </TabsTrigger>
+            <TabsTrigger
+              className="w-full data-[state=active]:bg-white gap-2"
+              value="upload"
+            >
+              <Upload className="w-4 h-4" /> Upload
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="url">
+            <Input
+              id="prompt-url-input"
+              value={selectedItem.prompt}
+              onChange={(e) => handleUpdate({ prompt: e.target.value })}
+              placeholder="https://example.com/audio.mp3"
+              className="text-xs"
             />
-          </div>
-        )}
+          </TabsContent>
+          <TabsContent value="record">
+            <div className="space-y-2">
+              {recordingPhase === 'idle' && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 rounded-full"
+                  onClick={startRecording}
+                >
+                  <Mic className="w-4 h-4" />
+                </Button>
+              )}
+              {recordingPhase === 'recording' && (
+                <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-sm">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-sm font-mono font-bold">
+                    {formatTime(recordingTimer)}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="gap-2 ml-auto"
+                    onClick={stopRecording}
+                  >
+                    <Square className="w-4 h-4" />
+                    Stop
+                  </Button>
+                </div>
+              )}
+              {recordingPhase === 'done' && recordedPreviewUrl && (
+                <AudioPreviewPlayer
+                  src={recordedPreviewUrl}
+                  fileName={`Recorded ${formatTime(recordingTimer)}`}
+                  onUpload={uploadRecorded}
+                  onCancel={cancelRecording}
+                  uploadLabel={uploadLabel}
+                />
+              )}
+              {selectedItem.prompt.startsWith('blob:') &&
+                recordingPhase === 'idle' && (
+                  <p className="text-xs text-green-600 text-center">
+                    Currently using recorded audio
+                  </p>
+                )}
+            </div>
+          </TabsContent>
+          <TabsContent value="upload">
+            <div className="space-y-2">
+              {!pendingUploadUrl ? (
+                <div
+                  className="border-2 border-dashed border-muted-foreground/30 rounded-sm p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Click to browse or drag audio file here
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    MP3, WAV, OGG, WEBM
+                  </p>
+                </div>
+              ) : (
+                <AudioPreviewPlayer
+                  src={pendingUploadUrl}
+                  fileName={pendingUploadName}
+                  onUpload={uploadFile}
+                  onCancel={cancelUpload}
+                />
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="audio/*"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <div className="space-y-3">
@@ -586,7 +658,7 @@ export default function NodeEditorPanel({
             selectedItem.children.map((child) => (
               <div
                 key={child.id}
-                className="flex items-center gap-3 p-2 bg-muted rounded text-sm"
+                className="flex items-center gap-3 p-2 border rounded-sm text-sm"
               >
                 <span className="font-mono font-bold w-8 text-center">
                   {child.digit || '?'}
@@ -600,7 +672,7 @@ export default function NodeEditorPanel({
 
       <div className="space-y-3">
         <Label>Hangup After Action</Label>
-        <div className="flex items-center justify-between p-3 bg-muted rounded">
+        <div className="flex items-center justify-between p-3 border rounded-sm">
           <span className="text-sm">End call after this action</span>
           <Switch
             checked={selectedItem.hangup}

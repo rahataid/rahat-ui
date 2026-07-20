@@ -48,6 +48,9 @@ export default function SimulationModal({
   const [totalInputs, setTotalInputs] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioError, setAudioError] = useState(false);
+  const [callEnded, setCallEnded] = useState(false);
+  const [lastDigit, setLastDigit] = useState('');
+  const [callStarted, setCallStarted] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const currentNode = findNodeById(flow.rootMenu, currentNodeId);
@@ -95,6 +98,7 @@ export default function SimulationModal({
   }, [stopAudio]);
 
   const handleDTMF = (key: string) => {
+    setLastDigit(key);
     setInputBuffer((prev) => prev + key);
     setTotalInputs((prev) => prev + 1);
 
@@ -135,6 +139,8 @@ export default function SimulationModal({
   }, [callPath, flow.rootMenu, stopAudio]);
 
   const handleHangup = () => {
+    setCallEnded(true);
+    stopAudio();
     stopAudio();
     setCallLog((prev) => [
       ...prev,
@@ -145,167 +151,142 @@ export default function SimulationModal({
 
   const dialPad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'];
 
+  const handleReset = () => {
+    stopAudio();
+    setCallEnded(false);
+    setLastDigit('');
+    setCurrentNodeId(flow.rootMenu.id);
+    setCallPath([flow.rootMenu.id]);
+    setInputBuffer('');
+    setTotalInputs(0);
+    setCallLog([`[START] ${flow.rootMenu.label}`]);
+  };
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-background rounded-lg shadow-lg w-full max-w-md">
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-bold">IVR Simulation</h2>
+        {/* Header */}
+        <div className="flex justify-between items-start border-b p-4">
+          <div>
+            <h2 className="text-lg font-bold">IVR Flow Simulator</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Test your IVR flow by navigating through it.
+            </p>
+          </div>
+
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="p-6 space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-1 flex-wrap text-xs font-mono bg-muted p-2 rounded">
-              {callPath.map((nodeId, idx) => {
-                const node = findNodeById(flow.rootMenu, nodeId);
-                return (
-                  <div key={nodeId} className="flex items-center gap-1">
-                    <span className="truncate max-w-[100px]">
-                      {node?.label}
-                    </span>
-                    {idx < callPath.length - 1 && (
-                      <span className="text-muted-foreground">&rarr;</span>
-                    )}
-                  </div>
-                );
-              })}
+        <div className="p-4 space-y-4">
+          {/* Controls */}
+          <div className="flex justify-between items-center">
+            <Button variant="outline" size="sm" onClick={handleReset}>
+              Reset
+            </Button>
+
+            {!callEnded && (
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() =>
+                    isPlaying ? stopAudio() : playAudio(audioUrl)
+                  }
+                >
+                  {isPlaying ? (
+                    <Pause className="w-4 h-4" />
+                  ) : (
+                    <Play className="w-4 h-4" />
+                  )}
+                </Button>
+
+                <Button variant="destructive" size="sm" onClick={handleHangup}>
+                  <Phone className="w-4 h-4 mr-1" />
+                  End
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Status */}
+          <div className="flex justify-between items-center">
+            <span className="font-medium">Status</span>
+
+            <Badge
+              className={
+                callEnded ? 'bg-red-500 text-white' : 'bg-black text-white'
+              }
+            >
+              {callEnded ? 'Ended' : 'Active'}
+            </Badge>
+          </div>
+
+          {/* Prompt */}
+          <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">
+                Current Prompt
+              </div>
+
+              <div className="text-sm truncate">{audioUrl || 'No prompt'}</div>
             </div>
 
-            <div className="bg-primary/10 p-4 rounded-lg border border-primary">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-xs text-muted-foreground font-semibold">
-                  Playing:
-                </div>
-                {audioUrl && (
-                  <div className="flex items-center gap-2">
-                    {isPlaying ? (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={stopAudio}
-                        className="h-6 w-6 p-0"
-                      >
-                        <Pause className="w-3 h-3" />
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => playAudio(audioUrl)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <Play className="w-3 h-3" />
-                      </Button>
-                    )}
-                    {isPlaying && (
-                      <Volume2 className="w-3 h-3 text-green-600 animate-pulse" />
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="text-lg font-semibold">{currentNode?.label}</div>
-              {audioUrl ? (
-                <div className="text-xs mt-1 text-muted-foreground truncate">
-                  {audioUrl}
-                </div>
-              ) : (
-                <div className="text-xs mt-1 text-yellow-600">
-                  No audio URL set — no audio to play
-                </div>
-              )}
-              {audioError && (
-                <div className="text-xs mt-1 text-red-500">
-                  Failed to load audio from URL
-                </div>
-              )}
-              {availableOptions.length > 0 && (
-                <div className="mt-3 space-y-1">
-                  <div className="text-xs text-muted-foreground font-semibold">
-                    Available Options:
-                  </div>
-                  {availableOptions.map((opt) => (
-                    <div key={opt.digit} className="text-sm">
-                      <Badge variant="outline" className="mr-2">
-                        {opt.digit}
-                      </Badge>
-                      {opt.label}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {currentNode?.hangup && (
-                <div className="mt-2 text-xs text-red-500 font-semibold">
-                  This node will hang up after playing
-                </div>
-              )}
-            </div>
+            <div className="flex justify-between items-center">
+              <Badge variant="outline">
+                {audioError ? 'Failed' : isPlaying ? 'Playing' : 'Ready'}
+              </Badge>
 
-            <div className="bg-secondary p-3 rounded-lg border border-secondary/50">
-              <div className="text-xs text-muted-foreground mb-1 font-semibold">
-                Entered:
-              </div>
-              <div className="text-3xl font-mono font-bold tracking-wider">
-                {inputBuffer || '\u2014'}
-              </div>
-            </div>
-
-            <div className="bg-muted p-3 rounded-lg max-h-36 overflow-y-auto border border-border">
-              <div className="text-xs text-muted-foreground mb-2 font-semibold">
-                Call Log:
-              </div>
-              <div className="space-y-1 font-mono text-xs">
-                {callLog.map((log, idx) => (
-                  <div key={idx} className="text-muted-foreground">
-                    {log}
-                  </div>
-                ))}
-              </div>
+              {lastDigit && <Badge variant="secondary">{lastDigit}</Badge>}
             </div>
           </div>
 
-          <div className="space-y-3">
+          {/* Keypad */}
+          {!callEnded && (
             <div className="grid grid-cols-3 gap-2">
               {dialPad.map((key) => (
                 <Button
                   key={key}
-                  onClick={() => handleDTMF(key)}
                   variant="outline"
-                  className="h-12 text-lg font-bold hover:bg-primary hover:text-primary-foreground"
+                  className="h-12 text-lg font-semibold"
+                  onClick={() => handleDTMF(key)}
                 >
                   {key}
                 </Button>
               ))}
             </div>
+          )}
 
-            <div className="flex gap-2">
-              <Button
-                onClick={handleBackspace}
-                variant="outline"
-                className="flex-1"
-              >
-                <Delete className="w-4 h-4 mr-2" />
-                Clear
-              </Button>
-              <Button
-                onClick={handleBack}
-                disabled={callPath.length <= 1}
-                variant="outline"
-                className="flex-1"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-              <Button
-                onClick={handleHangup}
-                variant="destructive"
-                className="flex-1"
-              >
-                <Phone className="w-4 h-4 mr-2" />
-                Hangup
-              </Button>
+          {/* History */}
+          <div>
+            <div className="font-medium mb-2">Call History</div>
+
+            <div className="rounded-lg border bg-muted/30 p-3 max-h-40 overflow-y-auto space-y-2">
+              {callLog.map((log, index) => (
+                <div
+                  key={index}
+                  className={`text-xs ${
+                    log.includes('[END]')
+                      ? 'text-red-500'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {log
+                    .replace('[START]', 'Started call')
+                    .replace('[INPUT]', 'Pressed')
+                    .replace('[BACK]', 'Back')
+                    .replace('[INVALID]', 'Invalid')
+                    .replace('[END]', 'Call ended')}
+                </div>
+              ))}
             </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-end">
+            <Button variant="outline" size="sm" onClick={onClose}>
+              Close
+            </Button>
           </div>
         </div>
       </div>

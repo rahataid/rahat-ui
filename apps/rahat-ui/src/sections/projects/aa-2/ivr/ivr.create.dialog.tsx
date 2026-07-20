@@ -45,9 +45,7 @@ export default function CreateIVRDialog({
     defaultValues: { name: '', description: '' },
   });
 
-  const onSubmit = async (
-    values: z.infer<typeof CreateIVRFormSchema>,
-  ) => {
+  const onSubmit = async (values: z.infer<typeof CreateIVRFormSchema>) => {
     try {
       createFlow(values.name, values.description || undefined);
       form.reset();
@@ -61,7 +59,7 @@ export default function CreateIVRDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button size="sm" className="gap-2 rounded-sm">
           <Plus className="w-4 h-4" />
           New IVR
         </Button>
@@ -108,11 +106,15 @@ export default function CreateIVRDialog({
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
+                className="rounded-sm"
                 onClick={() => setOpen(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit">Create</Button>
+              <Button type="submit" size="sm" className="rounded-sm">
+                Create
+              </Button>
             </div>
           </form>
         </Form>

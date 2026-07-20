@@ -50,7 +50,7 @@ export default function JSONPreviewPanel({ flow }: JSONPreviewPanelProps) {
           size="sm"
           variant="outline"
           onClick={handleCopy}
-          className="gap-2"
+          className="gap-2 rounded-sm"
         >
           {copied ? (
             <Check className="w-4 h-4 text-green-600" />

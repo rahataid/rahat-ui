@@ -85,9 +85,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   }
 
   return (
-    <div className="h-[calc(100vh-80px)] bg-secondary flex flex-col">
+    <div className="h-[calc(100vh-80px)] flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-border px-6 py-3">
+      <div className="bg-white border-b px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={handleBack}>
@@ -126,9 +126,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden gap-2 p-2">
+      <div className="flex flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
         {/* Left - Tree Panel */}
-        <div className="w-1/2 bg-white rounded-lg border border-border overflow-hidden flex flex-col">
+        <div className="w-1/2 bg-white rounded-sm border overflow-hidden flex flex-col">
           <TreePanel
             flow={flow}
             selectedNodeId={selectedNodeId}
@@ -140,9 +140,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         </div>
 
         {/* Right - Editor + JSON Preview */}
-        <div className="w-1/2 bg-white rounded-lg border border-border overflow-hidden flex flex-col">
+        <div className="w-1/2 bg-white rounded-sm border overflow-hidden flex flex-col">
           <Tabs defaultValue="editor" className="flex flex-col h-full">
-            <TabsList className="w-full justify-start rounded-none border-b border-border bg-muted/50 p-0">
+            <TabsList className="w-full justify-start rounded-none border-b bg-muted/50 p-0">
               <TabsTrigger
                 value="editor"
                 className="gap-2 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground"

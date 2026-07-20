@@ -48,7 +48,7 @@ function TreeItem({
     <div>
       <div
         className={cn(
-          'px-4 py-3 flex items-center gap-2 hover:bg-muted/50 cursor-pointer rounded-lg border mb-1',
+          'px-4 py-3 flex items-center gap-2 hover:bg-muted/50 cursor-pointer rounded-sm border mb-1',
           isSelected
             ? 'bg-muted/80 border-foreground/20'
             : 'border-transparent',
@@ -106,7 +106,7 @@ function TreeItem({
       </div>
 
       {hasChildren && isExpanded && (
-        <div className="ml-4 border-l border-border pl-2">
+        <div className="ml-4 border-l pl-2">
           {item.children.map((child) => (
             <TreeItem
               key={child.id}
@@ -133,11 +133,11 @@ export default function TreePanel({
   onSimulate,
 }: TreePanelProps) {
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-        <h3 className="text-lg font-bold">Menu Structure</h3>
+    <div className="flex flex-col h-full">
+      <div className="px-4 py-4 border-b flex items-center justify-between">
+        <h3 className="text-lg font-bold">IVR Flow</h3>
         <Button
-          className="gap-2 bg-green-600 hover:bg-green-700"
+          className="gap-2 bg-green-600 hover:bg-green-700 rounded-sm"
           size="sm"
           onClick={onSimulate}
         >

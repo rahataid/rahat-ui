@@ -3,17 +3,15 @@
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import DynamicPieChart from '../../../components/dynamicPieChart';
+import { SECTIONS } from '../utils/dashbord-constants';
 
-const SECTIONS = [
-  { name: 'COOLING_APPLIANCES_AVAILABLE_AT_HOME', title: 'Cooling Appliances Available at Home' },
-  { name: 'SAFE_DRINKING_WATER_AVAILABLE_AT_WORK', title: 'Safe Drinking Water Available at Work' },
-  { name: 'IS_WORKPLACE_SAFE_DURING_EXTREME_HEAT', title: 'Workplace Safe During Extreme Heat' },
-  { name: 'DISTANCE_TO_THE_NEAREST_HEALTH_FACILITY', title: 'Distance to Nearest Health Facility' },
-  { name: 'TYPE_OF_HOUSE', title: 'Type of House' },
-];
-
-export default function HeatwaveSpecific({ benefStats }: { benefStats: any[] }) {
-  const getStat = (name: string) => benefStats.find((s: any) => s.name === name);
+export default function HeatwaveSpecific({
+  benefStats,
+}: {
+  benefStats: any[];
+}) {
+  const getStat = (name: string) =>
+    benefStats.find((s: any) => s.name === name);
 
   const barSections = SECTIONS.filter((s) => {
     const stat = getStat(s.name);
@@ -25,7 +23,11 @@ export default function HeatwaveSpecific({ benefStats }: { benefStats: any[] }) 
 
   return (
     <div className="flex flex-col gap-4 mt-4">
-      <Heading title="Heat Wave Survey Data" titleStyle="text-lg" description="Household survey responses" />
+      <Heading
+        title="Heat Wave Survey Data"
+        titleStyle="text-lg"
+        description="Household survey responses"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {barSections.map((section) => {
@@ -33,13 +35,19 @@ export default function HeatwaveSpecific({ benefStats }: { benefStats: any[] }) 
           const categories = stat.data.map((d: any) => d.id);
           const series = stat.data.map((d: any) => d.count);
           return (
-            <div key={section.name} className="border rounded-sm p-2 flex flex-col h-full min-h-[260px]">
+            <div
+              key={section.name}
+              className="border rounded-sm p-2 flex flex-col h-full min-h-[260px]"
+            >
               <h1 className="text-sm font-medium mb-1">{section.title}</h1>
               <div className="flex-1">
                 {categories.length <= 2 ? (
                   <div className="w-full h-full flex items-center justify-center p-2">
                     <DynamicPieChart
-                      pieData={stat.data.map((d: any) => ({ label: d.id, value: d.count }))}
+                      pieData={stat.data.map((d: any) => ({
+                        label: d.id,
+                        value: d.count,
+                      }))}
                     />
                   </div>
                 ) : (

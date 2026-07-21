@@ -4,15 +4,7 @@ import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
-
-const chartTitles: Record<string, string> = {
-  DO_YOU_HAVE_ACCESS_TO_MOBILE_PHONES: 'DO_YOU_HAVE_ACCESS_TO_MOBILE_PHONES',
-  DO_YOU_HAVE_ACCESS_TO_INTERNET: 'DO_YOU_HAVE_ACCESS_TO_INTERNET',
-  USE_DIGITAL_WALLETS: 'USE_DIGITAL_WALLETS',
-  TYPE_OF_PHONE: 'TYPE_OF_PHONE',
-  HAVE_ACTIVE_BANK_AC: 'Bank Account Access',
-  SSA_RECIPIENT_IN_HH: 'Social Security Linked to Bank Account',
-};
+import { chartTitles } from '../utils/dashbord-constants';
 
 const defaultColors = ['#00796B', '#CFD8DC', '#4A90E2', '#FFB300'];
 

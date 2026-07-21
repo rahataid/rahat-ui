@@ -46,7 +46,6 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
               label: item.id,
               value: item.count,
             }));
-          // if (!pieData.length) return null;
 
           return (
             <div

@@ -177,7 +177,7 @@ export const useBackFill = (projectUuid: UUID) => {
         queryKey: ['allStats', projectUuid],
       });
       toast.fire({
-        title: 'Back Fill completed successfully',
+        title: 'Stats Data Synced successfully',
         icon: 'success',
       });
     },

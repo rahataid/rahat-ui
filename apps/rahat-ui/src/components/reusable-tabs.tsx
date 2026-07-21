@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -11,10 +11,10 @@ import { cn } from '@rahat-ui/shadcn/src/utils';
 
 type TabItem = {
   value: string;
-  label: React.ReactNode;
-  icon?: React.ReactNode;
-  badge?: React.ReactNode;
-  content: React.ReactNode;
+  label: ReactNode;
+  icon?: ReactNode;
+  badge?: ReactNode;
+  content: ReactNode;
   disabled?: boolean;
 };
 

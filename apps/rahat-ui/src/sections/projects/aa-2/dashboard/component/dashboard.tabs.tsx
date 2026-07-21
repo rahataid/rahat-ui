@@ -81,21 +81,22 @@ export default function DashboardTabs({
     },
   ];
 
-  const dynamicTabs: TabConfig[] = [];
-  if (projectType?.toUpperCase() === 'HEAT_WAVE') {
-    dynamicTabs.push({
+  const projectTabs: Record<string, TabConfig> = {
+    HEAT_WAVE: {
       value: 'heatwave',
       label: 'Heatwave Survey Data',
       content: <HeatwaveSpecific benefStats={benefStats} />,
-    });
-  }
-  if (projectType?.toUpperCase() === 'FLOOD') {
-    dynamicTabs.push({
+    },
+    FLOOD: {
       value: 'flood',
       label: 'Flood Survey Data',
       content: <AccessAndResilienceOverview data={benefStats} />,
-    });
-  }
+    },
+  };
+
+  const dynamicTabs: TabConfig[] = [];
+  const matched = projectTabs[projectType?.toUpperCase() ?? ''];
+  if (matched) dynamicTabs.push(matched);
 
   const allTabs: TabConfig[] = [
     {

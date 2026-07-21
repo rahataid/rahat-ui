@@ -9,9 +9,9 @@ on:
         default: ""
         type: string
       tag_suffix:
-        description: "Tag suffix (e.g. nrcs-training)"
+        description: "Tag suffix (e.g., mcn-demo-2026,nrcs-training)"
         required: true
-        default: "nrcs-training"
+        default: "mcn-training"
         type: string
       vault_secret_path:
         description: "Vault secret path"

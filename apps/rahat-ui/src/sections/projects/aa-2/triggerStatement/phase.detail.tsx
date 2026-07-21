@@ -5,14 +5,7 @@ import {
   IconLabelBtn,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
-import {
-  AlertCircleIcon,
-  AlertTriangle,
-  GitBranch,
-  Plus,
-  SquarePen,
-  Undo2,
-} from 'lucide-react';
+import { AlertCircleIcon, AlertTriangle, Plus, Undo2 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
 import ExtendedTriggerLogicCard from './components/extended-trigger-logic.card';
 import { useParams, useRouter } from 'next/navigation';
@@ -53,12 +46,6 @@ export default function PhaseDetail() {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
   };
 
-  const handleEditPhase = () => {
-    router.push(
-      `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/edit`,
-    );
-  };
-
   const handleConfigureExtendedLogic = () => {
     router.push(
       `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/extended-logic`,
@@ -67,8 +54,6 @@ export default function PhaseDetail() {
 
   const isDisabled =
     !phase?.isActive || !phase?.canRevert || revertPhase.isPending;
-
-  const isEditDisabled = phase?.isActive;
 
   const handleRevertPhase = async () => {
     await revertPhase.mutateAsync({
@@ -122,29 +107,7 @@ export default function PhaseDetail() {
               />
             </TooltipWrapper>
           </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
-            {isEditDisabled ? (
-              <TooltipWrapper
-                tip={'Cannot edit an active phase or a phase with triggers'}
-              >
-                <IconLabelBtn Icon={SquarePen} name="Edit Phase" disabled />
-              </TooltipWrapper>
-            ) : (
-              <TooltipWrapper tip="Edit Phase">
-                <CustomAlertDialog
-                  dialogTrigger={
-                    <IconLabelBtn Icon={SquarePen} name="Edit Phase" />
-                  }
-                  title="Edit Phase"
-                  description="Are you sure you want to edit this phase?"
-                  handleContinueClick={handleEditPhase}
-                />
-              </TooltipWrapper>
-            )}
-          </RoleAuth>
+
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
@@ -220,6 +183,9 @@ export default function PhaseDetail() {
               isActive={phase?.isActive}
               chartType="donut"
               hidePin={true}
+              disbursementMethods={
+                phase?.disbursementConfig?.disbursementMethods
+              }
             />
             {isTriggerLogicEnabled && (
               <ExtendedTriggerLogicCard

@@ -9,9 +9,9 @@ on:
         default: ""
         type: string
       tag_suffix:
-        description: "Tag suffix (e.g., test-load)"
+        description: "Tag suffix (e.g., mcn-demo-2026,nrcs-training)"
         required: true
-        default: "aa-dev"
+        default: "mcn-training"
         type: string
       vault_secret_path:
         description: "Vault secret path"

@@ -64,6 +64,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { GroupPurge } from '@rahataid/community-tool-sdk';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
@@ -134,6 +141,7 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [uniqueField, setUniqueField] = React.useState<string>('none');
 
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
@@ -346,6 +354,7 @@ export default function GroupDetail({ uuid }: IProps) {
         await updateBulkBeneficiary.mutateAsync({
           groupUUID: uuid,
           data: formData,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
         });
       } else {
         const formData = new FormData();
@@ -353,6 +362,7 @@ export default function GroupDetail({ uuid }: IProps) {
         await updateBulkBeneficiary.mutateAsync({
           groupUUID: uuid,
           data: formData,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
         });
       }
 
@@ -572,6 +582,28 @@ export default function GroupDetail({ uuid }: IProps) {
                         }}
                         className="border rounded p-2"
                       />
+                      <div className="flex flex-col space-y-2 mt-4 text-left">
+                        <Label className="text-sm font-medium text-foreground">
+                          Unique Field
+                        </Label>
+                        <Select
+                          value={uniqueField}
+                          onValueChange={setUniqueField}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select unique field" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="phone">Phone</SelectItem>
+                            <SelectItem value="govtIDNumber">
+                              Govt ID Number
+                            </SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="koboId">Kobo ID</SelectItem>
+                            <SelectItem value="none">--- None ---</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </AlertDialogDescription>
                 </AlertDialogHeader>

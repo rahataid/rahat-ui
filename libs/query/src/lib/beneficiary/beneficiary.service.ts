@@ -45,8 +45,10 @@ const removeBeneficiaryGroup = async (uuid: UUID) => {
   return response?.data;
 };
 
-const getBeneficiaryGroup = async (uuid: UUID) => {
-  const response = await api.get(`/beneficiaries/groups/${uuid}`);
+const getBeneficiaryGroup = async (uuid: UUID, payload?: any) => {
+  const response = await api.get(`/beneficiaries/groups/${uuid}`, {
+    params: payload,
+  });
   return response?.data;
 };
 
@@ -728,13 +730,14 @@ export const useTempBeneficiaryImport = () => {
 };
 export const useGetBeneficiaryGroup = (
   uuid: UUID,
+  payload?: any,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   return useQuery(
     {
-      queryKey: [GET_BENEFICIARY_GROUP, uuid],
+      queryKey: [GET_BENEFICIARY_GROUP, uuid, payload],
       // @ts-ignore
-      queryFn: () => getBeneficiaryGroup(uuid),
+      queryFn: () => getBeneficiaryGroup(uuid, payload),
       refetchOnWindowFocus: true,
     },
     queryClient,
@@ -742,19 +745,25 @@ export const useGetBeneficiaryGroup = (
 };
 
 const getBankCheckStatus = async (uuid: UUID) => {
-  const response = await api.get(`/beneficiaries/groups/${uuid}/bank-check-status`);
+  const response = await api.get(
+    `/beneficiaries/groups/${uuid}/bank-check-status`,
+  );
   return response?.data?.data;
 };
 
-export const useGetBankCheckStatus = (uuid: UUID, isBankTransfer: boolean, clickedValidateBankAccount: boolean) => {
+export const useGetBankCheckStatus = (
+  uuid: UUID,
+  isBankTransfer: boolean,
+  clickedValidateBankAccount: boolean,
+) => {
   const qc = useQueryClient();
 
   const query = useQuery({
     queryKey: ['BANK_CHECK_STATUS', uuid],
     queryFn: () => getBankCheckStatus(uuid),
-    enabled: !!uuid && isBankTransfer,  // always fetch once on mount
+    enabled: !!uuid && isBankTransfer, // always fetch once on mount
     refetchInterval: (q) => {
-      if (!clickedValidateBankAccount) return false;  // only poll after button clicked
+      if (!clickedValidateBankAccount) return false; // only poll after button clicked
       const d = q.state.data;
       if (!d || d.pending === 0) return false;
       return 5000;
@@ -796,4 +805,36 @@ export const getBeneficiariesGroupByUuids = (
   });
 
   return query;
+};
+
+const syncBeneficiaryGroup = async (uuid: UUID) => {
+  const response = await api.post(`/beneficiaries/groups/${uuid}/sync`);
+  return response?.data;
+};
+
+export const useSyncBeneficiaryGroup = () => {
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (uuid: UUID) => syncBeneficiaryGroup(uuid),
+    onSuccess: () => {
+      toast.fire({
+        title: 'Beneficiary sync started for following projects',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while syncing beneficiary group.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
 };

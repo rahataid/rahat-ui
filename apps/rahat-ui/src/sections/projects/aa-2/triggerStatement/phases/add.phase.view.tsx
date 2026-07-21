@@ -32,6 +32,7 @@ export default function AddPhaseView() {
   const addPhaseConfirmDialog = useBoolean(false);
 
   const navigation = searchParams.get('from');
+  const tab = searchParams.get('tab') ?? '';
 
   const createPhase = useCreatePhase();
   const { data: phasesData = [] } = usePhases(projectId);
@@ -58,16 +59,17 @@ export default function AddPhaseView() {
 
   const activeYear =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-    'active_year'
+      'active_year'
     ];
 
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-    'river_basin'
+      'river_basin'
     ];
 
-  const triggerStatementPath = `/projects/aa/${projectId}/${navigation || 'trigger-statements'
-    }`;
+  const triggerStatementPath = `/projects/aa/${projectId}/${
+    navigation || 'trigger-statements'
+  }?tab=${tab}`;
 
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),

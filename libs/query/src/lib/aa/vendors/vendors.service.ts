@@ -19,11 +19,14 @@ export const useAAVendorsList = (payload: any) => {
   const { setVendors } = useAAVendorsStore((state) => ({
     setVendors: state.setVendors,
   }));
+
   const query = useQuery({
-    queryKey: ['vendor.list_with_project_data', restPayloadString],
-    placeholderData: keepPreviousData,
+    queryKey: ['vendor.list_with_project_data', projectUUID, restPayloadString],
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === projectUUID ? previousData : undefined,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -50,7 +53,7 @@ export const useGetVendorStellarStats = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.stellar.getVendorStats', restPayloadString],
+    queryKey: ['aa.stellar.getVendorStats', projectUUID, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -103,7 +106,11 @@ export const useGetVendorRedemptionStats = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.vendor.token_redemption.get_stats', restPayloadString],
+    queryKey: [
+      'aa.vendor.token_redemption.get_stats',
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -129,7 +136,11 @@ export const useGetTxnRedemptionRequestList = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.stellar.getRedemptionRequest', restPayloadString],
+    queryKey: [
+      'aa.stellar.getRedemptionRequest',
+      projectUUID,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -179,10 +190,16 @@ export const useGetVendorTokenRedemptionList = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.vendor.token_redemption.list', restPayloadString],
-    placeholderData: keepPreviousData,
+    queryKey: [
+      'aa.vendor.token_redemption.list',
+      projectUUID,
+      restPayloadString,
+    ],
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === projectUUID ? previousData : undefined,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -256,6 +273,7 @@ export const useVendorTokenRedemptionList = (payload: any) => {
   const query = useQuery({
     queryKey: [
       'aa.vendor.token_redemption.get_vendor_redemptions',
+      projectUUID,
       restPayloadString,
     ],
     placeholderData: keepPreviousData,
@@ -371,8 +389,10 @@ export const useGetInkindRedemptionLogs = (payload: {
       inkindType,
       vendorUuid,
     ],
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey?.[1] === projectUuid ? previousData : undefined,
     enabled: !!projectUuid,
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUuid,

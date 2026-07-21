@@ -217,8 +217,9 @@ export default function CommsLogsDetailPage() {
     }
 
     return from === 'activities'
-      ? `/projects/aa/${projectID}/activities/${activityId}${backFrom ? `?from=${backFrom}` : ''
-      }`
+      ? `/projects/aa/${projectID}/activities/${activityId}${
+          backFrom ? `?from=${backFrom}` : ''
+        }`
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
   }, [from, projectID, activityId, tab, subTab, backFrom]);
 
@@ -401,7 +402,7 @@ export default function CommsLogsDetailPage() {
                 <div>
                   <p className="text-sm text-gray-500">Triggered Date</p>
                   <p className="font-medium">
-                    {dateFormat(logs?.sessionDetails?.createdAt)}
+                    {dateFormat(logs?.sessionDetails?.updatedAt)}
                   </p>
                 </div>
 
@@ -436,12 +437,13 @@ export default function CommsLogsDetailPage() {
                   </div>
 
                   <Badge
-                    className={`${logs?.sessionDetails?.status === 'COMPLETED'
-                      ? 'bg-green-100 text-green-600 hover:bg-green-100'
-                      : logs?.sessionDetails?.status === 'PENDING'
+                    className={`${
+                      logs?.sessionDetails?.status === 'COMPLETED'
+                        ? 'bg-green-100 text-green-600 hover:bg-green-100'
+                        : logs?.sessionDetails?.status === 'PENDING'
                         ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
                         : 'bg-red-100 text-red-600 hover:bg-red-100'
-                      } rounded-full px-3`}
+                    } rounded-full px-3`}
                   >
                     {logs?.sessionDetails?.status}
                   </Badge>

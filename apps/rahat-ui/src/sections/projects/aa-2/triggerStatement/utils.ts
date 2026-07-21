@@ -129,3 +129,15 @@ export const calculateRemainingTriggers = (
   }
   return remainingTriggers;
 };
+
+export const DISBURSEMENT_COLORS = [
+  'bg-amber-100 text-amber-700',
+  'bg-green-100 text-green-700',
+  'bg-blue-100 text-blue-700',
+  'bg-purple-100 text-purple-700',
+  'bg-pink-100 text-pink-700',
+  'bg-teal-100 text-teal-700',
+  'bg-orange-100 text-orange-700',
+];
+
+export const formatMethod = (method: string) => method.replace(/_/g, ' ');

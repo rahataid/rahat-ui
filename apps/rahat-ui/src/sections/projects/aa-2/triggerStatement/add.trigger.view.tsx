@@ -24,9 +24,11 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
+  PROJECT_SETTINGS_KEYS,
   useCreateTriggerStatement,
   useGetDataSourceTypes,
   useProjectInfo,
+  useTabConfiguration,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -56,8 +58,15 @@ export const AutomatedFormSchema = z.object({
   triggerStatement: triggerStatementSchema,
 });
 
+const componentMap = {
+  manual: ManualTriggerAddForm,
+  automated: AutomatedTriggerAddForm,
+} as const;
+
+type TriggerTabKey = keyof typeof componentMap;
+
 export default function AddTriggerView() {
-  const [activeTab, setActiveTab] = React.useState<string>('manual');
+  const [activeTab, setActiveTab] = React.useState<string>('');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
   const [isManualDataValid, setIsManualDataValid] =
@@ -83,11 +92,30 @@ export default function AddTriggerView() {
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
   );
-
+  const { data, isLoading: isTabLoading } = useTabConfiguration(
+    projectId as UUID,
+    PROJECT_SETTINGS_KEYS.TRIGGER_TAB,
+  );
   const SOURCES =
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
   const sourceOptions = buildSourceOptions(SOURCES);
   const subtypeOptionsBySource = buildSubtypeOptions(SOURCES);
+
+  const availableTabs = React.useMemo(() => {
+    return (data?.value?.tabs ?? [])
+      .filter((tab: any) => componentMap[tab.value as TriggerTabKey])
+      .map((tab: any) => ({
+        ...tab,
+        component: componentMap[tab.value as TriggerTabKey],
+      }));
+  }, [data]);
+
+  React.useEffect(() => {
+    if (!activeTab && availableTabs.length > 0) {
+      setActiveTab(availableTabs[0].value);
+    }
+  }, [activeTab, availableTabs]);
+  const hasTabs = availableTabs.length > 0;
   // Generating source options ends //
   const addTriggers = useCreateTriggerStatement();
 
@@ -162,7 +190,7 @@ export default function AddTriggerView() {
   };
 
   const handleStoreTriggers = () => {
-    const formHandlers: { [key in 'manual' | 'automated']: () => void } = {
+    const formHandlers = {
       manual: () => {
         manualForm.handleSubmit(handleSubmitManualTrigger)();
         isManualDataValid ? setOpen(true) : setOpen(false);
@@ -173,7 +201,7 @@ export default function AddTriggerView() {
       },
     };
 
-    formHandlers[activeTab as 'manual' | 'automated']?.();
+    formHandlers[activeTab as keyof typeof formHandlers]?.();
   };
 
   const handleAddAnotherTrigger = () => {
@@ -194,7 +222,7 @@ export default function AddTriggerView() {
       isMandatory: !trigger?.isMandatory,
       source: triggerSource
         ? REVERSE_SOURCE_MAPPING[triggerSource] ||
-        trigger?.source?.toLowerCase()
+          trigger?.source?.toLowerCase()
         : trigger?.source?.toLowerCase(),
     };
     const manualData = {
@@ -261,9 +289,33 @@ export default function AddTriggerView() {
         title="Add Trigger"
         description="Fill the form below to create new trigger statement"
       />
-      {isLoadingDataSourceTypes || isProjectInfoLoading ? (
+      {isLoadingDataSourceTypes || isProjectInfoLoading || isTabLoading ? (
         <SpinnerLoader />
-      ) : dataSourceTypes ? (
+      ) : !dataSourceTypes ? (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>Unable to load form.</AlertTitle>
+          <AlertDescription>
+            <p>Please verify if data source types are available.</p>
+            <ul className="list-inside list-disc text-sm">
+              <li>Check triggers settings &apos;DATASOURCETYPES&apos;</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      ) : !hasTabs ? (
+        <Alert>
+          <AlertCircleIcon />
+          <AlertTitle>No trigger types configured.</AlertTitle>
+          <AlertDescription>
+            <p>
+              Please configure trigger types before creating trigger statements.
+            </p>
+            <ul className="list-inside list-disc text-sm">
+              <li>Check triggers settings &apos;TRIGGER_TAB&apos;</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      ) : (
         <ScrollArea className="h-[calc(100vh-210px)] pr-3">
           <div className="border p-4 mb-4 rounded shadow">
             <Heading
@@ -274,36 +326,40 @@ export default function AddTriggerView() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="border bg-secondary rounded mb-2">
-                <TabsTrigger
-                  className="w-full data-[state=active]:bg-white"
-                  value="manual"
-                >
-                  Manual trigger
-                </TabsTrigger>
-                <TabsTrigger
-                  className="w-full data-[state=active]:bg-white"
-                  value="automated"
-                >
-                  Automated trigger
-                </TabsTrigger>
+                {availableTabs.map((tab: any) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="w-full data-[state=active]:bg-white"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
               </TabsList>
-              <TabsContent value="automated">
-                <AutomatedTriggerAddForm
-                  form={automatedForm}
-                  phase={selectedPhase}
-                  sourceOptions={sourceOptions}
-                  subTypeOptions={subtypeOptionsBySource}
-                  stationHeading={stationHeading}
-                  projectType={projectInfo?.value?.project_type}
-                />
-              </TabsContent>
-              <TabsContent value="manual">
-                <ManualTriggerAddForm
-                  form={manualForm}
-                  phase={selectedPhase}
-                  stationHeading={stationHeading}
-                />
-              </TabsContent>
+              {availableTabs.map((tab: any) => {
+                const Component = tab.component;
+
+                return (
+                  <TabsContent key={tab.value} value={tab.value}>
+                    {tab.value === 'manual' ? (
+                      <Component
+                        form={manualForm}
+                        phase={selectedPhase}
+                        stationHeading={stationHeading}
+                      />
+                    ) : (
+                      <Component
+                        form={automatedForm}
+                        phase={selectedPhase}
+                        sourceOptions={sourceOptions}
+                        subTypeOptions={subtypeOptionsBySource}
+                        stationHeading={stationHeading}
+                        projectType={projectInfo?.value?.project_type}
+                      />
+                    )}
+                  </TabsContent>
+                );
+              })}
             </Tabs>
 
             <div className="flex justify-end mt-4">
@@ -395,17 +451,6 @@ export default function AddTriggerView() {
             })}
           </div>
         </ScrollArea>
-      ) : (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>Unable to load form.</AlertTitle>
-          <AlertDescription>
-            <p>Please verify if data source types are available.</p>
-            <ul className="list-inside list-disc text-sm">
-              <li>Check triggers settings &apos;DATASOURCETYPES&apos;</li>
-            </ul>
-          </AlertDescription>
-        </Alert>
       )}
     </div>
   );

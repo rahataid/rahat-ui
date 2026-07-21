@@ -1,5 +1,5 @@
+import { IvrFlow, IvrFlowNode } from '@rahat-ui/types';
 import { create } from 'zustand';
-import { IvrFlow, IvrFlowNode } from './ivr.flow.types';
 
 let nodeIdCounter = 0;
 const generateNodeId = () => `node_${++nodeIdCounter}_${Date.now()}`;
@@ -27,22 +27,13 @@ interface IvrFlowStore {
   currentFlowId: string | null;
   history: Record<string, FlowHistory>;
 
-  createFlow: (name: string, description?: string) => IvrFlow;
-  duplicateFlow: (flowId: string, newName: string) => IvrFlow | undefined;
   loadFlow: (flowId: string) => IvrFlow | undefined;
   getCurrentFlow: () => IvrFlow | null;
-  updateFlow: (flowId: string, updates: Partial<IvrFlow>) => void;
-  deleteFlow: (flowId: string) => void;
-  getAllFlows: () => IvrFlow[];
 
   addNode: (parentId: string, node: Partial<IvrFlowNode>) => void;
   updateNode: (nodeId: string, updates: Partial<IvrFlowNode>) => void;
   deleteNode: (nodeId: string) => void;
-
-  undo: () => void;
-  redo: () => void;
-  canUndo: () => boolean;
-  canRedo: () => boolean;
+  setFlowRootMenu: (flowId: string, rootMenu: IvrFlowNode) => void;
 }
 
 function cloneFlow(flow: IvrFlow): IvrFlow {
@@ -89,41 +80,25 @@ export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
   currentFlowId: null,
   history: {},
 
-  createFlow: (name, description) => {
-    const newFlow: IvrFlow = {
-      id: generateFlowId(),
-      name,
-      description,
-      status: 'draft',
-      rootMenu: createDefaultRootMenu(),
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    set((state) => ({ flows: [...state.flows, newFlow] }));
-    return newFlow;
-  },
-
-  duplicateFlow: (flowId, newName) => {
-    const original = get().flows.find((f) => f.id === flowId);
-    if (!original) return undefined;
-    const duplicated: IvrFlow = {
-      ...cloneFlow(original),
-      id: generateFlowId(),
-      name: newName,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    set((state) => ({ flows: [...state.flows, duplicated] }));
-    return duplicated;
-  },
-
   loadFlow: (flowId) => {
-    const flow = get().flows.find((f) => f.id === flowId);
-    if (flow) {
-      set({ currentFlowId: flowId });
-      if (!get().history[flowId]) {
-        get().history[flowId] = { past: [], future: [] };
-      }
+    const { flows } = get();
+    let flow = flows.find((f) => f.id === flowId);
+    if (!flow) {
+      const newFlow: IvrFlow = {
+        id: flowId,
+        name: 'Untitled Flow',
+        description: '',
+        status: 'draft',
+        rootMenu: createDefaultRootMenu(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      set({ flows: [...flows, newFlow], currentFlowId: flowId });
+      return newFlow;
+    }
+    set({ currentFlowId: flowId });
+    if (!get().history[flowId]) {
+      get().history[flowId] = { past: [], future: [] };
     }
     return flow;
   },
@@ -132,24 +107,6 @@ export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
     const { flows, currentFlowId } = get();
     return flows.find((f) => f.id === currentFlowId) || null;
   },
-
-  updateFlow: (flowId, updates) => {
-    set((state) => ({
-      flows: state.flows.map((f) =>
-        f.id === flowId ? { ...f, ...updates, updatedAt: Date.now() } : f,
-      ),
-    }));
-  },
-
-  deleteFlow: (flowId) => {
-    set((state) => ({
-      flows: state.flows.filter((f) => f.id !== flowId),
-      currentFlowId:
-        state.currentFlowId === flowId ? null : state.currentFlowId,
-    }));
-  },
-
-  getAllFlows: () => get().flows,
 
   addNode: (parentId, nodePartial) => {
     set((state) => {
@@ -227,55 +184,17 @@ export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
     });
   },
 
-  undo: () => {
+  setFlowRootMenu: (flowId, rootMenu) => {
     set((state) => {
-      const flow = state.flows.find((f) => f.id === state.currentFlowId);
+      const flow = state.flows.find((f) => f.id === flowId);
       if (!flow) return state;
-
-      const history = state.history[flow.id];
-      if (!history || history.past.length === 0) return state;
-
-      const previous = history.past.pop()!;
-      const current = cloneFlow(flow);
-      history.future.push(current);
-
+      pushHistory(state, flow.id, flow);
+      flow.rootMenu = JSON.parse(JSON.stringify(rootMenu));
       return {
-        flows: state.flows.map((f) => (f.id === flow.id ? previous : f)),
-        history: { ...state.history, [flow.id]: history },
+        flows: state.flows.map((f) =>
+          f.id === flowId ? { ...flow, updatedAt: Date.now() } : f,
+        ),
       };
     });
-  },
-
-  redo: () => {
-    set((state) => {
-      const flow = state.flows.find((f) => f.id === state.currentFlowId);
-      if (!flow) return state;
-
-      const history = state.history[flow.id];
-      if (!history || history.future.length === 0) return state;
-
-      const next = history.future.pop()!;
-      const current = cloneFlow(flow);
-      history.past.push(current);
-
-      return {
-        flows: state.flows.map((f) => (f.id === flow.id ? next : f)),
-        history: { ...state.history, [flow.id]: history },
-      };
-    });
-  },
-
-  canUndo: () => {
-    const state = get();
-    const flow = state.flows.find((f) => f.id === state.currentFlowId);
-    if (!flow) return false;
-    return (state.history[flow.id]?.past?.length || 0) > 0;
-  },
-
-  canRedo: () => {
-    const state = get();
-    const flow = state.flows.find((f) => f.id === state.currentFlowId);
-    if (!flow) return false;
-    return (state.history[flow.id]?.future?.length || 0) > 0;
   },
 }));

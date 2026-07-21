@@ -20,17 +20,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useIvrFlowStore } from './ivr.flow.store';
+import { useIvrTemplates } from '@rahat-ui/query';
 import { IvrListItem } from './ivr.flow.types';
 import CreateIVRDialog from './ivr.create.dialog';
-import {
-  Phone,
-  Copy,
-  Trash2,
-  MoreHorizontal,
-  ArrowRight,
-  Voicemail,
-} from 'lucide-react';
+import { Trash2, MoreHorizontal, ArrowRight, Voicemail } from 'lucide-react';
 
 const statusColors: Record<string, string> = {
   draft: 'bg-yellow-100 text-yellow-800',
@@ -40,8 +33,6 @@ const statusColors: Record<string, string> = {
 
 function IvrCard({
   item,
-  onDelete,
-  onDuplicate,
 }: {
   item: IvrListItem;
   onDelete: () => void;
@@ -50,16 +41,6 @@ function IvrCard({
   const router = useRouter();
   const { id } = useParams();
   const managePath = `/projects/aa/${id}/ivr/manage/${item.id}`;
-
-  const handleDuplicate = () => {
-    useIvrFlowStore.getState().duplicateFlow(item.id, `${item.name} (Copy)`);
-    onDuplicate();
-  };
-
-  const handleDelete = () => {
-    useIvrFlowStore.getState().deleteFlow(item.id);
-    onDelete();
-  };
 
   return (
     <Card className="group hover:shadow transition-shadow rounded-sm">
@@ -90,15 +71,8 @@ function IvrCard({
               <DropdownMenuItem onClick={() => router.push(managePath)}>
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDuplicate}>
-                <Copy className="w-4 h-4 mr-2" />
-                Duplicate
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleDelete}
-                className="text-destructive"
-              >
+              <DropdownMenuItem className="text-destructive">
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete
               </DropdownMenuItem>
@@ -131,27 +105,20 @@ function IvrCard({
 }
 
 export default function IvrDashboard() {
-  const flows = useIvrFlowStore((s) => s.flows);
+  const { data: templates, isLoading } = useIvrTemplates();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<
     'all' | 'draft' | 'active' | 'archived'
   >('all');
 
-  const ivrList: IvrListItem[] = flows.map((f) => {
-    const count = (function countNodes(node: any): number {
-      let c = 1;
-      for (const child of node.children) c += countNodes(child);
-      return c;
-    })(f.rootMenu);
-    return {
-      id: f.id,
-      name: f.name,
-      description: f.description,
-      status: f.status,
-      itemCount: count,
-      lastModified: f.updatedAt,
-    };
-  });
+  const ivrList: IvrListItem[] = (templates || []).map((t) => ({
+    id: String(t.id),
+    name: t.name,
+    description: t.description,
+    status: t.status.toLowerCase() as 'draft' | 'active' | 'archived',
+    itemCount: 0,
+    lastModified: new Date(t.updatedAt).getTime(),
+  }));
 
   const filteredList = ivrList.filter((item) => {
     const matchesSearch = item.name
@@ -199,7 +166,13 @@ export default function IvrDashboard() {
       </div>
 
       <ScrollArea className="h-[calc(100%-120px)]">
-        {filteredList.length === 0 ? (
+        {isLoading ? (
+          <Card className="rounded-sm">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <p className="text-muted-foreground">Loading IVR templates...</p>
+            </CardContent>
+          </Card>
+        ) : filteredList.length === 0 ? (
           <Card className="border-2 border-dashed rounded-sm">
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Voicemail className="w-12 h-12 text-muted-foreground mb-4" />

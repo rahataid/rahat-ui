@@ -23,6 +23,7 @@ export * from './lib/comms';
 
 export * from './lib/imports';
 export * from './lib/c2c';
+export * from './lib/ivr';
 
 export * from './config';
 export * from './lib/cva';
@@ -35,4 +36,3 @@ export * from './utils/amountFormate';
 export * from './utils/useGraphQLErrorHandler';
 export * from './utils/debounceHooks';
 export * from './utils/fieldSuggestionApi';
-

@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { useIvrFlowStore } from './ivr.flow.store';
+import { useIvrTemplateCreate } from '@rahat-ui/query';
 import { Plus } from 'lucide-react';
 
 const CreateIVRFormSchema = z.object({
@@ -38,7 +38,7 @@ export default function CreateIVRDialog({
   onIVRCreated,
 }: CreateIVRDialogProps) {
   const [open, setOpen] = useState(false);
-  const createFlow = useIvrFlowStore((s) => s.createFlow);
+  const createIvr = useIvrTemplateCreate();
 
   const form = useForm<z.infer<typeof CreateIVRFormSchema>>({
     resolver: zodResolver(CreateIVRFormSchema),
@@ -47,7 +47,10 @@ export default function CreateIVRDialog({
 
   const onSubmit = async (values: z.infer<typeof CreateIVRFormSchema>) => {
     try {
-      createFlow(values.name, values.description || undefined);
+      await createIvr.mutateAsync({
+        name: values.name,
+        description: values.description || undefined,
+      });
       form.reset();
       setOpen(false);
       onIVRCreated?.();

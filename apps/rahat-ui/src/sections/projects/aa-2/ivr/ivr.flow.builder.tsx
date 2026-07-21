@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useIvrFlowStore } from './ivr.flow.store';
+import { useIvrTemplateDetail } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Tabs,
@@ -10,11 +11,35 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { ArrowLeft, Settings, Code, Undo2, Redo2 } from 'lucide-react';
+import { ArrowLeft, Settings, Code } from 'lucide-react';
 import TreePanel from './ivr.tree.panel';
 import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
 import SimulationModal from './ivr.simulation.modal';
+import { IvrFlowNode, IvrFlowApiPayload, IvrFlowOption } from './ivr.flow.types';
+
+function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
+  function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
+    return (options || []).map((opt) => ({
+      id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      digit: String(opt.digit),
+      label: opt.digit ? `Digit ${opt.digit}` : 'Menu',
+      prompt: opt.prompt || '',
+      hangup: opt.hangup || false,
+      destination: opt.destination || '',
+      children: mapOptions(opt.options || []),
+    }));
+  }
+
+  return {
+    id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    label: 'Main Menu',
+    prompt: payload.main?.prompt || '',
+    hangup: false,
+    destination: '',
+    children: mapOptions(payload.main?.options || []),
+  };
+}
 
 interface FlowBuilderProps {
   ivrId: string;
@@ -29,20 +54,40 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   const addNode = useIvrFlowStore((s) => s.addNode);
   const updateNode = useIvrFlowStore((s) => s.updateNode);
   const deleteNode = useIvrFlowStore((s) => s.deleteNode);
-  const undo = useIvrFlowStore((s) => s.undo);
-  const redo = useIvrFlowStore((s) => s.redo);
-  const canUndo = useIvrFlowStore((s) => s.canUndo);
-  const canRedo = useIvrFlowStore((s) => s.canRedo);
+  const setFlowRootMenu = useIvrFlowStore((s) => s.setFlowRootMenu);
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isSimulationOpen, setIsSimulationOpen] = useState(false);
+  const populatedRef = useRef(false);
 
   const flow = flows.find((f) => f.id === ivrId);
 
+  const { data: templateDetail } = useIvrTemplateDetail(Number(ivrId));
+
   useEffect(() => {
+    populatedRef.current = false;
     loadFlow(ivrId);
     setSelectedNodeId(null);
   }, [ivrId, loadFlow]);
+
+  useEffect(() => {
+    if (!templateDetail?.flowUrl || populatedRef.current) return;
+
+    const fetchAndPopulate = async () => {
+      try {
+        const response = await fetch(templateDetail.flowUrl);
+        if (!response.ok) throw new Error('Failed to fetch flow data');
+        const data: IvrFlowApiPayload = await response.json();
+        const rootMenu = convertApiPayloadToNode(data);
+        setFlowRootMenu(ivrId, rootMenu);
+      } catch (err) {
+        console.error('Failed to load IVR flow from URL:', err);
+      }
+      populatedRef.current = true;
+    };
+
+    fetchAndPopulate();
+  }, [templateDetail, ivrId, setFlowRootMenu]);
 
   const handleBack = () => {
     router.push(`/projects/aa/${id}/ivr`);
@@ -84,6 +129,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     );
   }
 
+  const displayName = templateDetail?.name || flow.name;
+  const displayDescription =
+    templateDetail?.description || flow.description || 'IVR Flow Builder';
+
   return (
     <div className="h-[calc(100vh-80px)] flex flex-col">
       {/* Header */}
@@ -94,9 +143,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-xl font-bold">{flow.name}</h1>
+              <h1 className="text-xl font-bold">{displayName}</h1>
               <p className="text-sm text-muted-foreground">
-                {flow.description || 'IVR Flow Builder'}
+                {displayDescription}
               </p>
             </div>
           </div>

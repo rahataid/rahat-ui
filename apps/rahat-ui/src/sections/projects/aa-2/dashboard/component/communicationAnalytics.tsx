@@ -1,4 +1,5 @@
 import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 type Props = {
   data: {
@@ -11,6 +12,7 @@ const CommunicationAnalytics = ({
   triggeersStats,
   projectId,
 }: any) => {
+  const t = useTranslations('AA Project');
   // console.log(triggeersStats);
   const getTriggerDataByName = (name: string) =>
     triggeersStats.find((item) => item.name.includes(name))?.data;
@@ -35,7 +37,7 @@ const CommunicationAnalytics = ({
     const beneficiaries = commsStats?.beneficiary || {};
 
     const stakeholderStats = {
-      category: 'Stakeholders',
+      category: t('STAKEHOLDERS'),
       totalCommunicationSent: stakeholdersCountsSession,
       numberOfStakeholders: benefStats?.find(
         (stat) => stat.name === 'STAKEHOLDERS_TOTAL',
@@ -46,7 +48,7 @@ const CommunicationAnalytics = ({
     };
 
     const beneficiaryStats = {
-      category: 'Beneficiaries',
+      category: t('BENEFICIARIES'),
       totalCommunicationSent: benefCountsSession,
       avcSuccessfullySent: beneficiaries?.VOICE?.SUCCESS || 0,
       smsSuccessfullyDelivered:
@@ -59,23 +61,32 @@ const CommunicationAnalytics = ({
     return [stakeholderStats, beneficiaryStats];
   };
 
+  const labelMap: Record<string, string> = {
+    avcSuccessfullySent: t('AVC_SUCCESSFULLY_SENT'),
+    smsSuccessfullySent: t('SMS_SUCCESSFULLY_SENT'),
+    deliveryFailures: t('DELIVERY_FAILURES'),
+    smsSuccessfullyDelivered: t('SMS_SUCCESSFULLY_DELIVERED'),
+    smsAndAvcDeliveryFailures: t('SMS_AND_AVC_DELIVERY_FAILURES'),
+    uniqueAvcRecipients: t('UNIQUE_AVC_RECIPIENTS'),
+  };
+
   const communicationData = formatCommsStats();
   return (
     <>
       <div className="flex flex-col mt-4">
         <Heading
-          title="Communications & Outreach"
+          title={t('COMMUNICATIONS_OUTREACH')}
           titleStyle="text-lg"
-          description="Reach and effectiveness of communication channels"
+          description={t('REACH_AND_EFFECTIVENESS_OF_COMMUNICATION_CHANNELS')}
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
           <DataCard
-            title="Activities with Communication"
+            title={t('ACTIVITIES_WITH_COMMUNICATION')}
             className="rounded-sm"
             number={activitiesWithComm.toString()}
           />
           <DataCard
-            title="Activities Automated"
+            title={t('ACTIVITIES_AUTOMATED')}
             className="rounded-sm"
             number={activitiesAutomated.toString()}
           />
@@ -86,7 +97,7 @@ const CommunicationAnalytics = ({
               key={item.category}
             >
               <h3 className="text-sm font-semibold text-gray-700">
-                Total Communication Sent
+                {t('TOTAL_COMMUNICATION_SENT')}
               </h3>
               <h4 className="text-md font-medium text-gray-500 mt-1">
                 {item.category}
@@ -101,19 +112,17 @@ const CommunicationAnalytics = ({
                     return null;
 
                   const label =
-                    key === 'smsAndAvcDeliveryFailures'
-                      ? 'SMS & AVC Delivery Failures'
-                      : key
-                          .replace(/([A-Z])/g, ' $1')
-                          .replace(/^./, (str) => str.toUpperCase())
-                          .replace(/\bSms\b/gi, 'SMS')
-                          .replace(/\bAvc\b/gi, 'AVC');
+                    labelMap[key] ||
+                    key
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (str) => str.toUpperCase())
+                      .replace(/\bSms\b/gi, 'SMS')
+                      .replace(/\bAvc\b/gi, 'AVC');
 
                   return (
                     <div key={key} className="flex flex-col">
                       <span className="text-sm text-gray-500">{label}</span>
                       <span className="font-semibold text-gray-800">
-                        {/* {value.toLocaleString()} */}
                         {value}
                       </span>
                     </div>

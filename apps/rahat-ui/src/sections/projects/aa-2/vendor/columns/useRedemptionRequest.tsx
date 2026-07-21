@@ -2,6 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useUserStore } from '@rumsan/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { IProjectRedemption } from '../types';
+import { useTranslations } from 'next-intl';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -18,6 +19,8 @@ import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { user } = useUserStore((s) => ({ user: s.user }));
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
@@ -26,7 +29,7 @@ export const useRedemptionRequestColumn = () => {
   const columns: ColumnDef<IProjectRedemption>[] = [
     {
       accessorKey: 'tokenAmount',
-      header: 'Token Amount',
+      header: t('TOKEN_AMOUNT'),
       cell: ({ row }) => (
         <TruncatedCell
           text={`${row.original?.tokenAmount} ${getAssetCode(settings, id)}`}
@@ -35,7 +38,7 @@ export const useRedemptionRequestColumn = () => {
     },
     {
       accessorKey: 'totalAmount',
-      header: 'Total Amount',
+      header: t('TOTAL_AMOUNT'),
       cell: ({ row }) => {
         const totalAmount = row.original?.tokenAmount
           ? Number(row.original.tokenAmount) * TOKEN_TO_AMOUNT_MULTIPLIER
@@ -43,14 +46,14 @@ export const useRedemptionRequestColumn = () => {
 
         return (
           <TruncatedCell
-            text={row.original?.tokenAmount ? `Rs. ${totalAmount}` : 'N/A'}
+            text={row.original?.tokenAmount ? `Rs. ${totalAmount}` : tg('N_A')}
           />
         );
       },
     },
     {
       accessorKey: 'redemptionStatus',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => (
         <Badge
           className="text-xs font-normal"
@@ -66,19 +69,19 @@ export const useRedemptionRequestColumn = () => {
           }}
         >
           {row.original?.redemptionStatus === 'APPROVED'
-            ? 'Approved'
+            ? t('APPROVED')
             : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-            ? 'Requested ✓'
-            : 'Requested'}
+            ? `${t('REQUESTED')} ✓`
+            : t('REQUESTED')}
         </Badge>
       ),
     },
     {
       accessorKey: 'transactionHash',
-      header: 'TxHash',
+      header: t('TX_HASH'),
       cell: ({ row }) => {
         if (!row.original?.transactionHash) {
-          return <div>N/A</div>;
+          return <div>{t('N_A')}</div>;
         }
         return (
           <div className="flex flex-row">
@@ -112,40 +115,40 @@ export const useRedemptionRequestColumn = () => {
     },
     {
       accessorKey: 'approvedBy',
-      header: 'Approved By',
+      header: t('APPROVED_BY'),
       cell: ({ row }) => (
         <TruncatedCell
           text={
             row.original?.redemptionStatus === 'APPROVED'
-              ? user?.data?.name || 'N/A'
-              : 'N/A'
+              ? user?.data?.name || tg('N_A')
+              : tg('N_A')
           }
         />
       ),
     },
     {
       accessorKey: 'createdAt',
-      header: 'Requested Date',
+      header: t('REQUESTED_DATE'),
       cell: ({ row }) => (
         <div className="flex gap-1">
           {row?.original?.createdAt ? (
             <TruncatedCell text={dateFormat(row.original?.createdAt)} />
           ) : (
-            'N/A'
+            tg('N_A')
           )}
         </div>
       ),
     },
     {
       accessorKey: 'approvedAt',
-      header: 'Approved Date',
+      header: t('APPROVED_DATE'),
       cell: ({ row }) => (
         <div className="flex gap-1">
           {row.original?.redemptionStatus === 'APPROVED' &&
           row?.original?.approvedAt ? (
             <TruncatedCell text={dateFormat(row.original?.approvedAt)} />
           ) : (
-            'N/A'
+            tg('N_A')
           )}
         </div>
       ),

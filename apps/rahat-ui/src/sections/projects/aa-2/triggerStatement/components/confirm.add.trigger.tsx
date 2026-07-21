@@ -11,6 +11,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   open: boolean;
@@ -31,18 +32,19 @@ export default function ConfirmAddTrigger({
   onCancel,
   isSubmitting = false,
 }: IProps) {
+  const t = useTranslations('AA Project');
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       {/* <AlertDialogTrigger asChild> */}
       <Button disabled={isSubmitting} className="w-40" onClick={handleStore}>
-        {isSubmitting ? 'Please wait ...' : 'Confirm'}
+        {isSubmitting ? t('PLEASE_WAIT') : t('CONFIRM')}
       </Button>
       {/* </AlertDialogTrigger> */}
       <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center justify-between">
             <AlertDialogTitle className="flex-1 text-center">
-              1 trigger added
+              {t('ONE_TRIGGER_ADDED')}
             </AlertDialogTitle>
             <Button
               variant="ghost"
@@ -54,16 +56,16 @@ export default function ConfirmAddTrigger({
             </Button>
           </div>
           <AlertDialogDescription className="text-center">
-            Click save to confirm the action or add another trigger
+            {t('CLICK_SAVE_TO_CONFIRM')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex flex-col space-y-2">
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>{t('SAVE')}</Button>
           <IconLabelBtn
             variant="outline"
             className="flex flex-row-reverse gap-2"
             Icon={Plus}
-            name="Add another trigger"
+            name={t('ADD_ANOTHER_TRIGGER')}
             handleClick={() => handleAddAnother()}
           />
           {/* <AlertDialogCancel>Cancel</AlertDialogCancel> */}

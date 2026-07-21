@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
 import {
@@ -14,7 +15,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { DemoTable } from '../../common/table';
-import { creditColumns, CreditRow } from './useCreditColumns';
+import { useCreditColumns, CreditRow } from './useCreditColumns';
 import UsageFilters from './usage-filters';
 
 type CreditData = {
@@ -80,6 +81,8 @@ export default function CreditUsageSection({
   defaultFrom,
   defaultTo,
 }: CreditUsageSectionProps) {
+  const t = useTranslations('Usage');
+  const creditColumns = useCreditColumns();
   const chartData = useMemo(
     () => transformCreditsForChart(credits ?? []),
     [credits],
@@ -108,7 +111,7 @@ export default function CreditUsageSection({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="text-lg font-semibold">
-          Credit Consumption
+          {t('CREDIT_CONSUMPTION')}
         </CardTitle>
         <UsageFilters
           selectedXref={xref}
@@ -124,7 +127,7 @@ export default function CreditUsageSection({
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Credits Over Time
+                {t('CREDITS_OVER_TIME')}
               </CardTitle>
             </CardHeader>
             <CardContent className="h-[350px]">
@@ -139,7 +142,7 @@ export default function CreditUsageSection({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Daily Credit Breakdown
+              {t('DAILY_CREDIT_BREAKDOWN')}
             </CardTitle>
           </CardHeader>
           <CardContent>

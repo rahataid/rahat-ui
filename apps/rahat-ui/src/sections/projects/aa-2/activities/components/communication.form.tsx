@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   getBeneficiariesGroupByUuids,
   useBeneficiariesGroupStore,
@@ -89,6 +90,8 @@ export default function AddCommunicationForm({
   isMultiSelect = false,
   editMode,
 }: AddCommunicationFormProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
   const [customFileName, setCustomFileName] = useState('');
@@ -227,6 +230,8 @@ export default function AddCommunicationForm({
     form.reset();
     fileUpload.reset();
   };
+
+  const charactersText = t('CHARACTERS');
 
   const updateTimer = () => {
     setTimer((t) => t + 1);
@@ -426,7 +431,7 @@ export default function AddCommunicationForm({
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-2">
-        <h1 className="text-lg font-semibold">Add : Communication</h1>
+        <h1 className="text-lg font-semibold">{t('ADD_COMMUNICATION')}</h1>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <FormField
@@ -434,9 +439,9 @@ export default function AddCommunicationForm({
           name="communicationTitle"
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <FormLabel>Communication Title</FormLabel>
+              <FormLabel>{t('COMMUNICATION_TITLE')}</FormLabel>
               <FormControl>
-                <Input placeholder="Write Communication title" {...field} />
+                <Input placeholder={t('WRITE_COMMUNICATION_TITLE')} {...field} />
               </FormControl>
               {errors.communicationTitle && (
                 <FormMessage>{errors.communicationTitle.message}</FormMessage>
@@ -449,19 +454,19 @@ export default function AddCommunicationForm({
           name="groupType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Group Type</FormLabel>
+              <FormLabel>{t('GROUP_TYPE')}</FormLabel>
               <Select
                 onValueChange={handleGroupTypeChange}
                 value={field.value || ''}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group type" />
+                    <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="STAKEHOLDERS">Stakeholders</SelectItem>
-                  <SelectItem value="BENEFICIARY">Beneficiary</SelectItem>
+                  <SelectItem value="STAKEHOLDERS">{t('STAKEHOLDERS')}</SelectItem>
+                  <SelectItem value="BENEFICIARY">{t('BENEFICIARY')}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.groupType && (
@@ -477,7 +482,7 @@ export default function AddCommunicationForm({
             name="groupId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Groups</FormLabel>
+                <FormLabel>{t('GROUPS')}</FormLabel>
                 <FormControl>
                   <MultipleSelector
                     options={groupOptions}
@@ -491,7 +496,7 @@ export default function AddCommunicationForm({
                       field.onChange(options.map((opt: Option) => opt.value));
                     }}
                     placeholder={
-                      groupType ? 'Select groups' : 'Select group type first'
+                      groupType ? t('SELECT_GROUPS') : t('SELECT_GROUP_TYPE_FIRST')
                     }
                     loading={isLoading}
                     loadingIndicator={
@@ -501,7 +506,7 @@ export default function AddCommunicationForm({
                     }
                     emptyIndicator={
                       <p className="text-sm text-muted-foreground">
-                        No groups found
+                        {t('NO_GROUPS_FOUND')}
                       </p>
                     }
                     disabled={isLoading || !groupType}
@@ -519,7 +524,7 @@ export default function AddCommunicationForm({
             name="groupId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Groups</FormLabel>
+                <FormLabel>{t('GROUPS')}</FormLabel>
                 <Select
                   disabled={!groupType || isLoading}
                   onValueChange={(value) => {
@@ -533,15 +538,15 @@ export default function AddCommunicationForm({
                       <SelectValue
                         placeholder={
                           groupType
-                            ? 'Select groups'
-                            : 'Select group type first'
+                            ? t('SELECT_GROUPS')
+                            : t('SELECT_GROUP_TYPE_FIRST')
                         }
                       />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     <SelectGroup>
-                      {renderGroups(groupOptions, isLoading)}
+                      {renderGroups(groupOptions, isLoading, t)}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -558,11 +563,11 @@ export default function AddCommunicationForm({
           name="transportId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Communication Type</FormLabel>
+              <FormLabel>{t('COMMUNICATION_TYPE')}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select communication type" />
+                    <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -589,14 +594,14 @@ export default function AddCommunicationForm({
           <div className="col-span-2">
             <Tabs defaultValue="upload" className="items-center">
               <TabsList className="">
-                <TabsTrigger value="upload" className="group gap-2">
-                  <UploadIcon className="w-5 h-5" />
-                  Upload
-                </TabsTrigger>
-                <TabsTrigger value="record" className="group gap-2">
-                  <MicIcon className="w-5 h-5" />
-                  Record
-                </TabsTrigger>
+                  <TabsTrigger value="upload" className="group gap-2">
+                    <UploadIcon className="w-5 h-5" />
+                    {t('UPLOAD')}
+                  </TabsTrigger>
+                  <TabsTrigger value="record" className="group gap-2">
+                    <MicIcon className="w-5 h-5" />
+                    {t('RECORD')}
+                  </TabsTrigger>
               </TabsList>
 
               <TabsContent value="upload">
@@ -614,14 +619,14 @@ export default function AddCommunicationForm({
                       </FormControl>
                       <div className="flex justify-end">
                         {fileUpload.isPending && (
-                          <p className="text-green-600 text-xs">uploading...</p>
+                          <p className="text-green-600 text-xs">{t('UPLOADING')}</p>
                         )}
                         {fileUpload.isError && (
-                          <p className="text-red-600 text-xs">upload error</p>
+                          <p className="text-red-600 text-xs">{t('UPLOAD_ERROR')}</p>
                         )}
                         {fileUpload.isSuccess && (
                           <p className="text-green-600 text-xs">
-                            upload complete
+                            {t('UPLOAD_COMPLETE')}
                           </p>
                         )}
                       </div>
@@ -663,17 +668,17 @@ export default function AddCommunicationForm({
                         <div className="flex justify-end">
                           {fileUpload.isPending && (
                             <p className="text-green-600 text-xs">
-                              uploading...
+                              {t('UPLOADING')}
                             </p>
                           )}
 
                           {fileUpload.isError && (
-                            <p className="text-red-600 text-xs">upload error</p>
+                            <p className="text-red-600 text-xs">{t('UPLOAD_ERROR')}</p>
                           )}
 
                           {fileUpload.isSuccess && (
                             <p className="text-green-600 text-xs">
-                              upload complete
+                              {t('UPLOAD_COMPLETE')}
                             </p>
                           )}
                         </div>
@@ -719,9 +724,9 @@ export default function AddCommunicationForm({
             name="subject"
             render={({ field }) => (
               <FormItem className="col-span-2">
-                <FormLabel>Subject</FormLabel>
+                <FormLabel>{t('SUBJECT')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter subject" {...field} />
+                  <Input placeholder={t('ENTER_SUBJECT')} {...field} />
                 </FormControl>
                 {errors.subject && (
                   <FormMessage>{errors.subject.message}</FormMessage>
@@ -742,12 +747,12 @@ export default function AddCommunicationForm({
                 if (/[\u0900-\u097F]/.test(value)) {
                   return (
                     value.length <= 350 ||
-                    'Nepali message cannot exceed 350 characters'
+                    t('NEPALI_MESSAGE_LIMIT')
                   );
                 } else {
                   return (
                     value.length <= 700 ||
-                    'English message cannot exceed 700 characters'
+                    t('ENGLISH_MESSAGE_LIMIT')
                   );
                 }
               },
@@ -757,10 +762,10 @@ export default function AddCommunicationForm({
               const maxLen = isNep ? 350 : 700;
               return (
                 <FormItem className="col-span-2">
-                  <FormLabel>Message</FormLabel>
+                  <FormLabel>{tg('MESSAGE')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Write message"
+                      placeholder={t('WRITE_MESSAGE')}
                       {...field}
                       maxLength={maxLen}
                     />
@@ -770,7 +775,7 @@ export default function AddCommunicationForm({
                       <FormMessage>{errors.message.message}</FormMessage>
                     )}
                     <p className="ml-auto text-xs text-muted-foreground">
-                      {field.value?.length || 0} / {maxLen} characters
+                      {field.value?.length || 0} / {maxLen} {charactersText}
                     </p>
                   </div>
                 </FormItem>
@@ -786,7 +791,7 @@ export default function AddCommunicationForm({
           onClick={clearCommunicationForm}
           type="button"
         >
-          {editMode?.value ? 'Reset' : 'Clear'}
+          {editMode?.value ? t('RESET') : tg('CLEAR')}
         </Button>
         <Button
           variant="outline"
@@ -794,7 +799,7 @@ export default function AddCommunicationForm({
           type="button"
           disabled={fileUpload.isPending}
         >
-          Save
+          {tg('SAVE')}
         </Button>
       </div>
 
@@ -805,10 +810,10 @@ export default function AddCommunicationForm({
           }}
         >
           <DialogHeader>
-            <DialogTitle>Enter a file name</DialogTitle>
+            <DialogTitle>{t('ENTER_A_FILE_NAME')}</DialogTitle>
             <DialogDescription>
               <Input
-                placeholder="Enter file name"
+                placeholder={t('ENTER_FILE_NAME')}
                 value={customFileName}
                 onChange={(e) => setCustomFileName(e.target.value)}
               />
@@ -821,7 +826,7 @@ export default function AddCommunicationForm({
               onClick={() => setShowConfirmDialog(false)}
               type="button"
             >
-              Cancel
+              {tg('CANCEL')}
             </Button>
 
             <Button
@@ -836,7 +841,7 @@ export default function AddCommunicationForm({
               type="button"
               disabled={!customFileName}
             >
-              Confirm Upload
+              {t('CONFIRM_UPLOAD')}
             </Button>
           </div>
         </DialogContent>

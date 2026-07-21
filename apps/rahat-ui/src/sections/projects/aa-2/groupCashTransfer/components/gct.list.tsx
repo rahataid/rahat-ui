@@ -34,8 +34,11 @@ import { usePagination, useGroupCashTransfers } from '@rahat-ui/query';
 import GctDeleteDialog from './gct.delete.dialog';
 import GctActionBtn from './gct.action-btn';
 import { GctItem } from '../types/gct.types';
+import { useTranslations } from 'next-intl';
 
 export default function GctList() {
+  const t = useTranslations('AA Project with Cash Tracker');
+  const tGlobal = useTranslations('GLOBAL');
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -99,7 +102,7 @@ export default function GctList() {
     () => [
       {
         accessorKey: 'name',
-        header: 'GCT Group Name',
+        header: t('GCT_GROUP_NAME_COL'),
         cell: ({ row }) => (
           <div className="flex items-center gap-1.5">
             <TruncatedCell text={row.getValue('name') || '—'} maxLength={20} />
@@ -110,7 +113,7 @@ export default function GctList() {
                     <CheckCircle2 size={14} strokeWidth={2} className="text-green-500 shrink-0" />
                   </span>
                 </TooltipTrigger>
-                <TooltipContent>Bank account validated</TooltipContent>
+                <TooltipContent>{t('BANK_ACCOUNT_VALIDATED')}</TooltipContent>
               </Tooltip>
             )}
           </div>
@@ -118,14 +121,14 @@ export default function GctList() {
       },
       {
         accessorKey: 'phone',
-        header: 'Phone Number',
+        header: tGlobal('PHONE'),
         cell: ({ row }) => (
           <TruncatedCell text={row.getValue('phone') || '—'} maxLength={18} />
         ),
       },
       {
         id: 'municipality',
-        header: 'Municipality',
+        header: tGlobal('MUNICIPALITY'),
         cell: ({ row }) => (
           <TruncatedCell
             text={row.original.extras?.municipality || '—'}
@@ -135,7 +138,7 @@ export default function GctList() {
       },
       {
         id: 'ward',
-        header: 'Ward (Community)',
+        header: tGlobal('WARD_COMMUNITY'),
         cell: ({ row }) => (
           <TruncatedCell
             text={row.original.extras?.ward || '—'}
@@ -145,7 +148,7 @@ export default function GctList() {
       },
       {
         id: 'supportArea',
-        header: 'Support Area',
+        header: tGlobal('SUPPORT_AREA'),
         cell: ({ row }) => {
           const areas = row.original.extras?.supportArea ?? [];
           if (!areas.length) return '—';
@@ -168,7 +171,7 @@ export default function GctList() {
       },
       {
         id: 'actions',
-        header: 'Action',
+        header: tGlobal('ACTION'),
         cell: ({ row }) => {
           const item = row.original;
           const hasFund = (item.groupCashTransferRecords?.length ?? 0) > 0;
@@ -176,7 +179,7 @@ export default function GctList() {
             <TooltipProvider>
               <div className="flex items-center gap-1">
                 <GctActionBtn
-                  label="View"
+                  label={tGlobal('VIEW')}
                   icon={<Eye size={16} strokeWidth={1.8} />}
                   hoverClass="hover:bg-gray-100 text-gray-600"
                   onClick={() =>
@@ -190,7 +193,7 @@ export default function GctList() {
                   hasContent={false}
                 >
                   <GctActionBtn
-                    label="Edit"
+                    label={tGlobal('EDIT')}
                     icon={<Pencil size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-blue-50 text-blue-500"
                     onClick={() =>
@@ -201,7 +204,7 @@ export default function GctList() {
                   />
                   <GctActionBtn
                     label={
-                      hasFund ? 'Cannot delete — funds reserved' : 'Delete'
+                      hasFund ? t('CANNOT_DELETE_FUNDS_RESERVED') : tGlobal('DELETE')
                     }
                     icon={<Trash2 size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-red-50 text-red-500"
@@ -235,15 +238,15 @@ export default function GctList() {
   return (
     <div>
       <Heading
-        title="Group Cash Transfer Group List"
+        title={t('GROUP_CASH_TRANSFER_GROUP_LIST')}
         titleStyle="font-medium text-lg"
-        description="List of all the Group Cash Transfer Groups"
+        description={t('LIST_OF_ALL_THE_GROUPS')}
       />
 
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <SearchInput
           className="flex-1 min-w-[140px]"
-          name="name"
+          name={tGlobal('NAME')}
           value={nameFilter}
           onSearch={(e) => {
             setNameFilter(e.target.value);
@@ -252,7 +255,7 @@ export default function GctList() {
         />
         <SearchInput
           className="flex-1 min-w-[140px]"
-          name="phone"
+          name={tGlobal('PHONE')}
           value={phoneFilter}
           onSearch={(e) => {
             setPhoneFilter(e.target.value);
@@ -261,7 +264,7 @@ export default function GctList() {
         />
         <SearchInput
           className="flex-1 min-w-[140px]"
-          name="Ward (Community)"
+          name={tGlobal('WARD_COMMUNITY')}
           value={wardFilter}
           onSearch={(e) => {
             setWardFilter(e.target.value);
@@ -270,7 +273,7 @@ export default function GctList() {
         />
         <SearchInput
           className="flex-1 min-w-[140px]"
-          name="support area"
+          name={tGlobal('SUPPORT_AREA')}
           value={supportAreaFilter}
           onSearch={(e) => {
             setSupportAreaFilter(e.target.value);

@@ -13,6 +13,7 @@ import {
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { formatDuration } from 'apps/rahat-ui/src/utils/dateFormate';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import { AlertTriangle, Clock } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
@@ -37,6 +38,7 @@ interface GrievanceOverviewProps {
 export default function GrievanceOverview({
   className,
 }: GrievanceOverviewProps) {
+  const t = useTranslations('AA Project');
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -71,13 +73,22 @@ export default function GrievanceOverview({
     return statusMap[key] || key;
   };
 
-  // Convert to chart data format for PieChart component using constants
+  const labelMap: Record<string, string> = {
+    'Technical': t('TECHNICAL'),
+    'Non-Technical': t('NON_TECHNICAL'),
+    'Other': t('OTHER'),
+    'New': t('NEW'),
+    'Under Review': t('UNDER_REVIEW'),
+    'Resolved': t('RESOLVED'),
+    'Closed': t('CLOSED'),
+  };
+
   const typeChartData = Object.entries(grievancesByType).map(
     ([name, value]) => {
       const enumValue = mapTypeKeyToEnum(name);
       const typeConstant = grievanceType.find((t) => t.value === enumValue);
       return {
-        label: typeConstant?.label || name,
+        label: labelMap[typeConstant?.label as string] || name,
         value: value as number,
       };
     },
@@ -88,7 +99,7 @@ export default function GrievanceOverview({
       const enumValue = mapStatusKeyToEnum(name);
       const statusConstant = grievanceStatus.find((s) => s.value === enumValue);
       return {
-        label: statusConstant?.label || name,
+        label: labelMap[statusConstant?.label as string] || name,
         value: value as number,
       };
     },
@@ -109,12 +120,12 @@ export default function GrievanceOverview({
   const stats = [
     {
       icon: <AlertTriangle className="w-5 h-5 text-muted-foreground" />,
-      label: 'Total Grievance',
+      label: t('TOTAL_GRIEVANCE'),
       value: totalGrievances.toString(),
     },
     {
       icon: <Clock className="w-5 h-5 text-muted-foreground" />,
-      label: 'Average Resolve Time',
+      label: t('AVERAGE_RESOLVE_TIME'),
       value: averageResolveTime,
     },
   ];
@@ -159,7 +170,7 @@ export default function GrievanceOverview({
               number={stat.value as string}
               className="rounded-sm w-full"
               key={stat.label}
-              truncate={stat.label === 'Average Resolve Time' ? false : true}
+              truncate={stat.label === t('AVERAGE_RESOLVE_TIME') ? false : true}
             />
           );
         })}
@@ -167,7 +178,7 @@ export default function GrievanceOverview({
         {/* Grievance Type Chart */}
         <div className="border rounded-sm p-4 flex flex-col h-full min-h-[300px]">
           <h1 className="text-sm/6 font-semibold text-neutral-800 dark:text-white">
-            Grievance Type
+            {t('GRIEVANCE_TYPE')}
           </h1>
           <div className="w-full flex-1 p-4 mt-2">
             <PieChart
@@ -188,7 +199,7 @@ export default function GrievanceOverview({
         {/* Grievance Status Chart */}
         <div className="border rounded-sm p-4 flex flex-col h-full min-h-[300px]">
           <h1 className="text-sm/6 font-semibold text-neutral-800 dark:text-white">
-            Grievance Status
+            {t('GRIEVANCE_STATUS')}
           </h1>
           <div className="w-full flex-1 p-4 mt-2">
             <PieChart

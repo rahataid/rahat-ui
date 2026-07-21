@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
@@ -15,6 +16,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function InKindManagementView() {
+  const tv = useTranslations('AA Project with Gnosis');
   const router = useRouter();
   const { id } = useParams();
   const searchParams = useSearchParams();
@@ -34,8 +36,8 @@ export default function InKindManagementView() {
     <div className="p-4">
       <div className="flex justify-between items-center space-x-4">
         <Heading
-          title="Inkind Management"
-          description="Track all inkind items and stock movements here"
+          title={tv('INKIND_MANAGEMENT')}
+          description={tv('TRACK_ALL_INKIND_ITEMS_AND_STOCK')}
         />
         <RoleAuth
           roles={[AARoles.ADMIN, AARoles.Municipality]}
@@ -50,14 +52,14 @@ export default function InKindManagementView() {
                   handleClick={() =>
                     router.push(`/projects/aa/${id}/inkind-management/assign?tab=${tab}`)
                   }
-                  name="Assign Inkind"
+                  name={tv('ASSIGN_INKIND')}
                   disabled={!isInkindDataAvailable}
                 />
               </span>
             </TooltipTrigger>
             { !isInkindDataAvailable && (
               <TooltipContent>
-                You must have at least one inkind item to assign.
+                {tv('YOU_MUST_HAVE_AT_LEAST_ONE')}
               </TooltipContent>
             )}
           </Tooltip>

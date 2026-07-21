@@ -3,6 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
+import { useTranslations } from 'next-intl';
 
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,6 +25,8 @@ import { useSelectItems } from '../useSelectItems';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function EditDailyMonitoring() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
@@ -245,14 +248,14 @@ export default function EditDailyMonitoring() {
                   <InputFormField
                     form={form}
                     name="dataEntryBy"
-                    label="Created By"
-                    placeholder="Enter Data Entry Personnel"
+                    label={tg('CREATED_BY')}
+                    placeholder={t('ENTER_DATA_ENTRY_PERSONNEL')}
                   />
                   <SelectFormField
                     form={form}
                     name="riverBasin"
-                    label="River Basin"
-                    placeholder="Select river basin"
+                    label={t('RIVER_BASIN')}
+                    placeholder={t('SELECT_RIVER_BASIN2')}
                     selectItems={riverBasins}
                   />
                 </div>

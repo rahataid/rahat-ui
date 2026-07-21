@@ -7,9 +7,11 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useTranslations } from 'next-intl';
 
 export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
+  const t = useTranslations('Beneficiary Detail');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
 
   return (
@@ -38,37 +40,37 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
             <div>
               <p>{beneficiaryDetail?.gender ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Gender
+                {tg('GENDER')}
               </p>
             </div>
             <div>
               <p>{beneficiaryDetail?.location ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Location
+                {tg('LOCATION')}
               </p>
             </div>
             <div>
               <p>{beneficiaryDetail?.piiData?.phone ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Phone Number
+                {tg('PHONE_NUMBER')}
               </p>
             </div>
             <div>
               <p>{beneficiaryDetail?.phoneStatus ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Phone Status
+                {tg('PHONE_STATUS')}
               </p>
             </div>
             <div>
               <p>{beneficiaryDetail?.bankedStatus ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Bank Status
+                {t('BANK_STATUS')}
               </p>
             </div>
             <div>
               <p>{beneficiaryDetail?.internetStatus ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Internet Status
+                {tg('INTERNET_STATUS')}
               </p>
             </div>
           </div>
@@ -76,7 +78,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
       </Card>
       <Card className="shadow rounded">
         <CardHeader>
-          <p className="font-mediun text-md">Projects Involved</p>
+          <p className="font-mediun text-md">{t('PROJECTS_INVOLVED')}</p>
         </CardHeader>
         <CardContent>
           {beneficiaryDetail?.BeneficiaryProject?.length ? (
@@ -99,7 +101,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
             })
           ) : (
             <p className="text-sm text-muted-foreground">
-              No projects involved
+              {t('NO_PROJECTS_INVOLVED')}
             </p>
           )}
         </CardContent>

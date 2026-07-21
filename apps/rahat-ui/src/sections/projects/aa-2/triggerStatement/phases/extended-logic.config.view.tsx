@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -62,6 +63,7 @@ const getTriggerKey = (trigger: ExistingTriggerRef): string => {
 };
 
 export default function ExtendedLogicConfigView() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -207,12 +209,12 @@ export default function ExtendedLogicConfigView() {
 
   const validate = (): boolean => {
     if (groups.length === 0) {
-      setValidationError('Add at least one group.');
+      setValidationError(t('ADD_AT_LEAST_ONE_GROUP'));
       return false;
     }
     for (let i = 0; i < groups.length; i++) {
       if (groups[i].triggers.length === 0) {
-        setValidationError(`Group ${i + 1} must have at least one trigger.`);
+        setValidationError(t('GROUP_MUST_HAVE_AT_LEAST_ONE_TRIGGER', { group: i + 1 }));
         return false;
       }
     }
@@ -280,7 +282,7 @@ export default function ExtendedLogicConfigView() {
         <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
           <AlertCircleIcon size={70} />
           <p className="text-xl">
-            Data not available at the moment. Please try again later.
+            {t('DATA_NOT_AVAILABLE_AT_THE_MOMENT')}
           </p>
         </div>
       </div>
@@ -294,8 +296,8 @@ export default function ExtendedLogicConfigView() {
       />
       <div className="mt-2 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <Heading
-          title="Configure Extended Trigger Logic"
-          description={`Set up grouped AND/OR trigger conditions for ${phase?.name || 'this phase'}`}
+          title={t('CONFIGURE_EXTENDED_TRIGGER_LOGIC')}
+          description={t('SET_UP_GROUPED_AND_OR_TRIGGER_CONDITIONS_FOR', { phase: phase?.name || t('THIS_PHASE') })}
         />
         <div className="flex items-center gap-2 self-start md:self-auto">
           <Button
@@ -305,7 +307,7 @@ export default function ExtendedLogicConfigView() {
             onClick={() => setMode('view')}
           >
             <Eye className="h-4 w-4" />
-            View
+            {t('VIEW')}
           </Button>
           <Button
             type="button"
@@ -315,7 +317,7 @@ export default function ExtendedLogicConfigView() {
             disabled={isReadOnly}
           >
             <Settings2 className="h-4 w-4" />
-            Configure
+            {t('CONFIGURE')}
           </Button>
         </div>
       </div>
@@ -323,31 +325,31 @@ export default function ExtendedLogicConfigView() {
       {/* Phase info summary */}
       <div className="mt-4 flex items-center gap-4 rounded-lg border bg-gray-50 px-4 py-3">
         <div>
-          <p className="text-sm text-muted-foreground">Phase</p>
-          <p className="text-base font-semibold">{phase?.name || 'N/A'}</p>
+          <p className="text-sm text-muted-foreground">{t('PHASE')}</p>
+          <p className="text-base font-semibold">{phase?.name || t('N_A')}</p>
         </div>
         <div className="h-8 w-px bg-gray-200" />
         <div>
-          <p className="text-sm text-muted-foreground">Triggers</p>
+          <p className="text-sm text-muted-foreground">{t('TRIGGERS')}</p>
           <p className="text-base font-semibold">{phaseTriggers.length}</p>
         </div>
         <div className="h-8 w-px bg-gray-200" />
         <div>
-          <p className="text-sm text-muted-foreground">Mandatory</p>
+          <p className="text-sm text-muted-foreground">{t('MANDATORY')}</p>
           <p className="text-base font-semibold">
             {phase?.totalMandatoryTriggers ?? 0}
             <span className="text-xs text-muted-foreground font-normal ml-1">
-              ({phase?.requiredMandatoryTriggers ?? 0} required)
+              ({phase?.requiredMandatoryTriggers ?? 0} {t('REQUIRED')})
             </span>
           </p>
         </div>
         <div className="h-8 w-px bg-gray-200" />
         <div>
-          <p className="text-sm text-muted-foreground">Optional</p>
+          <p className="text-sm text-muted-foreground">{t('OPTIONAL')}</p>
           <p className="text-base font-semibold">
             {phase?.totalOptionalTriggers ?? 0}
             <span className="text-xs text-muted-foreground font-normal ml-1">
-              ({phase?.requiredOptionalTriggers ?? 0} required)
+              ({phase?.requiredOptionalTriggers ?? 0} {t('REQUIRED')})
             </span>
           </p>
         </div>
@@ -360,7 +362,7 @@ export default function ExtendedLogicConfigView() {
           {/* Join Operator */}
           {groups.length > 1 && (
             <div className="flex items-center justify-center gap-3">
-              <p className="text-sm font-medium">Join groups with:</p>
+              <p className="text-sm font-medium">{t('JOIN_GROUPS_WITH')}:</p>
               <Select
                 value={joinOperator}
                 onValueChange={(v) => setJoinOperator(v as 'AND' | 'OR')}
@@ -392,7 +394,7 @@ export default function ExtendedLogicConfigView() {
               <div className={`rounded-lg border p-4 space-y-3 ${colorClass}`}>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold">
-                    Group {groupIndex + 1}
+                    {t('GROUP')} {groupIndex + 1}
                   </p>
                   <div className="flex items-center gap-2">
                     <Select
@@ -424,7 +426,7 @@ export default function ExtendedLogicConfigView() {
                 </div>
 
                 <p className="text-xs text-muted-foreground">
-                  Select triggers for this group:
+                  {t('SELECT_TRIGGERS_FOR_THIS_GROUP')}:
                 </p>
 
                 {/* Dropdown to add triggers */}
@@ -437,7 +439,7 @@ export default function ExtendedLogicConfigView() {
                       value=""
                     >
                       <SelectTrigger className="flex-1 h-9">
-                        <SelectValue placeholder="Choose a trigger to add..." />
+                        <SelectValue placeholder={t('CHOOSE_A_TRIGGER_TO_ADD')} />
                       </SelectTrigger>
                       <SelectContent>
                         {phaseTriggers
@@ -465,7 +467,7 @@ export default function ExtendedLogicConfigView() {
                           return !group.triggers.includes(key);
                         }).length === 0 && (
                           <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                            All triggers added
+                            {t('ALL_TRIGGERS_ADDED')}
                           </div>
                         )}
                       </SelectContent>
@@ -473,7 +475,7 @@ export default function ExtendedLogicConfigView() {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400">
-                    No triggers available in this phase.
+                    {t('NO_TRIGGERS_AVAILABLE_IN_THIS_PHASE')}
                   </p>
                 )}
 
@@ -561,7 +563,7 @@ export default function ExtendedLogicConfigView() {
               onClick={handleAddGroup}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Group
+              {t('ADD_GROUP')}
             </Button>
 
             {/* Validation Error */}
@@ -578,14 +580,14 @@ export default function ExtendedLogicConfigView() {
                 onClick={handleCancel}
                 disabled={configureExtendedLogic.isPending}
               >
-                Cancel
+                {t('CANCEL')}
               </Button>
               <Button
                 className="w-36"
                 onClick={handleSave}
                 disabled={configureExtendedLogic.isPending}
               >
-                {configureExtendedLogic.isPending ? 'Saving...' : 'Save'}
+                {configureExtendedLogic.isPending ? t('SAVING') : t('SAVE')}
               </Button>
             </div>
           </div>
@@ -593,7 +595,7 @@ export default function ExtendedLogicConfigView() {
           <div className="rounded-xl border bg-slate-50/70 p-4 space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-slate-700">
-                {viewDisplay === 'graph' ? 'Logic Graph View' : 'Logic List View'}
+                {viewDisplay === 'graph' ? t('LOGIC_GRAPH_VIEW') : t('LOGIC_LIST_VIEW')}
               </p>
               <div className="flex items-center gap-2">
                 {groups.length > 1 && viewDisplay === 'graph' && (
@@ -604,7 +606,7 @@ export default function ExtendedLogicConfigView() {
                         : 'bg-orange-500 text-white border-orange-600'
                     }
                   >
-                    Group Join: {joinOperator}
+                    {t('GROUP_JOIN')}: {joinOperator}
                   </Badge>
                 )}
                 {/* Graph / List toggle */}
@@ -619,7 +621,7 @@ export default function ExtendedLogicConfigView() {
                     }`}
                   >
                     <GitBranch className="h-3.5 w-3.5" />
-                    Graph
+                    {t('GRAPH')}
                   </button>
                   <button
                     type="button"
@@ -631,7 +633,7 @@ export default function ExtendedLogicConfigView() {
                     }`}
                   >
                     <List className="h-3.5 w-3.5" />
-                    List
+                    {t('LIST')}
                   </button>
                 </div>
               </div>
@@ -639,7 +641,7 @@ export default function ExtendedLogicConfigView() {
 
             {groups.length === 0 ? (
               <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-muted-foreground">
-                No extended trigger logic configured.
+                {t('NO_EXTENDED_TRIGGER_LOGIC_CONFIGURED2')}
               </div>
             ) : viewDisplay === 'graph' ? (
               <div className="rounded-lg border bg-white p-4 shadow-sm">
@@ -686,7 +688,7 @@ export default function ExtendedLogicConfigView() {
                     <div key={groupIndex}>
                       <div className={`rounded-lg border p-4 shadow-sm space-y-3 ${palette.group}`}>
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-semibold">Group {groupIndex + 1}</p>
+                          <p className="text-sm font-semibold">{t('GROUP')} {groupIndex + 1}</p>
                           <Badge
                             className={
                               group.operator === 'AND'
@@ -694,12 +696,12 @@ export default function ExtendedLogicConfigView() {
                                 : 'bg-orange-500 text-white border-orange-600'
                             }
                           >
-                            Internal: {group.operator}
+                            {t('INTERNAL')}: {group.operator}
                           </Badge>
                         </div>
                         {group.triggers.length === 0 ? (
                           <div className="rounded-md border border-dashed bg-white/70 px-3 py-2 text-xs text-muted-foreground">
-                            No triggers in this group.
+                            {t('NO_TRIGGERS_IN_THIS_GROUP')}
                           </div>
                         ) : (
                           <div className="space-y-2 pt-1">
@@ -724,7 +726,7 @@ export default function ExtendedLogicConfigView() {
                                   const detail = triggerDetails[logicKey];
                                   const isTriggered = detail?.isTriggered === true;
                                   const isManual = detail?.source === 'MANUAL';
-                                  const triggerMode = isManual ? 'Manual' : 'Automated';
+                                  const triggerMode = isManual ? t('MANUAL') : t('AUTOMATED');
 
                                   return (
                                     <div
@@ -757,7 +759,7 @@ export default function ExtendedLogicConfigView() {
                                                 ? 'bg-green-100 text-green-700 border-green-300'
                                                 : 'bg-slate-100 text-slate-500 border-slate-200'
                                             }`}>
-                                              {isTriggered ? '✓ Triggered' : '✗ Not triggered'}
+                                              {isTriggered ? t('TRIGGERED') : t('NOT_TRIGGERED')}
                                             </span>
                                           )}
                                         </div>
@@ -768,19 +770,19 @@ export default function ExtendedLogicConfigView() {
                                         <div className="px-3 py-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                                           {detail.sourceLabel && (
                                             <div>
-                                              <span className="text-muted-foreground">Source </span>
+                                              <span className="text-muted-foreground">{t('SOURCE')} </span>
                                               <span className="font-medium">{detail.sourceLabel}</span>
                                             </div>
                                           )}
                                           {detail.sourceSubType && (
                                             <div>
-                                              <span className="text-muted-foreground">Sub-type </span>
+                                              <span className="text-muted-foreground">{t('SUB_TYPE')} </span>
                                               <span className="font-medium">{toLabel(detail.sourceSubType)}</span>
                                             </div>
                                           )}
                                           {detail.stationName && (
                                             <div>
-                                              <span className="text-muted-foreground">Station </span>
+                                              <span className="text-muted-foreground">{t('STATION')} </span>
                                               <span className="font-medium">
                                                 {detail.stationName}
                                                 {detail.stationId && (
@@ -791,13 +793,13 @@ export default function ExtendedLogicConfigView() {
                                           )}
                                           {detail.operator !== undefined && detail.value !== undefined && (
                                             <div>
-                                              <span className="text-muted-foreground">Condition </span>
+                                              <span className="text-muted-foreground">{t('CONDITION')} </span>
                                               <span className="font-medium font-mono">{detail.operator} {detail.value}</span>
                                             </div>
                                           )}
                                           {detail.expression && (
                                             <div className="col-span-2">
-                                              <span className="text-muted-foreground">Trigger Statement </span>
+                                              <span className="text-muted-foreground">{t('TRIGGER_STATEMENT')} </span>
                                               <span className="font-medium font-mono break-all">{detail.expression}</span>
                                             </div>
                                           )}
@@ -839,14 +841,14 @@ export default function ExtendedLogicConfigView() {
                 className="w-36"
                 onClick={handleCancel}
               >
-                Back
+                {t('BACK')}
               </Button>
               {!isReadOnly && (
                 <Button
                   className="w-36"
                   onClick={() => setMode('configure')}
                 >
-                  Edit Logic
+                  {t('EDIT_LOGIC')}
                 </Button>
               )}
             </div>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { DataCard, Heading } from 'apps/rahat-ui/src/common';
 import RecentPayout from './recent.payout';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
@@ -9,6 +10,7 @@ export default function PayoutOverview({
   payouts,
   statsPayout,
 }: PayoutOverviewProps) {
+  const tv = useTranslations('AA Project with Cash Tracker');
   const pieDataLabel = [
     {
       label: 'FSP',
@@ -21,19 +23,19 @@ export default function PayoutOverview({
   ];
   const pieDataStatus = [
     {
-      label: 'Success',
+      label: tv('SUCCESSFUL_TRANSACTIONS'),
       value: statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
     },
     {
-      label: 'Failed',
+      label: tv('FAILED_TRANSACTIONS'),
       value: statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
     },
   ];
   return (
     <div className="mt-4">
       <Heading
-        title={`Payout Overview`}
-        description="Overview of your payouts"
+        title={tv('PAYOUT_OVERVIEW')}
+        description={tv('OVERVIEW_OF_YOUR_PAYOUTS')}
         titleStyle="font-medium text-lg"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
@@ -52,7 +54,7 @@ export default function PayoutOverview({
       </div>
       <div className="flex flex-wrap mt-4 gap-4">
         <div className="flex-1 border rounded-sm p-4">
-          <h1 className="text-lg font-medium mb-4">Payout Type</h1>
+          <h1 className="text-lg font-medium mb-4">{tv('PAYOUT_TYPE')}</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
               pieData={pieDataLabel}
@@ -62,7 +64,7 @@ export default function PayoutOverview({
         </div>
 
         <div className="flex-1 border rounded-sm p-4">
-          <h1 className="text-lg font-medium mb-4">Payout Status</h1>
+          <h1 className="text-lg font-medium mb-4">{tv('PAYOUT_STATUS')}</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
               pieData={pieDataStatus}

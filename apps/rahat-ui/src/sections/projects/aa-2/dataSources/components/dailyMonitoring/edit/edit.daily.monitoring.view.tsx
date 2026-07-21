@@ -25,9 +25,11 @@ import SelectFormField from '../select.form.field';
 import { useSelectItems } from '../useSelectItems';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { useTranslations } from 'next-intl';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 export default function EditDailyMonitoring() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
@@ -166,13 +168,13 @@ export default function EditDailyMonitoring() {
   }, [details]);
 
   const FormSchema = z.object({
-    dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
-    riverBasin: z.string().min(1, { message: 'Please select a river basin.' }),
+    dataEntryBy: z.string().min(2, { message: t('PLEASE_ENTER_NAME') }),
+    riverBasin: z.string().min(1, { message: t('PLEASE_SELECT_A_RIVER_BASIN') }),
     dataSource: z.array(
       z
         .object({
           id: z.number().optional(),
-          source: z.string().min(1, { message: 'Please select a source.' }),
+          source: z.string().min(1, { message: t('PLEASE_SELECT_A_SOURCE') }),
           //DHM
           forecast: z.string().optional(),
           //DHM - 3 Days Flood Forecast Bulletin
@@ -237,7 +239,7 @@ export default function EditDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['forecast'],
-                  message: 'Please select a forecast type.',
+                  message: t('PLEASE_SELECT_A_FORECAST_TYPE'),
                 });
                 return;
               }
@@ -269,13 +271,13 @@ export default function EditDailyMonitoring() {
                     ctx.addIssue({
                       code: z.ZodIssueCode.custom,
                       path: ['waterLevel'],
-                      message: 'Water level must be a positive number .',
+                      message: t('WATER_LEVEL_MUST_BE_POSITIVE'),
                     });
                   } else if (!/^\d+(\.\d+)?$/.test(String(data.waterLevel))) {
                     ctx.addIssue({
                       code: z.ZodIssueCode.custom,
                       path: ['waterLevel'],
-                      message: 'Water level must be number.',
+                      message: t('WATER_LEVEL_MUST_BE_NUMBER'),
                     });
                   }
                   break;
@@ -352,13 +354,13 @@ export default function EditDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauge Reading  must be a positive number.',
+                  message: t('GAUGE_READING_MUST_BE_POSITIVE'),
                 });
               } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauge Reading level must be number.',
+                  message: t('GAUGE_READING_LEVEL_MUST_BE_NUMBER'),
                 });
               }
               break;
@@ -535,8 +537,8 @@ export default function EditDailyMonitoring() {
   ) : (
     <div className="px-4 py-2">
       <HeaderWithBack
-        title={'Edit Daily Monitoring'}
-        subtitle="Edit the form below  to update daily monitoring"
+        title={t('EDIT_DAILY_MONITORING')}
+        subtitle={t('EDIT_THE_FORM_BELOW_TO_UPDATE')}
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>
@@ -546,8 +548,8 @@ export default function EditDailyMonitoring() {
               {/* <InputFormField
                 form={form}
                 name="dataEntryBy"
-                label="Created By"
-                placeholder="Enter Data Entry Personnel"
+                label={t('CREATED_BY')}
+                placeholder={t('ENTER_DATA_ENTRY_PERSONNEL')}
               /> */}
               <SelectFormField
                 key={form.watch('riverBasin')}
@@ -598,7 +600,7 @@ export default function EditDailyMonitoring() {
               className="border-dashed border-primary text-primary text-sm w-full mt-4"
               onClick={() => anotherDataSourceAppend(anotherDataSourceSchema)}
             >
-              Add Data Source
+              {t('ADD_DATA_SOURCE')}
               <Plus className="ml-2" size={16} strokeWidth={3} />
             </Button>
           </ScrollArea>
@@ -612,10 +614,10 @@ export default function EditDailyMonitoring() {
                 form.reset();
               }}
             >
-              Reset
+              {t('RESET')}
             </Button>
-            <Button type="submit" className="w-32">
-              Update
+            <Button type={t('SUBMIT')} className="w-32">
+              {t('UPDATE')}
             </Button>
           </div>
         </form>

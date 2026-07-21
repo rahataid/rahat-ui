@@ -33,9 +33,12 @@ import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contract
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
 export default function AddFundManagementView() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -161,7 +164,7 @@ export default function AddFundManagementView() {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Enter title" {...field} />
+                      <Input type="text" placeholder={t('ENTER_TITLE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -182,7 +185,7 @@ export default function AddFundManagementView() {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select beneficiary group" />
+                          <SelectValue placeholder={t('SELECT_BENEFICIARY_GROUP')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -211,7 +214,7 @@ export default function AddFundManagementView() {
                       <Input
                         type="number"
                         inputMode="decimal"
-                        placeholder="Enter number of tokens for each members"
+                        placeholder={t('ENTER_NUMBER_OF_TOKENS_FOR_EACH')}
                         {...field}
                       />
                     </FormControl>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   useActivitiesCategories,
   useActivitiesStore,
@@ -85,6 +86,8 @@ export const DurationData = [
 ];
 
 export default function AddActivities() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const addCommunicationOpen = useBoolean(false);
   const editCommunicationOpen = useBoolean();
   const templateConfirmDialog = useBoolean(false);
@@ -486,15 +489,15 @@ export default function AddActivities() {
               <div className="mt-4 flex justify-between items-center">
                 <div>
                   <Heading
-                    title={`Add Activity `}
-                    description="Fill the form below to create new activity"
+                    title={t('CREATE_ACTIVITY')}
+                    description={t('FILL_THE_FORM_BELOW_TO_CREATE2')}
                   />
                 </div>
 
                 <div className="flex justify-end mt-8 ">
                   <div className="flex gap-2  items-center">
                     <TooltipWrapper
-                      tip={'View templates to reuse for this activity'}
+                      tip={t('VIEW_TEMPLATES_TO_REUSE')}
                     >
                       <LayoutTemplate
                         type="button"
@@ -508,7 +511,7 @@ export default function AddActivities() {
                       className="w-36"
                       onClick={resetForm}
                     >
-                      Clear
+                      {tg('CLEAR')}
                     </Button>
 
                     <Button
@@ -523,7 +526,7 @@ export default function AddActivities() {
                         !!form.formState.errors.responsibility
                       }
                     >
-                      Add
+                      {tg('ADD')}
                     </Button>
                   </div>
                 </div>
@@ -538,11 +541,11 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel>Activity title</FormLabel>
+                          <FormLabel>{t('ACTIVITY_TITLE2')}</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
-                              placeholder="Enter activity title"
+                              placeholder={t('ENTER_ACTIVITY_TITLE')}
                               {...field}
                             />
                           </FormControl>
@@ -557,7 +560,7 @@ export default function AddActivities() {
                     name="responsibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Responsibility</FormLabel>
+                        <FormLabel>{t('RESPONSIBILITY')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -565,7 +568,7 @@ export default function AddActivities() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select responsibility" />
+                              <SelectValue placeholder={t('SELECT_RESPONSIBILITY')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -590,11 +593,11 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>Responsible Station</FormLabel>
+                          <FormLabel>{t('RESPONSIBLE_STATION')}</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
-                              placeholder="Enter responsible station"
+                              placeholder={t('ENTER_RESPONSIBLE_STATION')}
                               {...field}
                             />
                           </FormControl>
@@ -608,7 +611,7 @@ export default function AddActivities() {
                     name="phaseId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phase</FormLabel>
+                        <FormLabel>{t('PHASE')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={phaseId || field.value}
@@ -617,7 +620,7 @@ export default function AddActivities() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select phase" />
+                              <SelectValue placeholder={t('SELECT_PHASE')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -637,7 +640,7 @@ export default function AddActivities() {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category</FormLabel>
+                        <FormLabel>{t('CATEGORY')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -645,7 +648,7 @@ export default function AddActivities() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
+                              <SelectValue placeholder={t('SELECT_CATEGORY')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -668,7 +671,7 @@ export default function AddActivities() {
                         return (
                           <FormItem className=" w-[200px]">
                             <div className="flex items-center justify-between w-full">
-                              <FormLabel>Save as Template</FormLabel>{' '}
+                              <FormLabel>{t('SAVE_AS_TEMPLATE')}</FormLabel>{' '}
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild className="-ml-4">
@@ -679,9 +682,7 @@ export default function AddActivities() {
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     <p>
-                                      This will save the activity as a template
-                                      for future use. If disabled, this will not
-                                      be saved as template
+                                      {t('TEMPLATE_SAVE_TOOLTIP')}
                                     </p>
                                   </TooltipContent>
                                 </Tooltip>
@@ -713,9 +714,9 @@ export default function AddActivities() {
                                 }
                               />
                             </FormControl>
-                            <FormLabel className="text-sm font-normal ml-2">
-                              Is Automated Activity?
-                            </FormLabel>
+                              <FormLabel className="text-sm font-normal ml-2">
+                                {t('IS_AUTOMATED_ACTIVITY')}
+                              </FormLabel>
                             <FormMessage />
                           </FormItem>
                         );
@@ -735,11 +736,11 @@ export default function AddActivities() {
                         const unit = !unitValue ? 'days' : unitValue;
                         return (
                           <FormItem>
-                            <FormLabel>Lead Time</FormLabel>
+                            <FormLabel>{t('LEAD_TIME')}</FormLabel>
                             <div className="grid grid-cols-4">
                               <Input
                                 type="text"
-                                placeholder="Enter lead time"
+                                placeholder={t('ENTER_LEAD_TIME')}
                                 className="col-span-3 rounded-r-none"
                                 value={lead}
                                 onChange={(e) => {
@@ -768,7 +769,7 @@ export default function AddActivities() {
                                       key={item.value}
                                       value={item.value}
                                     >
-                                      {item.label}
+                                      {item.value === 'hours' ? t('HOURS') : t('DAYS')}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -787,10 +788,10 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2 ">
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel>{tg('DESCRIPTION')}</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="Enter description "
+                              placeholder={t('ENTER_DESCRIPTION')}
                               className=" rounded"
                               {...field}
                             />
@@ -817,8 +818,8 @@ export default function AddActivities() {
                                 className="text-primary"
                               />
                               <p className="text-sm font-medium">
-                                Drop files to upload, or{' '}
-                                <span className="text-primary">browse</span>
+                                {t('DROP_FILES_TO_UPLOAD')}{' '}
+                                <span className="text-primary">{t('BROWSE')}</span>
                               </p>
                             </div>
                             <Input
@@ -831,8 +832,7 @@ export default function AddActivities() {
                         </FormControl>
                         <FormMessage />
                         <p className="text-xs text-end text-orange-500">
-                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                          CSV under 5 MB.
+                          {t('FILE_VALIDATION_TEXT')}
                         </p>
                         <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
                           {activityDocuments?.map((file) => (
@@ -891,7 +891,7 @@ export default function AddActivities() {
                   }
                 }}
               >
-                Add Communication
+                {t('ADD_COMMUNICATION')}
                 {!addCommunicationOpen.value ? (
                   <Plus className="ml-2" size={16} strokeWidth={3} />
                 ) : (
@@ -938,8 +938,8 @@ export default function AddActivities() {
         isConfirmationDialogOpen={templateConfirmDialog.value}
         onCancel={cancelTemplateToggle}
         onConfirm={confirmTemplateToggle}
-        dialogTitle="Confirm Template"
-        dialogMessage="Are you sure you want to save this activity as a template?"
+        dialogTitle={t('CONFIRM_TEMPLATE')}
+        dialogMessage={t('SAVE_AS_TEMPLATE_CONFIRM')}
       />
     </Form>
   );

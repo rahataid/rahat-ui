@@ -1,4 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 
 import { BarChart2, RadioTower } from 'lucide-react';
 
@@ -9,6 +11,7 @@ type IProps = {
 };
 
 export default function GaugereadingMonitoringCard({ data }: IProps) {
+  const t = useTranslations('AA Project');
   const renderColor = React.useCallback((status: string) => {
     if (status === 'Low Risk') return 'bg-green-100 text-green-500';
     if (status === 'Medium Risk') return 'bg-yellow-100 text-yellow-500';
@@ -28,7 +31,7 @@ export default function GaugereadingMonitoringCard({ data }: IProps) {
         </div>
 
         <div className="">
-          <h1 className="font-medium text-md text-wrap ">Gauge Reading (mm)</h1>
+          <h1 className="font-medium text-md text-wrap">{t('GAUGE_READING_MM')}</h1>
           <h1 className="text-sm">{data?.[0]?.data?.gaugeReading}</h1>
         </div>
       </div>{' '}
@@ -39,7 +42,7 @@ export default function GaugereadingMonitoringCard({ data }: IProps) {
           </div>
         </div>
         <div className="">
-          <h1 className="font-medium text-md text-wrap ">Station</h1>
+          <h1 className="font-medium text-md text-wrap">{t('STATION')}</h1>
           <h1 className="text-sm">{data?.[0]?.data?.station}</h1>
         </div>
 

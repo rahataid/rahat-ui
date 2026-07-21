@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,6 +33,8 @@ import Back from '../../../../components/back';
 import { toast } from 'react-toastify';
 
 export default function StakeholdersGroupEdit() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
@@ -104,7 +107,7 @@ export default function StakeholdersGroupEdit() {
   const updateStakeholdersGroup = useUpdateStakeholdersGroups();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Please enter group name.' }),
+    name: z.string().min(2, { message: t('PLEASE_ENTER_GROUP_NAME') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -158,11 +161,11 @@ export default function StakeholdersGroupEdit() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Group Name</FormLabel>
+                      <FormLabel>{t('GROUP_NAME')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Group name"
+                          placeholder={t('GROUP_NAME')}
                           {...field}
                         />
                       </FormControl>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -21,31 +22,32 @@ interface SettingData {
 }
 
 export const useAASettingColumns = () => {
+  const t = useTranslations('AA Project');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const columns: ColumnDef<SettingData>[] = [
     {
-      header: 'Name',
+      header: t('NAME'),
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      header: 'DataType',
+      header: t('DATA_TYPE'),
       accessorKey: 'dataType',
       cell: ({ row }) => <div>{row.getValue('dataType')}</div>,
     },
     {
-      header: 'Is Private',
+      header: t('IS_PRIVATE'),
       accessorKey: 'isPrivate',
-      cell: ({ row }) => <div>{row.original.isPrivate ? 'Yes' : 'No'}</div>,
+      cell: ({ row }) => <div>{row.original.isPrivate ? t('YES') : t('NO')}</div>,
     },
     {
-      header: 'Is ReadOnly',
+      header: t('IS_READ_ONLY'),
       accessorKey: 'isReadOnly',
-      cell: ({ row }) => <div>{row.original.isReadOnly ? 'Yes' : 'No'}</div>,
+      cell: ({ row }) => <div>{row.original.isReadOnly ? t('YES') : t('NO')}</div>,
     },
     {
-      header: 'Required Fields',
+      header: t('REQUIRED_FIELDS'),
       accessorKey: 'requiredFields',
       cell: ({ row }) => (
         <div>
@@ -58,7 +60,7 @@ export const useAASettingColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
-      header: 'Actions',
+      header: t('ACTIONS'),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -77,7 +79,7 @@ export const useAASettingColumns = () => {
                 }
               />
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>{t('EDIT')}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       ),

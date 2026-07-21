@@ -2,6 +2,7 @@ import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
+import { useTranslations } from 'next-intl';
 
 const findStat = (data: any[], name: string) => {
   return data?.find((s) => s.name === name)?.data ?? [];
@@ -17,6 +18,8 @@ const colorMap: Record<string, string> = {
 };
 
 const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
+  const t = useTranslations('Dashboard \u2013 Access & Inclusion');
+  const g = useTranslations('GLOBAL');
   // Extract relevant stats
   const mobileAccess = findStat(statsData, 'MOBILE_ACCESS');
   const internetAccess = findStat(statsData, 'INTERNET_ACCESS');
@@ -42,13 +45,13 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
 
   // Prepare charts data
   const charts = [
-    { title: 'Access to Mobile Phones', data: mobileAccess },
-    { title: 'Internet Access', data: internetAccess },
-    { title: 'Digital Wallet Use', data: digitalWalletUse },
-    { title: 'Types of Phone', data: typeOfPhone },
-    { title: 'Bank Account Access', data: bankAccountAccess },
+    { title: t('ACCESS_TO_MOBILE_PHONES'), data: mobileAccess },
+    { title: g('INTERNET_ACCESS'), data: internetAccess },
+    { title: t('DIGITAL_WALLET_USE'), data: digitalWalletUse },
+    { title: t('TYPES_OF_PHONE'), data: typeOfPhone },
+    { title: t('BANK_ACCOUNT_ACCESS'), data: bankAccountAccess },
     {
-      title: 'Social Security Linked to Bank Account',
+      title: t('SOCIAL_SECURITY_LINKED_TO_BANK_ACCOUNT'),
       data: socialSecurityLinked,
     },
   ];
@@ -56,9 +59,9 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
   return (
     <div className="mt-4">
       <Heading
-        title="Access & Inclusion"
+        title={t('ACCESS_INCLUSION')}
         titleStyle="text-lg"
-        description="Household participation in banking and digital finance systems"
+        description={t('HOUSEHOLD_PARTICIPATION_IN_BANKING_AND_DIGITAL')}
       />
       <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-4 gap-2 mt-2">
         {charts.map(({ title, data }, idx) => {
@@ -88,7 +91,7 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
           );
         })}
         <div className="border rounded-sm p-2 flex flex-col h-full  min-h-[300px] lg:col-span-2 ">
-          <h1 className="text-sm font-medium">Bank Accounts</h1>
+          <h1 className="text-sm font-medium">{t('BANK_ACCOUNTS')}</h1>
           <div className="flex-1 overflow-y-auto max-h-[200px] p-2 scrollbar-hidden">
             {bankCountStats.length === 0 ? (
               <div className="flex justify-center h-[300px] items-center">
@@ -105,7 +108,7 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
                 horizontal={true}
                 height={Math.max(bankCountStats.length * 30, 200)}
                 width="100%"
-                xaxisTitle="No. of Beneficiaries"
+                xaxisTitle={g('NO_OF_BENEFICIARIES')}
               />
             )}
           </div>

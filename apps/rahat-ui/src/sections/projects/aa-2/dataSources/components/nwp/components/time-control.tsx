@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
@@ -21,6 +23,7 @@ export function TimeControl({
   onOpacityChange,
   availableTimes,
 }: TimeControlProps) {
+  const t = useTranslations('AA Project');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -154,7 +157,7 @@ export function TimeControl({
 
         {/* Opacity Control */}
         <div className="flex items-center gap-3 min-w-[200px]">
-          <span className="text-sm font-medium whitespace-nowrap">Opacity</span>
+          <span className="text-sm font-medium whitespace-nowrap">{t('OPACITY')}</span>
           <Slider
             value={[opacity * 100]}
             onValueChange={(value: number[]) => onOpacityChange(value[0] / 100)}

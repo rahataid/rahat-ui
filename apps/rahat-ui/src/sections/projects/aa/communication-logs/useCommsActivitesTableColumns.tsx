@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@rahat-ui/shadcn/src/components/ui/dialog';
@@ -26,17 +27,18 @@ function getStatusBg(status: string) {
 }
 
 export default function useCommsActivitiesTableColumns() {
+  const t = useTranslations('AA Project');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
-      header: 'Title',
+      header: t('TITLE'),
       cell: ({ row }) => (
         <div className="capitalize min-w-72">{row.getValue('title')}</div>
       ),
     },
     {
       accessorKey: 'createdAt',
-      header: 'Date',
+      header: t('DATE'),
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
           {new Date(row.getValue('createdAt')).toLocaleString()}
@@ -45,12 +47,12 @@ export default function useCommsActivitiesTableColumns() {
     },
     {
       accessorKey: 'phase',
-      header: 'Phase',
+      header: t('PHASE'),
       cell: ({ row }) => <div>{row.getValue('phase')}</div>,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('STATUS'),
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
         const bgColor = getStatusBg(status);
@@ -59,7 +61,7 @@ export default function useCommsActivitiesTableColumns() {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
@@ -73,7 +75,7 @@ export default function useCommsActivitiesTableColumns() {
             </DialogTrigger>
             <DialogContent className='w-full'>
               <DialogHeader>
-                <DialogTitle className='mb-4'>Activity Details</DialogTitle>
+                <DialogTitle className='mb-4'>{t('ACTIVITY_DETAILS')}</DialogTitle>
                 <ActivityCommsCards activityId={row?.original?.id} />
               </DialogHeader>
             </DialogContent>

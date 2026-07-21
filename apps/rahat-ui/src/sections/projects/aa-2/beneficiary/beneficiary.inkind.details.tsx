@@ -6,6 +6,7 @@ import {
   ColumnDef,
 } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
+import { useTranslations } from 'next-intl';
 
 interface InKindItem {
   inkindName: string;
@@ -21,13 +22,15 @@ const InkindDetails = ({
 }: {
   filteredInkinds: InKindItem[];
 }) => {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const columns: ColumnDef<InKindItem>[] = [
     {
-      header: 'Items',
+      header: t('INKIND_ITEM'),
       accessorKey: 'inkindName',
     },
     {
-      header: 'Type',
+      header: tg('TYPE'),
       accessorKey: 'inkindType',
       cell: ({ row }) => {
         const type = row.original.inkindType.replace('_', ' ');
@@ -35,7 +38,7 @@ const InkindDetails = ({
       },
     },
     {
-      header: 'Assigned',
+      header: t('ASSIGNED'),
       accessorKey: 'assignedAmount',
       cell: ({ row }) => {
         const assigned = row.original.assignedAmount ?? '-';
@@ -43,21 +46,21 @@ const InkindDetails = ({
       },
     },
     {
-      header: 'Redeemed',
+      header: t('REDEEMED'),
       accessorKey: 'redeemedAmount',
     },
     {
-      header: 'Available',
+      header: t('AVAILABLE'),
       accessorKey: 'availableAmount',
     },
     {
-      header: 'Status',
+      header: tg('STATUS'),
       accessorKey: 'status',
       cell: ({ row }) => {
         const status = row.original.status;
         return (
           <Badge className="text-xs w-full">
-            {status === 'REDEEMED' ? 'Redeemed' : ' Not Redeemed'}
+            {status === 'REDEEMED' ? t('REDEEMED') : ` ${t('NOT_REDEEMED')}`}
           </Badge>
         );
       },
@@ -73,7 +76,7 @@ const InkindDetails = ({
 
   return (
     <>
-      <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
+      <h3 className="text-md font-semibold mb-3">{t('INKIND_BENEFITS')}</h3>
       <DemoTable table={table} tableHeight="h-[calc(100vh-600px)]" />
     </>
   );

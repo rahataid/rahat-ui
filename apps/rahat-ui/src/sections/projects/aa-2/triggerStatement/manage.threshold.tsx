@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -31,6 +32,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 
 export default function ManageThreshold() {
+  const t = useTranslations('AA Project');
+  const tGlobal = useTranslations('GLOBAL');
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { id, phaseId } = useParams();
@@ -91,11 +94,8 @@ export default function ManageThreshold() {
     <div className="p-4">
       <HeaderWithBack
         path=""
-        subtitle="Set up your trigger statement"
-        title={`Configure ${
-          threshold.name.charAt(0).toUpperCase() +
-          threshold.name.slice(1).toLowerCase()
-        } Phase`}
+        subtitle={t('SET_UP_YOUR_TRIGGER_STATEMENT')}
+        title={t('CONFIGURE_PHASE', { phase: threshold.name.charAt(0).toUpperCase() + threshold.name.slice(1).toLowerCase() })}
       />
 
       <Form {...form}>
@@ -108,11 +108,11 @@ export default function ManageThreshold() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <Label>Mandatory</Label>
+                      <Label>{t('MANDATORY')}</Label>
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="Enter a Mandatory  Value"
+                          placeholder={t('ENTER_MANDATORY_VALUE')}
                           className="[&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:opacity-100"
                           onKeyDown={(e) => {
                             const invalidKeys = [
@@ -152,12 +152,12 @@ export default function ManageThreshold() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <Label>Optional</Label>
+                      <Label>{t('OPTIONAL')}</Label>
                       <FormControl>
                         <Input
                           type="number"
                           className="[&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:bg-slate-400"
-                          placeholder="Enter a Optional Value"
+                          placeholder={t('ENTER_OPTIONAL_VALUE')}
                           onKeyDown={(e) => {
                             const invalidKeys = [
                               'e',
@@ -200,7 +200,7 @@ export default function ManageThreshold() {
                   // router.back()
                 }}
               >
-                Reset
+                {t('RESET')}
               </Button>
 
               <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
@@ -210,7 +210,7 @@ export default function ManageThreshold() {
                   type="button"
                   disabled={!form.formState.isValid}
                 >
-                  Configure
+                  {t('CONFIGURE')}
                 </Button>
                 <DialogContent
                   className="!rounded-sm"
@@ -219,18 +219,18 @@ export default function ManageThreshold() {
                   }}
                 >
                   <DialogHeader className="!text-center">
-                    <DialogTitle>Confirm Configuration</DialogTitle>
+                    <DialogTitle>{t('CONFIRM_CONFIGURATION')}</DialogTitle>
                     <DialogDescription>
-                      Are you Sure you want to confirm this trigger threshold?
+                      {t('CONFIRM_TRIGGER_THRESHOLD')}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="border rounded-sm h-24 bg-slate-100 flex flex-col p-5 gap-4">
                     <Label>
-                      Mandatory : {form.watch('requiredMandatoryTriggers')}
+                      {t('MANDATORY')} : {form.watch('requiredMandatoryTriggers')}
                     </Label>
 
                     <Label>
-                      Optional : {form.watch('requiredOptionalTriggers')}
+                      {t('OPTIONAL')} : {form.watch('requiredOptionalTriggers')}
                     </Label>
                   </div>
                   <DialogFooter className="flex justify-between">
@@ -240,14 +240,14 @@ export default function ManageThreshold() {
                       className="w-full rounded-sm"
                       variant="outline"
                     >
-                      Cancel
+                      {tGlobal('CANCEL')}
                     </Button>
                     <Button
                       type="submit"
                       className={cn('w-full rounded-sm')}
                       onClick={form.handleSubmit(handleConfigureThreshhold)}
                     >
-                      Confirm
+                      {t('CONFIRM')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>

@@ -3,12 +3,15 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { IProjectVendor } from '../types';
 import { useAAVendorsStore } from '@rahat-ui/query';
 
 export const useProjectVendorTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { vendors, setVendorDetails } = useAAVendorsStore((state) => ({
     vendors: state.vendors,
     setVendorDetails: state.setVendorDetails,
@@ -24,29 +27,29 @@ export const useProjectVendorTableColumns = () => {
   const columns: ColumnDef<IProjectVendor>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'phone',
-      header: 'Phone Number',
-      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+      header: tg('PHONE_NUMBER'),
+      cell: ({ row }) => <div>{row.getValue('phone') || tg('N_A')}</div>,
     },
     {
       accessorKey: 'location',
-      header: 'Location',
-      cell: ({ row }) => <div>{row.getValue('location') || 'N/A'}</div>,
+      header: tg('LOCATION'),
+      cell: ({ row }) => <div>{row.getValue('location') || tg('N_A')}</div>,
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleViewClick(row.original.uuid)}
             />

@@ -18,6 +18,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { cn } from '@rahat-ui/shadcn/src';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   user: string;
@@ -66,12 +67,13 @@ export default function DailyMonitoringTableFilters({
   handleSearch,
   handleFilter,
 }: IProps) {
+  const tGlobal = useTranslations('GLOBAL');
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">
       <SearchInput
         className="w-full"
-        name="user"
+        name={tGlobal('USER')}
         value={user}
         onSearch={handleSearch}
       />

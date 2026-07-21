@@ -38,6 +38,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { formatUnits } from 'viem';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useTranslations } from 'next-intl';
 
 interface CardProps {
   title: string;
@@ -50,6 +51,8 @@ interface CardProps {
 export default function MultiSigWalletView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const { clickToCopy, copyAction } = useCopy();
+  const t = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('GLOBAL');
 
   const {
     data: safeOwners,
@@ -74,15 +77,15 @@ export default function MultiSigWalletView() {
 
   const InfoCardData: CardProps[] = [
     {
-      title: 'Total Balance',
-      tip: 'The total amount of available Rahat tokens currently held in the Safe wallet that can be proposed and added to the Project AA Project balance.',
-      content: `${safeOwners?.projectBalance} RHT` || 'N/A',
+      title: t('TOTAL_BALANCE'),
+      tip: t('TOTAL_BALANCE_TOOLTIP'),
+      content: `${safeOwners?.projectBalance} RHT` || tg('N_A'),
       color: 'green',
       icon: <Banknote strokeWidth={2.5} />,
     },
     {
-      title: 'Signature Threshold',
-      tip: 'The minimum number of authorized owners who must approve and sign a multi-sig transaction in the Safe wallet before the transaction can be successfully executed.',
+      title: t('SIGNATURE_THRESHOLD'),
+      tip: t('SIGNATURE_THRESHOLD_TOOLTIP'),
       content: `${safeOwners?.threshold || '-'} of ${
         safeOwners?.owners?.length || '-'
       }`,
@@ -90,9 +93,9 @@ export default function MultiSigWalletView() {
       icon: <CircleCheckBig strokeWidth={2.5} />,
     },
     {
-      title: 'Active Owners',
-      tip: 'The total number of active Safe wallet owners or admin who are authorized to sign and execute Gnosis multi-sig transactions.',
-      content: safeOwners?.owners?.length || 'N/A',
+      title: t('ACTIVE_OWNERS'),
+      tip: t('ACTIVE_OWNERS_TOOLTIP'),
+      content: safeOwners?.owners?.length || tg('N_A'),
       color: 'blue',
       icon: <Users strokeWidth={2.5} />,
     },
@@ -145,8 +148,8 @@ export default function MultiSigWalletView() {
     <div className="h-[calc(100vh-260px)]">
       <div className="flex justify-between space-x-4">
         <Heading
-          title="Gnosis Wallet Overview"
-          description="Overview of your gnosis wallet"
+          title={t('GNOSIS_WALLET_OVERVIEW')}
+          description={t('OVERVIEW_OF_YOUR_GNOSIS_WALLET')}
           titleStyle="text-lg"
         />
         <MultisigProposeBtn
@@ -173,12 +176,12 @@ export default function MultiSigWalletView() {
           <CardHeader className="p-4">
             <div className="flex items-center space-x-2">
               <CardTitle className="text-sm lg:text-base">
-                Safe Wallet Details
+                {t('SAFE_WALLET_DETAILS')}
               </CardTitle>
 
               <TooltipComponent
                 Icon={ExternalLinkIcon}
-                tip="Redirect to Safe Wallet"
+                tip={t('REDIRECT_TO_SAFE_WALLET')}
                 handleOnClick={openSafeTx}
                 iconStyle="text-primary"
               />
@@ -190,7 +193,7 @@ export default function MultiSigWalletView() {
                 <div className="flex items-center justify-between p-4 bg-gray-100 rounded-sm">
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      Wallet Address
+                      {tg('WALLET_ADDRESS')}
                     </p>
                     <p className="text-sm text-gray-600 font-mono">
                       {safeOwners?.address}
@@ -211,7 +214,7 @@ export default function MultiSigWalletView() {
 
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 mb-3">
-                    Authorized Owners
+                    {t('AUTHORIZED_OWNERS')}
                   </h4>
                   <ScrollArea className="h-[calc(100vh-655px)]">
                     <div className="space-y-2">
@@ -226,7 +229,7 @@ export default function MultiSigWalletView() {
                             </p>
                           </div>
                           <Badge className="bg-green-50 text-green-600 border-green-500 font-medium">
-                            active
+                            {tg('ACTIVE')}
                           </Badge>
                         </div>
                       ))}
@@ -243,7 +246,7 @@ export default function MultiSigWalletView() {
         <Card className="rounded-sm">
           <CardHeader className="p-4">
             <CardTitle className="text-sm lg:text-base">
-              Recent Transfers
+              {t('RECENT_TRANSFERS')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
@@ -256,9 +259,9 @@ export default function MultiSigWalletView() {
                       className="flex items-center justify-between p-3 border rounded-sm"
                     >
                       <div>
-                        <p className="text-sm font-medium">Transfer</p>
+                        <p className="text-sm font-medium">{t('TRANSFER')}</p>
                         <p className="text-xs">
-                          To: {truncateEthAddress(tx?.to)}
+                          {tg('TO')}: {truncateEthAddress(tx?.to)}
                         </p>
                         <p className="text-xs text-gray-600">
                           {dateFormat(tx?.submissionDate)}
@@ -276,7 +279,7 @@ export default function MultiSigWalletView() {
                               : 'bg-orange-50 text-orange-600 border-orange-500'
                           }`}
                         >
-                          {tx?.isSuccess ? 'Success' : 'Pending'}
+                          {tx?.isSuccess ? tg('SUCCESS') : tg('PENDING')}
                         </Badge>
                       </div>
                     </div>

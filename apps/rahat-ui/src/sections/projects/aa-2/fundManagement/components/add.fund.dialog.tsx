@@ -22,23 +22,25 @@ import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 
-const AddFundSchema = z.object({
-  amount: z
-    .string()
-    .min(1, 'Amount is required')
-    .refine((val) => !isNaN(Number(val)), {
-      message: 'Amount must be a number',
-    })
-    .refine((val) => Number(val) > 0, {
-      message: 'Amount must be greater than 0',
-    })
-    .refine((val) => Number.isFinite(Number(val)), {
-      message: 'Amount must be a finite number',
-    }),
-});
+const makeAddFundSchema = (t: (key: string) => string) =>
+  z.object({
+    amount: z
+      .string()
+      .min(1, t('AMOUNT_IS_REQUIRED'))
+      .refine((val) => !isNaN(Number(val)), {
+        message: t('AMOUNT_MUST_BE_NUMBER'),
+      })
+      .refine((val) => Number(val) > 0, {
+        message: t('AMOUNT_MUST_BE_GREATER_THAN_0'),
+      })
+      .refine((val) => Number.isFinite(Number(val)), {
+        message: t('AMOUNT_MUST_BE_FINITE_NUMBER'),
+      }),
+  });
 
-type AddFundFormValues = z.infer<typeof AddFundSchema>;
+type AddFundFormValues = z.infer<ReturnType<typeof makeAddFundSchema>>;
 
 type IProps = {
   open: boolean;
@@ -47,10 +49,11 @@ type IProps = {
 };
 
 export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
+  const t = useTranslations('AA Project');
   const addProjectFund = useAddProjectFund(projectUUID);
 
   const form = useForm<AddFundFormValues>({
-    resolver: zodResolver(AddFundSchema),
+    resolver: zodResolver(makeAddFundSchema(t)),
     defaultValues: { amount: '' },
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -73,7 +76,7 @@ export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Add Fund</DialogTitle>
+          <DialogTitle>{t('ADD_FUND')}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -83,13 +86,13 @@ export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount</FormLabel>
+                  <FormLabel>{t('AMOUNT')}</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
                       inputMode="decimal"
                       min="0"
-                      placeholder="Enter fund amount"
+                      placeholder={t('ENTER_FUND_AMOUNT_PLACEHOLDER')}
                       {...field}
                     />
                   </FormControl>
@@ -106,7 +109,7 @@ export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
                 disabled={addProjectFund.isPending}
                 className="w-full rounded-sm"
               >
-                Cancel
+                {t('CANCEL')}
               </Button>
               <Button
                 type="submit"
@@ -116,10 +119,10 @@ export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
                 {addProjectFund.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Adding...
+                    {t('ADDING')}
                   </>
                 ) : (
-                  'Add Fund'
+                  t('ADD_FUND')
                 )}
               </Button>
             </DialogFooter>

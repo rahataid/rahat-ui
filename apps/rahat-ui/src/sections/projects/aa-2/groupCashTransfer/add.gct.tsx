@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,6 +30,8 @@ const DEFAULT_VALUES: GctGroupValues = {
 };
 
 export default function AddGct() {
+  const t = useTranslations('AA Project with Cash Tracker');
+  const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -100,8 +103,8 @@ export default function AddGct() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Create GCT Group"
-        subtitle="Fill the form below to create new Group for Group Cash Transfer"
+        title={t('CREATE_GCT_GROUP')}
+        subtitle={t('FILL_THE_FORM_BELOW_TO_CREATE')}
         path={`/projects/aa/${id}/group-cash-transfer`}
       />
 
@@ -122,7 +125,7 @@ export default function AddGct() {
               onClick={() => { form.reset(DEFAULT_VALUES); setClearKey((k) => k + 1); }}
               disabled={isPending}
             >
-              Clear
+              {t('CLEAR')}
             </Button>
             <Button
               type="submit"
@@ -132,15 +135,15 @@ export default function AddGct() {
               {validating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Validating bank account...
+                  {t('VALIDATING_BANK_ACCOUNT')}
                 </>
               ) : createGct.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  {t('CREATING')}
                 </>
               ) : (
-                'Create'
+                tGlobal('CREATE')
               )}
             </Button>
           </div>

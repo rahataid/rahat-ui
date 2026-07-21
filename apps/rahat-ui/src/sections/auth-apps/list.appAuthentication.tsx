@@ -27,8 +27,11 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '../../utils/useDebouncehooks';
 import { useAppAuthenticationColumns } from './useAppAuthenticationColumns';
+import { useTranslations } from 'next-intl';
 
 export default function ListAppAuthentication() {
+  const t = useTranslations('Auth Apps – List');
+  const tg = useTranslations('GLOBAL');
   const columns = useAppAuthenticationColumns();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -83,7 +86,7 @@ export default function ListAppAuthentication() {
     <div className="w-full mt-1 p-1 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Search by name..."
+          placeholder={t('SEARCH_BY_NAME')}
           name="name"
           value={
             (table.getColumn('name')?.getFilterValue() as string) ??
@@ -138,7 +141,7 @@ export default function ListAppAuthentication() {
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {tg('NO_RESULTS')}
                   </TableCell>
                 </TableRow>
               )}

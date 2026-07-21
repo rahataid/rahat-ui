@@ -35,6 +35,7 @@ import { flexRender } from '@tanstack/react-table';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import React, { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
@@ -63,6 +64,8 @@ const AddAudience: FC<AddAudienceProps> = ({
   audienceRequiredError,
   setAudienceRequiredError,
 }) => {
+  const t = useTranslations('Communications – Add Campaign');
+  const tg = useTranslations('GLOBAL');
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -156,12 +159,12 @@ const AddAudience: FC<AddAudienceProps> = ({
   return (
     <>
       {audienceRequiredError && (
-        <h3 className="text-red-600">Select Audience</h3>
+        <h3 className="text-red-600">{t('SELECT_AUDIENCE')}</h3>
       )}
       {/* header area start  */}
       <div className="flex items-center gap-2 pb-2">
         <Input
-          placeholder="Filter audiences"
+          placeholder={tg('FILTER_AUDIENCES')}
           value={globalFilter ?? ''}
           onChange={(value) => {
             setGlobalFilter(value.target.value);
@@ -171,12 +174,12 @@ const AddAudience: FC<AddAudienceProps> = ({
         {filters.projectId && (
           <>
             <DatePicker
-              placeholder="Pick Start Date"
+              placeholder={t('PICK_START_DATE')}
               handleDateChange={handleDateChange}
               type="start"
             />
             <DatePicker
-              placeholder="Pick End Date"
+              placeholder={t('PICK_END_DATE')}
               handleDateChange={handleDateChange}
               type="end"
             />
@@ -184,10 +187,10 @@ const AddAudience: FC<AddAudienceProps> = ({
         )}
         <Select onValueChange={filterBenByProjectId}>
           <SelectTrigger className="max-w-32">
-            <SelectValue placeholder="Projects" />
+            <SelectValue placeholder={tg('PROJECTS')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={'ALL'}>ALL</SelectItem>
+            <SelectItem value={'ALL'}>{t('ALL')}</SelectItem>
             {projectsList.data?.data.length &&
               projectsList.data.data.map((project) => {
                 return (
@@ -201,7 +204,7 @@ const AddAudience: FC<AddAudienceProps> = ({
         {filters?.projectId === elUuid && (
           <Select onValueChange={filterBenByBenTypes}>
             <SelectTrigger className="max-w-32">
-              <SelectValue placeholder="Types" />
+              <SelectValue placeholder={t('TYPES')} />
             </SelectTrigger>
             <SelectContent>
               {benType?.map((item) => {
@@ -221,7 +224,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               : 'bg-card'
           }`}
         >
-          {selectedRows.length} - Audience selected
+          {selectedRows.length} - {tg('AUDIENCE_SELECTED')}
         </div>
       </div>
       {/* header area end  */}
@@ -276,7 +279,7 @@ const AddAudience: FC<AddAudienceProps> = ({
                               colSpan={columns.length}
                               className="text-center"
                             >
-                              No results.
+                              {tg('NO_RESULTS')}
                             </TableCell>
                           </TableRow>
                         )}
@@ -286,10 +289,10 @@ const AddAudience: FC<AddAudienceProps> = ({
                   <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
                     <div className="flex-1 text-sm text-muted-foreground">
                       {selectedRows.length} of{' '}
-                      {table.getFilteredRowModel().rows.length} row(s) selected.
+                      {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="text-sm font-medium">Rows per page</div>
+                      <div className="text-sm font-medium">{tg('ROWS_PER_PAGE')}</div>
                       <Select
                         defaultValue="10"
                         onValueChange={(value) =>
@@ -312,8 +315,7 @@ const AddAudience: FC<AddAudienceProps> = ({
                       </Select>
                     </div>
                     <div>
-                      Page {table.getState().pagination.pageIndex + 1} of{' '}
-                      {table.getPageCount()}
+                      {tg('PAGE_CURRENT_OF_TOTAL', { current: table.getState().pagination.pageIndex + 1, total: table.getPageCount() })}
                     </div>
                     <div className="space-x-4">
                       <Button
@@ -325,7 +327,7 @@ const AddAudience: FC<AddAudienceProps> = ({
                         }}
                         disabled={!table.getCanPreviousPage()}
                       >
-                        Previous
+                        {tg('PREVIOUS')}
                       </Button>
                       <Button
                         variant="outline"
@@ -336,7 +338,7 @@ const AddAudience: FC<AddAudienceProps> = ({
                         }}
                         disabled={!table.getCanNextPage()}
                       >
-                        Next
+                        {tg('NEXT')}
                       </Button>
                     </div>
                   </div>

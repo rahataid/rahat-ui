@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 
@@ -24,6 +25,7 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 
 export default function EditCampaign() {
+  const t = useTranslations('Communications – Text/SMS');
   const params = useParams<{ tag: string; id: string }>();
   const router = useRouter();
 
@@ -47,13 +49,13 @@ export default function EditCampaign() {
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {
-      message: 'Campaign Name must be at least 2 characters.',
+      message: t('CAMPAIGN_NAME_MUST_BE_AT_LEAST'),
     }),
     startTime: z.date({
-      required_error: 'Start time is required.',
+      required_error: t('START_TIME_IS_REQUIRED'),
     }),
     campaignType: z.string({
-      required_error: 'Camapign Type is required.',
+      required_error: t('CAMAPIGN_TYPE_IS_REQUIRED'),
     }),
 
     message: z.string({}),
@@ -154,7 +156,7 @@ export default function EditCampaign() {
 
         if (data) {
           router.push(paths.dashboard.communication.text);
-          toast.success('Campaign Edit Success.');
+          toast.success(t('CAMPAIGN_EDIT_SUCCESS'));
         }
       })
       .catch((e) => {
@@ -169,7 +171,7 @@ export default function EditCampaign() {
   return (
     <>
       {isLoading || data === undefined ? (
-        <p>Loading . . .</p>
+        <p>{t('LOADING')}</p>
       ) : (
         <Form {...form}>
           <form

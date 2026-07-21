@@ -1,4 +1,5 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 const getCellColor = (cell: string) => {
   const cellValue = cell ? Number(cell) : 0;
@@ -15,8 +16,9 @@ const getCellColor = (cell: string) => {
 };
 
 export default function GlofasContent({ location, glofasData }: any) {
+  const t = useTranslations('AA Project');
   if (!glofasData) {
-    return <p>Data not available for GloFAS.</p>;
+    return <p>{t('DATA_NOT_AVAILABLE_GLOFAS')}</p>;
   }
   const pointForecast = glofasData?.pointForecastData;
   const returnPeriodHeaders =
@@ -28,10 +30,10 @@ export default function GlofasContent({ location, glofasData }: any) {
     <ScrollArea className="h-[calc(100vh-215px)]">
       <div className="grid grid-cols-5 gap-4">
         <div className="bg-card p-4 rounded col-span-2">
-          <h1 className="font-semibold text-lg mb-4">Point Forecast</h1>
+          <h1 className="font-semibold text-lg mb-4">{t('POINT_FORECAST')}</h1>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h1 className="text-muted-foreground text-sm">Station</h1>
+              <h1 className="text-muted-foreground text-sm">{t('STATION')}</h1>
               <p>{location}</p>
             </div>
             <div className="text-right">
@@ -85,7 +87,7 @@ export default function GlofasContent({ location, glofasData }: any) {
 
         <div className="bg-card p-4 rounded col-span-5">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="font-semibold text-lg">{'ECMWF-ENS > 2 yr RP'}</h1>
+            <h1 className="font-semibold text-lg">{t('ECMWF_ENS_2_YR_RP')}</h1>
           </div>
           <div className="overflow-auto">
             <table className="min-w-full bg-white border border-gray-200">

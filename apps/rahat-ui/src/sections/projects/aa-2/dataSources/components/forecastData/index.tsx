@@ -1,4 +1,6 @@
 import { useGaugeForecast } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+
 import {
   Back,
   HeaderWithBack,
@@ -60,6 +62,7 @@ const ForeCastData = () => {
   } level`;
 
   if (isLoading) {
+  const t = useTranslations('AA Project');
     return (
       <div className="h-full w-full flex items-center justify-center">
         <TableLoader />
@@ -73,7 +76,7 @@ const ForeCastData = () => {
         <Back
           path={`/projects/aa/${projectId}/data-sources?tab=gaugeReading`}
         />
-        <NoResult message="No Gauge Reading Data" />
+        <NoResult message={t('NO_GAUGE_READING_DATA')} />
       </div>
     );
   }
@@ -82,7 +85,7 @@ const ForeCastData = () => {
     <div className="p-4">
       <HeaderWithBack
         title={'Gauge Reading Details'}
-        subtitle="Detailed view of the selected gauge reading"
+        subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_GAUGE')}
         path={`/projects/aa/${projectId}/data-sources?tab=gaugeReading`}
       />
       <GaugeForecastCard

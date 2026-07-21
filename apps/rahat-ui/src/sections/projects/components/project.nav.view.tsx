@@ -1,5 +1,6 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { NavItem } from './nav-items.types';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
@@ -9,6 +10,7 @@ type ProjectNavViewProps = {
 };
 
 const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const pathName = usePathname();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
@@ -144,7 +146,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-2v-5m0-1V4"
               />
             </svg>
-            <p>Exit Project</p>
+            <p>{t('EXIT_PROJECT')}</p>
           </div>
         </nav>
       </aside>

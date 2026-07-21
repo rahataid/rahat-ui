@@ -20,8 +20,10 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Pencil } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function DHMBulletinDialog() {
+  const t = useTranslations('AA Project');
   const FormSchema = z.object({
     waterWay: z.string().min(5, { message: 'Must be at least 5 characters' }),
     river: z.string().min(5, { message: 'Must be at least 5 characters' }),
@@ -62,7 +64,7 @@ export default function DHMBulletinDialog() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleUpdateBulletin)}>
             <DialogHeader>
-              <DialogTitle>Update Bulletin</DialogTitle>
+              <DialogTitle>{t('UPDATE_BULLETIN')}</DialogTitle>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
               <FormField
@@ -71,9 +73,9 @@ export default function DHMBulletinDialog() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Waterway</FormLabel>
+                      <FormLabel>{t('WATERWAY')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter Waterway" {...field} />
+                        <Input placeholder={t('ENTER_WATERWAY')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -86,9 +88,9 @@ export default function DHMBulletinDialog() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>River</FormLabel>
+                      <FormLabel>{t('RIVER')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter River" {...field} />
+                        <Input placeholder={t('ENTER_RIVER')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -101,9 +103,9 @@ export default function DHMBulletinDialog() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Today's status</FormLabel>
+                      <FormLabel>{t('TODAYS_STATUS')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter status" {...field} />
+                        <Input placeholder={t('ENTER_STATUS')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -116,9 +118,9 @@ export default function DHMBulletinDialog() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Tomorrow's status</FormLabel>
+                      <FormLabel>{t('TOMORROWS_STATUS')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter status" {...field} />
+                        <Input placeholder={t('ENTER_STATUS')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -131,9 +133,9 @@ export default function DHMBulletinDialog() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>The day after tomorrow's status</FormLabel>
+                      <FormLabel>{t('DAY_AFTER_TOMORROW_STATUS')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter status" {...field} />
+                        <Input placeholder={t('ENTER_STATUS')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -146,10 +148,10 @@ export default function DHMBulletinDialog() {
                   variant="secondary"
                   className="bg-red-100 text-red-600 w-full"
                 >
-                  Cancel
+                  {t('CANCEL')}
                 </Button>
                 <Button type="submit" className="w-full">
-                  Update
+                  {t('UPDATE')}
                 </Button>
               </div>
             </div>

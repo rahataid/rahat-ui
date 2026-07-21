@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useMemo } from 'react';
 
 import { Back, Heading } from 'apps/rahat-ui/src/common';
@@ -42,6 +43,8 @@ const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
 export default function UpdateStatus() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const activityId = params.activityID as UUID;
@@ -201,8 +204,8 @@ export default function UpdateStatus() {
 
           <div className="mt-4 flex justify-between items-center">
             <Heading
-              title={`Update Status`}
-              description="Change the status of this activity"
+              title={t('UPDATE_STATUS')}
+              description={t('CHANGE_THE_STATUS_OF_THIS_ACTIVITY')}
             />
           </div>
         </div>
@@ -217,7 +220,7 @@ export default function UpdateStatus() {
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <FormLabel className="text-muted-foreground">
-                        Status:
+                        {tg('STATUS')}:
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -225,7 +228,7 @@ export default function UpdateStatus() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
+                            <SelectValue placeholder={t('SELECT_STATUS')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -247,11 +250,11 @@ export default function UpdateStatus() {
                     return (
                       <FormItem>
                         <FormLabel className="text-muted-foreground">
-                          Add note
+                          {t('ADD_NOTE')}
                         </FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Enter notes"
+                            placeholder={t('ENTER_NOTES')}
                             {...field}
                           />
                         </FormControl>
@@ -275,9 +278,9 @@ export default function UpdateStatus() {
                                 className="text-primary"
                               />
                               <p className="text-sm font-medium">
-                                Drop files to upload, or{' '}
+                                {t('DROP_FILES_TO_UPLOAD')}{' '}
                                 <span className="text-primary cursor-pointer">
-                                  browse
+                                  {t('BROWSE')}
                                 </span>
                               </p>
                             </div>
@@ -291,8 +294,7 @@ export default function UpdateStatus() {
                         </FormControl>
                         <FormMessage />
                         <p className="text-xs text-orange-500 text-end">
-                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                          CSV under 5 MB.
+                          {t('FILE_VALIDATION_TEXT')}
                         </p>
 
                         <div className="grid grid-cols-5 gap-4 p-2">
@@ -349,7 +351,7 @@ export default function UpdateStatus() {
                     className="bg-red-100 text-red-600  w-48 rounded-sm"
                     onClick={() => form.reset()}
                   >
-                    Reset
+                    {t('RESET')}
                   </Button>
 
                   <Button
@@ -361,7 +363,7 @@ export default function UpdateStatus() {
                       !activityDetail
                     }
                   >
-                    Update
+                    {t('UPDATE')}
                   </Button>
                 </div>
               </div>

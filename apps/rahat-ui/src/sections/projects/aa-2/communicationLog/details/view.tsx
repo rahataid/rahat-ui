@@ -1,6 +1,7 @@
 import { useSingleActivity } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 import { Back, Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -122,6 +123,7 @@ const activityDetail = {
   ],
 };
 const CommunicationDetailsView = () => {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const activityId = params.activityId as UUID;
@@ -154,14 +156,14 @@ const CommunicationDetailsView = () => {
         <div className="mt-4 flex flex-col pb-3">
           <div>
             <Heading
-              title={`Communication Details`}
-              description="Select any communication to view  their details"
+              title={t('COMMUNICATION_DETAILS')}
+              description={t('SELECT_COMMUNICATION_TO_VIEW')}
             />
           </div>
           <div className="flex flex-col">
             {/* <p className="text-sm text-muted-foreground">Activity title:</p> */}
             <Label className="text-muted-foreground mb-2 text-xs">
-              Activity Title:
+              {t('ACTIVITY_TITLE')}:
             </Label>
             <p className="text-base">
               {activityDetail?.title}{' '}

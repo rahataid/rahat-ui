@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -40,6 +41,7 @@ import { ValidationContent } from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
 
 export default function EditActivity() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
@@ -275,7 +277,7 @@ export default function EditActivity() {
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter activity title"
+                            placeholder={t('ENTER_ACTIVITY_TITLE')}
                             {...field}
                           />
                         </FormControl>
@@ -294,7 +296,7 @@ export default function EditActivity() {
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter responsibility"
+                            placeholder={t('ENTER_RESPONSIBILITY')}
                             {...field}
                           />
                         </FormControl>
@@ -313,7 +315,7 @@ export default function EditActivity() {
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter source"
+                            placeholder={t('ENTER_SOURCE')}
                             {...field}
                           />
                         </FormControl>
@@ -334,7 +336,7 @@ export default function EditActivity() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select phase" />
+                            <SelectValue placeholder={t('SELECT_PHASE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -361,7 +363,7 @@ export default function EditActivity() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
+                            <SelectValue placeholder={t('SELECT_CATEGORY')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -411,7 +413,7 @@ export default function EditActivity() {
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter lead time"
+                            placeholder={t('ENTER_LEAD_TIME')}
                             {...field}
                           />
                         </FormControl>
@@ -430,7 +432,7 @@ export default function EditActivity() {
                         <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Enter description"
+                            placeholder={t('ENTER_DESCRIPTION')}
                             {...field}
                           />
                         </FormControl>

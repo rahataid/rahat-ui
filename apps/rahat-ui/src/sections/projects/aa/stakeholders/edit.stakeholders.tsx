@@ -19,6 +19,7 @@ import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import { useUpdateStakeholders } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 
 type IProps = {
@@ -26,6 +27,8 @@ type IProps = {
 };
 
 export default function EditStakeholders({ stakeholdersDetail }: IProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const { closeSecondPanel } = useSecondPanel();
 
@@ -108,7 +111,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="Name" {...field} />
+                        <Input type="text" placeholder={tg('NAME')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -122,7 +125,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
                   return (
                     <FormItem>
                       <FormControl>
-                        <PhoneInput placeholder="Phone" {...field} />
+                        <PhoneInput placeholder={tg('PHONE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -138,7 +141,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Email Address"
+                          placeholder={tg('EMAIL_ADDRESS')}
                           {...field}
                         />
                       </FormControl>
@@ -156,7 +159,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Designation"
+                          placeholder={t('DESIGNATION')}
                           {...field}
                         />
                       </FormControl>
@@ -174,7 +177,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Organization"
+                          placeholder={tg('ORGANIZATION')}
                           {...field}
                         />
                       </FormControl>
@@ -190,7 +193,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="District" {...field} />
+                        <Input type="text"                           placeholder={tg('ADDRESS')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -206,7 +209,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Municipality"
+                          placeholder={t('MUNICIPALITY')}
                           {...field}
                         />
                       </FormControl>

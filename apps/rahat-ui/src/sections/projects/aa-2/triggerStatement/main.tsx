@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
@@ -37,6 +38,7 @@ const savePinnedPhases = (projectId: string, ids: string[]) => {
 };
 
 export default function TriggerStatementView() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -106,8 +108,8 @@ export default function TriggerStatementView() {
     <div className="p-4 h-[calc(100vh-64px)] flex flex-col overflow-hidden">
       <div className="flex justify-between items-center">
         <Heading
-          title="Trigger Statement"
-          description="Track all the trigger reports here"
+          title={t('TRIGGER_STATEMENT')}
+          description={t('TRACK_ALL_THE_TRIGGER_REPORTS_HERE')}
         />
       </div>
 
@@ -116,7 +118,7 @@ export default function TriggerStatementView() {
         <ScrollArea className="flex-1 ">
           {sortedPhases.length === 0 ? (
             <div className="flex h-full min-h-[400px] items-center justify-center">
-              <NoResult message="No Phases Available" />
+              <NoResult message={t('NO_PHASES_AVAILABLE_SHORT')} />
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 pr-2">
@@ -173,10 +175,10 @@ export default function TriggerStatementView() {
                             </div>
                           </Button>
                           <p className="text-base font-medium text-blue-500 ">
-                            Add Phase
+                            {t('ADD_PHASE')}
                           </p>
                           <p className="text-sm text-blue-400">
-                            Click here to add new phase
+                            {t('CLICK_HERE_TO_ADD_NEW_PHASE')}
                           </p>
                         </div>
                       </CardContent>

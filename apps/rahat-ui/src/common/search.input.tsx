@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Input } from 'libs/shadcn/src/components/ui/input';
 import { Search, X } from 'lucide-react';
 import { cn } from 'libs/shadcn/src';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   name: string;
@@ -24,6 +25,7 @@ export function SearchInput({
   isDisabled = false,
   value,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   const handleClear = () => {
     const event = {
       target: { name, value: '' },
@@ -38,7 +40,7 @@ export function SearchInput({
       />
       <Input
         name={name}
-        placeholder={placeholder || `Search ${name}...`}
+        placeholder={placeholder || t('SEARCH_PLACEHOLDER', { name })}
         className={cn(
           'pl-8 h-[clamp(32px,3.5vw,40px)] text-[clamp(11px,1vw,14px)]',
           inputClassName,

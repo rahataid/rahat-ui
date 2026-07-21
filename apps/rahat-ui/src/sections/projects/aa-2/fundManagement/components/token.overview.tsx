@@ -18,8 +18,12 @@ import TokenOverviewSkeleton from './token.overview.skeleton';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
+import { useTranslations } from 'next-intl';
 
 export default function TokensOverview() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
+  const tc = useTranslations('AA Project with Cash Tracker');
   const uuid = useParams().id;
   const projectId = uuid as UUID;
   const { data, isLoading } = useFetchTokenStatsStellar({
@@ -59,18 +63,18 @@ export default function TokensOverview() {
       } else notDisbursedValue += numberOfTokens;
     });
     return [
-      { label: 'Disbursed', value: disbursedValue },
-      { label: 'Failed', value: failedValue },
-      { label: 'Not Disbursed', value: notDisbursedValue },
+      { label: tc('DISBURSED'), value: disbursedValue },
+      { label: tg('FAILED'), value: failedValue },
+      { label: t('NOT_DISBURSED'), value: notDisbursedValue },
     ];
   };
 
   return (
     <>
       <Heading
-        title="Tokens Overview"
+        title={t('TOKENS_OVERVIEW')}
         titleStyle="text-lg"
-        description="Overview of your tokens"
+        description={t('OVERVIEW_OF_YOUR_TOKENS')}
       />
       {!isLoading ? (
         <div className="space-y-4 mb-4">
@@ -126,7 +130,7 @@ export default function TokensOverview() {
                   <DataCard
                     key={index}
                     className="rounded-sm h-[116px]"
-                    title="1 Token Value"
+                    title={t('N1_TOKEN_VALUE')}
                     smallNumber={`Rs ${item.value}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
@@ -140,7 +144,7 @@ export default function TokensOverview() {
                   <DataCard
                     key={index}
                     className="rounded-sm h-[116px]"
-                    title="Budget Assigned"
+                    title={t('BUDGET_ASSIGNED')}
                     smallNumber={`Rs ${item.value}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
@@ -157,11 +161,11 @@ export default function TokensOverview() {
                   smallNumber={String(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                  subtitle={
-                    item.name === 'Average Duration'
-                      ? 'Activation Trigger to Successful Disbursement'
-                      : ' '
-                  }
+                    subtitle={
+                      item.name === 'Average Duration'
+                        ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
+                        : ' '
+                    }
                 />
               );
             })}
@@ -231,17 +235,17 @@ export default function TokensOverview() {
                   smallNumber={String(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                  subtitle={
-                    item.name === 'Average Duration'
-                      ? 'Activation Trigger to Successful Disbursement'
-                      : ' '
-                  }
+                    subtitle={
+                      item.name === 'Average Duration'
+                        ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
+                        : ' '
+                    }
                 />
               );
             })}
             <DataCard
               className="rounded-sm h-[116px] p-0"
-              title="Pending Disbursement"
+              title={t('PENDING_DISBURSEMENT')}
               smallNumber={String(
                 getTokenStat?.tokenStats?.pendingDisbursement ?? '-',
               )}
@@ -251,7 +255,7 @@ export default function TokensOverview() {
             />
             <DataCard
               className="rounded-sm h-[116px] p-0"
-              title="Redeemed Tokens"
+              title={t('REDEEMED_TOKENS')}
               smallNumber={String(
                 getTokenStat?.tokenStats?.redeemedTokens ?? '-',
               )}
@@ -266,7 +270,7 @@ export default function TokensOverview() {
       )}
       <div className="flex flex-wrap flex-col xl:flex-row mt-4 gap-4">
         <div className="flex-1 border rounded-sm p-4">
-          <h1 className="text-lg font-medium mb-4">Token Status</h1>
+          <h1 className="text-lg font-medium mb-4">{t('TOKEN_STATUS')}</h1>
           <div className="w-full aspect-video">
             <DynamicPieChart
               pieData={tokenStatus()}
@@ -277,7 +281,7 @@ export default function TokensOverview() {
 
         <div className="flex-[2] border rounded-sm p-4  overflow-hidden">
           <TransactionCard
-            cardTitle="Recent Transactions"
+            cardTitle={t('RECENT_TRANSACTIONS')}
             cardData={groupsFundsData?.data?.filter(
               (item) =>
                 item.status !== 'NOT_DISBURSED' && item.status !== 'STARTED',

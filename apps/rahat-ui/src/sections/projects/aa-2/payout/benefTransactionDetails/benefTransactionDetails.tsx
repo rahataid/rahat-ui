@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useGetPayoutLog, useTriggerForOnePayoutFailed } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -29,6 +30,8 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 
 export default function BeneficiaryTransactionLogDetails() {
+  const tv = useTranslations('AA Project with Cash Tracker');
+  const tg = useTranslations('GLOBAL');
   const { id, uuid } = useParams();
   const router = useRouter();
   const groupId = useSearchParams().get('groupId');
@@ -91,8 +94,8 @@ export default function BeneficiaryTransactionLogDetails() {
           path={`/projects/aa/${id as string}/payout/details/${
             groupId as string
           }?from=${navigation ? navigation : ''}`}
-          subtitle="Detail view of the selected payout transaction log"
-          title="Transaction Log Details"
+          subtitle={tv('DETAIL_VIEW_OF_THE_SELECTED_PAYOUT')}
+          title={tv('TRANSACTION_LOG_DETAILS')}
         />
         {data?.data?.payout?.type === 'FSP' && (
           <RoleAuth
@@ -106,21 +109,21 @@ export default function BeneficiaryTransactionLogDetails() {
               onClick={handleTriggerSinglePayoutFailed}
             >
               <RotateCcw className="w-4 h-4" />
-              Retry
+              {tg('RETRY')}
             </Button>
           </RoleAuth>
         )}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
         <DataCard
-          title="Actual Budget"
+          title={tv('ACTUAL_BUDGET')}
           Icon={Coins}
           smallNumber={`Rs. ${data?.data?.amount * ONE_TOKEN_VALUE}`}
           className="h-24 w-full rounded-sm pt-1"
         />
 
         <DataCard
-          title="Amount Disbursed"
+          title={tv('AMOUNT_DISBURSED')}
           Icon={Coins}
           smallNumber={`Rs. ${
             totalSuccessAmount.toString() || totalFailedAmount.toString()
@@ -130,7 +133,7 @@ export default function BeneficiaryTransactionLogDetails() {
         {data?.data?.status.endsWith('COMPLETED') && (
           <>
             <DataCard
-              title="Payout Type"
+              title={tv('PAYOUT_TYPE')}
               Icon={Ticket}
               badge={true}
               smallNumber={
@@ -142,7 +145,7 @@ export default function BeneficiaryTransactionLogDetails() {
             />
 
             <DataCard
-              title="Payout Method"
+              title={tv('PAYOUT_METHOD')}
               Icon={Ticket}
               badge={true}
               smallNumber={
@@ -161,7 +164,7 @@ export default function BeneficiaryTransactionLogDetails() {
       <Card className="rounded-sm">
         <CardContent className="space-y-6 p-4 ">
           <div className="inline-flex items-center gap-3 text-lg font-semibold text-[#2c2f3c] ">
-            Beneficiary Details
+            {tv('BENEFICIARY_DETAILS')}
             <ArrowUpRight
               className="w-5 h-5 text-blue-500 hover:cursor-pointer"
               onClick={handleRedirect}
@@ -169,22 +172,22 @@ export default function BeneficiaryTransactionLogDetails() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <InfoItem
-              label="Beneficiary Wallet Address"
+              label={tv('BENEFICIARY_WALLET_ADDRESS')}
               value={data?.data?.beneficiaryWalletAddress}
               copyable
             />
             <InfoItem
-              label="Transaction Wallet ID"
+              label={tv('TRANSACTION_WALLET_ID')}
               value={data?.data?.info?.offrampWalletAddress}
               copyable
             />
             <InfoItem
-              label="Transaction Hash"
+              label={tv('TRANSACTION_HASH')}
               value={data?.data?.txHash}
               link
               copyable
             />
-            <InfoItem label="Payout Status">
+            <InfoItem label={tv('PAYOUT_STATUS')}>
               <Badge
                 className={`rounded-xl w-auto ${transactionBgStatus(
                   data?.data?.status,
@@ -197,7 +200,7 @@ export default function BeneficiaryTransactionLogDetails() {
                   .join(' ')}
               </Badge>
             </InfoItem>
-            <InfoItem label="Transaction Type">
+            <InfoItem label={tv('TRANSACTION_TYPE')}>
               <Badge className="text-muted-foreground">
                 {data?.data?.transactionType.split('_').join(' ')}
               </Badge>
@@ -206,34 +209,34 @@ export default function BeneficiaryTransactionLogDetails() {
             {data?.data?.payout?.type === 'FSP' && (
               <>
                 <InfoItem
-                  label="Bank Name"
+                  label={tv('BANK_NAME')}
                   value={data?.data?.Beneficiary?.extras?.bank_name}
                 />
                 <InfoItem
-                  label="Bank Account Number"
+                  label={tv('BANK_ACCOUNT_NUMBER')}
                   value={data?.data?.Beneficiary?.extras?.bank_ac_number}
                 />
                 <InfoItem
-                  label="Bank Account Name"
+                  label={tv('BANK_ACCOUNT_NAME')}
                   value={data?.data?.Beneficiary?.extras?.bank_ac_name}
                 />
               </>
             )}
 
             <InfoItem
-              label="Created At"
+              label={tg('CREATED_AT')}
               value={intlFormatDate(data?.data?.createdAt)}
             />
 
             <InfoItem
-              label="Updated At"
+              label={tv('UPDATED_AT')}
               value={intlFormatDate(data?.data?.updatedAt)}
             />
 
             {data?.data?.payout?.type === 'FSP' && (
               <>
                 <InfoItem
-                  label="No. of Attempts"
+                  label={tv('NO_OF_ATTEMPTS')}
                   value={data?.data?.info?.numberOfAttempts}
                 />
               </>
@@ -241,7 +244,7 @@ export default function BeneficiaryTransactionLogDetails() {
 
             {data?.data?.info?.error && (
               <InfoItem
-                label="Message"
+                label={tg('MESSAGE')}
                 value={data?.data?.info?.error}
                 failed
               />

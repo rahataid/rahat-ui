@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
+
 import GFHCard from './gfhCard';
 import { Heading } from 'apps/rahat-ui/src/common';
 import TimeSeriesChart from '../dhm/chart';
@@ -25,9 +27,9 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
 
       <div className="p-4 rounded-sm border shadow">
         <Heading
-          title="River Forecast"
+          title={t('RIVER_FORECAST')}
           titleStyle="text-xl capitalize"
-          description="Chart showing river forecast data"
+          description={t('CHART_SHOWING_RIVER_FORECAST_DATA')}
         />
         <div className="grid grid-cols-4 gap-4">
           <div className="col-span-3">
@@ -37,7 +39,7 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
               extremeLevel={riverInfo.extremeDangerLevel}
               data={riverInfo.history}
               xDateFormat="MMMM d"
-              yaxisTitle="Discharge in m³/s"
+              yaxisTitle={t('DISCHARGE_IN_M3S')}
             />
           </div>
 
@@ -45,7 +47,7 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
             <div className="flex gap-1">
               <div className="h-2 w-2 rounded-full bg-[#FFA500] mt-2" />
               <div>
-                <p className="text-gray-500">Warning </p>
+                <p className="text-gray-500">{t('WARNING')}</p>
                 <p>{riverInfo.warningLevel || 'N/A'}</p>
               </div>
             </div>
@@ -53,7 +55,7 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
             <div className="flex gap-1">
               <div className="h-2 w-2 rounded-full bg-[#FF0000] mt-2" />
               <div>
-                <p className="text-gray-500">Danger </p>
+                <p className="text-gray-500">{t('DANGER')}</p>
                 <p>{riverInfo.dangerLevel || 'N/A'}</p>
               </div>
             </div>
@@ -61,7 +63,7 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
             <div className="flex gap-1">
               <div className="h-2 w-2 rounded-full bg-[#A51D1D] mt-2" />
               <div>
-                <p className="text-gray-500">Extreme </p>
+                <p className="text-gray-500">{t('EXTREME')}</p>
                 <p>{riverInfo.extremeDangerLevel || 'N/A'}</p>
               </div>
             </div>

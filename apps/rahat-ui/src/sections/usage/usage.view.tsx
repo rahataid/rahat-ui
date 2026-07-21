@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { format, subDays } from 'date-fns';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -27,6 +28,7 @@ const CREDIT_DEFAULT_FROM = subDays(new Date(), 30);
 const CREDIT_DEFAULT_TO = new Date();
 
 export default function UsageView() {
+  const t = useTranslations('Usage');
   const [usageXref, setUsageXref] = useState<string | null>(null);
   const [usageDateRange, setUsageDateRange] = useState<DateRangeQuery>({});
   const [creditXref, setCreditXref] = useState<string | null>(null);
@@ -60,12 +62,12 @@ export default function UsageView() {
   return (
     <ScrollArea className="h-[calc(100vh-80px)]">
       <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold">Usage</h2>
+        <h2 className="text-2xl font-bold">{t('USAGE')}</h2>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="text-lg font-semibold">
-              Communication Usage
+              {t('COMMUNICATION_USAGE')}
             </CardTitle>
             <UsageFilters
               selectedXref={usageXref}

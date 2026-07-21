@@ -62,6 +62,7 @@
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 const labelMap: Record<string, string> = {
   senior_citizen__70: 'Senior Citizen >70',
@@ -79,6 +80,7 @@ const VulnerableAndSocialProtectionOverview = ({
 }: {
   statsData: any[];
 }) => {
+  const t = useTranslations('Dashboard \u2013 Vulnerable & Social Protection');
   // Extract stats from data array
   const socialProtection =
     statsData?.find(
@@ -99,23 +101,23 @@ const VulnerableAndSocialProtectionOverview = ({
       {/* Vulnerable Groups Cards */}
       <div className="flex flex-col">
         <Heading
-          title="Vulnerable Groups"
+          title={t('VULNERABLE_GROUPS')}
           titleStyle="text-lg"
-          description="Household members with specific needs or requiring special support"
+          description={t('HOUSEHOLD_MEMBERS_WITH_SPECIFIC_NEEDS_OR')}
         />
         <div className="flex gap-4 mt-0 flex-col md:flex-row">
           <DataCard
-            title="Pregnant Females"
+            title={t('PREGNANT_FEMALES')}
             number={String(vulnerableCount.no_of_pregnant_women ?? 0)}
             className="rounded-sm h-24 w-full"
           />
           <DataCard
-            title="Lactating Females"
+            title={t('LACTATING_FEMALES')}
             number={String(vulnerableCount.no_of_lactating_women ?? 0)}
             className="rounded-sm h-24 w-full"
           />
           <DataCard
-            title="People with Disabilities"
+            title={t('PEOPLE_WITH_DISABILITIES')}
             number={String(vulnerableCount.no_of_persons_with_disability ?? 0)}
             className="rounded-sm h-24 w-full"
           />
@@ -123,14 +125,14 @@ const VulnerableAndSocialProtectionOverview = ({
       </div>
       <div className="flex flex-col">
         <Heading
-          title="Social Protection Benefits"
+          title={t('SOCIAL_PROTECTION_BENEFITS')}
           titleStyle="text-lg"
-          description="Households receiving government support"
+          description={t('HOUSEHOLDS_RECEIVING_GOVERNMENT_SUPPORT')}
         />
         {/* Social Protection Benefits Bar Chart */}
         <div className=" border rounded-sm p-4">
           <h2 className="text-sm font-medium mb-2">
-            Household Receiving Social Protection Benefits
+            {t('HOUSEHOLD_RECEIVING_SOCIAL_PROTECTION_BENEFITS')}
           </h2>
           <div className="flex-1  h-full min-h-[300px]">
             {socialProtectionBenefits.length === 0 ? (
@@ -147,8 +149,8 @@ const VulnerableAndSocialProtectionOverview = ({
                 barHeight={40}
                 height="100%"
                 width="100%"
-                xaxisTitle="Type of SSA"
-                yaxisTitle="No. of Households"
+                xaxisTitle={t('TYPE_OF_SSA')}
+                yaxisTitle={t('NO_OF_HOUSEHOLDS')}
                 columnWidth="20%"
               />
             )}

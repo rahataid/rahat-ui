@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Table } from '@tanstack/react-table';
 import {
   Select,
@@ -21,6 +22,7 @@ type IProps = {
 };
 
 export function ClientSidePagination({ table }: IProps) {
+  const t = useTranslations('GLOBAL');
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
 
@@ -30,7 +32,7 @@ export function ClientSidePagination({ table }: IProps) {
   return (
     <div className="flex items-center justify-end gap-[clamp(8px,1.2vw,16px)] border-t px-[clamp(8px,1vw,16px)] pt-[clamp(4px,0.6vw,8px)] text-[clamp(11px,1vw,14px)]">
       <div className="flex items-center gap-[clamp(4px,0.6vw,8px)]">
-        <div className="font-medium">Rows per page</div>
+        <div className="font-medium">{t('ROWS_PER_PAGE')}</div>
         <Select
           defaultValue={String(table.getState().pagination.pageSize)}
           onValueChange={(value) => table.setPageSize(Number(value))}
@@ -54,7 +56,7 @@ export function ClientSidePagination({ table }: IProps) {
         </Select>
       </div>
       <div>
-        Page {pageIndex + 1} of {pageCount}
+        {t('PAGE')} {pageIndex + 1} of {pageCount}
       </div>
       <div className="flex gap-[clamp(4px,0.6vw,8px)]">
         <Button

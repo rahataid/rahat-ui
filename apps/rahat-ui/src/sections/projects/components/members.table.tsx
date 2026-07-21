@@ -15,6 +15,7 @@ import { FileWarning } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<any>;
@@ -29,6 +30,7 @@ export default function MembersTable({
   loading,
   path,
 }: IProps) {
+  const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   return (
     <>
@@ -36,7 +38,7 @@ export default function MembersTable({
         <div className="flex justify-between gap-2">
           <SearchInput
             className="w-full mb-2"
-            name="phone number"
+            name={tGlobal('PHONE_NUMBER')}
             value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
             onSearch={(event) =>
               table.getColumn('phone')?.setFilterValue(event.target.value)

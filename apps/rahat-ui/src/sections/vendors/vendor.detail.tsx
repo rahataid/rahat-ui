@@ -17,8 +17,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 
 export default function VendorDetail() {
+  const t = useTranslations('Vendors – Detail');
+  const g = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const { data: vendorDetail, isLoading } = useGetVendor(id);
@@ -38,7 +41,7 @@ export default function VendorDetail() {
 
   const deleteVendor = async () => {
     if (isVendorAssigned)
-      return toast.warning('Assigned vendor cannot be deleted.');
+      return toast.warning(t('ASSIGNED_VENDOR_CANNOT_BE_DELETED'));
     await removeVendor.mutateAsync({ vendorId: id });
     router.push('/vendors');
   };
@@ -51,15 +54,15 @@ export default function VendorDetail() {
     return (
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{g('ARE_YOU_ABSOLUTELY_SURE')}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone.
+            {t('THIS_ACTION_CANNOT_BE_UNDONE')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{g('CANCEL')}</AlertDialogCancel>
           <AlertDialogAction onClick={handleContinueClick}>
-            Continue
+            {g('CONTINUE')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -70,22 +73,11 @@ export default function VendorDetail() {
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title="Vendor details"
-          subtitle="Here is a detailed view of the selected vendor"
+          title={t('VENDOR_DETAILS')}
+          subtitle={t('HERE_IS_A_DETAILED_VIEW_OF')}
           path="/vendors"
         />
         <div className="flex space-x-2">
-          {/* <CoreBtnComponent
-            className="text-primary bg-sky-50"
-            name="Assign to Project"
-            Icon={FolderPlus}
-            handleClick={() => { }}
-          /> */}
-          {/* <CoreBtnComponent
-            name="Edit"
-            Icon={Pencil}
-            handleClick={() => router.push(`/vendors/${id}/edit`)}
-          /> */}
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
               <Button
@@ -94,7 +86,7 @@ export default function VendorDetail() {
                 disabled={isVendorAssigned}
               >
                 <Trash2 className="mr-1" size={18} strokeWidth={1.5} />
-                Delete
+                {g('DELETE')}
               </Button>
             </AlertDialogTrigger>
             {renderAlertContent({ handleContinueClick: deleteVendor })}
@@ -103,27 +95,31 @@ export default function VendorDetail() {
       </div>
       <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
         <div>
-          <h1 className="text-md text-muted-foreground">Vendor Name</h1>
-          <p className="font-medium">{vendor?.name || 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{t('VENDOR_NAME')}</h1>
+          <p className="font-medium">{vendor?.name || g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{vendor?.gender || 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('GENDER')}</h1>
+          <p className="font-medium">{vendor?.gender || g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Project Name</h1>
+          <h1 className="text-md text-muted-foreground">{g('PROJECT_NAME')}</h1>
           {vendor?.projects?.length ? (
             <div className="flex gap-2 flex-wrap">
               {vendor?.projects?.map((project: any) => {
-                return <p className="font-medium">{project?.name}</p>;
+                return (
+                  <p key={project?.id} className="font-medium">
+                    {project?.name}
+                  </p>
+                );
               })}
             </div>
           ) : (
-            <p className="font-medium">N/A</p>
+            <p className="font-medium">{g('N_A')}</p>
           )}
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+          <h1 className="text-md text-muted-foreground">{g('WALLET_ADDRESS')}</h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => clickToCopy(vendor?.wallet)}
@@ -140,12 +136,12 @@ export default function VendorDetail() {
           </div>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{vendor?.phone || 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('PHONE_NUMBER')}</h1>
+          <p className="font-medium">{vendor?.phone || g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Email Address</h1>
-          <p className="font-medium">{vendor?.email || 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('EMAIL_ADDRESS')}</h1>
+          <p className="font-medium">{vendor?.email || g('N_A')}</p>
         </div>
       </div>
     </div>

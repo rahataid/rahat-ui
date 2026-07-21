@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -39,6 +40,7 @@ export function DialogComponent({
   variant = 'default',
   data,
 }: PaymentDialogProps) {
+  const tg = useTranslations('GLOBAL');
   const [open, setOpen] = useState(false);
 
   const handleSubmitClick = () => {
@@ -81,7 +83,7 @@ export function DialogComponent({
             className="w-full rounded-sm"
             variant="outline"
           >
-            Cancel
+            {tg('CANCEL')}
           </Button>
           <Button
             type="submit"

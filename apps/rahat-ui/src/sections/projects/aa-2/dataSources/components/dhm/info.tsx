@@ -1,4 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading } from 'apps/rahat-ui/src/common';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
@@ -27,11 +29,12 @@ interface InfoProp {
 }
 
 export function Info({ riverWatch, updatedAt }: InfoProp) {
+  const t = useTranslations('AA Project');
   const cardData = React.useMemo(
     () => [
       {
         icon: RadioTower,
-        label: 'Station Index',
+        label: t('STATION_INDEX'),
         value: riverWatch?.stationIndex,
       },
       {
@@ -46,7 +49,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
       },
       {
         icon: TrendingUp,
-        label: 'Elevation',
+        label: t('ELEVATION'),
         value: riverWatch?.elevation,
       },
       {
@@ -98,7 +101,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
           {truncateValue(riverWatch?.waterLevel?.value, 2)}
           {riverWatch?.unit}
         </p>
-        <p className="text-sm/6 font-medium">Water Level</p>
+        <p className="text-sm/6 font-medium">{t('WATER_LEVEL')}</p>
         <p className="text-gray-500 text-sm/6">
           {dateFormat(
             riverWatch?.waterLevel?.datetime,

@@ -34,10 +34,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import Back from '../../projects/components/back';
 import HeaderWithBack from '../../projects/components/header.with.back';
+import { useTranslations } from 'next-intl';
 
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
   const router = useRouter();
+  const t = useTranslations('Beneficiary Add');
+  const g = useTranslations('GLOBAL');
 
   const FormSchema = z.object({
     name: z
@@ -123,8 +126,8 @@ export default function AddBeneficiaryForm() {
         <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
           <div className="p-4 h-[calc(100vh-115px)]">
             <HeaderWithBack
-              title="Create Beneficiary"
-              subtitle="Create a new beneficiary"
+              title={t('CREATE_BENEFICIARY')}
+              subtitle={t('CREATE_A_NEW_BENEFICIARY')}
               path="/beneficiary"
             />
             <div className="shadow-md p-4 rounded-sm bg-card">
@@ -135,11 +138,11 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Beneficiary Name</FormLabel>
+                        <FormLabel>{g('BENEFICIARY_NAME')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter beneficiary name"
+                            placeholder={g('ENTER_BENEFICIARY_NAME')}
                             {...field}
                           />
                         </FormControl>
@@ -153,7 +156,7 @@ export default function AddBeneficiaryForm() {
                   name="gender"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>Gender</FormLabel>
+                      <FormLabel>{g('GENDER')}</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -164,21 +167,21 @@ export default function AddBeneficiaryForm() {
                             <FormControl>
                               <RadioGroupItem value="MALE" />
                             </FormControl>
-                            <FormLabel className="font-normal">Male</FormLabel>
+                            <FormLabel className="font-normal">{g('MALE')}</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="FEMALE" />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              Female
+                              {g('FEMALE')}
                             </FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="OTHER" />
                             </FormControl>
-                            <FormLabel className="font-normal">Other</FormLabel>
+                            <FormLabel className="font-normal">{g('OTHER')}</FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
@@ -193,10 +196,10 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>{g('PHONE_NUMBER')}</FormLabel>
                         <FormControl>
                           <PhoneInput
-                            placeholder="Enter phone number"
+                            placeholder={g('ENTER_PHONE_NUMBER')}
                             {...field}
                           />
                         </FormControl>
@@ -211,9 +214,9 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{g('EMAIL')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter email address" {...field} />
+                          <Input placeholder={g('ENTER_EMAIL_ADDRESS')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -226,11 +229,11 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Estimated age</FormLabel>
+                        <FormLabel>{g('ESTIMATED_AGE')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
-                            placeholder="Enter estimated Age"
+                            placeholder={g('ENTER_ESTIMATED_AGE')}
                             {...field}
                           />
                         </FormControl>
@@ -245,11 +248,11 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Address</FormLabel>
+                        <FormLabel>{g('ADDRESS')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter beneficiary address"
+                            placeholder={g('ENTER_BENEFICIARY_ADDRESS')}
                             {...field}
                           />
                         </FormControl>
@@ -264,25 +267,25 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Phone Status</FormLabel>
+                        <FormLabel>{g('PHONE_STATUS')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select phone status" />
+                              <SelectValue placeholder={g('SELECT_PHONE_STATUS')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="smart_phone">
-                              Smart Phone
+                              {g('SMART_PHONE')}
                             </SelectItem>
-                            <SelectItem value="no_phone">No Phone</SelectItem>
+                            <SelectItem value="no_phone">{g('NO_PHONE')}</SelectItem>
                             <SelectItem value="feature_phone">
-                              Feature Phone
+                              {g('FEATURE_PHONE')}
                             </SelectItem>
-                            <SelectItem value="unknown">Unknown</SelectItem>
+                            <SelectItem value="unknown">{g('UNKNOWN')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -297,23 +300,23 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Banking Status</FormLabel>
+                        <FormLabel>{g('BANKING_STATUS')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select banking status" />
+                              <SelectValue placeholder={g('SELECT_BANKING_STATUS')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="banked">Banked</SelectItem>
+                            <SelectItem value="banked">{g('BANKED')}</SelectItem>
                             <SelectItem value="under_banked">
-                              Under Banked
+                              {g('UNDER_BANKED')}
                             </SelectItem>
-                            <SelectItem value="unBanked">UnBanked</SelectItem>
-                            <SelectItem value="unknown">Unknown</SelectItem>
+                            <SelectItem value="unBanked">{g('UNBANKED')}</SelectItem>
+                            <SelectItem value="unknown">{g('UNKNOWN')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -328,27 +331,27 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Internet Status</FormLabel>
+                        <FormLabel>{g('INTERNET_STATUS')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select internet status" />
+                              <SelectValue placeholder={g('SELECT_INTERNET_STATUS')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="mobile_internet">
-                              Mobile Internet
+                              {g('MOBILE_INTERNET')}
                             </SelectItem>
                             <SelectItem value="no_internet">
-                              No Internet
+                              {g('NO_INTERNET')}
                             </SelectItem>
                             <SelectItem value="home_internet">
-                              Home Internet
+                              {g('HOME_INTERNET')}
                             </SelectItem>
-                            <SelectItem value="unknown">Unknown</SelectItem>
+                            <SelectItem value="unknown">{g('UNKNOWN')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -363,19 +366,18 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
+                        <FormLabel>{g('WALLET_ADDRESS')}</FormLabel>
                         <FormControl>
                           <div className="relative w-full">
                             <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                               type="text"
-                              placeholder="Enter wallet address"
+                              placeholder={g('ENTER_WALLET_ADDRESS')}
                               {...field}
                             />
                             {/* {!field.value ? ( */}
                             <p className="text-xs text-amber-500 mt-2">
-                              * Wallet address is required. If not entered, it
-                              will be automatically filled.
+                              {g('WALLET_ADDRESS_IS_REQUIRED_IF_NOT')}
                             </p>
                             {/* ) : (
                             ''
@@ -396,15 +398,15 @@ export default function AddBeneficiaryForm() {
               variant="secondary"
               onClick={() => form.reset()}
             >
-              Clear
+              {g('CLEAR')}
             </Button>
             {addBeneficiary.isPending ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
+                {g('PLEASE_WAIT')}
               </Button>
             ) : (
-              <Button className="px-10">Create</Button>
+              <Button className="px-10">{g('CREATE')}</Button>
             )}
           </div>
         </form>

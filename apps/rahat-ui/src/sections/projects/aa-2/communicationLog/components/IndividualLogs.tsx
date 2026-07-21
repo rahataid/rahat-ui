@@ -7,15 +7,21 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { UUID } from 'crypto';
 
 import { IndividualLogsTab } from '../table/IndividualLogsTab';
 import { useTransportSessionStats } from '@rahat-ui/query';
 import { normalizeTransportName } from 'apps/rahat-ui/src/utils/string';
-import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { DEFAULT_TRANSPORTS } from 'apps/rahat-ui/src/constants/communication.const';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
+
+const TRANSPORT_LABEL_KEYS: Record<string, string> = {
+  VOICE: 'VOICE',
+  SMS: 'SMS',
+  EMAIL: 'EMAIL',
+};
 
 type SubTabType = 'voice' | 'sms' | 'email';
 
@@ -26,6 +32,7 @@ type TransportStat = {
 };
 
 export function IndividualLogTab() {
+  const g = useTranslations('GLOBAL');
   const searchParams = useSearchParams();
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
@@ -104,7 +111,11 @@ export function IndividualLogTab() {
                       : ''
                   }
                 >
-                  {capitalizeFirstLetter(stat.transportName)}
+                  {(() => {
+                    const key =
+                      TRANSPORT_LABEL_KEYS[stat.transportName?.toUpperCase()];
+                    return key && g.has(key) ? g(key) : stat.transportName;
+                  })()}
                 </span>
                 <Badge
                   className={`h-6 w-6 justify-center text-white px-2 py-0 ${

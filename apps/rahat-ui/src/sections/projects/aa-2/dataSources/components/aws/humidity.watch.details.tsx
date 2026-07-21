@@ -17,8 +17,10 @@ import TemperatureWatchMap from './temperature.watch.map';
 import { TemperatureValueCard, HumidityScaleBar } from './components';
 import TimeSeriesChart from '../dhm/chart';
 import WaterLevelTable from '../dhm/table';
+import { useTranslations } from 'next-intl';
 
 export default function HumidityWatchDetails() {
+  const t = useTranslations('AA Project');
   const { id: projectId } = useParams() as { id: UUID };
 
   const { data, isLoading, error } =
@@ -28,7 +30,7 @@ export default function HumidityWatchDetails() {
   const updatedAt = data?.updatedAt;
   const columns = useTemperatureTableColumns(
     humidityInfo?.unit ?? '%',
-    'Relative Humidity',
+    t('RELATIVE_HUMIDITY'),
   );
 
   const history = useMemo(
@@ -56,17 +58,17 @@ export default function HumidityWatchDetails() {
     () => [
       {
         icon: RadioTower,
-        label: 'Station',
+        label: t('STATION'),
         value: humidityInfo?.name || 'Unknown',
       },
-      { icon: Globe, label: 'Latitude', value: humidityInfo?.latitude || '--' },
+      { icon: Globe, label: t('LATITUDE'), value: humidityInfo?.latitude || '--' },
       {
         icon: Globe,
-        label: 'Longitude',
+        label: t('LONGITUDE'),
         value: humidityInfo?.longitude || '--',
       },
     ],
-    [humidityInfo],
+    [humidityInfo, t],
   );
 
   const colors = useMemo(() => {
@@ -110,15 +112,15 @@ export default function HumidityWatchDetails() {
     <div className="p-4 flex flex-col space-y-4">
       <div>
         <Back />
-        <Heading title="Relative Humidity" description="" />
+        <Heading title={t('RELATIVE_HUMIDITY')} description="" />
       </div>
 
       {isNoDataError && (
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-sm">
-          <p className="text-sm text-yellow-800">
-            <strong>No data available:</strong> There is currently no humidity
-            data available for the selected time period.
-          </p>
+            <p className="text-sm text-yellow-800">
+              <strong>{t('NO_DATA_AVAILABLE')}:</strong>{' '}
+              {t('THERE_IS_CURRENTLY_NO_HUMIDITY')}
+            </p>
         </div>
       )}
 
@@ -134,13 +136,13 @@ export default function HumidityWatchDetails() {
                       title={humidityInfo?.name || 'Unknown Station'}
                       titleStyle="text-xl/6 font-semibold"
                       description={
-                        humidityInfo?.parameter_name || 'Air Humidity Hourly'
+                        humidityInfo?.parameter_name || t('AIR_HUMIDITY_HOURLY')
                       }
                     />
                   </div>
                 </div>
                 <p className="text-sm text-green-600">
-                  Last Synced at:{' '}
+                  {t('LAST_SYNCED_AT')}{' '}
                   {updatedAt
                     ? dateFormat(updatedAt, 'MMMM dd, yyyy, hh:mm:ss a')
                     : 'Not available'}
@@ -151,7 +153,7 @@ export default function HumidityWatchDetails() {
                 value={latestValue}
                 unit={humidityInfo?.unit ?? '%'}
                 updatedAt={latestDate}
-                label="Relative Humidity"
+                label={t('RELATIVE_HUMIDITY')}
                 colors={colors}
               />
             </div>
@@ -183,10 +185,10 @@ export default function HumidityWatchDetails() {
             <div className="flex-1">
               <TemperatureWatchMap
                 coordinates={mapCoordinates}
-                title="Map"
-                description="Humidity Station Location"
-                indicatorTitle="Humidity Station"
-                popupLabel="Humidity"
+                title={t('MAP')}
+                description={t('HUMIDITY_STATION_LOCATION')}
+                indicatorTitle={t('HUMIDITY_STATION')}
+                popupLabel={t('HUMIDITY_LABEL')}
                 unitLabel="%"
                 indicatorGradient="from-blue-900 via-cyan-500 to-cyan-100"
               />
@@ -197,7 +199,7 @@ export default function HumidityWatchDetails() {
         {/* Right Column - Humidity History */}
         <div className="p-4 rounded-sm border shadow">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-lg/7 font-semibold">Relative Humidity History</p>
+            <p className="text-lg/7 font-semibold">{t('RELATIVE_HUMIDITY_HISTORY')}</p>
           </div>
 
           {isLoading ? (
@@ -206,7 +208,7 @@ export default function HumidityWatchDetails() {
             <>
               <TimeSeriesChart
                 data={history}
-                yaxisTitle={`Relative Humidity (${humidityInfo?.unit ?? '%'})`}
+                yaxisTitle={`${t('RELATIVE_HUMIDITY')} (${humidityInfo?.unit ?? '%'})`}
                 unit={humidityInfo?.unit ?? '%'}
                 xDateFormat={'h:mm a'}
                 yAxisFormatter={(value) => roundValue(value)}
@@ -217,7 +219,7 @@ export default function HumidityWatchDetails() {
             </>
           ) : (
             <div className="flex items-center justify-center p-8">
-              <NoResult message="No hourly humidity data available for this period" />
+              <NoResult message={t('NO_HOURLY_HUMIDITY_DATA')} />
             </div>
           )}
         </div>

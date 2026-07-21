@@ -18,9 +18,12 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 export function AssetsModal(tokenAddress: any) {
+  const t = useTranslations('Treasury – Assets');
+  const tg = useTranslations('GLOBAL');
   const [amount, setAmount] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');
   const[selectedToken,setSelectedToken] = useState<`0x${string}`>('');
@@ -63,14 +66,14 @@ export function AssetsModal(tokenAddress: any) {
         // onClick={handleSendFunds}
         >
           <Plus className="mr-2" size={20} strokeWidth={1.25} />
-          Send fund to project
+          {t('SEND_FUND_TO_PROJECT')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Send Fund</DialogTitle>
+          <DialogTitle>{t('SEND_FUND')}</DialogTitle>
           <DialogDescription>
-            Choose the amount and project you would like to fund.
+            {t('CHOOSE_THE_AMOUNT_AND_PROJECT_YOU')}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -89,7 +92,7 @@ export function AssetsModal(tokenAddress: any) {
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-0">
                 <Command>
-                  <CommandInput placeholder="Search project..." />
+                  <CommandInput placeholder={t('SEARCH_PROJECTS')} />
                   <CommandList>
                     <CommandEmpty>No project found.</CommandEmpty>
                     <CommandGroup>
@@ -123,17 +126,17 @@ export function AssetsModal(tokenAddress: any) {
               <DropdownMenu.Trigger className="border border-gray-300 p-2 rounded mb-4">
                 {selectedProject
                   ? projects?.data?.data?.find(
-                      //@ts-ignore
+                      //@ts-expect-error - project param type is untyped/any
                       (p) => p?.extras?.tokenAddress === selectedToken,
                     )?.name
-                  : 'Select a project'}
+                  : t('SELECT_A_PROJECT')}
               </DropdownMenu.Trigger>
               <DropdownMenu.Content className="bg-white border border-gray-300 rounded shadow-lg">
                 {projects?.data?.data?.map((project) => (
                   <DropdownMenu.Item
                     key={project?.id}
                     onSelect={() =>
-                      //@ts-ignore
+                      //@ts-expect-error - project param type is untyped/any
                       handleSelectProject(project?.contractAddress,project?.extras?.tokenAddress)
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"
@@ -148,10 +151,10 @@ export function AssetsModal(tokenAddress: any) {
         <div className="grid gap-4 py-4">
           <div className="flex flex-col  gap-4">
             <Label htmlFor="name" className="">
-              Amount
+              {t('AMOUNT')}
             </Label>
             <Input
-              placeholder="Amount"
+              placeholder={t('AMOUNT')}
               className="w-full mb-4"
               type="number"
               min="0"
@@ -162,7 +165,7 @@ export function AssetsModal(tokenAddress: any) {
 
           {selectedProject && (
             <div className="mb-4">
-              Selected Project:{' '}
+              {t('SELECTED_PROJECT')}{' '}
               {
                 projects?.data?.data?.find(
                   (p) => p.contractAddress === selectedProject,
@@ -176,7 +179,7 @@ export function AssetsModal(tokenAddress: any) {
             onClick={handleSendFunds}
             disabled={selectedToken != contractAddress}
           >
-            Fund Project
+            {t('FUND_PROJECT')}
           </Button>
         </DialogFooter>
       </DialogContent>

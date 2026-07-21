@@ -1,7 +1,9 @@
+import { useTranslations } from 'next-intl';
 import { BadgeCent, HeartHandshake, Home, Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
 
 const DashboardSummary = ({ data }: { data: any }) => {
+  const t = useTranslations('AA Project');
   const {beneficiaryStats,vendorStats} = data
   const beneficiaryTotal = beneficiaryStats?.data?.data?.find(
     (item) => item.name === 'BENEFICIARY_TOTAL',
@@ -14,13 +16,13 @@ const DashboardSummary = ({ data }: { data: any }) => {
       <div className=" grid md:grid-cols-4 gap-2">
         <DataCard
           className=""
-          title="Total beneficiaries"
+          title={t('TOTAL_BENEFICIARIES')}
           number={count}
           Icon={Users}
         />
         <DataCard
           className=""
-          title="Total  Vendors"
+          title={t('TOTAL_VENDORS')}
           number={vendorTotal}
           Icon={Users}
         />

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -82,6 +83,7 @@ export default function BeneficiaryDetailTableView({
   transactionData: any;
   isFetching: boolean;
 }) {
+  const t = useTranslations('GLOBAL');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -170,7 +172,7 @@ export default function BeneficiaryDetailTableView({
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
+          <div className="text-sm font-medium">{t('ROWS_PER_PAGE')}</div>
           <Select
             defaultValue="10"
             onValueChange={(value) => table.setPageSize(Number(value))}
@@ -191,8 +193,10 @@ export default function BeneficiaryDetailTableView({
           </Select>
         </div>
         <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+          {t('PAGE_CURRENT_OF_TOTAL', {
+                current: table.getState().pagination.pageIndex + 1,
+                total: table.getPageCount(),
+              })}
         </div>
         <div className="space-x-4">
           <Button

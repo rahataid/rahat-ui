@@ -1,4 +1,5 @@
 import { useCreateAASafeTransaction } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -25,6 +26,7 @@ export default function MultisigProposeBtn({
   tokenBalance,
   isTxPending,
 }: Props) {
+  const t = useTranslations('AA Project with Gnosis');
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number | ''>('');
   const createSafeTransaction = useCreateAASafeTransaction();
@@ -36,13 +38,11 @@ export default function MultisigProposeBtn({
 
   const handlePropose = async () => {
     if (isTxPending) {
-      toast.warn(
-        'The previously proposed amount is still pending in the safe wallet. Please wait until the current tansaction is completed or executed, then try again to avoid conflicts',
-      );
+      toast.warn(t('PENDING_TRANSACTION_WARNING'));
       return;
     }
     if (Number(amount) > Number(tokenBalance)) {
-      toast.warn('Proposed amount exceeds available token balance.');
+      toast.warn(t('AMOUNT_EXCEEDS_BALANCE_WARNING'));
       return;
     }
     const result = await createSafeTransaction.mutateAsync({
@@ -63,18 +63,18 @@ export default function MultisigProposeBtn({
           createSafeTransaction?.isPending
         }
       >
-        <Button className="rounded-xl">Propose Amount</Button>
+        <Button className="rounded-xl">{t('PROPOSE_AMOUNT')}</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Propose an Amount</DialogTitle>
+          <DialogTitle>{t('PROPOSE_AN_AMOUNT')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <Input
             type="number"
-            placeholder="Enter amount"
+            placeholder={t('ENTER_AMOUNT')}
             value={amount}
             onChange={(e) => {
               const val = e.target.value;
@@ -92,7 +92,7 @@ export default function MultisigProposeBtn({
             {createSafeTransaction?.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              'Propose'
+              t('PROPOSE')
             )}
           </Button>
         </DialogFooter>

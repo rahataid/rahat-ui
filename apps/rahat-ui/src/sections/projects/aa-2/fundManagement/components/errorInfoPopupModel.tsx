@@ -9,6 +9,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type ValidateModalType = {
   value: boolean;
@@ -27,6 +28,7 @@ type IProps = {
 };
 
 const ErrorInfoPopupModel = ({ validateModal, errorData }: IProps) => {
+  const t = useTranslations('AA Project');
   const { clickToCopy, copyAction } = useCopy();
   return (
     <Dialog open={validateModal.value} onOpenChange={validateModal.onToggle}>
@@ -38,9 +40,10 @@ const ErrorInfoPopupModel = ({ validateModal, errorData }: IProps) => {
         <DialogHeader>
           <DialogTitle>{errorData?.message}</DialogTitle>
           <DialogDescription>
-            The following conflicts were found in group{' '}
-            <span className="font-semibold">{errorData?.groupName}</span>.
-            Please resolve them before proceeding.
+            {t.rich('CONFLICTS_FOUND', {
+              groupName: errorData?.groupName ?? '',
+              strong: (chunks) => <span className="font-semibold">{chunks}</span>,
+            })}
           </DialogDescription>
         </DialogHeader>
 
@@ -48,7 +51,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData }: IProps) => {
           {errorData?.tokenAssignedBenfWallet && errorData.tokenAssignedBenfWallet.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-destructive uppercase tracking-wide">
-                Already assigned — remove from group to continue
+                {t('ALREADY_ASSIGNED')}
               </p>
               <ScrollArea className="max-h-40">
                 <div className="space-y-1">
@@ -75,7 +78,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData }: IProps) => {
           {errorData?.foundAssignedBenf && errorData.foundAssignedBenf.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-yellow-600 uppercase tracking-wide">
-                Assigned but disbursement still pending
+                {t('ASSIGNED_BUT_DISBURSEMENT_PENDING')}
               </p>
               <ScrollArea className="max-h-40">
                 <div className="space-y-1">

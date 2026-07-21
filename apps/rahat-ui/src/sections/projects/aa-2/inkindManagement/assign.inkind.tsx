@@ -7,15 +7,7 @@ import AssignInkindForm from './forms/assign.inkind.form';
 import AssignInkindConfirmation from './forms/assign.inkind.confirmation';
 import { AssignInkindValues } from './forms/schema/inkinds.schema';
 import { PayoutMode } from '@rahat-ui/query';
-
-const ASSIGN_INKIND_STEPS = [
-  {
-    id: 0,
-    title: 'Select Items',
-    desc: 'Choose an in-kind item and a beneficiary group',
-  },
-  { id: 1, title: 'Confirmation', desc: 'Review and confirm the assignment' },
-];
+import { useTranslations } from 'next-intl';
 
 type AssignInkindSummary = AssignInkindValues & {
   inkindName: string;
@@ -32,6 +24,16 @@ export default function AssignInkindView() {
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
   const router = useRouter();
+  const t = useTranslations('AA Project');
+
+  const ASSIGN_INKIND_STEPS = [
+    {
+      id: 0,
+      title: t('SELECT_ITEMS'),
+      desc: t('CHOOSE_INKIND_ITEM_AND_GROUP'),
+    },
+    { id: 1, title: t('CONFIRMATION'), desc: t('REVIEW_AND_CONFIRM') },
+  ];
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<AssignInkindSummary | null>(null);
@@ -62,7 +64,7 @@ export default function AssignInkindView() {
           className="flex items-center gap-0 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />
-          <p className="ml-0 mb-0">Back</p>
+          <p className="ml-0 mb-0">{t('BACK')}</p>
         </button>
       </div>
 
@@ -111,7 +113,7 @@ export default function AssignInkindView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  Step {index + 1}
+                  {t('STEP', { index: index + 1 })}
                 </span>
                 <span
                   className={`text-md mt-0.5 text-center transition-colors ${

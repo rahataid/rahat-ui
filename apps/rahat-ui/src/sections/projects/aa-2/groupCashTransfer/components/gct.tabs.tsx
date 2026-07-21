@@ -1,6 +1,7 @@
 'use client';
 
 import { ComponentType, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Tabs,
   TabsContent,
@@ -15,9 +16,9 @@ import GctOverview from './gct.overview';
 // ─── Tab registry ─────────────────────────────────────────────────────────────
 
 const GCT_TABS = [
-  { value: 'overview', label: 'Overview' },
-  { value: 'gctGroupList', label: 'GCT Group List' },
-  { value: 'gctManagementList', label: 'GCT Management' },
+  { value: 'overview', labelKey: 'OVERVIEW' },
+  { value: 'gctGroupList', labelKey: 'GCT_GROUP_LIST' },
+  { value: 'gctManagementList', labelKey: 'GCT_MANAGEMENT' },
 ] as const;
 
 type GctTabValue = (typeof GCT_TABS)[number]['value'];
@@ -31,6 +32,7 @@ const componentMap: Record<GctTabValue, ComponentType> = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctTabs() {
+  const t = useTranslations('AA Project with Cash Tracker');
   const { activeTab, setActiveTab } = useActiveTab('overview');
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function GctTabs() {
                 value={tab.value}
                 className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
               >
-                {tab.label}
+                {t(tab.labelKey)}
               </TabsTrigger>
             ))}
           </TabsList>

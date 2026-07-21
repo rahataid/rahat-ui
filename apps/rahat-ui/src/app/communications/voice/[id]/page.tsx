@@ -1,8 +1,10 @@
+import { getTranslations } from 'next-intl/server';
 import VoiceDetailView from '../../../../sections/communications/voice/voiceDetailView';
 
-export const metadata = {
-  title: 'Voice: Detail',
-};
+export async function generateMetadata() {
+  const t = await getTranslations('Communications – Navigation');
+  return { title: t('VOICE_DETAIL') };
+}
 
 export default function VoiceCampaignDetail() {
   return <VoiceDetailView />;

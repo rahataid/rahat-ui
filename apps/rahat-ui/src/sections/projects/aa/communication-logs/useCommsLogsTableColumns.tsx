@@ -1,17 +1,19 @@
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 
 export default function useCommsLogsTableColumns() {
+  const t = useTranslations('AA Project');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
-      header: 'Audience',
+      header: t('AUDIENCE'),
       cell: ({ row }) => <div className="">{row?.original?.address}</div>,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('STATUS'),
       cell: ({ row }) => {
         return (
           <Badge className={renderBadgeBg(row?.original?.status)}>
@@ -22,19 +24,19 @@ export default function useCommsLogsTableColumns() {
     },
     {
       accessorKey: 'attempts',
-      header: 'Attempts',
+      header: t('ATTEMPTS'),
       cell: ({ row }) => {
         return <div className="ml-8">{row?.original?.attempts}</div>;
       },
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
+      header: t('TIMESTAMP'),
       cell: ({ row }) => <div>{renderDateTime(row?.original?.createdAt)}</div>,
     },
     {
       accessorKey: 'duration',
-      header: 'Duration',
+      header: t('DURATION'),
       cell: ({ row }) => (
         <div>{row?.original?.disposition?.cdr?.billableseconds || 'N/A'}</div>
       ),

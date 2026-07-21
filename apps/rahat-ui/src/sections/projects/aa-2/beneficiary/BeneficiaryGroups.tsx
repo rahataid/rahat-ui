@@ -10,6 +10,7 @@ import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { UUID } from 'crypto';
 import { LandmarkIcon, Phone, Users, Banknote } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useCallback } from 'react';
 
 const BeneficiaryGroups = () => {
@@ -17,6 +18,8 @@ const BeneficiaryGroups = () => {
   const searchParams = useSearchParams();
   const [filters, setFilters] = React.useState({ search: '' });
   const router = useRouter();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
 
   const { isLoading } = useBeneficiariesGroups(id as UUID, {
     sort: 'updatedAt',
@@ -47,7 +50,7 @@ const BeneficiaryGroups = () => {
         <div className="flex justify-between space-x-2 items-center mb-4">
           <SearchInput
             className="w-full"
-            name="beneficary group"
+            name={tg('BENEFICIARY_GROUP')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
@@ -80,7 +83,7 @@ const BeneficiaryGroups = () => {
 
                       <div className="flex justify-between items-center gap-2">
                         <p className="text-base capitalize">
-                          {i?.name ?? 'N/A'}
+                          {i?.name ?? tg('N_A')}
                         </p>
                         {(i?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
                           i?.groupPurpose === GroupPurpose.MOBILE_MONEY) && (
@@ -98,7 +101,7 @@ const BeneficiaryGroups = () => {
                       <div className="flex text-sm text-gray-500 justify-between items-center">
                         <div className="flex items-center gap-1">
                           <Users size={18} strokeWidth={2} />
-                          {i?._count?.beneficiaries || 0} beneficiaries
+                          {i?._count?.beneficiaries || 0} {t('BENEFICIARIES')}
                         </div>
 
                         {i?.tokensReserved?.numberOfTokens && (
@@ -119,7 +122,7 @@ const BeneficiaryGroups = () => {
               })}
             </div>
           ) : (
-            <NoResult message="No Beneficiary Group Available" />
+            <NoResult message={t('NO_BENEFICIARY_GROUP_AVAILABLE')} />
           )}
         </ScrollArea>
       </div>

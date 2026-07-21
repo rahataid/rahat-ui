@@ -1,6 +1,8 @@
 'use client';
 
 import { RegionType } from '../utils/districts';
+import { useTranslations } from 'next-intl';
+
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
 interface RegionSelectorProps {
@@ -12,10 +14,11 @@ export function RegionSelector({
   selectedRegion,
   onRegionChange,
 }: RegionSelectorProps) {
+  const t = useTranslations('AA Project');
   const regions: { value: RegionType; label: string }[] = [
     { value: 'province', label: 'Province' },
     { value: 'district', label: 'District' },
-    { value: 'municipality', label: 'Municipality' },
+    { value: 'municipality', label: t('MUNICIPALITY') },
   ];
 
   return (

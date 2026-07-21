@@ -18,6 +18,7 @@ import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { useProjectVendorRedemptionTableColumns } from '../table.columns';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
+import { useTranslations } from 'next-intl';
 
 export const VendorRedemptionList = ({ id }: { id: UUID }) => {
   const [columnVisibility, setColumnVisibility] =
@@ -32,6 +33,7 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     setPagination,
   } = usePagination();
 
+  const tGlobal = useTranslations('GLOBAL');
   const debounceSearch = useDebounce(filters, 500);
 
   const searchParams = useSearchParams();
@@ -96,13 +98,18 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
           className="w-full flex-[4]"
-          name="name"
+          name={tGlobal('NAME')}
           onSearch={(e) => handleSearch(e, 'name')}
           value={filters?.name || ''}
         />
         <SelectComponent
-          name="Status"
+          name={tGlobal('STATUS')}
           options={['ALL', 'APPROVED', 'REQUESTED']}
+          labels={{
+            ALL: tGlobal('ALL'),
+            APPROVED: tGlobal('APPROVED'),
+            REQUESTED: tGlobal('REQUESTED'),
+          }}
           onChange={(value) =>
             handleFilterChange({
               target: { name: 'status', value },
@@ -121,7 +128,7 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
       <DemoTable
         table={table}
         tableHeight="h-[500px]"
-        message="No Vendor Redemption Requests"
+        message={tGlobal('NO_VENDOR_REDEMPTION_REQUESTS')}
         loading={isLoading}
       />
       <CustomPagination

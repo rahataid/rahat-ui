@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUserList } from '@rumsan/react-query';
@@ -35,6 +36,7 @@ import {
 } from './bulk-upload.utils';
 
 export default function BulkUploadActivities() {
+  const t = useTranslations('AA Project');
   const { id: projectID } = useParams() as { id: UUID };
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -204,8 +206,8 @@ export default function BulkUploadActivities() {
       <div className="p-4 flex flex-col flex-1 min-w-0">
         <div className="flex justify-between items-start mb-2">
           <HeaderWithBack
-            title="Bulk Upload Activities"
-            subtitle="Upload an excel sheet to add multiple activities at once"
+            title={t('BULK_UPLOAD_ACTIVITIES')}
+            subtitle={t('UPLOAD_AN_EXCEL_SHEET_TO_ADD')}
             path={`/projects/aa/${projectID}/activities`}
           />
           <div className="flex gap-2 mt-4">
@@ -248,7 +250,7 @@ export default function BulkUploadActivities() {
               <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 h-9 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
                 {rows.length > 0 ? (
                   <>
-                    <Repeat2 className="mr-1" size={16} /> Replace
+                    <Repeat2 className="mr-1" size={16} /> {t('REPLACE')}
                   </>
                 ) : (
                   <>
@@ -320,7 +322,7 @@ export default function BulkUploadActivities() {
         </div>
         <div className="flex gap-2">
           <Button type="button" variant="outline" className="rounded-sm" onClick={handleClear}>
-            Clear
+            {t('CLEAR')}
           </Button>
           {rows.length > 0 && !isValid && (
             <Button
@@ -350,7 +352,7 @@ export default function BulkUploadActivities() {
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              {isSubmitting ? 'Submitting...' : t('SUBMIT')}
             </Button>
           )}
         </div>

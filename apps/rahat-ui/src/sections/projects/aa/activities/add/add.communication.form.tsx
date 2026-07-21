@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   FormControl,
   FormField,
@@ -40,6 +41,8 @@ export default function AddCommunicationForm({
   setLoading,
   appTransports
 }: IProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const [audioFile, setAudioFile] = React.useState({});
   const [contentType, setContentType] = React.useState<ValidationContent | "">("");
 
@@ -124,7 +127,7 @@ export default function AddCommunicationForm({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group type" />
+                    <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -145,7 +148,7 @@ export default function AddCommunicationForm({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
+                    <SelectValue placeholder={tg('SELECT_GROUP')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -165,7 +168,7 @@ export default function AddCommunicationForm({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select communication type" />
+                    <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -226,7 +229,7 @@ export default function AddCommunicationForm({
                   <FormItem className="col-span-2">
                     <FormLabel>Message</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Write message" {...field} />
+                      <Textarea placeholder={t('WRITE_MESSAGE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

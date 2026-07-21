@@ -31,10 +31,12 @@ import {
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { Wallet } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function EditBeneficiary({ beneficiary }: any) {
   const { closeSecondPanel } = useSecondPanel();
   const updateBeneficiary = useUpdateBeneficiary();
+  const t = useTranslations('GLOBAL');
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
@@ -98,8 +100,8 @@ export default function EditBeneficiary({ beneficiary }: any) {
           <div className="flex space-x-3 mb-10">
             <Back path="/beneficiary" />
             <div>
-              <h1 className="text-2xl font-semibold">Edit Beneficiary</h1>
-              <p className=" text-muted-foreground">Edit beneficiary detail</p>
+              <h1 className="text-2xl font-semibold">{t('EDIT_BENEFICIARY')}</h1>
+              <p className=" text-muted-foreground">{t('EDIT_BENEFICIARY_DETAIL')}</p>
             </div>
           </div>
           <div className="shadow-md p-4 rounded-sm bg-card">
@@ -110,11 +112,11 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Beneficiary Name</FormLabel>
+                      <FormLabel>{t('BENEFICIARY_NAME')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter beneficiary name"
+                          placeholder={t('ENTER_BENEFICIARY_NAME')}
                           {...field}
                         />
                       </FormControl>
@@ -128,7 +130,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 name="gender"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Gender</FormLabel>
+                    <FormLabel>{t('GENDER')}</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -139,19 +141,19 @@ export default function EditBeneficiary({ beneficiary }: any) {
                           <FormControl>
                             <RadioGroupItem value="male" />
                           </FormControl>
-                          <FormLabel className="font-normal">Male</FormLabel>
+                          <FormLabel className="font-normal">{t('MALE')}</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="female" />
                           </FormControl>
-                          <FormLabel className="font-normal">Female</FormLabel>
+                          <FormLabel className="font-normal">{t('FEMALE')}</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="other" />
                           </FormControl>
-                          <FormLabel className="font-normal">Other</FormLabel>
+                          <FormLabel className="font-normal">{t('OTHER')}</FormLabel>
                         </FormItem>
                       </RadioGroup>
                     </FormControl>
@@ -166,10 +168,10 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>{t('PHONE_NUMBER')}</FormLabel>
                       <FormControl>
                         <PhoneInput
-                          placeholder="Enter phone number"
+                          placeholder={t('ENTER_PHONE_NUMBER')}
                           {...field}
                         />
                       </FormControl>
@@ -184,9 +186,9 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('EMAIL')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter email address" {...field} />
+                        <Input placeholder={t('ENTER_EMAIL_ADDRESS')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -199,11 +201,11 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Estimated age</FormLabel>
+                      <FormLabel>{t('ESTIMATED_AGE')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="Enter estimated Age"
+                          placeholder={t('ENTER_ESTIMATED_AGE')}
                           {...field}
                         />
                       </FormControl>
@@ -218,11 +220,11 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>{t('ADDRESS')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter beneficiary address"
+                          placeholder={t('ENTER_BENEFICIARY_ADDRESS')}
                           {...field}
                         />
                       </FormControl>
@@ -237,25 +239,25 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Phone Status</FormLabel>
+                      <FormLabel>{t('PHONE_STATUS')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select phone status" />
+                            <SelectValue placeholder={t('SELECT_PHONE_STATUS')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="smart_phone">
-                            Smart Phone
+                            {t('SMART_PHONE') || 'Smart Phone'}
                           </SelectItem>
-                          <SelectItem value="no_phone">No Phone</SelectItem>
+                          <SelectItem value="no_phone">{t('NO_PHONE') || 'No Phone'}</SelectItem>
                           <SelectItem value="feature_phone">
-                            Feature Phone
+                            {t('FEATURE_PHONE') || 'Feature Phone'}
                           </SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value="unknown">{t('UNKNOWN')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -270,23 +272,23 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Banking Status</FormLabel>
+                      <FormLabel>{t('BANKING_STATUS')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select banking status" />
+                            <SelectValue placeholder={t('SELECT_BANKING_STATUS')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="banked">Banked</SelectItem>
+                          <SelectItem value="banked">{t('BANKED') || 'Banked'}</SelectItem>
                           <SelectItem value="under_banked">
-                            Under Banked
+                            {t('UNDER_BANKED') || 'Under Banked'}
                           </SelectItem>
-                          <SelectItem value="unBanked">UnBanked</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value="unBanked">{t('UNBANKED') || 'UnBanked'}</SelectItem>
+                          <SelectItem value="unknown">{t('UNKNOWN')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -301,27 +303,27 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Internet Status</FormLabel>
+                      <FormLabel>{t('INTERNET_STATUS')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select internet status" />
+                            <SelectValue placeholder={t('SELECT_INTERNET_STATUS')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="mobile_internet">
-                            Mobile Internet
+                            {t('MOBILE_INTERNET') || 'Mobile Internet'}
                           </SelectItem>
                           <SelectItem value="no_internet">
-                            No Internet
+                            {t('NO_INTERNET') || 'No Internet'}
                           </SelectItem>
                           <SelectItem value="home_internet">
-                            Home Internet
+                            {t('HOME_INTERNET') || 'Home Internet'}
                           </SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value="unknown">{t('UNKNOWN')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -336,19 +338,18 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Wallet Address</FormLabel>
+                      <FormLabel>{t('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
-                            placeholder="Enter wallet address"
+                            placeholder={t('ENTER_WALLET_ADDRESS')}
                             {...field}
                           />
                           {/* {!field.value ? ( */}
                           <p className="text-xs text-amber-500 mt-2">
-                            * Wallet address is required. If not entered, it
-                            will be automatically filled.
+                            {t('WALLET_ADDRESS_IS_REQUIRED_IF_NOT')}
                           </p>
                           {/* ) : (
                             ''
@@ -363,7 +364,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button>Edit Beneficiary</Button>
+            <Button>{t('EDIT_BENEFICIARY')}</Button>
           </div>
         </div>
       </form>

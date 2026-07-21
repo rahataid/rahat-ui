@@ -24,8 +24,10 @@ import {
 } from './utils';
 import { triggerStatementSchema } from './trigger.statement.schema';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { useTranslations } from 'next-intl';
 
 export default function EditTrigger() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -383,7 +385,7 @@ export default function EditTrigger() {
       <div className={'p-4'}>
         <Back />
         <Heading
-          title={`Edit ${capitalizeFirstLetter(triggerType || '')} Trigger`}
+          title={t('EDIT_TRIGGER', { type: capitalizeFirstLetter(triggerType || '') })}
           description=""
         />
         <div className="px-4 pb-4 border rounded shadow">
@@ -417,7 +419,7 @@ export default function EditTrigger() {
               className="w-40 mr-2"
               onClick={handleReset}
             >
-              Reset
+              {t('RESET')}
             </Button>
             <Button
               type="submit"
@@ -425,7 +427,7 @@ export default function EditTrigger() {
               onClick={handleEditTriggers}
               disabled={updateTrigger?.isPending}
             >
-              Update
+              {t('UPDATE')}
             </Button>
           </div>
         </div>

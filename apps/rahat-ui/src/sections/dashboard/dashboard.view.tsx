@@ -18,8 +18,11 @@ import {
 } from '@rahat-ui/query';
 import { useEffect, useState } from 'react';
 import { filterVendorsGeoJson } from '../../utils/getVendorInfo';
+import { useTranslations } from 'next-intl';
 
 export default function DashboardView() {
+  const t = useTranslations('Dashboard');
+  const g = useTranslations('GLOBAL');
   const reportData = [
     {
       name: 'BENEFICIARIES',
@@ -57,9 +60,9 @@ export default function DashboardView() {
   return (
     <div className="bg-card p-4">
       <div className="mb-4">
-        <h1 className="font-semibold text-[28px]">Dashboard</h1>
+        <h1 className="font-semibold text-[28px]">{g('DASHBOARD')}</h1>
         <p className="text-muted-foreground text-base">
-          Your Hub for Real-Time Analytics and Data Visualization of the system
+          {t('YOUR_HUB_FOR_REAL_TIME_ANALYTICS')}
         </p>
       </div>
       <Tabs defaultValue="overview">
@@ -68,13 +71,13 @@ export default function DashboardView() {
             className="w-full data-[state=active]:bg-white"
             value="overview"
           >
-            Overview
+            {t('OVERVIEW')}
           </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="graphs"
           >
-            Graphs
+            {t('GRAPHS')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
@@ -97,7 +100,7 @@ export default function DashboardView() {
             )}
           </ScrollArea>
         </TabsContent>
-        <TabsContent value="graphs">Graphs</TabsContent>
+        <TabsContent value="graphs">{t('GRAPHS')}</TabsContent>
       </Tabs>
     </div>
   );

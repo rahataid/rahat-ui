@@ -27,10 +27,14 @@ import {
   ConfirmReceipt,
 } from '@rahat-ui/query';
 import { AARoles } from '@rahat-ui/auth';
+import { useTranslations } from 'next-intl';
 
 export function InKindTracker() {
   const uuid = useParams().id as UUID;
   const router = useRouter();
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('AA Project with Gnosis');
+  const tc = useTranslations('AA Project with Cash Tracker');
 
   const entities = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
@@ -78,7 +82,7 @@ export function InKindTracker() {
             status: 'pending' as const,
             type: 'in-kind' as const,
             items: [],
-            comments: `Awaiting confirmation by ${entity.alias}`,
+            comments: t('AWAITING_CONFIRMATION_BY', { alias: entity.alias }),
           }),
         );
 
@@ -105,10 +109,10 @@ export function InKindTracker() {
             type: 'in-kind' as const,
             items: [],
             comments: !resolveAlias(flow.from)
-              ? 'Stock Created'
+              ? tg('STOCK_CREATED')
               : flow.type === 'received'
-              ? `Claimed by ${entity.alias}`
-              : `In-kind transfer from ${resolveAlias(flow.from) || 'Unknown'}`,
+              ? t('CLAIMED_BY', { alias: entity.alias })
+              : t('IN_KIND_TRANSFER_FROM', { from: resolveAlias(flow.from) || t('UNKNOWN') }),
           }));
 
         return [...(pendingTransfers || []), ...(successfulTransfers || [])];
@@ -163,9 +167,11 @@ export function InKindTracker() {
       <div className="flex justify-between items-start mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-gray-900">
-            In-kind Tracker
+            {tg('IN_KIND_TRACKER')}
           </h2>
-          <p className="text-gray-500 mt-1">Track your in-kind flow here.</p>
+          <p className="text-gray-500 mt-1">
+            {tg('TRACK_YOUR_IN_KIND_FLOW_HERE')}
+          </p>
         </div>
         <div className="flex gap-3">
           {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
@@ -179,7 +185,7 @@ export function InKindTracker() {
                 className="text-blue-500 border-blue-500 hover:bg-blue-50"
                 variant="outline"
               >
-                Initiate In-kind Transfer
+                {tg('INITIATE_IN_KIND_TRANSFER')}
               </Button>
               <Button
                 onClick={() =>
@@ -189,7 +195,7 @@ export function InKindTracker() {
                 }
                 className="bg-blue-500 hover:bg-blue-600"
               >
-                <Plus /> Add Stock
+                <Plus /> {tg('ADD_STOCK')}
               </Button>
             </>
           )}
@@ -204,7 +210,7 @@ export function InKindTracker() {
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold">
-                  In-kind Transfer Tracker
+                  {tg('IN_KIND_TRANSFER_TRACKER')}
                 </CardTitle>
                 {currentEntity && (
                   <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -212,7 +218,7 @@ export function InKindTracker() {
                       <User size={18} color="white" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-gray-400">User:</span>
+                      <span className="text-gray-400">{tc('USER_LABEL')}</span>
                       <span>{currentEntity.alias}</span>
                     </div>
                   </div>
@@ -239,7 +245,7 @@ export function InKindTracker() {
           <Card>
             <CardHeader className="pb-4 border-b">
               <CardTitle className="text-lg font-semibold">
-                Transfer History
+                {tg('TRANSFER_HISTORY')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">

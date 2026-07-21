@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import {
@@ -13,7 +14,24 @@ import { NavItem as BaseNavItem } from '../components/nav-items.types';
 
 type NavItem = BaseNavItem;
 
+const NAV_TITLE_KEYS: Record<string, string> = {
+  'Dashboard': 'DASHBOARD',
+  'Project Beneficiaries': 'PROJECT_BENEFICIARIES',
+  'Stakeholders': 'STAKEHOLDERS',
+  'Forecast Data': 'FORECAST_DATA',
+  'Activities': 'ACTIVITIES',
+  'Trigger Statements': 'TRIGGER_STATEMENTS',
+  'Fund Management': 'FUND_MANAGEMENT',
+  'Payout': 'PAYOUT2',
+  'Communication Logs': 'COMMUNICATION_LOGS',
+  'Grievances': 'GRIEVANCES',
+  'Group Cash Transfer': 'GROUP_CASH_TRANSFER',
+  'Inkind Management': 'INKIND_MANAGEMENT',
+  'Vendors': 'VENDORS',
+};
+
 export const useNavItems = () => {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as string;
   const { data, isLoading } = useTabConfiguration(
@@ -35,7 +53,7 @@ export const useNavItems = () => {
   // Map default nav items
   const mappedNavItems: NavItem[] = backendNavs.map((item: NavItem) => {
     const navItem: NavItem = {
-      title: item.title,
+      title: t(NAV_TITLE_KEYS[item.title] || item.title),
       path: `/projects/aa/${projectId}/${item.path}`,
       icon: item.icon,
     };
@@ -53,7 +71,7 @@ export const useNavItems = () => {
 
   const navItems: NavItem[] = [
     {
-      title: 'Project Details',
+      title: t('PROJECT_DETAILS'),
       isLoading: isLoading,
       children: [...mappedNavItems],
     },

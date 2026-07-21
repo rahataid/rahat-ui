@@ -30,6 +30,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import {
   useCreateStakeholdersGroups,
@@ -50,6 +51,7 @@ const UpdateOrAddStakeholdersGroup = () => {
   const groupId = params.editId as UUID;
   const router = useRouter();
   const isEditing = Boolean(groupId);
+  const t = useTranslations('AA Project');
 
   const form = useForm<z.infer<typeof stakeholderGroupSchema>>({
     resolver: zodResolver(stakeholderGroupSchema),
@@ -239,8 +241,8 @@ const UpdateOrAddStakeholdersGroup = () => {
               <div className="flex items-center justify-between">
                 <h1 className="font-semibold text-[clamp(16px,2vw,28px)]">
                   {isEditing
-                    ? 'Update Stakeholder Group Details'
-                    : 'Create Stakeholder Group'}
+                    ? t('UPDATE_STAKEHOLDER_GROUP')
+                    : t('CREATE_STAKEHOLDER_GROUP')}
                 </h1>
                 <div className="flex gap-2 items-center">
                   <Button
@@ -252,14 +254,14 @@ const UpdateOrAddStakeholdersGroup = () => {
                     }}
                     variant="outline"
                   >
-                    Clear
+                    {t('CLEAR')}
                   </Button>
                   <Button
                     type="submit"
                     className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
                     onClick={handleButtonClick}
                   >
-                    {isEditing ? 'Update' : 'Add'}
+                    {isEditing ? t('UPDATE') : t('ADD')}
                     {Object.keys(selectedListItems).length > 0 &&
                       ` (${Object.keys(selectedListItems).length} stakeholders)`}
                   </Button>
@@ -275,10 +277,10 @@ const UpdateOrAddStakeholdersGroup = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Stakeholder Group Name</Label>
+                    <Label>{t('STAKEHOLDER_GROUP_NAME')}</Label>
                     <FormControl>
                       <Input
-                        placeholder="Write stakeholder group name"
+                        placeholder={t('WRITE_STAKEHOLDER_GROUP_NAME')}
                         className="w-full rounded-md text-[clamp(11px,1vw,14px)]"
                         {...field}
                       />

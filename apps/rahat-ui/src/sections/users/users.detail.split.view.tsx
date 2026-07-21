@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Copy, CopyCheck, X, Expand, Wallet, Phone, Mail } from 'lucide-react';
@@ -31,6 +32,8 @@ export default function UsersDetailSplitView({
   userDetail,
   closeSecondPanel,
 }: IProps) {
+  const t = useTranslations('Users – Detail');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const removeUser = useUserRemove();
   const currentUser = useUserCurrentUser();
@@ -42,7 +45,7 @@ export default function UsersDetailSplitView({
   const handleDeleteUser = async () => {
     await removeUser.mutateAsync(userDetail.uuid as UUID);
     closeSecondPanel();
-    Swal.fire('User Deleted Successfully', '', 'success');
+    Swal.fire(t('USER_DELETED_SUCCESSFULLY'), '', 'success');
   };
 
   const clickToCopy = (walletAddress: string) => {
@@ -67,13 +70,13 @@ export default function UsersDetailSplitView({
           <TooltipComponent
             handleOnClick={() => router.push(`/users/${userDetail?.uuid}`)}
             Icon={Expand}
-            tip="Expand"
+            tip={tg('EXPAND')}
           />
         </div>
         <TooltipComponent
           handleOnClick={closeSecondPanel}
           Icon={X}
-          tip="Close"
+          tip={tg('CLOSE')}
         />
       </div>
       <div className="p-4 flex justify-between items-center border-b">
@@ -88,9 +91,9 @@ export default function UsersDetailSplitView({
           <div>
             <h1 className="font-semibold text-xl mb-1">{userDetail?.name}</h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{userDetail?.extras?.status ?? 'N/A'}</Badge>
+              <Badge>{userDetail?.extras?.status ?? tg('N_A')}</Badge>
               <p className="text-base text-muted-foreground">
-                {userDetail?.gender ?? 'N/A'}
+                {userDetail?.gender ?? tg('N_A')}
               </p>
             </div>
           </div>
@@ -104,25 +107,25 @@ export default function UsersDetailSplitView({
               className="w-full data-[state=active]:bg-white"
               value="general"
             >
-              General
+              {tg('GENERAL')}
             </TabsTrigger>
             <TabsTrigger
               id="usersRoles"
               className="w-full data-[state=active]:bg-white"
               value="usersRoles"
             >
-              Users Roles
+              {t('USERS_ROLES')}
             </TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="general">
           <ScrollArea className="h-[calc(100vh-340px)]">
             <div className="p-4 flex flex-col space-y-4">
-              <h1 className="font-medium">General Details</h1>
+              <h1 className="font-medium">{t('GENERAL_DETAILS')}</h1>
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                   <Wallet size={20} strokeWidth={1.5} />
-                  <p>Wallet Address</p>
+                  <p>{tg('WALLET_ADDRESS')}</p>
                 </div>
                 <div
                   className="flex space-x-3 items-center"
@@ -147,7 +150,7 @@ export default function UsersDetailSplitView({
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                   <Phone size={20} strokeWidth={1.5} />
-                  <p>Phone Number</p>
+                  <p>{tg('PHONE_NUMBER')}</p>
                 </div>
                 <p className="text-muted-foreground text-base">
                   {userDetail?.phone || '-'}
@@ -157,7 +160,7 @@ export default function UsersDetailSplitView({
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                   <Mail size={20} strokeWidth={1.5} />
-                  <p>Email Address</p>
+                  <p>{tg('EMAIL_ADDRESS')}</p>
                 </div>
                 <p className="text-muted-foreground text-base">
                   {userDetail?.email || '-'}

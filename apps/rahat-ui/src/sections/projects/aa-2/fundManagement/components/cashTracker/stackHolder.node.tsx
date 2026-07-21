@@ -1,4 +1,5 @@
 import { AlertCircle, Check, Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 function StakeholderNode({
   name,
@@ -19,6 +20,7 @@ function StakeholderNode({
   index?: number;
   isFirst?: boolean;
 }) {
+  const t = useTranslations('AA Project');
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-GB', {
       day: '2-digit',
@@ -62,13 +64,13 @@ function StakeholderNode({
           {isFirst ? (
             <div className="text-xs text-gray-600">
               <p>
-                Project Budget:{' '}
+                {t('PROJECT_BUDGET_LABEL')}{' '}
                 <span className="font-medium text-gray-900">
                   Rs. {Number(balance + sent).toFixed(2)}
                 </span>
               </p>
               <p>
-                Remaining Balance:{' '}
+                {t('REMAINING_BALANCE_LABEL')}{' '}
                 <span className="font-medium text-gray-900">Rs. {balance}</span>
               </p>
             </div>
@@ -76,7 +78,7 @@ function StakeholderNode({
             <>
               <div className="text-xs text-gray-600">
                 <p>
-                  Claimed:{' '}
+                  {t('CLAIMED')}{' '}
                   <span className="font-medium text-gray-900">
                     Rs. {received?.toLocaleString()}
                   </span>
@@ -87,13 +89,13 @@ function StakeholderNode({
             <>
               <div className="text-xs text-gray-600">
                 <p>
-                  Received Balance:{' '}
+                  {t('RECEIVED_BALANCE')}{' '}
                   <span className="font-medium text-gray-900">
                     Rs. {received?.toLocaleString()}
                   </span>
                 </p>
                 <p>
-                  Remaining Balance:{' '}
+{t('REMAINING_BALANCE_LABEL')}{' '}
                   <span className="font-medium text-gray-900">
                     Rs. {balance?.toLocaleString()}
                   </span>

@@ -16,8 +16,11 @@ import {
 import React, { useState } from 'react';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { useCreateRole } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 
 export default function AddRoles() {
+  const t = useTranslations('Users – Roles & Permissions');
+  const tg = useTranslations('GLOBAL');
   const [roleName, setRoleName] = useState('');
 
   const createRole = useCreateRole();
@@ -47,7 +50,7 @@ export default function AddRoles() {
 
   const FormSchema = z.object({
     roleName: z.string().min(2, {
-      message: 'Role Name must be at least 2 characters.',
+      message: t('ROLE_NAME_MUST_BE_AT_LEAST2'),
     }),
     isSystem: z.boolean(),
   });
@@ -71,7 +74,7 @@ export default function AddRoles() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateRole)}>
-        <h1 className="text-lg font-semibold mb-6">Add Role</h1>
+        <h1 className="text-lg font-semibold mb-6">{tg('ADD_ROLE')}</h1>
         <div className="p-4 rounded-sm">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
@@ -79,9 +82,9 @@ export default function AddRoles() {
               name="roleName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role Name</FormLabel>
+                  <FormLabel>{t('ROLE_NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Role Name" {...field} />
+                    <Input placeholder={t('ROLE_NAME')} {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -95,7 +98,7 @@ export default function AddRoles() {
             name="isSystem"
             render={({ field }) => (
               <div className=" flex flex-col space-y-4">
-                <FormLabel>System</FormLabel>
+                <FormLabel>{t('SYSTEM')}</FormLabel>
                 <Switch
                   {...field}
                   value={field.value ? 'true' : 'false'}
@@ -151,7 +154,7 @@ export default function AddRoles() {
             )}
           /> */}
           <div className="flex justify-end">
-            <Button type="submit">Create Role</Button>
+            <Button type="submit">{t('CREATE_ROLE')}</Button>
           </div>
         </div>
       </form>

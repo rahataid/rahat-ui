@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import type { ExtendedTriggerLogicGroup } from '../types/extended-trigger-logic.types';
 
 export interface TriggerDetail {
@@ -130,37 +131,38 @@ function TriggerTooltip({
   y: number;
   containerWidth: number;
 }) {
+  const t = useTranslations('AA Project');
   const triggered = detail.isTriggered ?? detail.status;
 
   const rows: { label: string; value: string; highlight?: boolean }[] = [];
 
   rows.push({
-    label: 'Triggered',
-    value: triggered === undefined ? 'Unknown' : triggered ? 'Yes' : 'No',
+    label: t('TRIGGERED'),
+    value: triggered === undefined ? t('UNKNOWN') : triggered ? t('YES') : t('NO'),
     highlight: true,
   });
   if (detail.sourceLabel || detail.source) {
-    rows.push({ label: 'Source', value: detail.sourceLabel || toLabel(detail.source!) });
+    rows.push({ label: t('SOURCE'), value: detail.sourceLabel || toLabel(detail.source!) });
   }
   if (detail.sourceSubType) {
-    rows.push({ label: 'Sub-type', value: toLabel(detail.sourceSubType) });
+    rows.push({ label: t('SUB_TYPE'), value: toLabel(detail.sourceSubType) });
   }
   if (detail.stationName) {
     rows.push({
-      label: 'Station',
+      label: t('STATION'),
       value: detail.stationId
         ? `${detail.stationName} (${detail.stationId})`
         : detail.stationName,
     });
   }
   if (detail.operator !== undefined && detail.value !== undefined) {
-    rows.push({ label: 'Condition', value: `${detail.operator} ${detail.value}` });
+    rows.push({ label: t('CONDITION'), value: `${detail.operator} ${detail.value}` });
   }
   if (detail.expression) {
-    rows.push({ label: 'Trigger Statement', value: detail.expression });
+    rows.push({ label: t('TRIGGER_STATEMENT'), value: detail.expression });
   }
   if (detail.logicKey || detail.uuid) {
-    rows.push({ label: 'Key', value: detail.logicKey || detail.uuid || '' });
+    rows.push({ label: t('KEY'), value: detail.logicKey || detail.uuid || '' });
   }
 
   const tooltipW = 240;
@@ -226,7 +228,7 @@ function TriggerTooltip({
           }}
         >
           <span style={{ fontWeight: 700, color: '#0f172a', fontSize: 12, display: 'block' }}>
-            {detail.title || detail.logicKey || 'Trigger'}
+            {detail.title || detail.logicKey || t('TRIGGER')}
           </span>
           {detail.description && (
             <span
@@ -294,7 +296,7 @@ function TriggerTooltip({
                               : '#dc2626',
                       }}
                     >
-                      {triggeredVal === undefined ? '— Unknown' : triggeredVal ? '✓ Yes' : '✗ No'}
+                      {triggeredVal === undefined ? '— ' + t('UNKNOWN') : triggeredVal ? '✓ ' + t('YES') : '✗ ' + t('NO')}
                     </span>
                   ) : (
                     <span
@@ -328,6 +330,7 @@ export function ExtendedLogicTree({
   triggerDetails = {},
   onTriggerClick,
 }: ExtendedLogicTreeProps) {
+  const t = useTranslations('AA Project');
   const hasMultipleGroups = groups.length > 1;
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -473,7 +476,7 @@ export function ExtendedLogicTree({
               fontWeight="700"
               fill="#c2410c"
             >
-              ALERT ACTIVATED
+              {t('ALERT_ACTIVATED')}
             </text>
             <text
               x={resultX}
@@ -484,7 +487,7 @@ export function ExtendedLogicTree({
               fontWeight="400"
               fill="#ea580c"
             >
-              all conditions satisfied
+              {t('ALL_CONDITIONS_SATISFIED')}
             </text>
             <StatusDot
               cx={resultX + RESULT_W / 2 - 8}
@@ -521,7 +524,7 @@ export function ExtendedLogicTree({
                 fontWeight="600"
                 fill={color.text}
               >
-                {`Group ${gi + 1}`}
+                {t('GROUP') + ' ' + (gi + 1)}
               </text>
               <rect
                 x={gp.x + 8}
@@ -654,7 +657,7 @@ export function ExtendedLogicTree({
                     fill="#fff"
                     letterSpacing="0.3"
                   >
-                    ✓ TRIGGERED
+                    ✓ {t('TRIGGERED')}
                   </text>
                 </g>
               )}
@@ -678,11 +681,11 @@ export function ExtendedLogicTree({
         <div className="flex items-center justify-center gap-4 mt-2 text-xs text-slate-500">
           <span className="flex items-center gap-1.5">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500" />
-            Condition met
+            {t('CONDITION_MET')}
           </span>
           <span className="flex items-center gap-1.5">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-400" />
-            Not met
+            {t('NOT_MET')}
           </span>
         </div>
       )}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -58,6 +59,8 @@ interface Props {
 }
 
 export default function AssignInkindForm({ onNext }: Props) {
+  const tv = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -141,7 +144,7 @@ export default function AssignInkindForm({ onNext }: Props) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
           <div className="flex items-center justify-between ">
-            <p className="text-base font-semibold">Assign Inkind to Group</p>
+            <p className="text-base font-semibold">{tv('ASSIGN_INKIND_TO_GROUP')}</p>
 
             <div className="flex items-center space-x-3">
               <Switch
@@ -150,9 +153,9 @@ export default function AssignInkindForm({ onNext }: Props) {
                 id="assign-mode-switch"
               />
               <Label htmlFor="assign-mode-switch">
-                Assign mode:{' '}
+                {tv('ASSIGN_MODE')}{' '}
                 <span className="font-semibold">
-                  {isOffline ? 'Offline' : 'Online'}
+                  {isOffline ? tv('OFFLINE') : tv('ONLINE')}
                 </span>
               </Label>
             </div>
@@ -164,7 +167,7 @@ export default function AssignInkindForm({ onNext }: Props) {
             render={({ field }) => (
               <FormItem className="flex flex-col space-y-3 w-full">
                 <FormLabel className="mt-1 text-base font-medium">
-                  Inkind Item
+                  {tv('INKIND_ITEM')}
                 </FormLabel>
                 <Popover open={inkindOpen} onOpenChange={setInkindOpen}>
                   <PopoverTrigger asChild>
@@ -180,7 +183,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                         {field.value
                           ? inkindItems.find((i) => i.uuid === field.value)
                             ?.name
-                          : 'Select InKind Item'}
+                          : tv('SELECT_INKIND_ITEM')}
                         <ChevronDown className="opacity-50" />
                       </Button>
                     </FormControl>
@@ -188,11 +191,11 @@ export default function AssignInkindForm({ onNext }: Props) {
                   <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
                     <Command>
                       <CommandInput
-                        placeholder="Search inkind items..."
+                        placeholder={tv('SEARCH_INKIND_ITEMS')}
                         className="h-9"
                       />
                       <CommandList>
-                        <CommandEmpty>No items found.</CommandEmpty>
+                        <CommandEmpty>{tv('NO_ITEMS_FOUND')}</CommandEmpty>
                         <CommandGroup>
                           {inkindItems.map((item: any) => (
                             <CommandItem
@@ -210,7 +213,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                             >
                               <span className="flex-1">{item.name}</span>
                               <span className="text-xs text-muted-foreground mr-2">
-                                Stock: {item.availableStock ?? 0}
+                                {tv('STOCK_LABEL')} {item.availableStock ?? 0}
                               </span>
                               <Check
                                 className={cn(
@@ -229,7 +232,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                 </Popover>
                 {selectedInkind && (
                   <p className="text-xs text-muted-foreground -mt-1">
-                    Available stock:{' '}
+                    {tv('AVAILABLE_STOCK_WITH_COLON')}{' '}
                     <span className="font-semibold text-primary">
                       {selectedInkind.availableStock ?? 0}
                     </span>
@@ -247,7 +250,7 @@ export default function AssignInkindForm({ onNext }: Props) {
             render={({ field }) => (
               <FormItem className="flex flex-col space-y-3 w-full">
                 <FormLabel className="mt-1 text-base font-medium">
-                  Beneficiary Group
+                  {tv('BENEFICIARY_GROUP')}
                 </FormLabel>
                 <Popover open={groupOpen} onOpenChange={setGroupOpen}>
                   <PopoverTrigger asChild>
@@ -263,7 +266,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                       >
                         {field.value
                           ? groups.find((g) => g.uuid === field.value)?.name
-                          : 'Select Beneficiary Group'}
+                          : tv('BENEFICIARY_GROUP')}
                         <ChevronDown className="opacity-50" />
                       </Button>
                     </FormControl>
@@ -271,11 +274,11 @@ export default function AssignInkindForm({ onNext }: Props) {
                   <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
                     <Command>
                       <CommandInput
-                        placeholder="Search groups..."
+                        placeholder={tv('SEARCH_GROUPS')}
                         className="h-9"
                       />
                       <CommandList>
-                        <CommandEmpty>No groups found.</CommandEmpty>
+                        <CommandEmpty>{tv('NO_GROUPS_FOUND')}</CommandEmpty>
                         <CommandGroup>
                           {groups.map((group: any) => (
                             <CommandItem
@@ -306,7 +309,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                 </Popover>
                 {selectedGroup && (
                   <p className="text-xs text-muted-foreground -mt-1">
-                    Selected group:{' '}
+                    {tv('SELECTED_GROUP')}{' '}
                     <span className="font-semibold text-primary">
                       {selectedGroup.name}
                     </span>
@@ -326,7 +329,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                 <FormItem className="flex flex-col space-y-3 w-full">
                   <div className="flex items-center justify-between">
                     <FormLabel className="mt-1 text-base font-medium">
-                      Select Vendor
+                      {tv('SELECT_VENDOR')}
                     </FormLabel>
 
                   </div>
@@ -344,7 +347,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                         >
                           {selectedVendor
                             ? `${selectedVendor.name ?? 'N/A'} `
-                            : 'Select Vendor'}
+                            : tv('SELECT_VENDOR')}
                           <ChevronDown className="opacity-50" />
                         </Button>
                       </FormControl>
@@ -352,11 +355,11 @@ export default function AssignInkindForm({ onNext }: Props) {
                     <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
                       <Command>
                         <CommandInput
-                          placeholder="Search vendors..."
+                          placeholder={tv('SEARCH_VENDORS')}
                           className="h-9"
                         />
                         <CommandList>
-                          <CommandEmpty>No vendors found.</CommandEmpty>
+                          <CommandEmpty>{tv('NO_VENDORS_FOUND')}</CommandEmpty>
                           <CommandGroup>
                             {vendorItems.map((item: any) => (
                               <CommandItem
@@ -388,7 +391,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                   </Popover>
                   {selectedVendor && (
                     <p className="text-xs text-muted-foreground -mt-1">
-                      Selected Vendor:{' '}
+                      {tv('SELECTED_VENDOR')}{' '}
                       <span className="font-semibold text-primary">
                         {selectedVendor.name}
                       </span>
@@ -412,10 +415,10 @@ export default function AssignInkindForm({ onNext }: Props) {
                 }}
                 className="px-10 rounded-sm w-40"
               >
-                Clear
+                {tg('CLEAR')}
               </Button>
               <Button type="submit" className="px-10 rounded-sm w-40">
-                Continue
+                {tg('CONTINUE')}
               </Button>
             </div>
           </div>

@@ -4,6 +4,7 @@ import Back from '../../../../components/back';
 import EditButton from '../../../../../../components/edit.btn';
 import DeleteButton from '../../../../../../components/delete.btn';
 import DetailsHeadCard from '../../../../components/details.head.card';
+import { useTranslations } from 'next-intl';
 import { User, Waves } from 'lucide-react';
 import { UUID } from 'crypto';
 import { useRemoveMonitoring, useSingleMonitoring } from '@rahat-ui/query';
@@ -21,6 +22,8 @@ import AccumulatedCard from './ncmrwf/ncmrwf.accumulated.card';
 import FlashFloodRiskMonitoringCard from './flash-flood-risk-monitoring/flash.flood.risk.monitoring.card';
 
 export default function DailyMonitoringDetailView() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -133,12 +136,12 @@ export default function DailyMonitoringDetailView() {
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <DetailsHeadCard
-          title="Created By"
+          title={tg('CREATED_BY')}
           icon={<User size={20} />}
           content={latestDataDetails?.dataEntryBy || '-'}
         />
         <DetailsHeadCard
-          title="River Basin"
+          title={t('RIVER_BASIN')}
           icon={<Waves size={20} />}
           content={latestDataDetails?.location || '-'}
         />

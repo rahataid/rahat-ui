@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -44,6 +45,8 @@ type IProps = {
   userDetails: User;
 };
 export default function AssignRoleDialog({ userDetails }: IProps) {
+  const t = useTranslations('Users – Detail');
+  const tg = useTranslations('GLOBAL');
   const contractSettings = useSettingsStore((state) => state.accessManager);
   const roleSync = useSettingsStore((state) => state.roleOnChainSync);
 
@@ -54,7 +57,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
   const addUserRole = useUserAddRoles();
 
   const FormSchema = z.object({
-    roles: z.array(z.string()).length(1, { message: 'Please select role' }),
+    roles: z.array(z.string()).length(1, { message: t('PLEASE_SELECT_ROLE') }),
   });
 
   const form = useForm({
@@ -84,21 +87,21 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
             uuid: userDetails?.uuid as UUID,
             roles: data.roles,
           });
-          Swal.fire('Role Assigned Successfully', '', 'success');
+          Swal.fire(t('ROLE_ASSIGNED_SUCCESSFULLY'), '', 'success');
         }
       } else {
         await addUserRole.mutateAsync({
           uuid: userDetails?.uuid as UUID,
           roles: data.roles,
         });
-        Swal.fire('Role Assigned Successfully', '', 'success');
+        Swal.fire(t('ROLE_ASSIGNED_SUCCESSFULLY'), '', 'success');
       }
     } catch (error) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'An unexpected error occurred.';
-      Swal.fire('Error Assigning Role', errorMessage, 'error');
+          : tg('AN_UNEXPECTED_ERROR_OCCURRED');
+      Swal.fire(t('ERROR_ASSIGNING_ROLE'), errorMessage, 'error');
     } finally {
       form.reset();
     }
@@ -110,14 +113,14 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
         <CoreBtnComponent
           className="text-primary hover:text-primary"
           variant="ghost"
-          name="Assign Role"
+          name={t('ASSIGN_ROLE')}
           Icon={Plus}
-          handleClick={() => {}}
+          handleClick={() => undefined}
         />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader className="mb-2">
-          <DialogTitle>Assign Role</DialogTitle>
+          <DialogTitle>{t('ASSIGN_ROLE')}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -136,7 +139,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select user role" />
+                            <SelectValue placeholder={t('PLEASE_SELECT_ROLE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -164,11 +167,11 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                     variant="secondary"
                     onClick={() => form.reset()}
                   >
-                    Cancel
+                    {tg('CANCEL')}
                   </Button>
                 </DialogClose>
                 <DialogClose asChild>
-                  <Button type="submit">Submit</Button>
+                  <Button type="submit">{tg('SUBMIT')}</Button>
                 </DialogClose>
               </div>
             </DialogFooter>

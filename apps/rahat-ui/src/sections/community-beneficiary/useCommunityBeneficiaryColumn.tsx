@@ -22,6 +22,7 @@ import {
 import useCopy from '../../hooks/useCopy';
 import { UUID } from 'crypto';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useTranslations } from 'next-intl';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +36,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 
 export const useCommunityBeneficiaryGroupTableColumns = () => {
+  const t = useTranslations('Community Beneficiary List');
+  const tg = useTranslations('GLOBAL');
   const importTempBeneficiaries = useTempBeneficiaryImport();
   const router = useRouter();
   const handleImportBeneficiaries = async (args: string) => {
@@ -49,13 +52,13 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
   };
   const columns: ColumnDef<TempBeneficiary>[] = [
     {
-      header: 'Group Name',
+      header: tg('GROUP_NAME'),
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
 
     {
-      header: 'Created At',
+      header: tg('CREATED_AT'),
       accessorKey: 'createdAt',
       cell: ({ row }) => {
         const createAt = row.getValue('createdAt');
@@ -76,7 +79,7 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
       id: 'actions',
       enableHiding: false,
       accessorKey: 'uuid',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       cell: ({ row }) => {
         return (
           <div className="flex gap-4 items-center">
@@ -94,7 +97,7 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary">
-                  <p className="text-xs font-medium">View Details</p>
+                  <p className="text-xs font-medium">{tg('VIEW_DETAILS')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -112,16 +115,15 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
                     <div className="rounded-full p-2 bg-blue-100">
                       <CloudDownloadIcon className="w-6 h-6" color="blue" />
                     </div>
-                    <div>Import Beneficiary Group</div>
+                    <div>{t('IMPORT_BENEFICIARY_GROUP')}</div>
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to import this beneficiary group to
-                    Rahat?
+                    {t('ARE_YOU_SURE_YOU_WANT_TO')}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel className="w-full">
-                    Cancel
+                    {tg('CANCEL')}
                   </AlertDialogCancel>
                   <AlertDialogAction
                     type="button"
@@ -130,7 +132,7 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
                     }
                     className="w-full"
                   >
-                    Import
+                    {t('IMPORT')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -144,10 +146,12 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
 };
 
 export const useCommunityBeneficiaryTableColumns = () => {
+  const t = useTranslations('Community Beneficiary Detail');
+  const tg = useTranslations('GLOBAL');
   const { clickToCopy, copyAction } = useCopy();
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
-      header: 'Beneficiary Name',
+      header: tg('BENEFICIARY_NAME'),
       cell: ({ row }) => {
         return (
           <div>
@@ -158,7 +162,7 @@ export const useCommunityBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: tg('WALLET_ADDRESS'),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -182,7 +186,7 @@ export const useCommunityBeneficiaryTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {copyAction === row?.original?.id ? 'copied' : 'click to copy'}
+                {copyAction === row?.original?.id ? tg('COPIED') : tg('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -191,13 +195,13 @@ export const useCommunityBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'phone',
-      header: 'Phone',
+      header: tg('PHONE'),
       cell: ({ row }) => <div>{humanizeString(row.getValue('phone'))}</div>,
     },
 
     {
       accessorKey: 'govtIDNumber',
-      header: 'Govt. ID Number',
+      header: t('GOVT_ID_NUMBER'),
       cell: ({ row }) => (
         <div>{humanizeString(row.getValue('govtIDNumber')) || '-'}</div>
       ),

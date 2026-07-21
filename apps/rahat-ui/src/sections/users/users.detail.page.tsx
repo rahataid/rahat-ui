@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React from 'react';
 import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
@@ -32,6 +33,9 @@ import Swal from 'sweetalert2';
 import { User } from '@rumsan/sdk/types';
 
 export default function UsersDetailPage() {
+  const t = useTranslations('Users – Detail');
+  const tc = useTranslations('Confirmation & Alert Dialogs');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
 
@@ -66,7 +70,7 @@ export default function UsersDetailPage() {
   const deleteUser = () => {
     removeUser.mutate(id, {
       onSuccess: () => {
-        Swal.fire('User Deleted Successfully', '', 'success');
+        Swal.fire(t('USER_DELETED_SUCCESSFULLY'), '', 'success');
         router.push('/users');
       },
     });
@@ -80,15 +84,15 @@ export default function UsersDetailPage() {
     return (
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{tg('ARE_YOU_ABSOLUTELY_SURE')}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone.
+            {t('THIS_ACTION_CANNOT_BE_UNDONE')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{tg('CANCEL')}</AlertDialogCancel>
           <AlertDialogAction onClick={handleContinueClick}>
-            Continue
+            {tg('CONTINUE')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -99,16 +103,16 @@ export default function UsersDetailPage() {
       <div className="p-4">
         <div className="flex justify-between items-center">
           <HeaderWithBack
-            title="User details"
-            subtitle="Here is a detailed view of the selected user"
+            title={t('USER_DETAILS')}
+            subtitle={t('HERE_IS_A_DETAILED_VIEW_OF')}
             path="/users"
           />
           <div className="flex space-x-2">
             <CoreBtnComponent
               className="text-primary bg-sky-50"
-              name="Assign to Project"
+              name={t('ASSIGN_TO_PROJECT')}
               Icon={FolderPlus}
-              handleClick={() => {}}
+              handleClick={() => undefined}
               disabled
             />
 
@@ -116,7 +120,7 @@ export default function UsersDetailPage() {
               <AlertDialogTrigger className="flex items-center">
                 <Button variant="secondary">
                   <Pencil className="mr-1" size={18} strokeWidth={1.5} />
-                  Edit
+                  {tg('EDIT')}
                 </Button>
               </AlertDialogTrigger>
               {renderAlertContent({
@@ -128,7 +132,7 @@ export default function UsersDetailPage() {
               <AlertDialogTrigger className="flex items-center">
                 <Button variant="secondary" className="text-red-500 bg-red-100">
                   <Trash2 className="mr-1" size={18} strokeWidth={1.5} />
-                  Delete
+                  {tg('DELETE')}
                 </Button>
               </AlertDialogTrigger>
               {renderAlertContent({ handleContinueClick: deleteUser })}
@@ -137,23 +141,23 @@ export default function UsersDetailPage() {
         </div>
         <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
           <div>
-            <h1 className="text-md text-muted-foreground">Name</h1>
-            <p className="font-medium">{User?.name || 'N/A'}</p>
+            <h1 className="text-md text-muted-foreground">{tg('NAME')}</h1>
+            <p className="font-medium">{User?.name || tg('N_A')}</p>
           </div>
           <div>
-            <h1 className="text-md text-muted-foreground">Gender</h1>
-            <p className="font-medium">{User?.gender || 'N/A'}</p>
+            <h1 className="text-md text-muted-foreground">{tg('GENDER')}</h1>
+            <p className="font-medium">{User?.gender || tg('N_A')}</p>
           </div>
           <div>
-            <h1 className="text-md text-muted-foreground">Phone Number</h1>
-            <p className="font-medium">{User?.phone || 'N/A'}</p>
+            <h1 className="text-md text-muted-foreground">{tg('PHONE_NUMBER')}</h1>
+            <p className="font-medium">{User?.phone || tg('N_A')}</p>
           </div>
           <div>
-            <h1 className="text-md text-muted-foreground">Email Address</h1>
-            <p className="font-medium">{User?.email || 'N/A'}</p>
+            <h1 className="text-md text-muted-foreground">{tg('EMAIL_ADDRESS')}</h1>
+            <p className="font-medium">{User?.email || tg('N_A')}</p>
           </div>
           <div>
-            <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+            <h1 className="text-md text-muted-foreground">{tg('WALLET_ADDRESS')}</h1>
             <div
               className="flex items-center space-x-2 cursor-pointer"
               onClick={() => clickToCopy(User?.wallet as string)}
@@ -170,13 +174,13 @@ export default function UsersDetailPage() {
           </div>
         </div>
         <div className="mt-4 text-lg">
-          <h1 className="font-medium mb-4">User Roles</h1>
+          <h1 className="font-medium mb-4">{t('USER_ROLES')}</h1>
           <div className="border rounded-md p-4">
             <div className="flex space-x-2">
               <SearchInput
                 className="w-full"
-                name="Role"
-                onSearch={() => {}}
+                name={tg('ROLE')}
+                onSearch={() => undefined}
                 isDisabled
               />
               {(loggedUserRoles?.includes('Admin') ||

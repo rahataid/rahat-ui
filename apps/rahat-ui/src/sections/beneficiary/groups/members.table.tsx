@@ -14,6 +14,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FileWarning } from 'lucide-react';
 import AddButton from '../../projects/components/add.btn';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<any>;
@@ -28,12 +29,13 @@ export default function MembersTable({
   groupUUID,
   name,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <>
       <div className="p-4 border rounded-md mt-5">
         <div className="flex justify-between gap-2">
           <SearchInput
-            name="Beneficiaries"
+            name={t('BENEFICIARIES')}
             className="mb-2 w-full"
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -99,10 +101,10 @@ export default function MembersTable({
                           <FileWarning size={18} strokeWidth={1.5} />
                         </div>
                         <p className="font-medium text-lg">
-                          No beneficiary added
+                          {t('NO_BENEFICIARY_ADDED')}
                         </p>
                         <p className="text-muted-foreground text-base">
-                          Add beneficiary to the group to display data
+                          {t('ADD_BENEFICIARY_TO_GROUP') || 'Add beneficiary to the group to display data'}
                         </p>
                         <AddButton
                           name="Beneficiary"

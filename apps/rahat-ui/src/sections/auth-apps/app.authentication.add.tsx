@@ -8,18 +8,21 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { isAddress } from 'viem';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 
 export default function AddAppAuthentication() {
+  const t = useTranslations('Auth Apps – Add');
+  const tg = useTranslations('GLOBAL');
   const createAuthApp = useCreateAuthApp();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+    name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST2') }),
     address: z.string().refine(
       (value) => {
         if (isAddress(value)) return true;
       },
       {
-        message: 'Invalid app address',
+        message: t('INVALID_APP_ADDRESS'),
       },
     ),
     description: z.string().optional(),
@@ -49,7 +52,7 @@ export default function AddAppAuthentication() {
   return (
     <form onSubmit={handleSubmit(handleAddAppAuthentication)}>
       <div className="p-4 h-add rounded border bg-white">
-        <h1 className="text-lg font-semibold mb-6">Add New</h1>
+        <h1 className="text-lg font-semibold mb-6">{t('ADD_NEW')}</h1>
         <div className="shadow-md p-4 rounded-sm">
           <div className="grid grid-cols-2 gap-5 mb-4">
             <FormField
@@ -57,10 +60,10 @@ export default function AddAppAuthentication() {
               name="name"
               render={({ field }) => (
                 <div className="col-span-1">
-                  <Label>Name</Label>
+                  <Label>{tg('NAME')}</Label>
                   <Input
                     type="text"
-                    placeholder="Enter app name"
+                    placeholder={t('ENTER_APP_NAME')}
                     className=" mt-4 "
                     {...field}
                   />
@@ -79,10 +82,10 @@ export default function AddAppAuthentication() {
               name="address"
               render={({ field }) => (
                 <div className="col-span-1">
-                  <Label>Address</Label>
+                  <Label>{tg('ADDRESS')}</Label>
                   <Input
                     type="text"
-                    placeholder="Enter app address"
+                    placeholder={t('ENTER_APP_ADDRESS')}
                     className=" mt-4 "
                     {...field}
                   />
@@ -101,10 +104,10 @@ export default function AddAppAuthentication() {
               name="description"
               render={({ field }) => (
                 <div className="col-span-1">
-                  <Label>Description</Label>
+                  <Label>{tg('DESCRIPTION')}</Label>
                   <Input
                     type="text"
-                    placeholder="Short description about app"
+                    placeholder={t('SHORT_DESCRIPTION_ABOUT_APP')}
                     className=" mt-4 "
                     {...field}
                   />
@@ -120,7 +123,7 @@ export default function AddAppAuthentication() {
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit">Save</Button>
+            <Button type="submit">{tg('SAVE')}</Button>
           </div>
         </div>
       </div>

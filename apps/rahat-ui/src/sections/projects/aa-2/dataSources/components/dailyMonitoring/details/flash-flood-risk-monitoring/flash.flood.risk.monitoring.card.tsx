@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BarChart2 } from 'lucide-react';
 import * as React from 'react';
@@ -7,6 +8,8 @@ type IProps = {
 };
 
 export default function FlashFloodRiskMonitoringCard({ data }: IProps) {
+  const t = useTranslations('AA Project');
+  const tGlobal = useTranslations('GLOBAL');
   const renderColor = React.useCallback((status: string) => {
     if (status === 'Low Risk') return 'bg-green-100 text-green-500';
     if (status === 'Medium Risk') return 'bg-yellow-100 text-yellow-500';
@@ -30,14 +33,14 @@ export default function FlashFloodRiskMonitoringCard({ data }: IProps) {
           </div>
         </div>
         <div className="text-center">
-          <h1 className="font-medium text-md ">Status</h1>
+          <h1 className="font-medium text-md ">{t('STATUS')}</h1>
           {
             <Badge
               className={` text-xs w-auto${renderColor(
                 data?.[0]?.data?.status,
               )}`}
             >
-              {data?.[0]?.data?.status ?? 'N/A'}
+              {data?.[0]?.data?.status ?? tGlobal('N_A')}
             </Badge>
           }
         </div>

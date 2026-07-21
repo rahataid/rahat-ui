@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,6 +41,7 @@ export default function ActivateTriggerDialog({
   version,
   notes,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -149,7 +151,7 @@ export default function ActivateTriggerDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleTriggerSubmit)}>
             <DialogHeader>
-              <DialogTitle className="text-center">Confirm Trigger</DialogTitle>
+              <DialogTitle className="text-center">{t('CONFIRM_TRIGGER')}</DialogTitle>
               <DialogDescription className="text-center">
                 Fill out the details below and press confirm to trigger
               </DialogDescription>
@@ -161,11 +163,11 @@ export default function ActivateTriggerDialog({
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Trigger Notes</FormLabel>
+                      <FormLabel>{t('TRIGGER_NOTES')}</FormLabel>
                       <FormControl>
                         <Textarea
                           className="rounded"
-                          placeholder="Write trigger notes here"
+                          placeholder={t('WRITE_TRIGGER_NOTES_HERE')}
                           {...field}
                         />
                       </FormControl>

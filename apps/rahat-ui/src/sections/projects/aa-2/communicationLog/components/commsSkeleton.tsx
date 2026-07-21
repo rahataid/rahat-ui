@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardContent,
@@ -9,6 +10,7 @@ import {
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 export default function CommunicationsStatsSkeleton() {
+  const t = useTranslations('AA Project');
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
@@ -16,7 +18,7 @@ export default function CommunicationsStatsSkeleton() {
         <Card className="shadow-sm rounded-sm flex-1 w-full">
           <CardHeader className="pb-0 pt-1">
             <CardTitle className="text-xl font-semibold text-gray-600">
-              Total SMS Sent
+              {t('TOTAL_SMS_SENT')}
             </CardTitle>
             <CardDescription>
               <Skeleton className="h-7 w-12" />
@@ -69,7 +71,7 @@ export default function CommunicationsStatsSkeleton() {
         <Card className="shadow-sm rounded-sm flex-1 w-full">
           <CardHeader className="pb-0 pt-1">
             <CardTitle className="text-xl font-semibold text-gray-600">
-              Total AVC Sent
+              {t('TOTAL_AVC_SENT')}
             </CardTitle>
             <CardDescription>
               <Skeleton className="h-7 w-12" />

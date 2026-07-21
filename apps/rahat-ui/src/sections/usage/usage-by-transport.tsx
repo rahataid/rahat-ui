@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardContent,
@@ -44,6 +45,7 @@ function getColor(transportType: string, index: number) {
 export default function UsageByTransport({
   byTransport,
 }: UsageByTransportProps) {
+  const t = useTranslations('Usage');
   if (!byTransport || byTransport.length === 0) return null;
 
   const pieData = {
@@ -56,11 +58,11 @@ export default function UsageByTransport({
 
   const barSeries = [
     {
-      name: 'Success',
+      name: t('SUCCESS'),
       data: byTransport.map((t) => t.success),
     },
     {
-      name: 'Failed',
+      name: t('FAILED'),
       data: byTransport.map((t) => t.fail),
     },
   ];
@@ -68,12 +70,12 @@ export default function UsageByTransport({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Usage by Transport</h3>
+      <h3 className="text-lg font-semibold">{t('USAGE_BY_TRANSPORT')}</h3>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Distribution by Transport
+              {t('DISTRIBUTION_BY_TRANSPORT')}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
@@ -91,7 +93,7 @@ export default function UsageByTransport({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Success vs Failure by Transport
+              {t('SUCCESS_VS_FAILURE_BY_TRANSPORT')}
             </CardTitle>
           </CardHeader>
           <CardContent>

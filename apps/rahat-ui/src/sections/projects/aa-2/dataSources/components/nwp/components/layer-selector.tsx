@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+
 import type { GroupedLayers, WeatherLayer } from '../utils/weather-layers';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
@@ -44,6 +46,7 @@ export function LayerSelector({
   onShowLayerChange,
   isLoading,
 }: LayerSelectorProps) {
+  const t = useTranslations('AA Project');
   const categories = Object.keys(groupedLayers);
   const [selectedCategory, setSelectedCategory] = useState(
     categories[0] || 'DHM-WRF',
@@ -89,7 +92,7 @@ export function LayerSelector({
           </Card>
         ) : categories.length === 0 ? (
           <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-lg shadow-lg p-4">
-            <p className="text-xs text-muted-foreground">No layers available</p>
+            <p className="text-xs text-muted-foreground">{t('NO_LAYERS_AVAILABLE')}</p>
           </Card>
         ) : (
           <div className="flex flex-col gap-2 items-end">

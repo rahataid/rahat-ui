@@ -1,4 +1,6 @@
 import { useGaugeReading } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+
 import React, { useMemo } from 'react';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -45,6 +47,7 @@ const GaugeReading = ({ date }: IGaugeReadingProps) => {
   }, [MonitoringData?.data, date]);
 
   if (isLoading) {
+  const t = useTranslations('AA Project');
     return (
       <div className="mx-auto space-y-4">
         {Array.from({ length: 4 }).map((_, idx) => (
@@ -57,7 +60,7 @@ const GaugeReading = ({ date }: IGaugeReadingProps) => {
   if (!filteredData?.length) {
     return (
       <div className="p-4">
-        <NoResult message="No Gauge Reading Data" />
+        <NoResult message={t('NO_GAUGE_READING_DATA')} />
       </div>
     );
   }

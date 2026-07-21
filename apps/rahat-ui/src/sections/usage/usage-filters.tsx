@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { X } from 'lucide-react';
@@ -31,6 +32,7 @@ export default function UsageFilters({
   defaultFrom,
   defaultTo,
 }: UsageFiltersProps) {
+  const t = useTranslations('Usage');
   const { data: projects } = useProjectList();
   const [fromDate, setFromDate] = useState<Date | undefined>(defaultFrom);
   const [toDate, setToDate] = useState<Date | undefined>(defaultTo);
@@ -66,10 +68,10 @@ export default function UsageFilters({
         onValueChange={(val) => onXrefChange(val === 'all' ? null : val)}
       >
         <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="All Projects" />
+          <SelectValue placeholder={t('ALL_PROJECTS')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Projects</SelectItem>
+          <SelectItem value="all">{t('ALL_PROJECTS')}</SelectItem>
           {projects?.data?.map((project: any) => (
             <SelectItem key={project.uuid} value={project.uuid}>
               {project.name}
@@ -80,16 +82,16 @@ export default function UsageFilters({
 
       <div className="flex items-center gap-2">
         <DatePicker
-          placeholder="From"
+          placeholder={t('FROM')}
           type="from"
           handleDateChange={(date: Date | undefined) => handleFromChange(date)}
           selectedDate={fromDate}
           maxDate={toDate}
           className="w-[160px]"
         />
-        <span className="text-muted-foreground text-sm">to</span>
+        <span className="text-muted-foreground text-sm">{t('TO')}</span>
         <DatePicker
-          placeholder="To"
+          placeholder={t('TO')}
           type="to"
           handleDateChange={(date: Date | undefined) => handleToChange(date)}
           selectedDate={toDate}

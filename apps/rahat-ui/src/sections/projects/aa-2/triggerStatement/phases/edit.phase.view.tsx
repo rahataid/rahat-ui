@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -30,6 +31,7 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function EditPhaseView() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;
@@ -67,9 +69,9 @@ export default function EditPhaseView() {
   );
 
   const disbursementMethodLabels: Record<string, string> = {
-    GROUP_TOKEN: 'Group Cash Token',
-    TOKEN: 'Token',
-    INKIND: 'Inkind',
+    GROUP_TOKEN: t('GROUP_CASH_TOKEN'),
+    TOKEN: t('TOKEN'),
+    INKIND: t('INKIND'),
   };
 
   const disbursementMethodOptions: Option[] = useMemo(() => {
@@ -187,22 +189,22 @@ export default function EditPhaseView() {
       </div>
       <div className="mt-4 px-4 flex items-start justify-between gap-3">
         <Heading
-          title="Edit Phase"
-          description="Edit the form below to update this phase"
+          title={t('EDIT_PHASE')}
+          description={t('EDIT_FORM_TO_UPDATE_PHASE')}
         />
         <TooltipWrapper
           tip={
             phase?._count?.Activity > 0 || phase?.triggers?.length > 0
-              ? 'Cannot delete a phase with activities or triggers'
-              : 'Delete Phase'
+              ? t('CANNOT_DELETE_PHASE_WITH_TRIGGERS')
+              : t('DELETE_PHASE')
           }
         >
           <DialogComponent
             buttonIcon={Trash}
-            buttonText="Delete Phase"
-            dialogTitle="Delete Phase"
-            dialogDescription="Are you sure you want to delete this phase?"
-            confirmButtonText={deletePhase.isPending ? 'Deleting...' : 'Delete'}
+            buttonText={t('DELETE_PHASE')}
+            dialogTitle={t('DELETE_PHASE')}
+            dialogDescription={t('DELETE_PHASE_CONFIRM')}
+            confirmButtonText={deletePhase.isPending ? t('DELETING') : t('DELETE')}
             handleClick={handleDeletePhase}
             buttonClassName="rounded-sm w-full text-red-500 border-red-500"
             confirmButtonClassName="rounded-sm w-full bg-red-500"
@@ -216,8 +218,8 @@ export default function EditPhaseView() {
         onSubmit={handleFormSubmit}
         onReset={handleReset}
         loading={updatePhase.isPending}
-        submitLabel="Update"
-        resetLabel="Reset"
+        submitLabel={t('UPDATE')}
+        resetLabel={t('RESET')}
         stationHeading={stationHeading}
         disbursementMethodOptions={disbursementMethodOptions}
         allPhases={phasesData}
@@ -227,8 +229,8 @@ export default function EditPhaseView() {
         isConfirmationDialogOpen={editPhaseConfirmDialog.value}
         onCancel={handleCancelUpdate}
         onConfirm={handleConfirmUpdate}
-        dialogTitle="Confirm Update Phase"
-        dialogMessage="Are you sure you want to update this phase?"
+        dialogTitle={t('CONFIRM_UPDATE_PHASE')}
+        dialogMessage={t('CONFIRM_UPDATE_PHASE_DESC')}
       />
     </>
   );

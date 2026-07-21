@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 
 type AddProjectConfirmModalProps = {
   open: boolean;
@@ -19,14 +20,13 @@ const AddProjectConfirmModal: React.FC<AddProjectConfirmModalProps> = ({
   open,
   handleClose,
 }) => {
+  const t = useTranslations('Projects List');
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Project</DialogTitle>
-          <DialogDescription>
-            Please contact admin to add project.
-          </DialogDescription>
+          <DialogTitle>{t('ADD_PROJECT')}</DialogTitle>
+          <DialogDescription>{t('CONTACT_ADMIN')}</DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
@@ -35,7 +35,7 @@ const AddProjectConfirmModal: React.FC<AddProjectConfirmModalProps> = ({
               variant="secondary"
               onClick={() => handleClose()}
             >
-              Ok
+              {t('OK')}
             </Button>
           </DialogClose>
         </DialogFooter>

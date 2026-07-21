@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
@@ -30,6 +31,8 @@ import StakeholdersTableFilters from '../stakeholders/stakeholders.table.filters
 import StakeholdersTable from '../stakeholders/stakeholders.table';
 
 export default function AddStakeholdersGroups() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -86,7 +89,7 @@ export default function AddStakeholdersGroups() {
   const createStakeholdersGroup = useCreateStakeholdersGroups();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Please enter group name.' }),
+    name: z.string().min(2, { message: t('PLEASE_ENTER_GROUP_NAME') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -103,7 +106,7 @@ export default function AddStakeholdersGroups() {
       (key) => selectedListItems[key],
     );
     if (!stakeholders.length) {
-      return toast.error('Please select members to create group');
+      return toast.error(t('PLEASE_SELECT_MEMBERS'));
     }
     const stakeholdersList = stakeholders?.map((stakeholder) => ({
       uuid: stakeholder,
@@ -128,7 +131,7 @@ export default function AddStakeholdersGroups() {
       <form onSubmit={form.handleSubmit(handleCreateStakeholdersGroups)}>
         <div className="p-4 h-[calc(100vh-130px)] bg-card">
           <h1 className="text-lg font-semibold mb-6">
-            Add : Stakeholders Groups
+            {t('ADD_STAKEHOLDERS_GROUPS')}
           </h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -138,11 +141,11 @@ export default function AddStakeholdersGroups() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Group Name</FormLabel>
+                      <FormLabel>{tg('GROUP_NAME')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Group name"
+                          placeholder={t('GROUP_NAME_PLACEHOLDER')}
                           {...field}
                         />
                       </FormControl>
@@ -155,16 +158,16 @@ export default function AddStakeholdersGroups() {
                 <div className="flex gap-4 items-end">
                   {selected ? (
                     <Badge className="rounded h-10 px-4 py-2 w-max">
-                      {selected} - member selected
+                      {t('MEMBER_SELECTED', { selected })}
                     </Badge>
                   ) : null}
                   <Button
                     type="button"
                     onClick={() => setShowMembers(!showMembers)}
                   >
-                    {showMembers ? 'Hide Members' : 'Show Members'}
+                    {showMembers ? t('HIDE_MEMBERS') : t('SHOW_MEMBERS')}
                   </Button>
-                  <Button type="submit">Create Stakeholders Groups</Button>
+                  <Button type="submit">{t('CREATE_STAKEHOLDERS_GROUPS')}</Button>
                 </div>
               </div>
             </div>

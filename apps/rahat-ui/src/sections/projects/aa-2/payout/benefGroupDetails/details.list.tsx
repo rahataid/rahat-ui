@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import {
   useGetPayoutLogs,
   usePagination,
@@ -38,6 +39,9 @@ import { getPayoutTransactionStatusOptions } from './utils';
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
+  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA Project with Cash Tracker');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const payoutId = params.detailID as UUID;
@@ -128,30 +132,30 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const payoutStats = [
     {
-      label: 'Actual Budget',
+      label: tv('ACTUAL_BUDGET'),
       smallNumber: `Rs. ${
         payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
       }`,
       infoIcon: true,
-      infoToolTip: `Total allocated budget for this beneficiary ${"group's"} payout`,
+      infoToolTip: tv('ACTUAL_BUDGET_TOOLTIP'),
     },
     {
-      label: 'Amount Disbursed',
+      label: tv('AMOUNT_DISBURSED'),
       smallNumber: `Rs. ${payout?.totalSuccessAmount}`,
       infoIcon: true,
-      infoToolTip: 'Total amount disbursed in this payout',
+      infoToolTip: tv('AMOUNT_DISBURSED_TOOLTIP'),
     },
     {
-      label: 'Payout Type',
+      label: tv('PAYOUT_TYPE'),
       infoIcon: true,
-      infoToolTip: 'Type of Payout',
+      infoToolTip: tv('PAYOUT_TYPE_TOOLTIP'),
       smallNumber: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
       badge: true,
     },
     {
-      label: 'Payout Method',
+      label: tv('PAYOUT_METHOD'),
       infoIcon: true,
-      infoToolTip: 'Payment Method',
+      infoToolTip: tv('PAYOUT_METHOD_TOOLTIP'),
       smallNumber:
         payout?.type === 'VENDOR'
           ? payout?.mode
@@ -184,7 +188,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           <div>
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
-              description="List of all the payout transaction logs of selected group"
+              description={tv('LIST_OF_ALL_THE_PAYOUT_TRANSACTION')}
               status={payout?.status
                 .toLowerCase()
                 .replace(/_/g, ' ')
@@ -215,7 +219,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                         triggerForPayoutFailed.isPending ? 'animate-spin' : ''
                       } w-4 h-4`}
                     />
-                    Retry Failed Requests
+                    {tv('RETRY_FAILED_REQUESTS')}
                   </Button>
                 </RoleAuth>
               )}
@@ -229,7 +233,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                     hasContent={false}
                   >
                     <TooltipWrapper
-                      tip="Payout cannot be verified because funds have not been disbursed to the beneficiary group."
+                      tip={tv('PAYOUT_CANNOT_BE_VERIFIED')}
                       disable={payout?.beneficiaryGroupToken?.isDisbursed}
                     >
                       <Button
@@ -243,7 +247,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                           )
                         }
                       >
-                        Verify Manual Payout
+                        {tv('VERIFY_MANUAL_PAYOUT')}
                       </Button>
                     </TooltipWrapper>
                   </RoleAuth>
@@ -256,7 +260,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 variant={'outline'}
               >
                 <CloudDownload className={`w-4 h-4`} />
-                Download Payout Logs
+                {tv('DOWNLOAD_PAYOUT_LOGS')}
               </Button>
             </div>
           }
@@ -283,9 +287,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
-              title="Vendor"
+              title={tv('VENDOR')}
               infoIcon={true}
-              infoTooltip="This shows the vendor name"
+              infoTooltip={tv('VENDOR_TOOLTIP')}
               smallNumber={payout?.extras?.vendorName}
               className="rounded-sm h-[80px] pt-10 pb-8"
               badge
@@ -295,35 +299,35 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
         <div className="grid lg:grid-cols-4 gap-4 pt-2">
           <DataCard
-            title="Total no. of Beneficiaries"
+            title={tv('TOTAL_NO_OF_BENEFICIARIES')}
             smallNumber={
               payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
                 ?.beneficiaries ?? 0
             }
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of beneficiaries in the group"
+            infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}
           />
           <DataCard
-            title="Successful Transactions"
+            title={tv('SUCCESSFUL_TRANSACTIONS')}
             smallNumber={payout?.totalSuccessRequests}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of Successful Transactions"
+            infoTooltip={tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
-            title="Failed Transactions"
+            title={tv('FAILED_TRANSACTIONS')}
             smallNumber={payout?.totalFailedPayoutRequests}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of Failed Transactions"
+            infoTooltip={tv('FAILED_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
-            title="Payout Gap"
+            title={tv('PAYOUT_GAP')}
             smallNumber={payout?.payoutGap}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Gap between Activation phsae triggerd and payout disbursed"
+            infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
           />
         </div>
       </div>
@@ -332,7 +336,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         <div className="flex gap-2">
           <SearchInput
             className="w-full flex-[4]"
-            name="beneficiary wallet address"
+            name={tv('SEARCH_BENEFICIARY_WALLET')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
@@ -340,13 +344,19 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           {payout?.type === 'FSP' &&
             payout?.extras?.paymentProviderType !== 'manual_bank_transfer' && (
               <SelectComponent
-                name="Transaction Type"
+                name={tv('TRANSACTION_TYPE')}
                 options={[
                   'ALL',
                   'TOKEN_TRANSFER',
                   'FIAT_TRANSFER',
                   'VENDOR_REIMBURSEMENT',
                 ]}
+                labels={{
+                  ALL: tg('ALL'),
+                  TOKEN_TRANSFER: tg('TOKEN_TRANSFER'),
+                  FIAT_TRANSFER: tg('FIAT_TRANSFER'),
+                  VENDOR_REIMBURSEMENT: tg('VENDOR_REIMBURSEMENT'),
+                }}
                 onChange={(value) =>
                   handleFilterChange({
                     target: { name: 'transactionType', value },
@@ -358,13 +368,25 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             )}
 
           <SelectComponent
-            name="Status"
+            name={tg('STATUS')}
             options={
               getPayoutTransactionStatusOptions(
                 payout?.type,
                 payout?.extras?.paymentProviderType,
               ) as string[]
             }
+            labels={{
+              ALL: tg('ALL'),
+              PENDING: tg('PENDING'),
+              COMPLETED: tg('COMPLETED'),
+              FAILED: tg('FAILED'),
+              FIAT_TRANSACTION_INITIATED: tg('FIAT_TRANSACTION_INITIATED'),
+              FIAT_TRANSACTION_COMPLETED: tg('FIAT_TRANSACTION_COMPLETED'),
+              FIAT_TRANSACTION_FAILED: tg('FIAT_TRANSACTION_FAILED'),
+              TOKEN_TRANSACTION_INITIATED: tg('TOKEN_TRANSACTION_INITIATED'),
+              TOKEN_TRANSACTION_COMPLETED: tg('TOKEN_TRANSACTION_COMPLETED'),
+              TOKEN_TRANSACTION_FAILED: tg('TOKEN_TRANSACTION_FAILED'),
+            }}
             onChange={(value) =>
               handleFilterChange({
                 target: { name: 'transactionStatus', value },

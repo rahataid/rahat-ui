@@ -23,6 +23,8 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Share } from 'lucide-react';
 import { useUploadBeneficiary } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
+
 export default function ExcelUploader() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -31,6 +33,7 @@ export default function ExcelUploader() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadBeneficiary = useUploadBeneficiary();
+  const t = useTranslations('GLOBAL');
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,7 +60,7 @@ export default function ExcelUploader() {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return toast.error('Please select a file to upload');
+    if (!selectedFile) return toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
 
     // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
@@ -82,8 +85,8 @@ export default function ExcelUploader() {
       <div className="p-4  h-[calc(100vh-115px)]">
         <div className="flex justify-between items-center mb-4">
           <HeaderWithBack
-            title="Import Beneficiaries"
-            subtitle="Select beneficiary file to update (Excel file)"
+            title={t('IMPORT_BENEFICIARIES')}
+            subtitle={t('SELECT_BENEFICIARY_FILE_TO_UPDATE') || 'Select beneficiary file to update (Excel file)'}
             path="/beneficiary"
           />
         </div>
@@ -103,7 +106,7 @@ export default function ExcelUploader() {
               >
                 <span className="flex items-center bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
                   <Share size={22} className="px-1" />
-                  Choose File
+                  {t('CHOOSE_FILE')}
                 </span>
                 <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
               </div>
@@ -152,7 +155,7 @@ export default function ExcelUploader() {
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
         <div>
-          {data?.length ? <p>Total Count: {data?.length ?? 0}</p> : null}
+          {data?.length ? <p>{t('TOTAL_COUNT')} {data?.length ?? 0}</p> : null}
         </div>
         <div className="flex space-x-2">
           <Button
@@ -166,7 +169,7 @@ export default function ExcelUploader() {
               // router.push('/beneficiary')
             }}
           >
-            Clear
+            {t('CLEAR')}
           </Button>
           {/* {addBeneficiary.isPending ? (
         <Button disabled>
@@ -179,7 +182,7 @@ export default function ExcelUploader() {
             onClick={handleUpload}
             disabled={uploadBeneficiary?.isPending || !data?.length}
           >
-            {uploadBeneficiary?.isPending ? <>Uploading...</> : 'Add'}
+            {uploadBeneficiary?.isPending ? <>{t('UPLOADING')}</> : t('ADD')}
           </Button>
           {/* )} */}
         </div>

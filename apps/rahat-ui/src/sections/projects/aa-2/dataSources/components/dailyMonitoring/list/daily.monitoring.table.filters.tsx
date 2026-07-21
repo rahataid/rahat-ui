@@ -18,6 +18,7 @@ import { cn } from '@rahat-ui/shadcn/src';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { SearchInput } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   user: string;
@@ -52,7 +53,7 @@ const SelectComponent = ({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem value={t('ALL')}{t('ALL')}/SelectItem>
           {options.map((item) => (
             <SelectItem key={item.label} value={item.value}>
               {item.label}
@@ -71,12 +72,14 @@ export default function DailyMonitoringTableFilters({
   handleSearch,
   handleFilterChange,
 }: IProps) {
+  const t = useTranslations('AA Project');
+  const tGlobal = useTranslations('GLOBAL');
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">
       <SearchInput
         className="w-full"
-        name="dataEntryBy"
+        name={tGlobal('DATA_ENTRY_BY')}
         value={user}
         onSearch={handleSearch}
       />
@@ -97,7 +100,7 @@ export default function DailyMonitoringTableFilters({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+            {date ? format(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>

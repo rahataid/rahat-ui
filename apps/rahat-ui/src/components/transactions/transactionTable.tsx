@@ -25,8 +25,10 @@ import {
 import { useProjectTransaction } from '../../hooks/el/subgraph/querycall';
 import { useTransactionTableColumns } from './useTransactionTableColumns';
 import TableLoader from '../table.loader';
+import { useTranslations } from 'next-intl';
 
 export default function DataTableDemo() {
+  const tg = useTranslations('GLOBAL');
   const columns = useTransactionTableColumns();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -66,7 +68,7 @@ export default function DataTableDemo() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter Beneficiary..."
+          placeholder={tg('FILTER_BENEFICIARY')}
           value={
             (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
           }
@@ -119,7 +121,7 @@ export default function DataTableDemo() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {tg('NO_RESULTS')}
                 </TableCell>
               </TableRow>
             )}
@@ -129,7 +131,7 @@ export default function DataTableDemo() {
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
         </div>
         <div className="space-x-2">
           <Button
@@ -138,7 +140,7 @@ export default function DataTableDemo() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            {tg('PREVIOUS')}
           </Button>
           <Button
             variant="outline"
@@ -146,7 +148,7 @@ export default function DataTableDemo() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            {tg('NEXT')}
           </Button>
         </div>
       </div>

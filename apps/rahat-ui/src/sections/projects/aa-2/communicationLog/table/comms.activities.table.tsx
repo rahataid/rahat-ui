@@ -12,8 +12,11 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
+import { useTranslations } from 'next-intl';
 
 export default function CommsActivitiesTable() {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
   const { id: projectId } = useParams();
 
   const {
@@ -62,7 +65,7 @@ export default function CommsActivitiesTable() {
     <div className="space-y-4">
       <div className="flex justify-between gap-2">
         <SearchInput
-          name="title"
+          name={tGlobal('TITLE')}
           className="w-[100%]"
           value={
             (table.getColumn('title')?.getFilterValue() as string) ??
@@ -71,8 +74,14 @@ export default function CommsActivitiesTable() {
           onSearch={(event) => handleFilterChange(event)}
         />
         <SelectComponent
-          name="Phase"
+          name={t('PHASE')}
           options={['ALL', 'ACTIVATION', 'READINESS', 'PREPAREDNESS']}
+          labels={{
+            ALL: tGlobal('ALL'),
+            ACTIVATION: tGlobal('ACTIVATION'),
+            READINESS: tGlobal('READINESS'),
+            PREPAREDNESS: tGlobal('PREPAREDNESS'),
+          }}
           onChange={(value) =>
             handleFilterChange({
               target: { name: 'phase', value },
@@ -102,7 +111,7 @@ export default function CommsActivitiesTable() {
           table={table}
           tableHeight={'h-[calc(100vh-320px)]'}
           loading={isLoading}
-          message="No Activities Found"
+          message={t('NO_ACTIVITIES_FOUND')}
         />
         <CustomPagination
           meta={

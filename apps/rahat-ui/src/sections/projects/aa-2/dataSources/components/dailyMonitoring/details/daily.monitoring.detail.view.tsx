@@ -29,8 +29,10 @@ import WeatherDashboard from './ncmrwf/ncmwrf.deterministic.problastic.weatherCa
 import GaugereadingMonitoringCard from './gaugeReading/gaugeReading';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { useTranslations } from 'next-intl';
 
 export default function DailyMonitoringDetailView() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -146,8 +148,8 @@ export default function DailyMonitoringDetailView() {
     <div className="p-4">
       <div className=" flex justify-between items-center">
         <HeaderWithBack
-          title={'Bulletin Details'}
-          subtitle="Detailed view of selected bulletin"
+          title={t('BULLETIN_DETAILS')}
+          subtitle={t('DETAILED_VIEW_OF_SELECTED_BULLETIN')}
           path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
         />
         <div className="flex gap-4 items-center">
@@ -171,7 +173,7 @@ export default function DailyMonitoringDetailView() {
           <div className="flex items-center gap-3 ">
             <User className="h-5 w-5 text-gray-700" />
             <div>
-              <p className="text-md text-gray-700">Recorded by</p>
+              <p className="text-md text-gray-700">{t('RECORDED_BY')}</p>
               <p className="text-muted-foreground text-sm">
                 {data?.data?.[0]?.dataEntryBy}
               </p>
@@ -191,7 +193,7 @@ export default function DailyMonitoringDetailView() {
           <div className="flex items-center gap-3 ">
             <Calendar className="h-5 w-5 text-gray-700" />
             <div>
-              <p className="text-md text-gray-700">Timestamp</p>
+              <p className="text-md text-gray-700">{t('TIMESTAMP')}</p>
               <p className="text-muted-foreground text-sm">
                 {Intl.DateTimeFormat('en-US', {
                   year: 'numeric',
@@ -207,11 +209,11 @@ export default function DailyMonitoringDetailView() {
         </div>
       </div>
 
-      <Tabs defaultValue="dhm" className="items-center">
+      <Tabs defaultValue={t('DHM')} className="items-center">
         <div className=" flex items-center py-2">
           <TabsList className=" gap-4 text-gray-600 border bg-secondary rounded justify-start overflow-x-auto h-auto">
             <TabsTrigger
-              value="dhm"
+              value={t('DHM')}
               className=" data-[state=active]:bg-white  data-[state=active]:text-gray-600"
             >
               DHM
@@ -226,34 +228,34 @@ export default function DailyMonitoringDetailView() {
               value="ncmrwf-deterministic"
               className=" data-[state=active]:bg-white  data-[state=active]:text-gray-600"
             >
-              NCMRWF Deterministic & Probablistic
+              {t('NCMRWF_DETERMINISTIC_PROBABLISTIC')}
             </TabsTrigger>
             <TabsTrigger
               value="ncrmwf-accumulated"
               className=" data-[state=active]:bg-white  data-[state=active]:text-gray-600"
             >
-              NCRMWF Accumulated
+              {t('NCRMWF_ACCUMULATED')}
             </TabsTrigger>
             <TabsTrigger
               value="flash-flood"
               className=" data-[state=active]:bg-white  data-[state=active]:text-gray-600"
             >
-              Flash Flood Risk Monitoring
+              {t('FLASH_FLOOD_RISK_MONITORING')}
             </TabsTrigger>
             <TabsTrigger
               value="gauge-reading"
               className=" data-[state=active]:bg-white  data-[state=active]:text-gray-600"
             >
-              Gauge Reading
+              {t('GAUGE_READING')}
             </TabsTrigger>
           </TabsList>
         </div>
 
-        <TabsContent value="dhm">
+        <TabsContent value={t('DHM')}>
           {DHM_data?.length ? (
             <DhmContent data={DHM_data} />
           ) : (
-            <NoResult message="No DHM Data" />
+            <NoResult message={t('NO_DHM_DATA')} />
           )}
         </TabsContent>
         <TabsContent value="flash-flood">
@@ -262,21 +264,21 @@ export default function DailyMonitoringDetailView() {
               data={Flash_Flood_Risk_Monitoring_data}
             />
           ) : (
-            <NoResult message="No Flash Flood Risk Monitoring Data" />
+            <NoResult message={t('NO_FLASH_FLOOD_RISK_MONITORING_DATA')} />
           )}
         </TabsContent>
         <TabsContent value="ncmrwf-deterministic">
           {NCMRWF_Deterministic_Probabilistic_data?.length ? (
             <WeatherDashboard data={NCMRWF_Deterministic_Probabilistic_data} />
           ) : (
-            <NoResult message="No NCMRWF Deterministic & Probablistic Data" />
+            <NoResult message={t('NO_NCMRWF_DETERMINISTIC_DATA')} />
           )}
         </TabsContent>
         <TabsContent value="ncrmwf-accumulated">
           {NCMRWF_Accumulated_data?.length ? (
             <AccumulatedCard data={NCMRWF_Accumulated_data} />
           ) : (
-            <NoResult message="No NCRMWF Accumulated Data" />
+            <NoResult message={t('NO_NCRMWF_ACCUMULATED_DATA')} />
           )}
         </TabsContent>
 
@@ -291,7 +293,7 @@ export default function DailyMonitoringDetailView() {
           {Gauge_Reading_Monitoring_data?.length ? (
             <GaugereadingMonitoringCard data={Gauge_Reading_Monitoring_data} />
           ) : (
-            <NoResult message="No Gauge Reading Data" />
+            <NoResult message={t('NO_GAUGE_READING_DATA')} />
           )}
         </TabsContent>
       </Tabs>

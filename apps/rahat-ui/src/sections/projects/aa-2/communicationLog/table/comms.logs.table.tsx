@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   TableBody,
   TableCell,
@@ -19,6 +20,7 @@ export default function CommsLogsTable({
   table: Table<any>;
   isLoading?: boolean;
 }) {
+  const t = useTranslations('AA Project');
   return (
     <>
       <div className="mt-1">
@@ -68,7 +70,7 @@ export default function CommsLogsTable({
                     {isLoading ? (
                       <SpinnerLoader />
                     ) : (
-                      <NoResult message="No Communications Logs Available" />
+                      <NoResult message={t('NO_COMMUNICATIONS_LOGS_AVAILABLE')} />
                     )}
                   </TableCell>
                 </TableRow>

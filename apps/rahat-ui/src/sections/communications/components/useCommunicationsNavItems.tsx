@@ -1,10 +1,12 @@
 import { useCampaignStore } from '@rumsan/react-query';
 import { Speech, Plus, FilePenLine } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { NavItem } from '.';
 
 export const useNavItems = () => {
+  const t = useTranslations('Communications – Navigation');
   const router = useRouter();
   const totalTextCampaign = useCampaignStore().totalTextCampaign;
 
@@ -14,10 +16,10 @@ export const useNavItems = () => {
 
   const navItems: NavItem[] = [
     {
-      title: 'Communications',
+      title: t('COMMUNICATIONS'),
       children: [
         {
-          title: 'Campaigns',
+          title: t('CAMPAIGNS'),
           onClick: handleGoBack,
           subtitle: totalTextCampaign,
           icon: <Speech size={18} strokeWidth={1.5} />,
@@ -25,10 +27,10 @@ export const useNavItems = () => {
       ],
     },
     {
-      title: 'Actions',
+      title: t('ACTIONS'),
       children: [
         {
-          title: 'Add Campaign',
+          title: t('ADD_CAMPAIGN'),
           path: `/communications/add`,
           icon: <Plus size={18} strokeWidth={1.5} />,
         },

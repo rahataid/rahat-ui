@@ -50,6 +50,7 @@ import { paths } from '../../../routes/paths';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { useTranslations } from 'next-intl';
 
 const data: Voice[] = VoiceTableData;
 
@@ -155,6 +156,7 @@ export const columns: ColumnDef<Voice>[] = [
 ];
 
 export default function VoiceTableView() {
+  const tg = useTranslations('GLOBAL');
   const campaignStore = useCampaignStore();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -202,7 +204,7 @@ export default function VoiceTableView() {
     <div className="p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Filter campaigns..."
+          placeholder={tg('FILTER_CAMPAIGNS')}
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
@@ -213,11 +215,11 @@ export default function VoiceTableView() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               <Settings2 className="mr-2 h-4 w-5" />
-              View
+              {tg('VIEW')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+            <DropdownMenuLabel>{tg('TOGGLE_COLUMNS')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table
               .getAllColumns()
@@ -283,7 +285,7 @@ export default function VoiceTableView() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {tg('NO_RESULTS')}
                   </TableCell>
                 </TableRow>
               )}
@@ -294,10 +296,10 @@ export default function VoiceTableView() {
       <div className="flex items-center justify-end space-x-8 p-2 border-t">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
+          <div className="text-sm font-medium">{tg('ROWS_PER_PAGE')}</div>
           <Select
             defaultValue="10"
             onValueChange={(value) => table.setPageSize(Number(value))}
@@ -318,8 +320,7 @@ export default function VoiceTableView() {
           </Select>
         </div>
         <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+          {tg('PAGE_CURRENT_OF_TOTAL', { current: table.getState().pagination.pageIndex + 1, total: table.getPageCount() })}
         </div>
         <div className="space-x-4">
           <Button
@@ -328,7 +329,7 @@ export default function VoiceTableView() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            {tg('PREVIOUS')}
           </Button>
           <Button
             variant="outline"
@@ -336,7 +337,7 @@ export default function VoiceTableView() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            {tg('NEXT')}
           </Button>
         </div>
       </div>

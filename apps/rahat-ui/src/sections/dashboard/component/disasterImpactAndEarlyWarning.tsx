@@ -2,8 +2,11 @@ import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
+import { useTranslations } from 'next-intl';
 
 const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
+  const t = useTranslations('Dashboard \u2013 Disaster Impact & Early Warning');
+  const g = useTranslations('GLOBAL');
   // Helper to find stat data by name
   const getStat = (name: string) =>
     statsData?.find((s) => s.name === name)?.data ?? [];
@@ -16,15 +19,15 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   return (
     <div className="flex flex-col mt-4">
       <Heading
-        title="Disaster Impact & Early Warning"
+        title={t('DISASTER_IMPACT_EARLY_WARNING')}
         titleStyle="text-lg"
-        description="Flood Impact History & Early Warning Access"
+        description={t('FLOOD_IMPACT_HISTORY_EARLY_WARNING_ACCESS')}
       />
       <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-2 gap-2 mt-2">
         {[
-          { title: 'Flood Impact in Last 5 Years', data: floodImpact },
+          { title: t('FLOOD_IMPACT_IN_LAST5_YEARS'), data: floodImpact },
           {
-            title: 'Access To Early Warning Information',
+            title: t('ACCESS_TO_EARLY_WARNING_INFORMATION'),
             data: earlyWarningAccess,
           },
         ].map(({ title, data }) => (
@@ -46,7 +49,7 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
         ))}
 
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[340px] lg:col-span-2">
-          <h1 className="text-sm font-medium">Information Channel Used</h1>
+          <h1 className="text-sm font-medium">{t('INFORMATION_CHANNEL_USED')}</h1>
           <div className="flex-1 p-2">
             {channelUsageStats?.length === 0 ? (
               <div className="flex justify-center h-[300px] items-center">
@@ -65,8 +68,8 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
                 barHeight={20}
                 height="100%"
                 width="100%"
-                xaxisTitle="Information Channel"
-                yaxisTitle="No. of Beneficiaries"
+                xaxisTitle={t('INFORMATION_CHANNEL')}
+                yaxisTitle={g('NO_OF_BENEFICIARIES')}
                 columnWidth={'20%'}
               />
             )}

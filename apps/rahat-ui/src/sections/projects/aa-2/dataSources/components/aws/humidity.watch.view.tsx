@@ -11,8 +11,10 @@ import { format } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
 import { getHumidityColor, getLatestValue } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
+import { useTranslations } from 'next-intl';
 
 export default function HumidityWatchView() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;
@@ -45,7 +47,7 @@ export default function HumidityWatchView() {
   if (rh1hData.length === 0) {
     return (
       <div className="p-4">
-        <NoResult message="No Humidity Data" />
+        <NoResult message={t('NO_HUMIDITY_DATA')} />
       </div>
     );
   }
@@ -72,10 +74,10 @@ export default function HumidityWatchView() {
             <div className="w-full">
               <div className="flex justify-between gap-4">
                 <Heading
-                  title={humInfo?.name || 'Unknown Station'}
+                  title={humInfo?.name || t('UNKNOWN_STATION')}
                   titleStyle="text-xl/6 font-semibold"
                   description={
-                    humInfo?.parameter_name || 'Relative Humidity Hourly'
+                    humInfo?.parameter_name || t('RELATIVE_HUMIDITY_HOURLY')
                   }
                   updatedAt={updatedAt}
                 />
@@ -85,7 +87,7 @@ export default function HumidityWatchView() {
                 <div className="flex space-x-3 items-center">
                   <RadioTower className="text-gray-500" size={20} />
                   <div>
-                    <p className="text-sm/6 font-medium mb-1">Station</p>
+                    <p className="text-sm/6 font-medium mb-1">{t('STATION')}</p>
                     <p className="text-sm/4 text-gray-600">
                       {humInfo?.name || '--'}
                     </p>
@@ -95,7 +97,7 @@ export default function HumidityWatchView() {
                 <div className="flex space-x-3 items-center">
                   <Globe className="text-gray-500" size={20} />
                   <div>
-                    <p className="text-sm/6 font-medium mb-1">Latitude</p>
+                    <p className="text-sm/6 font-medium mb-1">{t('LATITUDE')}</p>
                     <p className="text-sm/4 text-gray-600">
                       {humInfo?.latitude !== undefined
                         ? humInfo.latitude
@@ -107,7 +109,7 @@ export default function HumidityWatchView() {
                 <div className="flex space-x-3 items-center">
                   <Globe className="text-gray-500" size={20} />
                   <div>
-                    <p className="text-sm/6 font-medium mb-1">Longitude</p>
+                    <p className="text-sm/6 font-medium mb-1">{t('LONGITUDE')}</p>
                     <p className="text-sm/4 text-gray-600">
                       {humInfo?.longitude !== undefined
                         ? humInfo.longitude
@@ -122,7 +124,7 @@ export default function HumidityWatchView() {
               value={latestValue}
               unit={humInfo?.unit ?? '%'}
               updatedAt={latestDate}
-              label="Relative Humidity"
+              label={t('RELATIVE_HUMIDITY')}
               colors={colors}
             />
           </div>

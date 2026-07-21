@@ -27,6 +27,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useTreasuryTokenList } from 'libs/query/src/lib/treasury/treasury.service';
 import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 
@@ -40,6 +41,8 @@ export type Redeptions = {
 };
 
 export default function AssetsTable() {
+  const t = useTranslations('Treasury – Assets');
+  const tg = useTranslations('GLOBAL');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -76,14 +79,14 @@ export default function AssetsTable() {
           onCheckedChange={(value: any) =>
             table.toggleAllPageRowsSelected(!!value)
           }
-          aria-label="Select all"
+          aria-label={tg('SELECT_ALL')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          aria-label={tg('SELECT_ROW')}
         />
       ),
       enableSorting: false,
@@ -91,7 +94,7 @@ export default function AssetsTable() {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('name')}</div>
       ),
@@ -99,29 +102,29 @@ export default function AssetsTable() {
 
     {
       accessorKey: 'symbol',
-      header: 'Symbol',
+      header: t('SYMBOL'),
       cell: ({ row }) => <div>{row.getValue('symbol')}</div>,
     },
     {
       accessorKey: 'fromBlock',
-      header: 'BlockNumber',
+      header: t('BLOCKNUMBER'),
       cell: ({ row }) => <div>{row.getValue('fromBlock')}</div>,
     },
 
     {
       accessorKey: 'decimals',
-      header: 'Decimals',
+      header: t('DECIMALS'),
       cell: ({ row }) => <div>{row.getValue('decimals')}</div>,
     },
     {
       accessorKey: 'initialSupply',
-      header: 'Initial Supply',
+      header: t('INITIAL_SUPPLY'),
       cell: ({ row }) => <div>{row.getValue('initialSupply')}</div>,
     },
 
     {
       accessorKey: 'contractAddress',
-      header: 'Contract Address',
+      header: t('CONTRACT_ADDRESS'),
       cell: ({ row }) => (
         <div>{shortenAddress(row.getValue('contractAddress'))}</div>
       ),
@@ -167,7 +170,7 @@ export default function AssetsTable() {
     <div className="w-full p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Search Name..."
+          placeholder={t('SEARCH_NAME')}
           value={(table?.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
@@ -219,7 +222,7 @@ export default function AssetsTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {tg('NO_RESULTS')}
                   </TableCell>
                 </TableRow>
               )}
@@ -230,7 +233,7 @@ export default function AssetsTable() {
       <div className="flex items-center justify-end space-x-2 py-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
         </div>
         <div className="space-x-2">
           <Button
@@ -239,7 +242,7 @@ export default function AssetsTable() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            {tg('PREVIOUS')}
           </Button>
           <Button
             variant="outline"
@@ -247,7 +250,7 @@ export default function AssetsTable() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            {tg('NEXT')}
           </Button>
         </div>
       </div>

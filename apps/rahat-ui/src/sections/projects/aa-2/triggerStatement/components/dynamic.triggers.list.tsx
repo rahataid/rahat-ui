@@ -1,6 +1,7 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TriggerCard from './trigger.card';
 import { NoResult } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   projectId: string;
@@ -15,6 +16,7 @@ export default function DynamicTriggersList({
   history,
   riverBasin,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const allTriggers = triggers?.length
     ? triggers
     : history?.flatMap((group) =>
@@ -47,7 +49,7 @@ export default function DynamicTriggersList({
             />
           ))
         ) : (
-          <NoResult message="No Trigger Available" />
+          <NoResult message={t('NO_TRIGGER_AVAILABLE')} />
         )}
       </div>
     </ScrollArea>

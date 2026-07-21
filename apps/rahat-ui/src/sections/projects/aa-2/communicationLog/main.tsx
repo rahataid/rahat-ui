@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   useCommsStats,
   useCommuicationStatsforBeneficiaryandStakeHolders,
@@ -18,6 +19,7 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { IndividualLogTab } from './components/IndividualLogs';
 
 export default function CommunicationMainLogsView() {
+  const t = useTranslations('AA Project');
   const { id: ProjectId } = useParams();
   const { data: commsStatsData, isLoading: isLoadingCommsStats } =
     useCommsStats(ProjectId as UUID);
@@ -27,8 +29,8 @@ export default function CommunicationMainLogsView() {
   return (
     <div className="flex flex-col p-4">
       <Heading
-        title="Communications Logs"
-        description="Track all the activity based logs here"
+        title={t('COMMUNICATIONS_LOGS')}
+        description={t('TRACK_ALL_THE_ACTIVITY_BASED_LOGS')}
       />
 
       <Tabs
@@ -45,7 +47,7 @@ export default function CommunicationMainLogsView() {
                 : 'text-black'
             } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
           >
-            Overview
+            {t('OVERVIEW')}
           </TabsTrigger>
           <TabsTrigger
             value="communicationLog"
@@ -55,7 +57,7 @@ export default function CommunicationMainLogsView() {
                 : 'text-black'
             } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
           >
-            Activity Based Log
+            {t('ACTIVITY_BASED_LOG')}
           </TabsTrigger>
           <TabsTrigger
             value="individualLog"
@@ -65,7 +67,7 @@ export default function CommunicationMainLogsView() {
                 : 'text-black'
             } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
           >
-            Individual Logs
+            {t('INDIVIDUAL_LOGS')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">

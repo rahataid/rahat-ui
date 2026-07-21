@@ -1,4 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading } from 'apps/rahat-ui/src/common';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
@@ -15,6 +17,7 @@ type IProps = {
 };
 
 export default function GlofasInfoCard({ glofas }: IProps) {
+  const t = useTranslations('AA Project');
   const maxProbability = glofas?.info?.pointForecastData?.maxProbability?.data;
   const maxProbabilityDisplay =
     maxProbability == null ? 'N/A' : maxProbability === '' ? '0' : maxProbability;
@@ -23,29 +26,29 @@ export default function GlofasInfoCard({ glofas }: IProps) {
     () => [
       {
         icon: Calendar,
-        label: 'Forecast Date',
+        label: t('FORECAST_DATE'),
         value: dateFormat(glofas?.info?.forecastDate, 'MMMM d, yyyy'),
       },
       {
         icon: Calendar,
-        label: 'Return Period',
+        label: t('RETURN_PERIOD'),
         value: glofas?.info?.returnPeriod || 'N/A',
       },
       {
         icon: ChartNoAxesColumn,
-        label: 'Discharge Tendency',
+        label: t('DISCHARGE_TENDENCY'),
         value: glofas?.info?.pointForecastData?.dischargeTendencyImage?.data,
       },
       {
         icon: ChartLine,
-        label: 'Peak Forecasted',
+        label: t('PEAK_FORECASTED'),
         value: formateDateFromText(
           glofas?.info?.pointForecastData?.peakForecasted?.data,
         ),
       },
       {
         icon: TriangleAlert,
-        label: 'Alert Level',
+        label: t('ALERT_LEVEL'),
         value: glofas?.info?.pointForecastData?.alertLevel?.data,
       },
     ],
@@ -63,7 +66,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
               updatedAt={glofas?.updatedAt}
             />
             <div>
-              <Badge className="font-light">Steady</Badge>
+              <Badge className="font-light">{t('STEADY')}</Badge>
             </div>
           </div>
           <div className="grid grid-cols-5 gap-2">
@@ -79,7 +82,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
                     {d.label === 'Discharge Tendency' ? (
                       <img
                         src={d.value}
-                        alt="Discharge Tendency"
+                        alt={t('DISCHARGE_TENDENCY')}
                         className="w-4 h-4 object-cover"
                       />
                     ) : (
@@ -93,7 +96,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
         </div>
         <div className="p-4 rounded-sm border shadow min-w-max">
           <div className="text-center">
-            <p className="font-semibold text-xl/10">Maximum Probability</p>
+            <p className="font-semibold text-xl/10">{t('MAXIMUM_PROBABILITY')}</p>
             <p className="text-xs/4">
               Max Probability Step:{' '}
               {glofas?.info?.pointForecastData?.maxProbabilityStep?.data ||

@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
@@ -12,19 +13,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSettingsCreate } from '@rahat-ui/query';
 
 export default function AddSetting() {
+  const t = useTranslations('Settings – Add');
+  const g = useTranslations('GLOBAL');
   const createRahatSetting = useAppSettingsCreate();
   const FormSchema = z.object({
-    name: z.string().min(1, { message: 'Name is required' }),
+    name: z.string().min(1, { message: t('NAME_IS_REQUIRED') }),
     field: z.array(
       z.object({
         value: z.object({
-          key: z.string().min(1, { message: 'Key is required' }),
-          value: z.string().min(1, { message: 'Value is required' }),
+          key: z.string().min(1, { message: t('KEY_IS_REQUIRED') }),
+          value: z.string().min(1, { message: t('VALUE_IS_REQUIRED') }),
         }),
       }),
     ),
     requiredFields: z.array(
-      z.string().min(1, { message: 'Required Fields is required' }),
+      z.string().min(1, { message: t('REQUIRED_FIELDS_IS_REQUIRED') }),
     ),
     isReadOnly: z.boolean(),
     isPrivate: z.boolean(),
@@ -81,11 +84,11 @@ export default function AddSetting() {
   return (
     <form onSubmit={handleSubmit(handleAddSetting)}>
       <div className="p-4 h-add rounded border bg-white">
-        <h1 className="text-lg font-semibold mb-6">Add Settings</h1>
+        <h1 className="text-lg font-semibold mb-6">{t('ADD_SETTINGS')}</h1>
         <div className="shadow-md p-4 rounded-sm">
           <div className="grid grid-cols-5 gap-4 mb-4">
-            <Label className="col-span-2">Name</Label>
-            <Label className="col-span-2">Required Fields</Label>
+            <Label className="col-span-2">{g('NAME')}</Label>
+            <Label className="col-span-2">{t('REQUIRED_FIELDS')}</Label>
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             <FormField
@@ -93,7 +96,7 @@ export default function AddSetting() {
               name="name"
               render={({ field }) => (
                 <div className="col-span-2">
-                  <Input type="text" placeholder="Name" {...field} />
+                  <Input type="text" placeholder={g('NAME')} {...field} />
 
                   {errors.name && (
                     <Label className="text-red-500">
@@ -111,7 +114,7 @@ export default function AddSetting() {
                 <div className="col-span-2">
                   <Input
                     type="text"
-                    placeholder="Comma separated keys EG: key1, key2"
+                    placeholder={t('COMMA_SEPARATED_KEYS_EG_KEY1_KEY2')}
                     {...field}
                     onChange={(e) => {
                       const uppercaseValue = e.target.value.toUpperCase();
@@ -138,7 +141,7 @@ export default function AddSetting() {
                   name="isReadOnly"
                   render={({ field }) => (
                     <div className=" flex flex-row justify-evenly">
-                      <Label>ReadOnly</Label>
+                      <Label>{g('READONLY')}</Label>
                       <Switch
                         {...field}
                         value={field.value ? 'false' : 'true'}
@@ -154,7 +157,7 @@ export default function AddSetting() {
                   name="isPrivate"
                   render={({ field }) => (
                     <div className=" flex flex-row justify-evenly">
-                      <Label>Private</Label>
+                      <Label>{g('PRIVATE')}</Label>
                       <Switch
                         {...field}
                         value={field.value ? 'true' : 'false'}
@@ -170,8 +173,8 @@ export default function AddSetting() {
           <div className="grid grid-cols-5 gap-4 mb-4">
             {fields.length > 0 && (
               <>
-                <Label className="col-span-2">KEY</Label>
-                <Label className="col-span-2">VALUE</Label>
+                <Label className="col-span-2">{t('KEY')}</Label>
+                <Label className="col-span-2">{t('VALUE')}</Label>
               </>
             )}
           </div>
@@ -186,7 +189,7 @@ export default function AddSetting() {
                       <div className="col-span-2">
                         <Input
                           type="text"
-                          placeholder="eg:Client-ID"
+                          placeholder={t('EG_CLIENT_ID')}
                           {...field}
                         />
                         {errors?.field?.[index]?.value?.key && (
@@ -203,7 +206,7 @@ export default function AddSetting() {
                     name={`field.${index}.value.value`}
                     render={({ field }) => (
                       <div className="col-span-2">
-                        <Input type="text" placeholder="Value" {...field} />
+                        <Input type="text" placeholder={t('VALUE2')} {...field} />
                         {errors?.field?.[index]?.value?.value && (
                           <Label className="text-red-500">
                             {errors?.field[index]?.value?.value?.message}
@@ -235,10 +238,10 @@ export default function AddSetting() {
             className="flex items-center p-2 gap-1 text-xs  w-15"
           >
             <Plus size={18} strokeWidth={1.5} />
-            Add Field
+            {t('ADD_FIELD')}
           </Button>
           <div className="flex justify-end">
-            <Button type="submit">Save</Button>
+            <Button type="submit">{g('SAVE')}</Button>
           </div>
         </div>
       </div>

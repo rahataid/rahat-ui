@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -46,68 +47,74 @@ export type Role = {
   createdAt: string;
 };
 
-export const columns: ColumnDef<Role, any>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
-  },
+export function getRoleTableColumns(t: (key: string) => string): ColumnDef<Role, any>[] {
+  return [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value: any) =>
+            table.toggleAllPageRowsSelected(!!value)
+          }
+          aria-label={t('SELECT_ALL')}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value: any) => row.toggleSelected(!!value)}
+          aria-label={t('SELECT_ROW')}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: t('NAME'),
+      cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
+    },
 
-  {
-    accessorKey: 'createdBy',
-    header: () => <div className="text-right">Created By</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">
-          {row.getValue('createdBy')}
-        </div>
-      );
+    {
+      accessorKey: 'createdBy',
+      header: () => <div className="text-right">{t('CREATED_BY')}</div>,
+      cell: ({ row }) => {
+        return (
+          <div className="text-right font-medium">
+            {row.getValue('createdBy')}
+          </div>
+        );
+      },
     },
-  },
-  {
-    accessorKey: 'createdAt',
-    header: () => <div className="text-right">Created At</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">
-          {row.getValue('createdAt')}
-        </div>
-      );
+    {
+      accessorKey: 'createdAt',
+      header: () => <div className="text-right">{t('CREATED_AT')}</div>,
+      cell: ({ row }) => {
+        return (
+          <div className="text-right font-medium">
+            {row.getValue('createdAt')}
+          </div>
+        );
+      },
     },
-  },
-  {
-    accessorKey: 'Actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      return <ArrowUpRightFromSquare size={16} strokeWidth={1} />;
+    {
+      accessorKey: 'Actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return <ArrowUpRightFromSquare size={16} strokeWidth={1} />;
+      },
     },
-  },
-];
+  ];
+}
+
 export default function RoleTable({ handleClick }: IProps) {
+  const tg = useTranslations('GLOBAL');
+  const tr = useTranslations('Users – Roles & Permissions');
+  const columns = React.useMemo(() => getRoleTableColumns(tg), [tg]);
   const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -151,14 +158,14 @@ export default function RoleTable({ handleClick }: IProps) {
   return (
     <div>
       {isLoading ? (
-        <h1>Loading...</h1>
+        <h1>{tg('LOADING')}</h1>
       ) : (
         <div className="w-full">
           <div className="flex items-center py-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">
-                  Columns <ChevronDown className="ml-2 h-4 w-4" />
+                  {tr('COLUMNS')} <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -229,7 +236,7 @@ export default function RoleTable({ handleClick }: IProps) {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {tg('NO_RESULTS')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -239,7 +246,7 @@ export default function RoleTable({ handleClick }: IProps) {
           <div className="flex items-center justify-end space-x-2 py-4">
             <div className="flex-1 text-sm text-muted-foreground">
               {table.getFilteredSelectedRowModel().rows.length} of{' '}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
+              {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
             </div>
             <div className="space-x-2">
               <Button
@@ -248,7 +255,7 @@ export default function RoleTable({ handleClick }: IProps) {
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                Previous
+                {tg('PREVIOUS')}
               </Button>
               <Button
                 variant="outline"
@@ -256,7 +263,7 @@ export default function RoleTable({ handleClick }: IProps) {
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                Next
+                {tg('NEXT')}
               </Button>
             </div>
           </div>

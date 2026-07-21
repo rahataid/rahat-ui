@@ -1,5 +1,6 @@
 import { useGrievanceDetails, useGrievanceEditStatus } from '@rahat-ui/query';
 import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
@@ -15,6 +16,13 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import GrievanceInfo from './grievances.info';
 
 const GrievancesDetail = () => {
+  const t = useTranslations('AA Project');
+  const labelMap: Record<string, string> = {
+    'New': t('NEW'),
+    'Under Review': t('UNDER_REVIEW'),
+    'Resolved': t('RESOLVED'),
+    'Closed': t('CLOSED'),
+  };
   const params = useParams();
   const projectId = params.id as UUID;
   const grievanceId = params.uuid as UUID;
@@ -58,8 +66,8 @@ const GrievancesDetail = () => {
         <div className="mt-4 flex justify-between items-center">
           <div>
             <Heading
-              title={`Grievance Details`}
-              description="Detailed view of the selected grievance"
+              title={t('GRIEVANCE_DETAILS_TITLE')}
+              description={t('DETAILED_VIEW_OF_THE_SELECTED_GRIEVANCE')}
             />
           </div>
           <div className="flex gap-2">
@@ -69,7 +77,7 @@ const GrievancesDetail = () => {
                   variant="outline"
                   className="rounded flex gap-1 items-center text-sm font-medium w-auto"
                 >
-                  Update Status
+                  {t('UPDATE_STATUS')}
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
@@ -87,7 +95,7 @@ const GrievancesDetail = () => {
                         isCurrentStatus ? 'bg-accent' : ''
                       }`}
                     >
-                      <span>{status.label}</span>
+                      <span>{labelMap[status.label] || status.label}</span>
                       {isCurrentStatus && <Check className="h-4 w-4 ml-2" />}
                     </DropdownMenuItem>
                   );
@@ -103,7 +111,7 @@ const GrievancesDetail = () => {
               }
             >
               <PencilIcon className="h-4 w-4" />
-              Edit
+              {t('EDIT')}
             </Button>
           </div>
         </div>

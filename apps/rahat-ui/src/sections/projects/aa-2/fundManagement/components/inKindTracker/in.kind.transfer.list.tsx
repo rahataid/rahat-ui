@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 
 function InKindTransferList({
   transfers,
@@ -28,6 +29,8 @@ function InKindTransferList({
   onConfirmReceipt?: (payload: any) => void;
 }) {
   const id = useParams().id as UUID;
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('AA Project with Gnosis');
   const [confirmingTransferId, setConfirmingTransferId] = useState<
     string | null
   >(null);
@@ -79,7 +82,7 @@ function InKindTransferList({
       <div className="divide-y max-h-96 overflow-y-auto">
         {transfers?.length === 0 ? (
           <div className="p-6 text-center">
-            <p className="text-gray-500">No distributions initiated yet</p>
+            <p className="text-gray-500">{tg('NO_DISTRIBUTIONS_INITIATED_YET')}</p>
           </div>
         ) : (
           transfers?.map((transfer) => {
@@ -137,10 +140,10 @@ function InKindTransferList({
                             }`}
                           >
                             {isConfirmed
-                              ? 'CONFIRMED'
+                              ? t('CONFIRMED')
                               : isPending
-                              ? 'PENDING'
-                              : 'BLOCKED'}
+                              ? t('PENDING')
+                              : t('BLOCKED')}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-1">
@@ -169,8 +172,8 @@ function InKindTransferList({
                             >
                               <Check size={16} className="mr-2" />
                               {confirmingTransferId === transfer.id
-                                ? 'Confirming...'
-                                : 'Confirm Received'}
+                                ? t('CONFIRMING')
+                                : t('CONFIRM_RECEIVED')}
                             </Button>
                           )}
                       </div>
@@ -188,10 +191,10 @@ function InKindTransferList({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="text-center">
-              In-kind Receipt Confirmation
+              {tg('IN_KIND_RECEIPT_CONFIRMATION')}
             </DialogTitle>
             <DialogDescription className="text-center text-base text-gray-700 mt-2">
-              Please confirm receipt of in-kind transfer
+              {tg('PLEASE_CONFIRM_RECEIPT_OF_IN_KIND')}
             </DialogDescription>
           </DialogHeader>
 
@@ -202,7 +205,7 @@ function InKindTransferList({
                   {selectedTransfer.transfer.amount.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-700 mt-1">
-                  Transfer Quantity
+                  {tg('TRANSFER_QUANTITY')}
                 </div>
               </div>
             </div>
@@ -211,19 +214,19 @@ function InKindTransferList({
           {selectedTransfer && (
             <div className="space-y-3 py-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">From:</span>
+                <span className="text-sm text-gray-600">{t('FROM')}</span>
                 <span className="text-sm font-medium text-gray-900">
                   {selectedTransfer.transfer.from}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">To:</span>
+                <span className="text-sm text-gray-600">{t('TO')}</span>
                 <span className="text-sm font-medium text-gray-900">
                   {selectedTransfer.transfer.to}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Transfer Date:</span>
+                <span className="text-sm text-gray-600">{t('TRANSFER_DATE')}</span>
                 <span className="text-sm font-medium text-gray-900">
                   {formatDate(new Date(selectedTransfer.transfer.timestamp))}
                 </span>
@@ -241,7 +244,7 @@ function InKindTransferList({
                 setSelectedTransfer(null);
               }}
             >
-              Cancel
+              {t('CANCEL')}
             </Button>
             <Button
               type="button"
@@ -250,7 +253,7 @@ function InKindTransferList({
               disabled={confirmingTransferId !== null}
             >
               <Check size={16} className="mr-2" />
-              {confirmingTransferId ? 'Confirming...' : 'Confirm Receipt'}
+              {confirmingTransferId ? t('CONFIRMING') : t('CONFIRM_RECEIPT')}
             </Button>
           </DialogFooter>
         </DialogContent>

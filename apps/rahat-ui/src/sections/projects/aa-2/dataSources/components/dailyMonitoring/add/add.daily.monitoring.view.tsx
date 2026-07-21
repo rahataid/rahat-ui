@@ -19,9 +19,11 @@ import SelectFormField from '../select.form.field';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import AddAnotherDataSource from './add.another.data.source';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
+import { useTranslations } from 'next-intl';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 export default function AddDailyMonitoring() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -47,11 +49,11 @@ export default function AddDailyMonitoring() {
   };
 
   const FormSchema = z.object({
-    riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
+    riverBasin: z.string().min(1, { message: t('PLEASE_SELECT_RIVER_BASIN') }),
     dataSource: z.array(
       z
         .object({
-          source: z.string().min(1, { message: 'Please select a source.' }),
+          source: z.string().min(1, { message: t('PLEASE_SELECT_A_SOURCE') }),
           //DHM
           forecast: z.string().optional(),
           //DHM - 3 Days Flood Forecast Bulletin
@@ -116,7 +118,7 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['forecast'],
-                  message: 'Please select a forecast type.',
+                  message: t('PLEASE_SELECT_A_FORECAST_TYPE'),
                 });
                 return;
               }
@@ -148,13 +150,13 @@ export default function AddDailyMonitoring() {
                     ctx.addIssue({
                       code: z.ZodIssueCode.custom,
                       path: ['waterLevel'],
-                      message: 'Water level must be a positive number .',
+                      message: t('WATER_LEVEL_MUST_BE_POSITIVE'),
                     });
                   } else if (!/^\d+(\.\d+)?$/.test(String(data.waterLevel))) {
                     ctx.addIssue({
                       code: z.ZodIssueCode.custom,
                       path: ['waterLevel'],
-                      message: 'Water level must be a valid decimal number.',
+                      message: t('WATER_LEVEL_MUST_BE_VALID_DECIMAL'),
                     });
                   }
 
@@ -234,13 +236,13 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauge Reading  must be a positive number.',
+                  message: t('GAUGE_READING_MUST_BE_POSITIVE'),
                 });
               } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauge Reading level must be number.',
+                  message: t('GAUGE_READING_LEVEL_MUST_BE_NUMBER'),
                 });
               }
               break;
@@ -384,8 +386,8 @@ export default function AddDailyMonitoring() {
   return (
     <div className="px-4 py-2">
       <HeaderWithBack
-        title={'Add Daily Monitoring'}
-        subtitle="Fill the form below to add daily monitoring"
+        title={t('ADD_DAILY_MONITORING')}
+        subtitle={t('FILL_THE_FORM_BELOW_TO_ADD')}
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>
@@ -429,7 +431,7 @@ export default function AddDailyMonitoring() {
               className="border-dashed border-primary text-primary text-sm w-full mt-2"
               onClick={() => anotherDataSourceAppend(anotherDataSourceSchema)}
             >
-              Add Data Source
+              {t('ADD_DATA_SOURCE')}
               <Plus className="ml-2" size={16} strokeWidth={3} />
             </Button>
           </ScrollArea>
@@ -444,10 +446,10 @@ export default function AddDailyMonitoring() {
                 // router.push(dailyMonitoringListPath);
               }}
             >
-              Clear
+              {t('CLEAR')}
             </Button>
-            <Button type="submit" className="w-32">
-              Add
+            <Button type={t('SUBMIT')} className="w-32">
+              {t('ADD')}
             </Button>
           </div>
         </form>

@@ -30,6 +30,7 @@ import CustomPagination from '../../components/customPagination';
 import TooltipWrapper from '../../components/tooltip.wrapper';
 import { dateFormat } from '../../utils/dateFormate';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
+import { useTranslations } from 'next-intl';
 
 export const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   NOT_READY: { label: 'Not Ready', className: 'bg-yellow-100 text-yellow-700 border-yellow-300' },
@@ -47,6 +48,8 @@ export function StatusBadge({ status }: { status?: string }) {
 }
 
 export default function ListProject() {
+  const t = useTranslations('Projects List');
+  const g = useTranslations('GLOBAL');
   const { data, isLoading } = useProjectList();
   const closeProject = useProjectClose();
 
@@ -75,31 +78,31 @@ export default function ListProject() {
 
   const columns: ColumnDef<Project>[] = [
     {
-      header: 'Name',
+      header: g('NAME'),
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
       filterFn: 'includesString',
     },
     {
-      header: 'Description',
+      header: g('DESCRIPTION'),
       accessorKey: 'description',
       cell: ({ row }) => <div>
         <TruncatedCell text={row.getValue('description')} />
       </div>,
     },
     {
-      header: 'Type',
+      header: g('TYPE'),
       accessorKey: 'type',
       cell: ({ row }) => <div>{row.original.type?.toUpperCase()}</div>,
     },
     {
-      header: 'Status',
+      header: g('STATUS'),
       accessorKey: 'status',
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
       filterFn: 'equalsString',
     },
     {
-      header: 'Created At',
+      header: g('CREATED_AT'),
       accessorKey: 'createdAt',
       cell: ({ row }) =>
         row.original.createdAt
@@ -108,23 +111,18 @@ export default function ListProject() {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: g('ACTIONS'),
       cell: ({ row }) => {
         const project = row.original;
         console.log('project in actions', project);
         return (
-
-          <TooltipWrapper tip={project.status === 'CLOSED' ? 'Project is Closed' : 'Close Project'} >
-
+          <TooltipWrapper tip={project.status === 'CLOSED' ? t('PROJECT_IS_CLOSED') : t('CLOSE_PROJECT')} >
             <button
               onClick={() => setSelectedProject(project)}
               className=" cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
               disabled={project.status === 'CLOSED'}
             >
-
-              {
-                project.status === 'CLOSED' ? <LockKeyhole /> :
-                  <LockKeyholeOpen />}
+              {project.status === 'CLOSED' ? <LockKeyhole /> : <LockKeyholeOpen />}
             </button>
           </TooltipWrapper>
         );
@@ -152,12 +150,12 @@ export default function ListProject() {
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
           className="w-full flex-[4]"
-          name="name"
+          name={g('NAME')}
           onSearch={(e) => setFilter('name', e?.target?.value ?? '')}
           value={getFilterValue('name') ?? ''}
         />
         <SelectComponent
-          name="Status"
+          name={g('STATUS')}
           options={['ALL', 'ACTIVE', 'NOT_READY', 'CLOSED']}
           onChange={(value) => setFilter('status', value === 'ALL' ? '' : value)}
           value={getFilterValue('status') || 'ALL'}
@@ -169,7 +167,7 @@ export default function ListProject() {
         table={table}
         tableHeight="h-[calc(100vh-230px)]"
         loading={isLoading}
-        message="No Projects Found"
+        message={t('NO_PROJECTS_FOUND')}
       />
 
       <CustomPagination
@@ -188,19 +186,18 @@ export default function ListProject() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Close &quot;{selectedProject?.name}&quot;?</AlertDialogTitle>
+            <AlertDialogTitle>{t('CLOSE_PROJECT_TITLE', { name: selectedProject?.name })}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to close this project? Once a project is
-              closed, it cannot be reactivated.
+              {t('CLOSE_PROJECT_DESC')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{g('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleCloseProject}
             >
-              {closeProject.isPending ? 'Closing...' : 'Confirm'}
+              {closeProject.isPending ? t('CLOSING') : g('CONFIRM')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

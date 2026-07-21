@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
 import React, { Dispatch, SetStateAction } from 'react';
@@ -35,6 +36,7 @@ const CommunicationDataCard = ({
   setOpen,
   open = false,
 }: CommunicationDataCardProps) => {
+  const t = useTranslations('AA Project');
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -120,7 +122,7 @@ const CommunicationDataCard = ({
                             beneficiaryGroups?.find(
                               (g: BeneficiariesGroup) => g.uuid === uuid,
                             )?.name ||
-                            'Unknown Group';
+                            t('UNKNOWN_GROUP');
 
                           return (
                             <div key={uuid} className="flex items-center gap-2">
@@ -160,9 +162,9 @@ const CommunicationDataCard = ({
                   <DialogComponent
                     buttonIcon={Trash2}
                     buttonText=""
-                    dialogTitle="Remove Communication"
-                    dialogDescription="Are you sure you want to remove this communication?"
-                    confirmButtonText="Remove"
+                    dialogTitle={t('REMOVE_COMMUNICATION')}
+                    dialogDescription={t('REMOVE_COMMUNICATION_CONFIRM')}
+                    confirmButtonText={t('REMOVE')}
                     handleClick={() => handleRemoveclick(i)}
                     buttonClassName=" text-red-500 hover:text-red-600 transition-colors w-6 flex justify-center h-6  border-none p-0 hover:none "
                     confirmButtonClassName="rounded-sm w-full bg-red-500"

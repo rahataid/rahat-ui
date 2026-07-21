@@ -24,6 +24,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Pagination } from '@rumsan/sdk/types';
 import { Label } from '@radix-ui/react-label';
+import { useTranslations } from 'next-intl';
 type IProps = {
   table: Table<any>;
   setFilters: (fiters: Record<string, any>) => void;
@@ -41,6 +42,8 @@ export default function ListView({
   pagination,
   loading,
 }: IProps) {
+  const t = useTranslations('Community Beneficiary Detail');
+  const tg = useTranslations('GLOBAL');
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -61,7 +64,7 @@ export default function ListView({
       <div className="-mt-2 p-2">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search Beneficiary Name..."
+            placeholder={t('SEARCH_BENEFICIARY_NAME')}
             name="firstName"
             value={
               (table.getColumn('firstName')?.getFilterValue() as string) ??
@@ -119,11 +122,11 @@ export default function ListView({
                       <div className="flex items-center justify-center mt-4">
                         <div className="text-center">
                           <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
-                          <Label className="text-base">Loading ...</Label>
+                          <Label className="text-base">{tg('LOADING')}</Label>
                         </div>
                       </div>
                     ) : (
-                      'No result found'
+                      t('NO_RESULT_FOUND')
                     )}
                   </TableCell>
                 </TableRow>

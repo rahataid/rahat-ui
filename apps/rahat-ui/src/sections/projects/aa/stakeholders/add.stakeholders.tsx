@@ -13,12 +13,15 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { useCreateStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 export default function AddStakeholders() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -107,7 +110,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="Name" {...field} />
+                        <Input type="text" placeholder={tg('NAME')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -121,7 +124,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem>
                       <FormControl>
-                        <PhoneInput placeholder="Phone" {...field} />
+                        <PhoneInput placeholder={tg('PHONE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -137,7 +140,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Email Address"
+                          placeholder={tg('EMAIL_ADDRESS')}
                           {...field}
                         />
                       </FormControl>
@@ -155,7 +158,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Designation"
+                          placeholder={t('DESIGNATION')}
                           {...field}
                         />
                       </FormControl>
@@ -173,7 +176,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Organization"
+                          placeholder={tg('ORGANIZATION')}
                           {...field}
                         />
                       </FormControl>
@@ -189,7 +192,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="District" {...field} />
+                        <Input type="text"                           placeholder={tg('ADDRESS')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -205,7 +208,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Municipality"
+                          placeholder={t('MUNICIPALITY')}
                           {...field}
                         />
                       </FormControl>

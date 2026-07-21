@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   useProjectDashboardReporting,
   useProjectInfo,
@@ -20,6 +21,7 @@ import AccessAndResilienceOverview from './component/accessPieAndBar';
 const Main = () => {
   const { id } = useParams();
   const projectId = id as UUID;
+  const t = useTranslations('AA Project');
 
   // useAAStations(projectId);
   useStellarSettings(projectId);
@@ -33,8 +35,8 @@ const Main = () => {
     <>
       <div className="space-y-3 p-5">
         <Heading
-          title="Project Dashboard"
-          description="Overview of your system"
+          title={t('PROJECT_DASHBOARD')}
+          description={t('OVERVIEW_OF_YOUR_SYSTEM')}
           titleStyle={'text-xl xl:text-3xl'}
         />
         <ResilienceOverview

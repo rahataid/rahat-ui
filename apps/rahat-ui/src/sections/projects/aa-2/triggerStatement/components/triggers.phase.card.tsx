@@ -10,6 +10,7 @@ import { CardHeading } from 'apps/rahat-ui/src/common/card.heading';
 import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizontal-bar';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DISBURSEMENT_COLORS, formatMethod } from '../utils';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   title: string;
@@ -58,6 +59,7 @@ export default function TriggersPhaseCard({
   hasExtendedLogic = false,
   disbursementMethods,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
   return (
     <div className="p-4 rounded-xl border shadow-md flex flex-col justify-between">
@@ -86,8 +88,8 @@ export default function TriggersPhaseCard({
                 {isPinned ? (
                   <Image
                     src="/svg/pin-on.svg"
-                    alt="Unpin phase"
-                    title="Unpin phase"
+                    alt={t('UNPIN_PHASE')}
+                    title={t('UNPIN_PHASE')}
                     className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                     width={25}
                     height={25}
@@ -95,8 +97,8 @@ export default function TriggersPhaseCard({
                 ) : (
                   <Image
                     src="/svg/pin-off.svg"
-                    alt="Pin phase"
-                    title="Pin phase"
+                    alt={t('PIN_PHASE')}
+                    title={t('PIN_PHASE')}
                     className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                     width={25}
                     height={25}
@@ -140,7 +142,7 @@ export default function TriggersPhaseCard({
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-gray-600">No Data</p>
+                  <p className="text-gray-600">{t('NO_DATA')}</p>
                 </div>
               </div>
             ) : (
@@ -159,7 +161,7 @@ export default function TriggersPhaseCard({
         )}
         <div className="grid grid-cols-2 gap-2">
           <TriggerDetailsCard
-            title="Mandatory"
+            title={t('MANDATORY')}
             color="blue"
             bgColor="bg-[#EAF2FB]"
             totalTriggers={mandatoryTriggers}
@@ -167,7 +169,7 @@ export default function TriggersPhaseCard({
             totalRequiredTriggers={requiredMandatoryTriggers}
           />
           <TriggerDetailsCard
-            title="Optional"
+            title={t('OPTIONAL')}
             color="yellow"
             bgColor="bg-[#FCF6E9]"
             totalTriggers={optionalTriggers}
@@ -215,7 +217,7 @@ export default function TriggersPhaseCard({
                   hideAddTrigger && 'hidden'
                 }`}
                 Icon={Plus}
-                name="Add Trigger"
+                name={t('ADD_TRIGGER')}
                 handleClick={handleAddTrigger}
                 disabled={isActive}
               />
@@ -228,9 +230,9 @@ export default function TriggersPhaseCard({
             className={`border-primary text-primary flex-1 flex-row-reverse gap-2 w-full ${
               hideViewDetails && 'hidden'
             }`}
-            Icon={ArrowRight}
-            name="View Details"
-            handleClick={handleViewDetails}
+                Icon={ArrowRight}
+                name={t('VIEW_DETAILS')}
+                handleClick={handleViewDetails}
           />
         </div>
       </div>

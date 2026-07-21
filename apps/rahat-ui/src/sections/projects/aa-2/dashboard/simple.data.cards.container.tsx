@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { Home, LucideIcon, UsersRound } from 'lucide-react';
 
@@ -32,6 +33,7 @@ export default function SimpleDataCardsContainer({
   projectId,
   commsStats,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const totalBeneficiaries = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_TOTAL',
   )[0]?.data?.count;
@@ -42,12 +44,12 @@ export default function SimpleDataCardsContainer({
 
   const data = [
     {
-      title: 'Total Beneficiaries',
+      title: t('TOTAL_BENEFICIARIES'),
       Icon: UsersRound,
       number: totalBeneficiaries ?? 0,
     },
     {
-      title: 'Household Receiving Cash Support',
+      title: t('HOUSEHOLD_RECEIVING_CASH_SUPPORT'),
       Icon: Home,
       number: totalHouseholdReceivingCashSupport ?? 0,
     },

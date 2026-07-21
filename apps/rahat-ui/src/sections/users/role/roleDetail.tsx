@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Tabs,
@@ -17,6 +18,8 @@ type IProps = {
 };
 
 export default function RoleDetail({ data }: IProps) {
+  const t = useTranslations('Users – Roles & Permissions');
+  const tg = useTranslations('GLOBAL');
   const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const deleteRole = roleQuery.delete();
   const handleDelete = (roleName: string) => {
@@ -33,9 +36,9 @@ export default function RoleDetail({ data }: IProps) {
       <Tabs defaultValue="detail">
         <div className="flex justify-between items-center p-4">
           <TabsList>
-            <TabsTrigger value="detail">Details </TabsTrigger>
-            <TabsTrigger value="edit-role">Edit</TabsTrigger>
-            <TabsTrigger value="delete-role">Delete</TabsTrigger>
+            <TabsTrigger value="detail">{tg('DETAILS')}</TabsTrigger>
+            <TabsTrigger value="edit-role">{tg('EDIT')}</TabsTrigger>
+            <TabsTrigger value="delete-role">{tg('DELETE')}</TabsTrigger>
           </TabsList>
         </div>
 
@@ -51,12 +54,12 @@ export default function RoleDetail({ data }: IProps) {
           {/* more details here  */}
         </TabsContent>
         <TabsContent value="edit-role">
-          <div className="p-4 border-y">Edit Role View</div>
+          <div className="p-4 border-y">{t('EDIT_ROLE_VIEW')}</div>
         </TabsContent>
         <TabsContent value="delete-role">
-          <p className="text-slate-500 ml-4">Do you want to Delete Role?</p>
+          <p className="text-slate-500 ml-4">{t('DO_YOU_WANT_TO_DELETE_THE')}</p>
           <Button className="ml-4" onClick={() => handleDelete(data.name)}>
-            Confirm
+            {tg('CONFIRM')}
           </Button>
         </TabsContent>
       </Tabs>

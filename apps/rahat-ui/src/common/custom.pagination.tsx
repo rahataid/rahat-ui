@@ -16,6 +16,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 type IProps = {
   handleNextPage: () => void;
 
@@ -46,6 +47,7 @@ export function CustomPagination({
   setPagination,
   showChevrons,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   const lastPage = meta?.lastPage || 1;
   if (showChevrons === undefined) {
     showChevrons = true;
@@ -74,7 +76,7 @@ export function CustomPagination({
       </div> */}
       {handlePageSizeChange && (
         <div className="flex items-center gap-[clamp(4px,0.6vw,8px)]">
-          <div className="font-medium">Rows per page</div>
+          <div className="font-medium">{t('ROWS_PER_PAGE')}</div>
           <Select
             defaultValue={String(perPage)}
             onValueChange={handlePageSizeChange}
@@ -101,10 +103,10 @@ export function CustomPagination({
       <div>
         {meta?.total && meta.total > 0 ? (
           <>
-            Page {currentPage} of {lastPage}
+            {t('PAGE')} {currentPage} of {lastPage}
           </>
         ) : (
-          <>Page {currentPage}</>
+          <>{t('PAGE')} {currentPage}</>
         )}
       </div>
       <div className="flex gap-[clamp(4px,0.6vw,8px)] items-center justify-center">

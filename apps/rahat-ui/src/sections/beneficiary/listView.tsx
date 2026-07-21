@@ -27,6 +27,7 @@ import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -52,6 +53,8 @@ export default function ListView({
   setFilters,
 }: IProps) {
   const router = useRouter();
+  const t = useTranslations('Beneficiary List');
+  const g = useTranslations('GLOBAL');
 
   return (
     <>
@@ -72,7 +75,7 @@ export default function ListView({
       <div className="border rounded shadow p-3">
         <div className="flex space-x-2 items-center mb-2">
           <Input
-            placeholder="Search name..."
+            placeholder={t('SEARCH_NAME')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -81,14 +84,14 @@ export default function ListView({
           />
 
           <DatePicker
-            placeholder="Pick Start Date"
+            placeholder={t('PICK_START_DATE')}
             handleDateChange={handleDateChange}
             type="start"
             selectedDate={filters?.startDate}
             maxDate={filters?.endDate}
           />
           <DatePicker
-            placeholder="Pick End Date"
+            placeholder={t('PICK_END_DATE')}
             handleDateChange={handleDateChange}
             type="end"
             selectedDate={filters?.endDate}
@@ -100,7 +103,7 @@ export default function ListView({
             type="button"
             onClick={() => router.push(`/beneficiary/add`)}
           >
-            <Plus size={18} className="mr-1" /> Create Beneficiary
+            <Plus size={18} className="mr-1" /> {t('CREATE_BENEFICIARY')}
           </Button>
           {Object.values(table.getState().rowSelection).filter(Boolean)
             .length ? (
@@ -109,7 +112,7 @@ export default function ListView({
                 <Button className="ml-2">
                   {Object.values(table.getState().rowSelection).filter(Boolean)
                     .length}{' '}
-                  - Beneficiary Selected
+                  - {t('BENEFICIARY_SELECTED')}
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>
               </DropdownMenuTrigger>
@@ -118,13 +121,13 @@ export default function ListView({
                   onClick={projectModal.onTrue}
                   disabled={isBulkAssigning}
                 >
-                  Bulk Assign Project
+                  {t('BULK_ASSIGN_PROJECT')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={groupModal.onTrue}
                   // disabled={isBulkAssigning}
                 >
-                  Create Group
+                  {g('CREATE_GROUP')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -189,10 +192,10 @@ export default function ListView({
                         alt="no data"
                       />
                       <p className="text-medium text-base mb-1">
-                        No Data Available
+                        {g('NO_DATA_AVAILABLE')}
                       </p>
                       <p className="text-sm mb-4 text-gray-500">
-                        There are no beneficiaries to display at the moment
+                        {t('THERE_ARE_NO_BENEFICIARIES_TO_DISPLAY')}
                       </p>
                     </div>
                   </TableCell>

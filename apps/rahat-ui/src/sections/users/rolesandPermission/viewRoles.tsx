@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useRoleList } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -13,6 +14,8 @@ import AddButton from '../../projects/components/add.btn';
 import HeaderWithBack from '../../projects/components/header.with.back';
 
 export default function RoleView() {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('Users – Roles & Permissions');
   const { data: rolesList, isLoading } = useRoleList();
 
   const columns = useRoleTableColumns();
@@ -26,15 +29,15 @@ export default function RoleView() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Roles and Permissions"
-        subtitle=" Here is a list of all the roles"
+        title={t('ROLES_AND_PERMISSIONS')}
+        subtitle={t('HERE_IS_A_LIST_OF_ALL')}
         path="/users"
       />
       <div className="rounded border bg-card p-4">
         <div className="mb-2 flex justify-between items-start space-x-2">
           <SearchInput
             className="w-full"
-            name="role"
+            name={tGlobal('ROLE')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onSearch={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)

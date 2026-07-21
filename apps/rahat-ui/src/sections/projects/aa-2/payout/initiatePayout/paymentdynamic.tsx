@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -72,6 +73,9 @@ const initialFormState: PaymentState = {
 };
 
 export default function PaymentInitiation() {
+  const tv = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectID = params.id as UUID;
   const searchParams = useSearchParams();
@@ -196,8 +200,8 @@ export default function PaymentInitiation() {
             />
             <div className="mt-4 flex justify-between items-center">
               <Heading
-                title="Create Payout"
-                description="Select beneficiary group to initiate payment"
+                title={tv('CREATE_PAYOUT')}
+                description={tv('SELECT_BENEFICIARY_GROUP_TO_INITIATE_PAYMENT')}
               />
             </div>
           </div>
@@ -249,8 +253,8 @@ export default function PaymentInitiation() {
                       />
                       <Label htmlFor="mode-switch">
                         {formState.mode === PayoutMode.ONLINE
-                          ? 'Online'
-                          : 'Offline'}
+                          ? t('ONLINE')
+                          : t('OFFLINE')}
                       </Label>
                     </div>
                   )}
@@ -262,12 +266,12 @@ export default function PaymentInitiation() {
                   name="group"
                   render={({ field }) => (
                     <FormItem className="flex flex-col space-y-3 w-full">
-                      <FormLabel className="mt-1">Beneficiary Group</FormLabel>
+                      <FormLabel className="mt-1">{tv('BENEFICIARY_GROUP')}</FormLabel>
                       <DropdownSearch
                         selectedLabel={field.value?.name}
-                        placeholder="Select Beneficiary Group"
-                        searchPlaceholder="Search beneficiary group..."
-                        emptyMessage="No beneficiary group found."
+                        placeholder={tv('SELECT_BENEFICIARY_GROUP_PLACEHOLDER')}
+                        searchPlaceholder={tv('SEARCH_BENEFICIARY_GROUP')}
+                        emptyMessage={tv('NO_BENEFICIARY_GROUP_FOUND')}
                         isLoading={isBeneficiaryGroupsLoading}
                         options={
                           beneficiaryGroups?.data?.map((p: any) => ({
@@ -289,12 +293,12 @@ export default function PaymentInitiation() {
                     name="vendor"
                     render={({ field }) => (
                       <FormItem className="flex flex-col space-y-3 w-full">
-                        <FormLabel className="mt-1">Vendor</FormLabel>
+                        <FormLabel className="mt-1">{tv('VENDOR')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={field.value?.name}
-                          placeholder="Select Vendor"
-                          searchPlaceholder="Search vendor..."
-                          emptyMessage="No vendor found."
+                          placeholder={tv('SELECT_VENDOR_PLACEHOLDER')}
+                          searchPlaceholder={tv('SEARCH_VENDOR')}
+                          emptyMessage={tv('NO_VENDOR_FOUND')}
                           isLoading={isVendorsLoading}
                           options={
                             vendors?.data?.map((v: any) => ({
@@ -320,12 +324,12 @@ export default function PaymentInitiation() {
                       name="paymentProvider"
                       render={({ field }) => (
                         <FormItem className="flex flex-col space-y-3 w-full">
-                          <FormLabel className="mt-1">Payout Method</FormLabel>
+                          <FormLabel className="mt-1">{tv('PAYOUT_METHOD')}</FormLabel>
                           <DropdownSearch
                             selectedLabel={field.value?.name}
-                            placeholder="Select Payment Provider"
-                            searchPlaceholder="Search provider..."
-                            emptyMessage="No provider found."
+                            placeholder={tv('SELECT_PAYMENT_PROVIDER_PLACEHOLDER')}
+                            searchPlaceholder={tv('SEARCH_PROVIDER')}
+                            emptyMessage={tv('NO_PROVIDER_FOUND')}
                             isLoading={isPaymentProvidersLoading}
                             options={
                               paymentProviders?.map((p: any) => ({
@@ -350,7 +354,7 @@ export default function PaymentInitiation() {
                   type="button"
                   onClick={() => reset(initialFormState)}
                 >
-                  Clear
+                  {tg('CLEAR')}
                 </Button>
                 <PaymentDialog
                   formState={formState}
@@ -364,11 +368,10 @@ export default function PaymentInitiation() {
                   <div className="flex justify-between mt-4">
                     <div className="flex flex-col">
                       <h1 className="text-lg font-semibold">
-                        Selected: {formState.group.name}
+                        {tv('SELECTED')} {formState.group.name}
                       </h1>
                       <p className="text-sm text-muted-foreground">
-                        {formState.group.groupedBeneficiaries?.length} Total
-                        Beneficiaries
+                        {formState.group.groupedBeneficiaries?.length} {tg('TOTAL_BENEFICIARIES')}
                       </p>
                     </div>
                   </div>
@@ -400,11 +403,10 @@ export default function PaymentInitiation() {
                 <AlertCircle className="text-red-500 w-8 h-8" />
               </div>
               <h2 className="text-2xl font-bold text-red-600 mb-3">
-                Attention
+                {tv('ATTENTION')}
               </h2>
               <p className="text-center text-gray-600 max-w-2xl mb-8 leading-relaxed">
-                No payout type configured. Please configure payout types in
-                Settings before creating a payout.
+                {tv('NO_PAYOUT_TYPE_CONFIGURED_PLEASE_CONFIGURE')} {tv('SETTINGS_BEFORE_CREATING_A_PAYOUT')}
               </p>
             </div>
           )}

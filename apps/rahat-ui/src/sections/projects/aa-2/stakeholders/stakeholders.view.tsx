@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { memo, useCallback, useEffect, useState } from 'react';
 
 import {
@@ -42,6 +43,8 @@ import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 function StakeholdersView() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
 
@@ -128,13 +131,13 @@ function StakeholdersView() {
         <Heading
           title={
             activeTab === 'stakeholders'
-              ? 'Stakeholders'
-              : 'Stakeholders Groups'
+              ? t('STAKEHOLDERS')
+              : t('STAKEHOLDERS_GROUPS')
           }
           description={
             activeTab === 'stakeholders'
-              ? 'Track all the stakeholders in the project'
-              : 'Track all stakeholder groups in the project'
+              ? t('TRACK_ALL_THE_STAKEHOLDERS_IN_THE')
+              : t('TRACK_ALL_STAKEHOLDER_GROUPS_IN_THE')
           }
         />
       </div>
@@ -147,14 +150,14 @@ function StakeholdersView() {
               className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] "
               value="stakeholders"
             >
-              Stakeholders
+              {t('STAKEHOLDERS')}
             </TabsTrigger>
             <TabsTrigger
               id="stakeholdersGroup"
               className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] ]"
               value="stakeholdersGroup"
             >
-              Stakeholders Groups
+              {t('STAKEHOLDERS_GROUPS')}
             </TabsTrigger>
           </TabsList>
 
@@ -163,7 +166,7 @@ function StakeholdersView() {
             hasContent={false}
           >
             <IconLabelBtn
-              name="Import Stakeholders"
+              name={t('IMPORT_STAKEHOLDERS')}
               Icon={CloudDownload}
               handleClick={() =>
                 router.replace(`/projects/aa/${projectId}/stakeholders/import`)
@@ -181,28 +184,28 @@ function StakeholdersView() {
                 <SearchInput
                   className="flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="name"
+                  name={tg('NAME')}
                   onSearch={(e) => handleSearch(e, 'name')}
                   value={filters?.name || ''}
                 />
                 <SearchInput
                   className="hidden xl:block flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="municipality"
+                  name={tg('MUNICIPALITY')}
                   onSearch={(e) => handleSearch(e, 'municipality')}
                   value={filters?.municipality || ''}
                 />
                 <SearchInput
                   className="flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="organization"
+                  name={tg('ORGANIZATION')}
                   onSearch={(e) => handleSearch(e, 'organization')}
                   value={filters?.organization || ''}
                 />
                 <SearchInput
                   className="flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="support area"
+                  name={tg('SUPPORT_AREA')}
                   onSearch={(e) => handleSearch(e, 'supportArea')}
                   value={filters?.supportArea || ''}
                 />
@@ -212,14 +215,14 @@ function StakeholdersView() {
                 >
                   <AddButton
                     path={`/projects/aa/${projectId}/stakeholders/add`}
-                    name="Stakeholder"
+                    name={t('STAKEHOLDER')}
                     className='h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]'
                   />
                 </RoleAuth>
               </div>
               <DemoTable
                 table={table}
-                message="No Stakeholders Available"
+                message={t('NO_STAKEHOLDERS_AVAILABLE')}
                 tableHeight="h-[max(50vh,calc(90vh-230px))]"
               />
 

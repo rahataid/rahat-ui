@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -24,13 +25,15 @@ interface IVendorsInfo {
 }
 
 const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
+  const t = useTranslations('Vendors – Info Card');
+  const g = useTranslations('GLOBAL');
   const { name, phone, vendorWallet, vendorStatus } = vendorData;
   return (
     <>
       <Card className="mt-2 rounded shadow">
         <div className="mt-3">
           <CardContent>
-            <p className="text-primary">{name || 'Name N/A'}</p>
+            <p className="text-primary">{name || t('NAME_NA')}</p>
             <div className="flex items-center gap-3">
               <CardDescription className="flex items-center gap-1">
                 <TooltipProvider delayDuration={100}>
@@ -59,8 +62,8 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
                         {vendorData.vendorWalletAddressCopied
-                          ? 'copied'
-                          : 'click to copy'}
+                          ? g('COPIED')
+                          : g('CLICK_TO_COPY')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -75,9 +78,9 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
         </div> */}
             <div>
               <p className="text-primary">
-                {vendorStatus ? 'Approved' : 'Not Appproved'}
+                {vendorStatus ? t('APPROVED') : t('NOT_APPPROVED')}
               </p>
-              <CardDescription>Status</CardDescription>
+              <CardDescription>{g('STATUS')}</CardDescription>
             </div>
           </CardContent>
         </div>

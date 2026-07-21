@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import ActivityDetailCard from './activity.detail.card';
 import ActivityDetailCards from './activity.detail.cards';
 import ActivityCommunicationListCard from './activity.communication.list.card';
@@ -11,6 +12,7 @@ import DeleteButton from '../../../../../components/delete.btn';
 import Back from '../../../components/back';
 
 export default function ActivitiesDetailView() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -51,7 +53,7 @@ export default function ActivitiesDetailView() {
         <div className="flex gap-4 items-center">
           <EditButton path={activitiesEditPath} />
           <DeleteButton
-            name="activity"
+            name={t('ACTIVITY')}
             handleContinueClick={() => removeActivity(activityDetail.uuid)}
           />
         </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -34,6 +35,7 @@ export default function PhaseCard({
   onUpdateStatus,
   className,
 }: PhaseCardProps) {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const { id: ProjectId } = useParams();
 
@@ -45,7 +47,7 @@ export default function PhaseCard({
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
           <TooltipWrapper
-            tip={`Activity Status: ${status
+            tip={`${t('ACTIVITY_STATUS')}: ${status
               .toLowerCase()
               .split('_')
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -63,7 +65,7 @@ export default function PhaseCard({
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
           >
-            <TooltipWrapper tip="Update Activity Status">
+            <TooltipWrapper tip={t('UPDATE_ACTIVITY_STATUS')}>
               <div
                 className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
                 onClick={(e) => {
@@ -71,35 +73,34 @@ export default function PhaseCard({
                   onUpdateStatus();
                 }}
               >
-                Update Status <RefreshCw className="w-4 h-4" />
+                {t('UPDATE_STATUS')} <RefreshCw className="w-4 h-4" />
               </div>
             </TooltipWrapper>
           </RoleAuth>
         </div>
-        <TooltipWrapper tip={`Activity Title: ${title}`}>
+        <TooltipWrapper tip={`${t('ACTIVITY_TITLE')}: ${title}`}>
           <h3 className="text-sm font-medium text-gray-900 truncate w-[320px]">
             {title.length > 25
               ? `${title.substring(0, 20)}...`
               : title ?? 'N/A'}
-            {/* {title} */}
           </h3>
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">
           <TooltipWrapper
-            tip={`Responsible Station: ${responsibleStation ?? 'N/A'}`}
+            tip={`${t('RESPONSIBLE_STATION')}: ${responsibleStation ?? 'N/A'}`}
           >
             {responsibleStation && responsibleStation.length > 20
               ? `${responsibleStation.substring(0, 20)}...`
               : responsibleStation ?? 'N/A'}
           </TooltipWrapper>
-          <TooltipWrapper tip={`Lead Time: ${leadTime ?? 'N/A'}`}>
+          <TooltipWrapper tip={`${t('LEAD_TIME')}: ${leadTime ?? 'N/A'}`}>
             {leadTime && <span className="text-gray-400">&bull;</span>}
             <span>{leadTime ?? 'N/A'}</span>
           </TooltipWrapper>
         </div>
       </CardContent>
       <CardFooter className="p-2 pt-0">
-        <TooltipWrapper tip={`Responsibility: ${responsibility ?? ''}`}>
+        <TooltipWrapper tip={`${t('RESPONSIBILITY')}: ${responsibility ?? ''}`}>
           <div className="flex items-center gap-2 p-0">
             <User className="w-4 h-4 text-gray-500" />
             <span className="text-sm text-gray-500">

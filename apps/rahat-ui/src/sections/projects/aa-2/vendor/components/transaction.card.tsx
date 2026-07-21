@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
@@ -38,6 +39,7 @@ type Props = {
 };
 
 const Transaction = ({ amount, date, hash, title, type }: Txn) => {
+  const t = useTranslations('AA Project');
   const { id } = useParams();
   const projectId = id as string;
 
@@ -60,7 +62,7 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
         <div>
           <div>
             <p className="font-normal text-[14px] leading-[16px] text-[#37404C]">
-              {title ? formatEnumString(title) : 'N/A'}
+              {title ? formatEnumString(title) : t('N_A')}
             </p>
           </div>
           <div className="flex gap-1">
@@ -89,7 +91,7 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
                   minute: 'numeric',
                   second: 'numeric',
                 }).format(new Date(date))
-              : 'N/A'}
+              : t('N_A')}
           </p>
         </div>
       </div>
@@ -155,6 +157,7 @@ export default function TransactionCard({
   inkindTransactions,
   loading,
 }: Props) {
+  const t = useTranslations('AA Project');
   const [activeTab, setActiveTab] = useState('cva');
 
   const cvaTransactions =
@@ -169,10 +172,10 @@ export default function TransactionCard({
     })) || [];
 
   const TabsTriggerStats = [
-    { value: 'cva', title: 'CVA', count: cvaTransactions.length },
+    { value: 'cva', title: t('CVA'), count: cvaTransactions.length },
     {
       value: 'inkind',
-      title: 'In-kind',
+      title: t('IN_KIND'),
       count: normalizedInkindTransactions.length,
     },
   ];
@@ -180,9 +183,9 @@ export default function TransactionCard({
   return (
     <div className="border rounded-sm p-4">
       <Heading
-        title="Recent Transactions"
+        title={t('RECENT_TRANSACTIONS')}
         titleStyle="text-lg"
-        description="List of recently made transactions"
+        description={t('RECENT_TRANSACTIONS_DESC')}
       />
       {loading ? (
         <SkeletonTransaction />
@@ -222,7 +225,7 @@ export default function TransactionCard({
         <div className="h-full grid place-items-center">
           <div className="flex flex-col items-center text-muted-foreground">
             <Info />
-            <p className="text-sm">No transactions made</p>
+            <p className="text-sm">{t('NO_TRANSACTIONS')}</p>
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +27,8 @@ import { GctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gc
 import { BasicInfoSection, BankDetailsSection } from './components/gct.form-sections';
 
 export default function EditGct() {
+  const t = useTranslations('AA Project with Cash Tracker');
+  const tGlobal = useTranslations('GLOBAL');
   const { id, uuid } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -133,8 +136,8 @@ export default function EditGct() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Edit GCT Group"
-        subtitle="Update the details for this GCT Group"
+        title={t('EDIT_GCT_GROUP')}
+        subtitle={t('UPDATE_THE_DETAILS_FOR_THIS_GCT')}
         path={`/projects/aa/${id}/group-cash-transfer`}
       />
 
@@ -161,7 +164,7 @@ export default function EditGct() {
               onClick={() => form.reset()}
               disabled={updateGct.isPending}
             >
-              Clear
+              {t('CLEAR')}
             </Button>
             <Button
               type="submit"
@@ -171,10 +174,10 @@ export default function EditGct() {
               {updateGct.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t('SAVING')}
                 </>
               ) : (
-                'Confirm'
+                tGlobal('CONFIRM')
               )}
             </Button>
           </div>
@@ -184,14 +187,13 @@ export default function EditGct() {
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Edit</AlertDialogTitle>
+            <AlertDialogTitle>{t('CONFIRM_EDIT_TITLE')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to save changes to{' '}
-              <span className="font-semibold text-foreground">"{item?.name}"</span>?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_SAVE_CHANGES', { name: item?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={updateGct.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={updateGct.isPending}>{tGlobal('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmedUpdate}
               disabled={updateGct.isPending}
@@ -199,10 +201,10 @@ export default function EditGct() {
               {updateGct.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t('SAVING')}
                 </>
               ) : (
-                'Confirm'
+                tGlobal('CONFIRM')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

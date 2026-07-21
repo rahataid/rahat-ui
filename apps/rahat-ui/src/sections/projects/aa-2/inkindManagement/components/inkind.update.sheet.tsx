@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -53,6 +54,8 @@ export default function InkindUpdateSheet({
   open,
   onOpenChange,
 }: InkindUpdateSheetProps) {
+  const tv = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('GLOBAL');
   const updateInkind = useUpdateInkind(projectUUID);
 
   const form = useForm<InkindDetailsValues>({
@@ -89,9 +92,9 @@ export default function InkindUpdateSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-[400px] sm:w-[480px]">
         <SheetHeader className="mb-4">
-          <SheetTitle>Update Inkind Item</SheetTitle>
+          <SheetTitle>{tv('UPDATE_INKIND_ITEM')}</SheetTitle>
           <SheetDescription>
-            Edit the details for this inkind item.
+            {tv('EDIT_THE_DETAILS_FOR_THIS_INKIND')}
           </SheetDescription>
         </SheetHeader>
 
@@ -105,9 +108,9 @@ export default function InkindUpdateSheet({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{tg('NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter item name" {...field} />
+                    <Input placeholder={tv('ENTER_ITEM_NAME')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,10 +122,10 @@ export default function InkindUpdateSheet({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{tg('DESCRIPTION')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter description"
+                      placeholder={tv('ENTER_DESCRIPTION')}
                       className="resize-none"
                       rows={3}
                       {...field}
@@ -138,11 +141,11 @@ export default function InkindUpdateSheet({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>{tg('TYPE')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
+                        <SelectValue placeholder={tv('SELECT_TYPE')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -165,7 +168,7 @@ export default function InkindUpdateSheet({
                 onClick={() => onOpenChange(false)}
                 disabled={updateInkind.isPending}
               >
-                Reset
+                {tg('RESET')}
               </Button>
               <Button
                 type="submit"
@@ -175,10 +178,10 @@ export default function InkindUpdateSheet({
                 {updateInkind.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
+                    {tv('SAVING')}
                   </>
                 ) : (
-                  'Save Changes'
+                  tg('SAVE_CHANGES')
                 )}
               </Button>
             </div>

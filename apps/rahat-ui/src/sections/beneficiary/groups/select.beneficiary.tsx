@@ -17,10 +17,12 @@ import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export default function SelectBeneficiaryView() {
   const { Id } = useParams() as { Id: UUID };
   const router = useRouter();
+  const t = useTranslations('GLOBAL');
 
   const {
     pagination,
@@ -84,14 +86,14 @@ export default function SelectBeneficiaryView() {
     <>
       <div className="p-4">
         <HeaderWithBack
-          title="Select Beneficiary"
-          subtitle="Select beneficiaries from the list below to them assign to the selected group"
+          title={t('SELECT_BENEFICIARY')}
+          subtitle={t('SELECT_BENEFICIARIES_FROM_THE_LIST_BELOW')}
           path={`/beneficiary/groups/${Id}`}
         />
         <div className="border rounded shadow p-3">
           <div className="flex space-x-2 items-center mb-2">
             <SearchInput
-              name="beneficiary"
+              name={t('BENEFICIARY')}
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }
@@ -116,14 +118,14 @@ export default function SelectBeneficiaryView() {
         </div>
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
-        <p>Selected: {Object.keys(selectedListItems).length ?? 0}</p>
+        <p>{t('SELECTED')} {Object.keys(selectedListItems).length ?? 0}</p>
         <div className="flex space-x-2">
           <Button
             type="button"
             variant="secondary"
             onClick={() => router.push(`/beneficiary/groups/${Id}`)}
           >
-            Cancel
+            {t('CANCEL')}
           </Button>
           {/* {addBeneficiary.isPending ? (
         <Button disabled>
@@ -133,7 +135,7 @@ export default function SelectBeneficiaryView() {
         ) : ( */}
 
           <Button className="px-10" onClick={handleUpdateBeneficiaryGroup}>
-            Add ({Object.keys(selectedListItems).length ?? 0} Beneficiaries )
+            {t('ADD_BENEFICIARIES2')} ({Object.keys(selectedListItems).length ?? 0} {t('BENEFICIARIES')} )
           </Button>
           {/* )} */}
         </div>

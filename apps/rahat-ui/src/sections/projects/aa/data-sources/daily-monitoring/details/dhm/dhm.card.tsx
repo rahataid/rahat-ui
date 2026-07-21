@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataSourceCard from '../data.source.card';
@@ -9,6 +10,7 @@ type IProps = {
 };
 
 export default function DHMCard({ data }: IProps) {
+  const t = useTranslations('AA Project');
   const renderFieldCardContainer = React.useCallback((data: any) => {
     const floodForecastData = React.useMemo(() => {
       if (data) {
@@ -106,14 +108,14 @@ export default function DHMCard({ data }: IProps) {
         {floodForecastData?.length > 0 && (
           <FieldCard
             source="DHM"
-            title="3 Days Flood Forecast Bulletin"
+            title={t('N3_DAYS_FLOOD_FORECAST_BULLETIN')}
             data={floodForecastData}
           />
         )}
         {rainfallForecastData?.length > 0 && (
           <FieldCard
             source="DHM"
-            title="3 Days Rainfall Forecast Bulletin"
+            title={t('N3_DAYS_RAINFALL_FORECAST_BULLETIN')}
             data={rainfallForecastData}
           />
         )}
@@ -121,7 +123,7 @@ export default function DHMCard({ data }: IProps) {
         {realtimeMonitoringData?.length > 0 && (
           <FieldCard
             source="DHM"
-            title="Realtime Monitoring (River Watch)"
+            title={t('REALTIME_MONITORING_RIVER_WATCH')}
             data={realtimeMonitoringData}
           />
         )}
@@ -129,7 +131,7 @@ export default function DHMCard({ data }: IProps) {
         {realtimeRainfallData?.length > 0 && (
           <FieldCard
             source="DHM"
-            title="Realtime Rainfall"
+            title={t('REALTIME_RAINFALL')}
             data={realtimeRainfallData}
           />
         )}

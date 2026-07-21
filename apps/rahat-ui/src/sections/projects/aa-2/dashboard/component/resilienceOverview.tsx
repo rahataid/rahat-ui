@@ -9,9 +9,20 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/carousel';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Heading } from 'apps/rahat-ui/src/common';
-import { Home, Users } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
+
+const PHASE_COLORS = [
+  { color: 'bg-teal-500', bgColor: 'bg-teal-50', borderColor: 'border-teal-200' },
+  { color: 'bg-yellow-500', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' },
+  { color: 'bg-red-500', bgColor: 'bg-red-50', borderColor: 'border-red-200' },
+  { color: 'bg-purple-500', bgColor: 'bg-purple-50', borderColor: 'border-purple-200' },
+  { color: 'bg-blue-500', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' },
+  { color: 'bg-pink-500', bgColor: 'bg-pink-50', borderColor: 'border-pink-200' },
+  { color: 'bg-indigo-500', bgColor: 'bg-indigo-50', borderColor: 'border-indigo-200' },
+  { color: 'bg-orange-500', bgColor: 'bg-orange-50', borderColor: 'border-orange-200' },
+  { color: 'bg-cyan-500', bgColor: 'bg-cyan-50', borderColor: 'border-cyan-200' },
+];
 
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const project = useProjectStore((p) => p.singleProject);
@@ -21,31 +32,15 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   )?.data;
 
   const progressMetrics =
-    activitiesData?.map((item: any) => {
+    activitiesData?.map((item: any, idx: number) => {
       const phaseName = item.phase?.name ?? 'UNKNOWN';
       const percentage = parseFloat(item.completedPercentage);
-      const colors: any = {
-        PREPAREDNESS: {
-          color: 'bg-teal-500',
-          bgColor: 'bg-teal-50',
-          borderColor: 'border-teal-200',
-        },
-        READINESS: {
-          color: 'bg-yellow-500',
-          bgColor: 'bg-yellow-50',
-          borderColor: 'border-yellow-200',
-        },
-        ACTIVATION: {
-          color: 'bg-red-500',
-          bgColor: 'bg-red-50',
-          borderColor: 'border-red-200',
-        },
-      };
+      const palette = PHASE_COLORS[idx % PHASE_COLORS.length];
 
       return {
         title: phaseName,
         percentage,
-        ...(colors[phaseName] || {}),
+        ...palette,
       };
     }) ?? [];
 
@@ -72,9 +67,12 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
           <Heading
             title="Activities Status"
             titleStyle="text-lg"
-            description="Progress across preparedness, readiness, and activation phases"
+            description="Progress across all phases"
           />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            style={{ gridTemplateColumns: `repeat(auto-fill, minmax(200px, 1fr))` }}
+          >
             {progressMetrics.map((metric, index) => (
               <Card
                 key={index}

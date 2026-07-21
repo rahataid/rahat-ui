@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
-export const useFMDetailTableColumns = () => {
+export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
   const { id, fundId } = useParams();
   const router = useRouter();
   const handleViewClick = (fmId: string) => {
@@ -35,7 +35,7 @@ export const useFMDetailTableColumns = () => {
     {
       accessorKey: 'tokensAssigned',
       header: 'Tokens Assigned',
-      cell: ({ row }) => <div>{row.original?.tokensReserved || 'N/A'}</div>,
+      cell: () => <div>{tokensPerBeneficiary ?? 'N/A'}</div>,
     },
     {
       id: 'actions',

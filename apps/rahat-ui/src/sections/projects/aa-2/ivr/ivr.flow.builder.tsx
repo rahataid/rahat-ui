@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useIvrFlowStore } from './ivr.flow.store';
 import { useIvrTemplateDetail } from '@rahat-ui/query';
@@ -11,12 +11,13 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { ArrowLeft, Settings, Code } from 'lucide-react';
+import { ArrowLeft, Settings, Code, Download } from 'lucide-react';
 import TreePanel from './ivr.tree.panel';
 import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
 import SimulationModal from './ivr.simulation.modal';
-import { IvrFlowNode, IvrFlowApiPayload, IvrFlowOption } from './ivr.flow.types';
+import ExportModal from './ivr.export.modal';
+import { IvrFlowNode, IvrFlowApiPayload, IvrFlowOption, IvrFlow } from './ivr.flow.types';
 
 function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
   function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
@@ -58,11 +59,30 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isSimulationOpen, setIsSimulationOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const populatedRef = useRef(false);
 
   const flow = flows.find((f) => f.id === ivrId);
 
   const { data: templateDetail } = useIvrTemplateDetail(Number(ivrId));
+
+  const flowJsonString = useMemo(() => {
+    if (!flow) return '';
+    const mapNode = (node: IvrFlowNode): IvrFlowApiPayload['main']['options'][number] => ({
+      digit: parseInt(node.digit || '0') || 0,
+      destination: node.destination || '',
+      prompt: node.prompt || '',
+      hangup: node.hangup || false,
+      options: (node.children || []).map(mapNode),
+    });
+    const payload: IvrFlowApiPayload = {
+      main: {
+        prompt: flow.rootMenu.prompt || '',
+        options: (flow.rootMenu.children || []).map(mapNode),
+      },
+    };
+    return JSON.stringify(payload, null, 2);
+  }, [flow]);
 
   useEffect(() => {
     populatedRef.current = false;
@@ -149,6 +169,15 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               </p>
             </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 rounded-sm"
+            onClick={() => setIsExportOpen(true)}
+          >
+            <Download className="w-4 h-4" />
+            Export
+          </Button>
         </div>
       </div>
 
@@ -220,6 +249,15 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
           onClose={() => setIsSimulationOpen(false)}
         />
       )}
+
+      {/* Export Modal */}
+      <ExportModal
+        open={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        ivrId={Number(ivrId)}
+        jsonContent={flowJsonString}
+        onExported={() => { populatedRef.current = false; }}
+      />
     </div>
   );
 }

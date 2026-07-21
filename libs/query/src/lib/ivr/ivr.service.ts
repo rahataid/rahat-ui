@@ -20,6 +20,13 @@ export type CreateIvrTemplatePayload = {
   flowUrl?: string;
 };
 
+export type UpdateIvrTemplatePayload = {
+  flowUrl?: string;
+  name?: string;
+  description?: string;
+  status?: 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
+};
+
 const listIvrTemplates = async (): Promise<IvrTemplate[]> => {
   const response = await api.get('/ivr-templates');
   return response?.data?.data;
@@ -34,6 +41,14 @@ const createIvrTemplate = async (
   payload: CreateIvrTemplatePayload,
 ): Promise<IvrTemplate> => {
   const response = await api.post('/ivr-templates', payload);
+  return response?.data?.data;
+};
+
+const updateIvrTemplate = async (
+  id: number,
+  payload: UpdateIvrTemplatePayload,
+): Promise<IvrTemplate> => {
+  const response = await api.patch(`/ivr-templates/${id}`, payload);
   return response?.data?.data;
 };
 
@@ -76,6 +91,38 @@ export const useIvrTemplateCreate = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
         title: 'Error while creating IVR template.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useIvrTemplateUpdate = () => {
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: UpdateIvrTemplatePayload }) =>
+      updateIvrTemplate(id, payload),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['ivr-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['ivr-templates', variables.id] });
+      toast.fire({
+        title: 'IVR template updated successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while updating IVR template.',
         icon: 'error',
         text: errorMessage,
       });

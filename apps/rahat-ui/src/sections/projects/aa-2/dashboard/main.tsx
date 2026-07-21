@@ -22,10 +22,7 @@ const Main = () => {
     useProjectInfo(projectId);
 
   const projectType = projectInfo?.value.project_type;
-  const { data, isLoading } = useProjectDashboardReporting(
-    projectId,
-    projectType,
-  );
+  const { data, isLoading } = useProjectDashboardReporting(projectId);
   const { mutate: syncStats, isPending: isSyncing } = useBackFill(projectId);
 
   if (isProjectInfoLoading || isLoading) return <DashboardSkeleton />;
@@ -41,6 +38,7 @@ const Main = () => {
         <IconLabelBtn
           name={isSyncing ? 'Updating' : 'Sync Stats'}
           Icon={RefreshCcw}
+          disabled={isSyncing}
           handleClick={() => syncStats()}
           variant="outline"
           className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"

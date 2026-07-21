@@ -131,15 +131,12 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
   return query;
 };
 
-export const useProjectDashboardReporting = (
-  uuid: UUID,
-  projectType?: string,
-) => {
+export const useProjectDashboardReporting = (uuid: UUID) => {
   const q = useProjectAction();
   const query = useQuery({
-    queryKey: ['projectDashboard', uuid, projectType],
+    queryKey: ['projectDashboard', uuid],
     staleTime: 1000 * 60 * 60 * 4,
-    enabled: !!uuid && !!projectType,
+    enabled: !!uuid,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -147,7 +144,6 @@ export const useProjectDashboardReporting = (
           action: 'aaProject.stats.getAll',
           payload: {
             appId: uuid,
-            projectType,
           },
         },
       });

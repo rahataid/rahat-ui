@@ -118,7 +118,7 @@ export default function DashboardTabs({
 
   return (
     <Tabs defaultValue="main" className="w-full">
-      <TabsList className="flex flex-wrap h-auto bg-transparent gap-1">
+      <TabsList className="border bg-secondary rounded p-1 inline-flex flex-wrap h-auto gap-1 justify-start">
         {allTabs.map((tab) => (
           <TabsTrigger
             key={tab.value}

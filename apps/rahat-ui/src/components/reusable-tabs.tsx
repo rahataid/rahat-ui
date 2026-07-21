@@ -1,7 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 
 type TabItem = {
@@ -13,7 +18,7 @@ type TabItem = {
   disabled?: boolean;
 };
 
-type ThemeTabsProps = {
+type ReusableTabsProps = {
   defaultValue?: string;
   items: TabItem[];
   listClassName?: string;
@@ -23,7 +28,7 @@ type ThemeTabsProps = {
   onValueChange?: (value: string) => void;
 };
 
-export function ThemeTabs({
+export function ReusableTabs({
   defaultValue,
   items,
   listClassName,
@@ -31,11 +36,15 @@ export function ThemeTabs({
   contentClassName,
   orientation = 'horizontal',
   onValueChange,
-}: ThemeTabsProps) {
+}: ReusableTabsProps) {
   const activeValue = defaultValue || items[0]?.value;
 
   return (
-    <Tabs defaultValue={activeValue} onValueChange={onValueChange} className="w-full">
+    <Tabs
+      defaultValue={activeValue}
+      onValueChange={onValueChange}
+      className="w-full"
+    >
       <TabsList
         className={cn(
           'border bg-secondary rounded p-1 inline-flex h-auto gap-1',

@@ -1,14 +1,22 @@
 'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import BeneficiaryDemographics from './beneficiaryDemographics';
 import DigitalAccessOverview from './digitalAccessOverview';
 import CommunicationAnalytics from './communicationAnalytics';
 import MapView from './mapView';
 import HeatwaveSpecific from './heatwave.specific';
+import AccessAndResilienceOverview from './accessPieAndBar';
+import SocialProtectionBenefits from './socialProtectionBenefits';
 import TokenStatsCard from './tokenStats.card';
 import ResilienceOverview from './resilienceOverview';
+import { UUID } from 'crypto';
 
 type TabConfig = {
   value: string;
@@ -20,21 +28,34 @@ type Props = {
   benefStats: any[];
   triggeersStats: any[];
   tokenStats: any;
-  projectId: string;
+  projectId: UUID;
   projectType: string;
 };
 
-export default function DashboardTabs({ benefStats, triggeersStats, tokenStats, projectId, projectType }: Props) {
+export default function DashboardTabs({
+  benefStats,
+  triggeersStats,
+  tokenStats,
+  projectId,
+  projectType,
+}: Props) {
   const commonTabs: TabConfig[] = [
     {
       value: 'beneficiary',
       label: 'Beneficiary Demographics',
       content: (
-        <BeneficiaryDemographics
-          benefStats={benefStats}
-          triggeersStats={triggeersStats}
-          projectId={projectId}
-        />
+        <div className="space-y-4">
+          <BeneficiaryDemographics
+            benefStats={benefStats}
+            triggeersStats={triggeersStats}
+            projectId={projectId}
+          />
+          <SocialProtectionBenefits
+            benefStats={benefStats}
+            triggeersStats={triggeersStats}
+            projectId={projectId}
+          />
+        </div>
       ),
     },
     {
@@ -66,6 +87,13 @@ export default function DashboardTabs({ benefStats, triggeersStats, tokenStats, 
       value: 'heatwave',
       label: 'Heatwave Survey Data',
       content: <HeatwaveSpecific benefStats={benefStats} />,
+    });
+  }
+  if (projectType?.toUpperCase() === 'FLOOD') {
+    dynamicTabs.push({
+      value: 'flood',
+      label: 'Flood Survey Data',
+      content: <AccessAndResilienceOverview data={benefStats} />,
     });
   }
 
@@ -104,9 +132,7 @@ export default function DashboardTabs({ benefStats, triggeersStats, tokenStats, 
       {allTabs.map((tab) => (
         <TabsContent key={tab.value} value={tab.value} className="mt-4">
           <ScrollArea className="h-[calc(100vh-220px)]">
-            <div className="pr-4">
-              {tab.content}
-            </div>
+            <div className="pr-4">{tab.content}</div>
           </ScrollArea>
         </TabsContent>
       ))}

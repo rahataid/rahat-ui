@@ -38,13 +38,15 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
       <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-2 gap-4 mt-2">
         {pieChartKeys.map((key) => {
           const stat = getStat(key);
-          console.log(chartTitles[key], 'l', key);
           if (!stat || !Array.isArray(stat.data)) return null;
 
-          const pieData = stat.data.map((item) => ({
-            label: item.id,
-            value: item.count,
-          }));
+          const pieData = stat.data
+            .filter((item: any) => item.count > 0)
+            .map((item: any) => ({
+              label: item.id,
+              value: item.count,
+            }));
+          // if (!pieData.length) return null;
 
           return (
             <div

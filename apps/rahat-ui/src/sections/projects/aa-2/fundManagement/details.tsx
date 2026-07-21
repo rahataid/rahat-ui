@@ -82,6 +82,7 @@ export default function FundManagementDetail() {
         group={data?.groupedBeneficiaries}
         loading={isLoading}
         status={data?.status}
+        numberOfTokens={data?.numberOfTokens}
       />
     </div>
   );

@@ -22,12 +22,14 @@ interface IProps {
   loading?: boolean;
   title: string;
   status?: string;
+  numberOfTokens?: number;
 }
 
 export default function FundManagementDetailTable({
   group,
   loading,
   title,
+  numberOfTokens,
 }: IProps) {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
@@ -36,7 +38,9 @@ export default function FundManagementDetailTable({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const columns = useFMDetailTableColumns();
+  const tokensPerBeneficiary =
+    numberOfTokens && group?.length ? numberOfTokens / group.length : undefined;
+  const columns = useFMDetailTableColumns(tokensPerBeneficiary);
   const table = useReactTable({
     data: group || [],
     columns,

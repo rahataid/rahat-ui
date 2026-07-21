@@ -18,6 +18,8 @@ import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTranslations } from 'next-intl';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function SelectBeneficiaryView() {
   const { Id } = useParams() as { Id: UUID };
@@ -38,10 +40,12 @@ export default function SelectBeneficiaryView() {
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
-  }, []);
+  }, [setPagination]);
+
+  const debouncedFilters = useDebounce(filters, 500);
   const { data: Beneficiaries } = useBeneficiaryList({
     ...pagination,
-    ...filters,
+    ...debouncedFilters,
   });
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -94,11 +98,9 @@ export default function SelectBeneficiaryView() {
           <div className="flex space-x-2 items-center mb-2">
             <SearchInput
               name={t('BENEFICIARY')}
-              value={
-                (table.getColumn('name')?.getFilterValue() as string) ?? ''
-              }
+              value={filters?.name ?? ''}
               onSearch={(event) =>
-                table.getColumn('name')?.setFilterValue(event.target.value)
+                setFilters({ ...filters, name: event.target.value })
               }
               className="rounded w-full"
             />
@@ -114,7 +116,16 @@ export default function SelectBeneficiaryView() {
             type="end"
           /> */}
           </div>
-          <DemoTable table={table} tableHeight="h-[calc(100vh-307px)]" />
+          <DemoTable table={table} tableHeight="h-[calc(100vh-355px)]" />
+          <CustomPagination
+            meta={Beneficiaries?.response?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={Beneficiaries?.response?.meta.total || 0}
+          />
         </div>
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">

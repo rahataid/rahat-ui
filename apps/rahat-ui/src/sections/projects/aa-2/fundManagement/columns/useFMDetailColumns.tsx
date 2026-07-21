@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
-export const useFMDetailTableColumns = () => {
+export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
   const { id, fundId } = useParams();
   const router = useRouter();
   const tg = useTranslations('GLOBAL');
@@ -38,7 +38,7 @@ export const useFMDetailTableColumns = () => {
     {
       accessorKey: 'tokensAssigned',
       header: t('TOKEN_AMOUNT'),
-      cell: ({ row }) => <div>{row.original?.tokensReserved || tg('N_A')}</div>,
+      cell: () => <div>{tokensPerBeneficiary ?? tg('N_A')}</div>,
     },
     {
       id: 'actions',

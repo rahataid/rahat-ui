@@ -95,7 +95,7 @@ export default function Confirmation({
         reserveTokenPayload: payload,
       });
 
-      if (data?.status === 'error') {
+      if (data?.isAssignable === false) {
         errorModule.onTrue();
         setErrorData(data);
         return;

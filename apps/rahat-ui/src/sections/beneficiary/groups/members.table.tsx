@@ -21,6 +21,9 @@ type IProps = {
   groupedBeneficiaries: [];
   groupUUID: string;
   name: string;
+  searchValue: string;
+  isSearching: boolean;
+  onSearch: (value: string) => void;
 };
 
 export default function MembersTable({
@@ -28,6 +31,9 @@ export default function MembersTable({
   groupedBeneficiaries,
   groupUUID,
   name,
+  searchValue,
+  isSearching,
+  onSearch,
 }: IProps) {
   const t = useTranslations('GLOBAL');
   return (
@@ -37,10 +43,8 @@ export default function MembersTable({
           <SearchInput
             name={t('BENEFICIARIES')}
             className="mb-2 w-full"
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
+            value={searchValue}
+            onSearch={(e) => onSearch(e.target.value)}
           />
           <ViewColumns table={table} />
           {groupedBeneficiaries?.length ? (
@@ -74,7 +78,7 @@ export default function MembersTable({
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -94,23 +98,37 @@ export default function MembersTable({
                   <TableRow>
                     <TableCell
                       colSpan={table.getAllColumns().length}
-                      className="h-72 text-center "
+                      className="h-72 text-center"
                     >
-                      <div className="grid place-items-center space-y-2">
-                        <div className="bg-secondary rounded-full p-3 w-min">
-                          <FileWarning size={18} strokeWidth={1.5} />
+                      {isSearching ? (
+                        <div className="grid place-items-center space-y-2">
+                          <div className="bg-secondary rounded-full p-3 w-min">
+                            <FileWarning size={18} strokeWidth={1.5} />
+                          </div>
+                          <p className="font-medium text-lg">
+                            No results found
+                          </p>
+                          <p className="text-muted-foreground text-base">
+                            No beneficiaries match your search.
+                          </p>
                         </div>
-                        <p className="font-medium text-lg">
-                          {t('NO_BENEFICIARY_ADDED')}
-                        </p>
-                        <p className="text-muted-foreground text-base">
-                          {t('ADD_BENEFICIARY_TO_GROUP') || 'Add beneficiary to the group to display data'}
-                        </p>
-                        <AddButton
-                          name="Beneficiary"
-                          path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
-                        />
-                      </div>
+                      ) : (
+                        <div className="grid place-items-center space-y-2">
+                          <div className="bg-secondary rounded-full p-3 w-min">
+                            <FileWarning size={18} strokeWidth={1.5} />
+                          </div>
+                          <p className="font-medium text-lg">
+                            {t('NO_BENEFICIARY_ADDED')}
+                          </p>
+                          <p className="text-muted-foreground text-base">
+                            {t('ADD_BENEFICIARY_TO_GROUP') || 'Add beneficiary to the group to display data'}
+                          </p>
+                          <AddButton
+                            name="Beneficiary"
+                            path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
+                          />
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

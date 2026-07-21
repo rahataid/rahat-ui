@@ -46,12 +46,10 @@ export default function usePayoutTransactionLogTableColumn() {
       accessorKey: 'totalBeneficiaries',
       header: tg('TOTAL_BENEFICIARIES'),
       cell: ({ row }) => (
-        <div className="w-5">
-          <TruncatedCell
-            text={row.getValue('totalBeneficiaries')}
-            maxLength={10}
-          />
-        </div>
+        <TruncatedCell
+          text={row.getValue('totalBeneficiaries')}
+          maxLength={15}
+        />
       ),
     },
 

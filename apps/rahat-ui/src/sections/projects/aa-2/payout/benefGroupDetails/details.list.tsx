@@ -35,6 +35,7 @@ import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLo
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -83,8 +84,16 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   });
 
   const handleDownload = () => {
+    const correctedLogs = (exportPayoutLogs || []).map(
+      (row: Record<string, unknown>) => {
+        return {
+          ...row,
+          'Updated At': dateFormat(row['Updated At'] as string),
+        };
+      },
+    );
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(exportPayoutLogs);
+    const worksheet = XLSX.utils.json_to_sheet(correctedLogs);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };

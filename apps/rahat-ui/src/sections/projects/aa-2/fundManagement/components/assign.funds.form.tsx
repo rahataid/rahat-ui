@@ -78,11 +78,11 @@ export default function AssignFundsForm({
 
   const { control, handleSubmit, watch, reset, trigger, setValue } = form;
 
-  const benGroups = useBeneficiaryGroups(projectId, {
-    page: 1,
-    perPage: 100,
-    tokenAssigned: false,
-  });
+  const benGroups = useBeneficiaryGroups(
+    projectId,
+    { page: 1, perPage: 100, tokenAssigned: false },
+    { refetchOnMount: 'always' },
+  );
 
   const projectBalance = useProjectBalance(projectId);
 
@@ -135,6 +135,16 @@ export default function AssignFundsForm({
       return;
     }
 
+    if (validationResult?.fiatRedeemNotCompleted?.length > 0) {
+      setErrorData(validationResult);
+      errorModule.onTrue();
+      return;
+    }
+
+    proceedToNextStep(data);
+  };
+
+  const proceedToNextStep = (data: FundAssignmentFormValues) => {
     const selectedGroup = benGroups?.data.find(
       (group) => group.uuid === data.beneficiaryGroupId,
     );
@@ -327,7 +337,14 @@ export default function AssignFundsForm({
           </div>
         </div>
       </form>
-      <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
+      <ErrorInfoPopupModel
+        validateModal={errorModule}
+        errorData={errorData}
+        onContinue={() => {
+          errorModule.onFalse();
+          proceedToNextStep(form.getValues());
+        }}
+      />
     </Form>
   );
 }

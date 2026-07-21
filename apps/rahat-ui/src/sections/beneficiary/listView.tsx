@@ -61,16 +61,16 @@ export default function ListView({
       <BulkAssignToProjectModal
         handleSubmit={handleBulkAssign}
         projectModal={projectModal}
-        selectedBeneficiaries={Object.keys(table.getState().rowSelection).filter(
-          (k) => table.getState().rowSelection[k],
-        )}
+        selectedBeneficiaries={Object.keys(
+          table.getState().rowSelection,
+        ).filter((k) => table.getState().rowSelection[k])}
       />
       <CreateGroupModal
         handleSubmit={handleCreateGroup}
         groupModal={groupModal}
-        selectedBeneficiaries={Object.keys(table.getState().rowSelection).filter(
-          (k) => table.getState().rowSelection[k],
-        )}
+        selectedBeneficiaries={Object.keys(
+          table.getState().rowSelection,
+        ).filter((k) => table.getState().rowSelection[k])}
       />
       <div className="border rounded shadow p-3">
         <div className="flex space-x-2 items-center mb-2">
@@ -110,8 +110,10 @@ export default function ListView({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="ml-2">
-                  {Object.values(table.getState().rowSelection).filter(Boolean)
-                    .length}{' '}
+                  {
+                    Object.values(table.getState().rowSelection).filter(Boolean)
+                      .length
+                  }{' '}
                   - {t('BENEFICIARY_SELECTED')}
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>

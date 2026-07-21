@@ -42,6 +42,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useActiveTab } from '../../utils/useActivetab';
 import { useTranslations } from 'next-intl';
+import { useDebounce } from '../../utils/useDebouncehooks';
 
 function BeneficiaryView() {
   const router = useRouter();
@@ -55,7 +56,6 @@ function BeneficiaryView() {
     setPagination,
     setFilters,
     filters,
-    resetFilters,
   } = usePagination();
   const t = useTranslations('Beneficiary List');
   const tg = useTranslations('GLOBAL');
@@ -63,14 +63,14 @@ function BeneficiaryView() {
 
   useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
-    resetFilters();
-  }, [resetFilters, setPagination]);
+  }, [setPagination]);
 
   useBeneficiaryGroupsList({ ...pagination });
+  const debouncedFilters = useDebounce(filters, 500);
 
   const { data } = useBeneficiaryList({
     ...pagination,
-    ...filters,
+    ...debouncedFilters,
   });
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

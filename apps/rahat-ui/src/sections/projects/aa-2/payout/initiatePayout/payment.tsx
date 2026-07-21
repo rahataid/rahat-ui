@@ -114,7 +114,7 @@ export default function PaymentInitiation() {
       return [];
     }
 
-    const totalTokens = group.tokensReserved?.numberOfTokens || 0;
+    const totalTokens = group.tokensReserved?.[0]?.numberOfTokens || 0;
     const beneficiaryCount = group.groupedBeneficiaries.length;
     const tokensPerBeneficiary = totalTokens / beneficiaryCount;
 
@@ -174,7 +174,7 @@ export default function PaymentInitiation() {
         payload = {
           type: PayoutType.FSP,
           mode: PayoutMode.ONLINE,
-          groupId: formState?.group?.tokensReserved?.uuid,
+          groupId: formState?.group?.tokensReserved?.[0]?.uuid,
           payoutProcessorId: formState?.paymentProvider?.id,
           extras: {
             paymentProviderName: formState?.paymentProvider?.name,
@@ -188,14 +188,14 @@ export default function PaymentInitiation() {
             payload = {
               type: PayoutType.CVA && PayoutType.VENDOR,
               mode: PayoutMode.ONLINE,
-              groupId: formState?.group?.tokensReserved?.uuid,
+              groupId: formState?.group?.tokensReserved?.[0]?.uuid,
             };
             break;
           case PayoutMode.OFFLINE:
             payload = {
               type: PayoutType.CVA && PayoutType.VENDOR,
               mode: PayoutMode.OFFLINE,
-              groupId: formState?.group?.tokensReserved?.uuid,
+              groupId: formState?.group?.tokensReserved?.[0]?.uuid,
               payoutProcessorId: formState?.vendor?.uuid,
               extras: {
                 vendorName: formState?.vendor?.name,

@@ -6,6 +6,7 @@ import {
   UseMutationOptions,
   UseMutationResult,
   useQuery,
+  UseQueryOptions,
   useQueryClient,
 } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
@@ -265,15 +266,16 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
 };
 
-export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
+export const useBeneficiaryGroups = (uuid: UUID, payload: any, options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn'>) => {
   const q = useProjectAction();
   const { setBeneficiaryGroups } = useBeneficiaryGroupsStore((state) => ({
     setBeneficiaryGroups: state.setBeneficiaryGroups,
   }));
 
-  const query = useQuery({
+  const query = useQuery<any>({
     queryKey: ['stakeholdersGroups', uuid, payload],
     staleTime: 5 * 60 * 1000, // 5 minutes
+    ...options,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

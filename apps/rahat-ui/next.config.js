@@ -54,4 +54,4 @@ const plugins = [
   withNx,
 ];
 
-module.exports = withNextIntl(composePlugins(...plugins)(nextConfig));
+module.exports = composePlugins(...plugins)(withNextIntl(nextConfig));

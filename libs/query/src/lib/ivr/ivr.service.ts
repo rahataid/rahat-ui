@@ -109,14 +109,17 @@ export const useIvrTemplateUpdate = () => {
   });
 
   return useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: UpdateIvrTemplatePayload }) =>
-      updateIvrTemplate(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: UpdateIvrTemplatePayload;
+    }) => updateIvrTemplate(id, payload),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['ivr-templates'] });
-      queryClient.invalidateQueries({ queryKey: ['ivr-templates', variables.id] });
-      toast.fire({
-        title: 'IVR template updated successfully.',
-        icon: 'success',
+      queryClient.invalidateQueries({
+        queryKey: ['ivr-templates', variables.id],
       });
     },
     onError: (error: any) => {

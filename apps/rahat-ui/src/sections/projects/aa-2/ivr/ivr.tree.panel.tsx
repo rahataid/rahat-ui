@@ -80,8 +80,11 @@ function TreeItem({
   const hasChildren = item.children.length > 0;
   const isSelected = selectedNodeId === item.id;
 
+  const maxReached = item.children.length >= 9;
+
   const handleAddChild = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (maxReached) return;
     onAddNode(item.id);
   };
 
@@ -91,15 +94,15 @@ function TreeItem({
   };
 
   return (
-      <div className="group">
-        <div
-          className={cn(
-            'flex items-center gap-2 px-4 py-3 mb-2 rounded-sm border transition-colors cursor-pointer',
-            getLevelColor(level, isSelected),
-          )}
-          onClick={() => onSelectNode(item.id)}
-          style={{ marginLeft: `${level * 20}px` }}
-        >
+    <div className="group">
+      <div
+        className={cn(
+          'flex items-center gap-2 px-4 py-3 mb-2 rounded-sm border transition-colors cursor-pointer',
+          getLevelColor(level, isSelected),
+        )}
+        onClick={() => onSelectNode(item.id)}
+        style={{ marginLeft: `${level * 20}px` }}
+      >
         {hasChildren ? (
           <button
             onClick={(e) => {
@@ -143,7 +146,7 @@ function TreeItem({
             size="icon"
             className="h-6 w-6"
             onClick={handleAddChild}
-            title="Add child option"
+            disabled={maxReached}
           >
             <Plus className="w-3 h-3" />
           </Button>

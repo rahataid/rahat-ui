@@ -1,5 +1,5 @@
-import { IvrFlow, IvrFlowNode } from '@rahat-ui/types';
 import { create } from 'zustand';
+import { IvrFlow, IvrFlowNode } from './ivr.flow.types';
 
 let nodeIdCounter = 0;
 const generateNodeId = () => `node_${++nodeIdCounter}_${Date.now()}`;
@@ -116,20 +116,25 @@ export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
       const parent = findNodeById(flow.rootMenu, parentId);
       if (!parent) return state;
 
+      const takenDigits = new Set(
+        parent.children.map((c) => c.digit).filter((d): d is string => !!d),
+      );
+
+      const availableDigit = (() => {
+        for (let i = 1; i <= 9; i++) {
+          if (!takenDigits.has(String(i))) return i;
+        }
+        return null;
+      })();
+
+      if (availableDigit === null) return state;
+
       pushHistory(state, flow.id, flow);
-
-      const existingDigits = parent.children
-        .filter((c) => c.digit)
-        .map((c) => parseInt(c.digit!))
-        .filter((d) => !isNaN(d));
-
-      const nextDigit =
-        existingDigits.length > 0 ? Math.max(...existingDigits) + 1 : 1;
 
       const newNode: IvrFlowNode = {
         id: generateNodeId(),
-        digit: String(nextDigit),
-        label: `Digit ${nextDigit}`,
+        digit: String(availableDigit),
+        label: `Digit ${availableDigit}`,
         prompt: '',
         hangup: false,
         destination: '',

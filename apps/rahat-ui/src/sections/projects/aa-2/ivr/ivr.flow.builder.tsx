@@ -17,12 +17,7 @@ import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
 import SimulationModal from './ivr.simulation.modal';
 import ExportModal from './ivr.export.modal';
-import {
-  IvrFlowNode,
-  IvrFlowApiPayload,
-  IvrFlowOption,
-  IvrFlow,
-} from './ivr.flow.types';
+import { IvrFlowNode, IvrFlowApiPayload, IvrFlowOption, IvrFlow, buildApiPayload } from './ivr.flow.types';
 
 function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
   function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
@@ -76,22 +71,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
 
   const flowJsonString = useMemo(() => {
     if (!flow) return '';
-    const mapNode = (
-      node: IvrFlowNode,
-    ): IvrFlowApiPayload['main']['options'][number] => ({
-      digit: parseInt(node.digit || '0') || 0,
-      destination: node.destination || '',
-      prompt: node.prompt || '',
-      hangup: node.hangup || false,
-      options: (node.children || []).map(mapNode),
-    });
-    const payload: IvrFlowApiPayload = {
-      main: {
-        prompt: flow.rootMenu.prompt || '',
-        options: (flow.rootMenu.children || []).map(mapNode),
-      },
-    };
-    return JSON.stringify(payload, null, 2);
+    return JSON.stringify(buildApiPayload(flow), null, 2);
   }, [flow]);
 
   useEffect(() => {

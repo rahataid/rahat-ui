@@ -41,6 +41,12 @@ export default function ExportModal({
   const uploadFile = useUploadFile();
   const updateTemplate = useIvrTemplateUpdate();
 
+  const handleClose = () => {
+    setIpfsLink('');
+    setCopiedLink(false);
+    onClose();
+  };
+
   const handleGenerateLink = async () => {
     setIsGenerating(true);
     try {
@@ -71,7 +77,7 @@ export default function ExportModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent
         className="!rounded-sm max-w-md"
         onInteractOutside={(e) => e.preventDefault()}

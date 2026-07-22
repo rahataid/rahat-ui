@@ -4,23 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { X, Play, Pause, PhoneOff } from 'lucide-react';
-import { IvrFlow } from './ivr.flow.types';
-
-function findNodeById(root: any, id: string): any {
-  if (root.id === id) return root;
-  for (const child of root.children || []) {
-    const found = findNodeById(child, id);
-    if (found) return found;
-  }
-  return null;
-}
-
-function flattenOptions(node: any): { digit: string; label: string }[] {
-  return (node.children || []).map((child: any) => ({
-    digit: child.digit || '?',
-    label: child.label,
-  }));
-}
+import { IvrFlow, findNodeById, flattenOptions, DIAL_PAD } from './ivr.flow.types';
 
 interface SimulationModalProps {
   flow: IvrFlow;
@@ -33,31 +17,52 @@ export default function SimulationModal({
 }: SimulationModalProps) {
   const [currentNodeId, setCurrentNodeId] = useState<string>(flow.rootMenu.id);
   const [callPath, setCallPath] = useState<string[]>([flow.rootMenu.id]);
-  const [inputBuffer, setInputBuffer] = useState('');
   const [callLog, setCallLog] = useState<string[]>([
     `[START] ${flow.rootMenu.label}`,
   ]);
-  const [totalInputs, setTotalInputs] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioError, setAudioError] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
   const [lastDigit, setLastDigit] = useState('');
-  const [callStarted, setCallStarted] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hangupRef = useRef(false);
+  const inputsRef = useRef(0);
 
   const currentNode = findNodeById(flow.rootMenu, currentNodeId);
   const availableOptions = currentNode ? flattenOptions(currentNode) : [];
   const audioUrl = currentNode?.prompt || '';
 
+  const stopAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      setIsPlaying(false);
+    }
+  }, []);
+
+  const endCall = useCallback(
+    (finalCount: number) => {
+      setCallEnded(true);
+      stopAudio();
+      setCallLog((prev) => [
+        ...prev,
+        `[END] Call ended. Total inputs: ${finalCount}`,
+      ]);
+    },
+    [stopAudio],
+  );
+
   const playAudio = useCallback((url: string) => {
     setIsPlaying(false);
     setAudioError(false);
 
-    if (!url) return;
-
-    if (audioRef.current) {
-      audioRef.current.pause();
+    if (!url) {
+      if (hangupRef.current) endCall(inputsRef.current);
+      return;
     }
+
+    if (audioRef.current) audioRef.current.pause();
+
     const audio = new Audio(url);
     audioRef.current = audio;
 
@@ -70,6 +75,7 @@ export default function SimulationModal({
     audio.onended = () => {
       if (audioRef.current === audio) {
         setIsPlaying(false);
+        if (hangupRef.current) endCall(inputsRef.current);
       }
     };
     audio.onerror = () => {
@@ -84,15 +90,11 @@ export default function SimulationModal({
         setAudioError(true);
       }
     });
-  }, []);
+  }, [endCall]);
 
-  const stopAudio = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-      setIsPlaying(false);
-    }
-  }, []);
+  useEffect(() => {
+    hangupRef.current = currentNode?.hangup || false;
+  });
 
   useEffect(() => {
     playAudio(audioUrl);
@@ -100,56 +102,25 @@ export default function SimulationModal({
   }, [currentNodeId, playAudio, stopAudio, audioUrl]);
 
   useEffect(() => {
-    return () => {
-      stopAudio();
-    };
+    return () => stopAudio();
   }, [stopAudio]);
-
-  const endCall = useCallback(
-    (finalCount: number) => {
-      setCallEnded(true);
-      stopAudio();
-      setCallLog((prev) => [
-        ...prev,
-        `[END] Call ended. Total inputs: ${finalCount}`,
-      ]);
-      setTimeout(() => onClose(), 1500);
-    },
-    [stopAudio, onClose],
-  );
 
   const handleDTMF = (key: string) => {
     setLastDigit(key);
-    setInputBuffer((prev) => prev + key);
 
     if (currentNode?.children) {
       const target = currentNode.children.find(
-        (child: any) => child.digit === key,
+        (child) => child.digit === key,
       );
       if (target) {
-        const hasMoreOptions = target.children && target.children.length > 0;
         setCurrentNodeId(target.id);
         setCallPath((prev) => [...prev, target.id]);
-        setCallLog((prev) => [
-          ...prev,
-          `[INPUT] ${key} → ${target.label}`,
-          ...(hasMoreOptions ? [] : ['[END] All options exhausted']),
-        ]);
-        setInputBuffer('');
-        setTotalInputs((prev) => {
-          const next = prev + 1;
-          if (!hasMoreOptions) endCall(next);
-          return next;
-        });
+        setCallLog((prev) => [...prev, `[INPUT] ${key} → ${target.label}`]);
       } else {
         setCallLog((prev) => [...prev, `[INVALID] Key ${key} not recognized`]);
-        setTotalInputs((prev) => prev + 1);
       }
+      inputsRef.current += 1;
     }
-  };
-
-  const handleBackspace = () => {
-    setInputBuffer((prev) => prev.slice(0, -1));
   };
 
   const handleBack = useCallback(() => {
@@ -165,7 +136,6 @@ export default function SimulationModal({
         ...prev,
         `[BACK] Returned to ${previousNode?.label}`,
       ]);
-      setInputBuffer('');
     }
   }, [callPath, flow.rootMenu, stopAudio]);
 
@@ -174,12 +144,9 @@ export default function SimulationModal({
     stopAudio();
     setCallLog((prev) => [
       ...prev,
-      `[END] Call ended. Total inputs: ${totalInputs}`,
+      `[END] Call ended. Total inputs: ${inputsRef.current}`,
     ]);
-    setTimeout(() => onClose(), 1500);
   };
-
-  const dialPad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'];
 
   const handleReset = () => {
     stopAudio();
@@ -187,14 +154,13 @@ export default function SimulationModal({
     setLastDigit('');
     setCurrentNodeId(flow.rootMenu.id);
     setCallPath([flow.rootMenu.id]);
-    setInputBuffer('');
-    setTotalInputs(0);
+    inputsRef.current = 0;
     setCallLog([`[START] ${flow.rootMenu.label}`]);
   };
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-background rounded-sm shadow-lg w-full max-w-md">
-        {/* Header */}
         <div className="flex justify-between items-start border-b p-4">
           <div>
             <h2 className="text-lg font-bold">IVR Flow Simulator</h2>
@@ -202,7 +168,6 @@ export default function SimulationModal({
               Test your IVR flow by navigating through it.
             </p>
           </div>
-
           <Button
             variant="ghost"
             size="icon"
@@ -214,7 +179,6 @@ export default function SimulationModal({
         </div>
 
         <div className="p-4 space-y-4">
-          {/* Controls */}
           <div className="flex justify-between items-center">
             <Button
               variant="outline"
@@ -224,7 +188,6 @@ export default function SimulationModal({
             >
               Reset
             </Button>
-
             {!callEnded && (
               <div className="flex gap-2">
                 <Button
@@ -241,7 +204,6 @@ export default function SimulationModal({
                     <Play className="w-4 h-4" />
                   )}
                 </Button>
-
                 <Button
                   variant="outline"
                   size="sm"
@@ -255,10 +217,8 @@ export default function SimulationModal({
             )}
           </div>
 
-          {/* Status */}
           <div className="flex justify-between items-center">
             <span className="font-medium">Status</span>
-
             <Badge
               className={
                 callEnded ? 'bg-red-500 text-white' : 'bg-black text-white'
@@ -268,30 +228,34 @@ export default function SimulationModal({
             </Badge>
           </div>
 
-          {/* Prompt */}
           <div className="rounded-sm border bg-muted/30 p-3 space-y-3">
             <div>
               <div className="text-xs text-muted-foreground mb-1">
                 Current Prompt
               </div>
-
               <div className="text-sm truncate">{audioUrl || 'No prompt'}</div>
             </div>
-
             <div className="flex justify-between items-center">
               <Badge variant="outline">
                 {audioError ? 'Failed' : isPlaying ? 'Playing' : 'Ready'}
               </Badge>
-
               {lastDigit && <Badge variant="secondary">{lastDigit}</Badge>}
             </div>
           </div>
 
-          {/* Keypad */}
           {!callEnded && (
             <div className="space-y-2">
+              {availableOptions.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {availableOptions.map((opt) => (
+                    <Badge key={opt.digit} variant="outline" className="text-xs">
+                      {opt.digit} → {opt.label}
+                    </Badge>
+                  ))}
+                </div>
+              )}
               <div className="grid grid-cols-3 gap-2">
-                {dialPad.map((key) => {
+                {DIAL_PAD.map((key) => {
                   const hasOption = availableOptions.some(
                     (opt) => opt.digit === key,
                   );
@@ -310,10 +274,8 @@ export default function SimulationModal({
             </div>
           )}
 
-          {/* History */}
           <div>
             <div className="font-medium mb-2">Call History</div>
-
             <div className="rounded-sm border bg-muted/30 p-3 max-h-40 overflow-y-auto space-y-2">
               {callLog.map((log, index) => (
                 <div
@@ -335,7 +297,6 @@ export default function SimulationModal({
             </div>
           </div>
 
-          {/* Footer */}
           <div className="flex justify-end">
             <Button
               variant="outline"

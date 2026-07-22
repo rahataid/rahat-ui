@@ -91,15 +91,15 @@ function TreeItem({
   };
 
   return (
-    <div>
-      <div
-        className={cn(
-          'flex items-center gap-2 px-4 py-3 mb-2 rounded-sm border transition-colors cursor-pointer',
-          getLevelColor(level, isSelected),
-        )}
-        onClick={() => onSelectNode(item.id)}
-        style={{ marginLeft: `${level * 20}px` }}
-      >
+      <div className="group">
+        <div
+          className={cn(
+            'flex items-center gap-2 px-4 py-3 mb-2 rounded-sm border transition-colors cursor-pointer',
+            getLevelColor(level, isSelected),
+          )}
+          onClick={() => onSelectNode(item.id)}
+          style={{ marginLeft: `${level * 20}px` }}
+        >
         {hasChildren ? (
           <button
             onClick={(e) => {

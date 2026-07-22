@@ -111,12 +111,18 @@ export default function CreateIVRDialog({
                 variant="outline"
                 size="sm"
                 className="rounded-sm"
+                disabled={createIvr.isPending}
                 onClick={() => setOpen(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit" size="sm" className="rounded-sm">
-                Create
+              <Button
+                type="submit"
+                size="sm"
+                className="rounded-sm"
+                disabled={createIvr.isPending}
+              >
+                {createIvr.isPending ? 'Creating...' : 'Create'}
               </Button>
             </div>
           </form>

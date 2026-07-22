@@ -29,18 +29,9 @@ import {
   Pause,
   Loader2,
 } from 'lucide-react';
-import { IvrFlow, IvrFlowNode } from './ivr.flow.types';
+import { IvrFlow, IvrFlowNode, findNodeById } from './ivr.flow.types';
 import { useUploadFile } from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
-
-function findNodeById(root: IvrFlowNode, id: string): IvrFlowNode | null {
-  if (root.id === id) return root;
-  for (const child of root.children) {
-    const found = findNodeById(child, id);
-    if (found) return found;
-  }
-  return null;
-}
 
 function getBreadcrumbPath(root: IvrFlowNode, targetId: string): string[] {
   const path: string[] = [];

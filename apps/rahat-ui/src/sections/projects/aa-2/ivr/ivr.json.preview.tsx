@@ -1,27 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { IvrFlow } from './ivr.flow.types';
-import { IvrFlowApiPayload, IvrFlowOption } from './ivr.flow.types';
+import { IvrFlow, buildApiPayload } from './ivr.flow.types';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Copy, Check } from 'lucide-react';
-
-function buildApiPayload(flow: IvrFlow): IvrFlowApiPayload {
-  const mapNode = (node: typeof flow.rootMenu): IvrFlowOption => ({
-    digit: parseInt(node.digit || '0') || 0,
-    destination: node.destination || '',
-    prompt: node.prompt || '',
-    hangup: node.hangup || false,
-    options: (node.children || []).map(mapNode),
-  });
-
-  return {
-    main: {
-      prompt: flow.rootMenu.prompt || '',
-      options: (flow.rootMenu.children || []).map(mapNode),
-    },
-  };
-}
 
 interface JSONPreviewPanelProps {
   flow: IvrFlow;

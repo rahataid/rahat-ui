@@ -31,13 +31,7 @@ const statusColors: Record<string, string> = {
   archived: 'bg-gray-100 text-gray-800',
 };
 
-function IvrCard({
-  item,
-}: {
-  item: IvrListItem;
-  onDelete: () => void;
-  onDuplicate: () => void;
-}) {
+function IvrCard({ item }: { item: IvrListItem }) {
   const router = useRouter();
   const { id } = useParams();
   const managePath = `/projects/aa/${id}/ivr/manage/${item.id}`;
@@ -187,12 +181,7 @@ export default function IvrDashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredList.map((item) => (
-              <IvrCard
-                key={item.id}
-                item={item}
-                onDelete={() => {}}
-                onDuplicate={() => {}}
-              />
+              <IvrCard key={item.id} item={item} />
             ))}
           </div>
         )}

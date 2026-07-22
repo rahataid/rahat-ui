@@ -69,8 +69,8 @@ export default function GctRecordDetail() {
       settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
     target: 'tx',
     value:
-      record.disbursementInfo?.result?.offrampRequest?.transactionHash ??
-      record.txHash,
+      record?.disbursementInfo?.result?.offrampRequest?.transactionHash ??
+      record?.txHash,
   });
 
   if (isLoading) {

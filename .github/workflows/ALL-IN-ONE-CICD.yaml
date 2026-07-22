@@ -9,7 +9,7 @@ on:
         default: ""
         type: string
       tag_suffix:
-        description: "Tag suffix (e.g., test-load)"
+        description: "Tag suffix (e.g., aa-dev)"
         required: true
         default: "aa-dev"
         type: string

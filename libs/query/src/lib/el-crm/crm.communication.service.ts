@@ -604,6 +604,67 @@ export const useListElCrmBroadCastCount = (
   });
 };
 
+// Creates a new campaign targeting specific phone numbers — used to retry
+// WhatsApp failures via an alternative transport.
+export const useRetryFailedViaCampaign = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      name,
+      targetType,
+      transportId,
+      message,
+      phoneNumbers,
+    }: {
+      name: string;
+      targetType: string;
+      transportId: string;
+      message: string;
+      phoneNumbers: string[];
+    }) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: CREATE_CAMPAIGN,
+          payload: {
+            name,
+            targetType,
+            transportId,
+            message,
+            options: { phoneNumbers, isRetry: true },
+          },
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmCampaignList],
+      });
+      toast.fire({
+        title: 'Retry campaign created successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Could not create retry campaign';
+      toast.fire({ title: msg, icon: 'error' });
+    },
+  });
+};
+
 export const useRetryFailedSession = (uuid: UUID) => {
   const q = useProjectAction();
   const alert = useSwal();

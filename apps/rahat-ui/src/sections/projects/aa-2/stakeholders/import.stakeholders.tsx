@@ -25,10 +25,6 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
-  ScrollArea,
-  ScrollBar,
-} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
   Table,
   TableBody,
   TableCell,
@@ -98,7 +94,7 @@ export default function ImportStakeholder() {
   // Constants goes here
   const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
   const VALIDATION_COOLDOWN_SECONDS = 5;
-  const MAX_STAKEHOLDERS_PER_UPLOAD = 100;
+  const MAX_STAKEHOLDERS_PER_UPLOAD = 10000;
   const DEFAULT_PAGE_SIZE = 10;
 
   // Router goes here
@@ -764,199 +760,207 @@ export default function ImportStakeholder() {
       <div className="flex flex-col min-h-[calc(100vh-200px)] min-w-0">
         <div className="p-4 flex flex-col flex-1 min-w-0">
           <div className="flex justify-between items-start mb-2">
-          <HeaderWithBack
-            title="Import Stakeholders"
-            subtitle="List of all stakeholders you can import"
-            path={`/projects/aa/${id}/stakeholders`}
-          />
-          <div className="flex flex-col items-end gap-2 mt-4">
-            <div className="flex gap-2">
-              {hasValidationErrors && (
+            <HeaderWithBack
+              title="Import Stakeholders"
+              subtitle="List of all stakeholders you can import"
+              path={`/projects/aa/${id}/stakeholders`}
+            />
+            <div className="flex flex-col items-end gap-2 mt-4">
+              <div className="flex gap-2">
+                {hasValidationErrors && (
+                  <Button
+                    onClick={handleDownloadErrors}
+                    type="button"
+                    variant="outline"
+                    className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
+                  >
+                    <FileWarning className="mr-1" />
+                    Download Errors
+                  </Button>
+                )}
                 <Button
-                  onClick={handleDownloadErrors}
+                  onClick={handleSampleDownload}
                   type="button"
                   variant="outline"
                   className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
                 >
-                  <FileWarning className="mr-1" />
-                  Download Errors
+                  <CloudDownload className="mr-1" />
+                  Download Sample
                 </Button>
-              )}
-              <Button
-                onClick={handleSampleDownload}
-                type="button"
-                variant="outline"
-                className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-              >
-                <CloudDownload className="mr-1" />
-                Download Sample
-              </Button>
-            </div>
-            {(hasFrontendErrors || validationResponse !== null) &&
-              data.length > 1 && (
-                <div className="flex flex-col gap-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
-                  {hasFrontendErrors && (
-                    <>
-                      {duplicatePhonesInFile.size > 0 && (
+              </div>
+              {(hasFrontendErrors || validationResponse !== null) &&
+                data.length > 1 && (
+                  <div className="flex flex-col gap-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
+                    {hasFrontendErrors && (
+                      <>
+                        {duplicatePhonesInFile.size > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
+                            <span>Duplicate phone number found in file</span>
+                          </div>
+                        )}
+                        {duplicateEmailsInFile.size > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
+                            <span>Duplicate email found in file</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    {hasValidationErrors && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
+                        <span>
+                          Validation error - invalid or duplicate data
+                        </span>
+                      </div>
+                    )}
+                    {validationResponse !== null &&
+                      newStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
-                          <span>Duplicate phone number found in file</span>
+                          <span className="w-2.5 h-2.5 rounded-sm bg-green-200 border border-green-400" />
+                          <span>New stakeholder will be created</span>
                         </div>
                       )}
-                      {duplicateEmailsInFile.size > 0 && (
+                    {validationResponse !== null &&
+                      updateStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
-                          <span>Duplicate email found in file</span>
+                          <span>Existing stakeholder will be updated</span>
                         </div>
                       )}
-                    </>
-                  )}
-                  {hasValidationErrors && (
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
-                      <span>Validation error - invalid or duplicate data</span>
-                    </div>
-                  )}
-                  {validationResponse !== null &&
-                    newStakeholderPhones.size > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-sm bg-green-200 border border-green-400" />
-                        <span>New stakeholder will be created</span>
-                      </div>
-                    )}
-                  {validationResponse !== null &&
-                    updateStakeholderPhones.size > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
-                        <span>Existing stakeholder will be updated</span>
-                      </div>
-                    )}
-                </div>
-              )}
+                  </div>
+                )}
+            </div>
           </div>
-        </div>
 
-        <div className="p-[clamp(8px,1vw,12px)] border bg-card rounded-sm">
-          <div className="flex items-center gap-4 w-full">
-            {/* File Input */}
-            <div className="relative w-full">
-              <Input
-                type="file"
-                ref={inputRef}
-                onChange={handleFileUpload}
-                className="sr-only"
-              />
+          <div className="p-[clamp(8px,1vw,12px)] border bg-card rounded-sm">
+            <div className="flex items-center gap-4 w-full">
+              {/* File Input */}
+              <div className="relative w-full">
+                <Input
+                  type="file"
+                  ref={inputRef}
+                  onChange={handleFileUpload}
+                  className="sr-only"
+                />
 
-              <div
-                className="flex items-center border rounded-sm cursor-pointer w-full"
-                onClick={() => inputRef.current?.click()}
-              >
-                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-[clamp(8px,1vw,12px)] h-[clamp(28px,3vw,36px)] font-semibold text-[clamp(11px,1vw,14px)] hover:bg-gray-200 transition-colors whitespace-nowrap [&_svg]:size-[clamp(14px,1.4vw,18px)]">
-                  {selectedFile ? (
-                    <>
-                      <Repeat2 className="mr-1" /> Replace
-                    </>
-                  ) : (
-                    <>
-                      <Share className="mr-1" />
-                      Choose File
-                    </>
-                  )}
-                </span>
-                <span className="px-3 text-[clamp(11px,1vw,14px)] truncate w-full">{fileName}</span>
+                <div
+                  className="flex items-center border rounded-sm cursor-pointer w-full"
+                  onClick={() => inputRef.current?.click()}
+                >
+                  <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-[clamp(8px,1vw,12px)] h-[clamp(28px,3vw,36px)] font-semibold text-[clamp(11px,1vw,14px)] hover:bg-gray-200 transition-colors whitespace-nowrap [&_svg]:size-[clamp(14px,1.4vw,18px)]">
+                    {selectedFile ? (
+                      <>
+                        <Repeat2 className="mr-1" /> Replace
+                      </>
+                    ) : (
+                      <>
+                        <Share className="mr-1" />
+                        Choose File
+                      </>
+                    )}
+                  </span>
+                  <span className="px-3 text-[clamp(11px,1vw,14px)] truncate w-full">
+                    {fileName}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {data.length > 1 && (
-          <div className="flex flex-col min-w-0 mt-4">
-            <div className="border-2 border-dashed border-black w-full min-w-0">
-              <ScrollArea className="w-full max-h-[50vh]">
-                <Table className="table-auto w-full">
-                  <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                          <TableHead
-                            key={header.id}
-                            className="truncate max-w-[150px] sticky top-0 bg-card"
-                          >
-                            {
-                              flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              ) as React.ReactNode
-                            }
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableHeader>
-                  <TableBody>
-                    {table.getRowModel().rows.map((row) => {
-                      const rowPhone = getRowPhone(row.original);
-                      const isUpdateRow =
-                        updateStakeholderPhones.has(rowPhone);
-                      return (
-                        <TableRow
-                          key={row.id}
-                          className={isUpdateRow ? 'bg-yellow-50' : ''}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <React.Fragment key={cell.id}>
+          {data.length > 1 && (
+            <div className="flex flex-col min-w-0 mt-4">
+              <div className="border-2 border-dashed border-black w-full min-w-0">
+                <div className="w-full max-h-[50vh] overflow-y-auto overflow-x-auto">
+                  <Table className="table-auto w-full">
+                    <TableHeader>
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => (
+                            <TableHead
+                              key={header.id}
+                              className="truncate max-w-[150px] sticky top-0 bg-card"
+                            >
                               {
                                 flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
+                                  header.column.columnDef.header,
+                                  header.getContext(),
                                 ) as React.ReactNode
                               }
-                            </React.Fragment>
+                            </TableHead>
                           ))}
                         </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
+                      ))}
+                    </TableHeader>
+                    <TableBody>
+                      {table.getRowModel().rows.map((row) => {
+                        const rowPhone = getRowPhone(row.original);
+                        const isUpdateRow =
+                          updateStakeholderPhones.has(rowPhone);
+                        return (
+                          <TableRow
+                            key={row.id}
+                            className={isUpdateRow ? 'bg-yellow-50' : ''}
+                          >
+                            {row.getVisibleCells().map((cell) => (
+                              <React.Fragment key={cell.id}>
+                                {
+                                  flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
+                                  ) as React.ReactNode
+                                }
+                              </React.Fragment>
+                            ))}
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+              <ClientSidePagination table={table} />
             </div>
-            <ClientSidePagination table={table} />
-          </div>
-        )}
-      </div>
-      <div className="flex justify-between items-center py-2 px-4 border-t mt-4 sticky bottom-0 bg-background z-10">
-        <div>{data?.length > 0 && <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">Total Count: {data.length - 1}</p>}</div>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
-            variant="outline"
-            onClick={handleClear}
-          >
-            Clear
-          </Button>
-
-          {isValidated ? (
-            <Button
-              className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] bg-primary hover:ring-2 ring-primary"
-              onClick={handleUpload}
-              disabled={isImportDisabled}
-            >
-              {uploadStakeholders.isPending ? 'Importing...' : 'Import'}
-            </Button>
-          ) : (
-            <Button
-              className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] bg-primary hover:ring-2 ring-primary"
-              onClick={handleValidate}
-              disabled={isValidateDisabled}
-            >
-              {validateButtonText}
-            </Button>
           )}
         </div>
-      </div>
+        <div className="flex justify-between items-center py-2 px-4 border-t mt-4 sticky bottom-0 bg-background z-10">
+          <div>
+            {data?.length > 0 && (
+              <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
+                Total Count: {data.length - 1}
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
+              variant="outline"
+              onClick={handleClear}
+            >
+              Clear
+            </Button>
+
+            {isValidated ? (
+              <Button
+                className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] bg-primary hover:ring-2 ring-primary"
+                onClick={handleUpload}
+                disabled={isImportDisabled}
+              >
+                {uploadStakeholders.isPending ? 'Importing...' : 'Import'}
+              </Button>
+            ) : (
+              <Button
+                className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] bg-primary hover:ring-2 ring-primary"
+                onClick={handleValidate}
+                disabled={isValidateDisabled}
+              >
+                {validateButtonText}
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       <Dialog

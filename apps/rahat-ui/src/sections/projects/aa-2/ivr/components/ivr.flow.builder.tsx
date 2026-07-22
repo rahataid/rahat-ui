@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useIvrFlowStore } from '../store/ivr.flow.store';
 import { useIvrTemplateDetail } from '@rahat-ui/query';
@@ -17,9 +17,8 @@ import {
   IvrFlowNode,
   IvrFlowApiPayload,
   IvrFlowOption,
-  IvrFlow,
-  buildApiPayload,
 } from '../types/ivr.flow.types';
+import { buildApiPayload } from '../utils/utils';
 import TreePanel from './ivr.tree.panel';
 import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
@@ -113,27 +112,18 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     router.push(`/projects/aa/${id}/ivr`);
   };
 
-  const handleAddNode = useCallback(
-    (parentId: string) => {
-      addNode(parentId, {});
-    },
-    [addNode],
-  );
+  const handleAddNode = (parentId: string) => {
+    addNode(parentId, {});
+  };
 
-  const handleUpdateNode = useCallback(
-    (nodeId: string, updates: any) => {
-      updateNode(nodeId, updates);
-    },
-    [updateNode],
-  );
+  const handleUpdateNode = (nodeId: string, updates: Partial<IvrFlowNode>) => {
+    updateNode(nodeId, updates);
+  };
 
-  const handleDeleteNode = useCallback(
-    (nodeId: string) => {
-      deleteNode(nodeId);
-      if (selectedNodeId === nodeId) setSelectedNodeId(null);
-    },
-    [deleteNode, selectedNodeId],
-  );
+  const handleDeleteNode = (nodeId: string) => {
+    deleteNode(nodeId);
+    if (selectedNodeId === nodeId) setSelectedNodeId(null);
+  };
 
   if (!flow) {
     return (

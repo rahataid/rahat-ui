@@ -4,12 +4,8 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { X, Play, Pause, PhoneOff } from 'lucide-react';
-import {
-  IvrFlow,
-  findNodeById,
-  flattenOptions,
-  DIAL_PAD,
-} from '../types/ivr.flow.types';
+import { IvrFlow } from '../types/ivr.flow.types';
+import { findNodeById, flattenOptions, DIAL_PAD } from '../utils/utils';
 
 interface SimulationModalProps {
   flow: IvrFlow;
@@ -21,7 +17,6 @@ export default function SimulationModal({
   onClose,
 }: SimulationModalProps) {
   const [currentNodeId, setCurrentNodeId] = useState<string>(flow.rootMenu.id);
-  const [callPath, setCallPath] = useState<string[]>([flow.rootMenu.id]);
   const [callLog, setCallLog] = useState<string[]>([
     `[START] ${flow.rootMenu.label}`,
   ]);
@@ -109,10 +104,6 @@ export default function SimulationModal({
     return () => stopAudio();
   }, [currentNodeId, playAudio, stopAudio, audioUrl]);
 
-  useEffect(() => {
-    return () => stopAudio();
-  }, [stopAudio]);
-
   const handleDTMF = (key: string) => {
     setLastDigit(key);
 
@@ -120,7 +111,6 @@ export default function SimulationModal({
       const target = currentNode.children.find((child) => child.digit === key);
       if (target) {
         setCurrentNodeId(target.id);
-        setCallPath((prev) => [...prev, target.id]);
         setCallLog((prev) => [...prev, `[INPUT] ${key} → ${target.label}`]);
       } else {
         setCallLog((prev) => [...prev, `[INVALID] Key ${key} not recognized`]);
@@ -128,22 +118,6 @@ export default function SimulationModal({
       inputsRef.current += 1;
     }
   };
-
-  const handleBack = useCallback(() => {
-    if (callPath.length > 1) {
-      stopAudio();
-      const previousPath = callPath.slice(0, -1);
-      const previousNodeId = previousPath[previousPath.length - 1];
-      const previousNode = findNodeById(flow.rootMenu, previousNodeId);
-
-      setCurrentNodeId(previousNodeId);
-      setCallPath(previousPath);
-      setCallLog((prev) => [
-        ...prev,
-        `[BACK] Returned to ${previousNode?.label}`,
-      ]);
-    }
-  }, [callPath, flow.rootMenu, stopAudio]);
 
   const handleHangup = () => {
     setCallEnded(true);
@@ -159,7 +133,6 @@ export default function SimulationModal({
     setCallEnded(false);
     setLastDigit('');
     setCurrentNodeId(flow.rootMenu.id);
-    setCallPath([flow.rootMenu.id]);
     inputsRef.current = 0;
     setCallLog([`[START] ${flow.rootMenu.label}`]);
   };
@@ -251,19 +224,6 @@ export default function SimulationModal({
 
           {!callEnded && (
             <div className="space-y-2">
-              {availableOptions.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {availableOptions.map((opt) => (
-                    <Badge
-                      key={opt.digit}
-                      variant="outline"
-                      className="text-xs"
-                    >
-                      {opt.digit} → {opt.label}
-                    </Badge>
-                  ))}
-                </div>
-              )}
               <div className="grid grid-cols-3 gap-2">
                 {DIAL_PAD.map((key) => {
                   const hasOption = availableOptions.some(

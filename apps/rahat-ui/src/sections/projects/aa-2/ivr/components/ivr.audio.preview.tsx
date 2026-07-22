@@ -39,8 +39,8 @@ export function AudioPreviewPlayer({
       audioRef.current
         .play()
         .then(() => setPlaying(true))
-        .catch(() => {});
-    }
+      .catch(() => undefined);
+  }
   };
 
   const seek = (e: React.ChangeEvent<HTMLInputElement>) => {

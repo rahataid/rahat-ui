@@ -28,25 +28,12 @@ import {
   Square,
   Loader2,
 } from 'lucide-react';
-import { IvrFlow, IvrFlowNode, findNodeById } from '../types/ivr.flow.types';
-import { useUploadFile } from '@rahat-ui/query';
+import { IvrFlow, IvrFlowNode } from '../types/ivr.flow.types';
+import { findNodeById, getBreadcrumbPath } from '../utils/utils';
 import { cn } from '@rahat-ui/shadcn/src';
-import { AudioPreviewPlayer } from './ivr.audio.preview';
-
-function getBreadcrumbPath(root: IvrFlowNode, targetId: string): string[] {
-  const path: string[] = [];
-  const traverse = (node: IvrFlowNode): boolean => {
-    path.push(node.label);
-    if (node.id === targetId) return true;
-    for (const child of node.children) {
-      if (traverse(child)) return true;
-    }
-    path.pop();
-    return false;
-  };
-  traverse(root);
-  return path;
-}
+import AudioUrlTab from './editor/ivr.audio.url.tab';
+import AudioRecordTab from './editor/ivr.audio.record.tab';
+import AudioUploadTab from './editor/ivr.audio.upload.tab';
 
 interface NodeEditorPanelProps {
   flow: IvrFlow;
@@ -62,170 +49,17 @@ export default function NodeEditorPanel({
   const selectedItem = findNodeById(flow.rootMenu, selectedNodeId);
   const [isEditing, setIsEditing] = useState(false);
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [promptMode, setPromptMode] = useState<'url' | 'record' | 'upload'>(
+    'url',
+  );
+  const [isUploadPending, setIsUploadPending] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const breadcrumbPath = getBreadcrumbPath(flow.rootMenu, selectedNodeId);
-
-  const [recordingPhase, setRecordingPhase] = useState<
-    'idle' | 'recording' | 'done'
-  >('idle');
-  const [recordingTimer, setRecordingTimer] = useState(0);
-  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-  const [streamRef, setStreamRef] = useState<MediaStream | null>(null);
-  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [uploadLabel, setUploadLabel] = useState('Upload');
-  const [pendingUploadUrl, setPendingUploadUrl] = useState('');
-  const [pendingUploadName, setPendingUploadName] = useState('');
-  const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
-  const [recordedPreviewUrl, setRecordedPreviewUrl] = useState('');
-  const [promptMode, setPromptMode] = useState<
-    'url' | 'record' | 'upload' | null
-  >('url');
-  const uploadFileMutation = useUploadFile();
-  const isUploadPending = uploadFileMutation.isPending;
-
-  const resetRecordingState = () => {
-    setRecordingPhase('idle');
-    setRecordingTimer(0);
-    setRecordedBlob(null);
-    setRecordedPreviewUrl('');
-    setPendingUploadUrl('');
-    setPendingUploadName('');
-    if (streamRef) {
-      streamRef?.getTracks().forEach((t) => t.stop());
-      setStreamRef(null);
-    }
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-  };
 
   useEffect(() => {
     setIsEditing(false);
     setIsPreviewPlaying(false);
-    resetRecordingState();
   }, [selectedNodeId]);
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setStreamRef(stream);
-      chunksRef.current = [];
-      setRecordingTimer(0);
-      const recorder = new MediaRecorder(stream);
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        setRecordedBlob(blob);
-        setRecordedPreviewUrl(URL.createObjectURL(blob));
-        setRecordingPhase('done');
-        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-      };
-      mediaRecorderRef.current = recorder;
-      recorder.start();
-      setRecordingPhase('recording');
-      timerIntervalRef.current = setInterval(() => {
-        setRecordingTimer((prev) => prev + 1);
-      }, 1000);
-    } catch {
-      setRecordingPhase('idle');
-    }
-  };
-
-  const stopRecording = () => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== 'inactive'
-    ) {
-      mediaRecorderRef.current.stop();
-    }
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-  };
-
-  const uploadRecorded = async () => {
-    if (!recordedBlob) return;
-    try {
-      const file = new File([recordedBlob], `recording_${Date.now()}.webm`, {
-        type: 'audio/webm',
-      });
-      const formData = new FormData();
-      formData.append('file', file);
-      const { data: afterUpload } = await uploadFileMutation.mutateAsync(
-        formData,
-      );
-      handleUpdate({ prompt: afterUpload.mediaURL });
-      if (recordedPreviewUrl) URL.revokeObjectURL(recordedPreviewUrl);
-      resetRecordingState();
-      setUploadLabel('Uploaded');
-      setTimeout(() => setUploadLabel('Upload'), 2000);
-    } catch {
-      resetRecordingState();
-    }
-  };
-
-  const cancelRecording = () => {
-    resetRecordingState();
-  };
-
-  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPendingUploadUrl(url);
-    setPendingUploadName(file.name);
-    setPendingUploadFile(file);
-    e.target.value = '';
-  };
-
-  const handleFileUpload = async () => {
-    if (!pendingUploadUrl || !pendingUploadFile) return;
-    try {
-      const formData = new FormData();
-      formData.append('file', pendingUploadFile);
-      const { data: afterUpload } = await uploadFileMutation.mutateAsync(
-        formData,
-      );
-      handleUpdate({ prompt: afterUpload.mediaURL });
-      setPendingUploadUrl('');
-      setPendingUploadName('');
-      setPendingUploadFile(null);
-    } catch {
-      setPendingUploadFile(null);
-    }
-  };
-
-  const cancelUpload = () => {
-    if (pendingUploadUrl) URL.revokeObjectURL(pendingUploadUrl);
-    setPendingUploadUrl('');
-    setPendingUploadName('');
-    setPendingUploadFile(null);
-  };
-
-  const togglePreview = (url: string) => {
-    if (isPreviewPlaying && previewAudioRef.current) {
-      previewAudioRef.current.pause();
-      previewAudioRef.current = null;
-      setIsPreviewPlaying(false);
-      return;
-    }
-    if (!url) return;
-    const audio = new Audio(url);
-    previewAudioRef.current = audio;
-    audio.onended = () => setIsPreviewPlaying(false);
-    audio.onerror = () => setIsPreviewPlaying(false);
-    audio
-      .play()
-      .then(() => setIsPreviewPlaying(true))
-      .catch(() => setIsPreviewPlaying(false));
-  };
-
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
 
   if (!selectedItem) {
     return (
@@ -295,7 +129,23 @@ export default function NodeEditorPanel({
                   size="sm"
                   variant="outline"
                   className="gap-2 rounded-sm"
-                  onClick={() => togglePreview(selectedItem.prompt)}
+                  onClick={() => {
+                    if (isPreviewPlaying && previewAudioRef.current) {
+                      previewAudioRef.current.pause();
+                      previewAudioRef.current = null;
+                      setIsPreviewPlaying(false);
+                      return;
+                    }
+                    if (!selectedItem.prompt) return;
+                    const audio = new Audio(selectedItem.prompt);
+                    previewAudioRef.current = audio;
+                    audio.onended = () => setIsPreviewPlaying(false);
+                    audio.onerror = () => setIsPreviewPlaying(false);
+                    audio
+                      .play()
+                      .then(() => setIsPreviewPlaying(true))
+                      .catch(() => setIsPreviewPlaying(false));
+                  }}
                 >
                   {isPreviewPlaying ? (
                     <Square className="w-3 h-3" />
@@ -462,21 +312,10 @@ export default function NodeEditorPanel({
         >
           <Label>Audio Prompt</Label>
           <Tabs
-            value={promptMode || ''}
-            onValueChange={(value) => {
-              const v = value as 'url' | 'record' | 'upload';
-              if (v === 'url') {
-                resetRecordingState();
-                setPromptMode('url');
-              } else if (v === 'record') {
-                setPendingUploadUrl('');
-                setPendingUploadName('');
-                setPromptMode('record');
-              } else if (v === 'upload') {
-                cancelRecording();
-                setPromptMode('upload');
-              }
-            }}
+            value={promptMode}
+            onValueChange={(value) =>
+              setPromptMode(value as 'url' | 'record' | 'upload')
+            }
           >
             <TabsList className="border bg-secondary rounded w-full">
               <TabsTrigger
@@ -499,94 +338,23 @@ export default function NodeEditorPanel({
               </TabsTrigger>
             </TabsList>
             <TabsContent value="url">
-              <div className="space-y-2">
-                <Label htmlFor="prompt-url-input">Audio URL</Label>
-                <Input
-                  id="prompt-url-input"
-                  value={selectedItem.prompt}
-                  onChange={(e) => handleUpdate({ prompt: e.target.value })}
-                  placeholder="https://example.com/audio.mp3"
-                  className="text-xs"
-                />
-              </div>
+              <AudioUrlTab
+                prompt={selectedItem.prompt}
+                onUpdate={handleUpdate}
+              />
             </TabsContent>
             <TabsContent value="record">
-              <div className="space-y-2">
-                {recordingPhase === 'idle' && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-9 w-9 rounded-full"
-                    onClick={startRecording}
-                  >
-                    <Mic className="w-4 h-4" />
-                  </Button>
-                )}
-                {recordingPhase === 'recording' && (
-                  <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-sm">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-sm font-mono font-bold">
-                      {formatTime(recordingTimer)}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="gap-2 ml-auto rounded-sm"
-                      onClick={stopRecording}
-                    >
-                      <Square className="w-4 h-4" />
-                      Stop
-                    </Button>
-                  </div>
-                )}
-                {recordingPhase === 'done' && recordedPreviewUrl && (
-                  <AudioPreviewPlayer
-                    src={recordedPreviewUrl}
-                    fileName={`Recorded ${formatTime(recordingTimer)}`}
-                    onUpload={uploadRecorded}
-                    onCancel={cancelRecording}
-                    uploadLabel={uploadLabel}
-                  />
-                )}
-                {selectedItem.prompt.startsWith('blob:') &&
-                  recordingPhase === 'idle' && (
-                    <p className="text-xs text-green-600 text-center">
-                      Currently using recorded audio
-                    </p>
-                  )}
-              </div>
+              <AudioRecordTab
+                prompt={selectedItem.prompt}
+                onUpdate={handleUpdate}
+                onUploadingChange={setIsUploadPending}
+              />
             </TabsContent>
             <TabsContent value="upload">
-              <div className="space-y-2">
-                {!pendingUploadUrl ? (
-                  <div
-                    className="border-2 border-dashed border-muted-foreground/30 rounded-sm p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      Click to browse or drag audio file here
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      MP3, WAV, OGG, WEBM
-                    </p>
-                  </div>
-                ) : (
-                  <AudioPreviewPlayer
-                    src={pendingUploadUrl}
-                    fileName={pendingUploadName}
-                    onUpload={handleFileUpload}
-                    onCancel={cancelUpload}
-                  />
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="audio/*"
-                  className="hidden"
-                  onChange={handleFileSelected}
-                />
-              </div>
+              <AudioUploadTab
+                onUpdate={handleUpdate}
+                onUploadingChange={setIsUploadPending}
+              />
             </TabsContent>
           </Tabs>
         </div>

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { IvrFlow, IvrFlowNode, findNodeById } from '../types/ivr.flow.types';
+import { IvrFlow, IvrFlowNode } from '../types/ivr.flow.types';
+import { findNodeById, removeNodeById, findParent } from '../utils/utils';
 
 let nodeIdCounter = 0;
 const generateNodeId = () => `node_${++nodeIdCounter}_${Date.now()}`;
@@ -28,18 +29,6 @@ interface IvrFlowStore {
   setFlowRootMenu: (flowId: string, rootMenu: IvrFlowNode) => void;
 }
 
-function removeNodeById(root: IvrFlowNode, id: string): boolean {
-  const idx = root.children.findIndex((c) => c.id === id);
-  if (idx !== -1) {
-    root.children.splice(idx, 1);
-    return true;
-  }
-  for (const child of root.children) {
-    if (removeNodeById(child, id)) return true;
-  }
-  return false;
-}
-
 const initialFlows: IvrFlow[] = [];
 
 export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
@@ -48,7 +37,7 @@ export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
 
   loadFlow: (flowId) => {
     const { flows } = get();
-    let flow = flows.find((f) => f.id === flowId);
+    const flow = flows.find((f) => f.id === flowId);
     if (!flow) {
       const newFlow: IvrFlow = {
         id: flowId,
@@ -79,7 +68,7 @@ export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
       const parent = findNodeById(flow.rootMenu, parentId);
       if (!parent) return state;
 
-      // Parent now has children, so it should not hangup
+      // Parent has children, so it should not hangup
       parent.hangup = false;
 
       const takenDigits = new Set(
@@ -143,20 +132,6 @@ export const useIvrFlowStore = create<IvrFlowStore>((set, get) => ({
       if (!flow) return state;
 
       if (flow.rootMenu.id === nodeId) return state;
-
-      // Find parent before deleting the child
-      const findParent = (
-        root: IvrFlowNode,
-        id: string,
-      ): IvrFlowNode | null => {
-        const idx = root.children.findIndex((c) => c.id === id);
-        if (idx !== -1) return root;
-        for (const child of root.children) {
-          const found = findParent(child, id);
-          if (found) return found;
-        }
-        return null;
-      };
 
       const parent = findParent(flow.rootMenu, nodeId);
 

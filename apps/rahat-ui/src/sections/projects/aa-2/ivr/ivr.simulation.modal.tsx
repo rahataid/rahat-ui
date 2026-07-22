@@ -50,23 +50,39 @@ export default function SimulationModal({
   const audioUrl = currentNode?.prompt || '';
 
   const playAudio = useCallback((url: string) => {
-    if (!url) return;
+    setIsPlaying(false);
     setAudioError(false);
+
+    if (!url) return;
+
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.src = '';
     }
     const audio = new Audio(url);
     audioRef.current = audio;
-    audio.onplay = () => setIsPlaying(true);
-    audio.onended = () => setIsPlaying(false);
+
+    audio.onplay = () => {
+      if (audioRef.current === audio) {
+        setIsPlaying(true);
+        setAudioError(false);
+      }
+    };
+    audio.onended = () => {
+      if (audioRef.current === audio) {
+        setIsPlaying(false);
+      }
+    };
     audio.onerror = () => {
-      setIsPlaying(false);
-      setAudioError(true);
+      if (audioRef.current === audio) {
+        setIsPlaying(false);
+        setAudioError(true);
+      }
     };
     audio.play().catch(() => {
-      setIsPlaying(false);
-      setAudioError(true);
+      if (audioRef.current === audio) {
+        setIsPlaying(false);
+        setAudioError(true);
+      }
     });
   }, []);
 
@@ -89,22 +105,45 @@ export default function SimulationModal({
     };
   }, [stopAudio]);
 
+  const endCall = useCallback(
+    (finalCount: number) => {
+      setCallEnded(true);
+      stopAudio();
+      setCallLog((prev) => [
+        ...prev,
+        `[END] Call ended. Total inputs: ${finalCount}`,
+      ]);
+      setTimeout(() => onClose(), 1500);
+    },
+    [stopAudio, onClose],
+  );
+
   const handleDTMF = (key: string) => {
     setLastDigit(key);
     setInputBuffer((prev) => prev + key);
-    setTotalInputs((prev) => prev + 1);
 
     if (currentNode?.children) {
       const target = currentNode.children.find(
         (child: any) => child.digit === key,
       );
       if (target) {
+        const hasMoreOptions = target.children && target.children.length > 0;
         setCurrentNodeId(target.id);
         setCallPath((prev) => [...prev, target.id]);
-        setCallLog((prev) => [...prev, `[INPUT] ${key} → ${target.label}`]);
+        setCallLog((prev) => [
+          ...prev,
+          `[INPUT] ${key} → ${target.label}`,
+          ...(hasMoreOptions ? [] : ['[END] All options exhausted']),
+        ]);
         setInputBuffer('');
+        setTotalInputs((prev) => {
+          const next = prev + 1;
+          if (!hasMoreOptions) endCall(next);
+          return next;
+        });
       } else {
         setCallLog((prev) => [...prev, `[INVALID] Key ${key} not recognized`]);
+        setTotalInputs((prev) => prev + 1);
       }
     }
   };
@@ -132,7 +171,6 @@ export default function SimulationModal({
 
   const handleHangup = () => {
     setCallEnded(true);
-    stopAudio();
     stopAudio();
     setCallLog((prev) => [
       ...prev,
@@ -251,17 +289,24 @@ export default function SimulationModal({
 
           {/* Keypad */}
           {!callEnded && (
-            <div className="grid grid-cols-3 gap-2">
-              {dialPad.map((key) => (
-                <Button
-                  key={key}
-                  variant="outline"
-                  className="h-12 text-lg font-semibold rounded-sm"
-                  onClick={() => handleDTMF(key)}
-                >
-                  {key}
-                </Button>
-              ))}
+            <div className="space-y-2">
+              <div className="grid grid-cols-3 gap-2">
+                {dialPad.map((key) => {
+                  const hasOption = availableOptions.some(
+                    (opt) => opt.digit === key,
+                  );
+                  return (
+                    <Button
+                      key={key}
+                      variant={hasOption ? 'default' : 'outline'}
+                      className="h-12 text-lg font-semibold rounded-sm"
+                      onClick={() => handleDTMF(key)}
+                    >
+                      {key}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
           )}
 

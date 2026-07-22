@@ -11,13 +11,18 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { ArrowLeft, Settings, Code, Download } from 'lucide-react';
+import { ArrowLeft, Settings, Code, Download, Loader2 } from 'lucide-react';
 import TreePanel from './ivr.tree.panel';
 import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
 import SimulationModal from './ivr.simulation.modal';
 import ExportModal from './ivr.export.modal';
-import { IvrFlowNode, IvrFlowApiPayload, IvrFlowOption, IvrFlow } from './ivr.flow.types';
+import {
+  IvrFlowNode,
+  IvrFlowApiPayload,
+  IvrFlowOption,
+  IvrFlow,
+} from './ivr.flow.types';
 
 function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
   function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
@@ -65,10 +70,15 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   const flow = flows.find((f) => f.id === ivrId);
 
   const { data: templateDetail } = useIvrTemplateDetail(Number(ivrId));
+  const [isFetchingFlow, setIsFetchingFlow] = useState(
+    !!templateDetail?.flowUrl,
+  );
 
   const flowJsonString = useMemo(() => {
     if (!flow) return '';
-    const mapNode = (node: IvrFlowNode): IvrFlowApiPayload['main']['options'][number] => ({
+    const mapNode = (
+      node: IvrFlowNode,
+    ): IvrFlowApiPayload['main']['options'][number] => ({
       digit: parseInt(node.digit || '0') || 0,
       destination: node.destination || '',
       prompt: node.prompt || '',
@@ -94,6 +104,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     if (!templateDetail?.flowUrl || populatedRef.current) return;
 
     const fetchAndPopulate = async () => {
+      setIsFetchingFlow(true);
       try {
         const response = await fetch(templateDetail.flowUrl);
         if (!response.ok) throw new Error('Failed to fetch flow data');
@@ -104,6 +115,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         console.error('Failed to load IVR flow from URL:', err);
       }
       populatedRef.current = true;
+      setIsFetchingFlow(false);
     };
 
     fetchAndPopulate();
@@ -184,7 +196,17 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
         {/* Left - Tree Panel */}
-        <div className="w-1/2 bg-white rounded-sm border overflow-hidden flex flex-col">
+        <div className="w-1/2 bg-white rounded-sm border overflow-hidden flex flex-col relative">
+          {isFetchingFlow && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Loading flow data...
+                </span>
+              </div>
+            </div>
+          )}
           <TreePanel
             flow={flow}
             selectedNodeId={selectedNodeId}
@@ -266,7 +288,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         onClose={() => setIsExportOpen(false)}
         ivrId={Number(ivrId)}
         jsonContent={flowJsonString}
-        onExported={() => { populatedRef.current = false; }}
+        onExported={() => {
+          populatedRef.current = false;
+        }}
       />
     </div>
   );

@@ -199,7 +199,7 @@ export default function NodeEditorPanel({
   const [recordedPreviewUrl, setRecordedPreviewUrl] = useState('');
   const [promptMode, setPromptMode] = useState<
     'url' | 'record' | 'upload' | null
-  >(null);
+  >('url');
   const uploadFileMutation = useUploadFile();
   const isUploadPending = uploadFileMutation.isPending;
 

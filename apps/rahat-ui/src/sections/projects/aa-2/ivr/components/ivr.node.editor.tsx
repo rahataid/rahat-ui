@@ -28,10 +28,10 @@ import {
   Square,
   Loader2,
 } from 'lucide-react';
-import { IvrFlow, IvrFlowNode, findNodeById } from './ivr.flow.types';
-import { AudioPreviewPlayer } from './ivr.audio.preview';
+import { IvrFlow, IvrFlowNode, findNodeById } from '../types/ivr.flow.types';
 import { useUploadFile } from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
+import { AudioPreviewPlayer } from './ivr.audio.preview';
 
 function getBreadcrumbPath(root: IvrFlowNode, targetId: string): string[] {
   const path: string[] = [];

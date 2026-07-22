@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { IvrFlow, IvrFlowNode, findNodeById } from './ivr.flow.types';
+import { IvrFlow, IvrFlowNode, findNodeById } from '../types/ivr.flow.types';
 
 let nodeIdCounter = 0;
 const generateNodeId = () => `node_${++nodeIdCounter}_${Date.now()}`;

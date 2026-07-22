@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { IvrFlow, buildApiPayload } from './ivr.flow.types';
+import { IvrFlow, buildApiPayload } from '../types/ivr.flow.types';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Copy, Check } from 'lucide-react';
 

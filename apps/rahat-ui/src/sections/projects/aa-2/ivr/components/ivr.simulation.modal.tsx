@@ -4,7 +4,12 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { X, Play, Pause, PhoneOff } from 'lucide-react';
-import { IvrFlow, findNodeById, flattenOptions, DIAL_PAD } from './ivr.flow.types';
+import {
+  IvrFlow,
+  findNodeById,
+  flattenOptions,
+  DIAL_PAD,
+} from '../types/ivr.flow.types';
 
 interface SimulationModalProps {
   flow: IvrFlow;
@@ -52,45 +57,48 @@ export default function SimulationModal({
     [stopAudio],
   );
 
-  const playAudio = useCallback((url: string) => {
-    setIsPlaying(false);
-    setAudioError(false);
+  const playAudio = useCallback(
+    (url: string) => {
+      setIsPlaying(false);
+      setAudioError(false);
 
-    if (!url) {
-      if (hangupRef.current) endCall(inputsRef.current);
-      return;
-    }
-
-    if (audioRef.current) audioRef.current.pause();
-
-    const audio = new Audio(url);
-    audioRef.current = audio;
-
-    audio.onplay = () => {
-      if (audioRef.current === audio) {
-        setIsPlaying(true);
-        setAudioError(false);
-      }
-    };
-    audio.onended = () => {
-      if (audioRef.current === audio) {
-        setIsPlaying(false);
+      if (!url) {
         if (hangupRef.current) endCall(inputsRef.current);
+        return;
       }
-    };
-    audio.onerror = () => {
-      if (audioRef.current === audio) {
-        setIsPlaying(false);
-        setAudioError(true);
-      }
-    };
-    audio.play().catch(() => {
-      if (audioRef.current === audio) {
-        setIsPlaying(false);
-        setAudioError(true);
-      }
-    });
-  }, [endCall]);
+
+      if (audioRef.current) audioRef.current.pause();
+
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      audio.onplay = () => {
+        if (audioRef.current === audio) {
+          setIsPlaying(true);
+          setAudioError(false);
+        }
+      };
+      audio.onended = () => {
+        if (audioRef.current === audio) {
+          setIsPlaying(false);
+          if (hangupRef.current) endCall(inputsRef.current);
+        }
+      };
+      audio.onerror = () => {
+        if (audioRef.current === audio) {
+          setIsPlaying(false);
+          setAudioError(true);
+        }
+      };
+      audio.play().catch(() => {
+        if (audioRef.current === audio) {
+          setIsPlaying(false);
+          setAudioError(true);
+        }
+      });
+    },
+    [endCall],
+  );
 
   useEffect(() => {
     hangupRef.current = currentNode?.hangup || false;
@@ -109,9 +117,7 @@ export default function SimulationModal({
     setLastDigit(key);
 
     if (currentNode?.children) {
-      const target = currentNode.children.find(
-        (child) => child.digit === key,
-      );
+      const target = currentNode.children.find((child) => child.digit === key);
       if (target) {
         setCurrentNodeId(target.id);
         setCallPath((prev) => [...prev, target.id]);
@@ -248,7 +254,11 @@ export default function SimulationModal({
               {availableOptions.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {availableOptions.map((opt) => (
-                    <Badge key={opt.digit} variant="outline" className="text-xs">
+                    <Badge
+                      key={opt.digit}
+                      variant="outline"
+                      className="text-xs"
+                    >
                       {opt.digit} → {opt.label}
                     </Badge>
                   ))}

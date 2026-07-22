@@ -21,9 +21,9 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useIvrTemplates } from '@rahat-ui/query';
-import { IvrListItem } from './ivr.flow.types';
-import CreateIVRDialog from './ivr.create.dialog';
+import { IvrListItem } from '../types/ivr.flow.types';
 import { Trash2, MoreHorizontal, ArrowRight, Voicemail } from 'lucide-react';
+import CreateIVRDialog from './ivr.create.dialog';
 
 const statusColors: Record<string, string> = {
   draft: 'bg-yellow-100 text-yellow-800',

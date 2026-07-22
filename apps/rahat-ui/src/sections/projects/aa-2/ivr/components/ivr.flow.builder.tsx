@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useIvrFlowStore } from './ivr.flow.store';
+import { useIvrFlowStore } from '../store/ivr.flow.store';
 import { useIvrTemplateDetail } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -12,12 +12,19 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { ArrowLeft, Settings, Code, Download, Loader2 } from 'lucide-react';
+
+import {
+  IvrFlowNode,
+  IvrFlowApiPayload,
+  IvrFlowOption,
+  IvrFlow,
+  buildApiPayload,
+} from '../types/ivr.flow.types';
 import TreePanel from './ivr.tree.panel';
 import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
 import SimulationModal from './ivr.simulation.modal';
 import ExportModal from './ivr.export.modal';
-import { IvrFlowNode, IvrFlowApiPayload, IvrFlowOption, IvrFlow, buildApiPayload } from './ivr.flow.types';
 
 function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
   function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
@@ -86,6 +93,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     const fetchAndPopulate = async () => {
       setIsFetchingFlow(true);
       try {
+        if (!templateDetail.flowUrl) throw new Error('No flow URL provided');
         const response = await fetch(templateDetail.flowUrl);
         if (!response.ok) throw new Error('Failed to fetch flow data');
         const data: IvrFlowApiPayload = await response.json();

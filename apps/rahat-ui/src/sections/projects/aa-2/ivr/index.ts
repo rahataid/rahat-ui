@@ -1,2 +1,2 @@
-export { default as IvrDashboardView } from './ivr.dashboard';
-export { default as IvrFlowBuilderView } from './ivr.flow.builder';
+export { default as IvrDashboardView } from './components/ivr.dashboard';
+export { default as IvrFlowBuilderView } from './components/ivr.flow.builder';

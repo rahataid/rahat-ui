@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Select,
@@ -29,15 +30,16 @@ export default function CustomPagination({
   perPage,
   total,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   const lastPage = meta?.lastPage || 1;
   return (
     <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
       <div className="flex-1 text-sm text-muted-foreground">
-        Total Count : {meta?.total || total}
+        {t('TOTAL_COUNT')} : {meta?.total || total}
       </div>
       {handlePageSizeChange && (
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
+          <div className="text-sm font-medium">{t('ROWS_PER_PAGE')}</div>
           <Select
             defaultValue={String(perPage)}
             onValueChange={handlePageSizeChange}
@@ -58,7 +60,7 @@ export default function CustomPagination({
         </div>
       )}
       <div className="text-sm">
-        Page {currentPage} of {lastPage}
+        {t('PAGE')} {currentPage} of {lastPage}
       </div>
       <div className="space-x-2">
         <Button
@@ -69,7 +71,7 @@ export default function CustomPagination({
           disabled={currentPage === 1}
           type="button"
         >
-          Previous
+          {t('PREVIOUS')}
         </Button>
         <Button
           variant="outline"
@@ -82,7 +84,7 @@ export default function CustomPagination({
           // }
           disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
         >
-          Next
+          {t('NEXT')}
         </Button>
       </div>
     </div>

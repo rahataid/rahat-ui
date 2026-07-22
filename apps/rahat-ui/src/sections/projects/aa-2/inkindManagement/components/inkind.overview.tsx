@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import {
   CustomPagination,
@@ -78,34 +79,34 @@ type Movement = {
 
 const MOVEMENT_CONFIG: Record<
   string,
-  { label: string; color: string; bgColor: string; Icon: React.ElementType }
+  { labelKey: string; color: string; bgColor: string; Icon: React.ElementType }
 > = {
   ADD: {
-    label: 'Inkind Added',
+    labelKey: 'INKIND_ADDED',
     color: 'text-green-600',
     bgColor: 'bg-green-100',
     Icon: ArrowUp,
   },
   REMOVE: {
-    label: 'Inkind Removed',
+    labelKey: 'INKIND_REMOVED',
     color: 'text-red-600',
     bgColor: 'bg-red-100',
     Icon: ArrowDown,
   },
   LOCK: {
-    label: 'Assigned to group',
+    labelKey: 'ASSIGNED_TO_GROUP',
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-100',
     Icon: Archive,
   },
   UNLOCK: {
-    label: 'Inkind Unlocked',
+    labelKey: 'INKIND_UNLOCKED',
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
     Icon: ArchiveRestore,
   },
   REDEEM: {
-    label: 'Distributed',
+    labelKey: 'DISTRIBUTED',
     color: 'text-purple-600',
     bgColor: 'bg-purple-100',
     Icon: ShoppingBag,
@@ -162,6 +163,9 @@ export default function InkindOverview() {
     null,
   );
 
+  const tv = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('GLOBAL');
+
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
@@ -173,53 +177,53 @@ export default function InkindOverview() {
   return (
     <div className="flex flex-col h-full">
       <Heading
-        title="Inkind Overview"
+        title={tv('INKIND_OVERVIEW')}
         titleStyle="font-medium text-lg"
-        description="Overview of all in-kind items and stock movements"
+        description={tv('TRACK_YOUR_IN_KIND_FLOW_HERE')}
       />
 
       <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
         <DataCard
           className="rounded-sm"
-          title="Total Inkind Types"
+          title={tv('TOTAL_INKIND_TYPES')}
           number={String(
             inkindItemsSummary?.totalInkindTypes
               ? inkindItemsSummary.totalInkindTypes
               : 0,
           )}
-          subtitle="Distinct items registered"
+          subtitle={tv('DISTINCT_ITEMS_REGISTERED')}
         />
         <DataCard
           className="rounded-sm"
-          title="Available Stock"
+          title={tv('AVAILABLE_STOCK')}
           number={String(
             inkindItemsSummary?.totalAvailableStock
               ? inkindItemsSummary.totalAvailableStock
               : 0,
           )}
-          subtitle="Units currently available"
+          subtitle={tv('UNITS_CURRENTLY_AVAILABLE')}
         />
         <DataCard
           className="rounded-sm"
-          title="Redeemed Stock"
+          title={tv('REDEEMED_STOCK')}
           number={String(
             inkindItemsSummary?.totalRedeemedStock
               ? inkindItemsSummary.totalRedeemedStock
               : 0,
           )}
-          subtitle="Units currently redeemed"
+          subtitle={tv('UNITS_CURRENTLY_REDEEMED')}
         />
       </div>
 
       {/* Row 1: Redemption Type + Redemption Status */}
       <div className="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-3 mb-3">
         <div className="border rounded-sm p-4">
-          <h3 className="text-sm font-medium mb-3">Redemption Type</h3>
+          <h3 className="text-sm font-medium mb-3">{tv('REDEMPTION_TYPE')}</h3>
           <div className="w-full h-48">
             <DynamicPieChart
               pieData={[
-                { label: 'Predefined', value: inkindItemsSummary?.chartData?.redemptionType?.predefined || 0 },
-                { label: 'Walk-in', value: inkindItemsSummary?.chartData?.redemptionType?.walkIn || 0 },
+                { label: tv('PRE_DEFINED_BENEFICIARY_LIST'), value: inkindItemsSummary?.chartData?.redemptionType?.predefined || 0 },
+                { label: tv('WALK_IN_BENEFICIARY_LIST'), value: inkindItemsSummary?.chartData?.redemptionType?.walkIn || 0 },
               ]}
               colors={['#F4A462', '#2A9D90']}
             />
@@ -227,12 +231,12 @@ export default function InkindOverview() {
         </div>
 
         <div className="border rounded-sm p-4">
-          <h3 className="text-sm font-medium mb-3">Redemption Status</h3>
+          <h3 className="text-sm font-medium mb-3">{tv('REDEMPTION_STATUS')}</h3>
           <div className="w-full h-48">
             <DynamicPieChart
               pieData={[
-                { label: 'Redeemed', value: inkindItemsSummary?.totalRedeemedStock || 0 },
-                { label: 'Not Redeemed', value: Math.max(0, (inkindItemsSummary?.totalAssignedStock || 0) - (inkindItemsSummary?.totalRedeemedStock || 0)) },
+                { label: tv('REDEEMED'), value: inkindItemsSummary?.totalRedeemedStock || 0 },
+                { label: tv('NOT_REDEEMED'), value: Math.max(0, (inkindItemsSummary?.totalAssignedStock || 0) - (inkindItemsSummary?.totalRedeemedStock || 0)) },
               ]}
               colors={['#FFA500', '#10B981']}
             />
@@ -245,12 +249,12 @@ export default function InkindOverview() {
         {/* Left Column: OTP Status + OTP Skip Reasons */}
         <div className="flex flex-col gap-3">
           <div className="border rounded-sm p-4">
-            <h3 className="text-sm font-medium mb-3">OTP Status</h3>
+            <h3 className="text-sm font-medium mb-3">{tv('OTP_STATUS')}</h3>
             <div className="w-full h-48">
               <DynamicPieChart
                 pieData={[
-                  { label: 'Skipped', value: inkindItemsSummary?.chartData?.otpStatus?.skipped || 0 },
-                  { label: 'Not Skipped', value: inkindItemsSummary?.chartData?.otpStatus?.notSkipped || 0 },
+                  { label: tv('SKIPPED'), value: inkindItemsSummary?.chartData?.otpStatus?.skipped || 0 },
+                  { label: tv('NOT_SKIPPED'), value: inkindItemsSummary?.chartData?.otpStatus?.notSkipped || 0 },
                 ]}
                 colors={['#FFA500', '#10B981']}
               />
@@ -258,7 +262,7 @@ export default function InkindOverview() {
           </div>
 
           <div className="border rounded-sm p-4">
-            <h3 className="text-sm font-medium mb-3">OTP Skip Reasons</h3>
+            <h3 className="text-sm font-medium mb-3">{tv('OTP_SKIP_REASONS')}</h3>
             {inkindItemsSummary?.chartData?.otpSkipReasons && inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (() => {
               const reasons: {reason: string; count: number}[] = [...inkindItemsSummary.chartData.otpSkipReasons].sort((a, b) => b.count - a.count);
               const max = reasons[0].count;
@@ -292,7 +296,7 @@ export default function InkindOverview() {
               );
             })() : (
               <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">
-                No data available
+                {tg('NO_DATA_AVAILABLE')}
               </div>
             )}
           </div>
@@ -301,11 +305,11 @@ export default function InkindOverview() {
         {/* Right Column: Overall Inkind Flow */}
         <div className="border rounded-sm p-4 flex flex-col">
           <div className="flex items-start justify-between mb-0.5">
-            <h1 className="text-lg font-medium">Overall Inkind Flow</h1>
+            <h1 className="text-lg font-medium">{tv('OVERALL_INKIND_FLOW')}</h1>
           </div>
           {movements.length !== 0 && (
             <p className="text-xs text-muted-foreground mb-3">
-              Click on any logs to view details
+              {tv('CLICK_ON_ANY_LOGS_TO_VIEW')}
             </p>
           )}
           <div className="relative flex-1 min-h-[150px]">
@@ -317,7 +321,7 @@ export default function InkindOverview() {
           <ScrollArea className="flex-1 min-h-[120px] max-h-[40vh] overflow-auto items-center justify-center">
             {movements.length === 0 ? (
               <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
-                No records available.
+                {tv('NO_RECORDS_AVAILABLE')}
               </p>
             ) : (
               <div className="flex flex-col space-y-2">
@@ -382,7 +386,7 @@ export default function InkindOverview() {
                           variant="outline"
                           className={`rounded-sm text-xs ${config.color} border-current`}
                         >
-                          {config.label}
+                          {tv(config.labelKey)}
                         </Badge>
                       </div>
                     </button>
@@ -445,29 +449,29 @@ export default function InkindOverview() {
                       </div>
                       <div>
                         <SheetTitle className="text-base">
-                          Transaction Details
+                          {tv('TRANSACTION_DETAILS')}
                         </SheetTitle>
                         <Badge
                           variant="outline"
                           className={`mt-1 rounded-sm text-xs ${config.color} border-current`}
                         >
-                          {config.label}
+                          {tv(config.labelKey)}
                         </Badge>
                       </div>
                     </div>
                   </SheetHeader>
 
                   <div className="mb-5">
-                    <SectionTitle title="Transaction" />
+                    <SectionTitle title={tv('TRANSACTION_DETAILS')} />
                     <div className="border rounded-md px-3">
                       <DetailRow
                         icon={Hash}
-                        label="Transaction ID"
+                        label={tv('TRANSACTION_ID')}
                         value={selectedMovement.uuid}
                       />
                       <DetailRow
                         icon={Calendar}
-                        label="Date & Time"
+                        label={tv('DATE_TIME')}
                         value={
                           selectedMovement.createdAt
                             ? format(
@@ -479,7 +483,7 @@ export default function InkindOverview() {
                       />
                       <DetailRow
                         icon={Layers}
-                        label="Quantity"
+                        label={tv('QUANTITY')}
                         value={
                           <span className={`font-bold ${config.color}`}>
                             {isPositive ? '+' : '-'}
@@ -492,16 +496,16 @@ export default function InkindOverview() {
 
                   {selectedMovement.inkind && (
                     <div className="mb-5">
-                      <SectionTitle title="Inkind Item" />
+                      <SectionTitle title={tv('INKIND_ITEM')} />
                       <div className="border rounded-md px-3">
                         <DetailRow
                           icon={Package}
-                          label="Name"
+                          label={tg('NAME')}
                           value={selectedMovement.inkind.name}
                         />
                         <DetailRow
                           icon={Layers}
-                          label="Type"
+                          label={tg('TYPE')}
                           value={
                             <Badge className="bg-gray-200 text-gray-600">
                               {formatLabel(
@@ -514,7 +518,7 @@ export default function InkindOverview() {
                         />
                         <DetailRow
                           icon={Archive}
-                          label="Available Stock"
+                          label={tv('AVAILABLE_STOCK')}
                           value={
                             <span className="text-primary font-bold">
                               {selectedMovement.inkind.availableStock}
@@ -524,7 +528,7 @@ export default function InkindOverview() {
                         {selectedMovement.inkind.description && (
                           <DetailRow
                             icon={Hash}
-                            label="Description"
+                            label={tg('DESCRIPTION')}
                             value={selectedMovement.inkind.description}
                           />
                         )}
@@ -534,11 +538,11 @@ export default function InkindOverview() {
 
                   {selectedMovement.groupInkind && (
                     <div className="mb-5">
-                      <SectionTitle title="Group Allocation" />
+                      <SectionTitle title={tv('GROUP_ALLOCATION')} />
                       <div className="border rounded-md px-3">
                         <DetailRow
                           icon={Users}
-                          label="Group"
+                          label={tv('GROUP')}
                           value={
                             <span className="text-primary font-bold">
                               {selectedMovement.groupInkind.group?.name ?? '—'}

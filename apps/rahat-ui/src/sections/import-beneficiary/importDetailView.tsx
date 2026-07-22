@@ -44,8 +44,11 @@ import {
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 
 function ImportDetailView() {
+  const t = useTranslations('Import Beneficiary Detail');
+  const tg = useTranslations('GLOBAL');
   const { uuid } = useParams();
   const searchParams = useSearchParams();
   const groupName = searchParams.get('name');
@@ -137,8 +140,8 @@ function ImportDetailView() {
       <div className="shrink-0">
         <div className="flex items-center justify-between">
           <HeaderWithBack
-            title={groupName || 'Import Detail'}
-            subtitle="Here is the detailed view of the selected import"
+            title={groupName || t('IMPORT_DETAIL')}
+            subtitle={t('HERE_IS_THE_DETAILED_VIEW_OF')}
             path="/import-beneficiary"
           />
           <div className="flex items-center gap-2">
@@ -147,23 +150,23 @@ function ImportDetailView() {
                 <AlertDialogTrigger asChild>
                   <Button disabled={startImport.isPending}>
                     <Play size={18} className="mr-2" />
-                    Start Import
+                    {t('START_IMPORT')}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Confirm Import</AlertDialogTitle>
+                    <AlertDialogTitle>{t('CONFIRM_IMPORT')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Review the details below before starting the import.
+                      {t('REVIEW_THE_DETAILS_BELOW_BEFORE_STARTING')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <div className="rounded-md border p-3 space-y-2 text-sm my-2">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Group Name</span>
+                      <span className="text-muted-foreground">{tg('GROUP_NAME')}</span>
                       <span className="font-medium">{groupName || '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Beneficiaries to Import</span>
+                      <span className="text-muted-foreground">{t('BENEFICIARIES_TO_IMPORT')}</span>
                       <span className="font-medium">
                         {count || importData?.data?.beneficiaryCount || '-'}
                       </span>
@@ -172,16 +175,13 @@ function ImportDetailView() {
                   <div className="flex gap-2 rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
                     <AlertCircle size={16} className="mt-0.5 shrink-0 text-yellow-600" />
                     <p>
-                      If this group is assigned to any project, the beneficiaries will be
-                      automatically synced to those projects after import. Any existing beneficiary
-                      records in those projects will be updated with the latest imported data.
-                      Please ensure the imported data is accurate before proceeding.
+                      {t('IF_THIS_GROUP_IS_ASSIGNED_TO')}
                     </p>
                   </div>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{tg('CANCEL')}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleStartImport}>
-                      Start Import
+                      {t('START_IMPORT')}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -195,7 +195,7 @@ function ImportDetailView() {
                 className="text-red-600"
               >
                 <AlertCircle size={18} className="mr-2" />
-                Download Errors
+                {t('DOWNLOAD_ERRORS')}
               </Button>
             )}
           </div>
@@ -207,19 +207,19 @@ function ImportDetailView() {
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground flex items-center gap-2">
                 <Loader2 size={14} className="animate-spin" />
-                Processing import...
+                {t('PROCESSING_IMPORT')}
               </span>
               {progress && (
                 <span className="text-muted-foreground">
-                  {progress.processed} / {progress.total} processed
+                  {progress.processed} / {progress.total} {t('PROCESSED')}
                   {progress.failed > 0 && (
                     <span className="text-red-500 ml-2">
-                      ({progress.failed} failed)
+                      ({progress.failed} {t('FAILED')})
                     </span>
                   )}
                   {progress.duplicates > 0 && (
                     <span className="text-yellow-600 ml-2">
-                      ({progress.duplicates} duplicates)
+                      ({progress.duplicates} {t('DUPLICATES')})
                     </span>
                   )}
                 </span>
@@ -232,27 +232,27 @@ function ImportDetailView() {
         {/* Completed summary */}
         {!isProcessing && progress && currentStatus === 'IMPORTED' && (
           <div className="mt-3 mb-1 p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-800">
-            Import completed: {progress.processed} of {progress.total}{' '}
-            processed
-            {progress.failed > 0 && `, ${progress.failed} failed`}
+            {t('IMPORT_COMPLETED')} {progress.processed} of {progress.total}{' '}
+            {t('PROCESSED')}
+            {progress.failed > 0 && `, ${progress.failed} ${t('FAILED')}`}
             {progress.duplicates > 0 &&
-              `, ${progress.duplicates} duplicates`}
+              `, ${progress.duplicates} ${t('DUPLICATES')}`}
           </div>
         )}
 
         <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 pl-1 mt-4 mb-4">
           <DataCard
-            title="Beneficiary Count"
+            title={t('BENEFICIARY_COUNT')}
             Icon={Users2}
             smallNumber={count || importData?.data?.beneficiaryCount || 0}
           />
           <DataCard
-            title="Created at"
+            title={t('CREATED_AT')}
             Icon={Calendar}
             smallNumber={formatDate}
           />
           <DataCard
-            title="Status"
+            title={tg('STATUS')}
             Icon={FileSpreadsheet}
             smallNumber={currentStatus}
           />
@@ -264,7 +264,7 @@ function ImportDetailView() {
           <div className="flex items-center justify-center h-[400px]">
             <div className="text-center">
               <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
-              <Label className="text-base">Loading CSV...</Label>
+              <Label className="text-base">{t('LOADING_CSV')}</Label>
             </div>
           </div>
         ) : csvError ? (
@@ -279,7 +279,7 @@ function ImportDetailView() {
               </p>
               <Button variant="outline" size="sm" onClick={handleDownload}>
                 <Download className="h-4 w-4 mr-2" />
-                Download CSV
+                {t('DOWNLOAD_CSV')}
               </Button>
             </div>
             <div className="overflow-auto flex-1 min-h-0">
@@ -312,7 +312,7 @@ function ImportDetailView() {
           </>
         ) : (
           <div className="flex items-center justify-center h-[400px]">
-            <p className="text-sm text-gray-500">No CSV data available</p>
+            <p className="text-sm text-gray-500">{t('NO_CSV_DATA_AVAILABLE')}</p>
           </div>
         )}
       </div>

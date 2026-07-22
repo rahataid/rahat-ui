@@ -34,7 +34,7 @@ const SelectSection = ({filters, setFilters, options, placeholder, keys}: Select
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {options.map(({value, label}: any) => <SelectItem value={value}>{label}</SelectItem>)}
+                {options.map(({value, label}: any) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
               </SelectGroup>
             </SelectContent>
           </Select>

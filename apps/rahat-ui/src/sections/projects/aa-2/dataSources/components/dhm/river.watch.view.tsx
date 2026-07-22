@@ -4,6 +4,8 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
@@ -18,6 +20,7 @@ import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
 
 export default function RiverWatchView() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -51,7 +54,7 @@ export default function RiverWatchView() {
     () => [
       {
         icon: RadioTower,
-        label: 'Station Index',
+        label: t('STATION_INDEX'),
         value: primaryRiverWatchInfo?.stationIndex,
       },
       {
@@ -61,12 +64,12 @@ export default function RiverWatchView() {
       },
       {
         icon: TriangleAlert,
-        label: 'Warning Level',
+        label: t('WARNING_LEVEL'),
         value: primaryRiverWatchInfo?.warning_level,
       },
       {
         icon: Skull,
-        label: 'Danger Level',
+        label: t('DANGER_LEVEL'),
         value: primaryRiverWatchInfo?.danger_level,
       },
     ],
@@ -80,7 +83,7 @@ export default function RiverWatchView() {
   if (!riverWatch || !primaryRiverWatchInfo) {
     return (
       <div className="p-4">
-        <NoResult message="No River Watch Data" />
+        <NoResult message={t('NO_RIVER_WATCH_DATA')} />
       </div>
     );
   }
@@ -138,7 +141,7 @@ export default function RiverWatchView() {
             {truncateValue(primaryRiverWatchInfo?.waterLevel?.value, 2)}
             {primaryRiverWatchInfo?.unit}
           </p>
-          <p className="text-sm/6 font-medium">Water Level</p>
+          <p className="text-sm/6 font-medium">{t('WATER_LEVEL')}</p>
           <p className="text-gray-500 text-sm/6">
             {dateFormat(
               primaryRiverWatchInfo?.waterLevel?.datetime,

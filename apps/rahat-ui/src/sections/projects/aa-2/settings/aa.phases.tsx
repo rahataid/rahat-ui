@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 
 import React from 'react';
 import { usePhases, usePhasesStore, useProjectInfo } from '@rahat-ui/query';
@@ -23,6 +24,8 @@ export interface Phase {
   };
 }
 export default function AAProjectPhasesView() {
+  const t = useTranslations('AA Project');
+
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -72,17 +75,17 @@ export default function AAProjectPhasesView() {
   return (
     <div>
       <div className="pb-1 flex justify-between items-center space-x-4">
-        <Heading title="Phases" description="Manage project phases" />
+        <Heading title={t('PHASES')} description={t('MANAGE_PROJECT_PHASES')} />
         <IconLabelBtn
           Icon={Plus}
           handleClick={handleAddPhaseClick}
-          name="Add Phase"
+          name={t('ADD_PHASE')}
           className="px-3 py-2"
         />
       </div>
       <div className="space-y-2">
         <Input
-          placeholder="Search by name..."
+          placeholder={t('SEARCH_BY_NAME')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="rounded"

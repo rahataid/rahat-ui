@@ -6,24 +6,29 @@ import {
   DialogFooter,
 } from '@rahat-ui/shadcn/components/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   name: string;
 };
 
 export default function ConfirmDeleteDialog({ name }: IProps) {
+  const t = useTranslations('Confirmation & Alert Dialogs');
+  const tg = useTranslations('GLOBAL');
+
   return (
     <DialogContent className="sm:max-w-[400px]">
       <DialogHeader>
-        <DialogTitle>Delete {name}</DialogTitle>
+        <DialogTitle>{t('DELETE_NAME', { name })}</DialogTitle>
         <DialogDescription>
-          This action cannot be undone. This will permanently delete this
-          {name}.
+          {t('THIS_ACTION_CANNOT_BE_UNDONE_THIS', { name })}
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>
-        <Button type="submit">Cancel</Button>
-        <Button type="submit">Ok</Button>
+        <Button type="submit" variant="outline">
+          {tg('CANCEL')}
+        </Button>
+        <Button type="submit">{t('CONFIRM_ACTION')}</Button>
       </DialogFooter>
     </DialogContent>
   );

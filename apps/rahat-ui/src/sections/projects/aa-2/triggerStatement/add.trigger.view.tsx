@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Back,
   DeleteButton,
@@ -66,6 +67,7 @@ const componentMap = {
 type TriggerTabKey = keyof typeof componentMap;
 
 export default function AddTriggerView() {
+  const t = useTranslations('AA Project');
   const [activeTab, setActiveTab] = React.useState<string>('');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
@@ -286,17 +288,17 @@ export default function AddTriggerView() {
     <div className="p-4">
       <Back />
       <Heading
-        title="Add Trigger"
-        description="Fill the form below to create new trigger statement"
+        title={t('ADD_TRIGGER')}
+        description={t('FILL_THE_FORM_BELOW_TO_CREATE5')}
       />
       {isLoadingDataSourceTypes || isProjectInfoLoading || isTabLoading ? (
         <SpinnerLoader />
       ) : !dataSourceTypes ? (
         <Alert variant="destructive">
           <AlertCircleIcon />
-          <AlertTitle>Unable to load form.</AlertTitle>
+          <AlertTitle>{t('UNABLE_TO_LOAD_FORM')}</AlertTitle>
           <AlertDescription>
-            <p>Please verify if data source types are available.</p>
+            <p>{t('PLEASE_VERIFY_IF_DATA_SOURCE_TYPES')}</p>
             <ul className="list-inside list-disc text-sm">
               <li>Check triggers settings &apos;DATASOURCETYPES&apos;</li>
             </ul>
@@ -305,7 +307,7 @@ export default function AddTriggerView() {
       ) : !hasTabs ? (
         <Alert>
           <AlertCircleIcon />
-          <AlertTitle>No trigger types configured.</AlertTitle>
+          <AlertTitle>{t('NO_TRIGGER_TYPES_CONFIGURED')}</AlertTitle>
           <AlertDescription>
             <p>
               Please configure trigger types before creating trigger statements.
@@ -319,9 +321,9 @@ export default function AddTriggerView() {
         <ScrollArea className="h-[calc(100vh-210px)] pr-3">
           <div className="border p-4 mb-4 rounded shadow">
             <Heading
-              title="Select Trigger Type"
+              title={t('SELECT_TRIGGER_TYPE')}
               titleStyle="text-xl/6 font-semibold"
-              description="Select trigger type and fill the details below"
+              description={t('SELECT_TRIGGER_TYPE_AND_FILL_THE')}
             />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>

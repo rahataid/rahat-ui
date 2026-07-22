@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
+
 import dynamic from 'next/dynamic';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
@@ -37,6 +39,7 @@ const GFHCard = ({
   updatedAt,
   basinSize,
 }: IGFHCardProps) => {
+  const t = useTranslations('AA Project');
   const googleFloodHubInfoModal = useBoolean();
 
   const handleAssignModalClick = () => {
@@ -47,15 +50,15 @@ const GFHCard = ({
     <>
       <InfoModal
         removeModal={googleFloodHubInfoModal}
-        title="Gauge thresholds"
-        description="The historical and forecasted river levels. The risk level is determined by comparing the forecast with the predefined thresholds (based on past flood events)."
+        title={t('GAUGE_THRESHOLDS')}
+        description={t('THE_HISTORICAL_AND_FORECASTED_RIVER_LEVELS')}
         link="https://support.google.com/flood-hub/answer/15636998"
       />
 
       <Card className="px-4 py-3 rounded-xl mb-4">
         {/* title */}
         <div className="flex items-center gap-2 mb-1">
-          <h2 className="font-bold text-lg">Doda River Forecast</h2>
+          <h2 className="font-bold text-lg">{t('DODA_RIVER_FORECAST')}</h2>
 
           <CircleAlert
             className="w-4 h-4 cursor-pointer"
@@ -74,7 +77,7 @@ const GFHCard = ({
           <div className="flex items-center gap-3">
             <FileText className="w-4 h-4 text-gray-500" />
             <div>
-              <p className="text-sm font-medium">River Gauge ID</p>
+              <p className="text-sm font-medium">{t('RIVER_GAUGE_ID')}</p>
               <p className="text-sm text-gray-600">{riverGaugeId || 'N/A'}</p>
             </div>
           </div>
@@ -83,7 +86,7 @@ const GFHCard = ({
           <div className="flex items-center gap-3">
             <Globe className="w-4 h-4 text-gray-500" />
             <div>
-              <p className="text-sm font-medium ">Source</p>
+              <p className="text-sm font-medium">{t('SOURCE')}</p>
               <p className="text-sm text-gray-600">{source || 'N/A'}</p>
             </div>
           </div>
@@ -92,7 +95,7 @@ const GFHCard = ({
           <div className="flex items-center gap-3">
             <Globe className="w-4 h-4 text-gray-500" />
             <div>
-              <p className="text-sm font-medium ">Latitude</p>
+              <p className="text-sm font-medium">{t('LATITUDE')}</p>
               <p className="text-sm text-gray-600">{latitude || 'N/A'}</p>
             </div>
           </div>
@@ -101,7 +104,7 @@ const GFHCard = ({
           <div className="flex items-center gap-3">
             <Globe className="w-4 h-4 text-gray-500" />
             <div>
-              <p className="text-sm font-medium ">Longitude</p>
+              <p className="text-sm font-medium">{t('LONGITUDE')}</p>
               <p className="text-sm text-gray-600">{longitude || 'N/A'}</p>
             </div>
           </div>
@@ -110,7 +113,7 @@ const GFHCard = ({
           <div className="flex items-center gap-3">
             <RadioTower className="w-4 h-4 text-gray-500" />
             <div>
-              <p className="text-sm font-medium ">Gauge Station Name</p>
+              <p className="text-sm font-medium">{t('GAUGE_STATION_NAME')}</p>
               <p className="text-sm text-gray-600">{stationName || 'N/A'}</p>
             </div>
           </div>
@@ -119,7 +122,7 @@ const GFHCard = ({
           <div className="flex items-center gap-3">
             <Calendar className="w-4 h-4 text-gray-500" />
             <div>
-              <p className="text-sm font-medium ">Date</p>
+              <p className="text-sm font-medium">{t('DATE')}</p>
               <p className="text-sm text-gray-600">
                 {dateFormat(forecastDate, 'eee, MMMM d, yyyy') || 'N/A'}
               </p>
@@ -130,7 +133,7 @@ const GFHCard = ({
           {/* <div className="flex items-center gap-3">
             <Calendar className="w-4 h-4 text-gray-500" />
             <div>
-              <p className="text-sm font-medium">Basin Size (km³)</p>
+              <p className="text-sm font-medium">{t('BASIN_SIZE_KM3')}</p>
               <p className="text-sm text-gray-600">{basinSize || 'N/A'}</p>
             </div>
           </div> */}

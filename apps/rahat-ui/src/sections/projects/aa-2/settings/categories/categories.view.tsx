@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 
 import {
   VisibilityState,
@@ -19,6 +20,8 @@ import { useAACategoryColumns } from './categories.columns';
 import AddCategoryDialog from './add.category';
 
 export default function AACategoriesView() {
+  const t = useTranslations('AA Project');
+
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -49,18 +52,18 @@ export default function AACategoriesView() {
   return (
     <div>
       <div className="pb-1 flex justify-between items-center space-x-4">
-        <Heading title="Categories" description="Manage activity categories" />
+        <Heading title={t('CATEGORIES')} description={t('MANAGE_ACTIVITY_CATEGORIES')} />
         <IconLabelBtn
           Icon={Plus}
           handleClick={() => setDialogOpen(true)}
-          name="Add Category"
+          name={t('ADD_CATEGORY')}
           className="px-3 py-2"
         />
       </div>
       <div className="w-full mt-1 p-1 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search by name..."
+            placeholder={t('SEARCH_BY_NAME')}
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="rounded mr-2"

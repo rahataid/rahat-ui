@@ -16,8 +16,10 @@ import { ListBeneficiary } from '@rahat-ui/types';
 import { useSearchParams } from 'next/navigation';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { GroupPurpose } from '../../constants/beneficiary.const';
+import { useTranslations } from 'next-intl';
 
 export const useBeneficiaryTableColumns = () => {
+  const t = useTranslations('GLOBAL');
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
@@ -67,7 +69,7 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => {
         // const piiData = row.getValue('piiData') as any;
         return (
@@ -82,7 +84,7 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: t('WALLET_ADDRESS'),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -106,8 +108,8 @@ export const useBeneficiaryTableColumns = () => {
               <p className="text-xs font-medium">
                 {walletAddressCopied &&
                 walletAddressCopied === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
+                  ? t('COPIED')
+                  : t('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -116,27 +118,27 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'gender',
-      header: 'Gender',
+      header: t('GENDER'),
       cell: ({ row }) => <div>{row.getValue('gender')}</div>,
     },
     {
       accessorKey: 'internetStatus',
-      header: 'Internet Access',
+      header: t('INTERNET_ACCESS'),
       cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
     },
     {
       accessorKey: 'phoneStatus',
-      header: 'Phone Type',
+      header: t('PHONE_TYPE'),
       cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
     },
     {
       accessorKey: 'bankedStatus',
-      header: 'Banking Status',
+      header: t('BANKING_STATUS'),
       cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (

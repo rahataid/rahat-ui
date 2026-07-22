@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -72,6 +73,9 @@ export const columns: ColumnDef<Transaction>[] = [
 ];
 
 export default function ReferralTable({ name, projectId, vendorId }) {
+  const t = useTranslations('Vendors – Referral Table');
+  const g = useTranslations('GLOBAL');
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -187,7 +191,7 @@ export default function ReferralTable({ name, projectId, vendorId }) {
                     {getVendorReferrals.isPending ? (
                       <TableLoader />
                     ) : (
-                      'No data available.'
+                      g('NO_DATA_AVAILABLE2')
                     )}
                   </TableCell>
                 </TableRow>
@@ -204,7 +208,7 @@ export default function ReferralTable({ name, projectId, vendorId }) {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            {g('PREVIOUS')}
           </Button>
           <Button
             variant="outline"
@@ -212,7 +216,7 @@ export default function ReferralTable({ name, projectId, vendorId }) {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            {g('NEXT')}
           </Button>
         </div>
       </div>

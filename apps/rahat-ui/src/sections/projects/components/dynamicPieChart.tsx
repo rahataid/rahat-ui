@@ -1,3 +1,4 @@
+import { ApexOptions } from 'apexcharts';
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { NoResult } from 'apps/rahat-ui/src/common';
@@ -10,11 +11,13 @@ interface IDynamicPieChartProps {
   }[];
   isLoading?: boolean;
   colors: string[];
+  options?: ApexOptions;
 }
 const DynamicPieChart = ({
   pieData,
   isLoading,
   colors,
+  options,
 }: IDynamicPieChartProps) => {
   const total = pieData?.reduce(
     (s: number, it: { label: string; value: number }) =>
@@ -61,6 +64,7 @@ const DynamicPieChart = ({
       chart={{
         series: pieData,
         colors: colors,
+        options,
       }}
       custom
       projectAA

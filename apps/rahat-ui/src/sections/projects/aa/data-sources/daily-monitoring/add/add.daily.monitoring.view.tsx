@@ -3,6 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
+import { useTranslations } from 'next-intl';
 
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -22,6 +23,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useSelectItems } from '../useSelectItems';
 
 export default function AddDailyMonitoring() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -232,8 +234,8 @@ export default function AddDailyMonitoring() {
                   <SelectFormField
                     form={form}
                     name="riverBasin"
-                    label="River Basin"
-                    placeholder="Select river basin"
+                    label={t('RIVER_BASIN')}
+                    placeholder={t('SELECT_RIVER_BASIN2')}
                     selectItems={riverBasins}
                   />
                 </div>

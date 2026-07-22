@@ -33,8 +33,10 @@ import { AlertCircleIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
+import { useTranslations } from 'next-intl';
 
 export default function TriggerStatementDetail() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
 
@@ -77,10 +79,10 @@ export default function TriggerStatementDetail() {
 
   const getEditDeleteTip = () => {
     if (trigger?.isTriggered) {
-      return 'Cannot modify a triggered trigger';
+      return t('CANNOT_MODIFY_TRIGGERED_TRIGGER');
     }
     if (trigger?.phase?.isActive) {
-      return 'Cannot modify trigger in an active phase';
+      return t('CANNOT_MODIFY_TRIGGER_ACTIVE_PHASE');
     }
     return '';
   };
@@ -108,7 +110,7 @@ export default function TriggerStatementDetail() {
         <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
           <AlertCircleIcon size={70} />
           <p className="text-xl">
-            Trigger Details not available at the moment. Please try again later.
+            {t('TRIGGER_DETAILS_NOT_AVAILABLE')}
           </p>
         </div>
       </div>
@@ -120,12 +122,12 @@ export default function TriggerStatementDetail() {
       <Back />
       <div className="flex justify-between items-center mb-4">
         <Heading
-          title="Trigger Details"
-          description="Detailed view of the selected trigger"
+          title={t('TRIGGER_DETAILS')}
+          description={t('DETAILED_VIEW_OF_THE_SELECTED_TRIGGER')}
           status={
             versionType
               ? `V${versionType}`
-              : trigger?.isTriggered && 'Triggered'
+              : trigger?.isTriggered && t('TRIGGERED')
           }
           badgeClassName={`${
             versionType
@@ -149,7 +151,7 @@ export default function TriggerStatementDetail() {
                   version && 'hidden'
                 }`}
                 name="trigger"
-                label="Delete"
+                label={t('DELETE')}
                 handleContinueClick={handleDelete}
                 disabled={isEditDeleteDisabled}
               />
@@ -167,7 +169,7 @@ export default function TriggerStatementDetail() {
                 className={`rounded flex gap-1 items-center text-sm font-medium ${
                   version && 'hidden'
                 }`}
-                label="Edit"
+                label={t('EDIT')}
                 onFallback={() =>
                   router.push(
                     `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
@@ -215,7 +217,7 @@ export default function TriggerStatementDetail() {
               <p>{trigger?.phase?.source?.riverBasin || 'N/A'}</p>
             </div>
             <div>
-              <p className="mb-1">Phase</p>
+              <p className="mb-1">{t('PHASE')}</p>
               <Badge
                 className={`${
                   trigger?.phase?.name === 'READINESS'
@@ -227,17 +229,17 @@ export default function TriggerStatementDetail() {
               </Badge>
             </div>
             <div>
-              <p className="mb-1">Trigger Type</p>
-              <Badge>{source === 'MANUAL' ? 'Manual' : 'Automated'}</Badge>
+              <p className="mb-1">{t('TRIGGER_TYPE')}</p>
+              <Badge>{source === 'MANUAL' ? t('MANUAL') : t('AUTOMATED')}</Badge>
             </div>
             <div>
-              <p className="mb-1">Type</p>
-              <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
+              <p className="mb-1">{t('TYPE')}</p>
+              <Badge>{trigger?.isMandatory ? t('MANDATORY') : t('OPTIONAL')}</Badge>
             </div>
 
             {trigger?.transactionHash && (
               <div className="flex-1 min-w-0">
-                <p className="mb-1">TxHash</p>
+                <p className="mb-1">{t('TXHASH')}</p>
                 <Link
                   href={txnUrl || '#'}
                   target="_blank"
@@ -252,19 +254,19 @@ export default function TriggerStatementDetail() {
             )}
             {trigger?.createdBy && (
               <div>
-                <p className="mb-1">Created By</p>
+                <p className="mb-1">{t('CREATED_BY')}</p>
                 <p>{trigger?.createdBy}</p>
               </div>
             )}
             {trigger?.isTriggered && (
               <div>
-                <p className="mb-1">Triggered At</p>
+                <p className="mb-1">{t('TRIGGERED_AT')}</p>
                 <p>{dateFormat(trigger?.triggeredAt)}</p>
               </div>
             )}
             {trigger?.triggeredBy && (
               <div>
-                <p className="mb-1">Triggered By</p>
+                <p className="mb-1">{t('TRIGGERED_BY')}</p>
                 <p>{trigger?.triggeredBy}</p>
               </div>
             )}
@@ -291,7 +293,7 @@ export default function TriggerStatementDetail() {
         {trigger?.notes && (
           <div className="p-4 border rounded-sm shadow">
             <Heading
-              title="Trigger Notes"
+              title={t('TRIGGER_NOTES')}
               titleStyle="text-lg/7"
               description=""
             />

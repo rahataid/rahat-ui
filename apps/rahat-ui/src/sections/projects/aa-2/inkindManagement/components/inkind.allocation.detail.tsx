@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -91,6 +92,8 @@ function formatLogs(raw: any[]): LogRow[] {
 }
 
 export default function InkindAllocationDetail() {
+  const tv = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('GLOBAL');
   const { id, allocationId } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
@@ -233,10 +236,10 @@ export default function InkindAllocationDetail() {
   };
 
   const inklindAllocationStats = [
-    { name: 'Inkind Name', amount: inkindName },
-    { name: 'No of Beneficiaries', amount: totalBeneficiaries },
-    { name: 'Total Inkinds', amount: totalAvailableInkinds },
-    { name: 'Total Redeemed', amount: quantityRedeemed },
+    { name: tv('INKIND_NAME'), amount: inkindName },
+    { name: tv('NO_OF_BENEFICIARIES'), amount: totalBeneficiaries },
+    { name: tv('TOTAL_INKINDS'), amount: totalAvailableInkinds },
+    { name: tv('TOTAL_REDEEMED'), amount: quantityRedeemed },
   ];
 
   const status = isWalkIn
@@ -261,7 +264,7 @@ export default function InkindAllocationDetail() {
   const columns: ColumnDef<LogRow>[] = [
     {
       accessorKey: 'beneficiaryWalletAddress',
-      header: 'Beneficiary Wallet',
+      header: tv('BENEFICIARY_WALLET'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.original.beneficiaryWalletAddress}
@@ -271,7 +274,7 @@ export default function InkindAllocationDetail() {
     },
     {
       accessorKey: 'txHash',
-      header: 'Transaction Hash',
+      header: tv('TRANSACTION_HASH'),
       cell: ({ row }) => {
         const txHash = row.original.txHash;
         const txnUrl = getTxUrl(txHash);
@@ -292,21 +295,21 @@ export default function InkindAllocationDetail() {
     },
     {
       accessorKey: 'vendorName',
-      header: 'Vendor',
+      header: tv('VENDOR'),
       cell: ({ row }) => (
         <TruncatedCell text={row.original.vendorName} maxLength={20} />
       ),
     },
     {
       accessorKey: 'quantity',
-      header: 'Qty',
+      header: tv('QTY'),
       cell: ({ row }) => (
         <span className="font-semibold">{row.original.quantity}</span>
       ),
     },
     {
       accessorKey: 'redeemedAt',
-      header: 'Redeemed At',
+      header: tv('REDEEMED_AT'),
       cell: ({ row }) => (
         <span className="text-sm">
           {row.original.redeemedAt
@@ -317,20 +320,20 @@ export default function InkindAllocationDetail() {
     },
     {
       accessorKey: 'otpExemptionReason',
-      header: 'Skipped OTP',
+      header: tv('SKIPPED_OTP'),
       cell: ({ row }) => {
         const reason = row.original.otpExemptionReason;
         const skipped = reason !== null;
         return (
           <span>
-            {skipped ? 'Yes' : 'No'}
+            {skipped ? tg('YES') : tg('NO')}
           </span>
         );
       },
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         const r = row.original;
@@ -352,7 +355,7 @@ export default function InkindAllocationDetail() {
         return (
           <TooltipComponent
             Icon={Eye}
-            tip="View Transaction Details"
+            tip={tv('VIEW_TRANSACTION_DETAILS')}
             iconStyle="hover:text-primary cursor-pointer"
             handleOnClick={() =>
               router.push(
@@ -391,19 +394,19 @@ export default function InkindAllocationDetail() {
             sp.get('from') ?? 'online'
           }`}
           title={groupName}
-          subtitle="Disbursement information for this group allocation"
-          status={status}
+          subtitle={tv('DISBURSEMENT_INFORMATION_FOR_THIS_GROUP_ALLOCATION')}
+          status={tv(status.replace(/\s+/g, '_').toUpperCase())}
           badgeClassName={STATUS_STYLE[status]}
         />
         <div className="flex gap-4">
           <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
             <TooltipWrapper
-              tip={meta?.total ? 'Export In-kind Logs' : 'No data available'}
+              tip={meta?.total ? tv('EXPORT_INKIND_LOGS') : tg('NO_DATA_AVAILABLE')}
             >
               <IconLabelBtn
                 Icon={CloudDownloadIcon}
                 handleClick={handleDownloadReport}
-                name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
+                name={isDownloading ? tv('EXPORTING') : tv('EXPORT_INKIND_LOGS')}
                 variant="outline"
                 disabled={isDownloading || !meta?.total}
               />
@@ -428,16 +431,16 @@ export default function InkindAllocationDetail() {
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-1">
             <Package className="h-4 w-4 text-muted-foreground" />
-            <h2 className="font-semibold text-sm">Inkind logs</h2>
+            <h2 className="font-semibold text-sm">{tv('INKIND_LOGS')}</h2>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            List of all beneficiaries who received this inkind
+            {tv('LIST_OF_ALL_BENEFICIARIES_WHO_RECEIVED')}
           </p>
 
           <div className="flex items-center gap-2 mb-3">
             <SearchInput
               className="flex-1"
-              name="Search by wallet / name / phone"
+              name={tv('SEARCH_BY_WALLET_NAME_PHONE')}
               value={search}
               onSearch={(e) => {
                 setSearch(e.target.value);
@@ -454,7 +457,7 @@ export default function InkindAllocationDetail() {
               }}
             >
               <ArrowUpDown className="h-3.5 w-3.5" />
-              {order === 'desc' ? 'Desc' : 'Asc'}
+              {order === 'desc' ? tv('DESC') : tv('ASC')}
             </Button>
           </div>
 

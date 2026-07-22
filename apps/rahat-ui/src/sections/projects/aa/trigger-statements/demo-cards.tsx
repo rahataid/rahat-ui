@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@rahat-ui/shadcn/src/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@rahat-ui/shadcn/src/components/ui/select";
+import { useTranslations } from 'next-intl';
 import { useState } from "react";
 
 const ActionCards = () => {
+    const t = useTranslations('AA Project');
     const [vis, setVis] = useState(false)
 
     const handleValueChange = (val: any) => {
@@ -21,11 +23,11 @@ const ActionCards = () => {
                         <div className="flex flex-col justify-between w-full">
                             <div>
                                 <div className="flex justify-between">
-                                    <p className="font-semibold text-xl mb-2">Communication</p>
+                                    <p className="font-semibold text-xl mb-2">{t('COMMUNICATION')}</p>
                                 </div>
                                 <Select onValueChange={(val) => handleValueChange(val)}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select option" />
+                                        <SelectValue placeholder={t('SELECT_OPTION')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="1">
@@ -51,7 +53,7 @@ const ActionCards = () => {
                         <div className="flex flex-col justify-between w-full">
                             <div>
                                 <div className="flex justify-between">
-                                    <p className="font-semibold text-xl mb-2">Payout</p>
+                                    <p className="font-semibold text-xl mb-2">{t('PAYOUT')}</p>
                                 </div>
                                 <p className="font-normal text-sm pr-4">
                                     Total beneficiaries: 20

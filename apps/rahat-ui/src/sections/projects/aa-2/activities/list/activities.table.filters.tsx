@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import {
   Select,
@@ -39,6 +40,8 @@ export default function ActivitiesTableFilters({
   status,
   isAutomated,
 }: IProps) {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
   const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
   }));
@@ -49,7 +52,7 @@ export default function ActivitiesTableFilters({
       <SearchInput
         className="w-full"
         value={activity}
-        name="Activities"
+        name={tGlobal('ACTIVITIES')}
         onSearch={(e) => handleSearch(e, 'title')}
       />
       {/* Filter Category */}
@@ -58,11 +61,11 @@ export default function ActivitiesTableFilters({
         onValueChange={(value) => handleFilter('category', value)}
       >
         <SelectTrigger className={category ? '' : 'text-muted-foreground'}>
-          <SelectValue placeholder="Select a category" />
+          <SelectValue placeholder={t('SELECT_A_CATEGORY')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">{t('ALL_CATEGORIES')}</SelectItem>
             {categories.map((item) => (
               <SelectItem key={item.id} value={item.uuid}>
                 {item.name}
@@ -78,13 +81,13 @@ export default function ActivitiesTableFilters({
         onValueChange={(value) => handleFilter('isAutomated', value)}
       >
         <SelectTrigger className={isAutomated ? '' : 'text-muted-foreground'}>
-          <SelectValue placeholder="Select  Activity Type" />
+          <SelectValue placeholder={t('SELECT_ACTIVITY_TYPE')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="all">All type</SelectItem>
-            <SelectItem value={'true'}>Automated</SelectItem>
-            <SelectItem value={'false'}>Manual</SelectItem>
+            <SelectItem value="all">{t('ALL_TYPE')}</SelectItem>
+            <SelectItem value={'true'}>{t('AUTOMATED')}</SelectItem>
+            <SelectItem value={'false'}>{t('MANUAL')}</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -95,11 +98,11 @@ export default function ActivitiesTableFilters({
         onValueChange={(value) => handleFilter('status', value)}
       >
         <SelectTrigger className={status ? '' : 'text-muted-foreground'}>
-          <SelectValue placeholder="Select a status" />
+          <SelectValue placeholder={t('SELECT_A_STATUS')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="all">{t('ALL_STATUS')}</SelectItem>
             {statusList.map((status) => (
               <SelectItem key={status} value={status}>
                 {status
@@ -116,14 +119,9 @@ export default function ActivitiesTableFilters({
       <SearchInput
         className="w-full"
         value={responsibility}
-        name="Responsiblity"
+        name={tGlobal('RESPONSIBILITY')}
         onSearch={(e) => handleSearch(e, 'responsibility')}
       />
-      {/* <DownloadReportBtn handleDownload={handleDownload} />
-      <AddButton
-        path={`/projects/aa/${projectID}/activities/add`}
-        name="Activities"
-      /> */}
     </div>
   );
 }

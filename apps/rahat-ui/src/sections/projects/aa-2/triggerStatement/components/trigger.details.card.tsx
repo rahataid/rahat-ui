@@ -1,6 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import React from 'react';
 import { calculateRemainingTriggers } from '../utils';
+import { useTranslations } from 'next-intl';
 
 interface IProps {
   title: string;
@@ -19,9 +20,10 @@ const TriggerDetailsCard = ({
   totalTriggered,
   totalRequiredTriggers,
 }: IProps) => {
+  const t = useTranslations('AA Project');
   return (
     <div className={`${bgColor} rounded-xl p-4 space-y-1`}>
-      <p className="text-sm/4">{title} Triggers</p>
+      <p className="text-sm/4">{title} {t('TRIGGERS')}</p>
       <div className="flex items-center gap-1">
         <p className={`text-2xl font-medium text-${color}-500`}>
           {totalTriggered}
@@ -33,7 +35,7 @@ const TriggerDetailsCard = ({
           className={`bg-slate-50 p-2 rounded text-sm/4 text-gray-500 space-y-1`}
         >
           <div className="flex items-center justify-between gap-4">
-            <p className="text-black">Station</p>
+            <p className="text-black">{t('STATION')}</p>
             <Badge
               className={`bg-${color}-500 text-white font-extralight tracking-wider px-1`}
             >
@@ -42,17 +44,17 @@ const TriggerDetailsCard = ({
           </div>
 
           <div className="flex items-center justify-between pt-2">
-            <p>Total Triggers</p>
+            <p>{t('TOTAL_TRIGGERS')}</p>
             <p className="text-gray-700">{totalTriggers}</p>
           </div>
 
           <div className="flex items-center justify-between">
-            <p>Required</p>
+            <p>{t('REQUIRED')}</p>
             <p className="text-gray-700">{totalRequiredTriggers}</p>
           </div>
 
           <div className="flex items-center justify-between">
-            <p>Remaining</p>
+            <p>{t('REMAINING')}</p>
             <p className="text-gray-700">
               {calculateRemainingTriggers(
                 totalRequiredTriggers,

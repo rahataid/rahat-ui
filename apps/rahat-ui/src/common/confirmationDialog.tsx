@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 type ConfirmationDialogProps = {
   isConfirmationDialogOpen: boolean;
@@ -22,10 +23,13 @@ const ConfirmationDialog = ({
   isConfirmationDialogOpen,
   onCancel,
   onConfirm,
-  dialogTitle = 'Confirm Action',
-  dialogMessage = 'This action cannot be undone. Are you sure you want to perform this action?',
+  dialogTitle,
+  dialogMessage,
   children,
 }: ConfirmationDialogProps) => {
+  const t = useTranslations('Confirmation & Alert Dialogs');
+  const tg = useTranslations('GLOBAL');
+
   return (
     <Dialog
       open={isConfirmationDialogOpen}
@@ -40,8 +44,8 @@ const ConfirmationDialog = ({
         }}
       >
         <DialogHeader className="!text-center">
-          <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>{children || dialogMessage}</DialogDescription>
+          <DialogTitle>{dialogTitle || t('CONFIRM_ACTION')}</DialogTitle>
+          <DialogDescription>{children || dialogMessage || t('THIS_ACTION_CANNOT_BE_UNDONE_ARE')}</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="flex justify-between">
@@ -52,7 +56,7 @@ const ConfirmationDialog = ({
               className="w-full rounded-sm"
               variant="outline"
             >
-              Cancel
+              {tg('CANCEL')}
             </Button>
           </DialogClose>
           <Button
@@ -60,7 +64,7 @@ const ConfirmationDialog = ({
             onClick={onConfirm}
             className="w-full rounded-sm"
           >
-            Confirm
+            {t('CONFIRM_ACTION')}
           </Button>
         </DialogFooter>
       </DialogContent>

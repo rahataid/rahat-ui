@@ -26,8 +26,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 
 export default function Stock({}: {}) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('AA Project with Gnosis');
   const [formData, setFormData] = useState({
     amount: '',
     currency: 'Hygiene Kits',
@@ -65,18 +68,18 @@ export default function Stock({}: {}) {
           className="text-sm text-gray-500 mb-2"
           onClick={() => router.back()}
         >
-          &larr; Back
+          &larr; {t('BACK')}
         </button>
-        <h1 className="text-2xl font-bold">Create Stock</h1>
+        <h1 className="text-2xl font-bold">{tg('CREATE_STOCK')}</h1>
         <p className="text-sm text-gray-500">
-          Fill the form below to create stock
+          {tg('FILL_THE_FORM_BELOW_TO_CREATE')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Amount */}
         <div>
-          <Label>Amount</Label>
+          <Label>{t('AMOUNT')}</Label>
           <div className="flex gap-2 w-full">
             <Select
               defaultValue="Hygiene Kits"
@@ -89,16 +92,16 @@ export default function Stock({}: {}) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem defaultChecked={true} value="Hygiene Kits">
-                  Hygiene Kits
+                  {tg('HYGIENE_KITS')}
                 </SelectItem>
-                <SelectItem value="Food Packages">Food Packages</SelectItem>
-                <SelectItem value="Water Packages">Water Packages</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                <SelectItem value="Food Packages">{tg('FOOD_PACKAGES')}</SelectItem>
+                <SelectItem value="Water Packages">{tg('WATER_PACKAGES')}</SelectItem>
+                <SelectItem value="Other">{t('OTHER')}</SelectItem>
               </SelectContent>
             </Select>
             <Input
               type="number"
-              placeholder="Enter number"
+              placeholder={tg('ENTER_NUMBER')}
               value={formData.amount}
               onChange={(e) =>
                 setFormData({ ...formData, amount: e.target.value })
@@ -111,13 +114,13 @@ export default function Stock({}: {}) {
         {/* Buttons */}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline">
-            Clear
+            {t('CLEAR')}
           </Button>
           <Button
             type="submit"
             disabled={createBudget.isPending || !formData.amount}
           >
-            {createBudget.isPending ? <span>Submitting...</span> : 'Confirm'}
+            {createBudget.isPending ? <span>{t('SUBMITTING')}</span> : t('CONFIRM')}
           </Button>
         </div>
       </form>
@@ -126,9 +129,9 @@ export default function Stock({}: {}) {
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle className="text-center">Create Stock</DialogTitle>
+            <DialogTitle className="text-center">{tg('CREATE_STOCK')}</DialogTitle>
             <DialogDescription className="text-center text-base text-gray-700 mt-2">
-              Are you sure you want to create this stock?
+              {tg('CREATE_STOCK_CONFIRMATION')}
             </DialogDescription>
           </DialogHeader>
 
@@ -137,7 +140,7 @@ export default function Stock({}: {}) {
               <div className="text-2xl font-bold text-gray-900">
                 {formData.amount} {formData.currency}
               </div>
-              <div className="text-sm text-gray-700 mt-1">Stock Created</div>
+              <div className="text-sm text-gray-700 mt-1">{tg('STOCK_CREATED')}</div>
             </div>
           </div>
 
@@ -148,7 +151,7 @@ export default function Stock({}: {}) {
               className="flex-1 border-blue-500 text-blue-600 hover:bg-blue-50"
               onClick={() => setShowConfirmDialog(false)}
             >
-              Cancel
+              {t('CANCEL')}
             </Button>
             <Button
               type="button"
@@ -156,7 +159,7 @@ export default function Stock({}: {}) {
               onClick={handleConfirm}
               disabled={createBudget.isPending}
             >
-              {createBudget.isPending ? 'Creating...' : 'Confirm'}
+              {createBudget.isPending ? t('CREATING') : t('CONFIRM')}
             </Button>
           </DialogFooter>
         </DialogContent>

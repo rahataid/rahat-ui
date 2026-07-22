@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import {
   AlertDialog,
@@ -23,6 +24,8 @@ export default function PayoutConfirmationDialog({
   payoutData,
   onConfirm,
 }: IProps) {
+  const tv = useTranslations('AA Project with Cash Tracker');
+  const tg = useTranslations('GLOBAL');
   return (
     <AlertDialog>
       <RoleAuth
@@ -33,7 +36,7 @@ export default function PayoutConfirmationDialog({
           (payoutData?.extras?.paymentProviderName === 'NCHL' ||
             payoutData?.extras?.paymentProviderName === 'Namaste Pay') && (
             <TooltipWrapper
-              tip="Payout cannot be triggered because funds have not been disbursed to the beneficiary group."
+              tip={tv('PAYOUT_CANNOT_BE_TRIGGERED')}
               disable={payoutData?.beneficiaryGroupToken?.isDisbursed}
             >
               <AlertDialogTrigger asChild>
@@ -43,7 +46,7 @@ export default function PayoutConfirmationDialog({
                   }`}
                   disabled={!payoutData?.beneficiaryGroupToken?.isDisbursed}
                 >
-                  Trigger Payout
+                  {tv('TRIGGER_PAYOUT')}
                 </Button>
               </AlertDialogTrigger>
             </TooltipWrapper>
@@ -52,20 +55,20 @@ export default function PayoutConfirmationDialog({
       <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center text-lg font-semibold">
-            Trigger Payout
+            {tv('TRIGGER_PAYOUT')}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center">
-            Are you sure you want to trigger this payout?
+            {tv('TRIGGER_PAYOUT_CONFIRMATION')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <div className="bg-gray-50 rounded-sm p-4 mt-2 text-sm space-y-2">
           <div className="flex justify-between">
-            <span className="font-medium">Payout Type</span>
+            <span className="font-medium">{tv('PAYOUT_TYPE')}</span>
             <span>{payoutData?.type}</span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Payout Method</span>
+            <span className="font-medium">{tv('PAYOUT_METHOD')}</span>
             <span>
               {payoutData?.type === 'FSP'
                 ? payoutData?.extras?.paymentProviderName
@@ -73,13 +76,13 @@ export default function PayoutConfirmationDialog({
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Beneficiary Group Name</span>
+            <span className="font-medium">{tv('BENEFICIARY_GROUP')}</span>
             <span>
               {payoutData?.beneficiaryGroupToken?.beneficiaryGroup?.name}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Total Beneficiaries</span>
+            <span className="font-medium">{tg('TOTAL_BENEFICIARIES')}</span>
             <span>
               {
                 payoutData?.beneficiaryGroupToken?.beneficiaryGroup?._count
@@ -88,20 +91,20 @@ export default function PayoutConfirmationDialog({
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Total Tokens</span>
+            <span className="font-medium">{tv('TOTAL_TOKENS')}</span>
             <span>{payoutData?.beneficiaryGroupToken?.numberOfTokens}</span>
           </div>
         </div>
 
         <AlertDialogFooter>
           <AlertDialogCancel className="border border-gray- w-full">
-            Cancel
+            {tg('CANCEL')}
           </AlertDialogCancel>
           <AlertDialogAction
             className="bg-blue-600 hover:bg-blue-700 text-white w-full"
             onClick={onConfirm}
           >
-            Confirm
+            {tg('CONFIRM')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

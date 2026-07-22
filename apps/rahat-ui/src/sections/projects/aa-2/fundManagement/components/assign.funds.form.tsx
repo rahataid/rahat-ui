@@ -38,6 +38,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 import {
   FundAssignmentFormSchema,
   FundAssignmentFormValues,
@@ -59,6 +60,7 @@ export default function AssignFundsForm({
 }: {
   handleStepChange: (step: number) => void;
 }) {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
 
@@ -113,12 +115,12 @@ export default function AssignFundsForm({
       projectBalance < 0 ||
       isNaN(projectBalance)
     ) {
-      toast.error('Insufficient project balance');
+      toast.error(t('INSUFFICIENT_PROJECT_BALANCE'));
       return;
     }
 
     if (projectBalance < data.totalTokenAmount) {
-      toast.error('Insufficient project balance to assign funds');
+      toast.error(t('INSUFFICIENT_PROJECT_BALANCE_TO_ASSIGN'));
       return;
     }
 
@@ -184,11 +186,11 @@ export default function AssignFundsForm({
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t('TITLE')}</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder="Write token title"
+                      placeholder={t('WRITE_TOKEN_TITLE')}
                       {...field}
                     />
                   </FormControl>
@@ -203,7 +205,7 @@ export default function AssignFundsForm({
               name="beneficiaryGroupId"
               render={({ field }) => (
                 <FormItem className="flex flex-col space-y-3 w-full">
-                  <FormLabel className="mt-1">Beneficiary Group</FormLabel>
+                  <FormLabel className="mt-1">{t('BENEFICIARY_GROUP')}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -219,7 +221,7 @@ export default function AssignFundsForm({
                             ? benGroups.data.find(
                                 (group) => group.uuid === field.value,
                               )?.name
-                            : 'Select Beneficiary Group'}
+                            : t('SELECT_BENEFICIARY_GROUP')}
                           <ChevronDown className="opacity-50" />
                         </Button>
                       </FormControl>
@@ -227,11 +229,11 @@ export default function AssignFundsForm({
                     <PopoverContent className="p-0">
                       <Command>
                         <CommandInput
-                          placeholder="Search ..."
+                          placeholder={t('SEARCH_PLACEHOLDER')}
                           className="h-9"
                         />
                         <CommandList>
-                          <CommandEmpty>No group found.</CommandEmpty>
+                          <CommandEmpty>{t('NO_GROUP_FOUND')}</CommandEmpty>
                           <CommandGroup>
                             {benGroups.data.map(
                               (group: BeneficiaryGroupListItem) => (
@@ -275,11 +277,11 @@ export default function AssignFundsForm({
               name="tokenAmountPerBenef"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Token Amount Per Beneficiary</FormLabel>
+                  <FormLabel>{t('TOKEN_AMOUNT_PER_BENEFICIARY_LABEL')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Write token amount"
+                      placeholder={t('WRITE_TOKEN_AMOUNT')}
                       {...field}
                       value={field.value === 0 ? '' : field.value}
                       onChange={(e) => {
@@ -298,7 +300,7 @@ export default function AssignFundsForm({
               name="totalTokenAmount"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Total Token Amount</FormLabel>
+                  <FormLabel>{t('TOTAL_TOKEN_AMOUNT_LABEL')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -321,7 +323,7 @@ export default function AssignFundsForm({
                 onClick={() => reset(DEFAULT_VALUES)}
                 className="px-10 rounded-sm w-40"
               >
-                Clear
+                {t('CLEAR')}
               </Button>
 
               <Button
@@ -329,7 +331,7 @@ export default function AssignFundsForm({
                 className="px-10 rounded-sm w-40"
                 disabled={validateTokenAction.isPending}
               >
-                {validateTokenAction.isPending ? 'Validating...' : 'Confirm'}
+                {validateTokenAction.isPending ? t('VALIDATING') : t('CONFIRM')}
               </Button>
             </div>
           </div>

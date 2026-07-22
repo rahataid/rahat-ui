@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -68,6 +69,9 @@ type BeneficiaryGroupDetailsLogRow = {
 export default function useBeneficiaryGroupDetailsLogColumns(
   payoutType: string,
 ) {
+  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA Project with Cash Tracker');
+  const tg = useTranslations('GLOBAL');
   const { id, detailID } = useParams();
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
@@ -105,11 +109,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const columns: ColumnDef<BeneficiaryGroupDetailsLogRow>[] = [
     {
       accessorKey: 'beneficiaryWalletAddress',
-      header: 'Beneficiary Wallet Address',
+      header: tv('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <TruncatedCell
-            text={row?.original?.beneficiaryWalletAddress || 'N/A'}
+            text={row?.original?.beneficiaryWalletAddress || tg('N_A')}
             maxLength={10}
           />
 
@@ -122,12 +126,12 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     {
       accessorKey: 'transactionWalletId',
-      header: 'Transaction Wallet ID',
+      header: tv('TRANSACTION_WALLET_ID'),
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TruncatedCell
-              text={row?.original?.info?.offrampWalletAddress || 'N/A'}
+              text={row?.original?.info?.offrampWalletAddress || tg('N_A')}
               maxLength={10}
             />
             <CopyTooltip
@@ -140,7 +144,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     {
       accessorKey: 'txHash',
-      header: 'Transaction Hash',
+      header: tv('TRANSACTION_HASH'),
       cell: ({ row }) => {
         const txUrl = getExplorerUrl({
           chainSettings:
@@ -160,7 +164,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                 <TruncatedCell text={row?.original?.txHash} maxLength={10} />
               </a>
             ) : (
-              'N/A'
+              tg('N_A')
             )}
           </div>
         );
@@ -168,7 +172,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     {
       accessorKey: 'amount',
-      header: 'Amount Disbursed',
+      header: tv('AMOUNT_DISBURSED'),
       cell: ({ row }) => {
         const amount =
           row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
@@ -200,7 +204,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     {
       accessorKey: 'transactionType',
-      header: 'Transaction Type',
+      header: tv('TRANSACTION_TYPE'),
       cell: ({ row }) => {
         const type = row?.original?.transactionType ?? 'unknown';
         return (
@@ -223,7 +227,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     {
       accessorKey: 'status',
-      header: 'Payout Status',
+      header: tv('PAYOUT_STATUS'),
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (
@@ -242,7 +246,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     {
       accessorKey: 'updatedAt',
-      header: 'Timestamp',
+      header: tg('TIMESTAMP'),
       cell: ({ row }) => {
         const { createdAt, updatedAt, payout, status } = row?.original || {};
 
@@ -290,7 +294,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
@@ -319,11 +323,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                           color="red"
                         />
                         <span className="font-semibold text-sm/6">
-                          Transaction Failed
+                          {tv('TRANSACTION_FAILED')}
                         </span>
                       </div>
                       <p className="text-gray-500 text-sm mt-1 break-words">
-                        {row.original?.info?.error ?? 'Something went wrong!!'}
+                        {row.original?.info?.error ?? t('SOMETHING_WENT_WRONG')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -345,7 +349,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                 >
                   <TooltipComponent
                     Icon={RotateCcwIcon}
-                    tip="Update"
+                    tip={tg('UPDATE')}
                     iconStyle="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
                     handleOnClick={() =>
                       handleTriggerSinglePayoutFailed(row.original.uuid)
@@ -356,7 +360,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
 
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+                    tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />

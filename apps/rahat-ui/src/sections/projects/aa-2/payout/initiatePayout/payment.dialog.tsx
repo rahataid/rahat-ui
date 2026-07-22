@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -22,6 +23,9 @@ export function PaymentDialog({
   handleSubmit,
   shouldTriggerDialog,
 }: PaymentDialogProps) {
+  const tv = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   // State goes here
   const [open, setOpen] = useState(false);
 
@@ -43,7 +47,7 @@ export function PaymentDialog({
         type="button"
         onClick={handleDialogBox}
       >
-        Confirm
+        {tg('CONFIRM')}
       </Button>
       <DialogContent
         className="!rounded-sm"
@@ -52,21 +56,21 @@ export function PaymentDialog({
         }}
       >
         <DialogHeader className="!text-center">
-          <DialogTitle>Confirm Payout</DialogTitle>
+          <DialogTitle>{tv('CONFIRM_PAYOUT')}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to confirm this payout?
+            {tv('CONFIRM_PAYOUT_DIALOG_DESC')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2 p-6 rounded-sm bg-gray-200 border-gray-200">
           <div className="grid grid-cols-2 gap-2">
-            <div className="text-gray-600 font-medium">Payout Type</div>
+            <div className="text-gray-600 font-medium">{tv('PAYOUT_TYPE')}</div>
             <div className="font-medium text-muted-foreground">
               {formState?.method}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <div className="text-gray-600 font-medium">Payout Method</div>
+            <div className="text-gray-600 font-medium">{tv('PAYOUT_METHOD')}</div>
             <div className="font-medium text-muted-foreground">
               {formState?.method === 'FSP'
                 ? formState?.paymentProvider?.name
@@ -76,7 +80,7 @@ export function PaymentDialog({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">
-              Beneficiary Group Name
+              {tv('BENEFICIARY_GROUP')}
             </div>
             <div className="font-medium text-muted-foreground">
               {formState?.group?.name}
@@ -84,7 +88,7 @@ export function PaymentDialog({
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="text-gray-600 font-medium">Total Beneficiaries</div>
+            <div className="text-gray-600 font-medium">{tg('TOTAL_BENEFICIARIES')}</div>
             <div className="font-medium text-muted-foreground">
               {formState?.group?._count?.beneficiaries}
             </div>
@@ -93,7 +97,7 @@ export function PaymentDialog({
           {Object.keys(formState.vendor).length !== 0 && (
             <>
               <div className="grid grid-cols-2 gap-2">
-                <div className="text-gray-600 font-medium">Vendor Name</div>
+                <div className="text-gray-600 font-medium">{t('VENDOR_NAME')}</div>
                 <div className="font-medium text-muted-foreground">
                   {formState?.vendor?.name}
                 </div>
@@ -102,7 +106,7 @@ export function PaymentDialog({
           )}
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="text-gray-600 font-medium">Tokens</div>
+            <div className="text-gray-600 font-medium">{tv('TOTAL_TOKENS')}</div>
             <div className="font-medium text-muted-foreground">
               {formState?.group?.tokensReserved?.[0]?.numberOfTokens}
             </div>
@@ -115,14 +119,14 @@ export function PaymentDialog({
             className="w-full rounded-sm"
             variant="outline"
           >
-            Cancel
+            {tg('CANCEL')}
           </Button>
           <Button
             type="submit"
             onClick={handleSubmit}
             className="w-full rounded-sm"
           >
-            Payout
+            {tv('PAYOUT')}
           </Button>
         </DialogFooter>
       </DialogContent>

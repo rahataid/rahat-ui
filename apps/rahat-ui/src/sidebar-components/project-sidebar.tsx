@@ -14,6 +14,7 @@ import { NavMain } from './nav-main';
 import Image from 'next/image';
 import { NavItem } from '../sections/projects/components';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 type ProjectNavViewProps = {
@@ -40,6 +41,7 @@ function SidebarToggle() {
 }
 
 export function ProjectSidebar(menuItems: ProjectNavViewProps) {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   return (
     <Sidebar
@@ -85,7 +87,7 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
         >
           <LogOut className="size-[clamp(16px,1.6vw,20px)]" />
           <span className="text-[clamp(11px,1vw,14px)] group-data-[collapsible=icon]:hidden">
-            Exit project
+            {t('EXIT_PROJECT')}
           </span>
         </div>
       </SidebarFooter>

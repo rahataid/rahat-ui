@@ -26,6 +26,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { ACTIVITY_STATUS } from 'apps/rahat-ui/src/constants/aa.constants';
+import { useTranslations } from 'next-intl';
 const { FAILED, COMPLETED, PENDING, ALL } = ACTIVITY_STATUS;
 const statusList = [FAILED, COMPLETED, PENDING, ALL];
 
@@ -50,6 +51,8 @@ export default function CommonLogsTable<T>({
   isLoading,
   meta,
 }: ReusableLogsTableProps<T>) {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
   const table = useReactTable({
     manualPagination: true,
     data: data || [],
@@ -78,22 +81,27 @@ export default function CommonLogsTable<T>({
     <>
       <div className="flex justify-between gap-2 mb-2">
         <SearchInput
-          name="title"
-          placeholder="Search Communication Title..."
+          name={tGlobal('TITLE')}
+          
           className="w-[100%]"
           value={filters.title}
           onSearch={(event) => handleFilterChange(event)}
         />
         <SearchInput
-          name="group_name"
-          placeholder="Search Group Name..."
+          name={tGlobal('GROUP_NAME')}
+          
           className="w-[100%]"
           value={filters.groupName}
           onSearch={(event) => handleFilterChange(event)}
         />
         <SelectComponent
-          name="Group Type"
+          name={t('GROUP_TYPE')}
           options={['BENEFICIARY', 'STAKEHOLDERS', 'ALL']}
+          labels={{
+            BENEFICIARY: tGlobal('BENEFICIARY'),
+            STAKEHOLDERS: tGlobal('STAKEHOLDERS'),
+            ALL: tGlobal('ALL'),
+          }}
           onChange={(value) =>
             handleFilterChange({
               target: { name: 'group_type', value },
@@ -103,8 +111,14 @@ export default function CommonLogsTable<T>({
         />
 
         <SelectComponent
-          name="status"
+          name={t('STATUS')}
           options={statusList}
+          labels={{
+            FAILED: tGlobal('FAILED'),
+            COMPLETED: tGlobal('COMPLETED'),
+            PENDING: tGlobal('PENDING'),
+            ALL: tGlobal('ALL'),
+          }}
           onChange={(value) =>
             handleFilterChange({
               target: { name: 'sessionStatus', value },

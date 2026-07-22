@@ -1,5 +1,7 @@
 'use client';
 import { SourceHealthData } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -30,6 +32,7 @@ interface ApiStatusCardProps {
 }
 
 export function StatusCard({ data, className }: ApiStatusCardProps) {
+  const t = useTranslations('AA Project');
   const severity = getSeverityFromData(data.currentStatus, data.errors);
   const { clickToCopy, copyAction } = useCopy();
 
@@ -106,7 +109,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <Clock className="w-4 h-4" />
-              <span>Last Checked</span>
+              <span>{t('LAST_CHECKED')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
               {dateFormat(data.last_checked) ?? '-'}
@@ -116,7 +119,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <Hourglass className="w-4 h-4" />
-              <span>Fetch Interval</span>
+              <span>{t('FETCH_INTERVAL')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
               {formatDurationFromMinutes(data?.fetch_frequency_minutes)}
@@ -126,7 +129,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <Zap className="w-4 h-4" />
-              <span>Response Time</span>
+              <span>{t('RESPONSE_TIME')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
               {data.response_time_ms ? `${data.response_time_ms}ms` : '-'}
@@ -136,7 +139,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <AlertTriangle className="w-4 h-4" />
-              <span>Data Validity</span>
+              <span>{t('DATA_VALIDITY')}</span>
             </div>
 
             <Badge

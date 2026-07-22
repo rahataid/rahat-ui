@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { z } from 'zod';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -42,6 +43,7 @@ const FormSchema = z.object({
 });
 
 export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) {
+  const t = useTranslations('AA Project');
   const addSetting = useAAProjectSettingsAdd();
 
   const {
@@ -93,14 +95,14 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
   return (
     <div className="p-4">
       <div className="flex justify-between items-center pb-4 border-b">
-        <h1 className="text-base font-semibold">Add Setting</h1>
+        <h1 className="text-base font-semibold">{t('ADD_SETTING')}</h1>
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger onClick={closeSecondPanel} type="button">
               <X size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary">
-              <p className="text-xs font-medium">Close</p>
+              <p className="text-xs font-medium">{t('CLOSE')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -109,8 +111,8 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
       <form onSubmit={handleSubmit(handleAddSetting)}>
         <div className="shadow-md p-4 rounded-sm mt-5">
           <div className="grid grid-cols-5 gap-4 mb-4">
-            <Label className="col-span-2">Name</Label>
-            <Label className="col-span-2">Required Fields</Label>
+            <Label className="col-span-2">{t('NAME')}</Label>
+            <Label className="col-span-2">{t('REQUIRED_FIELDS')}</Label>
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             <FormField
@@ -118,7 +120,7 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
               name="name"
               render={({ field }) => (
                 <div className="col-span-2">
-                  <Input type="text" placeholder="Name" {...field} />
+                  <Input type="text" placeholder={t('NAME')} {...field} />
                   {errors.name && (
                     <Label className="text-red-500">{errors.name.message}</Label>
                   )}
@@ -132,7 +134,7 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
                 <div className="col-span-2">
                   <Input
                     type="text"
-                    placeholder="Comma separated keys EG: key1, key2"
+                    placeholder={t('COMMA_SEPARATED_KEYS')}
                     {...field}
                     onChange={(e) => {
                       const uppercaseValue = e.target.value.toUpperCase();
@@ -158,7 +160,7 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
                   name="isReadOnly"
                   render={({ field }) => (
                     <div className="flex flex-row justify-evenly">
-                      <Label>ReadOnly</Label>
+                      <Label>{t('READ_ONLY')}</Label>
                       <Switch
                         {...field}
                         value={field.value ? 'false' : 'true'}
@@ -173,7 +175,7 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
                   name="isPrivate"
                   render={({ field }) => (
                     <div className="flex flex-row justify-evenly">
-                      <Label>Private</Label>
+                      <Label>{t('PRIVATE')}</Label>
                       <Switch
                         {...field}
                         value={field.value ? 'true' : 'false'}
@@ -189,8 +191,8 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
 
           {fields.length > 0 && (
             <div className="grid grid-cols-5 gap-4 mb-4">
-              <Label className="col-span-2">KEY</Label>
-              <Label className="col-span-2">VALUE</Label>
+              <Label className="col-span-2">{t('KEY')}</Label>
+              <Label className="col-span-2">{t('VALUE')}</Label>
             </div>
           )}
 
@@ -202,7 +204,7 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
                   name={`field.${index}.value.key`}
                   render={({ field }) => (
                     <div className="col-span-2">
-                      <Input type="text" placeholder="eg:Client-ID" {...field} />
+                      <Input type="text" placeholder={t('CLIENT_ID_PLACEHOLDER')} {...field} />
                       {errors?.field?.[index]?.value?.key && (
                         <Label className="text-red-500">
                           {errors.field[index]?.value?.key?.message}
@@ -216,7 +218,7 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
                   name={`field.${index}.value.value`}
                   render={({ field }) => (
                     <div className="col-span-2">
-                      <Input type="text" placeholder="Value" {...field} />
+                      <Input type="text" placeholder={t('VALUE')} {...field} />
                       {errors?.field?.[index]?.value?.value && (
                         <Label className="text-red-500">
                           {errors.field[index]?.value?.value?.message}
@@ -244,12 +246,12 @@ export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) 
             className="flex items-center p-2 gap-1 text-xs w-15"
           >
             <Plus size={18} strokeWidth={1.5} />
-            Add Field
+            {t('ADD_FIELD')}
           </Button>
 
           <div className="flex justify-end mt-4">
             <Button type="submit" disabled={addSetting.isPending}>
-              {addSetting.isPending ? 'Saving...' : 'Save'}
+              {addSetting.isPending ? t('SAVING') : t('SAVE')}
             </Button>
           </div>
         </div>

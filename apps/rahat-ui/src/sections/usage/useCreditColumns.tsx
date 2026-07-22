@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 
@@ -10,33 +11,40 @@ export type CreditRow = {
   broadcasts: number;
 };
 
-export const creditColumns: ColumnDef<CreditRow>[] = [
-  {
-    accessorKey: 'date',
-    header: 'Date',
-    cell: ({ row }) => {
-      const date = row.getValue('date') as string;
-      return format(new Date(date), 'MMM dd, yyyy');
+export function useCreditColumns() {
+  const t = useTranslations('Usage');
+  const g = useTranslations('GLOBAL');
+
+  const creditColumns: ColumnDef<CreditRow>[] = [
+    {
+      accessorKey: 'date',
+      header: g('DATE'),
+      cell: ({ row }) => {
+        const date = row.getValue('date') as string;
+        return format(new Date(date), 'MMM dd, yyyy');
+      },
     },
-  },
-  {
-    accessorKey: 'transportName',
-    header: 'Transport',
-  },
-  {
-    accessorKey: 'transportType',
-    header: 'Type',
-  },
-  {
-    accessorKey: 'credits',
-    header: 'Credits',
-  },
-  {
-    accessorKey: 'sessions',
-    header: 'Sessions',
-  },
-  {
-    accessorKey: 'broadcasts',
-    header: 'Broadcasts',
-  },
-];
+    {
+      accessorKey: 'transportName',
+      header: g('TRANSPORT'),
+    },
+    {
+      accessorKey: 'transportType',
+      header: g('TYPE'),
+    },
+    {
+      accessorKey: 'credits',
+      header: t('CREDITS'),
+    },
+    {
+      accessorKey: 'sessions',
+      header: t('SESSIONS'),
+    },
+    {
+      accessorKey: 'broadcasts',
+      header: t('BROADCASTS'),
+    },
+  ];
+
+  return creditColumns;
+}

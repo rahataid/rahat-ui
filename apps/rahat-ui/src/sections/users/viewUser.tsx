@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Tabs,
@@ -21,14 +22,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectGroup,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useRoleList, useSettingsStore } from '@rahat-ui/query';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -71,6 +64,9 @@ type IProps = {
 };
 
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
+  const t = useTranslations('Users – Detail');
+  const ts = useTranslations('Users – Split View');
+  const tg = useTranslations('GLOBAL');
   const { data } = useUserCurrentUser();
   const removeUser = useUserRemove();
   const { data: roleData } = useRoleList(); //TODO:fetch from store
@@ -137,7 +133,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
               <Minus size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
-              <p className="text-xs font-medium">Close</p>
+              <p className="text-xs font-medium">{tg('CLOSE')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -157,20 +153,20 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                       />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Add Role</p>
+                      <p>{tg('ADD_ROLE')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add Role</DialogTitle>
+                  <DialogTitle>{tg('ADD_ROLE')}</DialogTitle>
                 </DialogHeader>
                 <DialogDescription>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Select onValueChange={(value) => setSelectedRole(value)}>
                       <SelectTrigger className="max-w-32">
-                        <SelectValue placeholder="Role" />
+                        <SelectValue placeholder={t('ROLE')} />
                       </SelectTrigger>
                       <SelectContent>
                         {roleData &&
@@ -192,11 +188,11 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                         onClick={() => handleRoleAssign()}
                         variant="outline"
                       >
-                        Submit
+                        {tg('SUBMIT')}
                       </Button>
                     </DialogClose>
                     <DialogClose asChild>
-                      <Button variant="outline">Cancel</Button>
+                      <Button variant="outline">{tg('CANCEL')}</Button>
                     </DialogClose>
                   </div>
                 </DialogFooter>
@@ -218,25 +214,25 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                       />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Archive User</p>
+                      <p>{ts('ARCHIVE_USER')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Are you sure?</DialogTitle>
+                  <DialogTitle>{tg('ARE_YOU_SURE')}</DialogTitle>
                   <DialogDescription>
-                    Confirm if you want to archive user.
+                    {ts('CONFIRM_IF_YOU_WANT_TO_ARCHIVE')}
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                   <div className="flex items-center justify-center mt-2 gap-4">
                     <Button onClick={handleDeleteUser} variant="outline">
-                      Yes
+                      {tg('YES')}
                     </Button>
                     <DialogClose asChild>
-                      <Button variant="outline">No</Button>
+                      <Button variant="outline">{tg('NO')}</Button>
                     </DialogClose>
                   </div>
                 </DialogFooter>
@@ -254,10 +250,10 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                Details{' '}
+                {tg('DETAILS')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                Edit
+                {tg('EDIT')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -287,8 +283,8 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         <Tabs defaultValue="details">
           <div className="p-2">
             <TabsList className="w-full grid grid-cols-2 border h-auto">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="roles">Roles</TabsTrigger>
+              <TabsTrigger value="details">{tg('DETAILS')}</TabsTrigger>
+              <TabsTrigger value="roles">{ts('ROLES')}</TabsTrigger>
             </TabsList>
           </div>
           <TabsContent value="details">
@@ -298,7 +294,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                   <div>
                     <p className="font-light text-base">{userDetail.name}</p>
                     <p className="text-sm font-normal text-muted-foreground">
-                      Name
+                      {tg('NAME')}
                     </p>
                   </div>
                   <div className="text-right">
@@ -306,7 +302,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                       {userDetail.gender || '-'}
                     </p>
                     <p className="text-sm font-normal text-muted-foreground ">
-                      Gender
+                      {tg('GENDER')}
                     </p>
                   </div>
                   <div>
@@ -314,7 +310,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                       {userDetail.email || '-'}
                     </p>
                     <p className="text-sm font-normal text-muted-foreground ">
-                      Email
+                      {tg('EMAIL')}
                     </p>
                   </div>
                   <div className="text-right">
@@ -322,7 +318,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                       {userDetail.phone || '-'}
                     </p>
                     <p className="text-sm font-normal text-muted-foreground ">
-                      Phone
+                      {tg('PHONE')}
                     </p>
                   </div>
                 </div>

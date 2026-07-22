@@ -23,11 +23,13 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, Check, LoaderCircle } from 'lucide-react';
 import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { validateFile } from '../../file.validation';
 import { toast } from 'react-toastify';
 
 export default function ManualTriggerDialog() {
+  const t = useTranslations('AA Project');
   const { id: projectID, triggerID } = useParams();
   const router = useRouter();
   const uploadFile = useUploadFile();
@@ -135,7 +137,7 @@ export default function ManualTriggerDialog() {
                     <FormItem>
                       <FormLabel>Add note</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Write note" {...field} />
+                        <Textarea placeholder={t('WRITE_NOTE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

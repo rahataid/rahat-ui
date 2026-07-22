@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 
 export default function useBeneficiaryMembersTableColumn(members?: any) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const [prevData, setPrevData] = React.useState(members);
   const columns: ColumnDef<IStakeholdersItem>[] = [
     {
@@ -52,27 +55,27 @@ export default function useBeneficiaryMembersTableColumn(members?: any) {
     },
     {
       accessorKey: 'wallet',
-      header: 'Wallet',
+      header: t('WALLET'),
       cell: ({ row }) => <div>{row.getValue('wallet')}</div>,
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'email',
-      header: 'Email Address',
-      cell: ({ row }) => <div>{row.getValue('email') || 'N/A'}</div>,
+      header: tg('EMAIL_ADDRESS'),
+      cell: ({ row }) => <div>{row.getValue('email') || tg('N_A')}</div>,
     },
     {
       accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+      header: tg('PHONE'),
+      cell: ({ row }) => <div>{row.getValue('phone') || tg('N_A')}</div>,
     },
     {
       accessorKey: 'gender',
-      header: 'Gender',
+      header: tg('GENDER'),
       cell: ({ row }) => <div>{row.getValue('gender')}</div>,
     },
   ];

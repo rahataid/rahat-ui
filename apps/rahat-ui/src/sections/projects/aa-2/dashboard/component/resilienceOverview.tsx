@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useProjectStore } from '@rahat-ui/query';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -12,8 +13,11 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { Home, Users } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
+import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
+  const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const project = useProjectStore((p) => p.singleProject);
 
   const activitiesData = triggeersStats?.find((stat: any) =>
@@ -70,9 +74,9 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
         {/* Progress Cards */}
         <div className="flex flex-col mt-4">
           <Heading
-            title="Activities Status"
+            title={t('ACTIVITIES_STATUS')}
             titleStyle="text-lg"
-            description="Progress across preparedness, readiness, and activation phases"
+            description={t('PROGRESS_ACROSS_PREPAREDNESS_READINESS_AND_ACTIVATION')}
           />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {progressMetrics.map((metric, index) => (
@@ -87,9 +91,9 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
                     </h3>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs sm:text-sm text-gray-600">
-                          {metric.percentage}% completed
-                        </span>
+                    <span className="text-xs sm:text-sm text-gray-600">
+                      {formatNum(metric.percentage)}% completed
+                    </span>
                       </div>
 
                       <Progress

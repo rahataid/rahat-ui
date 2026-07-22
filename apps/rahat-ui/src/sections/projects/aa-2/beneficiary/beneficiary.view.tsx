@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { memo, useState } from 'react';
 
@@ -34,6 +35,8 @@ import { useProjectBeneficiaryTableColumns } from './columns';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import BeneficiaryTable from './beneficiary.table';
 function BeneficiaryView() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const uuid = id as UUID;
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
@@ -42,18 +45,18 @@ function BeneficiaryView() {
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">
         <div>
-          <h1 className="font-bold text-2xl text-label pl-4">Beneficiary</h1>
+          <h1 className="font-bold text-2xl text-label pl-4">{tg('BENEFICIARY')}</h1>
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUP')}s
           </h1>
         </div>
       </TabsContent>
       <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
-        Track all the beneficiaries in the project
+        {t('TRACK_ALL_THE_BENEFICIARIES_IN_THE')}
       </p>
 
       <div className="flex justify-between items-center p-4">
@@ -63,14 +66,14 @@ function BeneficiaryView() {
             className="w-full data-[state=active]:bg-white"
             value="beneficiary"
           >
-            Beneficiary
+            {tg('BENEFICIARY')}
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryGroups"
           >
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUP')}s
           </TabsTrigger>
         </TabsList>
 
@@ -87,7 +90,7 @@ function BeneficiaryView() {
             <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
-                name="walletAddress"
+                name={tg('WALLET_ADDRESS')}
                 onSearch={(e) => handleSearch(e, 'search')}
                 value={filters?.search || ''}
               />

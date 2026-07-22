@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { UserRound } from 'lucide-react';
 import { NoResult } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 import {
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
@@ -23,6 +24,7 @@ export default function Confirmation({
   payoutData: FundWithPayoutSchema | null;
   onPayoutData: (data: FundWithPayoutSchema | null) => void;
 }) {
+  const t = useTranslations('AA Project');
   // State goes here
   const errorModule = useBoolean();
   const [errorData, setErrorData] = useState(null);
@@ -47,21 +49,21 @@ export default function Confirmation({
   // Handlers goes here
   const cardData = useMemo(
     () => [
-      { label: 'Title', value: reserveTokenPayload.title },
+      { label: t('TITLE'), value: reserveTokenPayload.title },
       {
-        label: 'Beneficiary Group Name',
+        label: t('BENEFICIARY_GROUP_NAME'),
         value: reserveTokenPayload.beneficiaryName,
       },
       {
-        label: 'Total Beneficiaries',
+        label: t('TOTAL_BENEFICIARIES2'),
         value: group?.data?.groupedBeneficiaries.length,
       },
       {
-        label: 'Token Assigned Per Beneficiary',
+        label: t('TOKEN_ASSIGNED_PER_BENEFICIARY'),
         value: reserveTokenPayload.tokenAmountPerBenef,
       },
       {
-        label: 'Total Token Amount',
+        label: t('TOTAL_TOKEN_AMOUNT_LABEL'),
         value: reserveTokenPayload.numberOfTokens,
       },
     ],
@@ -114,7 +116,7 @@ export default function Confirmation({
       <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
       <div className="flex gap-3 mb-3">
         <div className="w-[60%] p-3 rounded-md bg-gray-50">
-          <p className="font-semibold text-sm mb-2">Fund Assignment</p>
+          <p className="font-semibold text-sm mb-2">{t('FUND_ASSIGNMENT')}</p>
           <div className="flex flex-col space-y-2">
             {cardData.map((i) => (
               <div key={i.label}>
@@ -125,17 +127,17 @@ export default function Confirmation({
           </div>
           {payoutData && payoutData.method && (
             <div className="mt-3 pt-3 border-t">
-              <p className="font-semibold text-sm mb-2">Payout Details</p>
+              <p className="font-semibold text-sm mb-2">{t('PAYOUT_DETAILS')}</p>
               <div className="flex flex-col space-y-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Method</p>
+                  <p className="text-sm text-muted-foreground">{t('METHOD')}</p>
                   <p className="text-base font-semibold text-primary">
                     {payoutData.method}
                   </p>
                 </div>
                 {payoutData.method != 'FSP' && (
                   <div>
-                    <p className="text-sm text-muted-foreground">Mode</p>
+                    <p className="text-sm text-muted-foreground">{t('MODE')}</p>
                     <p className="text-base font-semibold text-primary">
                       {payoutData.mode}
                     </p>
@@ -143,7 +145,7 @@ export default function Confirmation({
                 )}
                 {payoutData.vendor?.name && (
                   <div>
-                    <p className="text-sm text-muted-foreground">Vendor</p>
+                    <p className="text-sm text-muted-foreground">{t('VENDOR_LABEL')}</p>
                     <p className="text-base font-semibold text-primary">
                       {payoutData.vendor.name}
                     </p>
@@ -152,7 +154,7 @@ export default function Confirmation({
                 {payoutData.paymentProvider?.name && (
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Payment Provider
+                      {t('PAYMENT_PROVIDER')}
                     </p>
                     <p className="text-base font-semibold text-primary">
                       {payoutData.paymentProvider.name}
@@ -166,7 +168,7 @@ export default function Confirmation({
 
         <div className="w-[40%] p-3 rounded-md bg-gray-50">
           <p className="font-semibold text-sm mb-2">
-            Beneficiaries List
+            {t('BENEFICIARIES_LIST')}
             {benefData?.length ? (
               <span className="text-muted-foreground font-normal ml-1">
                 ({benefData.length})
@@ -190,7 +192,7 @@ export default function Confirmation({
                 </div>
               ))
             ) : (
-              <NoResult message="No Beneficiary found" />
+              <NoResult message={t('NO_BENEFICIARY_FOUND')} />
             )}
           </div>
         </div>
@@ -198,14 +200,14 @@ export default function Confirmation({
 
       <div className="fixed bottom-6 right-6 z-50 flex space-x-2 rounded-lg p-3">
         <Button type="button" variant="secondary" onClick={() => router.back()}>
-          Cancel
+          {t('CANCEL')}
         </Button>
         <Button
           className="px-10"
           onClick={handleSubmit}
           disabled={reserveTokenForGroups.isPending}
         >
-          {reserveTokenForGroups.isPending ? 'Confirming...' : 'Confirm'}
+          {reserveTokenForGroups.isPending ? t('CONFIRMING') : t('CONFIRM')}
         </Button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useRevertPhase, useSinglePhase, useSingleStat } from '@rahat-ui/query';
 import {
   Tabs,
@@ -16,6 +17,7 @@ import { generateExcel } from '../generate.excel';
 import { toast } from 'react-toastify';
 
 export default function PhaseDetailView() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
@@ -127,14 +129,14 @@ export default function PhaseDetailView() {
                 {/* Add Trigger Statements Btn */}
                 <AddButton
                   path={`/projects/aa/${projectId}/trigger-statements/add`}
-                  name="Trigger Statement"
+                  name={t('TRIGGER_STATEMENT')}
                 />
                 {phaseDetail?.canRevert && (
                   <Button
                     onClick={handleRevert}
                     disabled={!phaseDetail?.isActive}
                   >
-                    Revert Phase
+                    {t('REVERT_PHASE')}
                   </Button>
                 )}
                 {

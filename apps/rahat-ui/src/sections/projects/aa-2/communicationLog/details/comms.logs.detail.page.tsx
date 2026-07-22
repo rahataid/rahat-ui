@@ -50,8 +50,11 @@ import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useTranslations } from 'next-intl';
 
 export default function CommsLogsDetailPage() {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
 
   const [communicationId, activityId, sessionId] = (
@@ -184,22 +187,22 @@ export default function CommsLogsDetailPage() {
     try {
       if (!logs || !activityDetail || !sessionLogs) {
         return toast.error(
-          'Failed to load communication data. Please refresh and try again.',
+          t('FAILED_LOAD_COMMUNICATION_DATA'),
         );
       }
       if (!count?.data?.data) {
         return toast.error(
-          'Communication statistics not available. Please try again.',
+          t('COMMUNICATION_STATS_NOT_AVAILABLE'),
         );
       }
       const logsData = sessionLogs?.httpReponse?.data?.data;
       const total = logsMeta?.total ?? 0;
       exportAllLogs(logsData, logs, activityDetail, count.data.data, total);
-      toast.success('Communication logs exported successfully!');
+      toast.success(t('LOGS_EXPORTED_SUCCESSFULLY'));
     } catch (error) {
       console.error('Error exporting all logs:', error);
       toast.error(
-        'Failed to export logs. Please try again or contact support.',
+        t('FAILED_EXPORT_LOGS'),
       );
     }
   };
@@ -243,12 +246,12 @@ export default function CommsLogsDetailPage() {
         <div className="mt-1 flex flex-col pb-1 gap-2">
           <div className="flex justify-between">
             <Heading
-              title={`Communication Details`}
-              description="Here is the detailed view of selected communication"
+              title={t('COMMUNICATION_DETAILS')}
+              description={t('DETAILED_VIEW_OF_COMMUNICATION')}
             />
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper
-                tip="No communication logs available to export"
+                tip={t('NO_LOGS_TO_EXPORT')}
                 disable={!hasNoLogsForExport}
               >
                 <Button
@@ -264,12 +267,12 @@ export default function CommsLogsDetailPage() {
                 >
                   <CloudDownload className="h-3.5 w-3.5" />
                   {isLoading || isLoadingActivity || isLoadingSessionLogs
-                    ? 'Loading...'
-                    : 'Export All Logs'}
+                    ? t('LOADING')
+                    : t('EXPORT_ALL_LOGS')}
                 </Button>
               </TooltipWrapper>
               <TooltipWrapper
-                tip="No failed deliveries to export"
+                tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
                 disable={!hasNoFailedDeliveries}
               >
                 <Button
@@ -279,7 +282,7 @@ export default function CommsLogsDetailPage() {
                   disabled={hasNoFailedDeliveries}
                 >
                   <CloudDownload className="h-3.5 w-3.5" />
-                  Failed Exports Attempts
+                  {t('FAILED_EXPORTS_ATTEMPTS')}
                 </Button>
               </TooltipWrapper>
               {count?.data?.data &&
@@ -303,7 +306,7 @@ export default function CommsLogsDetailPage() {
                       className=" gap-2 h-7"
                     >
                       <RefreshCcw className="h-3.5 w-3.5" />
-                      Retry Failed Requests
+                      {t('RETRY_FAILED_REQUESTS')}
                     </Button>
                   </RoleAuth>
                 )}
@@ -318,7 +321,7 @@ export default function CommsLogsDetailPage() {
                 <Card className="p-4 rounded-sm bg-white h-full">
                   <CardTitle className="flex gap-2 pb-2">
                     <TooltipWrapper
-                      tip={`Activity Phase: ${activityDetail?.phase?.name}`}
+                      tip={`${t('ACTIVITY_PHASE')}: ${activityDetail?.phase?.name}`}
                     >
                       <Badge
                         className={`${getPhaseColor(
@@ -329,7 +332,7 @@ export default function CommsLogsDetailPage() {
                       </Badge>
                     </TooltipWrapper>
                     <TooltipWrapper
-                      tip={`Activity Status: ${activityDetail?.status}`}
+                      tip={`${t('ACTIVITY_STATUS')}: ${activityDetail?.status}`}
                     >
                       <Badge
                         className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
@@ -349,10 +352,10 @@ export default function CommsLogsDetailPage() {
                   </CardTitle>
                   <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
                     <Label className="text-muted-foreground text-xs">
-                      Activity Title:
+                      {t('ACTIVITY_TITLE')}:
                     </Label>
                     <TooltipWrapper
-                      tip={`Activity Title: ${activityDetail?.title}`}
+                      tip={`${t('ACTIVITY_TITLE')}: ${activityDetail?.title}`}
                     >
                       <Label className="text-base space-y-1 font-semibold">
                         {activityDetail?.title}
@@ -360,7 +363,7 @@ export default function CommsLogsDetailPage() {
                     </TooltipWrapper>
                   </CardContent>
                   <TooltipWrapper
-                    tip={`Activity Description: ${activityDetail?.description}`}
+                    tip={`${t('ACTIVITY_DESCRIPTION')}: ${activityDetail?.description}`}
                   >
                     <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
                       {activityDetail?.description}
@@ -372,12 +375,12 @@ export default function CommsLogsDetailPage() {
               {/* Right Section (Data Cards) — 2/3 on large screens */}
               <div className=" flex-1 flex flex-wrap gap-4">
                 <DataCard
-                  title="Successfully Delivered"
+                  title={t('SUCCESSFULLY_DELIVERED')}
                   smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
-                  title="Failed Delivered"
+                  title={t('FAILED_DELIVERED')}
                   smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
@@ -392,7 +395,7 @@ export default function CommsLogsDetailPage() {
                 <div>
                   <p className="text-sm text-gray-500">
                     {logs?.communicationDetail?.groupType
-                      ? logs?.communicationDetail?.groupType + ' ' + 'GROUP'
+                      ? logs?.communicationDetail?.groupType + ' ' + t('GROUP')
                       : 'N/A'}
                   </p>
                   <p className="font-medium">{logsGroupName}</p>
@@ -400,7 +403,7 @@ export default function CommsLogsDetailPage() {
 
                 {/* Triggered Date */}
                 <div>
-                  <p className="text-sm text-gray-500">Triggered Date</p>
+                  <p className="text-sm text-gray-500">{t('TRIGGERED_DATE')}</p>
                   <p className="font-medium">
                     {dateFormat(logs?.sessionDetails?.updatedAt)}
                   </p>
@@ -408,13 +411,13 @@ export default function CommsLogsDetailPage() {
 
                 {/* Total Audience */}
                 <div>
-                  <p className="text-sm text-gray-500">Total Audience</p>
+                  <p className="text-sm text-gray-500">{t('TOTAL_AUDIENCE')}</p>
                   <p className="font-medium">{logsMeta?.total}</p>
                 </div>
 
                 {logs?.sessionDetails?.status === 'COMPLETED' && (
                   <div>
-                    <p className="text-sm text-gray-500">Completed At</p>
+                    <p className="text-sm text-gray-500">{t('COMPLETED_AT')}</p>
                     <p className="font-medium">
                       {dateFormat(logs?.sessionDetails?.updatedAt)}
                     </p>
@@ -452,7 +455,7 @@ export default function CommsLogsDetailPage() {
                 {/* Communication */}
                 <div className="space-y-3">
                   <TooltipWrapper
-                    tip={`Communication Title: ${communicationTitle}`}
+                    tip={`${t('COMMUNICATION_TITLE')}: ${communicationTitle}`}
                   >
                     <p className="text-sm text-gray-500">
                       {communicationTitle}
@@ -460,7 +463,7 @@ export default function CommsLogsDetailPage() {
                   </TooltipWrapper>
                   {logs?.communicationDetail?.subject && (
                     <TooltipWrapper
-                      tip={`Communication Subject: ${logs?.communicationDetail?.subject}`}
+                      tip={`${t('COMMUNICATION_SUBJECT')}: ${logs?.communicationDetail?.subject}`}
                     >
                       <div>
                         <p className="font-medium">
@@ -470,7 +473,7 @@ export default function CommsLogsDetailPage() {
                     </TooltipWrapper>
                   )}
                   <TooltipWrapper
-                    tip={`Communication Message: ${getCommunicationMessage(
+                    tip={`${t('COMMUNICATION_MESSAGE')}: ${getCommunicationMessage(
                       logs?.communicationDetail?.message,
                     )}`}
                   >
@@ -486,12 +489,18 @@ export default function CommsLogsDetailPage() {
                 <SearchInput
                   className="w-full"
                   value={filters.address}
-                  name="Audience"
+                  name={tGlobal('AUDIENCE')}
                   onSearch={(e) => handleSearch(e, 'address')}
                 />
                 <SelectComponent
-                  name="Status"
+                  name={t('STATUS')}
                   options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                  labels={{
+                    ALL: tGlobal('ALL'),
+                    SUCCESS: tGlobal('SUCCESS'),
+                    PENDING: tGlobal('PENDING'),
+                    FAIL: tGlobal('FAIL'),
+                  }}
                   onChange={(value) =>
                     handleFilterChange({
                       target: { name: 'status', value },

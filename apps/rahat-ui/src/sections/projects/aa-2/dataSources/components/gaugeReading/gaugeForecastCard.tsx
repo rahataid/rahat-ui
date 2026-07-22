@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useTranslations } from 'next-intl';
 
 export interface IGaugeForecastCardProps {
   date?: string | null;
@@ -28,6 +29,7 @@ const GaugeForecastCard = ({
   latestGaugeReading,
   unit,
 }: IGaugeForecastCardProps) => {
+  const t = useTranslations('AA Project');
   return (
     <Card className="px-4 py-3 rounded-xl mb-4">
       <div className="grid grid-cols-4 gap-4 items-center">
@@ -49,18 +51,18 @@ const GaugeForecastCard = ({
             {(gaugeForecast && (
               <Badge className="h-fit text-[11px] text-center font-normal">
                 {gaugeForecast === 'riverWatch'
-                  ? 'River Watch'
-                  : 'Rainfall Watch'}
+                  ? t('RIVER_WATCH')
+                  : t('RAINFALL_WATCH')}
               </Badge>
             )) ||
               'N/A'}
           </div>
           <div className="flex items-center gap-2">
             <RadioTower className="w-4 h-4 text-gray-500" />
-            <div>
-              <p className="text-sm font-medium text-gray-700">Station</p>
-              <p className="text-sm text-gray-600">{station || 'N/A'}</p>
-            </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">{t('STATION')}</p>
+                <p className="text-sm text-gray-600">{station || 'N/A'}</p>
+              </div>
           </div>
         </div>
 
@@ -68,10 +70,10 @@ const GaugeForecastCard = ({
         <div className="md:col-span-1">
           <div className="flex items-center gap-2">
             <User className="w-4 h-4 text-gray-500" />
-            <div>
-              <p className="text-sm font-medium text-gray-700">Created By</p>
-              <p className="text-sm text-gray-600">{dataEntryBy || 'N/A'}</p>
-            </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">{t('CREATED_BY')}</p>
+                <p className="text-sm text-gray-600">{dataEntryBy || 'N/A'}</p>
+              </div>
           </div>
         </div>
 
@@ -79,12 +81,12 @@ const GaugeForecastCard = ({
         <div className="md:col-span-1">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-gray-500" />
-            <div>
-              <p className="text-sm font-medium text-gray-700">Created Date</p>
-              <p className="text-sm text-gray-600">
-                {dateFormat(date, 'eee, MMMM d, yyyy') || 'N/A'}
-              </p>
-            </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">{t('CREATED_DATE')}</p>
+                <p className="text-sm text-gray-600">
+                  {dateFormat(date, 'eee, MMMM d, yyyy') || 'N/A'}
+                </p>
+              </div>
           </div>
         </div>
 
@@ -92,12 +94,12 @@ const GaugeForecastCard = ({
         <div className="md:col-span-1">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-gray-500" />
-            <div>
-              <p className="text-sm font-medium text-gray-700">Gauge Reading</p>
-              <p className="text-sm text-gray-600">
-                {latestGaugeReading ? `${latestGaugeReading} ${unit}` : 'N/A'}
-              </p>
-            </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">{t('GAUGE_READING')}</p>
+                <p className="text-sm text-gray-600">
+                  {latestGaugeReading ? `${latestGaugeReading} ${unit}` : 'N/A'}
+                </p>
+              </div>
           </div>
         </div>
       </div>

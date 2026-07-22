@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { useActivities, usePhases } from '@rahat-ui/query';
 import { Heading, IconLabelBtn, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
@@ -16,6 +17,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function ActivitiesView() {
+  const t = useTranslations('AA Project');
   const { id: projectID } = useParams();
   const { state } = useSidebar();
   const router = useRouter();
@@ -53,9 +55,7 @@ export default function ActivitiesView() {
     (phase: string) => {
       const isCurrentlyPinned = pinnedPhases.includes(phase);
       if (!isCurrentlyPinned && pinnedPhases.length >= 3) {
-        toast.error(
-          'You can only pin up to 3 cards at a time. Please unpin another card before pinning this one.',
-        );
+        toast.error(t('PIN_LIMIT_MESSAGE'));
         return;
       }
       const next = isCurrentlyPinned
@@ -121,7 +121,7 @@ export default function ActivitiesView() {
 
   const handleDownloadReport = () => {
     if (!activitiesData?.length) {
-      return toast.error('No data to download.');
+      return toast.error(t('NO_DATA_TO_DOWNLOAD'));
     }
     const mappedData =
       activitiesData?.map((item: IActivitiesItem) => {
@@ -175,8 +175,8 @@ export default function ActivitiesView() {
         <div className="w-full">
           <div className="pr-52">
             <Heading
-              title="Activities"
-              description="Track all the activities reports here"
+          title={t('ACTIVITIES')}
+          description={t('TRACK_ALL_THE_ACTIVITIES_REPORTS_HERE')}
             />
           </div>
           <div className="fixed top-[72px] right-6 z-40 flex gap-2">
@@ -187,14 +187,14 @@ export default function ActivitiesView() {
               <TooltipWrapper
                 tip={
                   !hasActivities
-                    ? 'Create an activity before downloading the report.'
+                    ? t('CREATE_ACTIVITY_BEFORE_DOWNLOAD')
                     : ''
                 }
               >
                 <IconLabelBtn
                   Icon={CloudDownloadIcon}
                   handleClick={handleDownloadReport}
-                  name="Download Report"
+                  name={t('DOWNLOAD_REPORT')}
                   variant="outline"
                   disabled={!hasActivities}
                 />
@@ -206,7 +206,7 @@ export default function ActivitiesView() {
             >
               <TooltipWrapper
                 tip={
-                  !hasPhases ? 'Create a phase before adding activities.' : ''
+                  !hasPhases ? t('CREATE_PHASE_BEFORE_ACTIVITIES') : ''
                 }
               >
                 <IconLabelBtn
@@ -216,7 +216,7 @@ export default function ActivitiesView() {
                       `/projects/aa/${projectID}/activities/add?nav=mainPage`,
                     )
                   }
-                  name="Add Activity"
+                  name={t('ADD_ACTIVITY')}
                   variant="default"
                   disabled={!hasPhases}
                 />
@@ -226,7 +226,7 @@ export default function ActivitiesView() {
         </div>
         {!hasPhases ? (
           <div className="w-full flex items-center justify-center h-[calc(100vh-180px)]">
-            <NoResult message="No phases available. Create a phase to add activities." />
+            <NoResult message={t('NO_PHASES_AVAILABLE')} />
           </div>
         ) : (
           <div
@@ -273,10 +273,10 @@ export default function ActivitiesView() {
                           </div>
                         </Button>
                         <p className="text-base font-medium text-blue-500 ">
-                          Add Phase
+                          {t('ADD_PHASE')}
                         </p>
                         <p className="text-sm text-blue-400">
-                          Click here to add new phase
+                          {t('CLICK_HERE_TO_ADD_NEW_PHASE')}
                         </p>
                       </div>
                     </CardContent>

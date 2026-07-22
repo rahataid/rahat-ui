@@ -11,9 +11,11 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { useTranslations } from 'next-intl';
 
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
+  const t = useTranslations('AA Project');
 
   const { data, isLoading } = useSingleGroupReservedFunds(
     projectID as UUID,
@@ -22,19 +24,19 @@ export default function FundManagementDetail() {
 
   const FMTokensData = [
     {
-      name: 'Tokens',
+      name: t('TOKENS'),
       amount: data?.numberOfTokens ?? 'N/A',
     },
     {
-      name: 'Total Beneficiaries',
+      name: t('TOTAL_BENEFICIARIES'),
       amount: data?.groupedBeneficiaries?.length ?? 0,
     },
     {
-      name: 'Created By',
+      name: t('CREATED_BY'),
       amount: data?.createdBy ?? 'N/A',
     },
     {
-      name: '1 Token Value',
+      name: t('N1_TOKEN_VALUE'),
       amount: `Rs. ${ONE_TOKEN_VALUE}`,
     },
   ];
@@ -45,7 +47,7 @@ export default function FundManagementDetail() {
         <HeaderWithBack
           path={`/projects/aa/${projectID}/fund-management?tab=fundManagementList`}
           title={isLoading ? <Skeleton className="h-7 w-56" /> : data?.title}
-          subtitle="Detailed view of reserved fund"
+          subtitle={t('DETAILED_VIEW_OF_RESERVED_FUND')}
           status={isLoading ? undefined : data?.status?.replace(/_/g, ' ')}
           badgeClassName={
             data?.status === 'DISBURSED'

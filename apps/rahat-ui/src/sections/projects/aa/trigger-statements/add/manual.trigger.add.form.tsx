@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
@@ -22,6 +23,7 @@ type IProps = {
 };
 
 export default function AddManualTriggerForm({ form }: IProps) {
+  const t = useTranslations('AA Project');
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
   );
@@ -49,7 +51,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter Trigger Title"
+                        placeholder={t('ENTER_TRIGGER_TITLE')}
                         {...field}
                       />
                     </FormControl>

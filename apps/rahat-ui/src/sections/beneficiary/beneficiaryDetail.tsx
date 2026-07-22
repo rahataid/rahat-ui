@@ -49,6 +49,7 @@ import TooltipComponent from '../../components/tooltip';
 import { humanizeString } from '../../utils';
 import useCopy from '../../hooks/useCopy';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   beneficiaryDetail: any;
@@ -73,6 +74,8 @@ export default function BeneficiaryDetail({
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
   const walletAddress = beneficiaryDetail.walletAddress || '';
+  const t = useTranslations('Beneficiary Detail');
+  const g = useTranslations('GLOBAL');
 
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
@@ -229,7 +232,7 @@ export default function BeneficiaryDetail({
             disable={benfAssignedToProject}
             handleOnClick={handleDeleteClick}
             Icon={Trash2}
-            tip="Delete"
+            tip={g('DELETE')}
             iconStyle="text-red-600"
           />
           <TooltipComponent
@@ -241,7 +244,7 @@ export default function BeneficiaryDetail({
               )
             }
             Icon={Pencil}
-            tip="Edit"
+            tip={g('EDIT')}
           />
 
           {!fromTab && (
@@ -249,14 +252,14 @@ export default function BeneficiaryDetail({
               <TooltipComponent
                 handleOnClick={handleAssignModalClick}
                 Icon={FolderPlus}
-                tip="Assign Project"
+                tip={g('ASSIGN_PROJECT')}
               />
               <TooltipComponent
                 handleOnClick={() =>
                   router.push(`/beneficiary/${beneficiaryDetail.uuid}`)
                 }
                 Icon={Expand}
-                tip="Expand"
+                tip={g('EXPAND')}
               />
             </>
           )}
@@ -264,7 +267,7 @@ export default function BeneficiaryDetail({
         <TooltipComponent
           handleOnClick={closeSecondPanel}
           Icon={X}
-          tip="Close"
+          tip={g('CLOSE')}
         />
       </div>
       <div className="p-4 flex justify-between items-center border-b">
@@ -297,12 +300,12 @@ export default function BeneficiaryDetail({
 
       <ScrollArea className="h-[calc(100vh-240px)]">
         <div className="p-4 flex flex-col space-y-4">
-          <h1 className="font-medium">General</h1>
+          <h1 className="font-medium">{g('GENERAL')}</h1>
 
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <MapPin size={20} strokeWidth={1.5} />
-              <p>Address</p>
+              <p>{g('ADDRESS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {beneficiaryDetail?.piiData?.extras?.address ||
@@ -314,7 +317,7 @@ export default function BeneficiaryDetail({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Phone size={20} strokeWidth={1.5} />
-              <p>Phone Number</p>
+              <p>{g('PHONE_NUMBER')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {beneficiaryDetail?.piiData?.phone ||
@@ -326,7 +329,7 @@ export default function BeneficiaryDetail({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Mail size={20} strokeWidth={1.5} />
-              <p>Email Address</p>
+              <p>{g('EMAIL_ADDRESS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {beneficiaryDetail?.piiData?.email ||
@@ -338,7 +341,7 @@ export default function BeneficiaryDetail({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Phone size={20} strokeWidth={1.5} />
-              <p>Phone Status</p>
+              <p>{g('PHONE_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {beneficiaryDetail?.phoneStatus || '-'}
@@ -348,7 +351,7 @@ export default function BeneficiaryDetail({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Landmark size={20} strokeWidth={1.5} />
-              <p>Bank Status</p>
+              <p>{t('BANK_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {beneficiaryDetail?.bankedStatus || '-'}
@@ -358,7 +361,7 @@ export default function BeneficiaryDetail({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Wifi size={20} strokeWidth={1.5} />
-              <p>Internet Status</p>
+              <p>{g('INTERNET_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {beneficiaryDetail?.internetStatus || '-'}
@@ -368,11 +371,11 @@ export default function BeneficiaryDetail({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <WalletIcon size={20} strokeWidth={1.5} />
-              <p>Wallet Address</p>
+              <p>{g('WALLET_ADDRESS')}</p>
             </div>
             <div className="flex items-center">
               <div className="text-base text-muted-foreground truncate w-32  mr-2">
-                {beneficiaryDetail?.walletAddress || 'N/A'}
+                {beneficiaryDetail?.walletAddress || g('N_A')}
               </div>
               <button
                 onClick={() =>
@@ -396,7 +399,7 @@ export default function BeneficiaryDetail({
             }`}
           >
             <div className="flex justify-between items-start">
-              <p className="text-base font-medium">Project Involved</p>
+              <p className="text-base font-medium">{t('PROJECT_INVOLVED')}</p>
 
               <div className="flex flex-col items-end space-y-2">
                 {beneficiaryDetail?.BeneficiaryProject?.map((item, index) => (
@@ -414,7 +417,7 @@ export default function BeneficiaryDetail({
 
         {beneficiaryDetail?.extras && (
           <div className="p-4 flex flex-col space-y-4 ml-2">
-            <h1 className="font-medium">Extra Details</h1>
+            <h1 className="font-medium">{t('EXTRA_DETAILS')}</h1>
 
             {Object.keys(beneficiaryDetail?.extras || {}).length > 0 &&
               beneficiaryDetail?.extras && (
@@ -445,7 +448,7 @@ export default function BeneficiaryDetail({
                               rel="noopener noreferrer"
                               className="text-blue-600 no-underline"
                             >
-                              View Link
+                              {t('VIEW_LINK')}
                             </a>
                           ) : (
                             String(value) || '-'

@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { StyledMapWrapper } from '@rahat-ui/shadcn/src/components/maps';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { roundValue } from './utils/color.utils';
+import { useTranslations } from 'next-intl';
 
 const DEFAULT_LAT = 28.3949;
 const DEFAULT_LNG = 84.124;
@@ -32,14 +33,19 @@ interface TemperatureWatchMapProps {
 
 function TemperatureWatchMap({
   coordinates,
-  title = 'Map',
-  description = 'Temperature Station Location',
-  indicatorTitle = 'Temperature Station',
-  popupLabel = 'Temperature',
+  title,
+  description,
+  indicatorTitle,
+  popupLabel,
   unitLabel = '°C',
   indicatorGradient = 'from-red-500 via-yellow-500 to-green-500',
 }: TemperatureWatchMapProps) {
+  const t = useTranslations('AA Project');
   const mapRef = React.useRef<MapRef>(null);
+  const resolvedTitle = title ?? t('MAP');
+  const resolvedDescription = description ?? t('TEMPERATURE_STATION_LOCATION');
+  const resolvedIndicatorTitle = indicatorTitle ?? t('TEMPERATURE_STATION');
+  const resolvedPopupLabel = popupLabel ?? t('TEMPERATURE_LABEL');
   const [selectedMarker, setSelectedMarker] = React.useState<Coordinate | null>(
     null,
   );
@@ -56,9 +62,9 @@ function TemperatureWatchMap({
   return (
     <div className="p-4 rounded-sm shadow border">
       <Heading
-        title={title}
+        title={resolvedTitle}
         titleStyle="text-lg/7 font-semibold"
-        description={description}
+        description={resolvedDescription}
       />
       {/* @ts-expect-error - StyledMapWrapper type definition issue */}
       <StyledMapWrapper className="relative overflow-hidden rounded-md h-[400px]">
@@ -66,7 +72,7 @@ function TemperatureWatchMap({
         <div className="absolute top-2 right-2 bg-white p-4 rounded shadow-lg z-10 text-xs">
           <div className="flex space-x-2 items-center">
             <div className={`w-5 h-5 rounded-full bg-gradient-to-r ${indicatorGradient}`} />
-            <p>{indicatorTitle}</p>
+            <p>{resolvedIndicatorTitle}</p>
           </div>
         </div>
 
@@ -101,7 +107,7 @@ function TemperatureWatchMap({
               </p>
               {selectedMarker.value !== undefined && (
                 <p className="text-sm font-semibold mt-1">
-                  {popupLabel}: {roundValue(selectedMarker.value)}
+                  {resolvedPopupLabel}: {roundValue(selectedMarker.value)}
                   {selectedMarker.unit || unitLabel}
                 </p>
               )}

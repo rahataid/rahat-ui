@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   FormControl,
   FormField,
@@ -41,6 +42,8 @@ export default function EditCommunicationForm({
   appTransports,
   setLoading,
 }: IProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const [audioFile, setAudioFile] = React.useState({});
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
@@ -145,7 +148,7 @@ export default function EditCommunicationForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group type" />
+                    <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -170,7 +173,7 @@ export default function EditCommunicationForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
+                    <SelectValue placeholder={tg('SELECT_GROUP')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -194,7 +197,7 @@ export default function EditCommunicationForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select communication type" />
+                    <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -256,7 +259,7 @@ export default function EditCommunicationForm({
                   <FormControl>
                     <Textarea
                       disabled={sessionId}
-                      placeholder="Write message"
+                      placeholder={t('WRITE_MESSAGE')}
                       {...field}
                     />
                   </FormControl>
@@ -277,7 +280,7 @@ export default function EditCommunicationForm({
                 <FormItem>
                   <FormLabel>SessionId</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="SessionId" {...field} />
+                    <Input type="text" placeholder={t('SESSIONID')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -297,7 +300,7 @@ export default function EditCommunicationForm({
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder="CommunicationId"
+                      placeholder={t('COMMUNICATIONID')}
                       {...field}
                     />
                   </FormControl>

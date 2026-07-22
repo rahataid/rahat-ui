@@ -46,6 +46,7 @@ import { useRouter } from 'next/navigation';
 import DeleteButton from '../../components/delete.btn';
 import { toast } from 'react-toastify';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   vendorsDetail: any;
@@ -56,6 +57,8 @@ export default function VendorsDetailSplitView({
   vendorsDetail,
   closeSecondPanel,
 }: IProps) {
+  const t = useTranslations('Vendors – Detail Split View');
+  const g = useTranslations('GLOBAL');
   const router = useRouter();
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
@@ -80,7 +83,7 @@ export default function VendorsDetailSplitView({
   };
 
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
+    if (!selectedProject) return alert(t('PLEASE_SELECT_A_PROJECT'));
     await addVendor.mutateAsync({
       vendorUUID: vendorsDetail.id,
       projectUUID: selectedProject,
@@ -94,7 +97,7 @@ export default function VendorsDetailSplitView({
 
   const deleteVendor = async () => {
     if (isVendorAssigned)
-      return toast.warning('Assigned vendor cannot be deleted.');
+      return toast.warning(t('ASSIGNED_VENDOR_CANNOT_BE_DELETED'));
 
     await removeVendor.mutateAsync({ vendorId: vendorsDetail.id });
     closeSecondPanel();
@@ -126,30 +129,23 @@ export default function VendorsDetailSplitView({
             handleContinueClick={deleteVendor}
           />
 
-          {/* <TooltipComponent
-            handleOnClick={() =>
-              router.push(`/vendors/${vendorsDetail?.id}/edit`)
-            }
-            Icon={Pencil}
-            tip="Edit"
-          /> */}
           {vendorsDetail?.projectName === 'N/A' && (
             <TooltipComponent
               handleOnClick={assignVoucher}
               Icon={FolderPlus}
-              tip="Assign Project"
+              tip={t('SELECT_A_PROJECT_TO_ASSIGN')}
             />
           )}
           <TooltipComponent
             handleOnClick={() => router.push(`/vendors/${vendorsDetail?.id}`)}
             Icon={Expand}
-            tip="Expand"
+            tip={g('EXPAND')}
           />
         </div>
         <TooltipComponent
           handleOnClick={closeSecondPanel}
           Icon={X}
-          tip="Close"
+          tip={g('CLOSE')}
         />
       </div>
       <div className="p-4 flex justify-between items-center border-b">
@@ -176,11 +172,11 @@ export default function VendorsDetailSplitView({
       </div>
       <ScrollArea className="h-[calc(100vh-240px)]">
         <div className="p-4 flex flex-col space-y-4">
-          <h1 className="font-medium">General</h1>
+          <h1 className="font-medium">{g('GENERAL')}</h1>
           <div className="flex justify-between items-start">
             <div className="flex items-center space-x-4">
               <FolderDot size={20} strokeWidth={1.5} />
-              <p>Project Name</p>
+              <p>{g('PROJECT_NAME')}</p>
             </div>
             {Array.isArray(vendorsDetail?.projectName) &&
             vendorsDetail.projectName.length > 0 ? (
@@ -193,7 +189,7 @@ export default function VendorsDetailSplitView({
                     key={item?.Project?.id || index}
                     className="text-xs px-2 py-0.5 bg-blue-50 text-blue-500 border border-blue-200 rounded-full font-medium"
                   >
-                    {item?.Project?.name || 'NA'}
+                    {item?.Project?.name || g('N_A')}
                   </Badge>
                 ))}
                 {vendorsDetail.projectName.length > 2 && (
@@ -202,20 +198,20 @@ export default function VendorsDetailSplitView({
                     className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full font-medium cursor-pointer hover:bg-gray-200 transition-colors"
                   >
                     {showAllProjects
-                      ? 'Show less'
-                      : `+${vendorsDetail.projectName.length - 2} more`}
+                      ? t('SHOW_LESS')
+                      : `+${vendorsDetail.projectName.length - 2} ${g('MORE')}`}
                   </Badge>
                 )}
               </div>
             ) : (
-              <span className="text-gray-400 text-sm">NA</span>
+              <span className="text-gray-400 text-sm">{g('N_A')}</span>
             )}
           </div>
 
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Wallet size={20} strokeWidth={1.5} />
-              <p>Wallet Address</p>
+              <p>{g('WALLET_ADDRESS')}</p>
             </div>
             <div
               className="flex space-x-3 items-center"
@@ -241,7 +237,7 @@ export default function VendorsDetailSplitView({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Phone size={20} strokeWidth={1.5} />
-              <p>Phone Number</p>
+              <p>{g('PHONE_NUMBER')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {vendorsDetail?.phone || '-'}
@@ -251,7 +247,7 @@ export default function VendorsDetailSplitView({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Mail size={20} strokeWidth={1.5} />
-              <p>Email Address</p>
+              <p>{g('EMAIL_ADDRESS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {vendorsDetail?.email || '-'}
@@ -261,7 +257,7 @@ export default function VendorsDetailSplitView({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Calendar size={20} strokeWidth={1.5} />
-              <p>Registered Date</p>
+              <p>{t('REGISTERED_DATE')}</p>
             </div>
             <p className="text-muted-foreground text-base">
               {formattedDate || '-'}
@@ -273,17 +269,17 @@ export default function VendorsDetailSplitView({
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign Project</DialogTitle>
+            <DialogTitle>{g('ASSIGN_PROJECT')}</DialogTitle>
             <DialogDescription>
               {!selectedProject && (
-                <p className="text-orange-500">Select a project to assign</p>
+                <p className="text-orange-500">{t('SELECT_A_PROJECT_TO_ASSIGN')}</p>
               )}
             </DialogDescription>
           </DialogHeader>
           <div>
             <Select onValueChange={handleProjectChange}>
               <SelectTrigger>
-                <SelectValue placeholder="--Select--" />
+                <SelectValue placeholder={t('SELECT')} />
               </SelectTrigger>
               <SelectContent>
                 {projectList.data?.data.length ? (
@@ -295,7 +291,7 @@ export default function VendorsDetailSplitView({
                     );
                   })
                 ) : (
-                  <p className="text-xs">No project found</p>
+                  <p className="text-xs">{t('NO_PROJECT_FOUND')}</p>
                 )}
               </SelectContent>
             </Select>
@@ -303,7 +299,7 @@ export default function VendorsDetailSplitView({
           <DialogFooter className="sm:justify-end">
             <DialogClose asChild>
               <Button type="button" variant="ghost">
-                Close
+                {g('CLOSE')}
               </Button>
             </DialogClose>
             <DialogClose asChild>
@@ -313,7 +309,7 @@ export default function VendorsDetailSplitView({
                 variant="ghost"
                 className="text-primary"
               >
-                Assign
+                {g('ASSIGN')}
               </Button>
             </DialogClose>
           </DialogFooter>

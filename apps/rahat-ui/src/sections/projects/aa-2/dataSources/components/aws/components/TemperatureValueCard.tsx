@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   getTemperatureColor,
@@ -17,10 +18,13 @@ export function TemperatureValueCard({
   value,
   unit = '°C',
   updatedAt,
-  label = 'Average Temperature',
+  label: propLabel,
   colors,
 }: TemperatureValueCardProps) {
+  const t = useTranslations('AA Project');
+  const tGlobal = useTranslations('GLOBAL');
   const colorScheme = colors || getTemperatureColor(value);
+  const label = propLabel ?? t('AVERAGE_TEMPERATURE');
 
   return (
     <div
@@ -34,7 +38,7 @@ export function TemperatureValueCard({
       <p className="text-xs text-gray-500 mt-1">
         {updatedAt
           ? dateFormat(updatedAt, 'eee, MMM d yyyy, hh:mm:ss a')
-          : 'No data available'}
+          : tGlobal('NO_DATA_AVAILABLE')}
       </p>
     </div>
   );

@@ -1,6 +1,7 @@
 import { Heading } from 'apps/rahat-ui/src/common';
 import { File } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   triggerDocuments: any[];
@@ -8,12 +9,13 @@ type IProps = {
 };
 
 export function DocumentsSection({ triggerDocuments, date }: IProps) {
+  const t = useTranslations('AA Project');
   return (
     <div className="p-4 border rounded-sm shadow">
       <Heading
-        title="Document"
+        title={t('DOCUMENT')}
         titleStyle="text-lg/7"
-        description="List of all the uploaded documents"
+        description={t('LIST_OF_ALL_UPLOADED_DOCUMENTS')}
       />
       <div className="grid grid-cols-2 gap-3">
         {triggerDocuments?.map((d: any) => (

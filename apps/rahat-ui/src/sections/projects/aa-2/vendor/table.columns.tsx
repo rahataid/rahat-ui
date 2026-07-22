@@ -16,6 +16,7 @@ import { UUID } from 'crypto';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
@@ -36,6 +37,8 @@ interface ITableColumnProps {
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const { id } = useParams();
   const router = useRouter();
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
 
   const handleViewClick = (vendorId: string) => {
     setPaginationToLocalStorage(`${PaginationTableName.VENDOR_LIST}`);
@@ -49,25 +52,25 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const columns: ColumnDef<IProjectVendor>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('name')} maxLength={30} />
       ),
     },
     {
       accessorKey: 'phone',
-      header: 'Phone Number',
-      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+      header: tg('PHONE_NUMBER'),
+      cell: ({ row }) => <div>{row.getValue('phone') || tg('N_A')}</div>,
     },
     {
       accessorKey: 'registeredApps',
-      header: 'Registered Apps',
+      header: t('REGISTERED_APPS'),
       cell: ({ row }) => {
         const apps =
           row.original?.extras?.registeredApps;
 
         if (!apps?.length) {
-          return <div>N/A</div>;
+          return <div>{tg('N_A')}</div>;
         }
 
         return (
@@ -83,14 +86,14 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleViewClick(row.original.uuid)}
             />
@@ -104,6 +107,8 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
 
 export const useProjectVendorRedemptionTableColumns = () => {
   const { id }: { id: UUID } = useParams();
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { user } = useUserStore((s) => ({ user: s.user }));
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
@@ -134,17 +139,17 @@ export const useProjectVendorRedemptionTableColumns = () => {
   const columns: ColumnDef<ITableColumnProps>[] = [
     {
       accessorKey: 'name',
-      header: 'Vendor Name',
+      header: t('VENDOR_NAME'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.original?.vendor?.name || 'N/A'}
+          text={row.original?.vendor?.name || tg('N_A')}
           maxLength={30}
         />
       ),
     },
     {
       accessorKey: 'tokenAmount',
-      header: 'Total Token',
+      header: t('TOTAL_TOKEN'),
       cell: ({ row }) => (
         <TruncatedCell
           text={
@@ -153,7 +158,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
                 settings,
                 id,
               )}`
-              : 'N/A'
+              : tg('N_A')
           }
           maxLength={15}
         />
@@ -161,14 +166,14 @@ export const useProjectVendorRedemptionTableColumns = () => {
     },
     {
       accessorKey: 'amount',
-      header: 'Total Amount',
+      header: t('TOTAL_AMOUNT'),
       cell: ({ row }) => {
         const totalAmount = row.getValue('tokenAmount')
           ? Number(row.getValue('tokenAmount')) * TOKEN_TO_AMOUNT_MULTIPLIER
           : 0;
         return (
           <TruncatedCell
-            text={row.getValue('tokenAmount') ? `Rs. ${totalAmount}` : 'N/A'}
+            text={row.getValue('tokenAmount') ? `Rs. ${totalAmount}` : tg('N_A')}
             maxLength={15}
           />
         );
@@ -177,10 +182,10 @@ export const useProjectVendorRedemptionTableColumns = () => {
 
     {
       accessorKey: 'transactionHash',
-      header: 'TxHash',
+      header: t('TX_HASH'),
       cell: ({ row }) => {
         if (!row.original?.transactionHash) {
-          return <div>N/A</div>;
+          return <div>{tg('N_A')}</div>;
         }
         return (
           <div className="flex flex-row">
@@ -209,7 +214,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
     },
     {
       accessorKey: 'redemptionStatus',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => (
         <Badge
           className="text-xs font-normal"
@@ -227,10 +232,10 @@ export const useProjectVendorRedemptionTableColumns = () => {
           <TruncatedCell
             text={
               row.original?.redemptionStatus === 'APPROVED'
-                ? 'Approved'
+                ? t('APPROVED')
                 : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-                  ? 'Requested ✓'
-                  : 'Requested'
+                  ? `${t('REQUESTED')} ✓`
+                  : t('REQUESTED')
             }
             maxLength={15}
           />
@@ -239,13 +244,13 @@ export const useProjectVendorRedemptionTableColumns = () => {
     },
     {
       accessorKey: 'approvedBy',
-      header: 'Approved By',
+      header: t('APPROVED_BY'),
       cell: ({ row }) => (
         <TruncatedCell
           text={
             row.original?.redemptionStatus === 'APPROVED'
-              ? user?.data?.name || 'N/A'
-              : 'N/A'
+              ? user?.data?.name || tg('N_A')
+              : tg('N_A')
           }
           maxLength={15}
         />
@@ -253,7 +258,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         const status = row.original?.redemptionStatus?.toLowerCase();
@@ -262,13 +267,13 @@ export const useProjectVendorRedemptionTableColumns = () => {
             <div className="flex items-center justify-start">
               {status === 'approved' ? (
                 <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
-                  <div>Approved on:</div>
+                  <div>{t('APPROVED_ON')}</div>
                   <TruncatedCell
                     text={
                       row.original?.redemptionStatus === 'APPROVED' &&
                         row.original?.approvedAt
                         ? dateFormat(row.original?.approvedAt)
-                        : 'N/A'
+              : tg('N_A')
                     }
                     maxLength={30}
                   />
@@ -278,11 +283,11 @@ export const useProjectVendorRedemptionTableColumns = () => {
                   <DialogComponent
                     onSubmit={() => handleApproveClick(row)}
                     onCancel={() => null}
-                    title="Approve Redemption Request"
-                    subtitle="Are you sure you want to approve this redemption request?"
+                    title={t('APPROVE_REDEMPTION_REQUEST')}
+                    subtitle={t('CONFIRM_APPROVE_REDEMPTION')}
                     trigger={
                       <div className="cursor-pointer select-none text-[#297AD6]">
-                        Approve
+                        {t('APPROVE')}
                       </div>
                     }
                   />

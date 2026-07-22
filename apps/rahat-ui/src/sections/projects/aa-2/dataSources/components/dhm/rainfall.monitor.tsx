@@ -1,4 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading } from 'apps/rahat-ui/src/common';
 import { MapPin, Radio } from 'lucide-react';
 
@@ -24,6 +26,7 @@ export function RainFallMonitor({
   updatedAt,
   timeIntervals,
 }: RainFallMonitorProps) {
+  const t = useTranslations('AA Project');
   return (
     <div className="p-4 rounded-sm border shadow flex justify-between space-x-4 ">
       <div className="flex-[1]">
@@ -51,14 +54,14 @@ export function RainFallMonitor({
           <div className="flex items-center mr-8">
             <Radio className="w-4 h-4 mr-2 text-gray-500" />
             <div>
-              <div className="text-gray-600">Station Index</div>
+              <div className="text-gray-600">{t('STATION_INDEX')}</div>
               <div>{stationIndex || 'N/A'}</div>
             </div>
           </div>
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-2 text-gray-500" />
             <div>
-              <div className="text-gray-600">District</div>
+              <div className="text-gray-600">{t('DISTRICT')}</div>
               <div>{district || 'N/A'}</div>
             </div>
           </div>

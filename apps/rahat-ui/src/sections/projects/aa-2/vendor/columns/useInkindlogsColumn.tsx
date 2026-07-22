@@ -9,11 +9,14 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 
 export const useInkindLogsColumn = () => {
   const params = useParams();
   const projectId = params.id as UUID;
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -29,7 +32,7 @@ export const useInkindLogsColumn = () => {
   const columns: ColumnDef<InKindLog>[] = [
     {
       accessorKey: 'groupName',
-      header: 'Group Name',
+      header: tg('GROUP_NAME'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.original.groupInkind.group.name}
@@ -40,7 +43,7 @@ export const useInkindLogsColumn = () => {
 
     {
       accessorKey: 'beneficiaryWallet',
-      header: 'Beneficiary Wallet Address',
+      header: t('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="flex gap-2 items-center">
           <TruncatedCell text={row.original.beneficiaryWallet} maxLength={10} />
@@ -53,7 +56,7 @@ export const useInkindLogsColumn = () => {
     },
     {
       accessorKey: 'inKindName',
-      header: 'In-kind Name',
+      header: t('IN_KIND_NAME'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.original.groupInkind.inkind.name}
@@ -63,11 +66,11 @@ export const useInkindLogsColumn = () => {
     },
     {
       accessorKey: 'quantity',
-      header: 'In-kind Quantity',
+      header: t('IN_KIND_QUANTITY'),
     },
     {
       accessorKey: 'txHash',
-      header: 'TxHash',
+      header: t('TX_HASH'),
       cell: ({ row }) => {
         const txHash = row.original.txHash;
         const txnUrl = getTxUrl(txHash);
@@ -84,7 +87,7 @@ export const useInkindLogsColumn = () => {
                 <TruncatedCell text={txHash} maxLength={10} />
               </a>
             ) : (
-              <TruncatedCell text="N/A" maxLength={10} />
+              <TruncatedCell text={tg('N_A')} maxLength={10} />
             )}
             <CopyTooltip
               value={row.getValue('txHash')}
@@ -96,7 +99,7 @@ export const useInkindLogsColumn = () => {
     },
     {
       accessorKey: 'redeemedAt',
-      header: 'Timestamp',
+      header: tg('TIMESTAMP'),
       cell: ({ row }) => (
         <TruncatedCell
           text={

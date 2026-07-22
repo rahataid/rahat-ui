@@ -3,6 +3,7 @@ import { Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import InkindDetails from './beneficiary.inkind.details';
@@ -22,6 +23,8 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const params = useParams();
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { clickToCopy, copyAction } = useCopy();
 
   const { data: tokenData, isPending } = useTokenDetails({
@@ -57,7 +60,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         <div className="flex flex-col ml-6">
           <div className="flex items-center">
             <div className="text-lg text-muted-foreground truncate w-48 overflow-hidden mr-2">
-              {beneficiary?.walletAddress || 'N/A'}
+              {beneficiary?.walletAddress || tg('N_A')}
             </div>
             <button
               onClick={() => clickToCopy(beneficiary?.walletAddress || '', 1)}
@@ -70,42 +73,42 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
 
       <div className="grid grid-cols-3 gap-6 py-4">
-        <DataItem label="Age" value={beneficiary?.projectData?.age || 'N/A'} />
+        <DataItem label={tg('ESTIMATED_AGE')} value={beneficiary?.projectData?.age || tg('N_A')} />
         <DataItem
-          label="Gender"
-          value={beneficiary?.projectData?.gender || 'N/A'}
+          label={tg('GENDER')}
+          value={beneficiary?.projectData?.gender || tg('N_A')}
         />
         <DataItem
-          label="Phone Number"
-          value={beneficiary?.extras?.phone || 'N/A'}
+          label={tg('PHONE_NUMBER')}
+          value={beneficiary?.extras?.phone || tg('N_A')}
         />
         <div>
-          <h1 className="text-lg text-black">Address</h1>
+          <h1 className="text-lg text-black">{tg('ADDRESS')}</h1>
           <div className=" text-sm text-muted-foreground font-medium flex gap-1 capitalize">
             <p>{beneficiary?.projectData?.location || ''}</p>
             {beneficiary?.extras?.ward_no && (
-              <p>ward no - {beneficiary?.extras?.ward_no}</p>
+              <p>{t('WARD')} no - {beneficiary?.extras?.ward_no}</p>
             )}
             <p>
               {!beneficiary?.extras?.location &&
                 !beneficiary?.projectData?.location &&
                 !beneficiary?.extras?.ward_no &&
-                'N/A'}
+                tg('N_A')}
             </p>
           </div>
         </div>
         <DataItem
-          label="Banking Status"
+          label={tg('BANKING_STATUS')}
           value={beneficiary?.projectData?.bankedStatus?.split('_').join(' ')}
           isBadge
         />
         <DataItem
-          label="Phone Type"
+          label={t('PHONE_TYPE')}
           value={beneficiary?.projectData?.phoneStatus?.split('_').join(' ')}
           isBadge
         />
         <DataItem
-          label="Internet Type"
+          label={t('INTERNET_TYPE')}
           value={beneficiary?.projectData?.internetStatus?.split('_').join(' ')}
           isBadge
         />
@@ -137,16 +140,16 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         ) : hasTokenData ? (
           <div className="flex gap-4 mb-6">
             <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-              <p className="text-sm text-gray-500">Assigned</p>
+              <p className="text-sm text-gray-500">{t('ASSIGNED')}</p>
               <h3 className="text-xl font-bold">
-                {tokenData?.assignedToken} Tokens
+                {tokenData?.assignedToken} {t('TOKENS')}
               </h3>
               <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-              <p className="text-sm text-gray-500">Redeemed</p>
+              <p className="text-sm text-gray-500">{t('REDEEMED')}</p>
               <h3 className="text-xl font-bold">
-                {tokenData?.redemmedToken} Tokens
+                {tokenData?.redemmedToken} {t('TOKENS')}
               </h3>
               <p className="text-gray-600">NPR {tokenData?.redemmedToken}</p>
             </div>

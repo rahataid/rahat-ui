@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { UseFormReturn } from 'react-hook-form';
 import { AddPhaseFormInputValues, AddPhaseFormValues } from './phase.schema';
 
@@ -45,6 +46,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
   allPhases = [],
   currentPhaseId,
 }) => {
+  const t = useTranslations('AA Project');
   const watchCanTriggerPayout = form.watch('canTriggerPayout');
 
   const methodOptions = useMemo(() => {
@@ -84,9 +86,9 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phase Name</FormLabel>
+                    <FormLabel>{t('PHASE_NAME')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Write phase name" {...field} />
+                      <Input placeholder={t('WRITE_PHASE_NAME')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,12 +120,12 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                   name="requiredMandatoryTriggers"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mandatory Triggers*</FormLabel>
+                      <FormLabel>{t('MANDATORY_TRIGGERS')}*</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min={0}
-                          placeholder="Enter Mandatory Triggers"
+                          placeholder={t('ENTER_MANDATORY_TRIGGERS')}
                           value={
                             typeof field.value === 'string' ||
                             typeof field.value === 'number'
@@ -143,12 +145,12 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                   name="requiredOptionalTriggers"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Optional Triggers*</FormLabel>
+                      <FormLabel>{t('OPTIONAL_TRIGGERS')}*</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min={0}
-                          placeholder="Enter Optional Triggers"
+                          placeholder={t('ENTER_OPTIONAL_TRIGGERS')}
                           value={
                             typeof field.value === 'string' ||
                             typeof field.value === 'number'
@@ -165,16 +167,15 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
               </div>
 
               <div className="space-y-4  pt-3">
-                <p className="text-sm font-medium">Other Options:</p>
+                <p className="text-sm font-medium">{t('OTHER_OPTIONS')}:</p>
                 {/* Can Revert Toggle */}
                 <div className="flex items-start justify-between border-b pb-4 ">
                   <div className="flex-1 pr-4">
                     <h4 className="font-semibold text-slate-900 text-sm mb-1">
-                      Can Revert
+                      {t('CAN_REVERT')}
                     </h4>
                     <p className="text-slate-600 text-sm">
-                      Allow user to manually revert this phase if conditions
-                      drop below thresholds.
+                      {t('ALLOW_USER_TO_MANUALLY_REVERT_THIS')} {t('DROP_BELOW_THRESHOLDS')}
                     </p>
                   </div>
                   <FormField
@@ -201,11 +202,10 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 <div className="flex items-start justify-between border-b pb-4">
                   <div className="flex-1 pr-4">
                     <h4 className="font-semibold text-slate-900 text-sm mb-1">
-                      Can Trigger Payout
+                      {t('CAN_TRIGGER_PAYOUT')}
                     </h4>
                     <p className="text-slate-600 text-sm">
-                      Authorize initiation of disbursements upon the activation
-                      of this phase.
+                      {t('AUTHORIZE_INITIATION_OF_DISBURSEMENTS_UPON_THE')} {t('OF_THIS_PHASE')}
                     </p>
                   </div>
                   <FormField
@@ -215,11 +215,11 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                       <FormItem className="flex flex-row items-center space-x-2 space-y-0  ">
                         <FormControl>
                           <TooltipWrapper
-                            tip={
-                              allMethodsTaken
-                                ? 'All disbursement methods already used - no options left to select'
-                                : ''
-                            }
+                              tip={
+                                allMethodsTaken
+                                  ? t('ALL_DISBURSEMENT_METHODS_ALREADY_USED')
+                                  : ''
+                              }
                           >
                             <Switch
                               id="canTriggerPayout"
@@ -241,10 +241,10 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 <div className="flex items-start justify-between pb-4 border-b">
                   <div className="flex-1 pr-4">
                     <h4 className="font-semibold text-slate-900 text-sm mb-1">
-                      Is Automated Activity
+                      {t('IS_AUTOMATED_ACTIVITY')}
                     </h4>
                     <p className="text-slate-600 text-sm">
-                      Enable automated activities for this phase.
+                      {t('ENABLE_AUTOMATED_ACTIVITIES_FOR_THIS_PHASE')}
                     </p>
                   </div>
                   <FormField
@@ -269,10 +269,10 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 <div className="flex items-start justify-between pb-4 border-b">
                   <div className="flex-1 pr-4">
                     <h4 className="font-semibold text-slate-900 text-sm mb-1">
-                      Is Lead Time Required
+                      {t('IS_LEAD_TIME_REQUIRED')}
                     </h4>
                     <p className="text-slate-600 text-sm">
-                      Enable lead time for activities in this phase.
+                      {t('ENABLE_LEAD_TIME_FOR_ACTIVITIES_IN')}
                     </p>
                   </div>
 
@@ -302,7 +302,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                     name="disbursementMethods"
                     render={({ field }) => (
                       <FormItem className=" flex  flex-col items-start w-full ">
-                        <FormLabel>Disbursement Methods</FormLabel>
+                        <FormLabel>{t('DISBURSEMENT_METHODS')}</FormLabel>
                         <FormControl>
                           <MultipleSelector
                             value={filterSelectedOptions(field.value)}
@@ -310,7 +310,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                               field.onChange(options.map((o) => o.value));
                             }}
                             options={methodOptions}
-                            placeholder="Select disbursement methods"
+                            placeholder={t('SELECT_DISBURSEMENT_METHODS')}
                             hideClearAllButton
                           />
                         </FormControl>

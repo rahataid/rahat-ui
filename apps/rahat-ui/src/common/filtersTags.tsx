@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React from 'react';
 import { RxCrossCircled } from 'react-icons/rx';
@@ -10,6 +11,7 @@ import { IconLabelBtn } from './icon.label.btn';
 import { Trash2, X } from 'lucide-react';
 
 const FiltersTags = ({ filters, setFilters, total }: any) => {
+  const t = useTranslations('AA Project');
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
   });
@@ -22,7 +24,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
   return (
     <div className="rounded bg-card  px-4 text-sm mb-2">
       <div className="flex items-center gap-6 w-full">
-        <p className="text-primary min-w-max">{total} results found</p>
+        <p className="text-primary min-w-max">{t('RESULTS_FOUND', { total })}</p>
         <ScrollArea className="w-full py-2">
           <div className="flex gap-4 items-center">
             {filterArray.map((filter, index) => (
@@ -45,7 +47,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
         {/* <Button onClick={() => setFilters({})}>Clear filter</Button> */}
         <IconLabelBtn
           Icon={Trash2}
-          name="Clear"
+          name={t('CLEAR')}
           handleClick={() => setFilters({})}
           variant="outline"
           className="text-red-500 rounded-xl"

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
@@ -34,6 +35,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 // import ActivitiesTable from './activities.table';
 
 export default function ActivitiesList() {
+  const t = useTranslations('AA Project');
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();
   const [filtersApplied, setFiltersApplied] = React.useState(false);
@@ -129,7 +131,7 @@ export default function ActivitiesList() {
   }, [filters]);
 
   const handleDownloadReport = () => {
-    if (allData.length < 1) return toast.error('No data to download.');
+    if (allData.length < 1) return toast.error(t('NO_DATA_TO_DOWNLOAD'));
     const mappedData = allData?.map((item: Record<string, any>) => {
       let timeStamp;
       if (item?.completedAt) {
@@ -188,7 +190,7 @@ export default function ActivitiesList() {
             title={decodeURIComponent(
               Array.isArray(title) ? title[0] : title,
             ).toUpperCase()}
-            description="List of all the activities in the selected phase "
+            description={t('LIST_OF_ALL_THE_ACTIVITIES_IN')}
           />
         </div>
         <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
@@ -199,7 +201,7 @@ export default function ActivitiesList() {
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={handleDownloadReport}
-              name="Download"
+              name={t('DOWNLOAD')}
               variant="outline"
               className="rounded w-full"
             />
@@ -220,7 +222,7 @@ export default function ActivitiesList() {
                   `/projects/aa/${projectID}/activities/bulk-upload?isRequiredLeadTime=${!!phase?.isRequiredLeadTime}&isAutomatedActivity=${!!phase?.isAutomatedActivity}&phase=${decodeURIComponent(title as string)}`,
                 );
               }}
-              name="Bulk Upload"
+              name={t('BULK_UPLOAD')}
               variant="outline"
               className="rounded w-full"
             />
@@ -242,7 +244,7 @@ export default function ActivitiesList() {
                   }`,
                 )
               }
-              name="Add Activity"
+              name={t('ADD_ACTIVITY')}
               className="rounded w-full"
             />
           </RoleAuth>

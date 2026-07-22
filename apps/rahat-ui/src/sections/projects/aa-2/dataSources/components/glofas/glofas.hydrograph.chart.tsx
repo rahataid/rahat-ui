@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
+
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -17,6 +19,7 @@ interface IGlofasHydrographChartProps {
 }
 
 const GlofasHydrographChart = ({ series }: IGlofasHydrographChartProps) => {
+  const t = useTranslations('AA Project');
   if (!series?.length) return null;
 
   const chartData = series.map((d) => ({
@@ -27,7 +30,7 @@ const GlofasHydrographChart = ({ series }: IGlofasHydrographChartProps) => {
 
   return (
     <div className="bg-card overflow-hidden p-4 border shadow rounded-sm mt-4">
-      <h1 className="font-semibold text-lg mb-4">Discharge Forecast (m³/s)</h1>
+      <h1 className="font-semibold text-lg mb-4">{t('DISCHARGE_FORECAST_M3S')}</h1>
       <ResponsiveContainer width="100%" height={400}>
         <ComposedChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />

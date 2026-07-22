@@ -15,8 +15,10 @@ import {
   TemperatureScaleBar,
   TemperatureHistorySection,
 } from './components';
+import { useTranslations } from 'next-intl';
 
 export default function TemperatureWatchDetails() {
+  const t = useTranslations('AA Project');
   const { id: projectId } = useParams() as { id: UUID };
   const [activeTab, setActiveTab] = useState<'hourly' | 'daily'>('hourly');
 
@@ -50,13 +52,13 @@ export default function TemperatureWatchDetails() {
     () => [
       {
         icon: RadioTower,
-        label: 'Station',
+        label: t('STATION'),
         value: tempInfo?.name || 'Unknown',
       },
-      { icon: Globe, label: 'Latitude', value: tempInfo?.latitude || '--' },
-      { icon: Globe, label: 'Longitude', value: tempInfo?.longitude || '--' },
+      { icon: Globe, label: t('LATITUDE'), value: tempInfo?.latitude || '--' },
+      { icon: Globe, label: t('LONGITUDE'), value: tempInfo?.longitude || '--' },
     ],
-    [tempInfo],
+    [tempInfo, t],
   );
 
   const colors = useMemo(
@@ -100,7 +102,7 @@ export default function TemperatureWatchDetails() {
       <div className="p-4">
         <Back />
         <p className="text-sm text-red-500">
-          Error loading data:{' '}
+          {t('ERROR_LOADING_DATA')}{' '}
           {(
             error as {
               response?: { data?: { message?: string } };
@@ -120,16 +122,16 @@ export default function TemperatureWatchDetails() {
     <div className="p-4 flex flex-col space-y-4">
       <div>
         <Back />
-        <Heading title="DHM Heatwave" description="" />
+        <Heading title={t('DHM_HEATWAVE')} description="" />
       </div>
 
       {/* No Data Warning */}
       {isNoDataError && (
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-sm">
-          <p className="text-sm text-yellow-800">
-            <strong>No data available:</strong> There is currently no heatwave
-            data available for the selected time period ({activeTab}).
-          </p>
+            <p className="text-sm text-yellow-800">
+              <strong>{t('NO_DATA_AVAILABLE')}:</strong>{' '}
+              {t('THERE_IS_CURRENTLY_NO_HEATWAVE')} ({activeTab}).
+            </p>
         </div>
       )}
 
@@ -141,20 +143,20 @@ export default function TemperatureWatchDetails() {
               <div className="flex-1">
                 <div className="flex items-start justify-between">
                   <div>
-                    <Heading
-                      title={tempInfo?.name || 'Unknown Station'}
-                      titleStyle="text-xl/6 font-semibold"
-                      description={
-                        tempInfo?.parameter_name || 'Air Temperature Hourly'
-                      }
-                    />
+                     <Heading
+                       title={tempInfo?.name || t('UNKNOWN_STATION')}
+                       titleStyle="text-xl/6 font-semibold"
+                       description={
+                         tempInfo?.parameter_name || t('AIR_TEMPERATURE_HOURLY')
+                       }
+                     />
                   </div>
                 </div>
                 <p className="text-sm text-green-600">
-                  Last Synced at:{' '}
+                  {t('LAST_SYNCED_AT')}{' '}
                   {updatedAt
                     ? dateFormat(updatedAt, 'MMMM dd, yyyy, hh:mm:ss a')
-                    : 'Not available'}
+                    : t('NOT_AVAILABLE')}
                 </p>
               </div>
 
@@ -193,10 +195,10 @@ export default function TemperatureWatchDetails() {
             <div className="flex-1">
               <TemperatureWatchMap
                 coordinates={mapCoordinates}
-                title="Map"
-                description="Temperature Station Location"
-                indicatorTitle="Temperature Station"
-                popupLabel="Temperature"
+                title={t('MAP')}
+                description={t('TEMPERATURE_STATION_LOCATION')}
+                indicatorTitle={t('TEMPERATURE_STATION')}
+                popupLabel={t('TEMPERATURE_LABEL')}
                 unitLabel="°C"
               />
             </div>
@@ -213,9 +215,9 @@ export default function TemperatureWatchDetails() {
           history={history}
           columns={columns}
           unit={tempInfo?.unit ?? '°C'}
-          title="Temperature History"
-          yaxisLabel="Temperature"
-          noDataLabel="temperature"
+          title={t('TEMPERATURE_HISTORY')}
+          yaxisLabel={t('TEMPERATURE_LABEL')}
+          noDataLabel={t('TEMPERATURE_LABEL').toLowerCase()}
         />
       </div>
     </div>

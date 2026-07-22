@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 
 type Iprops = {
   open: boolean;
@@ -22,22 +23,24 @@ const CampaignModal = ({
   isSubmitting,
   selectedRows,
 }: Iprops) => {
+  const t = useTranslations('Communications – Add Campaign');
+  const tg = useTranslations('GLOBAL');
   const submitBtnStatus = selectedRows?.length > 0 ? false : true;
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant={'default'} disabled={submitBtnStatus}>
-          Submit
+          {tg('SUBMIT')}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Confirm Campaign</DialogTitle>
+          <DialogTitle>{t('CONFIRM_CAMPAIGN')}</DialogTitle>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
-              Close
+              {tg('CLOSE')}
             </Button>
           </DialogClose>
           <Button
@@ -47,7 +50,7 @@ const CampaignModal = ({
             className="text-primary"
             disabled={isSubmitting}
           >
-            Confirm
+            {tg('CONFIRM')}
           </Button>
         </DialogFooter>
       </DialogContent>

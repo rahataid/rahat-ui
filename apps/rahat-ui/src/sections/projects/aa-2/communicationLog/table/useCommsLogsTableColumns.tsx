@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
@@ -10,15 +11,16 @@ import {
 import { TriangleAlertIcon } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 export default function useCommsLogsTableColumns(transportName: string) {
+  const t = useTranslations('AA Project');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
-      header: 'Audience',
+      header: t('AUDIENCE'),
       cell: ({ row }) => <div className="">{row?.original?.address}</div>,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('STATUS'),
       cell: ({ row }) => {
         return (
           <Badge className={renderBadgeBg(row?.original?.status)}>
@@ -29,7 +31,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
     },
     {
       accessorKey: 'attempts',
-      header: 'Attempts',
+      header: t('ATTEMPTS'),
       cell: ({ row }) => {
         return <div className="ml-8">{row?.original?.attempts}</div>;
       },
@@ -39,7 +41,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
       ? [
           {
             accessorKey: 'duration',
-            header: 'Duration',
+            header: t('DURATION'),
             cell: ({ row }) => (
               <div>
                 {row?.original?.disposition?.cdr?.billableseconds || 'N/A'}
@@ -50,7 +52,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
       : []),
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
+      header: t('TIMESTAMP'),
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2 gap-2">
@@ -74,7 +76,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
                         strokeWidth={1.5}
                         color="red"
                       />
-                      <span className="font-semibold text-sm/6">Fail</span>
+                      <span className="font-semibold text-sm/6">{t('FAIL')}</span>
                     </div>
                     <p className="text-gray-500 text-sm mt-1 break-words">
                       {row.original?.disposition?.disposition}

@@ -11,6 +11,7 @@ import { Button } from '@rahat-ui/shadcn/components/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck, TriangleAlert } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type ValidateModalType = {
   value: boolean;

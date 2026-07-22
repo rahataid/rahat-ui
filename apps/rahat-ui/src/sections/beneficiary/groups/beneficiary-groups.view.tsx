@@ -15,10 +15,12 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
+import { useTranslations } from 'next-intl';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState<string>('');
+  const t = useTranslations('GLOBAL');
   const [selectedGroup, setSelectedGroup] =
     React.useState<ListBeneficiaryGroup>([]);
   const {
@@ -75,7 +77,7 @@ function BeneficiaryGroupsView() {
         <div className="flex justify-between space-x-2 items-center mb-4">
           <SearchInput
             className="w-full"
-            name="group"
+            name={t('GROUP')}
             onSearch={(e) => handleSearch(e.target.value)}
           />
           <Button
@@ -83,7 +85,7 @@ function BeneficiaryGroupsView() {
             type="button"
             onClick={() => router.push(`/beneficiary/groups/add`)}
           >
-            <Plus size={18} className="mr-1" /> Create Group
+            <Plus size={18} className="mr-1" /> {t('CREATE_GROUP')}
           </Button>
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
@@ -130,7 +132,7 @@ function BeneficiaryGroupsView() {
                         <div className="flex items-center gap-2">
                           <div className="flex gap-2 items-center text-[#667085]">
                             <Users size={18} strokeWidth={2} />
-                            {i?._count?.groupedBeneficiaries || 0} beneficiaries
+                            {i?._count?.groupedBeneficiaries || 0} {t('BENEFICIARIES').toLowerCase()}
                           </div>
                           {i?.groupPurpose && (
                             <Badge className="text-gray-700 font-normal text-xs">
@@ -144,7 +146,7 @@ function BeneficiaryGroupsView() {
 
                       <div className="mb-3">
                         <p className="text-sm/6 text-[#505868] mb-2">
-                          Projects Involved
+                          {t('PROJECTS_INVOLVED')}
                         </p>
                         <div className="flex gap-1 flex-wrap">
                           {i?.beneficiaryGroupProject?.length > 0 ? (
@@ -160,7 +162,7 @@ function BeneficiaryGroupsView() {
                             })
                           ) : (
                             <p className="text-sm/6 italic text-[#505868]">
-                              No Projects Assigned
+                              {t('NO_PROJECTS_ASSIGNED')}
                             </p>
                           )}
                         </div>
@@ -178,7 +180,7 @@ function BeneficiaryGroupsView() {
                       disabled={!i?._count?.groupedBeneficiaries}
                     >
                       <Plus className="mr-1" size={18} strokeWidth={1.5} />
-                      Assign Project
+                      {t('ASSIGN_PROJECT')}
                     </Button>
                   </div>
                 );
@@ -186,7 +188,7 @@ function BeneficiaryGroupsView() {
             </div>
           ) : (
             <p className="text-center mt-10 text-muted-foreground">
-              No result.
+              {t('NO_RESULT')}
             </p>
           )}
         </ScrollArea>

@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -21,6 +22,8 @@ import PayoutTransactionList from './table/payoutTransactionList';
 import PayoutOverview from './component/payout-overview';
 
 export default function PayoutView() {
+  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA Project with Cash Tracker');
   const params = useParams();
   const projectID = params.id as UUID;
   const route = useRouter();
@@ -38,17 +41,17 @@ export default function PayoutView() {
   const payoutStats = useMemo(() => {
     return [
       {
-        label: 'No. of Beneficiaries Recieving Cash',
+        label: tv('NO_OF_BENEFICIARIES_RECEIVING_CASH'),
         value: statsPayout?.payoutStats?.beneficiaries || 'N/A',
         infoIcon: true,
-        infoTooltip: 'Total number of beneficiaries recieving cash',
+        infoTooltip: tv('NO_OF_BENEFICIARIES_RECEIVING_CASH_TOOLTIP'),
       },
       {
-        label: 'Total Cash Distribution',
+        label: tv('TOTAL_CASH_DISTRIBUTION'),
         value:
           `Rs. ${statsPayout?.payoutStats?.totalCashDistribution}` || 'N/A',
         infoIcon: true,
-        infoTooltip: 'Total amount of cash distributed to the beneficiaries',
+        infoTooltip: tv('TOTAL_CASH_DISTRIBUTION_TOOLTIP'),
       },
     ];
   }, [statsPayout]);
@@ -57,8 +60,8 @@ export default function PayoutView() {
     <div className="p-4 ">
       <div className="flex justify-between">
         <Heading
-          title="Payout"
-          description="Track all the payout reports here"
+          title={t('PAYOUT2')}
+          description={tv('TRACK_ALL_THE_PAYOUT_REPORTS_HERE')}
         />
         <div className="flex flex-end gap-2 items-center">
           <RoleAuth
@@ -72,7 +75,7 @@ export default function PayoutView() {
                   `/projects/aa/${projectID}/payout/initiate-payout?from=${activeTab}`,
                 );
               }}
-              name="Create Payout"
+              name={tv('CREATE_PAYOUT')}
               variant="default"
               payout-main-bug-refactor
             />
@@ -90,13 +93,13 @@ export default function PayoutView() {
               className="w-full data-[state=active]:bg-white"
               value="payoutOverview"
             >
-              Payout Overview
+              {tv('PAYOUT_OVERVIEW')}
             </TabsTrigger>
             <TabsTrigger
               className="w-full data-[state=active]:bg-white"
               value="payoutList"
             >
-              Payout List
+              {tv('PAYOUT_LIST')}
             </TabsTrigger>
           </TabsList>
           <TabsContent value="payoutOverview">

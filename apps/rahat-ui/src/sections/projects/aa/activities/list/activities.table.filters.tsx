@@ -13,6 +13,7 @@ import { UUID } from 'crypto';
 import SearchInput from '../../../components/search.input';
 import { ACTIVITY_STATUS } from '../../aa.constants';
 import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
+import { useTranslations } from 'next-intl';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
@@ -43,6 +44,7 @@ export default function ActivitiesTableFilters({
   category,
   status,
 }: IProps) {
+  const tGlobal = useTranslations('GLOBAL');
   const { categories, phases } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,
@@ -54,7 +56,7 @@ export default function ActivitiesTableFilters({
       <SearchInput
         className="w-full"
         value={activity}
-        name="Activities"
+        name={tGlobal('ACTIVITIES')}
         onSearch={(e) => handleSearch(e, 'title')}
       />
       {/* Filter Phases */}
@@ -118,7 +120,7 @@ export default function ActivitiesTableFilters({
       <SearchInput
         className="w-full"
         value={responsibility}
-        name="Responsiblity"
+        name={tGlobal('RESPONSIBILITY')}
         onSearch={(e) => handleSearch(e, 'responsibility')}
       />
       {/* Download report btn  */}

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -21,6 +22,9 @@ interface PayoutTransactionLogRow {
 }
 
 export default function usePayoutTransactionLogTableColumn() {
+  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA Project with Cash Tracker');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams();
   const router = useRouter();
 
@@ -33,14 +37,14 @@ export default function usePayoutTransactionLogTableColumn() {
   const columns: ColumnDef<PayoutTransactionLogRow>[] = [
     {
       accessorKey: 'groupName',
-      header: 'Group Name',
+      header: t('GROUP'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('groupName')} maxLength={15} />
       ),
     },
     {
       accessorKey: 'totalBeneficiaries',
-      header: 'Total Beneficiaries',
+      header: tg('TOTAL_BENEFICIARIES'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('totalBeneficiaries')}
@@ -51,7 +55,7 @@ export default function usePayoutTransactionLogTableColumn() {
 
     {
       accessorKey: 'totalTokenAssigned',
-      header: 'Total Amount Disbursed',
+      header: tv('AMOUNT_DISBURSED'),
       cell: ({ row }) => (
         <TruncatedCell
           text={`Rs. ${row.original.totalSuccessAmount}`}
@@ -61,7 +65,7 @@ export default function usePayoutTransactionLogTableColumn() {
     },
     {
       accessorKey: 'amountperBenef',
-      header: 'Amount per beneficiary',
+      header: tv('AMOUNT_PER_BENEFICIARY'),
       cell: ({ row }) => {
         const amountPerBeneficiary =
           (row.original.totalTokenAssigned * 1) /
@@ -73,7 +77,7 @@ export default function usePayoutTransactionLogTableColumn() {
     },
     {
       accessorKey: 'payoutType',
-      header: 'Payout Type',
+      header: tv('PAYOUT_TYPE'),
       cell: ({ row }) => (
         <TruncatedCell
           text={
@@ -87,7 +91,7 @@ export default function usePayoutTransactionLogTableColumn() {
     },
     {
       accessorKey: 'payoutMode',
-      header: 'Payout Method',
+      header: tv('PAYOUT_METHOD'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('payoutMode')}
@@ -98,7 +102,7 @@ export default function usePayoutTransactionLogTableColumn() {
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (
@@ -117,7 +121,7 @@ export default function usePayoutTransactionLogTableColumn() {
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
+      header: tg('TIMESTAMP'),
       cell: ({ row }) => {
         const time = row.getValue('timeStamp') as string;
         return (
@@ -130,14 +134,14 @@ export default function usePayoutTransactionLogTableColumn() {
 
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />

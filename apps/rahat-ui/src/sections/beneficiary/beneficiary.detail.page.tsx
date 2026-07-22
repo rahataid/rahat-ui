@@ -8,6 +8,7 @@ import CoreBtnComponent from '../../components/core.btn';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { humanizeString } from '../../utils';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 export default function BeneficiaryDetail() {
   const { id } = useParams() as { id: UUID };
@@ -23,6 +24,8 @@ export default function BeneficiaryDetail() {
     React.useState<string>();
   useSingleBeneficiary(id as UUID);
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
+  const t = useTranslations('Beneficiary Detail');
+  const g = useTranslations('GLOBAL');
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
@@ -37,8 +40,8 @@ export default function BeneficiaryDetail() {
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title="Beneficiary Details"
-          subtitle="Here is a detailed view of the selected beneficiary"
+          title={t('BENEFICIARY_DETAILS')}
+          subtitle={t('HERE_IS_A_DETAILED_VIEW_OF')}
           path={routePath}
         />
         <div className="flex space-x-2">
@@ -49,7 +52,7 @@ export default function BeneficiaryDetail() {
             handleClick={() => {}}
           /> */}
           <CoreBtnComponent
-            name="Edit"
+            name={g('EDIT')}
             Icon={Pencil}
             handleClick={() => {
               router.push(`/beneficiary/${id}/edit`);
@@ -57,50 +60,50 @@ export default function BeneficiaryDetail() {
           />
           <CoreBtnComponent
             className="bg-red-100 text-red-600"
-            name="Delete"
+            name={g('DELETE')}
             Icon={Trash2}
             handleClick={() => {}}
           />
         </div>
       </div>
-      <h1 className="font-medium mb-3">General</h1>
+      <h1 className="font-medium mb-3">{g('GENERAL')}</h1>
       <div className="p-5 rounded-sm shadow border grid grid-cols-4 gap-5">
         <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
-          <p className="font-medium">{beneficiary?.piiData?.name || 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('BENEFICIARY_NAME')}</h1>
+          <p className="font-medium">{beneficiary?.piiData?.name || g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{beneficiary?.gender ?? 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('GENDER')}</h1>
+          <p className="font-medium">{beneficiary?.gender ?? g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Estimated Age</h1>
-          <p className="font-medium">{beneficiary?.age ?? 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('ESTIMATED_AGE')}</h1>
+          <p className="font-medium">{beneficiary?.age ?? g('N_A')}</p>
         </div>
 
         <div>
-          <h1 className="text-md text-muted-foreground">Address</h1>
-          <p className="font-medium">{beneficiary?.location ?? 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('ADDRESS')}</h1>
+          <p className="font-medium">{beneficiary?.location ?? g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{beneficiary?.piiData?.phone ?? 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('PHONE_NUMBER')}</h1>
+          <p className="font-medium">{beneficiary?.piiData?.phone ?? g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Email Address</h1>
-          <p className="font-medium">{beneficiary?.piiData?.email ?? 'N/A'}</p>
+          <h1 className="text-md text-muted-foreground">{g('EMAIL_ADDRESS')}</h1>
+          <p className="font-medium">{beneficiary?.piiData?.email ?? g('N_A')}</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Phone Status</h1>
-          <Badge>{beneficiary?.phoneStatus ?? 'N/A'}</Badge>
+          <h1 className="text-md text-muted-foreground">{g('PHONE_STATUS')}</h1>
+          <Badge>{beneficiary?.phoneStatus ?? g('N_A')}</Badge>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Bank Status</h1>
-          <Badge>{beneficiary?.bankedStatus ?? 'N/A'}</Badge>
+          <h1 className="text-md text-muted-foreground">{t('BANK_STATUS')}</h1>
+          <Badge>{beneficiary?.bankedStatus ?? g('N_A')}</Badge>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Internet Status</h1>
-          <Badge>{beneficiary?.internetStatus ?? 'N/A'}</Badge>
+          <h1 className="text-md text-muted-foreground">{g('INTERNET_STATUS')}</h1>
+          <Badge>{beneficiary?.internetStatus ?? g('N_A')}</Badge>
         </div>
 
         {/* <div>
@@ -109,13 +112,13 @@ export default function BeneficiaryDetail() {
         </div> */}
 
         <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+          <h1 className="text-md text-muted-foreground">{g('WALLET_ADDRESS')}</h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => clickToCopy(beneficiary?.walletAddress as string)}
           >
             <Badge className="truncate w-32">
-              {beneficiary?.walletAddress ?? 'N/A'}
+              {beneficiary?.walletAddress ?? g('N_A')}
             </Badge>
 
             {walletAddressCopied === beneficiary?.walletAddress ? (
@@ -134,7 +137,7 @@ export default function BeneficiaryDetail() {
           'hidden'
         }`}
       >
-        <p className="text-base font-medium">Project Involved</p>
+        <p className="text-base font-medium">{t('PROJECT_INVOLVED')}</p>
 
         <div className="p-5 rounded-sm shadow border flex flex-wrap gap-5">
           {beneficiary?.BeneficiaryProject?.map((item, index) => (
@@ -151,7 +154,7 @@ export default function BeneficiaryDetail() {
       {Object.keys(beneficiary?.extras || {}).length > 0 &&
         beneficiary?.extras && (
           <div className="mt-3 space-y-3">
-            <h1 className="font-medium">Extra Details</h1>
+            <h1 className="font-medium">{t('EXTRA_DETAILS')}</h1>
             <div className="p-5 rounded-sm shadow border grid grid-cols-4 gap-5">
               {Object.entries(beneficiary.extras)
                 .filter(([key]) => {

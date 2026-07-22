@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
@@ -25,6 +26,7 @@ type CommonLogRow = Row<IndividualCommonLogRow>;
 export default function useIndividualCommonLogsTableColumns(
   type: 'sms' | 'email' | 'voice',
 ) {
+  const t = useTranslations('AA Project');
   const { id } = useParams();
   const router = useRouter();
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -32,26 +34,26 @@ export default function useIndividualCommonLogsTableColumns(
   const columns: ColumnDef<IndividualCommonLogRow>[] = [
     {
       accessorKey: 'title',
-      header: 'Communication Title',
+      header: t('COMMUNICATION_TITLE'),
       cell: ({ row }: { row: CommonLogRow }) => (
         <TruncatedCell text={row.getValue('title')} />
       ),
     },
     {
       accessorKey: 'groupName',
-      header: 'Group Name',
+      header: t('GROUP_NAME'),
       cell: ({ row }) => <TruncatedCell text={row.getValue('groupName')} />,
     },
     {
       accessorKey: 'group_type',
-      header: 'Group Type',
+      header: t('GROUP_TYPE'),
       cell: ({ row }) => <TruncatedCell text={row.getValue('group_type')} />,
     },
     ...(type === 'voice'
       ? [
           {
             accessorKey: 'media_url',
-            header: 'Message',
+            header: t('MESSAGE'),
             cell: ({ row }: { row: CommonLogRow }) => {
               return (
                 <div className="relative w-auto lg:w-[150px] h-[40px] overflow-hidden">
@@ -72,7 +74,7 @@ export default function useIndividualCommonLogsTableColumns(
       : [
           {
             accessorKey: 'message',
-            header: 'Message',
+            header: t('MESSAGE'),
             cell: ({ row }: { row: CommonLogRow }) => (
               <TruncatedCell text={row.getValue('message')} />
             ),
@@ -81,7 +83,7 @@ export default function useIndividualCommonLogsTableColumns(
 
     {
       accessorKey: 'timestamp',
-      header: 'Timestamp',
+      header: t('TIMESTAMP'),
       cell: ({ row }) => {
         const timestamp = new Date(row.original.timestamp).toLocaleString(
           'en-US',
@@ -95,7 +97,7 @@ export default function useIndividualCommonLogsTableColumns(
     },
     {
       accessorKey: 'sessionStatus',
-      header: 'Status',
+      header: t('STATUS'),
       cell: ({ row }) => {
         const status = row.getValue('sessionStatus') as string;
         const className = getSessionColor(status as string);
@@ -105,14 +107,14 @@ export default function useIndividualCommonLogsTableColumns(
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={t('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() =>
                 router.push(

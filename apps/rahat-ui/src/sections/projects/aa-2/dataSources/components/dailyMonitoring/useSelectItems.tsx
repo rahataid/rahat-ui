@@ -1,4 +1,7 @@
+import { useTranslations } from 'next-intl';
+
 export const useSelectItems = () => {
+  const t = useTranslations('AA Project');
   const riverBasins = [
     { value: 'Karnali', label: 'Karnali' },
     { value: 'Mahakali', label: 'Mahakali' },
@@ -7,42 +10,42 @@ export const useSelectItems = () => {
   ];
 
   const dataSourceSelectItems = [
-    { value: 'DHM', label: 'DHM' },
+    { value: 'DHM', label: t('DHM') },
     { value: 'GLOFAS', label: 'GLOFAS' },
     {
       value: 'Flash Flood Risk Monitoring',
-      label: 'Flash Flood Risk Monitoring',
+      label: t('FLASH_FLOOD_RISK_MONITORING'),
     },
-    { value: 'NCMRWF Accumulated', label: 'NCMRWF Accumulated' },
+    { value: 'NCMRWF Accumulated', label: t('NCMRWF_ACCUMULATED') },
     {
       value: 'NCMRWF Deterministic & Probabilistic',
-      label: 'NCMRWF Deterministic & Probabilistic',
+      label: t('NCMRWF_DETERMINISTIC_PROBABILISTIC'),
     },
-    { label: 'Gauge Reading', value: 'Gauge Reading' },
+    { label: t('GAUGE_READING'), value: 'Gauge Reading' },
   ];
 
   const dhmForecastSelectItems = [
     {
       value: '3 Days Flood Forecast Bulletin',
-      label: '3 Days Flood Forecast Bulletin',
+      label: t('N3_DAYS_FLOOD_FORECAST_BULLETIN'),
     },
     {
       value: '3 Days Rainfall Forecast Bulletin',
-      label: '3 Days Rainfall Forecast Bulletin',
+      label: t('N3_DAYS_RAINFALL_FORECAST_BULLETIN'),
     },
     {
       value: 'Realtime Monitoring (River Watch)',
-      label: 'Realtime Monitoring (River Watch)',
+      label: t('REALTIME_MONITORING_RIVER_WATCH'),
     },
 
     { value: 'NWP', label: 'NWP' },
   ];
 
   const flashFloodRiskSelectItems = [
-    { value: 'Low Risk', label: 'Low Risk' },
-    { value: 'Medium Risk', label: 'Medium Risk' },
-    { value: 'High Risk', label: 'High Risk' },
-    { value: 'Extreme High Risk', label: 'Extreme High Risk' },
+    { value: 'Low Risk', label: t('LOW_RISK') },
+    { value: 'Medium Risk', label: t('MEDIUM_RISK') },
+    { value: 'High Risk', label: t('HIGH_RISK') },
+    { value: 'Extreme High Risk', label: t('EXTREME_HIGH_RISK') },
   ];
 
   const rainfallSelectItems = [
@@ -54,20 +57,20 @@ export const useSelectItems = () => {
   ];
 
   const floodForecastSelectItems = [
-    { value: 'Steady', label: 'Steady' },
-    { value: 'Minor Fluctuations', label: 'Minor Fluctuations' },
-    { value: 'Increase', label: 'Increase' },
-    { value: 'Decrease', label: 'Decrease' },
-    { value: 'Minor Increase', label: 'Minor Increase' },
+    { value: 'Steady', label: t('STEADY') },
+    { value: 'Minor Fluctuations', label: t('MINOR_FLUCTUATIONS') },
+    { value: 'Increase', label: t('INCREASE') },
+    { value: 'Decrease', label: t('DECREASE') },
+    { value: 'Minor Increase', label: t('MINOR_INCREASE') },
   ];
 
   const rainfallForecastSelectItems = [
-    { value: 'No Rain', label: 'No Rain' },
-    { value: 'Light Rain', label: 'Light Rain' },
-    { value: 'Moderate Rain', label: 'Moderate Rain' },
-    { value: 'Heavy Rain', label: 'Heavy Rain' },
-    { value: 'Very Heavy Rain', label: 'Very Heavy Rain' },
-    { value: 'Extremely Heavy Rain', label: 'Extremely Heavy Rain' },
+    { value: 'No Rain', label: t('NO_RAIN') },
+    { value: 'Light Rain', label: t('LIGHT_RAIN') },
+    { value: 'Moderate Rain', label: t('MODERATE_RAIN') },
+    { value: 'Heavy Rain', label: t('HEAVY_RAIN') },
+    { value: 'Very Heavy Rain', label: t('VERY_HEAVY_RAIN') },
+    { value: 'Extremely Heavy Rain', label: t('EXTREMELY_HEAVY_RAIN') },
   ];
 
   const gaugeReadingRainfallStationItems = [
@@ -81,13 +84,13 @@ export const useSelectItems = () => {
   ];
 
   const possibility = [
-    { value: 'Yes', label: 'Yes' },
-    { value: 'No', label: 'No' },
+    { value: 'Yes', label: t('YES') },
+    { value: 'No', label: t('NO') },
   ];
 
   const gaugeForecastDataSourceSelectItems = [
-    { value: 'rainfallWatch', label: 'Rainfall Watch' },
-    { value: 'riverWatch', label: 'River Watch' },
+    { value: 'rainfallWatch', label: t('RAINFALL_WATCH') },
+    { value: 'riverWatch', label: t('RIVER_WATCH') },
   ];
 
   return {

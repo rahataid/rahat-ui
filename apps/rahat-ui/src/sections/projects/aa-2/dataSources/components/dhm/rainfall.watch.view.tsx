@@ -4,6 +4,8 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { MapPin, RadioTower, Skull, TriangleAlert, Waves } from 'lucide-react';
@@ -14,6 +16,7 @@ import { format } from 'date-fns';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function RainfallWatchView() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const formattedDate = format(new Date(), 'yyyy/MM/dd');
@@ -43,7 +46,7 @@ export default function RainfallWatchView() {
   if (!rainfallWatch || !rainfallWatchInfoList?.length) {
     return (
       <div className="p-4">
-        <NoResult message="No Rainfall Watch Data" />
+        <NoResult message={t('NO_RAINFALL_WATCH_DATA')} />
       </div>
     );
   }

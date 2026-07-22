@@ -25,9 +25,13 @@ import SearchInput from '../sections/projects/components/search.input';
 import React from 'react';
 
 import { NotificationButton } from './notification-button';
+import { LanguageToggle } from './language-toggle';
 import { useProjectList } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 
 export function Nav({ hasDefaultHeader = true }) {
+  const t = useTranslations('Top Navigation / Header');
+  const g = useTranslations('GLOBAL');
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
     clearUser: state.clearUser,
@@ -52,7 +56,7 @@ export function Nav({ hasDefaultHeader = true }) {
     if (triggerPinPhase)
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
-    toast.success('Logged out successfully.');
+    toast.success(t('LOGGED_OUT_SUCCESSFULLY'));
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
@@ -62,6 +66,7 @@ export function Nav({ hasDefaultHeader = true }) {
         <SearchInput className="w-1/4" name="" onSearch={() => {}} isDisabled />
         <div className="flex space-x-6 items-center">
           {showNotification && <NotificationButton unreadCount={3} />}
+          <LanguageToggle />
           <ConnectWallet />
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -90,32 +95,32 @@ export function Nav({ hasDefaultHeader = true }) {
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.profile.root}
                 >
-                  Profile
+                  {t('PROFILE')}
                 </Link>
                 <Link
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.dashboard.root}
                 >
-                  Home
+                  {t('HOME')}
                 </Link>
                 <Link
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.settings.root}
                 >
-                  Settings
+                  {g('SETTINGS')}
                 </Link>
                 <Link
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.usage.root}
                 >
-                  Usage
+                  {t('USAGE')}
                 </Link>
                 {/* <ThemeSwitch /> */}
                 <Badge
                   className="mt-2 rounded bg-primary text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
                   onClick={handleLogout}
                 >
-                  Logout
+                  {t('LOGOUT')}
                 </Badge>
               </DropdownMenuGroup>
             </DropdownMenuContent>

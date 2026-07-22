@@ -1,4 +1,5 @@
 import { UseFormReturn } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import {
   Form,
   FormControl,
@@ -26,13 +27,14 @@ export default function AddManualTriggerForm({
   phase,
   stationHeading,
 }: IProps) {
+  const t = useTranslations('AA Project');
   return (
     <>
       <Form {...form}>
         <form>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <FormItem className="w-full">
-              <FormLabel>Phase</FormLabel>
+              <FormLabel>{t('PHASE')}</FormLabel>
               <FormControl>
                 <Input
                   className="bg-gray-300"
@@ -61,11 +63,11 @@ export default function AddManualTriggerForm({
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-2">
-                    <FormLabel>Trigger Title</FormLabel>
+                    <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter Trigger Title"
+                        placeholder={t('ENTER_TRIGGER_TITLE')}
                         {...field}
                       />
                     </FormControl>
@@ -80,10 +82,10 @@ export default function AddManualTriggerForm({
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-2">
-                    <FormLabel>Trigger Description</FormLabel>
+                    <FormLabel>{t('TRIGGER_DESCRIPTION')}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Write trigger description here"
+                        placeholder={t('WRITE_TRIGGER_DESCRIPTION_HERE')}
                         {...field}
                       />
                     </FormControl>
@@ -103,7 +105,7 @@ export default function AddManualTriggerForm({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel className="ml-2">Optional</FormLabel>
+                  <FormLabel className="ml-2">{t('OPTIONAL')}</FormLabel>
                 </FormItem>
               )}
             />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Tag, TagInput } from 'emblor';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -36,6 +37,7 @@ export default function GctSupportAreaInput({
   shouldDirty = false,
   onUnsavedChange,
 }: GctSupportAreaInputProps) {
+  const t = useTranslations('AA Project with Cash Tracker');
   const [tags, setTags] = useState<Tag[]>(
     initialTags ?? form.getValues('supportArea') ?? [],
   );
@@ -70,7 +72,7 @@ export default function GctSupportAreaInput({
       name="supportArea"
       render={({ field }) => (
         <FormItem>
-          <Label>Support Area (Optional)</Label>
+          <Label>{t('SUPPORT_AREA_OPTIONAL')}</Label>
           <FormControl>
             <>
               <TagInput
@@ -84,7 +86,7 @@ export default function GctSupportAreaInput({
                     shouldDirty ? { shouldDirty: true } : undefined,
                   );
                 }}
-                placeholder="Enter value and press ENTER"
+                placeholder={t('ENTER_VALUE_AND_PRESS_ENTER')}
                 className="min-h-[23px]"
                 styleClasses={TAG_STYLE}
                 activeTagIndex={activeTagIndex}
@@ -98,7 +100,7 @@ export default function GctSupportAreaInput({
               />
               {unsaved && (
                 <span className="text-xs text-muted-foreground ml-1">
-                  Press Enter to add.
+                  {t('PRESS_ENTER_TO_ADD')}
                 </span>
               )}
             </>

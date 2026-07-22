@@ -1,4 +1,5 @@
 import { AlertCircle, Check, Info, Package } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 function InKindStakeholderNode({
   name,
@@ -15,6 +16,7 @@ function InKindStakeholderNode({
   index?: number;
   isFirst?: boolean;
 }) {
+  const t = useTranslations('AA Project with Gnosis');
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-GB', {
       day: '2-digit',
@@ -59,7 +61,7 @@ function InKindStakeholderNode({
             <>
               <div className="text-xs text-gray-600">
                 <p>
-                  Received Stocks:{' '}
+                  {t('RECEIVED_STOCKS')}{' '}
                   <span className="font-medium text-gray-900">
                     Rs. {received.toLocaleString()}
                   </span>
@@ -69,13 +71,13 @@ function InKindStakeholderNode({
           ) : (
             <div className="text-xs text-gray-600">
               <p>
-                Stock:{' '}
+                {t('STOCK_LABEL')}{' '}
                 <span className="font-medium text-gray-900">
                   {received.toLocaleString()}
                 </span>
               </p>
               <p>
-                Remaining Stocks:{' '}
+                {t('REMAINING_STOCK')}:{' '}
                 <span className="font-medium text-gray-900">
                   {balance.toLocaleString()}
                 </span>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Table, flexRender } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -16,6 +17,7 @@ type IProps = {
 };
 
 export default function BeneficiariesGroupTable({ table, loading }: IProps) {
+  const t = useTranslations('AA Project');
   return (
     <TableComponent>
       <ScrollArea className="h-[calc(100vh-500px)]">
@@ -60,7 +62,7 @@ export default function BeneficiariesGroupTable({ table, loading }: IProps) {
                 {loading ? (
                   <SpinnerLoader />
                 ) : (
-                  <NoResult message="No Logs Found" />
+                  <NoResult message={t('NO_LOGS_FOUND')} />
                 )}
               </TableCell>
             </TableRow>

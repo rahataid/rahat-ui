@@ -46,6 +46,7 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
@@ -59,6 +60,7 @@ type BenProjectType = {
 
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
+  const t = useTranslations('GLOBAL');
   const validateModal = useBoolean();
   const removeModal = useBoolean();
   const groupProposeModal = useBoolean();
@@ -237,9 +239,7 @@ export default function GroupDetailView() {
             <Back path="/beneficiary?tab=beneficiaryGroups" />
             <Heading
               title={group?.data?.name}
-              description={
-                'Here is a detailed view of the selected beneficiary groups'
-              }
+              description={t('HERE_IS_A_DETAILED_VIEW_OF')}
               status={capitalizeFirstLetter(groupPurposeName || '')}
             />
           </div>
@@ -259,13 +259,13 @@ export default function GroupDetailView() {
                   {group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER && (
                     <>
                       <LandmarkIcon className="h-4 w-4 text-green-600" />
-                      Bank Account Verified
+                      {t('BANK_ACCOUNT_VERIFIED')}
                     </>
                   )}
                   {group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY && (
                     <>
                       <Phone className="h-4 w-4 text-green-600" />
-                      Phone Number Verified
+                      {t('PHONE_NUMBER_VERIFIED')}
                     </>
                   )}
                 </Badge>
@@ -277,7 +277,7 @@ export default function GroupDetailView() {
                 onClick={() => editGroupNameModal.onTrue()}
               >
                 <Pencil className="w-4 h-4" />
-                Edit
+                {t('EDIT')}
               </Button>
             )}
             <Button
@@ -289,8 +289,7 @@ export default function GroupDetailView() {
               }`}
               onClick={handleGroupPurposeClick}
             >
-              {groupPurposeName ? 'Change ' : 'Assign '}
-              Group Purpose
+              {groupPurposeName ? t('CHANGE_GROUP_PURPOSE') : t('ASSIGN_GROUP_PURPOSE')}
             </Button>
 
             {!group?.data?.isGroupValidForAA &&
@@ -306,12 +305,12 @@ export default function GroupDetailView() {
                   {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
                     <>
                       <Phone className="w-4 h-4" />
-                      Validate Phone Number
+                      {t('VALIDATE_PHONE_NUMBER')}
                     </>
                   ) : (
                     <>
                       <LandmarkIcon className="w-4 h-4" />
-                      Validate Bank Account
+                      {t('VALIDATE_BANK_ACCOUNT')}
                     </>
                   )}
                 </Button>
@@ -322,7 +321,7 @@ export default function GroupDetailView() {
                 className={` gap-2 text-gray-700 rounded-sm`}
                 onClick={onFailedExports}
               >
-                <CloudDownloadIcon className="w-4 h-4" /> Export Failed
+                <CloudDownloadIcon className="w-4 h-4" /> {t('EXPORT_FAILED')}
               </Button>
             )}
 
@@ -334,7 +333,7 @@ export default function GroupDetailView() {
               onClick={handleRemoveClick}
             >
               <Trash2Icon className="w-4 h-4" />
-              Delete Group
+              {t('DELETE_GROUP')}
             </Button>
             {(group?.data?.isGroupValidForAA || !groupPurposeName) &&
               group?.data?.groupedBeneficiaries?.length !== 0 && (
@@ -344,7 +343,7 @@ export default function GroupDetailView() {
                   onClick={handleProjectAssignModalClick}
                 >
                   <FolderDot className="w-4 h-4" />
-                  Assign To Project
+                  {t('ASSIGN_TO_PROJECT')}
                 </Button>
               )}
           </div>
@@ -353,7 +352,7 @@ export default function GroupDetailView() {
           <DataCard
             className="border-solid w-1/3 rounded-xl"
             iconStyle="bg-white text-secondary-muted"
-            title="Total Beneficiaries"
+            title={t('TOTAL_BENEFICIARIES')}
             Icon={UsersRound}
             number={group?.data?.groupedBeneficiaries?.length}
           />
@@ -361,7 +360,7 @@ export default function GroupDetailView() {
             <DataCard
               className="border-solid w-1/3 rounded-xl"
               iconStyle="bg-white text-secondary-muted"
-              title="Project Involved"
+              title={t('PROJECT_INVOLVED')}
               Icon={FolderDot}
               refresh={() => syncBeneficiaryGroup.mutate(Id)}
             >
@@ -387,7 +386,7 @@ export default function GroupDetailView() {
                   <>
                     <p className="text-muted-foreground font-medium mb-1 flex items-center gap-1">
                       <Loader2 className="w-3 h-3 animate-spin" />
-                      Bank validation in progress
+                      {t('BANK_VALIDATION_IN_PROGRESS')}
                     </p>
                     <p>
                       Current status:
@@ -399,7 +398,7 @@ export default function GroupDetailView() {
                   </>
                 ) : (
                   <p className="text-muted-foreground font-medium mb-1">
-                    Bank validation completed
+                    {t('BANK_VALIDATION_COMPLETED')}
                   </p>
                 )}
                 <p className="text-green-600">

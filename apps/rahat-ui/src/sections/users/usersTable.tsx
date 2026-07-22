@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -119,6 +120,7 @@ export const columns: ColumnDef<any, any>[] = [
 ];
 
 export default function UserTable({ handleClick }: IProps) {
+  const tg = useTranslations('GLOBAL');
   const { userQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -162,13 +164,13 @@ export default function UserTable({ handleClick }: IProps) {
   return (
     <>
       {isLoading ? (
-        <h1>Loading...</h1>
+        <h1>{tg('LOADING')}</h1>
       ) : (
         <>
           <div className="p-2">
             <div className="flex items-center mb-2">
               <Input
-                placeholder="Filter Users..."
+                placeholder={tg('FILTER_USERS')}
                 value={
                   (table
                     .getColumn('walletAddress')
@@ -185,11 +187,11 @@ export default function UserTable({ handleClick }: IProps) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="ml-auto">
                     <Settings2 className="mr-2 h-4 w-5" />
-                    View
+                    {tg('VIEW')}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+                  <DropdownMenuLabel>{tg('TOGGLE_COLUMNS')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {table
                     .getAllColumns()
@@ -260,7 +262,7 @@ export default function UserTable({ handleClick }: IProps) {
                           colSpan={columns.length}
                           className="text-center"
                         >
-                          No results.
+                          {tg('NO_RESULTS')}
                         </TableCell>
                       </TableRow>
                     )}
@@ -273,10 +275,10 @@ export default function UserTable({ handleClick }: IProps) {
           <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t">
             <div className="flex-1 text-sm text-muted-foreground">
               {table.getFilteredSelectedRowModel().rows.length} of{' '}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
+              {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
             </div>
             <div className="flex items-center gap-2">
-              <div className="text-sm font-medium">Rows per page</div>
+              <div className="text-sm font-medium">{tg('ROWS_PER_PAGE')}</div>
               <Select
                 defaultValue="50"
                 onValueChange={(value) => table.setPageSize(Number(value))}
@@ -297,7 +299,7 @@ export default function UserTable({ handleClick }: IProps) {
               </Select>
             </div>
             <div>
-              Page {table.getState().pagination.pageIndex + 1} of{' '}
+                {tg('PAGE')} {table.getState().pagination.pageIndex + 1} {tg('OF')}{' '}
               {table.getPageCount()}
             </div>
             <div className="space-x-2">
@@ -307,7 +309,7 @@ export default function UserTable({ handleClick }: IProps) {
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                Previous
+                {tg('PREVIOUS')}
               </Button>
               <Button
                 variant="outline"
@@ -315,7 +317,7 @@ export default function UserTable({ handleClick }: IProps) {
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                Next
+                {tg('NEXT')}
               </Button>
             </div>
           </div>

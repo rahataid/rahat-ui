@@ -4,6 +4,8 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { BarChart2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
 import * as React from 'react';
 
 type IProps = {
@@ -11,13 +13,14 @@ type IProps = {
 };
 
 export default function GLOFASCard({ data }: IProps) {
+  const t = useTranslations('AA Project');
   const sanitizedData = React.useMemo(() => {
     return [
-      { label: 'Today', value: data?.[0].data?.todayGLOFAS },
-      { label: '3 Days', value: data?.[0].data?.days3 },
-      { label: '5 Days', value: data?.[0].data?.days5 },
+      { label: t('TODAY'), value: data?.[0].data?.todayGLOFAS },
+      { label: t('N3_DAYS'), value: data?.[0].data?.days3 },
+      { label: t('N5_DAYS'), value: data?.[0].data?.days5 },
       {
-        label: 'In between today until 7 Days is there any possibility of peak',
+        label: t('IN_BETWEEN_TODAY_UNTIL7_DAYS'),
         value:
           data?.[0].data?.inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak,
       },

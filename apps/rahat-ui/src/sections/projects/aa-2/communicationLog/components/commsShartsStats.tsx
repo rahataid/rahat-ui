@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
 import {
   Card,
@@ -33,6 +34,7 @@ export default function CommunicationsChartsStats({
   commsStatsData,
   statsBenefStakeholders,
 }: CommunicationsChartsStatsProps) {
+  const t = useTranslations('AA Project');
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
@@ -40,7 +42,7 @@ export default function CommunicationsChartsStats({
         <Card className="shadow-sm rounded-sm flex-1 w-full">
           <CardHeader className="pb-0 pt-1">
             <CardTitle className="text-xl font-semibold text-gray-600">
-              Total SMS Sent
+              {t('TOTAL_SMS_SENT')}
             </CardTitle>
             <CardDescription className="text-lg text-sky-500 font-bold">
               {(statsBenefStakeholders?.beneficiary?.SMS?.TOTAL || 0) +
@@ -53,7 +55,7 @@ export default function CommunicationsChartsStats({
                 <DynamicPieChart
                   pieData={[
                     {
-                      label: 'Successfully Delivered SMS',
+                      label: t('SUCCESSFULLY_DELIVERED_SMS'),
                       value:
                         (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS ||
                           0) +
@@ -61,7 +63,7 @@ export default function CommunicationsChartsStats({
                           0),
                     },
                     {
-                      label: 'SMS Delivery Failures',
+                      label: t('SMS_DELIVERY_FAILURES'),
                       value:
                         (statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0) +
                         (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0),
@@ -74,26 +76,26 @@ export default function CommunicationsChartsStats({
 
             <div className="grid grid-cols-2 xl:grid-cols-1">
               {[
-                {
-                  label: 'Successfully Delivered',
-                  value:
-                    (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0) +
-                      (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
-                        0) || 0,
-                },
-                {
-                  label: 'SMS Delivery Failures',
+                 {
+                   label: t('SUCCESSFULLY_DELIVERED'),
+                   value:
+                     (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0) +
+                       (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
+                         0) || 0,
+                 },
+                 {
+                   label: t('SMS_DELIVERY_FAILURES'),
                   value:
                     (statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0) +
                       (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0) ||
                     0,
                 },
-                {
-                  label: 'SMS Successfully sent to Beneficiaries',
+                 {
+                   label: t('SMS_SUCCESSFULLY_SENT_TO_BENEFICIARIES'),
                   value: statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0,
                 },
-                {
-                  label: 'SMS Successfully sent to Stakeholders',
+                 {
+                   label: t('SMS_SUCCESSFULLY_SENT_TO_STAKEHOLDERS'),
                   value: statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS || 0,
                 },
               ].map(({ label, value }) => (
@@ -111,7 +113,7 @@ export default function CommunicationsChartsStats({
         <Card className="shadow-sm rounded-sm flex-1 w-full">
           <CardHeader className="pb-0 pt-1">
             <CardTitle className="text-xl font-semibold text-gray-600">
-              Total AVC Sent
+              {t('TOTAL_AVC_SENT')}
             </CardTitle>
             <CardDescription className="text-lg text-sky-500 font-bold">
               {(statsBenefStakeholders?.beneficiary?.VOICE?.TOTAL || 0) +
@@ -124,7 +126,7 @@ export default function CommunicationsChartsStats({
                 <DynamicPieChart
                   pieData={[
                     {
-                      label: 'Successfully Delivered AVC',
+                      label: t('SUCCESSFULLY_DELIVERED_AVC'),
                       value:
                         (statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS ||
                           0) +
@@ -132,7 +134,7 @@ export default function CommunicationsChartsStats({
                             ?.SUCCESS || 0) || 0,
                     },
                     {
-                      label: 'AVC Delivery Failures',
+                      label: t('AVC_DELIVERY_FAILURES'),
                       value:
                         (statsBenefStakeholders?.beneficiary?.VOICE?.FAIL ||
                           0) +
@@ -147,14 +149,14 @@ export default function CommunicationsChartsStats({
             <div className="grid grid-cols-2 xl:grid-cols-1 gap-2 ">
               {[
                 {
-                  label: 'Unique AVC Recipients',
+                  label: t('UNIQUE_AVC_RECIPIENTS'),
                   value:
                     commsStatsData?.stats?.transportStats.find(
                       (r) => r.name === 'VOICE',
                     )?.totalRecipients || 0,
                 },
                 {
-                  label: 'Successfully Delivered',
+                  label: t('SUCCESSFULLY_DELIVERED'),
                   value:
                     (statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS || 0) +
                       (statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS ||
@@ -162,19 +164,19 @@ export default function CommunicationsChartsStats({
                 },
 
                 {
-                  label: 'AVC Delivery Failures',
+                  label: t('AVC_DELIVERY_FAILURES'),
                   value:
                     (statsBenefStakeholders?.beneficiary?.VOICE?.FAIL || 0) +
                       (statsBenefStakeholders?.stakeholder?.VOICE?.FAIL || 0) ||
                     0,
                 },
                 {
-                  label: 'AVC Successfully sent to Beneficiaries',
+                  label: t('AVC_SUCCESSFULLY_SENT_TO_BENEFICIARIES'),
                   value:
                     statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS || 0,
                 },
                 {
-                  label: 'AVC Successfully sent to Stakeholders',
+                  label: t('AVC_SUCCESSFULLY_SENT_TO_STAKEHOLDERS'),
                   value: statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS,
                 },
               ].map(({ label, value }) => (

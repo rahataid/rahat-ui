@@ -1,4 +1,6 @@
 import { HealthCacheData } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -16,6 +18,7 @@ export function SystemHealthCard({
   last_updated,
   sources,
 }: HealthCacheData) {
+  const t = useTranslations('AA Project');
   const statusColors: any = {
     HEALTHY: 'bg-green-50 text-green-700',
     UNHEALTHY: 'bg-red-50 text-red-700',
@@ -41,7 +44,7 @@ export function SystemHealthCard({
       <CardContent className="flex flex-col space-y-3 p-4">
         <div className="flex flex-col w-full p-3 pt-0 gap-2">
           <div className="flex flex-row items-center gap-3">
-            <span className="text-sm font-medium">Overall system health:</span>
+            <span className="text-sm font-medium">{t('OVERALL_SYSTEM_HEALTH')}</span>
 
             <Badge variant="outline" className={statusColors[overall_status]}>
               {overall_status}
@@ -78,7 +81,7 @@ export function SystemHealthCard({
                   </div>
                   <Separator />
                   <div>
-                    <h4 className="text-sm font-medium mb-1">Validity Rules</h4>
+                    <h4 className="text-sm font-medium mb-1">{t('VALIDITY_RULES')}</h4>
                     <ul className="space-y-1 text-xs">
                       <li>
                         <span className=" text-green-600">VALID:</span> Data

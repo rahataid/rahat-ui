@@ -23,8 +23,10 @@ import ProjectConfirm from './projects.assign.confirm';
 // import ProjectAssign from './project.assign.modal';
 import { Copy, CopyCheck } from 'lucide-react';
 import ProjectAssign from './project.assign.modal';
+import { useTranslations } from 'next-intl';
 
 export default function InfoCards() {
+  const t = useTranslations('GLOBAL');
   const addBeneficiary = useAssignBenToProject();
 
   const data = useBeneficiaryStore((state) => state.singleBeneficiary);
@@ -87,12 +89,12 @@ export default function InfoCards() {
             <div className="flex justify-between">
               <div className="flex gap-2 items-center">
                 <p className="text-xl font-semibold">
-                  {data?.piiData?.name ?? 'Beneficiary Name'}
+                  {data?.piiData?.name ?? t('BENEFICIARY_NAME')}
                 </p>
-                <Badge>Active</Badge>
+                <Badge>{t('ACTIVE')}</Badge>
               </div>
               <Button onClick={handleOpenProjectAssignModal}>
-                Assign To Project
+                {t('ASSIGN_TO_PROJECT')}
               </Button>
             </div>
           </CardHeader>
@@ -120,44 +122,44 @@ export default function InfoCards() {
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
-                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                        {walletAddressCopied ? t('COPIED') : t('CLICK_TO_COPY')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Wallet Address
+                  {t('WALLET_ADDRESS')}
                 </p>
               </div>
               <div>
                 <p>{data?.bankedStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Bank Status
+                  {t('BANKING_STATUS')}
                 </p>
               </div>
               <div>
                 <p>{data?.internetStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Internet Status
+                  {t('INTERNET_STATUS')}
                 </p>
               </div>
               <div>
                 <p>{data?.gender ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Gender
+                  {t('GENDER')}
                 </p>
               </div>
 
               <div>
                 <p>{data?.location ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Location
+                  {t('LOCATION')}
                 </p>
               </div>
               <div>
                 <p>{data?.phoneStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Phone Status
+                  {t('PHONE_STATUS')}
                 </p>
               </div>
             </div>
@@ -166,7 +168,7 @@ export default function InfoCards() {
 
         <Card className="shadow rounded">
           <CardHeader>
-            <p className="font-mediun text-md">Projects Involved</p>
+            <p className="font-mediun text-md">{t('PROJECTS_INVOLVED')}</p>
           </CardHeader>
           <CardContent>
             {data?.BeneficiaryProject?.length ? (
@@ -189,7 +191,7 @@ export default function InfoCards() {
               })
             ) : (
               <p className="text-sm text-muted-foreground">
-                No projects involved
+                {t('NO_PROJECTS_INVOLVED')}
               </p>
             )}
           </CardContent>

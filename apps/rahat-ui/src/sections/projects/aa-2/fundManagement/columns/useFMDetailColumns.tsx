@@ -3,6 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
@@ -10,6 +11,8 @@ import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
   const { id, fundId } = useParams();
   const router = useRouter();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
   const handleViewClick = (fmId: string) => {
     console.log('benefwallet', fmId);
     router.push(`/projects/aa/${id}/beneficiary/${fmId}?fundId=${fundId}`);
@@ -17,7 +20,7 @@ export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: tg('WALLET_ADDRESS'),
       accessorFn: (row) => row.Beneficiary?.walletAddress ?? 'N/A',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
@@ -34,19 +37,19 @@ export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
     },
     {
       accessorKey: 'tokensAssigned',
-      header: 'Tokens Assigned',
-      cell: () => <div>{tokensPerBeneficiary ?? 'N/A'}</div>,
+      header: t('TOKEN_AMOUNT'),
+      cell: () => <div>{tokensPerBeneficiary ?? tg('N_A')}</div>,
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleViewClick(row.original.beneficiaryId)}
             />

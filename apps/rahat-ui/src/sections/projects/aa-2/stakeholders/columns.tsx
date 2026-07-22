@@ -3,6 +3,7 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { IconDialogComponent } from './component/iconDialog';
 import { useDeleteStakeholders } from '@rahat-ui/query';
@@ -15,6 +16,7 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   const [showAll, setShowAll] = React.useState(false);
+  const t = useTranslations('AA Project');
 
   if (!supportArea || supportArea.length === 0) return null;
 
@@ -35,7 +37,7 @@ const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
           }}
           className="text-[clamp(8px,0.6vw,10px)] text-primary hover:underline whitespace-nowrap"
         >
-          {showAll ? 'Show less' : `+${supportArea.length - 1} more`}
+          {showAll ? t('SHOW_LESS') : `+${supportArea.length - 1} ${t('MORE')}`}
         </button>
       )}
     </div>
@@ -47,6 +49,8 @@ export const useProjectStakeholdersTableColumns = (
 ) => {
   const router = useRouter();
   const { id } = useParams();
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const removeStakeholder = useDeleteStakeholders();
 
   const handleDelete = async (uuid: string, stakeholderName: string) => {
@@ -70,7 +74,7 @@ export const useProjectStakeholdersTableColumns = (
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('name')}
@@ -81,35 +85,35 @@ export const useProjectStakeholdersTableColumns = (
     },
     {
       accessorKey: 'phone',
-      header: 'Phone number',
+      header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('phone')} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: tg('EMAIL'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'designation',
-      header: 'Designation',
+      header: t('DESIGNATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'organization',
-      header: 'Organization',
+      header: t('ORGANIZATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'supportArea',
-      header: 'Support Area',
+      header: t('SUPPORT_AREA'),
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
@@ -117,7 +121,7 @@ export const useProjectStakeholdersTableColumns = (
 
     {
       accessorKey: 'municipality',
-      header: 'Municipality',
+      header: t('MUNICIPALITY'),
       meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
@@ -126,7 +130,7 @@ export const useProjectStakeholdersTableColumns = (
 
     {
       id: 'actions',
-      header: 'Action',
+      header: tg('ACTIONS'),
       enableHiding: false,
       meta: { className: 'w-20 lg:w-28' },
       cell: ({ row }) => {
@@ -139,10 +143,10 @@ export const useProjectStakeholdersTableColumns = (
               <IconDialogComponent
                 Icon={Edit2}
                 buttonText=""
-                confirmButtonText="Edit"
-                dialogDescription="Are you sure you want to edit?"
-                dialogTitle="Edit"
-                tip="Edit"
+                confirmButtonText={tg('EDIT')}
+                dialogDescription={tg('ARE_YOU_SURE')}
+                dialogTitle={tg('EDIT')}
+                tip={tg('EDIT')}
                 handleClick={() =>
                   setTimeout(() => {
                     router.push(
@@ -155,10 +159,10 @@ export const useProjectStakeholdersTableColumns = (
               <IconDialogComponent
                 Icon={Trash2}
                 buttonText=""
-                confirmButtonText="Delete"
-                dialogDescription="Are you sure you want to delete?"
-                dialogTitle="Delete"
-                tip="Delete"
+                confirmButtonText={tg('DELETE')}
+                dialogDescription={tg('ARE_YOU_SURE')}
+                dialogTitle={tg('DELETE')}
+                tip={tg('DELETE')}
                 handleClick={() => {
                   handleDelete(row.original.uuid, row.original.name);
                 }}
@@ -167,7 +171,7 @@ export const useProjectStakeholdersTableColumns = (
               />
               <TooltipComponent
                 Icon={Eye}
-                tip="View Details"
+                tip={tg('VIEW_DETAILS')}
                 iconStyle="hover:text-primary cursor-pointer"
                 handleOnClick={() =>
                   router.push(
@@ -192,28 +196,28 @@ export const useProjectStakeholdersGroupTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('name')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'phone',
-      header: 'Phone number',
+      header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('phone')} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: tg('EMAIL'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'designation',
-      header: 'Designation',
+      header: t('DESIGNATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={14} />
       ),
@@ -221,21 +225,21 @@ export const useProjectStakeholdersGroupTableColumns = () => {
 
     {
       accessorKey: 'organization',
-      header: 'Organization',
+      header: t('ORGANIZATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'supportArea',
-      header: 'Support Area',
+      header: t('SUPPORT_AREA'),
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
     },
     {
       accessorKey: 'municipality',
-      header: 'Municipality',
+      header: t('MUNICIPALITY'),
       meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
@@ -244,7 +248,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
 
     {
       id: 'actions',
-      header: 'Action',
+      header: tg('ACTIONS'),
       enableHiding: false,
       meta: { className: 'w-15 lg:w-20' },
       cell: ({ row }) => {
@@ -256,7 +260,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
             <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
               <TooltipComponent
                 Icon={Eye}
-                tip="View Details"
+                tip={tg('VIEW_DETAILS')}
                 iconStyle="hover:text-primary cursor-pointer"
                 handleOnClick={() =>
                   router.push(
@@ -304,21 +308,21 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('name')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'phone',
-      header: 'Phone number',
+      header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('phone')} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: tg('EMAIL'),
       meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={14} />
@@ -326,7 +330,7 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     },
     {
       accessorKey: 'designation',
-      header: 'Designation',
+      header: t('DESIGNATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
@@ -334,14 +338,14 @@ export const useProjectSelectStakeholdersTableColumns = () => {
 
     {
       accessorKey: 'organization',
-      header: 'Organization',
+      header: t('ORGANIZATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'supportArea',
-      header: 'Support Area',
+      header: t('SUPPORT_AREA'),
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
@@ -349,7 +353,7 @@ export const useProjectSelectStakeholdersTableColumns = () => {
 
     {
       accessorKey: 'municipality',
-      header: 'Municipality',
+      header: t('MUNICIPALITY'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={14} />
       ),

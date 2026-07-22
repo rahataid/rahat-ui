@@ -3,6 +3,7 @@ import { useProjectList } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 import { CirclePlus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
@@ -31,6 +32,7 @@ const savePinnedProjects = (ids: string[]) => {
 };
 
 export default function ProjectListView() {
+  const t = useTranslations('Projects List');
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
   const [filterValue, setFilterValue] = useState([]);
@@ -83,9 +85,9 @@ export default function ProjectListView() {
   return (
     <div className=" p-4 bg-card mt-14">
       <div className="mb-4">
-        <h1 className="font-semibold text-2xl mb-">Projects</h1>
+        <h1 className="font-semibold text-2xl mb-">{t('PROJECTS')}</h1>
         <p className="text-muted-foreground">
-          Here is a list of all the projects
+          {t('HERE_IS_A_LIST_OF_ALL')}
         </p>
       </div>
       <AddProjectConfirmModal
@@ -95,7 +97,7 @@ export default function ProjectListView() {
       <div className="p-4 border rounded shadow">
         <div className="flex items-center space-x-2 mb-4">
           <Input
-            placeholder="Search Project by Name..."
+            placeholder={t('SEARCH_PROJECT_BY_NAME')}
             className="rounded"
             onChange={handleFilterChange}
           />
@@ -105,7 +107,7 @@ export default function ProjectListView() {
             disabled
           >
             <CirclePlus size={16} strokeWidth={1.5} />
-            Add Project
+            {t('ADD_PROJECT')}
           </Button>
         </div>
         <ScrollArea className="pb-2 h-[calc(100vh-253px)]">
@@ -127,7 +129,7 @@ export default function ProjectListView() {
             </div>
           ) : (
             <div className="h-[calc(100vh-190px)] grid place-items-center">
-              <p className="text-muted-foreground text-xl">No projects.</p>
+              <p className="text-muted-foreground text-xl">{t('NO_PROJECTS_FOUND')}</p>
             </div>
           )}
         </ScrollArea>

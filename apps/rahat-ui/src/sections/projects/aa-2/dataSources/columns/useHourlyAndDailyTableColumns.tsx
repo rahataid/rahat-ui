@@ -1,8 +1,10 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useTranslations } from 'next-intl';
 
 export const useHourlyAndDailyTableColumns = () => {
+  const t = useTranslations('AA Project');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
@@ -19,17 +21,17 @@ export const useHourlyAndDailyTableColumns = () => {
     },
     {
       accessorKey: 'min',
-      header: 'Min',
+      header: t('MIN'),
       cell: ({ row }) => <div>{row.getValue('min') || 'N/A'}</div>,
     },
     {
       accessorKey: 'max',
-      header: 'Max',
+      header: t('MAX'),
       cell: ({ row }) => <div>{row.getValue('max') || 'N/A'}</div>,
     },
     {
       accessorKey: 'value',
-      header: 'Average',
+      header: t('AVERAGE'),
       cell: ({ row }) => <div>{row.getValue('value')}</div>,
     },
   ];

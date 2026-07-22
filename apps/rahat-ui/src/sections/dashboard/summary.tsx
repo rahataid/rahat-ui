@@ -1,7 +1,11 @@
+import { useTranslations } from 'next-intl';
 import { BadgeCent, HeartHandshake, Home, Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
+import { useNumberFormat } from '../../utils/useNumberFormat';
 
 const DashboardSummary = ({ data }: { data: any }) => {
+  const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const {beneficiaryStats,vendorStats} = data
   const beneficiaryTotal = beneficiaryStats?.data?.data?.find(
     (item) => item.name === 'BENEFICIARY_TOTAL',
@@ -14,14 +18,14 @@ const DashboardSummary = ({ data }: { data: any }) => {
       <div className=" grid md:grid-cols-4 gap-2">
         <DataCard
           className=""
-          title="Total beneficiaries"
-          number={count}
+          title={t('TOTAL_BENEFICIARIES')}
+          number={formatNum(count)}
           Icon={Users}
         />
         <DataCard
           className=""
-          title="Total  Vendors"
-          number={vendorTotal}
+          title={t('TOTAL_VENDORS')}
+          number={formatNum(vendorTotal)}
           Icon={Users}
         />
         {/* <DataCard

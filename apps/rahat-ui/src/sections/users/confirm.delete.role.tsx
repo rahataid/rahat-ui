@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -19,13 +20,15 @@ const DeleteConfirmModal = ({
   handleSubmit,
   data,
 }: Iprops) => {
+  const tr = useTranslations('Users – Roles & Permissions');
+  const tg = useTranslations('GLOBAL');
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Confirm</DialogTitle>
+          <DialogTitle>{tr('CONFIRM')}</DialogTitle>
         </DialogHeader>
-        <div>Do you want to delete the role ?</div>
+        <div>{tr('DO_YOU_WANT_TO_DELETE_THE')}</div>
         <div className="flex justify-center items-center gap-4">
           <Button
             onClick={() => {
@@ -34,7 +37,7 @@ const DeleteConfirmModal = ({
             }}
             variant="secondary"
           >
-            Confirm
+            {tg('CONFIRM')}
           </Button>
           <Button
             onClick={() => {
@@ -42,7 +45,7 @@ const DeleteConfirmModal = ({
             }}
             variant="outline"
           >
-            Close
+            {tg('CLOSE')}
           </Button>
         </div>
       </DialogContent>

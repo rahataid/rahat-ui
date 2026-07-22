@@ -2,15 +2,17 @@ import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { roundValue } from '../components/aws/utils/color.utils';
+import { useTranslations } from 'next-intl';
 
 export const useTemperatureTableColumns = (
   unit = '°C',
-  label = 'Temperature',
 ) => {
+  const t = useTranslations('AA Project');
+  const label = t('TEMPERATURE_LABEL');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
-      header: 'Date & Time',
+      header: t('DATE_AND_TIME'),
       cell: ({ row }) => {
         const getDateAndTime = row.getValue('datetime') as string;
         const formatted = dateFormat(

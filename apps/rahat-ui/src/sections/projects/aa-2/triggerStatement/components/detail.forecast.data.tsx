@@ -1,6 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriangleAlert } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { SOURCE_CONFIG } from '../trigger.statement.schema';
 import { toLabel, TriggerStatement } from '../utils';
 
@@ -15,6 +16,7 @@ export function ForecastDataSection({
   phase,
   triggerStatement,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const {
     value,
     source: triggerSource,
@@ -71,7 +73,7 @@ export function ForecastDataSection({
   return (
     <div className="p-4 border rounded-sm shadow">
       <Heading
-        title="Forecast Data"
+        title={t('FORECAST_DATA')}
         titleStyle="text-lg/7"
         description={`Source: ${source} - ${sourceSubTypeLabel}`}
       />

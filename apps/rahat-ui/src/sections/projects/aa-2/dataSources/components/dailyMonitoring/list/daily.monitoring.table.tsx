@@ -1,4 +1,6 @@
 import { Table, flexRender } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
+
 import {
   Table as TableComponent,
   TableBody,
@@ -16,6 +18,7 @@ type IProps = {
 };
 
 export default function DailyMonitoringTable({ table, loading }: IProps) {
+  const t = useTranslations('AA Project');
   return (
     <TableComponent>
       <ScrollArea className="h-[calc(100vh-322px)]">
@@ -60,7 +63,7 @@ export default function DailyMonitoringTable({ table, loading }: IProps) {
                 {loading ? (
                   <SpinnerLoader />
                 ) : (
-                  <NoResult message="No Daily Monitoring Available" />
+                  <NoResult message={t('NO_DAILY_MONITORING_AVAILABLE')} />
                 )}
               </TableCell>
             </TableRow>

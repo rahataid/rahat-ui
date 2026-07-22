@@ -1,5 +1,6 @@
 'use client';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -62,6 +63,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 
 export default function EditActivity() {
+  const t = useTranslations('AA Project');
   // State goes here
   const [open, setOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
@@ -396,8 +398,8 @@ export default function EditActivity() {
               <div className="flex justify-between items-center">
                 <div>
                   <Heading
-                    title={`Edit Activity `}
-                    description="Edit the form below to update  activity"
+                    title={t('EDIT_ACTIVITY')}
+                    description={t('EDIT_THE_FORM_BELOW_TO_UPDATE2')}
                   />
                 </div>
 
@@ -409,14 +411,14 @@ export default function EditActivity() {
                       className="w-36"
                       onClick={handleReset}
                     >
-                      Reset
+                      {t('RESET')}
                     </Button>
                     <Button
                       className="  w-36"
                       type="submit"
                       disabled={isSubmitButtonDisabled}
                     >
-                      Update
+                      {t('UPDATE_ACTIVITY')}
                     </Button>
                   </div>
                 </div>
@@ -431,11 +433,11 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel>Activity title</FormLabel>
+                          <FormLabel>{t('ACTIVITY_TITLE2')}</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
-                              placeholder="Enter activity title"
+                              placeholder={t('ENTER_ACTIVITY_TITLE')}
                               {...field}
                             />
                           </FormControl>
@@ -450,7 +452,7 @@ export default function EditActivity() {
                     name="responsibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Responsibility</FormLabel>
+                        <FormLabel>{t('RESPONSIBILITY')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -458,7 +460,7 @@ export default function EditActivity() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select responsibility" />
+                              <SelectValue placeholder={t('SELECT_RESPONSIBILITY')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -483,11 +485,11 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>Responsible Station</FormLabel>
+                          <FormLabel>{t('RESPONSIBLE_STATION')}</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
-                              placeholder="Enter responsible station"
+                              placeholder={t('ENTER_RESPONSIBLE_STATION')}
                               {...field}
                             />
                           </FormControl>
@@ -501,7 +503,7 @@ export default function EditActivity() {
                     name="phaseId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phase</FormLabel>
+                        <FormLabel>{t('PHASE')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -509,7 +511,7 @@ export default function EditActivity() {
                         >
                           <FormControl>
                             <SelectTrigger disabled>
-                              <SelectValue placeholder="Select phase" />
+                              <SelectValue placeholder={t('SELECT_PHASE')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -529,7 +531,7 @@ export default function EditActivity() {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category</FormLabel>
+                        <FormLabel>{t('CATEGORY')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -537,7 +539,7 @@ export default function EditActivity() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
+                              <SelectValue placeholder={t('SELECT_CATEGORY')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -569,7 +571,7 @@ export default function EditActivity() {
                               />
                             </FormControl>
                             <FormLabel className="text-sm font-normal ml-2">
-                              Is Automated Activity?
+                              {t('IS_AUTOMATED_ACTIVITY')}?
                             </FormLabel>
                             <FormMessage />
                           </FormItem>
@@ -591,11 +593,11 @@ export default function EditActivity() {
                         const unit = !unitValue ? 'days' : unitValue;
                         return (
                           <FormItem>
-                            <FormLabel>Lead Time</FormLabel>
+                            <FormLabel>{t('LEAD_TIME')}</FormLabel>
                             <div className="grid grid-cols-4">
                               <Input
                                 type="text"
-                                placeholder="Enter lead time"
+                                placeholder={t('ENTER_LEAD_TIME')}
                                 className="col-span-3 rounded-r-none "
                                 value={lead}
                                 onChange={(e) => {
@@ -643,10 +645,10 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel>{t('DESCRIPTION')}</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="Enter description"
+                              placeholder={t('ENTER_DESCRIPTION')}
                               {...field}
                             />
                           </FormControl>
@@ -672,8 +674,8 @@ export default function EditActivity() {
                                 className="text-primary"
                               />
                               <p className="text-sm font-medium">
-                                Drop files to upload, or{' '}
-                                <span className="text-primary">browse</span>
+                                {t('DROP_FILES_TO_UPLOAD')}, {t('OR')}{' '}
+                                <span className="text-primary">{t('BROWSE')}</span>
                               </p>
                             </div>
                             <Input
@@ -686,8 +688,7 @@ export default function EditActivity() {
                         </FormControl>
                         <FormMessage />
                         <p className="text-xs text-end text-orange-500">
-                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                          CSV under 5 MB.
+                          {t('FILES_MUST_BE_JPEG_PNG_BMP')}
                         </p>
                         <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
                           {activityDocuments?.map((file) => (
@@ -731,7 +732,7 @@ export default function EditActivity() {
                   setOpen(!open);
                 }}
               >
-                Add Communication
+                {t('ADD_COMMUNICATION')}
                 {!open ? (
                   <Plus className="ml-2" size={16} strokeWidth={3} />
                 ) : (

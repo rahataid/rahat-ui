@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 
 interface CategoryData {
@@ -8,9 +9,10 @@ interface CategoryData {
 }
 
 export const useAACategoryColumns = () => {
+  const t = useTranslations('AA Project');
   const columns: ColumnDef<CategoryData>[] = [
     {
-      header: 'Name',
+      header: t('NAME'),
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },

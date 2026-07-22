@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Loader2, UserRound } from 'lucide-react';
 import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';
@@ -32,6 +33,8 @@ export default function AssignInkindConfirmation({
   onSuccess,
   tab,
 }: Props) {
+  const tv = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -42,12 +45,12 @@ export default function AssignInkindConfirmation({
   const beneficiaries: any[] =
     rawData?.data?.groupedBeneficiaries ?? rawData?.groupedBeneficiaries ?? [];
   const cardData = [
-    { label: 'Inkind Item', value: formData.inkindName },
-    { label: 'Beneficiary Group', value: formData.groupName },
-    { label: 'Available Stock', value: formData.availableStock },
-    { label: 'Assign Mode', value: formData.mode ?? 'Online' },
+    { label: tv('INKIND_ITEM'), value: formData.inkindName },
+    { label: tv('BENEFICIARY_GROUP'), value: formData.groupName },
+    { label: tv('AVAILABLE_STOCK'), value: formData.availableStock },
+    { label: tv('ASSIGN_MODE'), value: formData.mode ?? tv('ONLINE') },
     ...(formData.vendorName
-      ? [{ label: 'Vendor', value: formData.vendorName }]
+      ? [{ label: tv('VENDOR'), value: formData.vendorName }]
       : []),
   ];
 
@@ -70,7 +73,7 @@ export default function AssignInkindConfirmation({
     <div className="flex flex-col h-[calc(100vh-220px)] p-2">
       <div className="flex gap-3 flex-1 min-h-0 mb-3">
         <div className="w-[60%] p-4 rounded-md bg-gray-50 flex flex-col space-y-4 overflow-y-auto">
-          <p className="font-semibold text-sm mb-1">Assignment Summary</p>
+          <p className="font-semibold text-sm mb-1">{tv('ASSIGNMENT_SUMMARY')}</p>
           {cardData.map((item) => (
             <div key={item.label}>
               <p className="text-sm text-muted-foreground">{item.label}</p>
@@ -85,14 +88,14 @@ export default function AssignInkindConfirmation({
 
         <div className="w-[40%] p-4 rounded-md bg-gray-50 flex flex-col min-h-0">
           <p className="font-semibold text-sm mb-2">
-            Beneficiaries List ({beneficiaries.length})
+            {tv('BENEFICIARIES_LIST', { count: beneficiaries.length })}
           </p>
           {group.isLoading || group.isFetching ? (
             <div className="flex items-center justify-center h-24">
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : beneficiaries.length === 0 ? (
-            <NoResult message="No beneficiaries found" size="small" />
+            <NoResult message={tv('NO_BENEFICIARIES_FOUND')} size="small" />
           ) : (
             <div className="flex flex-col divide-y overflow-y-auto flex-1">
               {beneficiaries.map((i: any) => (
@@ -121,7 +124,7 @@ export default function AssignInkindConfirmation({
           }
           disabled={assignGroupInkind.isPending}
         >
-          Cancel
+          {tg('CANCEL')}
         </Button>
         <Button
           className="px-10 rounded-sm"
@@ -131,10 +134,10 @@ export default function AssignInkindConfirmation({
           {assignGroupInkind.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Assigning...
+              {tv('ASSIGNING')}
             </>
           ) : (
-            'Assign Inkind'
+            tv('ASSIGN_INKIND')
           )}
         </Button>
       </div>

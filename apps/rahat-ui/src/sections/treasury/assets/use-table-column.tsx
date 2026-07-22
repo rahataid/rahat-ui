@@ -1,9 +1,12 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { Eye } from 'lucide-react';
 
 export const useAssetsTableColumn = () => {
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('Treasury – Assets');
   const columns: ColumnDef<Assets>[] = [
     {
       id: 'select',
@@ -16,14 +19,14 @@ export const useAssetsTableColumn = () => {
           onCheckedChange={(value: any) =>
             table.toggleAllPageRowsSelected(!!value)
           }
-          aria-label="Select all"
+          aria-label={tg('SELECT_ALL')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          aria-label={tg('SELECT_ROW')}
         />
       ),
       enableSorting: false,
@@ -31,25 +34,25 @@ export const useAssetsTableColumn = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('name')}</div>
       ),
     },
     {
       accessorKey: 'amount',
-      header: 'Amount',
+      header: t('AMOUNT'),
       cell: ({ row }) => <div>{row.getValue('amount')}</div>,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => {
         const status = row.getValue('status');
         return status === 'Paid' ? (
-          <Badge className="bg-green-200 text-green-600">Paid</Badge>
+          <Badge className="bg-green-200 text-green-600">{t('PAID')}</Badge>
         ) : (
-          <Badge className="bg-red-200 text-red-600">Pending</Badge>
+          <Badge className="bg-red-200 text-red-600">{t('PENDING')}</Badge>
         );
       },
     },
@@ -60,7 +63,6 @@ export const useAssetsTableColumn = () => {
       cell: () => {
         return (
           <Eye
-            //   onClick={() => route.push(`/treasury/assets/${id}`)}
             className="cursor-pointer"
             size={18}
             strokeWidth={1.5}

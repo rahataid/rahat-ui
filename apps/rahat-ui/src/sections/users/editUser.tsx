@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -22,15 +23,17 @@ type Iprops = {
   userDetail: User;
 };
 export default function EditUser({ userDetail }: Iprops) {
+  const t = useTranslations('Users – Edit');
+  const tg = useTranslations('GLOBAL');
   const { closeSecondPanel } = useSecondPanel();
   const updateUser = useUserUpdate();
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST4') }),
     email: z.string(),
     phone: z.string(),
     walletAddress: z
       .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+      .min(42, { message: t('ETH_ADDRESS_MUST_BE42') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -65,7 +68,7 @@ export default function EditUser({ userDetail }: Iprops) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUser)}>
         <div className="p-4">
-          <h1 className="text-md font-semibold mb-6">Edit User</h1>
+          <h1 className="text-md font-semibold mb-6">{t('EDIT_USER')}</h1>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
               control={form.control}
@@ -74,7 +77,7 @@ export default function EditUser({ userDetail }: Iprops) {
                 return (
                   <FormItem>
                     <FormControl>
-                      <Input type="text" placeholder="Name" {...field} />
+                      <Input type="text" placeholder={tg('NAME')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -88,7 +91,7 @@ export default function EditUser({ userDetail }: Iprops) {
                 return (
                   <FormItem>
                     <FormControl>
-                      <Input type="text" placeholder="Email" {...field} />
+                      <Input type="text" placeholder={tg('EMAIL')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,7 +106,7 @@ export default function EditUser({ userDetail }: Iprops) {
                 return (
                   <FormItem>
                     <FormControl>
-                      <PhoneInput placeholder="Phone" {...field} />
+                      <PhoneInput placeholder={tg('PHONE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -146,7 +149,7 @@ export default function EditUser({ userDetail }: Iprops) {
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Wallet Address"
+                        placeholder={tg('WALLET_ADDRESS')}
                         {...field}
                       />
                     </FormControl>
@@ -157,7 +160,7 @@ export default function EditUser({ userDetail }: Iprops) {
             />
           </div>
           <div className="flex justify-end">
-            <Button>Update User</Button>
+            <Button>{t('UPDATE_USER')}</Button>
           </div>
         </div>
       </form>

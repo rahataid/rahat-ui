@@ -21,6 +21,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { useTranslations } from 'next-intl';
 import { useAuthStore, useUserStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../../app/config-nav';
@@ -30,6 +31,7 @@ import { ModeToggle } from '../dropdown';
 import MobileNav from '../mobileNav';
 
 export function Nav() {
+  const t = useTranslations('Top Navigation / Header');
   const currentPath = usePathname();
   const navData = useNavData();
   const { user, clearUser } = useUserStore((state) => ({
@@ -66,7 +68,7 @@ export function Nav() {
             height={50}
             width={50}
           />
-          <p className="font-medium text-slate-500">Rahat</p>
+          <p className="font-medium text-slate-500">{t('RAHAT')}</p>
         </Link>
         <nav className="hidden md:flex items-center">
           {navData.map((item) =>
@@ -127,19 +129,19 @@ export function Nav() {
                 className="p-2 hover:bg-secondary"
                 href={paths.profile.root}
               >
-                Profile
+                {t('PROFILE')}
               </Link>
               <Link
                 className="p-2 hover:bg-secondary"
                 href={paths.dashboard.root}
               >
-                Home
+                {t('HOME')}
               </Link>
               <Button
                 className="mt-2 p-2 hover:border w-full"
                 onClick={handleLogout}
               >
-                Logout
+                {t('LOGOUT')}
               </Button>
             </DropdownMenuGroup>
           </DropdownMenuContent>

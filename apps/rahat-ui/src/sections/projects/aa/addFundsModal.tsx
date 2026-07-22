@@ -17,6 +17,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useMintTokens } from 'apps/rahat-ui/src/hooks/aa/contracts/aa-contract';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 type FundsModalType = {
@@ -29,6 +30,8 @@ type IProps = {
 };
 
 export default function AddFundsModal({ fundsModal }: IProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const [tokens, setTokens] = React.useState('');
   const params = useParams();
   const projectID = params.id as UUID;
@@ -54,7 +57,7 @@ export default function AddFundsModal({ fundsModal }: IProps) {
     <Dialog open={fundsModal.value} onOpenChange={fundsModal.onToggle}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Tokens Budget</DialogTitle>
+          <DialogTitle>{t('ADD_TOKENS_BUDGET')}</DialogTitle>
         </DialogHeader>
         <div>
           <Input
@@ -62,7 +65,7 @@ export default function AddFundsModal({ fundsModal }: IProps) {
             inputMode="decimal"
             value={tokens}
             onChange={(e) => setTokens(e.target.value)}
-            placeholder="Tokens"
+            placeholder={t('TOKENS')}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 handleAdd(tokens);
@@ -73,7 +76,7 @@ export default function AddFundsModal({ fundsModal }: IProps) {
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
-              Close
+              {tg('CLOSE')}
             </Button>
           </DialogClose>
           <DialogClose asChild>
@@ -85,7 +88,7 @@ export default function AddFundsModal({ fundsModal }: IProps) {
               variant="ghost"
               className="text-primary"
             >
-              Add
+              {tg('ADD')}
             </Button>
           </DialogClose>
         </DialogFooter>

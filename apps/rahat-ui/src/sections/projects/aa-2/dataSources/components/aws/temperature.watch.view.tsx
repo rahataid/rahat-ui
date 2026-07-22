@@ -11,8 +11,10 @@ import { format } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
 import { getTemperatureColor, getLatestValue } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
+import { useTranslations } from 'next-intl';
 
 export default function TemperatureWatchView() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;
@@ -45,7 +47,7 @@ export default function TemperatureWatchView() {
   if (tn1hData.length === 0) {
     return (
       <div className="p-4">
-        <NoResult message="No Temperature Data" />
+        <NoResult message={t('NO_TEMPERATURE_DATA')} />
       </div>
     );
   }
@@ -60,11 +62,11 @@ export default function TemperatureWatchView() {
         const seriesId = tempInfo?.series_id || tempInfo?.id || String(index);
 
         const stationInfo = [
-          { icon: RadioTower, label: 'Station', value: tempInfo?.name || '--' },
-          { icon: Globe, label: 'Latitude', value: tempInfo?.latitude ?? '--' },
+          { icon: RadioTower, label: t('STATION'), value: tempInfo?.name || '--' },
+          { icon: Globe, label: t('LATITUDE'), value: tempInfo?.latitude ?? '--' },
           {
             icon: Globe,
-            label: 'Longitude',
+            label: t('LONGITUDE'),
             value: tempInfo?.longitude ?? '--',
           },
         ];
@@ -82,10 +84,10 @@ export default function TemperatureWatchView() {
             <div className="w-full">
               <div className="flex justify-between gap-4">
                 <Heading
-                  title={tempInfo?.name || 'Unknown Station'}
+                  title={tempInfo?.name || t('UNKNOWN_STATION')}
                   titleStyle="text-xl/6 font-semibold"
                   description={
-                    tempInfo?.parameter_name || 'Air Temperature Hourly'
+                    tempInfo?.parameter_name || t('AIR_TEMPERATURE_HOURLY')
                   }
                   updatedAt={updatedAt}
                 />
@@ -121,7 +123,7 @@ export default function TemperatureWatchView() {
               value={latestValue}
               unit={tempInfo?.unit ?? '°C'}
               updatedAt={latestDate}
-              label="Hourly Temperature"
+              label={t('HOURLY_TEMPERATURE')}
               colors={colors}
             />
           </div>

@@ -8,6 +8,7 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useProjectInfo } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { useTranslations } from 'next-intl';
 
 type DailyMonitoringRow = {
   dataEntryBy?: string;
@@ -17,6 +18,7 @@ type DailyMonitoringRow = {
 };
 
 export default function useDailyMonitoringTableColumn() {
+  const t = useTranslations('AA Project');
   const { id: projectId } = useParams();
   const router = useRouter();
   const { data: projectInfo } = useProjectInfo(projectId as UUID);
@@ -34,14 +36,14 @@ export default function useDailyMonitoringTableColumn() {
   const columns: ColumnDef<DailyMonitoringRow>[] = [
     {
       accessorKey: 'dataEntryBy',
-      header: 'Created By',
+      header: t('CREATED_BY'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('dataEntryBy')} maxLength={25} />
       ),
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created At',
+      header: t('CREATED_AT'),
       filterFn: (row, columnId, filterValue) => {
         const rowDate = new Date(row.getValue(columnId));
         const filterDate = new Date(filterValue);
@@ -64,14 +66,14 @@ export default function useDailyMonitoringTableColumn() {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex gap-4 items-center">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={t('VIEW_DETAILS')}
               iconStyle="cursor-pointer hover:text-primary"
               handleOnClick={() => handleEyeClick(row.original.groupKey)}
             />

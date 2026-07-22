@@ -14,8 +14,10 @@ import CustomPagination from '../../components/customPagination';
 import ImportListTable from './importListTable';
 import { useImportListTableColumns } from './useImportColumns';
 import HeaderWithBack from '../projects/components/header.with.back';
+import { useTranslations } from 'next-intl';
 
 function ImportListView() {
+  const t = useTranslations('Import Beneficiary List');
   const {
     pagination,
     selectedListItems,
@@ -54,8 +56,8 @@ function ImportListView() {
   return (
     <div className="p-4 flex flex-col h-[calc(100vh-65px)]">
       <HeaderWithBack
-        title="Import Beneficiary"
-        subtitle="Here are the beneficiary imports listed from the imports API"
+        title={t('IMPORT_BENEFICIARY')}
+        subtitle={t('HERE_ARE_THE_BENEFICIARY_IMPORTS_LISTED')}
         path="/beneficiary"
       />
       <div className="p-4 border rounded-sm flex-1 overflow-hidden">

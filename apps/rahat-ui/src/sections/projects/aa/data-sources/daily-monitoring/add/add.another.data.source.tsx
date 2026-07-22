@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import SelectFormField from '../../../../../../components/select.form.field';
 import InputFormField from '../../../../../../components/input.form.field';
 import { useSelectItems } from '../useSelectItems';
@@ -11,6 +12,7 @@ type IProps = {
 };
 
 export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
+  const t = useTranslations('AA Project');
   const fieldName = (name: string) => `dataSource.${index}.${name}`; // Dynamic field name generator
 
   const {
@@ -54,8 +56,8 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <SelectFormField
               form={form}
               name={fieldName('forecast')}
-              label="Forecast"
-              placeholder="Select forecast"
+              label={t('FORECAST')}
+              placeholder={t('SELECT_FORECAST')}
               selectItems={newDHMForecastSelectItemsArray}
             />
             {renderFieldsBasedOnDHMForecast()}
@@ -68,28 +70,28 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <InputFormField
               form={form}
               name={fieldName('todayGLOFAS')}
-              label="Today"
-              placeholder="Enter today's status"
+              label={t('TODAY')}
+              placeholder={t('ENTER_TODAY_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName('days3')}
-              label="3 days"
-              placeholder="Enter 3 day's status"
+              label={t('N3_DAYS')}
+              placeholder={t('ENTER_3_DAY_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName('days5')}
-              label="5 days"
-              placeholder="Enter 5 day's status"
+              label={t('N5_DAYS')}
+              placeholder={t('ENTER_5_DAY_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName(
                 'inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak',
               )}
-              label="In between today until 7 Days is there any possibility of peak"
-              placeholder="Enter possibility"
+              label={t('IN_BETWEEN_TODAY_UNTIL7_DAYS')}
+              placeholder={t('SELECT_POSSIBILITY')}
             />
           </>
         );
@@ -100,7 +102,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             form={form}
             name={fieldName('status')}
             label="Status"
-            placeholder="Select status"
+            placeholder={t('SELECT_STATUS')}
             selectItems={flashFloodRiskSelectItems}
           />
         );
@@ -111,9 +113,9 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <SelectFormField
               form={form}
               name={fieldName('heavyRainfallForecastInKarnaliBasin')}
-              label="Heavy Rainfall Forecast in Karnali Basin (upstream areas)"
-              subLabel="(more than 100mm in consecutive 2-3 days)"
-              placeholder="Select status"
+              label={t('HEAVY_RAINFALL_FORECAST_IN_KARNALI_BASIN')}
+              subLabel={t('HEAVY_RAINFALL_SUBLABEL')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={[
                 { value: 'Yes', label: 'Yes' },
                 { value: 'No', label: 'No' },
@@ -122,22 +124,22 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <SelectFormField
               form={form}
               name={fieldName('hours24')}
-              label="24 hours"
-              placeholder="Select status"
+              label={t('N24_HOURS')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('hours72')}
-              label="72 hours"
-              placeholder="Select status"
+              label={t('N72_HOURS')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('hours168')}
-              label="168 hours"
-              placeholder="Select status"
+              label={t('N168_HOURS')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallSelectItems}
             />
           </>
@@ -149,23 +151,23 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <InputFormField
               form={form}
               name={fieldName('extremeWeatherOutlook')}
-              label="Extreme Weather Outlook"
-              subLabel="Severe Weather Event -Extreme Rainfall >95 Percentile purple dots over Karnali Watershed"
-              placeholder="Enter status"
+              label={t('EXTREME_WEATHER_OUTLOOK')}
+              subLabel={t('SEVERE_WEATHER_EVENT')}
+              placeholder={t('ENTER_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName('deterministicsPredictionSystem')}
-              label="Deterministics Prediction System"
-              subLabel="Predicts commulative rainfall more than 300 MM in next 3 to 5 Days"
-              placeholder="Enter status"
+              label={t('DETERMINISTICS_PREDICTION_SYSTEM')}
+              subLabel={t('DETERMINISTICS_SUBLABEL')}
+              placeholder={t('ENTER_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName('probabilisticPredictionSystem')}
-              label="Probabilistic Prediction System"
-              subLabel="Heavy Rainfall 115 MM per day 80 percent probablity in next 3 to 5 days"
-              placeholder="Enter status"
+              label={t('PROBABILISTIC_PREDICTION_SYSTEM')}
+              subLabel={t('PROBABILISTIC_SUBLABEL')}
+              placeholder={t('ENTER_STATUS')}
             />
           </>
         );
@@ -186,22 +188,22 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <SelectFormField
               form={form}
               name={fieldName('today')}
-              label="Today"
-              placeholder="Select status"
+              label={t('TODAY')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={floodForecastSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('tomorrow')}
               label="Tomorrow"
-              placeholder="Select status"
+              placeholder={t('SELECT_STATUS')}
               selectItems={floodForecastSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('dayAfterTomorrow')}
-              label="Day After Tomorrow"
-              placeholder="Select status"
+              label={t('DAY_AFTER_TOMORROW')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={floodForecastSelectItems}
             />
           </>
@@ -213,43 +215,43 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <SelectFormField
               form={form}
               name={fieldName('todayAfternoon')}
-              label="Today Afternoon"
-              placeholder="Select status"
+              label={t('TODAY_AFTERNOON')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('todayNight')}
-              label="Today Night"
-              placeholder="Select status"
+              label={t('TODAY_NIGHT')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('tomorrowAfternoon')}
-              label="Tomorrow Afternoon"
-              placeholder="Select status"
+              label={t('TOMORROW_AFTERNOON')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('tomorrowNight')}
-              label="Tomorrow Night"
-              placeholder="Select status"
+              label={t('TOMORROW_NIGHT')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('dayAfterTomorrowAfternoon')}
-              label="Day After Tomorrow Afternoon"
-              placeholder="Select status"
+              label={t('DAY_AFTER_TOMORROW_AFTERNOON')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('dayAfterTomorrowNight')}
-              label="Day After Tomorrow Night"
-              placeholder="Select status"
+              label={t('DAY_AFTER_TOMORROW_NIGHT')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallForecastSelectItems}
             />
           </>
@@ -260,9 +262,9 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           <InputFormField
             form={form}
             name={fieldName('waterLevel')}
-            label="Water Level(Meter)"
-            subLabel="Danger Level 10.8m"
-            placeholder="Enter Water Level"
+            label={t('WATER_LEVEL_METER')}
+            subLabel={t('DANGER_LEVEL108M')}
+            placeholder={t('ENTER_WATER_LEVEL')}
           />
         );
         break;
@@ -273,25 +275,25 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
               form={form}
               name={fieldName('chisapaniKarnali')}
               label="Chisapani Karnali"
-              placeholder="Enter status"
+              placeholder={t('ENTER_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName('daulatpurStation')}
               label="Daulatpur Station"
-              placeholder="Enter status"
+              placeholder={t('ENTER_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName('bachilaStation')}
               label="Bachila Station"
-              placeholder="Enter status"
+              placeholder={t('ENTER_STATUS')}
             />
             <InputFormField
               form={form}
               name={fieldName('gurbaDurbar')}
               label="Gurba Durbar"
-              placeholder="Enter status"
+              placeholder={t('ENTER_STATUS')}
             />
           </>
         );
@@ -302,22 +304,22 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <SelectFormField
               form={form}
               name={fieldName('hours24NWP')}
-              label="24 hours"
-              placeholder="Select status"
+              label={t('N24_HOURS')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('hours48')}
-              label="48 hours"
-              placeholder="Select status"
+              label={t('N48_HOURS')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
               form={form}
               name={fieldName('hours72NWP')}
-              label="72 hours"
-              placeholder="Select status"
+              label={t('N72_HOURS')}
+              placeholder={t('SELECT_STATUS')}
               selectItems={rainfallSelectItems}
             />
           </>
@@ -342,7 +344,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           form={form}
           name={fieldName('source')}
           label="Source"
-          placeholder="Select Data Source"
+          placeholder={t('SELECT_DATA_SOURCE')}
           selectItems={newSourceSelectItemsArray}
         />
         {renderFieldsBasedOnSource()}

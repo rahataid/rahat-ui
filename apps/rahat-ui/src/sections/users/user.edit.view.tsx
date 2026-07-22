@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -36,23 +37,24 @@ import { useUserGet, useUserEdit } from '@rumsan/react-query';
 import { Gender } from '@rumsan/sdk/enums';
 import Swal from 'sweetalert2';
 
-const FormSchema = z.object({
-  name: z.string().min(4, { message: 'Name must be at least 4 character' }),
-  email: z.string().email(),
-  gender: z.string(),
-  // roles: z.array(z.string()).length(1, { message: 'Please select role' }),
-  roles: z.array(z.string()).optional(),
-  phone: z.string(),
-  wallet: z
-    .string()
-    .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-});
-
-// Component
 export default function EditUser() {
+  const t = useTranslations('Users – Edit');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const searchParams = useSearchParams()?.get('split');
+
+
+  const FormSchema = z.object({
+    name: z.string().min(4, { message: t('NAME_MUST_BE_AT_LEAST4') }),
+    email: z.string().email(),
+    gender: z.string(),
+    roles: z.array(z.string()).optional(),
+    phone: z.string(),
+    wallet: z
+      .string()
+      .min(42, { message: t('ETH_ADDRESS_MUST_BE42') }),
+  });
 
   const { data } = useUserGet(id);
   const user = data?.data;
@@ -91,7 +93,7 @@ export default function EditUser() {
       uuid: id,
       data,
     });
-    Swal.fire('User Updated Successfully', '', 'success');
+    Swal.fire(t('USER_UPDATED_SUCCESSFULLY'), '', 'success');
     router.push('/users');
   };
 
@@ -100,8 +102,8 @@ export default function EditUser() {
       <form onSubmit={form.handleSubmit(handleEditUser)}>
         <div className="p-4 h-[calc(100vh-130px)]">
           <HeaderWithBack
-            title="Edit User"
-            subtitle="Edit user detail"
+            title={t('EDIT_USER')}
+            subtitle={t('EDIT_USER_DETAIL')}
             path={searchParams ? '/users' : `/users/${id}`}
           />
           <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
@@ -111,11 +113,11 @@ export default function EditUser() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>User Name</FormLabel>
+                    <FormLabel>{t('USER_NAME')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter user name"
+                        placeholder={t('ENTER_USER_NAME')}
                         {...field}
                       />
                     </FormControl>
@@ -128,7 +130,7 @@ export default function EditUser() {
                 name="gender"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Gender</FormLabel>
+                    <FormLabel>{tg('GENDER')}</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -139,25 +141,25 @@ export default function EditUser() {
                           <FormControl>
                             <RadioGroupItem value={Gender.MALE} />
                           </FormControl>
-                          <FormLabel className="font-normal">Male</FormLabel>
+                          <FormLabel className="font-normal">{tg('MALE')}</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value={Gender.FEMALE} />
                           </FormControl>
-                          <FormLabel className="font-normal">Female</FormLabel>
+                          <FormLabel className="font-normal">{tg('FEMALE')}</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value={Gender.OTHER} />
                           </FormControl>
-                          <FormLabel className="font-normal">Other</FormLabel>
+                          <FormLabel className="font-normal">{tg('OTHER')}</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value={Gender.UKNOWN} />
                           </FormControl>
-                          <FormLabel className="font-normal">Unknown</FormLabel>
+                          <FormLabel className="font-normal">{tg('UNKNOWN')}</FormLabel>
                         </FormItem>
                       </RadioGroup>
                     </FormControl>
@@ -171,10 +173,10 @@ export default function EditUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>{tg('PHONE_NUMBER')}</FormLabel>
                       <FormControl>
                         <PhoneInput
-                          placeholder="Enter phone number"
+                          placeholder={tg('ENTER_PHONE_NUMBER')}
                           {...field}
                         />
                       </FormControl>
@@ -189,11 +191,11 @@ export default function EditUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{tg('EMAIL')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter email address"
+                          placeholder={tg('ENTER_EMAIL_ADDRESS')}
                           {...field}
                         />
                       </FormControl>
@@ -216,10 +218,10 @@ export default function EditUser() {
                         value={field.value[0]}
                         disabled
                       >
-                        <FormLabel>User Role</FormLabel>
+                        <FormLabel>{t('USER_ROLE')}</FormLabel>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select user role" />
+                            <SelectValue placeholder={t('SELECT_USER_ROLE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -245,13 +247,13 @@ export default function EditUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Wallet Address</FormLabel>
+                      <FormLabel>{tg('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
-                            placeholder="Enter wallet address"
+                            placeholder={tg('ENTER_WALLET_ADDRESS')}
                             {...field}
                           />
                         </div>
@@ -274,16 +276,16 @@ export default function EditUser() {
               // router.push('/users')
             }}
           >
-            Reset
+            {tg('RESET')}
           </Button>
           {updateUser.isPending ? (
             <Button disabled>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
+              {tg('PLEASE_WAIT')}
             </Button>
           ) : (
             <Button type="submit" className="px-10">
-              Update
+              {tg('UPDATE')}
             </Button>
           )}
         </div>

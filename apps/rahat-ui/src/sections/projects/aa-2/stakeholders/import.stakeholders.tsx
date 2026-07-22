@@ -14,6 +14,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -101,6 +102,8 @@ export default function ImportStakeholder() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
 
   // Query goes here
   const queryClient = useQueryClient();
@@ -725,7 +728,7 @@ export default function ImportStakeholder() {
 
       const trimmedName = groupName.trim();
       if (!trimmedName) {
-        setGroupError('Group name is required');
+          setGroupError(t('GROUP_NAME_REQUIRED'));
         return;
       }
 
@@ -761,8 +764,8 @@ export default function ImportStakeholder() {
         <div className="p-4 flex flex-col flex-1 min-w-0">
           <div className="flex justify-between items-start mb-2">
             <HeaderWithBack
-              title="Import Stakeholders"
-              subtitle="List of all stakeholders you can import"
+              title={t('IMPORT_STAKEHOLDERS')}
+              subtitle={t('LIST_OF_ALL_STAKEHOLDERS_YOU_CAN')}
               path={`/projects/aa/${id}/stakeholders`}
             />
             <div className="flex flex-col items-end gap-2 mt-4">
@@ -775,7 +778,7 @@ export default function ImportStakeholder() {
                     className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
                   >
                     <FileWarning className="mr-1" />
-                    Download Errors
+                    {t('DOWNLOAD_ERRORS')}
                   </Button>
                 )}
                 <Button
@@ -784,8 +787,8 @@ export default function ImportStakeholder() {
                   variant="outline"
                   className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
                 >
-                  <CloudDownload className="mr-1" />
-                  Download Sample
+                    <CloudDownload className="mr-1" />
+                    {t('DOWNLOAD_SAMPLE')}
                 </Button>
               </div>
               {(hasFrontendErrors || validationResponse !== null) &&
@@ -796,13 +799,13 @@ export default function ImportStakeholder() {
                         {duplicatePhonesInFile.size > 0 && (
                           <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
-                            <span>Duplicate phone number found in file</span>
+                            <span>{t('DUPLICATE_PHONE_NUMBER_FOUND_IN_FILE')}</span>
                           </div>
                         )}
                         {duplicateEmailsInFile.size > 0 && (
                           <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
-                            <span>Duplicate email found in file</span>
+                            <span>{t('DUPLICATE_EMAIL_FOUND_IN_FILE')}</span>
                           </div>
                         )}
                       </>
@@ -810,8 +813,8 @@ export default function ImportStakeholder() {
                     {hasValidationErrors && (
                       <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
-                        <span>
-                          Validation error - invalid or duplicate data
+                            <span>
+                          {t('VALIDATION_ERROR_INVALID_OR_DUPLICATE_DATA')}
                         </span>
                       </div>
                     )}
@@ -819,14 +822,14 @@ export default function ImportStakeholder() {
                       newStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-sm bg-green-200 border border-green-400" />
-                          <span>New stakeholder will be created</span>
+                            <span>{t('NEW_STAKEHOLDER_WILL_BE_CREATED')}</span>
                         </div>
                       )}
                     {validationResponse !== null &&
                       updateStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
-                          <span>Existing stakeholder will be updated</span>
+                            <span>{t('EXISTING_STAKEHOLDER_WILL_BE_UPDATED')}</span>
                         </div>
                       )}
                   </div>
@@ -852,12 +855,12 @@ export default function ImportStakeholder() {
                   <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-[clamp(8px,1vw,12px)] h-[clamp(28px,3vw,36px)] font-semibold text-[clamp(11px,1vw,14px)] hover:bg-gray-200 transition-colors whitespace-nowrap [&_svg]:size-[clamp(14px,1.4vw,18px)]">
                     {selectedFile ? (
                       <>
-                        <Repeat2 className="mr-1" /> Replace
-                      </>
-                    ) : (
-                      <>
-                        <Share className="mr-1" />
-                        Choose File
+                         <Repeat2 className="mr-1" /> {t('REPLACE')}
+                       </>
+                     ) : (
+                       <>
+                         <Share className="mr-1" />
+                         {t('CHOOSE_FILE')}
                       </>
                     )}
                   </span>
@@ -928,7 +931,7 @@ export default function ImportStakeholder() {
           <div>
             {data?.length > 0 && (
               <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
-                Total Count: {data.length - 1}
+                {tg('TOTAL_COUNT')} {data.length - 1}
               </p>
             )}
           </div>
@@ -939,7 +942,7 @@ export default function ImportStakeholder() {
               variant="outline"
               onClick={handleClear}
             >
-              Clear
+              {t('CLEAR')}
             </Button>
 
             {isValidated ? (
@@ -979,10 +982,10 @@ export default function ImportStakeholder() {
             <>
               <DialogHeader>
                 <DialogTitle className="text-center text-primary">
-                  Create a Group?
+                  {t('CREATE_A_GROUP')}?
                 </DialogTitle>
                 <DialogDescription className="text-center">
-                  Would you like to organize the imported stakeholders into a
+                  {t('WOULD_YOU_LIKE_TO_ORGANIZE_THE')}
                   group?
                 </DialogDescription>
               </DialogHeader>
@@ -1003,10 +1006,10 @@ export default function ImportStakeholder() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-gray-800">
-                            Create a Group
+                            {t('CREATE_A_GROUP')}
                           </span>
                           <span className="text-xs px-2 py-0.5 rounded-sm bg-gray-100 font-semibold text-blue-600">
-                            RECOMMENDED
+                            {t('RECOMMENDED')}
                           </span>
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
@@ -1029,7 +1032,7 @@ export default function ImportStakeholder() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="font-semibold text-gray-800">
-                            Skip for Now
+                            {t('SKIP_FOR_NOW')}
                           </span>
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
@@ -1056,16 +1059,16 @@ export default function ImportStakeholder() {
                   disabled={uploadStakeholders.isPending}
                   onClick={() => showGroupForm.onTrue()}
                 >
-                  Create Group
+                  {t('CREATE_GROUP')}
                 </Button>
               </div>
             </>
           ) : (
             <form onSubmit={handleGroupImport}>
               <DialogHeader>
-                <DialogTitle>Create Stakeholder Group</DialogTitle>
+                <DialogTitle>{t('CREATE_STAKEHOLDER_GROUP')}</DialogTitle>
                 <DialogDescription>
-                  Enter a name for the group to organize the imported
+                  {t('ENTER_A_NAME_FOR_THE_GROUP')}
                   stakeholders.
                 </DialogDescription>
               </DialogHeader>
@@ -1080,7 +1083,7 @@ export default function ImportStakeholder() {
                     setGroupName(e.target.value);
                     setGroupError('');
                   }}
-                  placeholder="Enter group name"
+                   placeholder={t('ENTER_GROUP_NAME')}
                   className="w-full"
                   autoFocus
                   disabled={uploadStakeholders.isPending}
@@ -1095,13 +1098,13 @@ export default function ImportStakeholder() {
                   variant="outline"
                   className="flex-1 rounded-sm"
                   disabled={uploadStakeholders.isPending}
-                  onClick={() => {
+                   onClick={() => {
                     showGroupForm.onFalse();
                     setGroupName('');
                     setGroupError('');
                   }}
                 >
-                  Back
+                  {t('BACK')}
                 </Button>
                 <Button
                   type="submit"

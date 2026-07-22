@@ -40,11 +40,25 @@ import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { Tag, TagInput } from 'emblor';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function AddGrievances() {
+  const t = useTranslations('AA Project');
+  const labelMap: Record<string, string> = {
+    'Technical': t('TECHNICAL'),
+    'Non-Technical': t('NON_TECHNICAL'),
+    'Other': t('OTHER'),
+    'New': t('NEW'),
+    'Under Review': t('UNDER_REVIEW'),
+    'Resolved': t('RESOLVED'),
+    'Closed': t('CLOSED'),
+    'Low': t('LOW'),
+    'Medium': t('MEDIUM'),
+    'High': t('HIGH'),
+  };
   const { id: projectID } = useParams();
   const router = useRouter();
   const [formKey, setFormKey] = React.useState(0);
@@ -206,8 +220,8 @@ export default function AddGrievances() {
             <div className="mt-4 flex justify-between items-center">
               <div>
                 <Heading
-                  title={`Create Grievance`}
-                  description="Fill the form below to create new grievance"
+                  title={t('CREATE_GRIEVANCE')}
+                  description={t('FILL_THE_FORM_BELOW_TO_CREATE_NEW_GRIEVANCE')}
                 />
               </div>
 
@@ -225,11 +239,11 @@ export default function AddGrievances() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Grievance Title *</FormLabel>
+                        <FormLabel>{t('GRIEVANCE_TITLE')} *</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Write grievance title"
+                            placeholder={t('WRITE_GRIEVANCE_TITLE')}
                             {...field}
                           />
                         </FormControl>
@@ -245,10 +259,10 @@ export default function AddGrievances() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Description *</FormLabel>
+                        <FormLabel>{t('DESCRIPTION')} *</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Provide the detailed information about the grievance"
+                            placeholder={t('PROVIDE_DETAILED_INFORMATION')}
                             {...field}
                           />
                         </FormControl>
@@ -265,7 +279,7 @@ export default function AddGrievances() {
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Grievance Type *</FormLabel>
+                        <FormLabel>{t('GRIEVANCE_TYPE')} *</FormLabel>
                         <Select
                           onValueChange={(value: string) =>
                             field.onChange(value as GrievanceType)
@@ -275,7 +289,7 @@ export default function AddGrievances() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select Grievance Type" />
+                              <SelectValue placeholder={t('SELECT_GRIEVANCE_TYPE')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -284,7 +298,7 @@ export default function AddGrievances() {
                                 key={item.value}
                                 value={item.value as GrievanceType}
                               >
-                                {item.label}
+                                {labelMap[item.label] || item.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -299,7 +313,7 @@ export default function AddGrievances() {
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Status *</FormLabel>
+                        <FormLabel>{t('STATUS')} *</FormLabel>
                         <Select
                           onValueChange={(value: string) =>
                             field.onChange(value as GrievanceStatus)
@@ -309,7 +323,7 @@ export default function AddGrievances() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select Grievance Status" />
+                              <SelectValue placeholder={t('SELECT_GRIEVANCE_STATUS')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -318,7 +332,7 @@ export default function AddGrievances() {
                                 key={item.value}
                                 value={item.value as GrievanceStatus}
                               >
-                                {item.label}
+                                {labelMap[item.label] || item.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -334,7 +348,7 @@ export default function AddGrievances() {
                     name="priority"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>Priority *</FormLabel>
+                        <FormLabel>{t('PRIORITY')} *</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={(value: string) =>
@@ -354,7 +368,7 @@ export default function AddGrievances() {
                                   />
                                 </FormControl>
                                 <FormLabel className="font-normal">
-                                  {item.label}
+                                  {labelMap[item.label] || item.label}
                                 </FormLabel>
                               </FormItem>
                             ))}
@@ -373,15 +387,15 @@ export default function AddGrievances() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>Reporter Name *</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="Enter reporter name"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
+                        <FormLabel>{t('REPORTER_NAME')} *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder={t('ENTER_REPORTER_NAME')}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
                         </FormItem>
                       );
                     }}
@@ -393,15 +407,15 @@ export default function AddGrievances() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>Contact Information *</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="Write reporter's contact information"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
+                        <FormLabel>{t('CONTACT_INFORMATION')} *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder={t('WRITE_REPORTER_CONTACT')}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
                         </FormItem>
                       );
                     }}
@@ -414,7 +428,7 @@ export default function AddGrievances() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <Label>Tags</Label>
+                        <Label>{t('TAGS')}</Label>
                         <FormControl>
                           <>
                             <TagInput
@@ -427,9 +441,7 @@ export default function AddGrievances() {
                                   newTags as [Tag, ...Tag[]],
                                 );
                               }}
-                              placeholder={
-                                'Enter Tag and press ENTER to continue'
-                              }
+                              placeholder={t('ENTER_TAG_AND_PRESS_ENTER')}
                               className="min-h-[23px]"
                               styleClasses={{
                                 inlineTagsContainer:
@@ -455,7 +467,7 @@ export default function AddGrievances() {
                             />
                             {unsavedTag && (
                               <span className="text-sm text-red-400 ml-1">
-                                Press Enter to add.
+                                {t('PRESS_ENTER_TO_ADD')}
                               </span>
                             )}
                           </>
@@ -474,10 +486,10 @@ export default function AddGrievances() {
                 className="w-36"
                 onClick={handleResetForm}
               >
-                Clear
+                {t('CLEAR')}
               </Button>
               <Button className="w-36" type="submit" disabled={false}>
-                Create
+                {t('CREATE')}
               </Button>
             </div>
           </ScrollArea>

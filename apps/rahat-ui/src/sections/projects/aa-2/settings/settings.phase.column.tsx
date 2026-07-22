@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -14,6 +15,7 @@ import { Phase } from './aa.phases';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 
 function DisbursementCell({ methods }: { methods: string[] }) {
+  const t = useTranslations('AA Project');
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? methods : methods.slice(0, 2);
 
@@ -32,7 +34,7 @@ function DisbursementCell({ methods }: { methods: string[] }) {
           onClick={() => setShowAll(!showAll)}
           className="text-[10px] text-primary underline cursor-pointer ml-1"
         >
-          {showAll ? 'View Less' : `+${methods.length - 2} more`}
+          {showAll ? t('VIEW_LESS') : `+${methods.length - 2} ${t('MORE')}`}
         </button>
       )}
     </div>
@@ -43,30 +45,31 @@ export const useAASettingsPhaseColumns = (
   handleEditClick: (phase: Phase) => void,
   projectType?: string,
 ) => {
+  const t = useTranslations('AA Project');
   const riverBasinHeader =
-    projectType === 'HEAT_WAVE' ? 'Station' : 'River Basin';
+    projectType === 'HEAT_WAVE' ? t('STATION') : t('RIVER_BASIN');
   const columns: ColumnDef<Phase>[] = [
     {
-      header: 'Name',
+      header: t('NAME'),
       accessorKey: 'name',
       cell: ({ row }: { row: Row<Phase> }) => {
         return <TruncatedCell text={row.getValue('name')} maxLength={25} />;
       },
     },
     {
-      header: 'Can Revert',
+      header: t('CAN_REVERT'),
       accessorKey: 'canRevert',
       cell: ({ row }: { row: Row<Phase> }) => {
         const value = row.getValue('canRevert');
-        return <div>{value ? 'Yes' : 'No'}</div>;
+        return <div>{value ? t('YES') : t('NO')}</div>;
       },
     },
     {
-      header: 'Can Trigger Payout',
+      header: t('CAN_TRIGGER_PAYOUT'),
       accessorKey: 'canTriggerPayout',
       cell: ({ row }: { row: Row<Phase> }) => {
         const value = row.getValue('canTriggerPayout');
-        return <div>{value ? 'Yes' : 'No'}</div>;
+        return <div>{value ? t('YES') : t('NO')}</div>;
       },
     },
     {
@@ -79,15 +82,15 @@ export const useAASettingsPhaseColumns = (
       },
     },
     {
-      header: 'Is Automated Activity',
+      header: t('IS_AUTOMATED_ACTIVITY'),
       accessorKey: 'isAutomatedActivity',
       cell: ({ row }: { row: Row<Phase> }) => {
         const value = row.getValue('isAutomatedActivity');
-        return <div>{value ? 'Yes' : 'No'}</div>;
+        return <div>{value ? t('YES') : t('NO')}</div>;
       },
     },
     {
-      header: 'Disbursement Method',
+      header: t('DISBURSEMENT_METHOD'),
       accessorKey: 'disbursementConfig',
       cell: ({ row }: { row: Row<Phase> }) => {
         const disbursementConfig = row.getValue(
@@ -97,14 +100,14 @@ export const useAASettingsPhaseColumns = (
         return disbursementMethods?.length ? (
           <DisbursementCell methods={disbursementMethods} />
         ) : (
-          'N/A'
+          t('N_A')
         );
       },
     },
     {
       id: 'actions',
       enableHiding: false,
-      header: 'Actions',
+      header: t('ACTIONS'),
       cell: ({ row }: { row: Row<Phase> }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -116,7 +119,7 @@ export const useAASettingsPhaseColumns = (
                 onClick={() => handleEditClick(row.original)}
               />
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>{t('EDIT')}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       ),

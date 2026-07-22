@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Expand } from 'lucide-react';
@@ -23,6 +24,7 @@ export default function PhaseContent({
   isPinned = false,
   onTogglePin,
 }: PhaseContentProps) {
+  const t = useTranslations('AA Project');
   const { id: projectID } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -51,8 +53,8 @@ export default function PhaseContent({
                   >
                     <Image
                       src="/svg/pin-on.svg"
-                      alt="Unpin phase"
-                      title="Unpin phase"
+                      alt={t('UNPIN_PHASE')}
+                      title={t('UNPIN_PHASE')}
                       className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                       width={25}
                       height={25}
@@ -66,8 +68,8 @@ export default function PhaseContent({
                   >
                     <Image
                       src="/svg/pin-off.svg"
-                      alt="Pin phase to front"
-                      title="Pin phase to front"
+                      alt={t('PIN_PHASE_TO_FRONT')}
+                      title={t('PIN_PHASE_TO_FRONT')}
                       className="w-5 h-5  cursor-pointer active:scale-95 transition-transform"
                       width={25}
                       height={25}
@@ -118,7 +120,7 @@ export default function PhaseContent({
           </div>
         ) : (
           <div className="flex flex-1 items-center justify-center ">
-            <NoResult message="No Activities Available" className="mt-1" />
+            <NoResult message={t('NO_ACTIVITIES_AVAILABLE')} className="mt-1" />
           </div>
         )}
       </CardContent>

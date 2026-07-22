@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useCreatePhase,
@@ -25,6 +26,7 @@ import {
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function AddPhaseView() {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;
@@ -89,9 +91,9 @@ export default function AddPhaseView() {
   );
 
   const disbursementMethodLabels: Record<string, string> = {
-    GROUP_TOKEN: 'Group Cash Token',
-    TOKEN: 'Token',
-    INKIND: 'Inkind',
+    GROUP_TOKEN: t('GROUP_CASH_TOKEN'),
+    TOKEN: t('TOKEN'),
+    INKIND: t('INKIND'),
   };
 
   const disbursementMethodOptions: Option[] = useMemo(() => {
@@ -164,8 +166,8 @@ export default function AddPhaseView() {
       <div className="mt-4 px-4">
         <Back path={triggerStatementPath} />
         <Heading
-          title="Add Phase"
-          description="Fill the form below to create new phase"
+          title={t('ADD_PHASE')}
+          description={t('FILL_FORM_TO_CREATE_PHASE')}
         />
       </div>
       <PhaseForm
@@ -173,8 +175,8 @@ export default function AddPhaseView() {
         onSubmit={handleFormSubmit}
         onReset={handleReset}
         loading={createPhase.isPending}
-        submitLabel="Add"
-        resetLabel="Clear"
+        submitLabel={t('ADD')}
+        resetLabel={t('CLEAR')}
         stationHeading={stationHeading}
         disbursementMethodOptions={disbursementMethodOptions}
         allPhases={phasesData}
@@ -183,8 +185,8 @@ export default function AddPhaseView() {
         isConfirmationDialogOpen={addPhaseConfirmDialog.value}
         onCancel={handleCancelAdd}
         onConfirm={handleConfirmAdd}
-        dialogTitle="Confirm Add Phase"
-        dialogMessage="Are you sure you want to add this phase?"
+        dialogTitle={t('CONFIRM_ADD_PHASE')}
+        dialogMessage={t('CONFIRM_ADD_PHASE_DESC')}
       />
     </>
   );

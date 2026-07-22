@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
@@ -51,6 +52,7 @@ export type Transaction = {
 };
 
 function BeneficiaryDetailTableView() {
+  const t = useTranslations('AA Project');
   const route = useRouter();
   const id = useParams();
   // TODO: Refactor it
@@ -114,7 +116,7 @@ function BeneficiaryDetailTableView() {
       <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter name..."
+            placeholder={t('FILTER_NAME')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)

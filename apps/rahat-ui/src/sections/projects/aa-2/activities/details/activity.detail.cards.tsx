@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Clock, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
@@ -14,6 +15,7 @@ export default function ActivityDetailCards({
   activityDetail,
   loading,
 }: ActivityDetailCardsProps) {
+  const t = useTranslations('AA Project');
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
       <SpinnerLoader />
@@ -26,23 +28,23 @@ export default function ActivityDetailCards({
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <TooltipWrapper tip={`Phase: ${activityDetail?.phase?.name}`}>
+            <TooltipWrapper tip={`${t('PHASE')}: ${activityDetail?.phase?.name}`}>
               <span className="bg-green-100 text-green-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
                 {activityDetail?.phase?.name}
               </span>
             </TooltipWrapper>
 
             <TooltipWrapper
-              tip={`Activity Type: ${
-                activityDetail?.isAutomated ? 'Automated' : 'Manual'
+              tip={`${t('ACTIVITY_TYPE')}: ${
+                activityDetail?.isAutomated ? t('AUTOMATED') : t('MANUAL')
               }`}
             >
               <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
-                {activityDetail?.isAutomated ? 'Automated' : 'Manual'}
+                {activityDetail?.isAutomated ? t('AUTOMATED') : t('MANUAL')}
               </span>
             </TooltipWrapper>
 
-            <TooltipWrapper tip={`Category: ${activityDetail?.category?.name}`}>
+            <TooltipWrapper tip={`${t('CATEGORY')}: ${activityDetail?.category?.name}`}>
               <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
                 {activityDetail?.category?.name}
               </span>
@@ -51,7 +53,7 @@ export default function ActivityDetailCards({
             {/* getStatusBg(status) */}
             <div className="ml-auto">
               <TooltipWrapper
-                tip={`Activity Status: ${activityDetail?.status
+                tip={`${t('ACTIVITY_STATUS')}: ${activityDetail?.status
                   ?.toLowerCase()
                   ?.split('_')
                   ?.map(
@@ -75,14 +77,14 @@ export default function ActivityDetailCards({
               </TooltipWrapper>
             </div>
           </div>
-          <TooltipWrapper tip={`Activity Title: ${activityDetail?.title}`}>
+          <TooltipWrapper tip={`${t('ACTIVITY_TITLE')}: ${activityDetail?.title}`}>
             <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate w-[420px] cursor-pointer">
               {activityDetail?.title}
             </h3>
           </TooltipWrapper>
 
           {activityDetail?.description && (
-            <TooltipWrapper tip={`Description: ${activityDetail?.description}`}>
+            <TooltipWrapper                 tip={`${tg('DESCRIPTION')}: ${activityDetail?.description}`}>
               <p className="text-gray-600 text-sm mt-1 leading-tight cursor-pointer">
                 {activityDetail?.description?.substring(0, 100)}...
               </p>
@@ -90,7 +92,7 @@ export default function ActivityDetailCards({
           )}
           <div className="text-gray-500 text-sm mt-2 flex flex-wrap gap-2">
             <TooltipWrapper
-              tip={`Responsible Station: ${
+              tip={`${t('RESPONSIBLE_STATION')}: ${
                 activityDetail?.responsibleStation ?? 'N/A'
               }`}
             >
@@ -103,7 +105,7 @@ export default function ActivityDetailCards({
             </TooltipWrapper>
 
             <TooltipWrapper
-              tip={`Lead Time: ${activityDetail?.leadTime ?? 'N/A'}`}
+              tip={`${t('LEAD_TIME')}: ${activityDetail?.leadTime ?? 'N/A'}`}
             >
               <span className="cursor-pointer">
                 {activityDetail?.leadTime && <span>&bull;</span>}
@@ -114,10 +116,10 @@ export default function ActivityDetailCards({
           <div className="flex items-center text-gray-500 text-sm mt-1">
             <UserCircle className="w-4 h-4 mr-2 ml-1" />
             <TooltipWrapper
-              tip={`Responsibility: ${activityDetail?.manager?.name}`}
+              tip={`${t('RESPONSIBILITY')}: ${activityDetail?.manager?.name}`}
             >
               <span className="cursor-pointer">
-                Assigned to: {activityDetail?.manager?.name}
+                {t('ASSIGNED_TO')}: {activityDetail?.manager?.name}
               </span>
             </TooltipWrapper>
           </div>
@@ -125,7 +127,7 @@ export default function ActivityDetailCards({
             <div className="flex items-center text-green-700 text-xs mt-2">
               <CheckCircle className="w-4 h-4 mr-2 ml-1" />
               <TooltipWrapper
-                tip={`Completed by: ${activityDetail?.completedBy}`}
+                tip={`${t('COMPLETED_BY')}: ${activityDetail?.completedBy}`}
               >
                 <span className="cursor-pointer">
                   {activityDetail?.completedBy}
@@ -137,10 +139,10 @@ export default function ActivityDetailCards({
             <div className="flex items-center text-green-700 text-xs mt-2">
               <Clock className="w-4 h-4 mr-2 ml-1" />
               <TooltipWrapper
-                tip={`Completed at: ${dateFormat(activityDetail?.completedAt)}`}
+                tip={`${t('COMPLETED_AT')}: ${dateFormat(activityDetail?.completedAt)}`}
               >
                 <span className="cursor-pointer">
-                  Completed at: {dateFormat(activityDetail?.completedAt)}
+                  {t('COMPLETED_AT')}: {dateFormat(activityDetail?.completedAt)}
                 </span>
               </TooltipWrapper>
             </div>

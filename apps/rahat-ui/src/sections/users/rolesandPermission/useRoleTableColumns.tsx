@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { Role } from '@rumsan/sdk/types';
@@ -8,22 +9,24 @@ import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provide
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useRoleTableColumns = () => {
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('Users – Roles & Permissions');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const columns: ColumnDef<Role>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'isSystem',
-      header: 'Is System',
-      cell: ({ row }) => <Badge>{row.original.isSystem ? 'Yes' : 'No'}</Badge>,
+      header: t('IS_SYSTEM'),
+      cell: ({ row }) => <Badge>{row.original.isSystem ? tg('YES') : tg('NO')}</Badge>,
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created At',
+      header: tg('CREATED_AT'),
       cell: ({ row }) => {
         const changedDate = new Date(row.getValue('createdAt') as Date);
         const formattedDate = changedDate.toLocaleDateString('en-US', {
@@ -36,7 +39,7 @@ export const useRoleTableColumns = () => {
     },
     {
       id: 'actions',
-      header: 'Action',
+      header: tg('ACTION'),
       enableHiding: false,
       cell: ({ row }) => {
         return (

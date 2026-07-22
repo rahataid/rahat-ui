@@ -10,22 +10,24 @@ import {
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Settings2 } from 'lucide-react';
 import { Table } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<any>;
 };
 
 export function ToggleColumns({ table }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="ml-auto">
           <Settings2 className="mr-2 h-4 w-5" />
-          View
+          {t('VIEW')}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('TOGGLE_COLUMNS')}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

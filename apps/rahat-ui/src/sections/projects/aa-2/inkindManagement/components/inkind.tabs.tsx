@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import {
   Tabs,
@@ -7,16 +8,10 @@ import {
   TabsList,
   TabsTrigger,
 } from 'libs/shadcn/src/components/ui/tabs';
-import { ComponentType, useEffect } from 'react';
+import { ComponentType, useEffect, useMemo } from 'react';
 import InkindList from './inkind.list';
 import InkindOverview from './inkind.overview';
 import InkindAllocationList from './inkind.allocation.list';
-
-const INKIND_TABS = [
-  { value: 'inkindOverview', label: 'Inkind Overview' },
-  { value: 'inkindList', label: 'Inkind List' },
-  { value: 'inkindAllocation', label: 'Allocation List' },
-] as const;
 
 type InkindTabValue = (typeof INKIND_TABS)[number]['value'];
 
@@ -27,7 +22,14 @@ const componentMap: Record<InkindTabValue, ComponentType> = {
 };
 
 export default function InkindTabs() {
+  const tv = useTranslations('AA Project with Gnosis');
   const { activeTab, setActiveTab } = useActiveTab('inkindOverview');
+
+  const INKIND_TABS = useMemo(() => [
+    { value: 'inkindOverview', label: tv('INKIND_OVERVIEW') },
+    { value: 'inkindList', label: tv('IN_KIND_LIST') },
+    { value: 'inkindAllocation', label: tv('ALLOCATION_LIST') },
+  ] as const, [tv]);
 
   useEffect(() => {
     if (!activeTab) {

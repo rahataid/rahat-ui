@@ -41,6 +41,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
+import { useTranslations } from 'next-intl';
 
 const data: Transaction[] = [];
 
@@ -152,6 +153,7 @@ export default function BeneficiaryDetailTableView({
   tableScrollAreaHeight,
   tableSpacing,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -230,7 +232,7 @@ export default function BeneficiaryDetailTableView({
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {t('NO_RESULTS')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -241,10 +243,10 @@ export default function BeneficiaryDetailTableView({
         <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
           <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {table.getFilteredRowModel().rows.length} {t('ROW_S_SELECTED')}
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-sm font-medium">Rows per page</div>
+            <div className="text-sm font-medium">{t('ROWS_PER_PAGE')}</div>
             <Select
               defaultValue="10"
               onValueChange={(value) => table.setPageSize(Number(value))}
@@ -265,8 +267,10 @@ export default function BeneficiaryDetailTableView({
             </Select>
           </div>
           <div>
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            {t('PAGE_CURRENT_OF_TOTAL', {
+                current: table.getState().pagination.pageIndex + 1,
+                total: table.getPageCount(),
+              })}
           </div>
           <div className="space-x-4">
             <Button
@@ -275,7 +279,7 @@ export default function BeneficiaryDetailTableView({
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              Previous
+              {t('PREVIOUS')}
             </Button>
             <Button
               variant="outline"
@@ -283,7 +287,7 @@ export default function BeneficiaryDetailTableView({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Next
+              {t('NEXT')}
             </Button>
           </div>
         </div>

@@ -4,6 +4,7 @@ import {
   DialogContent,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTranslations } from 'next-intl';
 import { Lock } from 'lucide-react';
 
 interface Activity {
@@ -40,6 +41,7 @@ export function ConflictDialog({
   closeButtonText = 'Understood',
   conflictType,
 }: ConflictDialogProps) {
+  const t = useTranslations('AA Project');
   // Determine the conflict type and data to use
   const isStakeholderConflict =
     conflictType === 'stakeholder' || groupNames || stakeholderName;
@@ -56,8 +58,8 @@ export function ConflictDialog({
   // Set appropriate defaults based on conflict type
   const defaultTitle =
     detectedType === 'stakeholder'
-      ? 'Cannot Delete Stakeholder'
-      : 'Cannot Delete Group';
+      ? t('CANNOT_DELETE_STAKEHOLDER')
+      : t('CANNOT_DELETE_GROUP');
   const finalTitle = title || defaultTitle;
 
   // Convert items to Activity[] format
@@ -76,7 +78,7 @@ export function ConflictDialog({
       } stakeholder group${
         itemsList.length !== 1 ? 's' : ''
       } which are assigned to activities. Remove it from all of them to delete the stakeholder.`,
-      listTitle: 'Stakeholder Groups:',
+      listTitle: t('STAKEHOLDER_GROUPS'),
       // nextStep: 'Navigate to each stakeholder group listed above and remove this stakeholder from them. Once removed from all groups, you\'ll be able to delete the stakeholder.',
     },
     group: {
@@ -85,7 +87,7 @@ export function ConflictDialog({
       } active communication${
         itemsList.length !== 1 ? 's' : ''
       }. Remove it from all of them to delete the group.`,
-      listTitle: 'Communications:',
+      listTitle: t('COMMUNICATIONS'),
       // nextStep: 'Navigate to each communication listed above and unlink this group. Once removed from all communications, you\'ll be able to delete it.',
     },
   };
@@ -109,7 +111,7 @@ export function ConflictDialog({
             <span className="font-semibold text-slate-900">
               {`"${displayName}"`}
             </span>{' '}
-            is still in use
+            {t('IS_STILL_IN_USE')}
           </p>
         </div>
 

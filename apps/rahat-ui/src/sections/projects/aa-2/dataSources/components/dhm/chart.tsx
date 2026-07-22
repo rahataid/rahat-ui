@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
+
 import dynamic from 'next/dynamic';
 import { format } from 'date-fns';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
@@ -25,10 +27,12 @@ const TimeSeriesChart = ({
   warningLevel,
   extremeLevel,
   xDateFormat = 'h:mm a',
-  yaxisTitle = 'Water Level (m)',
+  yaxisTitle: yaxisTitleProp,
   unit = '',
   yAxisFormatter,
 }: ChartProps) => {
+  const t = useTranslations('AA Project');
+  const resolvedYaxisTitle = yaxisTitleProp ?? t('WATER_LEVEL_METERS');
   if (!data || data.length === 0) return null;
 
   const roundToOneDecimal = (value: number) => Number(roundValue(value));
@@ -41,7 +45,7 @@ const TimeSeriesChart = ({
 
   const series = keys.map((key) => ({
     name: key === 'value' ? 'average' : key,
-    data: sortedData.map((d) => {
+          data: sortedData.map((d) => {
       const result = convertToLocalTimeOrMillisecond(d.datetime);
       if (typeof result === 'string' || !result) {
         return [0, d[key]]; // Fallback to 0 or handle error as needed
@@ -88,9 +92,9 @@ const TimeSeriesChart = ({
       type: 'datetime',
       min: minTime,
       max: maxTime,
-      title: {
-        text: 'Time Stamp',
-      },
+        title: {
+          text: t('TIME_STAMP'),
+        },
       labels: {
         formatter: function (value) {
           return format(new Date(value), xDateFormat);
@@ -101,7 +105,7 @@ const TimeSeriesChart = ({
     },
     yaxis: {
       title: {
-        text: yaxisTitle,
+        text: resolvedYaxisTitle,
       },
       min: minY - 0.5,
       max: maxY + 0.5,
@@ -160,7 +164,7 @@ const TimeSeriesChart = ({
                     color: '#fff',
                     background: '#FFA500',
                   },
-                  text: 'Warning Level',
+                  text: t('WARNING_LEVEL'),
                 },
               },
             ]
@@ -176,7 +180,7 @@ const TimeSeriesChart = ({
                     color: '#fff',
                     background: '#FF0000',
                   },
-                  text: 'Danger Level',
+                  text: t('DANGER_LEVEL'),
                 },
               },
             ]
@@ -192,7 +196,7 @@ const TimeSeriesChart = ({
                     color: '#fff',
                     background: '#A51D1D',
                   },
-                  text: 'Extreme Level',
+                  text: t('EXTREME_LEVEL'),
                 },
               },
             ]

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -30,6 +31,8 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 // }
 
 export default function useActivitiesTableColumn() {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID, title } = useParams();
   const router = useRouter();
 
@@ -49,12 +52,12 @@ export default function useActivitiesTableColumn() {
   const columns: ColumnDef<IActivitiesItem>[] = [
     {
       accessorKey: 'title',
-      header: 'Title',
+      header: t('TITLE'),
       cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'category',
-      header: 'Category',
+      header: t('CATEGORY'),
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
           <TruncatedCell text={row.getValue('category')} maxLength={15} />
@@ -64,36 +67,36 @@ export default function useActivitiesTableColumn() {
 
     {
       accessorKey: 'isAutomated',
-      header: 'Type',
+      header: tg('TYPE'),
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize  text-xs font-normal text-muted-foreground">
-          {row.getValue('isAutomated') ? 'Automated' : 'Manual'}
+          {row.getValue('isAutomated') ? t('AUTOMATED') : t('MANUAL')}
         </Badge>
       ),
     },
     {
       accessorKey: 'responsibility',
-      header: 'Responsibility',
+      header: t('RESPONSIBILITY'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.getValue('responsibility') || 'N/A'}
+          text={row.getValue('responsibility') || tg('N_A')} 
           maxLength={15}
         />
       ),
     },
     {
       accessorKey: 'responsibleStation',
-      header: 'Responsible Station ',
+      header: t('RESPONSIBLE_STATION'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.getValue('responsibleStation') || 'N/A'}
+          text={row.getValue('responsibleStation') || tg('N_A')} 
           maxLength={10}
         />
       ),
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
         const bgColor = getStatusBg(status);
@@ -108,15 +111,15 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'completedBy',
-      header: 'Completed By',
+      header: t('COMPLETED_BY'),
       cell: ({ row }) => {
         const completedBy = row.getValue('completedBy') as string;
-        return <TruncatedCell text={completedBy || 'N/A'} />;
+        return <TruncatedCell text={completedBy || tg('N_A')} />;
       },
     },
     {
       accessorKey: 'completedAt',
-      header: 'Timestamp',
+      header: tg('TIMESTAMP'),
       cell: ({ row }) => {
         const completedAt = row.getValue('completedAt') as string;
         if (completedAt) {
@@ -125,13 +128,13 @@ export default function useActivitiesTableColumn() {
           const localeTime = d.toLocaleTimeString();
           return <TruncatedCell text={`${localeDate} ${localeTime}`} />;
         }
-        return 'N/A';
+        return tg('N_A');
       },
     },
     {
       id: 'actions',
       enableHiding: false,
-      header: 'Action',
+      header: tg('ACTION'),
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
@@ -142,7 +145,7 @@ export default function useActivitiesTableColumn() {
             /> */}
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={t('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleEyeClick(row.original.id)}
             />
@@ -152,7 +155,7 @@ export default function useActivitiesTableColumn() {
             >
               <TooltipComponent
                 Icon={RefreshCcw}
-                tip="Update Activity Status"
+                tip={t('UPDATE_ACTIVITY_STATUS')}
                 iconStyle="hover:text-primary cursor-pointer"
                 handleOnClick={() =>
                   handleUpdateStatusIconClick(row.original.id)

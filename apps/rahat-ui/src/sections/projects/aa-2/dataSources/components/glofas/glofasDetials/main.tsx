@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
+
 import GlofasInfoCard from '../glofas.info.card';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -32,6 +34,8 @@ const GlofasDetails = () => {
     perPage: 9999,
   });
 
+  const t = useTranslations('AA Project');
+
   if (error) {
     return (
       <div className="p-4">
@@ -49,7 +53,7 @@ const GlofasDetails = () => {
       <Back />
       <Heading
         title={`GLOFAS ${returnPeriod}`}
-        description="Details view of the selected station"
+        description={t('DETAILS_VIEW_OF_THE_SELECTED_STATION')}
       />
 
       <ScrollArea className="h-[calc(100vh-200px)]">

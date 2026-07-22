@@ -13,8 +13,11 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
 import posthog from 'posthog-js';
+import { useTranslations } from 'next-intl';
 
 export default function AuthPage() {
+  const t = useTranslations('Login');
+  const g = useTranslations('GLOBAL');
   const [isEmailValid, setIsEmailValid] = React.useState<boolean>(false);
   const [otp, setOtp] = useState('');
   const [otpinputError, setOtpinputError] = useState(false);
@@ -43,7 +46,7 @@ export default function AuthPage() {
     }).then((data) => {
       if (data.data.challenge) {
         if (resendOtp) {
-          return toast.success('Otp successfully re-sent');
+          return toast.success(t('OTP_SUCCESSFULLY_RE_SENT'));
         }
         setOtpSent(true);
       }
@@ -80,18 +83,18 @@ export default function AuthPage() {
           <div className="flex flex-col space-y-2 items-center">
             <Image src={'/rahat-logo.png'} width={40} height={40} alt="" />
             <div className="text-2xl font-bold tracking-tight">
-              Welcome to Rahat
+              {t('WELCOME_TO_RAHAT')}
             </div>
           </div>
           <div className="rounded-sm border shadow-sm p-4 space-y-4">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl  tracking-tight">
-                {!optSent ? 'Sign in' : 'Verify with OTP'}
+                {!optSent ? t('SIGN_IN') : t('VERIFY_WITH_OTP')}
               </h1>
               <p className="text-sm text-muted-foreground">
                 {!optSent
-                  ? 'Enter your email address to receive unique OTP code .'
-                  : `To ensure you security please enter your One-Time-Password . \n OTP has been sent to ${address}`}
+                  ? t('ENTER_YOUR_EMAIL_ADDRESS_TO_RECEIVE')
+                  : t('TO_ENSURE_YOU_SECURITY_PLEASE_ENTER', { address })}
               </p>
             </div>
 
@@ -100,11 +103,11 @@ export default function AuthPage() {
                 <div className="grid gap-2">
                   <div className="grid gap-1">
                     <Label className="sr-only" htmlFor="email">
-                      Email
+                      {g('EMAIL')}
                     </Label>
                     <Input
                       id="email"
-                      placeholder="Email"
+                      placeholder={g('EMAIL')}
                       type="email"
                       autoCapitalize="none"
                       autoComplete="email"
@@ -122,7 +125,7 @@ export default function AuthPage() {
                     type="submit"
                     disabled={isPending || !isEmailValid || !address}
                   >
-                    Send OTP
+                    {t('SEND_OTP')}
                   </Button>
                 </div>
               </form>
@@ -131,11 +134,11 @@ export default function AuthPage() {
                 <div className="grid gap-2">
                   <div className="grid gap-1">
                     <Label className="sr-only" htmlFor="otp">
-                      OTP
+                      {t('OTP')}
                     </Label>
                     <Input
                       id="otp"
-                      placeholder="Enter OTP"
+                      placeholder={t('ENTER_OTP')}
                       type="text"
                       autoCapitalize="none"
                       autoComplete="otp"
@@ -156,13 +159,13 @@ export default function AuthPage() {
                     />
                     {otpinputError && (
                       <div className="text-red-700 text-sm">
-                        Please enter valid OTP
+                        {t('PLEASE_ENTER_VALID_OTP')}
                       </div>
                     )}
                   </div>
 
                   <p className="px-8 text-center text-sm text-muted-foreground">
-                    Didn't get one?
+                    {t('DIDNT_GET_ONE')}
                     <span
                       className="underline font-medium ml-2 cursor-pointer"
                       onClick={(e) => {
@@ -170,12 +173,12 @@ export default function AuthPage() {
                         onRequestOtp(e, true);
                       }}
                     >
-                      Resend OTP
+                      {t('RESEND_OTP')}
                     </span>
                   </p>
 
                   <Button type="submit" disabled={otp?.length !== 6}>
-                    Verify
+                    {t('VERIFY')}
                   </Button>
                   <Button
                     type="button"
@@ -185,10 +188,9 @@ export default function AuthPage() {
                       setOtp('');
                       setChallenge('');
                       setAddress('');
-                      // optionally reset address if needed: setAddress('');
                     }}
                   >
-                    Back
+                    {g('BACK')}
                   </Button>
                 </div>
               </form>
@@ -196,19 +198,17 @@ export default function AuthPage() {
 
             {!optSent && (
               <p className="text-muted-foreground text-sm">
-                By clicking continue, you agree to our
-                <span className="font-medium">
-                  <Link
-                    target="_blank"
-                    href={
-                      'https://docs.google.com/document/d/15eSgn1OPwsvWRU0inMOHYFgV5kvdOVA7L5LPoo6jJO0/edit'
-                    }
-                    className="underline font-medium"
-                  >
-                    Terms of Service
-                  </Link>
-                </span>
-                {''} and {''}
+                {t('BY_CLICKING_CONTINUE_YOU_AGREE_TO')}{' '}
+                <Link
+                  target="_blank"
+                  href={
+                    'https://docs.google.com/document/d/15eSgn1OPwsvWRU0inMOHYFgV5kvdOVA7L5LPoo6jJO0/edit'
+                  }
+                  className="underline font-medium"
+                >
+                  {t('TERMS_OF_SERVICE')}
+                </Link>
+                {' ' + t('AND') + ' '}
                 <Link
                   target="_blank"
                   href={
@@ -216,7 +216,7 @@ export default function AuthPage() {
                   }
                   className="underline font-medium"
                 >
-                  Privacy Policy
+                  {t('PRIVACY_POLICY')}
                 </Link>
                 .
               </p>

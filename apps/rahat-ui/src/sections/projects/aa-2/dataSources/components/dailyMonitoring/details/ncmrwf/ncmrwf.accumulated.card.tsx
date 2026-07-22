@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
+
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataSourceCard from '../data.source.card';
 import FieldCard from '../field.card';
@@ -16,14 +18,15 @@ type IProps = {
 };
 
 export default function AccumulatedCard({ data }: IProps) {
+  const t = useTranslations('AA Project');
   const sanitizedData = React.useMemo(() => {
     return [
-      { label: '24 hours', subLabel: '', value: data?.[0].data?.hours24 },
-      { label: '72 hours', subLabel: '', value: data?.[0].data?.hours72 },
-      { label: '168 hours', subLabel: '', value: data?.[0].data?.hours168 },
+      { label: t('N24_HOURS'), subLabel: '', value: data?.[0].data?.hours24 },
+      { label: t('N72_HOURS'), subLabel: '', value: data?.[0].data?.hours72 },
+      { label: t('N168_HOURS'), subLabel: '', value: data?.[0].data?.hours168 },
       {
         label: 'Heavy Rainfall Forecast in Karnali Basin (upstream areas)',
-        subLabel: '(more than 100mm in consecutive 2-3 days)',
+        subLabel: t('HEAVY_RAINFALL_SUBLABEL'),
         value: data?.[0].data?.heavyRainfallForecastInKarnaliBasin,
       },
     ];

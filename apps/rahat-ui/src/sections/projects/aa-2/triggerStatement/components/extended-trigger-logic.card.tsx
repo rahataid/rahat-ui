@@ -2,6 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Settings2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type {
   ExtendedTriggerLogic,
   ExtendedTriggerLogicGroup,
@@ -87,6 +88,7 @@ export default function ExtendedTriggerLogicCard({
   triggers = [],
   onConfigure,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const hasConfig =
     extendedTriggerLogic &&
     extendedTriggerLogic.groups &&
@@ -96,7 +98,7 @@ export default function ExtendedTriggerLogicCard({
     <div className="mt-4 p-4 rounded-xl border shadow-md">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-base font-semibold">Extended Trigger Logic</p>
+          <p className="text-base font-semibold">{t('EXTENDED_TRIGGER_LOGIC')}</p>
           <p className="text-xs text-muted-foreground">
             Additional grouped AND/OR conditions
           </p>

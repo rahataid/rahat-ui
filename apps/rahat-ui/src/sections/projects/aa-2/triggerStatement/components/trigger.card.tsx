@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { useRouter } from 'next/navigation';
@@ -55,6 +56,7 @@ export default function TriggerCard({
   id,
   triggerStatement: tgSt,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const router = useRouter();
 
   const handleRoute = () => {
@@ -96,7 +98,7 @@ export default function TriggerCard({
             isTriggered ? 'bg-red-50 text-red-500' : ''
           }`}
         >
-          {isTriggered ? 'Triggered' : 'Not Triggered'}
+          {isTriggered ? t('TRIGGERED') : t('NOT_TRIGGERED')}
         </Badge>
       </div>
       <TooltipProvider>
@@ -138,12 +140,12 @@ export default function TriggerCard({
 
       {createdAt && (
         <p className="text-muted-foreground text-sm/4 mb-1">
-          Created at : {dateFormat(createdAt)}
+          {t('CREATED_AT_COLON')} {dateFormat(createdAt)}
         </p>
       )}
       {triggeredAt && (
         <p className="text-muted-foreground text-sm/4">
-          Triggered at : {dateFormat(triggeredAt)}
+          {t('TRIGGERED_AT_COLON')} {dateFormat(triggeredAt)}
         </p>
       )}
     </div>

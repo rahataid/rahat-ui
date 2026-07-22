@@ -16,6 +16,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Pagination } from '@rumsan/sdk/types';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<any>;
@@ -34,6 +35,8 @@ export default function ImportListTable({
   pagination,
   loading,
 }: IProps) {
+  const t = useTranslations('Import Beneficiary List');
+  const tg = useTranslations('GLOBAL');
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -54,7 +57,7 @@ export default function ImportListTable({
       <div className="p-2">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search Group Name..."
+            placeholder={t('SEARCH_GROUP_NAME')}
             name="groupName"
             value={
               (table.getColumn('groupName')?.getFilterValue() as string) ??
@@ -111,7 +114,7 @@ export default function ImportListTable({
                       <div className="flex items-center justify-center mt-4">
                         <div className="text-center">
                           <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
-                          <Label className="text-base">Loading ...</Label>
+                          <Label className="text-base">{tg('LOADING')}</Label>
                         </div>
                       </div>
                     ) : (
@@ -123,10 +126,10 @@ export default function ImportListTable({
                           alt="no data"
                         />
                         <p className="text-medium text-base mb-1">
-                          No Data Available
+                          {tg('NO_DATA_AVAILABLE')}
                         </p>
                         <p className="text-sm mb-4 text-gray-500">
-                          There are no imports to display at the moment
+                          {t('THERE_ARE_NO_IMPORTS_TO_DISPLAY')}
                         </p>
                       </div>
                     )}

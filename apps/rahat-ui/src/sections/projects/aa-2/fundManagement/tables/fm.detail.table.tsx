@@ -9,6 +9,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { useFMDetailTableColumns } from '../columns/useFMDetailColumns';
+import { useTranslations } from 'next-intl';
 import {
   ClientSidePagination,
   DemoTable,
@@ -30,6 +31,8 @@ export default function FundManagementDetailTable({
   title,
   numberOfTokens,
 }: IProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -58,11 +61,11 @@ export default function FundManagementDetailTable({
       <Heading
         title={title}
         titleStyle="text-lg"
-        description="List of all the beneficiaries in the group"
+        description={t('DETAILED_VIEW_OF_THE_SELECTED_BENEFICIARY2')}
       />
       <SearchInput
         className="w-full mb-2"
-        name="walletAddress"
+        name={tg('WALLET_ADDRESS')}
         value={
           (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
         }
@@ -74,7 +77,7 @@ export default function FundManagementDetailTable({
         table={table}
         tableHeight="h-[calc(100vh-550px)]"
         loading={loading}
-        message="No Detail Available"
+        message={tg('NO_DATA_AVAILABLE')}
       />
       <ClientSidePagination table={table} />
     </div>

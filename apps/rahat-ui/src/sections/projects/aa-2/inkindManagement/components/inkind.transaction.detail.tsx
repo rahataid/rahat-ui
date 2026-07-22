@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -9,6 +10,8 @@ import { formatDate } from '../inkind.helpers';
 import InfoItem from 'apps/rahat-ui/src/sections/projects/aa-2/payout/benefTransactionDetails/infoItem';
 
 export default function InkindTransactionDetail() {
+  const tv = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('GLOBAL');
   const { id, allocationId } = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -36,8 +39,8 @@ export default function InkindTransactionDetail() {
     <div className="p-4 md:p-6 space-y-6">
       <HeaderWithBack
         path={`/projects/aa/${id}/inkind-management/${allocationId}`}
-        title="Transaction Log Details"
-        subtitle="Detail view of the selected inkind disbursement transaction"
+        title={tv('TRANSACTION_LOG_DETAILS')}
+        subtitle={tv('DETAIL_VIEW_OF_THE_SELECTED_INKIND')}
         onBack={() => {
           queryClient.invalidateQueries({
             queryKey: [
@@ -58,19 +61,19 @@ export default function InkindTransactionDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <DataCard
-          title="Inkind Name"
+          title={tv('INKIND_NAME')}
           smallNumber={inkindName}
           className="border-solid rounded-sm"
           iconStyle="bg-white text-secondary-muted"
         />
         <DataCard
-          title="Group Name"
+          title={tv('GROUP_NAME')}
           smallNumber={groupName}
           className="border-solid rounded-sm"
           iconStyle="bg-white text-secondary-muted"
         />
         <DataCard
-          title="Quantity Redeemed"
+          title={tv('TOTAL_REDEEMED')}
           smallNumber={quantity}
           className="border-solid rounded-sm"
           iconStyle="bg-white text-secondary-muted"
@@ -80,34 +83,34 @@ export default function InkindTransactionDetail() {
       <Card className="rounded-sm">
         <CardContent className="p-6">
           <div className="inline-flex items-center gap-3 text-lg font-semibold text-[#2c2f3c] mb-6">
-            Transaction Details
+            {tv('TRANSACTION_DETAILS')}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-7">
             <InfoItem
-              label="Beneficiary Wallet Address"
+              label={tv('BENEFICIARY_WALLET_ADDRESS')}
               value={beneficiaryWalletAddress || undefined}
               copyable
             />
             <InfoItem
-              label="Beneficiary Phone"
+              label={tv('BENEFICIARY_PHONE')}
               value={beneficiaryPhone || undefined}
             />
             <InfoItem
-              label="Transaction Hash"
+              label={tv('TRANSACTION_HASH')}
               value={txHash || undefined}
               copyable
               link={true}
             />
-            <InfoItem label="Redeemed At" value={formatDate(redeemedAt)} />
-            <InfoItem label="Vendor Name" value={vendorName || undefined} />
+            <InfoItem label={tv('REDEEMED_AT')} value={formatDate(redeemedAt)} />
+            <InfoItem label={tv('VENDOR_NAME')} value={vendorName || undefined} />
             <InfoItem
-              label="Vendor Wallet Address"
+              label={tv('VENDOR_WALLET_ADDRESS')}
               value={vendorWalletAddress || undefined}
               copyable
             />
             {otpExemptionReason && (
               <InfoItem
-                label="OTP Exemption Reason"
+                label={tv('OTP_EXEMPTION_REASON')}
                 value={formatOtpReason(otpExemptionReason)}
               />
             )}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   VisibilityState,
   flexRender,
@@ -38,6 +39,8 @@ type IProps = {
   roleData: Role[];
 };
 export default function ListView({ roleData }: IProps) {
+  const t = useTranslations('Users – Roles & Permissions');
+  const tg = useTranslations('GLOBAL');
   const columns = useRoleTableColumns();
 
   const [rowSelection, setRowSelection] = React.useState({});
@@ -64,7 +67,7 @@ export default function ListView({ roleData }: IProps) {
       <div className="w-full h-full mt-1 p-1 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search Role by name..."
+            placeholder={t('SEARCH_ROLE_BY_NAME')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -75,11 +78,11 @@ export default function ListView({ roleData }: IProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 <Settings2 className="mr-2 h-4 w-5" />
-                View
+                {tg('VIEW')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+              <DropdownMenuLabel>{tg('TOGGLE_COLUMNS')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {table
                 .getAllColumns()
@@ -148,7 +151,7 @@ export default function ListView({ roleData }: IProps) {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {tg('NO_RESULTS')}
                     </TableCell>
                   </TableRow>
                 )}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { useRouter } from 'next/navigation';
@@ -62,6 +63,8 @@ export function DisburseModal({
   onOpenChange: (open: boolean) => void;
   disburseLoading?: boolean;
 }) {
+  const t = useTranslations('AA Project with Cash Tracker');
+  const tGlobal = useTranslations('GLOBAL');
   const router = useRouter();
   const recordsListPath = `/projects/aa/${projectUUID}/group-cash-transfer?tab=gctManagementList`;
   const confirmDisburse = useConfirmDisburseGroupCashTransfer(projectUUID);
@@ -75,17 +78,17 @@ export function DisburseModal({
   const selectedProvider = providers?.find((p: PaymentProvider) => String(p.id) === providerId);
 
   const summaryRows: [string, string][] = [
-    ['Group Name', group?.name || '—'],
-    ['Amount', amountFmt],
-    ['Phone', group?.phone || '—'],
-    ['Account Holder Name', group?.bankDetails?.accountName || '—'],
-    ['Bank Account Number', group?.bankDetails?.accountNumber || '—'],
+    [t('GROUP_NAME_COL'), group?.name || '—'],
+    [t('AMOUNT_COL'), amountFmt],
+    [t('PHONE_COL'), group?.phone || '—'],
+    [t('ACCOUNT_HOLDER_NAME'), group?.bankDetails?.accountName || '—'],
+    [t('BANK_ACCOUNT_NUMBER'), group?.bankDetails?.accountNumber || '—'],
   ];
 
   const handleConfirm = () => {
     setConfirmOpen(false);
     confirmDisburse.mutate({ uuid: recordUuid, paymentProviderId: providerId });
-    swal.fire({ title: 'Disbursement initiated.', icon: 'success', timer: 2000, showConfirmButton: false });
+    swal.fire({ title: t('DISBURSEMENT_INITIATED'), icon: 'success', timer: 2000, showConfirmButton: false });
     onOpenChange(false);
     router.push(recordsListPath);
   };
@@ -97,12 +100,12 @@ export function DisburseModal({
           {disburseLoading && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground animate-pulse">Please wait, disbursement is initiating…</p>
+              <p className="text-sm text-muted-foreground animate-pulse">{t('PLEASE_WAIT_DISBURSEMENT_INITIATING')}</p>
             </div>
           )}
           <Card className="rounded-sm border-0 shadow-none">
             <CardContent className="p-5 space-y-4">
-              <h2 className="text-xl font-semibold">Disbursement Details</h2>
+              <h2 className="text-xl font-semibold">{t('DISBURSEMENT_DETAILS')}</h2>
               <div className="text-base divide-y">
                 {summaryRows.map(([label, value]) => (
                   <div key={label} className="flex items-center justify-between py-2.5">
@@ -113,10 +116,10 @@ export function DisburseModal({
               </div>
 
               <div className="border-t pt-4 space-y-3">
-                <p className="text-sm font-medium">Select Payment Provider</p>
+                <p className="text-sm font-medium">{t('SELECT_PAYMENT_PROVIDER')}</p>
                 <Select value={providerId} onValueChange={setProviderId}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={providersLoading ? 'Loading…' : 'Select a provider'} />
+                    <SelectValue placeholder={providersLoading ? t('LOADING') : t('SELECT_A_PROVIDER')} />
                   </SelectTrigger>
                   <SelectContent>
                     {(providers ?? []).map((p: PaymentProvider) => (
@@ -131,7 +134,7 @@ export function DisburseModal({
                   disabled={!providerId || confirmDisburse.isPending}
                   onClick={() => setConfirmOpen(true)}
                 >
-                  Proceed
+                  {t('PROCEED')}
                 </Button>
               </div>
             </CardContent>
@@ -142,23 +145,22 @@ export function DisburseModal({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Disbursement</AlertDialogTitle>
+            <AlertDialogTitle>{t('CONFIRM_DISBURSEMENT')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to disburse{' '}
-              <span className="font-semibold text-foreground">{amountFmt}</span>{' '}
-              to{' '}
-              <span className="font-semibold text-foreground">&quot;{group?.name}&quot;</span>{' '}
-              via{' '}
-              <span className="font-semibold text-foreground">{selectedProvider?.name ?? '—'}</span>?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_DISBURSE', {
+                amount: amountFmt,
+                groupName: group?.name,
+                provider: selectedProvider?.name ?? '—',
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={confirmDisburse.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={confirmDisburse.isPending}>{tGlobal('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirm} disabled={confirmDisburse.isPending}>
               {confirmDisburse.isPending ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Disbursing…</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('DISBURSING')}</>
               ) : (
-                'Yes, Disburse'
+                t('YES_DISBURSE')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -184,10 +186,11 @@ export function DisburseButton({
   disabledReason?: string;
   onClick: () => void;
 }) {
+  const t = useTranslations('AA Project with Cash Tracker');
   const { data: payoutStatus } = usePhasePayoutStatus(projectUUID);
   const canDisburse = !!payoutStatus?.isPayoutMethodPhaseActivated;
   const isDisabled = !canDisburse || loading || disabled;
-  const tip = !canDisburse ? 'Phase not triggered.' : disabledReason;
+  const tip = !canDisburse ? t('PHASE_NOT_TRIGGERED') : disabledReason;
 
   return (
     <TooltipProvider>
@@ -201,7 +204,7 @@ export function DisburseButton({
               onClick={onClick}
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Disburse
+              {t('DISBURSING')}
             </Button>
           </span>
         </TooltipTrigger>

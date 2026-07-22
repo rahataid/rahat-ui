@@ -1,6 +1,7 @@
 import React from 'react';
 import BeneficiaryInfo from './beneficiary.info';
 import TransactionLogs from './transaction.log';
+import { useTranslations } from 'next-intl';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useProjectBeneficiaryDetail } from '@rahat-ui/query';
@@ -12,6 +13,7 @@ const BeneficiaryDetail = () => {
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
   const searchParams = useSearchParams();
+  const t = useTranslations('AA Project');
   const redirectTo = searchParams.get('groupId') as string;
   const redirectToFund = searchParams.get('fundId') as string;
   const vendorId = searchParams.get('vendorId') as string;
@@ -36,8 +38,8 @@ const BeneficiaryDetail = () => {
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={'Beneficiary Details'}
-          subtitle="Detailed view of the selected beneficiary"
+          title={t('BENEFICIARY_DETAILS')}
+          subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_BENEFICIARY')}
           path={navRoute}
         />
       </div>

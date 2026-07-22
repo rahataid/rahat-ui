@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Eye, ArrowLeftRight, Dot } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -30,6 +31,8 @@ export default function RecentPaymentCard({
   vendorName,
   status,
 }: GroupCardProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   return (
     <div
       className={`flex items-center justify-between p-1  bg-white ${
@@ -81,7 +84,7 @@ export default function RecentPaymentCard({
               .replace(/^./, (char) => char.toUpperCase())}
           </div>
           <div className="text-sm text-muted-foreground">
-            {beneficiariesCount} beneficiaries
+            {beneficiariesCount} {t('BENEFICIARIES')}
           </div>
         </div>
       </div>
@@ -93,7 +96,7 @@ export default function RecentPaymentCard({
       {/* View Icon */}
       <TooltipComponent
         Icon={Eye}
-        tip="View Details"
+        tip={tg('VIEW_DETAILS')}
         iconStyle="w-5 h-5 text-muted-foreground"
         handleOnClick={onView}
       />

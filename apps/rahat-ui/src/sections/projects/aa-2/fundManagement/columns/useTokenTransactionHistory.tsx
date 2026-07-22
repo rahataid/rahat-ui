@@ -9,6 +9,7 @@ import {
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 
 interface TokenTransaction {
   uuid: string;
@@ -22,14 +23,14 @@ interface TokenTransaction {
 export const useTokenTransactionHistory = () => {
   const params = useParams();
   const projectId = params.id as UUID;
-
+  const tg = useTranslations('GLOBAL');
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
 
   const columns: ColumnDef<TokenTransaction>[] = [
     {
-      header: 'Transaction Hash',
+      header: tg('TX_HASH'),
       accessorKey: 'transactionHash',
       cell: ({ row }) => {
         const txnUrl = getExplorerUrl({
@@ -60,7 +61,7 @@ export const useTokenTransactionHistory = () => {
       },
     },
     {
-      header: 'From',
+      header: tg('FROM'),
       accessorKey: 'from',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
@@ -73,7 +74,7 @@ export const useTokenTransactionHistory = () => {
       ),
     },
     {
-      header: 'To',
+      header: tg('TO'),
       accessorKey: 'to',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
@@ -86,17 +87,17 @@ export const useTokenTransactionHistory = () => {
       ),
     },
     {
-      header: 'Amount',
+      header: tg('AMOUNT'),
       accessorKey: 'value',
     },
     {
-      header: 'Date',
+      header: tg('DATE'),
       accessorKey: 'blockTimeStamp',
       cell: ({ row }) => {
         const date = new Date(Number(row.original.blockTimeStamp) * 1000);
         const formattedDate = row.original.blockTimeStamp
           ? dateFormat(date)
-          : 'N/A';
+          : tg('N_A');
         return formattedDate;
       },
     },

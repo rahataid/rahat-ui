@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
 import {
@@ -38,6 +39,7 @@ type IProps = {
 };
 
 export default function AddAutomatedTriggerForm({ form }: IProps) {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const selectedPhase = JSON.parse(
@@ -77,7 +79,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter Trigger Title"
+                          placeholder={t('ENTER_TRIGGER_TITLE')}
                           {...field}
                         />
                       </FormControl>
@@ -99,7 +101,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         <FormLabel>Source</FormLabel>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Source" />
+                            <SelectValue placeholder={t('SELECT_SOURCE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -128,7 +130,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         <FormLabel>River Basin</FormLabel>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select River Basin" />
+                            <SelectValue placeholder={t('SELECT_RIVER_BASIN')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -160,7 +162,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         // inputMode="decimal"
                         // pattern="[0-9]*[.,]?[0-9]*"
                         // title="Please enter positive number"
-                        placeholder="Enter water Level"
+                        placeholder={t('ENTER_WATER_LEVEL2')}
                         {...field}
                       />
                     </FormControl>

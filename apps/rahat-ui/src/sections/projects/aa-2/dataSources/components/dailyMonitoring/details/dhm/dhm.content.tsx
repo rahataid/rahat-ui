@@ -4,6 +4,7 @@ import React from 'react';
 import MonitoringCard from './monitorig.card';
 import { useForecastData } from './useForcastData';
 import { BarChart2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ForecastData {
   title: string;
@@ -28,6 +29,7 @@ const ForecastCard = ({ title, data }: ForecastData) => (
 );
 
 export const DhmContent = ({ data }: { data: any }) => {
+  const t = useTranslations('AA Project');
   const {
     floodForecast,
     rainfallForecast,
@@ -42,19 +44,19 @@ export const DhmContent = ({ data }: { data: any }) => {
   };
   const forecastCards: ForecastData[] = [
     floodForecast.length > 0 && {
-      title: '3 Days Flood Forecast Bulletin',
+      title: t('N3_DAYS_FLOOD_FORECAST_BULLETIN'),
       data: floodForecast,
     },
     rainfallForecast.length > 0 && {
-      title: '3 Days Rainfall Forecast Bulletin',
+      title: t('N3_DAYS_RAINFALL_FORECAST_BULLETIN'),
       data: rainfallForecast,
     },
     realtimeMonitoring.length > 0 && {
-      title: 'Realtime Monitoring (River Watch)',
+      title: t('REALTIME_MONITORING_RIVER_WATCH'),
       data: realtimeMonitoring,
     },
     realtimeRainfall.length > 0 && {
-      title: 'Realtime Rainfall',
+      title: t('REALTIME_RAINFALL'),
       data: realtimeRainfall,
     },
     nwp.length > 0 && {
@@ -74,7 +76,7 @@ export const DhmContent = ({ data }: { data: any }) => {
         </div>
       ) : (
         <div className="text-center text-muted-foreground py-8">
-          No forecast data available.
+          {t('NO_FORECAST_DATA_AVAILABLE')}
         </div>
       )}
     </div>

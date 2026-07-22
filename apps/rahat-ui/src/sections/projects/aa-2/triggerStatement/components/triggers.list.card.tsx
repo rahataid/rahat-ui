@@ -1,6 +1,7 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import TriggerCard from './trigger.card';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   projectId: string;
@@ -8,12 +9,13 @@ type IProps = {
 };
 
 export default function TriggersListCard({ projectId, triggers }: IProps) {
+  const t = useTranslations('AA Project');
   return (
     <div className="p-4 rounded-xl border shadow-md">
       <Heading
-        title="Recent Triggers"
+        title={t('RECENT_TRIGGERS')}
         titleStyle="text-xl/6"
-        description="List of all recently activated triggers"
+        description={t('LIST_OF_ALL_RECENTLY_ACTIVATED_TRIGGERS')}
       />
       <ScrollArea className="h-[calc(100vh-260px)] min-h-[440px]">
         <div className="flex flex-col space-y-3 pr-2.5">
@@ -35,7 +37,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
               />
             ))
           ) : (
-            <NoResult message="No Recent Triggers" />
+            <NoResult message={t('NO_RECENT_TRIGGERS')} />
           )}
         </div>
       </ScrollArea>

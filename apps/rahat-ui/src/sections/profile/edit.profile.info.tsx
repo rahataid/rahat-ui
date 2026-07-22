@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
@@ -30,14 +31,16 @@ export default function EditUserProfile() {
 
   const router = useRouter();
 
+  const t = useTranslations('Profile – Edit');
+  const g = useTranslations('GLOBAL');
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+    name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST2') }),
     wallet: z.string().optional(),
     phone: z
       .string()
       .optional()
       .refine((val) => !val || isValidPhoneNumber(val), {
-        message: 'Invalid phone number',
+        message: t('INVALID_PHONE_NUMBER'),
       }),
     email: z.string(),
   });
@@ -61,13 +64,13 @@ export default function EditUserProfile() {
       setUser(response);
     } catch (e) {
       console.error('Error updating user profile:', e);
-      toast.error('Error updating user profile');
+      toast.error(t('ERROR_UPDATING_USER_PROFILE'));
     }
   };
 
   React.useEffect(() => {
     if (editUser.isSuccess) {
-      toast.success('User updated successfully');
+      toast.success(t('USER_UPDATED_SUCCESSFULLY'));
       setTimeout(() => {
         router.push('/profile');
       }, 1000);
@@ -79,8 +82,8 @@ export default function EditUserProfile() {
       <form onSubmit={form.handleSubmit(handleEditUserProfile)}>
         <div className="p-4">
           <HeaderWithBack
-            title="Edit User Profile"
-            subtitle="Edit user details"
+            title={t('EDIT_USER_PROFILE')}
+            subtitle={t('EDIT_USER_DETAILS')}
             path="/profile"
           />
           <div className="border shadow-md p-6 rounded-sm bg-card">
@@ -91,9 +94,9 @@ export default function EditUserProfile() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>{g('NAME')}</FormLabel>
                       <FormControl>
-                        <Input type="text" placeholder="Name" {...field} />
+                        <Input type="text" placeholder={g('NAME')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -107,9 +110,9 @@ export default function EditUserProfile() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>{g('PHONE')}</FormLabel>
                       <FormControl>
-                        <PhoneInput placeholder="Phone" {...field} />
+                        <PhoneInput placeholder={g('PHONE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -122,9 +125,9 @@ export default function EditUserProfile() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{g('EMAIL')}</FormLabel>
                       <FormControl>
-                        <Input disabled placeholder="Email" {...field} />
+                        <Input disabled placeholder={g('EMAIL')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -137,14 +140,14 @@ export default function EditUserProfile() {
                 render={({ field }) => {
                   return (
                     <FormItem className="col-span-3">
-                      <FormLabel>Wallet Address</FormLabel>
+                      <FormLabel>{g('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             disabled={userInfo?.wallet ? true : false}
                             type="text"
-                            placeholder="Wallet Address"
+                            placeholder={g('WALLET_ADDRESS')}
                             {...field}
                           />
                         </div>
@@ -163,15 +166,15 @@ export default function EditUserProfile() {
             variant="secondary"
             onClick={() => router.push('/users')}
           >
-            Cancel
+            {g('CANCEL')}
           </Button>
           {editUser.isPending ? (
             <Button disabled>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
+              {g('PLEASE_WAIT')}
             </Button>
           ) : (
-            <Button className="px-10">Save Changes</Button>
+            <Button className="px-10">{g('SAVE_CHANGES')}</Button>
           )}
         </div>
       </form>

@@ -13,6 +13,7 @@ import {
 } from '@tanstack/react-table';
 import { useProjectBeneficiaryGroupDetailsTableColumns } from './columns';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import {
   useGenerateQrPdf,
@@ -32,9 +33,11 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
 
 const BeneficiaryGroupsDetails = () => {
+  const tGlobal = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
+  const t = useTranslations('AA Project');
   const { data: groupDetails, isPending: isGroupLoading } =
     useSingleBeneficiaryGroup(projectId, groupId);
 
@@ -97,7 +100,7 @@ const BeneficiaryGroupsDetails = () => {
       <div className="flex justify-between items-center ">
         <HeaderWithBack
           title={groupDetails?.name}
-          subtitle="Detailed view of the selected beneficiary groups"
+          subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_BENEFICIARY2')}
           path={`/projects/aa/${projectId}/beneficiary?tab=beneficiaryGroups`}
         />
         {/* <div className="flex items-end justify-end"> */}
@@ -108,7 +111,7 @@ const BeneficiaryGroupsDetails = () => {
             className="cursor-pointer"
           >
             <CloudDownload className="mr-1" />
-            Download QR
+            {t('DOWNLOAD_QR')}
           </Button>
         ) : (
           <Button
@@ -118,7 +121,7 @@ const BeneficiaryGroupsDetails = () => {
             disabled={isQrLoading}
           >
             <CloudDownload className="mr-1" />
-            Generate QR
+            {t('GENERATE_QR')}
           </Button>
         )}
 
@@ -128,14 +131,14 @@ const BeneficiaryGroupsDetails = () => {
         <DataCard
           className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
-          title="Total Beneficiaries"
+          title={t('TOTAL_BENEFICIARIES')}
           Icon={User}
           number={groupDetails?.groupedBeneficiaries?.length || 0}
         />
         {/* <DataCard
           className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
-          title="Total Token Assigned"
+          title={t('TOTAL_TOKEN_ASSIGNED')}
           Icon={Coins}
           number={totalTokensAssigned}
         /> */}
@@ -143,7 +146,7 @@ const BeneficiaryGroupsDetails = () => {
       <div className="p-4 rounded-sm border">
         <SearchInput
           className="w-full m-1"
-          name="walletAddress"
+          name={tGlobal('WALLET_ADDRESS')}
           value={
             (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
           }

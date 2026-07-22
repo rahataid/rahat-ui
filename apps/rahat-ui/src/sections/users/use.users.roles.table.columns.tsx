@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { UserRole } from '@rumsan/sdk/types';
 import { Trash2 } from 'lucide-react';
@@ -17,6 +18,8 @@ export const useUsersRolesTableColumns = ({
   loggedUserRoles,
   userUUID,
 }: IProps) => {
+  const t = useTranslations('Users – Detail');
+  const tg = useTranslations('GLOBAL');
   const removeUserRole = useUserRolesRemove();
 
   const deleteUserRole = async (roles: string[]) => {
@@ -25,10 +28,10 @@ export const useUsersRolesTableColumns = ({
       loggedUserRoles.includes('Manager')
     ) {
       await removeUserRole.mutateAsync({ uuid: userUUID, roles: roles });
-      Swal.fire('Role Removed Successfully', '', 'success');
+      Swal.fire(t('ROLE_REMOVED_SUCCESSFULLY'), '', 'success');
     } else {
       return Swal.fire(
-        'You do not have permission to remove role',
+        t('YOU_DO_NOT_HAVE_PERMISSION_TO'),
         '',
         'warning',
       );
@@ -38,7 +41,7 @@ export const useUsersRolesTableColumns = ({
   const columns: ColumnDef<UserRole>[] = [
     {
       accessorKey: 'name',
-      header: 'Role',
+      header: t('ROLE'),
       cell: ({ row }) => {
         return row.getValue('name');
       },
@@ -46,7 +49,7 @@ export const useUsersRolesTableColumns = ({
 
     {
       id: 'actions',
-      header: () => <div className="flex justify-end">Action</div>,
+      header: () => <div className="flex justify-end">{tg('ACTION')}</div>,
       enableHiding: false,
       cell: ({ row }) => {
         return (

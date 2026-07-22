@@ -11,6 +11,7 @@ import {
   useProjectStore,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
@@ -37,6 +38,7 @@ type TransactionProps = {
 };
 
 const TransactionLogs = () => {
+  const t = useTranslations('AA Project');
   const params = useParams();
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
@@ -109,7 +111,7 @@ const TransactionLogs = () => {
       return (
         <TransactionLogItem
           key={txn?.txHash}
-          title="Amount Disbursed"
+          title={t('AMOUNT_DISBURSED')}
           subtitle={subtitleParts.join(' • ')}
           txHash={txn?.txHash}
           txUrl={txnUrl ?? ''}
@@ -154,9 +156,9 @@ const TransactionLogs = () => {
 
   return (
     <>
-      <h2 className="text-xl font-semibold">Transaction Log</h2>
+      <h2 className="text-xl font-semibold">{t('TRANSACTION_LOG')}</h2>
       <p className="text-sm text-muted-foreground">
-        List of all token transactions
+        {t('LIST_OF_ALL_TOKEN_TRANSACTIONS')}
       </p>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>

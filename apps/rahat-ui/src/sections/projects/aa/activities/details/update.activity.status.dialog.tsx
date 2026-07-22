@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -48,6 +49,7 @@ export default function UpdateActivityStatusDialog({
   triggerTitle = '',
   iconStyle,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
 
@@ -214,7 +216,7 @@ export default function UpdateActivityStatusDialog({
                     <FormItem>
                       <FormLabel>Add note</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Write note" {...field} />
+                        <Textarea placeholder={t('WRITE_NOTE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

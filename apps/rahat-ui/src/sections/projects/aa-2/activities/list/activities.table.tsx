@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Table, flexRender } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -19,6 +20,7 @@ type IProps = {
 };
 
 export default function ActivitiesTable({ table, tableheight }: IProps) {
+  const t = useTranslations('AA Project');
   return (
     <ScrollArea className={`${tableheight ?? 'h-[calc(100vh-390px)]'}`}>
       <TableComponent>
@@ -60,7 +62,7 @@ export default function ActivitiesTable({ table, tableheight }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                <NoResult message="No Activities Available" />
+                <NoResult message={t('NO_ACTIVITIES_AVAILABLE')} />
               </TableCell>
             </TableRow>
           )}

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
@@ -34,18 +35,19 @@ function getPhaseColor(phase: string) {
   return '';
 }
 export default function useCommsActivitiesTableColumns() {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const { id } = useParams();
 
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
-      header: 'Title',
+      header: t('TITLE'),
       cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'updatedAt',
-      header: 'Date',
+      header: t('DATE'),
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
           <TruncatedCell
@@ -57,7 +59,7 @@ export default function useCommsActivitiesTableColumns() {
     },
     {
       accessorKey: 'phase',
-      header: 'Phase',
+      header: t('PHASE'),
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const className = getPhaseColor(phase);
@@ -66,7 +68,7 @@ export default function useCommsActivitiesTableColumns() {
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('STATUS'),
       cell: ({ row }) => {
         const className = getStatusBg(row.original?.commStatus);
         return <Badge className={className}>{row.original?.commStatus}</Badge>;
@@ -74,14 +76,14 @@ export default function useCommsActivitiesTableColumns() {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={t('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() =>
                 router.push(

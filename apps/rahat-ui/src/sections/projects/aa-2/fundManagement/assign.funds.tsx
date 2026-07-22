@@ -7,9 +7,12 @@ import FundManagementForm from './components/fund.management.form';
 import { FUND_MANAGEMENT_TABS } from './consts/conts';
 import type { PayoutFormData } from './components/assign.payout.form';
 import { useFundAssignmentStore } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 
 export default function AssignFundsView() {
   // Router goes here
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('AA Project with Gnosis');
   const id = useParams().id;
   const router = useRouter();
 
@@ -55,7 +58,7 @@ export default function AssignFundsView() {
           className="flex items-center gap-0 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />
-          <p className="ml-0 mb-0">Back</p>
+          <p className="ml-0 mb-0">{t('BACK')}</p>
         </button>
       </div>
       <nav className="flex items-start w-full mb-2 px-4">
@@ -102,7 +105,7 @@ export default function AssignFundsView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  Step {index + 1}
+                  {tg('STEP', { index: index + 1 })}
                 </span>
                 <span
                   className={`text-md mt-0.5 text-center transition-colors ${
@@ -113,7 +116,7 @@ export default function AssignFundsView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {tab.title}
+                  {t(tab.titleKey)}
                 </span>
               </div>
             </div>

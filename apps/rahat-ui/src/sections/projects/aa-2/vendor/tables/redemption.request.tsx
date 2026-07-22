@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { usePagination, useVendorTokenRedemptionList } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -10,6 +11,7 @@ import React from 'react';
 import { useRedemptionRequestColumn } from '../columns/useRedemptionRequest';
 
 export default function RedemptionRequestTable() {
+  const t = useTranslations('AA Project');
   const { id, vendorId } = useParams();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -37,9 +39,9 @@ export default function RedemptionRequestTable() {
   return (
     <div className="space-y-1">
       <Heading
-        title="Redemption Request"
+        title={t('REDEMPTION_REQUEST')}
         titleStyle="text-lg"
-        description="List of all the redemption request"
+        description={t('REDEMPTION_REQUEST_DESC')}
       />
 
       <>

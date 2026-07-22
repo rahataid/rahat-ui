@@ -41,6 +41,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useActiveTab } from '../../utils/useActivetab';
+import { useTranslations } from 'next-intl';
 import { useDebounce } from '../../utils/useDebouncehooks';
 
 function BeneficiaryView() {
@@ -56,6 +57,9 @@ function BeneficiaryView() {
     setFilters,
     filters,
   } = usePagination();
+  const t = useTranslations('Beneficiary List');
+  const tg = useTranslations('GLOBAL');
+  const tbd = useTranslations('Beneficiary Group Detail');
 
   useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
@@ -123,9 +127,7 @@ function BeneficiaryView() {
       .map((ben: any) => ben.uuid);
 
     if (!benNotAssignedToTheProject)
-      return alert(
-        'All selected beneficiaries are already assigned to the project',
-      );
+      return alert(t('ALL_SELECTED_BENEFICIARIES_ALREADY_ASSIGNED'));
 
     await bulkAssign.mutateAsync({
       projectUUID: selectedProject as UUID,
@@ -145,13 +147,13 @@ function BeneficiaryView() {
       };
       const result = await createBeneficiaryGroup.mutateAsync(payload);
       if (result) {
-        toast.success('Beneficiary group added successfully!');
+        toast.success(tbd('BENEFICIARY_GROUP_ADDED_SUCCESSFULLY'));
         router.push('/beneficiary');
         table.resetRowSelection(true);
       }
     } catch (e: any) {
       toast.error(
-        e?.response?.data?.message || 'Failed to add beneficiary group!',
+        e?.response?.data?.message || tbd('FAILED_TO_ADD_BENEFICIARY_GROUP'),
       );
     }
   };
@@ -169,14 +171,14 @@ function BeneficiaryView() {
       <TabsContent value="beneficiary">
         <div>
           <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary
+            {tg('BENEFICIARY')}
           </h1>
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div>
           <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUPS')}
           </h1>
         </div>
       </TabsContent>
@@ -187,21 +189,21 @@ function BeneficiaryView() {
             className="w-full data-[state=active]:bg-white"
             value="beneficiary"
           >
-            Beneficiary
+            {tg('BENEFICIARY')}
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryGroups"
           >
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUPS')}
           </TabsTrigger>
         </TabsList>
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="space-x-2">
             <Button variant="outline">
               <CloudDownload className="mr-1" />
-              Import beneficiaries
+              {t('IMPORT_BENEFICIARIES')}
               <ChevronDownIcon
                 className="-me-1 opacity-60"
                 size={16}
@@ -213,12 +215,12 @@ function BeneficiaryView() {
             <DropdownMenuItem
               onClick={() => router.push('/import-beneficiary')}
             >
-              Import from Community Tool
+              {t('IMPORT_FROM_COMMUNITY_TOOL')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => router.push('/beneficiary-import')}
             >
-              Import from Excel Sheet
+              {t('IMPORT_FROM_EXCEL_SHEET')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import {
   Dialog,
@@ -34,6 +35,8 @@ export function TemplateDetailsDialog({
   onSelectTemplate,
   setOpen,
 }: TemplateDetailsDialogProps) {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   if (!template) return null;
   const appTransports = useListAllTransports();
 
@@ -49,7 +52,7 @@ export function TemplateDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl p-4 overflow-hidden">
         <DialogHeader className="p-6 pb-2">
-          <h3 className="flex semi-bold items-center gap-2">Activity Title</h3>
+          <h3 className="flex semi-bold items-center gap-2">{t('ACTIVITY_TITLE')}</h3>
           <DialogTitle className="text-xl font-semibold flex items-center justify-between">
             <div className="flex gap-2 items-center">
               <TruncatedCell
@@ -74,7 +77,7 @@ export function TemplateDetailsDialog({
               }}
               className="gap-2"
             >
-              Choose Template
+              {t('CHOOSE_TEMPLATE')}
               <ChevronRight className="w-4 h-4" />
             </Button>
           </DialogTitle>
@@ -84,15 +87,15 @@ export function TemplateDetailsDialog({
         <ScrollArea className="max-h-[75vh] px-6 pb-6">
           {/* Basic Info */}
           <div className="grid grid-cols-2 gap-4 mt-4">
-            <InfoItem icon={<Clock size={16} />} label="Lead Time">
+            <InfoItem icon={<Clock size={16} />} label={t('LEAD_TIME')}>
               {template.leadTime || '—'}
             </InfoItem>
 
-            <InfoItem icon={<User size={16} />} label="Responsibility">
+            <InfoItem icon={<User size={16} />} label={t('RESPONSIBILITY')}>
               {template.manager?.name}
             </InfoItem>
 
-            <InfoItem label="Phase">
+            <InfoItem label={t('PHASE')}>
               <Badge
                 className={`${getPhaseColor(template?.phase?.name)} border`}
               >
@@ -100,7 +103,7 @@ export function TemplateDetailsDialog({
               </Badge>
             </InfoItem>
 
-            <InfoItem label="Category">{template.category?.name}</InfoItem>
+            <InfoItem label={t('CATEGORY')}>{template.category?.name}</InfoItem>
           </div>
 
           <Separator className="my-6" />
@@ -108,7 +111,7 @@ export function TemplateDetailsDialog({
           <div className="grid grid-cols-2 gap-4">
             {/* Description */}
             {template.description && (
-              <Section title="Description">
+              <Section title={tg('DESCRIPTION')}>
                 <p className="text-sm text-muted-foreground text-justify">
                   {template.description}
                 </p>
@@ -117,7 +120,7 @@ export function TemplateDetailsDialog({
             {
               /* Responsible Station */
               template.responsibleStation && (
-                <Section title="Responsible Station">
+                <Section title={t('RESPONSIBLE_STATION')}>
                   <p className="text-sm text-muted-foreground text-justify">
                     {template.responsibleStation}
                   </p>
@@ -127,7 +130,7 @@ export function TemplateDetailsDialog({
 
             {/* Notes */}
             {template.notes && (
-              <Section title="Notes">
+              <Section title={t('NOTES')}>
                 <p className="text-sm text-muted-foreground">
                   {template.notes || 'hello notes'}
                 </p>
@@ -135,16 +138,16 @@ export function TemplateDetailsDialog({
             )}
 
             {/* Automation */}
-            <Section title="Automation">
+            <Section title={t('AUTOMATION')}>
               <Badge variant={template.isAutomated ? 'default' : 'outline'}>
-                {template.isAutomated ? 'Automated' : 'Manual'}
+                {template.isAutomated ? t('AUTOMATED') : t('MANUAL')}
               </Badge>
             </Section>
           </div>
 
           {/* Documents */}
           {template.activityDocuments?.length > 0 && (
-            <Section title="Documents">
+            <Section title={t('DOCUMENTS')}>
               <div className="space-y-2">
                 {template.activityDocuments.map(
                   (
@@ -169,7 +172,7 @@ export function TemplateDetailsDialog({
 
           {/* Communications */}
           {template.activityCommunication?.length > 0 && (
-            <Section title="Communications">
+            <Section title={t('COMMUNICATIONS')}>
               <div className="space-y-3">
                 {template.activityCommunication.map(
                   (
@@ -195,12 +198,12 @@ export function TemplateDetailsDialog({
                             {/* NEW: Communication Name */}
                             {transportName && (
                               <span className="text-xs font-medium text-muted-foreground">
-                                Communication Type: {transportName}
+                                {t('COMMUNICATION_TYPE')}: {transportName}
                               </span>
                             )}
 
                             <span className="text-sm font-medium text-muted-foreground">
-                              Title:{comm.communicationTitle}
+                              {t('TITLE')}:{comm.communicationTitle}
                             </span>
                           </div>
 
@@ -211,12 +214,12 @@ export function TemplateDetailsDialog({
                           <>
                             {transportName === 'EMAIL' && (
                               <p className="text-sm text-muted-foreground">
-                                Subject: {comm.subject}
+                                {t('SUBJECT')}: {comm.subject}
                               </p>
                             )}
-                            <p className="text-sm text-muted-foreground text-justify">
-                              Message: {comm.message}
-                            </p>
+                              <p className="text-sm text-muted-foreground text-justify">
+                                {tg('MESSAGE')}: {comm.message}
+                              </p>
                           </>
                         ) : comm.message?.fileName?.endsWith('.mp3') ||
                           comm.message?.fileName?.endsWith('.wav') ? (
@@ -244,9 +247,9 @@ export function TemplateDetailsDialog({
                         )}
 
                         {/* Group Name */}
-                        <span className="text-sm font-medium text-muted-foreground">
-                          Group Name: {groupName?.name || '—'}
-                        </span>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {tg('GROUP_NAME')}: {groupName?.name || '—'}
+                          </span>
                       </div>
                     );
                   },
@@ -259,12 +262,12 @@ export function TemplateDetailsDialog({
           {isCompleted && (
             <>
               <Separator className="my-6" />
-              <Section title="Completion Details">
+              <Section title={t('COMPLETION_DETAILS')}>
                 <p className="text-sm">
-                  Completed By: <strong>{template.completedBy}</strong>
+                  {t('COMPLETED_BY')}: <strong>{template.completedBy}</strong>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Completed At:{' '}
+                  {t('COMPLETED_AT')}:{' '}
                   {new Date(template.completedAt).toLocaleString()}
                 </p>
               </Section>

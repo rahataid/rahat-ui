@@ -205,6 +205,8 @@ export default function ComposeMessageView() {
   const [parsedSheet, setParsedSheet] = useState<ParsedSheet | null>(null);
   const [excelColumn, setExcelColumn] = useState('');
   const [excelError, setExcelError] = useState('');
+  // Which audience bucket the uploaded list counts toward ('BENEFICIARY' | 'VENDOR').
+  const [excelTargetType, setExcelTargetType] = useState('');
 
   const isUpload = selectedGroup === 'UPLOAD';
 
@@ -351,7 +353,11 @@ export default function ComposeMessageView() {
     !!selectedGroup &&
     !!messageContent &&
     !!selectedTransportId &&
-    (!isUpload || (!!parsedSheet && !!excelColumn && excelValidCount > 0));
+    (!isUpload ||
+      (!!parsedSheet &&
+        !!excelColumn &&
+        !!excelTargetType &&
+        excelValidCount > 0));
 
   const isSending = createCampaign.isPending || sendExcel.isPending;
 
@@ -417,7 +423,7 @@ export default function ComposeMessageView() {
         name: campaignName,
         message: messageContent,
         transportId: selectedTransportId,
-        targetType: 'BENEFICIARY',
+        targetType: excelTargetType,
         fileBase64: parsedSheet.fileBase64,
         column: excelColumn || undefined,
       });
@@ -474,6 +480,7 @@ export default function ComposeMessageView() {
     setParsedSheet(null);
     setExcelColumn('');
     setExcelError('');
+    setExcelTargetType('');
   };
 
   const addFilterRow = () =>
@@ -648,7 +655,9 @@ export default function ComposeMessageView() {
                             {plasgateSmsInfo.exceeded && (
                               <p className="text-xs text-destructive">
                                 Message exceeds the {plasgateSmsInfo.limit}
-                                -character limit for {plasgateSmsInfo.encoding}{' '}
+                                -character limit for {
+                                  plasgateSmsInfo.encoding
+                                }{' '}
                                 encoding and will be sent as multiple SMS
                                 segments.
                               </p>
@@ -683,6 +692,7 @@ export default function ComposeMessageView() {
                           setParsedSheet(null);
                           setExcelColumn('');
                           setExcelError('');
+                          setExcelTargetType('');
                           if (group.id === 'UPLOAD') setIsAutomatic(false);
                         }}
                         className={cn(
@@ -745,6 +755,36 @@ export default function ComposeMessageView() {
                       </div>
 
                       <div className="ml-10 space-y-3">
+                        {/* Which audience bucket this list counts toward */}
+                        <div className="space-y-2">
+                          <Label>Recipient Type</Label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {[
+                              { id: 'VENDOR', name: 'Customers' },
+                              { id: 'BENEFICIARY', name: 'Consumers' },
+                            ].map((opt) => (
+                              <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => setExcelTargetType(opt.id)}
+                                className={cn(
+                                  'flex items-center justify-center gap-2 rounded-lg border-2 p-3 text-sm font-medium transition-all hover:border-primary/50',
+                                  excelTargetType === opt.id
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border',
+                                )}
+                              >
+                                <Users className="h-4 w-4" />
+                                {opt.name}
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Counts this campaign toward the selected audience in
+                            your communication stats.
+                          </p>
+                        </div>
+
                         <label
                           htmlFor="excel-upload"
                           className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border p-6 cursor-pointer hover:border-primary/50 transition-colors"
@@ -1123,6 +1163,16 @@ export default function ComposeMessageView() {
             <DetailRow label="Audience" value={selectedGroupName || '-'} />
             {isUpload ? (
               <>
+                <DetailRow
+                  label="Recipient Type"
+                  value={
+                    excelTargetType === 'VENDOR'
+                      ? 'Customers'
+                      : excelTargetType === 'BENEFICIARY'
+                      ? 'Consumers'
+                      : '-'
+                  }
+                />
                 <DetailRow
                   label="Uploaded File"
                   value={parsedSheet?.fileName || '-'}

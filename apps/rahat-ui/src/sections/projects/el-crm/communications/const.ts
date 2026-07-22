@@ -12,9 +12,10 @@ export const getCampaignGroupLabel = (campaign: {
   targetType?: string;
   options?: { source?: string } | null;
 }): string => {
-  if (campaign?.options?.source === 'EXCEL') return 'Uploaded List';
   const key = campaign?.targetType as keyof typeof targetTypeMap;
-  return targetTypeMap[key] || campaign?.targetType || '—';
+  const base = targetTypeMap[key] || campaign?.targetType || '—';
+  if (campaign?.options?.source === 'EXCEL') return `${base} (Uploaded)`;
+  return base;
 };
 
 // ─── Plasgate SMS helpers ────────────────────────────────────────────────────

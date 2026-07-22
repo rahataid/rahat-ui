@@ -616,13 +616,16 @@ export default function NodeEditorPanel({
               </TabsTrigger>
             </TabsList>
             <TabsContent value="url">
-              <Input
-                id="prompt-url-input"
-                value={selectedItem.prompt}
-                onChange={(e) => handleUpdate({ prompt: e.target.value })}
-                placeholder="https://example.com/audio.mp3"
-                className="text-xs"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="prompt-url-input">Audio URL</Label>
+                <Input
+                  id="prompt-url-input"
+                  value={selectedItem.prompt}
+                  onChange={(e) => handleUpdate({ prompt: e.target.value })}
+                  placeholder="https://example.com/audio.mp3"
+                  className="text-xs"
+                />
+              </div>
             </TabsContent>
             <TabsContent value="record">
               <div className="space-y-2">

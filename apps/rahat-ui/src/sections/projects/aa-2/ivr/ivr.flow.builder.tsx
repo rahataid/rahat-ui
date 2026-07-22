@@ -198,22 +198,24 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         {/* Right - Editor + JSON Preview */}
         <div className="w-1/2 bg-white rounded-sm border overflow-hidden flex flex-col">
           <Tabs defaultValue="editor" className="flex flex-col h-full">
-            <TabsList className="w-full justify-start rounded-none border-b bg-muted/50 p-0">
-              <TabsTrigger
-                value="editor"
-                className="gap-2 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground"
-              >
-                <Settings className="w-4 h-4" />
-                Node Editor
-              </TabsTrigger>
-              <TabsTrigger
-                value="json"
-                className="gap-2 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground"
-              >
-                <Code className="w-4 h-4" />
-                JSON Preview
-              </TabsTrigger>
-            </TabsList>
+            <div className="px-4 pt-3">
+              <TabsList className="border bg-secondary rounded w-full">
+                <TabsTrigger
+                  value="editor"
+                  className="w-full gap-2 data-[state=active]:bg-white"
+                >
+                  <Settings className="w-4 h-4" />
+                  Node Editor
+                </TabsTrigger>
+                <TabsTrigger
+                  value="json"
+                  className="w-full gap-2 data-[state=active]:bg-white"
+                >
+                  <Code className="w-4 h-4" />
+                  JSON Preview
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent
               value="editor"
@@ -226,8 +228,16 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
                   onUpdateNode={handleUpdateNode}
                 />
               ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground">
-                  Select a menu item from the tree to edit
+                <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-3">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                    <Settings className="w-6 h-6 text-muted-foreground/60" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">No Node Selected</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Select a menu item from the tree to edit its properties
+                    </p>
+                  </div>
                 </div>
               )}
             </TabsContent>

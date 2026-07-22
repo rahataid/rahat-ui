@@ -16,6 +16,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useUploadFile, useIvrTemplateUpdate } from '@rahat-ui/query';
 import { Link, Copy, Check, Globe, Phone, ExternalLink } from 'lucide-react';
 
@@ -71,7 +72,10 @@ export default function ExportModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent
+        className="!rounded-sm max-w-md"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Export IVR Flow</DialogTitle>
           <DialogDescription>
@@ -103,41 +107,37 @@ export default function ExportModal({
 
           <TabsContent value="link" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              Generate a permanent IPFS link to your IVR flow JSON or copy the
-              JSON directly
+              Generate a permanent IPFS link to your IVR flow JSON
             </p>
-            <div className="flex justify-center">
-              <Button
-                variant="default"
-                className="gap-2 rounded-sm"
-                onClick={handleGenerateLink}
-                disabled={isGenerating}
-              >
-                {isGenerating ? (
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Link className="w-4 h-4" />
-                )}
-                {isGenerating ? 'Generating...' : 'Generate Link'}
-              </Button>
-            </div>
+            <Button
+              variant="default"
+              className="w-full gap-2 rounded-sm"
+              onClick={handleGenerateLink}
+              disabled={isGenerating}
+            >
+              {isGenerating ? (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Link className="w-4 h-4" />
+              )}
+              {isGenerating ? 'Generating...' : 'Generate Link'}
+            </Button>
 
             {ipfsLink && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">IPFS Link</label>
-
+              <div className="border rounded-sm p-3 space-y-2">
+                <Label>IPFS Link</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     value={ipfsLink}
                     readOnly
                     className="flex-1 text-xs font-mono"
                   />
-
                   <Button
                     size="icon"
                     variant="outline"
                     onClick={handleCopyLink}
                     title="Copy link"
+                    className="rounded-sm"
                   >
                     {copiedLink ? (
                       <Check className="w-4 h-4 text-green-600" />
@@ -145,12 +145,12 @@ export default function ExportModal({
                       <Copy className="w-4 h-4" />
                     )}
                   </Button>
-
                   <Button
                     size="icon"
                     variant="outline"
                     asChild
                     title="Open link"
+                    className="rounded-sm"
                   >
                     <a
                       href={ipfsLink}
@@ -161,32 +161,30 @@ export default function ExportModal({
                     </a>
                   </Button>
                 </div>
-
-                <p className="text-xs text-muted-foreground">
-                  This is a permanent IPFS link to your IVR flow JSON.
-                </p>
               </div>
             )}
+
             <div className="space-y-2">
-              <label className="text-sm font-medium">JSON Content</label>
-              <textarea
-                className="w-full h-40 p-3 text-xs font-mono border rounded-sm bg-muted/30 resize-none focus:outline-none"
-                value={jsonContent}
-                readOnly
-              />
+              <Label>JSON Content</Label>
+              <div className="rounded-sm border overflow-hidden">
+                <textarea
+                  className="w-full h-40 p-3 text-xs font-mono bg-card resize-none focus:outline-none"
+                  value={jsonContent}
+                  readOnly
+                />
+              </div>
             </div>
           </TabsContent>
 
           <TabsContent value="webhook" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              Configure a webhook URL to send the IVR flow data to an external
-              endpoint.
+              Send the IVR flow data to an external endpoint
             </p>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Webhook URL</label>
+              <Label>Webhook URL</Label>
               <Input placeholder="https://example.com/webhook" />
             </div>
-            <Button variant="default" className="gap-2 rounded-sm">
+            <Button variant="default" className="w-full gap-2 rounded-sm">
               <Globe className="w-4 h-4" />
               Send to Webhook
             </Button>
@@ -197,19 +195,16 @@ export default function ExportModal({
               Send a test call to experience your IVR flow in real-time
             </p>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Phone Number</label>
-              <Input placeholder="123456789" />
+              <Label>Phone Number</Label>
+              <Input placeholder="Enter phone number" />
               <p className="text-xs text-muted-foreground">
-                Enter the phone number where you want to receive the test call
+                Standard call rates may apply depending on your provider
               </p>
             </div>
-            <Button variant="default" className="gap-2 rounded-sm">
+            <Button variant="default" className="w-full gap-2 rounded-sm">
               <Phone className="w-4 h-4" />
               Send Test Call
             </Button>
-            <p className="text-xs text-muted-foreground">
-              Note: Standard call rates may apply depending on your provider
-            </p>
           </TabsContent>
         </Tabs>
       </DialogContent>

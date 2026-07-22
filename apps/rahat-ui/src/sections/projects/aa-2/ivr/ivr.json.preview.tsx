@@ -43,8 +43,8 @@ export default function JSONPreviewPanel({ flow }: JSONPreviewPanelProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4 border-b border-border">
+    <div className="flex flex-col h-full gap-3 p-4">
+      <div className="flex items-center justify-between">
         <h3 className="font-semibold">IVR Flow JSON</h3>
         <Button
           size="sm"
@@ -60,9 +60,11 @@ export default function JSONPreviewPanel({ flow }: JSONPreviewPanelProps) {
           {copied ? 'Copied' : 'Copy'}
         </Button>
       </div>
-      <pre className="flex-1 overflow-auto p-4 text-xs font-mono bg-muted/30">
-        <code>{jsonString}</code>
-      </pre>
+      <div className="flex-1 overflow-hidden rounded-sm border">
+        <pre className="h-full overflow-auto p-4 text-xs font-mono bg-card">
+          <code>{jsonString}</code>
+        </pre>
+      </div>
     </div>
   );
 }

@@ -32,17 +32,17 @@ import { dateFormat } from '../../utils/dateFormate';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
 
-export const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  NOT_READY: { label: 'Not Ready', className: 'bg-yellow-100 text-yellow-700 border-yellow-300' },
-  ACTIVE: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-300' },
-  CLOSED: { label: 'Closed', className: 'bg-red-100 text-red-700 border-red-300' },
+const STATUS_CLASSES: Record<string, string> = {
+  NOT_READY: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+  ACTIVE: 'bg-green-100 text-green-700 border-green-300',
+  CLOSED: 'bg-red-100 text-red-700 border-red-300',
 };
 
 export function StatusBadge({ status }: { status?: string }) {
-  const config = STATUS_CONFIG[status ?? ''];
+  const t = useTranslations('Projects List');
   return (
-    <Badge className={`border ${config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'}`}>
-      {config?.label ?? status ?? '—'}
+    <Badge className={`border ${STATUS_CLASSES[status ?? ''] ?? 'bg-gray-100 text-gray-500 border-gray-300'}`}>
+      {t(status ?? '')}
     </Badge>
   );
 }
@@ -157,6 +157,7 @@ export default function ListProject() {
         <SelectComponent
           name={g('STATUS')}
           options={['ALL', 'ACTIVE', 'NOT_READY', 'CLOSED']}
+          optionLabels={{ ALL: g('ALL'), ACTIVE: t('ACTIVE'), NOT_READY: t('NOT_READY'), CLOSED: t('CLOSED') }}
           onChange={(value) => setFilter('status', value === 'ALL' ? '' : value)}
           value={getFilterValue('status') || 'ALL'}
           className="flex-[1]"

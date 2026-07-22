@@ -8,6 +8,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -20,9 +21,17 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useIvrTemplates } from '@rahat-ui/query';
+import { useIvrTemplates, useIvrTemplateDelete } from '@rahat-ui/query';
 import { IvrListItem } from '../types/ivr.flow.types';
-import { Trash2, MoreHorizontal, ArrowRight, Voicemail } from 'lucide-react';
+import {
+  Trash2,
+  MoreHorizontal,
+  ArrowRight,
+  Voicemail,
+  Archive,
+} from 'lucide-react';
+import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import CreateIVRDialog from './ivr.create.dialog';
 
 const statusColors: Record<string, string> = {
@@ -31,7 +40,13 @@ const statusColors: Record<string, string> = {
   archived: 'bg-gray-100 text-gray-800',
 };
 
-function IvrCard({ item }: { item: IvrListItem }) {
+function IvrCard({
+  item,
+  onDelete,
+}: {
+  item: IvrListItem;
+  onDelete: (item: IvrListItem) => void;
+}) {
   const router = useRouter();
   const { id } = useParams();
   const managePath = `/projects/aa/${id}/ivr/manage/${item.id}`;
@@ -47,53 +62,47 @@ function IvrCard({ item }: { item: IvrListItem }) {
             >
               {item.name}
             </CardTitle>
-            <CardDescription className="mt-1">
-              {item.itemCount} menu item{item.itemCount !== 1 ? 's' : ''}
-            </CardDescription>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => router.push(managePath)}>
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {item.status !== 'archived' && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onDelete(item)}>
+                  <Archive className="w-4 h-4 mr-2" />
+                  Archive
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Badge className={statusColors[item.status] || ''}>
-              {item.status}
-            </Badge>
-            <span className="text-sm text-muted-foreground">
-              {new Date(item.lastModified).toLocaleDateString()}
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push(managePath)}
-            className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-          >
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+        <div className="flex items-center gap-3">
+          <Badge className={statusColors[item.status] || ''}>
+            {item.status}
+          </Badge>
+          <span className="text-sm text-muted-foreground">
+            {new Date(item.lastModified).toLocaleDateString()}
+          </span>
         </div>
       </CardContent>
+      <CardFooter>
+        <IconLabelBtn
+          variant="outline"
+          className="border-primary text-primary flex-1 flex-row-reverse gap-2"
+          Icon={ArrowRight}
+          name="View Details"
+          handleClick={() => router.push(managePath)}
+        />
+      </CardFooter>
     </Card>
   );
 }
@@ -104,6 +113,12 @@ export default function IvrDashboard() {
   const [statusFilter, setStatusFilter] = useState<
     'all' | 'draft' | 'active' | 'archived'
   >('all');
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
+  const deleteIvr = useIvrTemplateDelete();
 
   const ivrList: IvrListItem[] = (templates || []).map((t) => ({
     id: String(t.id),
@@ -181,11 +196,29 @@ export default function IvrDashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredList.map((item) => (
-              <IvrCard key={item.id} item={item} />
+              <IvrCard
+                key={item.id}
+                item={item}
+                onDelete={(i) =>
+                  setDeleteTarget({ id: Number(i.id), name: i.name })
+                }
+              />
             ))}
           </div>
         )}
       </ScrollArea>
+
+      <ConfirmationDialog
+        isConfirmationDialogOpen={!!deleteTarget}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          await deleteIvr.mutateAsync(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+        dialogTitle="Archive IVR"
+        dialogMessage={`Are you sure you want to archive "${deleteTarget?.name}"? This action will archive the IVR template and cannot be undone.`}
+      />
     </div>
   );
 }

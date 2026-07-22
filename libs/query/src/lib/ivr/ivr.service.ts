@@ -98,6 +98,41 @@ export const useIvrTemplateCreate = () => {
   });
 };
 
+const deleteIvrTemplate = async (id: number): Promise<IvrTemplate> => {
+  const response = await api.delete(`/ivr-templates/${id}`);
+  return response?.data?.data;
+};
+
+export const useIvrTemplateDelete = () => {
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: (id: number) => deleteIvrTemplate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ivr-templates'] });
+      toast.fire({
+        title: 'IVR template deleted successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while deleting IVR template.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useIvrTemplateUpdate = () => {
   const queryClient = useQueryClient();
   const alert = useSwal();

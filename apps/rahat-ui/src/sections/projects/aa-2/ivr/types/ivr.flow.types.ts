@@ -39,6 +39,5 @@ export interface IvrListItem {
   name: string;
   description?: string;
   status: 'draft' | 'active' | 'archived';
-  itemCount: number;
   lastModified: number;
 }

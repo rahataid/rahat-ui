@@ -24,6 +24,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { useIvrTemplateCreate } from '@rahat-ui/query';
 import { Plus } from 'lucide-react';
+import { UUID } from 'crypto';
 
 const CreateIVRFormSchema = z.object({
   name: z.string().min(1, 'IVR name is required'),
@@ -31,10 +32,12 @@ const CreateIVRFormSchema = z.object({
 });
 
 interface CreateIVRDialogProps {
+  projectUUID: UUID;
   onIVRCreated?: () => void;
 }
 
 export default function CreateIVRDialog({
+  projectUUID,
   onIVRCreated,
 }: CreateIVRDialogProps) {
   const [open, setOpen] = useState(false);
@@ -48,8 +51,11 @@ export default function CreateIVRDialog({
   const onSubmit = async (values: z.infer<typeof CreateIVRFormSchema>) => {
     try {
       await createIvr.mutateAsync({
-        name: values.name,
-        description: values.description || undefined,
+        projectUUID,
+        payload: {
+          name: values.name,
+          description: values.description || undefined,
+        },
       });
       form.reset();
       setOpen(false);

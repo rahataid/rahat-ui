@@ -17,7 +17,6 @@ export function AudioPreviewPlayer({
   fileName,
   onUpload,
   onCancel,
-  uploadLabel = 'Upload',
 }: AudioPreviewPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -39,8 +38,8 @@ export function AudioPreviewPlayer({
       audioRef.current
         .play()
         .then(() => setPlaying(true))
-      .catch(() => undefined);
-  }
+        .catch(() => undefined);
+    }
   };
 
   const seek = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,20 +84,20 @@ export function AudioPreviewPlayer({
       <div className="flex gap-2">
         <Button
           size="sm"
-          variant="default"
-          className="gap-2 rounded-sm flex-1"
-          onClick={onUpload}
-        >
-          <Upload className="w-4 h-4" />
-          {uploadLabel}
-        </Button>
-        <Button
-          size="sm"
           variant="outline"
           className="rounded-sm flex-1"
           onClick={onCancel}
         >
           Discard
+        </Button>
+        <Button
+          size="sm"
+          variant="default"
+          className="gap-2 rounded-sm flex-1"
+          onClick={onUpload}
+        >
+          <Upload className="w-4 h-4" />
+          Upload
         </Button>
       </div>
       <audio

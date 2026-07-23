@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -35,6 +37,7 @@ export default function ExportModal({
   jsonContent,
   onExported,
 }: ExportModalProps) {
+  const { id: projectUUID } = useParams();
   const [ipfsLink, setIpfsLink] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -59,6 +62,7 @@ export default function ExportModal({
       const { data: afterUpload } = await uploadFile.mutateAsync(formData);
       setIpfsLink(afterUpload.mediaURL);
       await updateTemplate.mutateAsync({
+        projectUUID: projectUUID as UUID,
         id: ivrId,
         payload: { flowUrl: afterUpload.mediaURL },
       });

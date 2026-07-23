@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
@@ -108,7 +109,8 @@ function IvrCard({
 }
 
 export default function IvrDashboard() {
-  const { data: templates, isLoading } = useIvrTemplates();
+  const { id: projectUUID } = useParams();
+  const { data: templates, isLoading } = useIvrTemplates(projectUUID as UUID);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<
     'all' | 'draft' | 'active' | 'archived'
@@ -149,7 +151,7 @@ export default function IvrDashboard() {
             </p>
           </div>
         </div>
-        <CreateIVRDialog />
+        <CreateIVRDialog projectUUID={projectUUID as UUID} />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -213,7 +215,7 @@ export default function IvrDashboard() {
         onCancel={() => setDeleteTarget(null)}
         onConfirm={async () => {
           if (!deleteTarget) return;
-          await deleteIvr.mutateAsync(deleteTarget.id);
+          await deleteIvr.mutateAsync({ projectUUID: projectUUID as UUID, id: deleteTarget.id });
           setDeleteTarget(null);
         }}
         dialogTitle="Archive IVR"

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 import { useIvrFlowStore } from '../store/ivr.flow.store';
 import { useIvrTemplateDetail } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -70,7 +71,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
 
   const flow = flows.find((f) => f.id === ivrId);
 
-  const { data: templateDetail } = useIvrTemplateDetail(Number(ivrId));
+  const { data: templateDetail } = useIvrTemplateDetail(id as UUID, Number(ivrId));
   const [isFetchingFlow, setIsFetchingFlow] = useState(
     !!templateDetail?.flowUrl,
   );

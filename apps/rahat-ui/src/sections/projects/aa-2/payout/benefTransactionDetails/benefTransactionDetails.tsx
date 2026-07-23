@@ -5,6 +5,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DataCard,
+  FilePreview,
   HeaderWithBack,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
@@ -202,6 +203,17 @@ export default function BeneficiaryTransactionLogDetails() {
                 {data?.data?.transactionType.split('_').join(' ')}
               </Badge>
             </InfoItem>
+
+            {data?.data?.payout?.mediaUrl && (
+              <InfoItem label="Proof of Payment">
+                <FilePreview
+                  url={data.data.payout.mediaUrl}
+                  fileName={
+                    data.data.payout.mediaUrl.split('/').pop() || 'Receipt'
+                  }
+                />
+              </InfoItem>
+            )}
 
             {data?.data?.payout?.type === 'FSP' && (
               <>

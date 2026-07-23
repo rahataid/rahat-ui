@@ -11,36 +11,41 @@ const LEVEL_COLORS = [
   {
     name: 'Main',
     bg: 'bg-white',
-    selectedBg: 'bg-gray-90',
-    border: 'border-gray-90',
+    selectedBg: 'bg-gray-100',
+    hoverBg: 'hover:bg-gray-100',
+    border: 'border-gray-100',
     selectedBorder: 'border-gray-300',
   },
   {
     name: 'Level 1',
     bg: 'bg-blue-50',
-    selectedBg: 'bg-blue-90',
-    border: 'border-blue-90',
+    selectedBg: 'bg-blue-100',
+    hoverBg: 'hover:bg-blue-100',
+    border: 'border-blue-100',
     selectedBorder: 'border-blue-300',
   },
   {
     name: 'Level 2',
     bg: 'bg-green-50',
-    selectedBg: 'bg-green-90',
-    border: 'border-green-90',
+    selectedBg: 'bg-green-100',
+    hoverBg: 'hover:bg-green-100',
+    border: 'border-green-100',
     selectedBorder: 'border-green-300',
   },
   {
     name: 'Level 3',
     bg: 'bg-purple-50',
-    selectedBg: 'bg-purple-90',
-    border: 'border-purple-90',
+    selectedBg: 'bg-purple-100',
+    hoverBg: 'hover:bg-purple-100',
+    border: 'border-purple-100',
     selectedBorder: 'border-purple-300',
   },
   {
     name: 'Level 4+',
     bg: 'bg-amber-50',
-    selectedBg: 'bg-amber-90',
-    border: 'border-amber-90',
+    selectedBg: 'bg-amber-100',
+    hoverBg: 'hover:bg-amber-100',
+    border: 'border-amber-100',
     selectedBorder: 'border-amber-300',
   },
 ];
@@ -49,7 +54,7 @@ function getLevelColor(level: number, selected: boolean) {
   const c = LEVEL_COLORS[Math.min(level, LEVEL_COLORS.length - 1)];
   return selected
     ? `${c.selectedBg} ${c.selectedBorder}`
-    : `${c.bg} ${c.border} hover:${c.selectedBg}`;
+    : `${c.bg} ${c.border} ${c.hoverBg}`;
 }
 
 interface TreePanelProps {
@@ -204,8 +209,8 @@ export default function TreePanel({
                 <span
                   className={cn(
                     'inline-block w-3 h-3 rounded border',
-                    lvl.bg,
-                    lvl.border,
+                    lvl.selectedBg,
+                    lvl.selectedBorder,
                   )}
                 />
                 <span>{lvl.name}</span>
@@ -225,9 +230,9 @@ export default function TreePanel({
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
-        <Card className="rounded-sm bg-muted/60 boarder-0">
-          <CardContent className="p-4">
+      <div className="flex-1 p-4 min-h-0">
+        <Card className="rounded-sm bg-muted/60 boarder-0 h-full">
+          <CardContent className="p-4 h-full overflow-y-auto">
             <div className="group">
               <TreeItem
                 item={flow.rootMenu}

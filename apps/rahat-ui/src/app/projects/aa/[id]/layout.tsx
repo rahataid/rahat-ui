@@ -4,6 +4,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsContract,
   useEntities,
+  usePhaseSSE,
   useProjectChainSettings,
   useProjectContractSettings,
   useProjectSettingsStore,
@@ -25,6 +26,7 @@ export default function ProjectLayoutRoot({
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;
+  usePhaseSSE(uuid);
   const { isLoading: isContractLoading } = useProjectContractSettings(uuid);
   const { isLoading: isSubgraphLoading } = useProjectSubgraphSettings(uuid);
   const { isLoading: isAAContractLoading } = useAAProjectSettingsContract(uuid);

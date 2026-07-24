@@ -76,6 +76,7 @@ import {
   FileExtension,
   REQUIRED_HEADERS,
 } from './stakeholders.consts';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 interface ValidationError {
   phone?: string;
   email?: string;
@@ -104,6 +105,7 @@ export default function ImportStakeholder() {
   const inputRef = useRef<HTMLInputElement>(null);
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
 
   // Query goes here
   const queryClient = useQueryClient();
@@ -465,13 +467,13 @@ export default function ImportStakeholder() {
 
         if (duplicatePhones.size > 0) {
           toast.warn(
-            `${duplicatePhones.size} duplicate phone number(s) found in file`,
+            `${formatNum(duplicatePhones.size)} duplicate phone number(s) found in file`,
             { autoClose: 5000 },
           );
         }
         if (duplicateEmails.size > 0) {
           toast.warn(
-            `${duplicateEmails.size} duplicate email(s) found in file`,
+            `${formatNum(duplicateEmails.size)} duplicate email(s) found in file`,
             { autoClose: 5000 },
           );
         }

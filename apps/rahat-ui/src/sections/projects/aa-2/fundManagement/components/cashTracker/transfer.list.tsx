@@ -22,6 +22,8 @@ import {
 import { useGetCashApprovedByMe } from '@rahat-ui/query';
 import { AARoles } from '@rahat-ui/auth';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 function TransferList({
   transfers,
@@ -55,18 +57,8 @@ function TransferList({
     from: donorSmartAccount || '',
     to: currentEntity?.smartaccount || '',
   });
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   const handleConfirmClick = (transfer: FundTransfer, pendingTransfer: any) => {
     setSelectedTransfer({ transfer, pendingTransfer });
@@ -92,9 +84,7 @@ function TransferList({
   };
 
   const formatAmount = (amount: number) => {
-    return `Rs.${amount.toLocaleString('en-IN', {
-      maximumFractionDigits: 0,
-    })}`;
+    return `Rs.${formatNum(amount)}`;
   };
 
   return (
@@ -175,12 +165,12 @@ function TransferList({
                           {transfer.comments}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {formatDate(new Date(transfer.timestamp))}
+                           {formatDate(transfer.timestamp, 'dd MMMM, yyyy')}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900 mt-1">
-                          Rs. {transfer.amount.toLocaleString()}
+                          Rs. {formatNum(transfer.amount)}
                         </p>
 
                         {canConfirm &&
@@ -256,7 +246,7 @@ function TransferList({
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">{tv('TRANSFER_DATE')}:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {formatDate(new Date(selectedTransfer.transfer.timestamp))}
+                   {formatDate(selectedTransfer.transfer.timestamp, 'dd MMMM, yyyy')}
                 </span>
               </div>
             </div>

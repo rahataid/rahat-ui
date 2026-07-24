@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function Budget({}: {}) {
   const t = useTranslations('AA Project');
@@ -35,6 +36,7 @@ export default function Budget({}: {}) {
   const id = useParams().id as UUID;
   const router = useRouter();
   const createBudget = useCreateBudget(id);
+  const formatNum = useNumberFormat();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +61,7 @@ export default function Budget({}: {}) {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount)) return '';
 
-    const formatted = numAmount.toLocaleString('en-IN', {});
+    const formatted = formatNum(numAmount);
 
     return currency === 'NPR' ? `Rs.${formatted}` : `$${formatted}`;
   };

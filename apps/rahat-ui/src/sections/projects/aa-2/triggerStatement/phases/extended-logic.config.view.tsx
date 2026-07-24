@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -64,6 +65,7 @@ const getTriggerKey = (trigger: ExistingTriggerRef): string => {
 
 export default function ExtendedLogicConfigView() {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -331,7 +333,7 @@ export default function ExtendedLogicConfigView() {
         <div className="h-8 w-px bg-gray-200" />
         <div>
           <p className="text-sm text-muted-foreground">{t('TRIGGERS')}</p>
-          <p className="text-base font-semibold">{phaseTriggers.length}</p>
+          <p className="text-base font-semibold">{formatNum(phaseTriggers.length)}</p>
         </div>
         <div className="h-8 w-px bg-gray-200" />
         <div>
@@ -688,7 +690,7 @@ export default function ExtendedLogicConfigView() {
                     <div key={groupIndex}>
                       <div className={`rounded-lg border p-4 shadow-sm space-y-3 ${palette.group}`}>
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-semibold">{t('GROUP')} {groupIndex + 1}</p>
+                          <p className="text-sm font-semibold">{t('GROUP')} {formatNum(groupIndex + 1)}</p>
                           <Badge
                             className={
                               group.operator === 'AND'

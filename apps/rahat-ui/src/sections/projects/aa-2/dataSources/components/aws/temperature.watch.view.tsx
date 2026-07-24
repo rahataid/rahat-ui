@@ -12,9 +12,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { getTemperatureColor, getLatestValue } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function TemperatureWatchView() {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;
@@ -110,7 +112,7 @@ export default function TemperatureWatchView() {
                           {item.label}
                         </p>
                         <p className="text-sm/4 text-gray-600">
-                          {item.value ?? '--'}
+                          {formatNum(item.value ?? 0)}
                         </p>
                       </div>
                     </div>

@@ -12,8 +12,10 @@ import { useStakeholdersGroups } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const StakeGoldersGroups = () => {
+  const formatNum = useNumberFormat();
   const tGlobal = useTranslations('GLOBAL');
   const t = useTranslations('AA Project');
   const { id } = useParams();
@@ -94,7 +96,7 @@ const StakeGoldersGroups = () => {
                       <p className="text-[clamp(11px,1vw,14px)] mb-1">{i?.name ?? 'N/A'}</p>
                       <div className="flex gap-2 items-center text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(12px,1.4vw,18px)]">
                         <Users size={18} strokeWidth={2} />
-                        {i?._count?.stakeholders || 0}
+                        {formatNum(i?._count?.stakeholders || 0)}
                       </div>
                     </div>
                   </div>

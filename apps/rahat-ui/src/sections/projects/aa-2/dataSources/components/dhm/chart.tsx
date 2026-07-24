@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { format } from 'date-fns';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { roundValue } from '../aws/utils/color.utils';
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -32,6 +33,7 @@ const TimeSeriesChart = ({
   yAxisFormatter,
 }: ChartProps) => {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const resolvedYaxisTitle = yaxisTitleProp ?? t('WATER_LEVEL_METERS');
   if (!data || data.length === 0) return null;
 
@@ -120,7 +122,7 @@ const TimeSeriesChart = ({
               return `${roundedValue}`;
             }
           }
-          return `${roundedValue}`;
+          return formatNum(roundedValue);
         },
       },
     },
@@ -133,7 +135,7 @@ const TimeSeriesChart = ({
       },
       y: {
         formatter: function (value) {
-          return `${roundValue(Number(value))} ${unit}`;
+          return `${formatNum(roundValue(Number(value)))} ${unit}`;
         },
       },
     },

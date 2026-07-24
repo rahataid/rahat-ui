@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import type { ExtendedTriggerLogicGroup } from '../types/extended-trigger-logic.types';
 
 export interface TriggerDetail {
@@ -132,6 +133,7 @@ function TriggerTooltip({
   containerWidth: number;
 }) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const triggered = detail.isTriggered ?? detail.status;
 
   const rows: { label: string; value: string; highlight?: boolean }[] = [];
@@ -309,7 +311,7 @@ function TriggerTooltip({
                         fontFamily: row.label === 'Trigger Statement' ? 'monospace' : undefined,
                       }}
                     >
-                      {row.value}
+                      {formatNum(row.value)}
                     </span>
                   )}
                 </div>

@@ -45,11 +45,11 @@ export default function EditDailyMonitoring() {
   };
 
   const FormSchema = z.object({
-    dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
-    riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
+    dataEntryBy: z.string().min(2, { message: t('PLEASE_ENTER_NAME') }),
+    riverBasin: z.string().min(1, { message: t('PLEASE_SELECT_RIVER_BASIN') }),
     dataSource: z.array(
       z.object({
-        source: z.string().min(1, { message: 'Please select a source.' }),
+        source: z.string().min(1, { message: t('PLEASE_SELECT_A_SOURCE') }),
         //DHM
         forecast: z.string().optional(),
         //DHM - 3 Days Flood Forecast Bulletin

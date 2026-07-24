@@ -14,6 +14,7 @@ import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
@@ -34,6 +35,7 @@ export const useVendorsBeneficiaryTableColumns = (
 ) => {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -136,12 +138,12 @@ export const useVendorsBeneficiaryTableColumns = (
         const status = row.original?.status;
         return status === 'COMPLETED' ? (
           row.getValue('benTokens') ? (
-            <TruncatedCell text={`Rs. ${row.getValue('benTokens')}`} />
+            <TruncatedCell text={`Rs. ${formatNum(row.getValue('benTokens'))}`} />
           ) : (
             tg('N_A')
           )
         ) : (
-          'Rs. 0'
+          `Rs. ${formatNum(0)}`
         );
       },
     },

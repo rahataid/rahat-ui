@@ -12,6 +12,7 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
@@ -21,6 +22,8 @@ export default function FundManagementDetail() {
     projectID as UUID,
     fundId,
   );
+
+  const formatNum = useNumberFormat();
 
   const FMTokensData = [
     {
@@ -70,7 +73,7 @@ export default function FundManagementDetail() {
               <DataCard
                 key={item.name}
                 title={item.name}
-                number={item.amount}
+                number={formatNum(item.amount)}
                 className="border-solid rounded-md"
                 iconStyle="bg-white text-secondary-muted"
               />

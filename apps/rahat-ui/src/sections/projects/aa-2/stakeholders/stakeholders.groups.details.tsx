@@ -29,8 +29,10 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const StakeholdersGroupsDetails = () => {
+  const formatNum = useNumberFormat();
   const tGlobal = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
@@ -200,7 +202,7 @@ const StakeholdersGroupsDetails = () => {
 
         <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
           <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
-            {t('TOTAL_STAKEHOLDERS')} : {groupDetails?.stakeholders?.length || 0}
+            {t('TOTAL_STAKEHOLDERS')} : {formatNum(groupDetails?.stakeholders?.length ?? 0)}
           </p>
           <ClientSidePagination table={table} />
         </div>

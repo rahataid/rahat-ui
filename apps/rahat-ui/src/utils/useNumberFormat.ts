@@ -11,13 +11,20 @@ export function useNumberFormat() {
     // Chart libraries sometimes pass category labels (e.g. bank names)
     // through the same numeric-axis formatter as actual values — guard
     // against that instead of letting Intl.NumberFormat produce "NaN".
-    if (typeof value !== 'number' && typeof value !== 'bigint') {
+    let num: number;
+    if (typeof value === 'number') {
+      num = value;
+    } else if (typeof value === 'bigint') {
+      return formatter.number(value, locale === 'ne' ? { numberingSystem: 'deva' } : {});
+    } else if (typeof value === 'string' && /^-?\d+(\.\d+)?$/.test(value)) {
+      num = Number(value);
+    } else {
       return String(value);
     }
     if (locale === 'ne') {
-      return formatter.number(value, { numberingSystem: 'deva' });
+      return formatter.number(num, { numberingSystem: 'deva' });
     }
-    return formatter.number(value);
+    return formatter.number(num);
   };
 
   return format;

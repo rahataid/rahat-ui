@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { BarChart2 } from 'lucide-react';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type IProps = {
   data: any;
@@ -19,6 +20,7 @@ type IProps = {
 
 export default function AccumulatedCard({ data }: IProps) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const sanitizedData = React.useMemo(() => {
     return [
       { label: t('N24_HOURS'), subLabel: '', value: data?.[0].data?.hours24 },
@@ -45,7 +47,7 @@ export default function AccumulatedCard({ data }: IProps) {
                   <CardTitle className="text-base font-semibold">
                     {d.label}
                     <div className="text-md font-normal break-words">
-                      {d.value}
+                      {formatNum(d.value)}
                     </div>
                   </CardTitle>
                 </div>

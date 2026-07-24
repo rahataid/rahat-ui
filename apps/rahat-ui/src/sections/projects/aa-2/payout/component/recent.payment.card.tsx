@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { Eye, ArrowLeftRight, Dot } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
@@ -33,6 +34,8 @@ export default function RecentPaymentCard({
 }: GroupCardProps) {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   return (
     <div
       className={`flex items-center justify-between p-1  bg-white ${
@@ -84,14 +87,14 @@ export default function RecentPaymentCard({
               .replace(/^./, (char) => char.toUpperCase())}
           </div>
           <div className="text-sm text-muted-foreground">
-            {beneficiariesCount} {t('BENEFICIARIES')}
+            {formatNum(beneficiariesCount)} {t('BENEFICIARIES')}
           </div>
         </div>
       </div>
 
       {/* Date and Time */}
       <div className="text-sm text-muted-foreground whitespace-nowrap">
-        {dateFormat(dateTime)}
+        {formatDate(dateTime)}
       </div>
       {/* View Icon */}
       <TooltipComponent

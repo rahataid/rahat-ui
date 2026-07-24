@@ -47,7 +47,7 @@ export default function EditUser() {
 
   const FormSchema = z.object({
     name: z.string().min(4, { message: t('NAME_MUST_BE_AT_LEAST4') }),
-    email: z.string().email(),
+    email: z.string().email({ message: t('INVALID_EMAIL_ADDRESS') }),
     gender: z.string(),
     roles: z.array(z.string()).optional(),
     phone: z.string(),

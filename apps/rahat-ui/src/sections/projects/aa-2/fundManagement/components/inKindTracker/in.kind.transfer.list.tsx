@@ -14,6 +14,8 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 function InKindTransferList({
   transfers,
@@ -39,18 +41,8 @@ function InKindTransferList({
     transfer: InKindTransfer;
     pendingTransfer: any;
   } | null>(null);
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   const handleOpenConfirm = (
     transfer: InKindTransfer,
@@ -150,12 +142,12 @@ function InKindTransferList({
                           {transfer.comments}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {formatDate(new Date(transfer.timestamp))}
+                           {formatDate(transfer.timestamp, 'dd MMMM, yyyy')}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900 mt-1">
-                          {transfer.amount.toLocaleString()}
+                          {formatNum(transfer.amount)}
                         </p>
 
                         {canConfirm &&
@@ -202,7 +194,7 @@ function InKindTransferList({
             <div className="flex flex-col items-center justify-center py-4">
               <div className="bg-gray-100 rounded-lg px-6 py-4 w-full text-center">
                 <div className="text-3xl font-bold text-gray-900">
-                  {selectedTransfer.transfer.amount.toLocaleString()}
+                  {formatNum(selectedTransfer.transfer.amount)}
                 </div>
                 <div className="text-sm text-gray-700 mt-1">
                   {tg('TRANSFER_QUANTITY')}
@@ -228,7 +220,7 @@ function InKindTransferList({
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">{t('TRANSFER_DATE')}</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {formatDate(new Date(selectedTransfer.transfer.timestamp))}
+                   {formatDate(selectedTransfer.transfer.timestamp, 'dd MMMM, yyyy')}
                 </span>
               </div>
             </div>

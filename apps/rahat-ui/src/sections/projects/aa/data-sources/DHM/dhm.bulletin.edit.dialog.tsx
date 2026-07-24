@@ -25,17 +25,17 @@ import { useTranslations } from 'next-intl';
 export default function DHMBulletinDialog() {
   const t = useTranslations('AA Project');
   const FormSchema = z.object({
-    waterWay: z.string().min(5, { message: 'Must be at least 5 characters' }),
-    river: z.string().min(5, { message: 'Must be at least 5 characters' }),
+    waterWay: z.string().min(5, { message: t('MUST_BE_AT_LEAST_5_CHARACTERS') }),
+    river: z.string().min(5, { message: t('MUST_BE_AT_LEAST_5_CHARACTERS') }),
     todayStatus: z
       .string()
-      .min(5, { message: 'Must be at least 5 characters' }),
+      .min(5, { message: t('MUST_BE_AT_LEAST_5_CHARACTERS') }),
     tomorrowStatus: z
       .string()
-      .min(5, { message: 'Must be at least 5 characters' }),
+      .min(5, { message: t('MUST_BE_AT_LEAST_5_CHARACTERS') }),
     dayAfterTomorrowStatus: z
       .string()
-      .min(5, { message: 'Must be at least 5 characters' }),
+      .min(5, { message: t('MUST_BE_AT_LEAST_5_CHARACTERS') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

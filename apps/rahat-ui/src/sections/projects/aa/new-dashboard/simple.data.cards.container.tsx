@@ -16,6 +16,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { useQuery } from 'urql';
+import { useNumberFormat } from '../../../../utils/useNumberFormat';
 
 type IProps = {
   allStats: any;
@@ -50,6 +51,7 @@ export default function SimpleDataCardsContainer({
 }: IProps) {
 
   console.log(commsStats)
+  const formatNum = useNumberFormat();
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -72,14 +74,6 @@ export default function SimpleDataCardsContainer({
   const parsedProjectBudget = Number(projectBudget);
 
   const projectBalance = parsedProjectBudget - Number(totalDistributed);
-
-  const formatToEnglishNumberSystem = (number: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'decimal',
-      minimumFractionDigits: number % 1 === 0 ? 0 : 2, // No decimals if whole number,
-      maximumFractionDigits: 2,
-    }).format(number);
-  }
 
   const tempDashboardStats = allStats?.filter(
     (data: any) => data.name === 'TEMP_DASHBOARD_STATS',
@@ -107,17 +101,17 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Budget',
       Icon: Coins,
-      number: `NRs. ${formatToEnglishNumberSystem(parsedProjectBudget) ?? 0}`,
+      number: `NRs. ${formatNum(parsedProjectBudget) ?? 0}`,
     },
     {
       title: 'Balance',
       Icon: Coins,
-      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.BALANCE)}` : `NRs. ${formatToEnglishNumberSystem(projectBalance) ?? 0}`,
+      number: tempDashboardStats ? `NRs. ${formatNum(tempDashboardStats.BALANCE)}` : `NRs. ${formatNum(projectBalance) ?? 0}`,
     },
     {
       title: 'Fund Distributed',
       Icon: HandCoins,
-      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.FUND_DISTRIBUTED)}` : `NRs. ${formatToEnglishNumberSystem(totalDistributed) ?? 0}`,
+      number: tempDashboardStats ? `NRs. ${formatNum(tempDashboardStats.FUND_DISTRIBUTED)}` : `NRs. ${formatNum(totalDistributed) ?? 0}`,
     },
     {
       title: 'Number of Communication Project',

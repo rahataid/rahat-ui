@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import ActivityCommsCards from './activity.comms.cards.list';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 function getStatusBg(status: string) {
   if (status === 'NOT_STARTED') {
@@ -28,6 +29,7 @@ function getStatusBg(status: string) {
 
 export default function useCommsActivitiesTableColumns() {
   const t = useTranslations('AA Project');
+  const formatDate = useDateFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
@@ -41,7 +43,7 @@ export default function useCommsActivitiesTableColumns() {
       header: t('DATE'),
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
-          {new Date(row.getValue('createdAt')).toLocaleString()}
+          {formatDate(row.getValue('createdAt'))}
         </div>
       ),
     },

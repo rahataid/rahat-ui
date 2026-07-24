@@ -26,6 +26,7 @@ import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistor
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function Treasury() {
   const t = useTranslations('AA Project');
@@ -47,6 +48,8 @@ export default function Treasury() {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const formatNum = useNumberFormat();
 
   return (
     <>
@@ -79,14 +82,14 @@ export default function Treasury() {
             <DataCard
               className="rounded-sm"
               title={t('TOTAL_TOKEN_SUPPLY')}
-              smallNumber={`${tokenDetails?.data.totalSupply} ${tokenDetails?.data.symbol}`}
+              smallNumber={`${formatNum(tokenDetails?.data.totalSupply)} ${tokenDetails?.data.symbol}`}
               Icon={Coins}
               subtitle={t('TOTAL_TOKENS_MINTED_FOR_THIS_PROJECT')}
             />
             <DataCard
               className="rounded-sm"
               title={t('PROJECT_BALANCE')}
-              smallNumber={`${tokenDetails?.data.projectBalance} ${tokenDetails?.data.symbol}`}
+              smallNumber={`${formatNum(tokenDetails?.data.projectBalance)} ${tokenDetails?.data.symbol}`}
               Icon={Wallet}
               subtitle={t('TOKENS_CURRENTLY_HELD_IN_PROJECT_TREASURY')}
             />

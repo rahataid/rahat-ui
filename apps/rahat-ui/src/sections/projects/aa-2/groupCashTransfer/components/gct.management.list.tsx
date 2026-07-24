@@ -63,6 +63,7 @@ import {
 } from '../types/gct.types';
 import { CIPS_BANKS } from '../types/cips-banks';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
 export default function GctManagementList() {
   const t = useTranslations('AA Project with Cash Tracker');
@@ -93,7 +94,21 @@ export default function GctManagementList() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [downloading, setDownloading] = useState(false);
+  const formatNum = useNumberFormat();
   const q = useProjectAction();
+
+  const statusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      NOT_STARTED: t('NOT_STARTED'),
+      PENDING: tGlobal('PENDING'),
+      STARTED: t('STARTED'),
+      COMPLETED: tGlobal('COMPLETED'),
+      SUCCESS: tGlobal('SUCCESS'),
+      FAILED: tGlobal('FAILED'),
+      REJECTED: t('REJECTED'),
+    };
+    return map[s] ?? s.replace(/_/g, ' ');
+  };
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -195,7 +210,7 @@ export default function GctManagementList() {
         header: t('AMOUNT_COL'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.original.amount?.toLocaleString() ?? '—'}
+            {formatNum(row.original.amount ?? 0)}
           </span>
         ),
       },
@@ -217,7 +232,7 @@ export default function GctManagementList() {
                 GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'
               }`}
             >
-              {s?.replace(/_/g, ' ') ?? '—'}
+              {s ? statusLabel(s) : '—'}
             </Badge>
           );
         },
@@ -359,7 +374,7 @@ export default function GctManagementList() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
-              {statusFilter ? statusFilter.replace(/_/g, ' ') : t('ALL_STATUSES')}
+              {statusFilter ? statusLabel(statusFilter) : t('ALL_STATUSES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -369,14 +384,14 @@ export default function GctManagementList() {
             </DropdownMenuItem>
             {GCT_RECORD_STATUSES.map((s) => (
               <DropdownMenuItem key={s} onSelect={() => setStatusFilter(s)}>
-                {s.replace(/_/g, ' ')}
+                {statusLabel(s)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <DemoTable table={table} loading={isLoading} />
+      <DemoTable table={table} loading={isLoading} message={tGlobal('NO_RESULTS')} />
 
       <CustomPagination
         currentPage={pagination.page}

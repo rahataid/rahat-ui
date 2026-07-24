@@ -7,6 +7,7 @@ import { BarChart2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import * as React from 'react';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type IProps = {
   data: any;
@@ -14,6 +15,7 @@ type IProps = {
 
 export default function GLOFASCard({ data }: IProps) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const sanitizedData = React.useMemo(() => {
     return [
       { label: t('TODAY'), value: data?.[0].data?.todayGLOFAS },
@@ -40,7 +42,7 @@ export default function GLOFASCard({ data }: IProps) {
                   <CardTitle className="text-base font-semibold">
                     {d.label}
                     <div className="text-md font-normal break-words">
-                      {d.value}
+                      {formatNum(d.value)}
                     </div>
                   </CardTitle>
                 </div>

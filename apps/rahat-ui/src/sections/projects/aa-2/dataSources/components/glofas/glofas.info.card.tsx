@@ -2,7 +2,6 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useTranslations } from 'next-intl';
 
 import { Heading } from 'apps/rahat-ui/src/common';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   Calendar,
   TriangleAlert,
@@ -11,6 +10,8 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { formateDateFromText } from './utils/formateDataFormTextData';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 type IProps = {
   glofas: Record<string, any>;
@@ -18,6 +19,8 @@ type IProps = {
 
 export default function GlofasInfoCard({ glofas }: IProps) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const maxProbability = glofas?.info?.pointForecastData?.maxProbability?.data;
   const maxProbabilityDisplay =
     maxProbability == null ? 'N/A' : maxProbability === '' ? '0' : maxProbability;
@@ -27,7 +30,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
       {
         icon: Calendar,
         label: t('FORECAST_DATE'),
-        value: dateFormat(glofas?.info?.forecastDate, 'MMMM d, yyyy'),
+        value: formatDate(glofas?.info?.forecastDate, 'MMMM d, yyyy'),
       },
       {
         icon: Calendar,
@@ -86,7 +89,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
                         className="w-4 h-4 object-cover"
                       />
                     ) : (
-                      <p className="text-sm/4 text-gray-600">{d.value}</p>
+                      <p className="text-sm/4 text-gray-600">{formatNum(d.value)}</p>
                     )}
                   </div>
                 </div>

@@ -11,6 +11,11 @@ const LOCALE_LABELS: Record<string, string> = {
   ne: 'NE',
 };
 
+const LOCALE_FLAGS: Record<string, string> = {
+  en: '🇬🇧',
+  ne: '🇳🇵',
+};
+
 export function LanguageToggle() {
   const t = useTranslations('AA Project');
   const locale = useLocale();
@@ -37,29 +42,31 @@ export function LanguageToggle() {
       aria-label={t('SWITCH_LANGUAGE')}
       disabled={isPending}
       onClick={toggleLocale}
-      className="relative inline-flex h-10 w-[108px] items-center justify-between rounded-full border border-border bg-muted px-3 transition-opacity disabled:cursor-not-allowed disabled:opacity-70"
+      className="relative inline-flex h-9 w-[104px] items-center justify-between rounded-full border border-border/60 bg-muted px-3 shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60"
     >
       <span
         className={cn(
-          'z-10 text-xs font-semibold transition-colors',
-          !isSecondActive ? 'text-foreground' : 'text-muted-foreground',
+          'z-0 text-[11px] font-bold tracking-wide transition-colors',
+          !isSecondActive ? 'text-foreground' : 'text-muted-foreground/50',
         )}
       >
         {LOCALE_LABELS[first] ?? first?.toUpperCase()}
       </span>
       <span
         className={cn(
-          'z-10 text-xs font-semibold transition-colors',
-          isSecondActive ? 'text-foreground' : 'text-muted-foreground',
+          'z-0 text-[11px] font-bold tracking-wide transition-colors',
+          isSecondActive ? 'text-foreground' : 'text-muted-foreground/50',
         )}
       >
         {LOCALE_LABELS[second] ?? second?.toUpperCase()}
       </span>
       <span
         aria-hidden
-        className="absolute top-1/2 h-8 w-8 -translate-y-1/2 rounded-full border bg-background shadow transition-all duration-200 ease-out"
-        style={{ left: isSecondActive ? 'calc(100% - 36px)' : '4px' }}
-      />
+        className="absolute top-1/2 h-7 w-7 -translate-y-1/2 rounded-full bg-background shadow ring-1 ring-border/40 transition-all duration-200 ease-out flex items-center justify-center text-sm leading-none overflow-hidden"
+        style={{ left: isSecondActive ? 'calc(100% - 32px)' : '4px' }}
+      >
+        {isSecondActive ? LOCALE_FLAGS[second] : LOCALE_FLAGS[first]}
+      </span>
     </button>
   );
 }

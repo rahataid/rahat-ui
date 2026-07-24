@@ -4,7 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 function getStatusBg(status: string) {
   if (status === 'Not Started') {
@@ -38,6 +38,7 @@ export default function useCommsActivitiesTableColumns() {
   const t = useTranslations('AA Project');
   const router = useRouter();
   const { id } = useParams();
+  const formatDate = useDateFormat();
 
   const columns: ColumnDef<any>[] = [
     {
@@ -51,7 +52,7 @@ export default function useCommsActivitiesTableColumns() {
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
           <TruncatedCell
-            text={dateFormat(row.original?.updatedAt)}
+            text={formatDate(row.original?.updatedAt)}
             maxLength={30}
           />
         </div>

@@ -1,4 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 type IProps = {
   status: boolean;
@@ -8,14 +9,6 @@ type IProps = {
   triggeredBy: string;
 };
 
-function renderTimestamp (timestamp: string) {
-  const d =  new Date(timestamp)
-  const localeDate = d.toLocaleDateString()
-  const localeTime = d.toLocaleTimeString()
-
-  return `${localeDate} ${localeTime}`
-}
-
 export default function ManualTriggerDetailCard({
   status,
   notes,
@@ -24,7 +17,7 @@ export default function ManualTriggerDetailCard({
   triggeredBy
 }: IProps) {
 
-
+  const formatDate = useDateFormat();
 
   return (
     <div className="bg-card rounded p-4">
@@ -48,11 +41,7 @@ export default function ManualTriggerDetailCard({
           <p className="text-sm text-muted-foreground">Triggered At</p>
           {
             status ? (
-              <p>
-                {
-                  renderTimestamp(triggeredAt)
-                }
-              </p>
+              <p>{formatDate(triggeredAt)}</p>
             ) : (
               <p>{'N/A'}</p>
             )

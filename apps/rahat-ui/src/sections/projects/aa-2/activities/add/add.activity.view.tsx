@@ -669,12 +669,14 @@ export default function AddActivities() {
                       name="isTemplate"
                       render={({ field }) => {
                         return (
-                          <FormItem className=" w-[200px]">
-                            <div className="flex items-center justify-between w-full">
-                              <FormLabel>{t('SAVE_AS_TEMPLATE')}</FormLabel>{' '}
+                          <FormItem>
+                            <div className="flex items-center gap-2">
+                              <FormLabel className="whitespace-nowrap">
+                                {t('SAVE_AS_TEMPLATE')}
+                              </FormLabel>
                               <TooltipProvider>
                                 <Tooltip>
-                                  <TooltipTrigger asChild className="-ml-4">
+                                  <TooltipTrigger asChild>
                                     <Info
                                       size={18}
                                       className="text-muted-foreground cursor-help hover:text-primary transition-colors"

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardContent,
@@ -47,6 +48,7 @@ export default function ConfigurePhase({
   prevStep,
   handleAddTrigger,
 }: IProps) {
+  const t = useTranslations('AA Project');
   const { id: projectID } = useParams();
   const mandatoryTriggers = phaseDetail?.triggers?.filter(
     (d: any) => d?.isMandatory,
@@ -127,7 +129,7 @@ export default function ConfigurePhase({
                           )}
                         </>
                       ))
-                    : 'No data'}
+                    : t('NO_DATA')}
                 </div>
               </CardContent>
             </Card>
@@ -153,7 +155,7 @@ export default function ConfigurePhase({
                           )}
                         </>
                       ))
-                    : 'No data'}
+                    : t('NO_DATA')}
                 </div>
               </CardContent>
             </Card>

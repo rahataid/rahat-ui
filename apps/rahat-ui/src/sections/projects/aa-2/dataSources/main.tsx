@@ -235,7 +235,9 @@ export default function DataSources() {
                   disabled={tab.disabled}
                   className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
                 >
-                  {tab.label}
+                  {t.has(tab.label.toUpperCase().replace(/\s+/g, '_'))
+                  ? t(tab.label.toUpperCase().replace(/\s+/g, '_'))
+                  : tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>

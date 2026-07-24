@@ -1,5 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
 import {
   Card,
@@ -35,6 +36,7 @@ export default function CommunicationsChartsStats({
   statsBenefStakeholders,
 }: CommunicationsChartsStatsProps) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
@@ -45,8 +47,8 @@ export default function CommunicationsChartsStats({
               {t('TOTAL_SMS_SENT')}
             </CardTitle>
             <CardDescription className="text-lg text-sky-500 font-bold">
-              {(statsBenefStakeholders?.beneficiary?.SMS?.TOTAL || 0) +
-                (statsBenefStakeholders?.stakeholder?.SMS?.TOTAL || 0)}
+              {formatNum((statsBenefStakeholders?.beneficiary?.SMS?.TOTAL || 0) +
+                (statsBenefStakeholders?.stakeholder?.SMS?.TOTAL || 0))}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-between flex-col xl:flex-row  ">
@@ -76,28 +78,28 @@ export default function CommunicationsChartsStats({
 
             <div className="grid grid-cols-2 xl:grid-cols-1">
               {[
-                 {
-                   label: t('SUCCESSFULLY_DELIVERED'),
+{
+                    label: t('SUCCESSFULLY_DELIVERED'),
+                    value:
+                      formatNum((statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0) +
+                        (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
+                          0) || 0),
+                  },
+                  {
+                    label: t('SMS_DELIVERY_FAILURES'),
                    value:
-                     (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0) +
-                       (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
-                         0) || 0,
+                     formatNum((statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0) +
+                       (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0) ||
+                     0),
                  },
-                 {
-                   label: t('SMS_DELIVERY_FAILURES'),
-                  value:
-                    (statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0) +
-                      (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0) ||
-                    0,
-                },
-                 {
-                   label: t('SMS_SUCCESSFULLY_SENT_TO_BENEFICIARIES'),
-                  value: statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0,
-                },
-                 {
-                   label: t('SMS_SUCCESSFULLY_SENT_TO_STAKEHOLDERS'),
-                  value: statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS || 0,
-                },
+                  {
+                    label: t('SMS_SUCCESSFULLY_SENT_TO_BENEFICIARIES'),
+                   value: formatNum(statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0),
+                 },
+                  {
+                    label: t('SMS_SUCCESSFULLY_SENT_TO_STAKEHOLDERS'),
+                   value: formatNum(statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS || 0),
+                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col flex-wrap bg-white">
                   <p className="text-sm text-gray-600 text-wrap">{label}</p>
@@ -116,8 +118,8 @@ export default function CommunicationsChartsStats({
               {t('TOTAL_AVC_SENT')}
             </CardTitle>
             <CardDescription className="text-lg text-sky-500 font-bold">
-              {(statsBenefStakeholders?.beneficiary?.VOICE?.TOTAL || 0) +
-                (statsBenefStakeholders?.stakeholder?.VOICE?.TOTAL || 0)}
+              {formatNum((statsBenefStakeholders?.beneficiary?.VOICE?.TOTAL || 0) +
+                (statsBenefStakeholders?.stakeholder?.VOICE?.TOTAL || 0))}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-between flex-col xl:flex-row">
@@ -150,34 +152,35 @@ export default function CommunicationsChartsStats({
               {[
                 {
                   label: t('UNIQUE_AVC_RECIPIENTS'),
-                  value:
+                  value: formatNum(
                     commsStatsData?.stats?.transportStats.find(
                       (r) => r.name === 'VOICE',
-                    )?.totalRecipients || 0,
+                    )?.totalRecipients || 0),
                 },
                 {
                   label: t('SUCCESSFULLY_DELIVERED'),
-                  value:
+                  value: formatNum(
                     (statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS || 0) +
                       (statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS ||
-                        0) || 0,
+                        0)) || 0,
                 },
 
                 {
                   label: t('AVC_DELIVERY_FAILURES'),
-                  value:
+                  value: formatNum(
                     (statsBenefStakeholders?.beneficiary?.VOICE?.FAIL || 0) +
-                      (statsBenefStakeholders?.stakeholder?.VOICE?.FAIL || 0) ||
+                      (statsBenefStakeholders?.stakeholder?.VOICE?.FAIL || 0)) ||
                     0,
                 },
                 {
                   label: t('AVC_SUCCESSFULLY_SENT_TO_BENEFICIARIES'),
-                  value:
-                    statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS || 0,
+                  value: formatNum(
+                    statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS || 0),
                 },
                 {
                   label: t('AVC_SUCCESSFULLY_SENT_TO_STAKEHOLDERS'),
-                  value: statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS,
+                  value: formatNum(
+                    statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS || 0),
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col flex-wrap bg-white">

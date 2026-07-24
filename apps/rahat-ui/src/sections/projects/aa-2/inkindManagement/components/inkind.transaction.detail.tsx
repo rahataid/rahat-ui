@@ -8,10 +8,12 @@ import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { formatDate } from '../inkind.helpers';
 import InfoItem from 'apps/rahat-ui/src/sections/projects/aa-2/payout/benefTransactionDetails/infoItem';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function InkindTransactionDetail() {
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id, allocationId } = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -74,7 +76,7 @@ export default function InkindTransactionDetail() {
         />
         <DataCard
           title={tv('TOTAL_REDEEMED')}
-          smallNumber={quantity}
+          smallNumber={formatNum(quantity)}
           className="border-solid rounded-sm"
           iconStyle="bg-white text-secondary-muted"
         />

@@ -32,6 +32,7 @@ import {
 } from '@tanstack/react-table';
 import useCommsLogsTableColumns from './useCommsLogsTableColumns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 type IHeadCardProps = {
   title: string;
@@ -52,6 +53,7 @@ export default function CommsLogsDetailPage() {
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
+  const formatDate = useDateFormat();
 
   const columns = useCommsLogsTableColumns();
 
@@ -112,7 +114,7 @@ export default function CommsLogsDetailPage() {
     {
       title: t('TRIGGERED_AT'),
       icon: Timer,
-      content: renderDateTime(logs?.sessionDetails?.createdAt),
+      content: formatDate(logs?.sessionDetails?.createdAt),
     },
     {
       title: t('GROUP_NAME'),
@@ -227,16 +229,6 @@ export default function CommsLogsDetailPage() {
       />
     </div>
   );
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
 }
 
 function renderMessage(message: any) {

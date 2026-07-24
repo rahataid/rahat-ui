@@ -3,7 +3,7 @@ import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useTranslations } from 'next-intl';
 import PieChartCard from '../../components/pie.chart.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useNumberFormat } from '../../../../utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type IProps = {
   allStats: any;
@@ -37,6 +37,11 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   )[0]?.data;
 
   const chartAxOptions = {
+    xaxis: {
+      labels: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
     yaxis: {
       labels: {
         formatter: (val: number) => formatNum(val),

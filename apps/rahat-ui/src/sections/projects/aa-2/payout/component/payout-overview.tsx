@@ -1,9 +1,11 @@
 import { useTranslations } from 'next-intl';
+import * as React from 'react';
 import { DataCard, Heading } from 'apps/rahat-ui/src/common';
 import RecentPayout from './recent.payout';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 
 import { PayoutOverviewProps } from 'apps/rahat-ui/src/types/payout';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function PayoutOverview({
   payoutStats,
@@ -11,6 +13,19 @@ export default function PayoutOverview({
   statsPayout,
 }: PayoutOverviewProps) {
   const tv = useTranslations('AA Project with Cash Tracker');
+  const formatNum = useNumberFormat();
+
+  const pieOptions = React.useMemo(
+    () => ({
+      tooltip: {
+        y: {
+          formatter: (value: number) => formatNum(value),
+        },
+      },
+    }),
+    [formatNum],
+  );
+
   const pieDataLabel = [
     {
       label: 'FSP',
@@ -44,7 +59,7 @@ export default function PayoutOverview({
             <DataCard
               key={stat.label}
               title={stat.label}
-              number={stat.value as string}
+              number={formatNum(stat.value as unknown as number)}
               className="rounded-sm h-32"
               infoIcon={stat.infoIcon}
               infoTooltip={stat.infoTooltip}
@@ -59,6 +74,7 @@ export default function PayoutOverview({
             <DynamicPieChart
               pieData={pieDataLabel}
               colors={['#F4A462', '#2A9D90']}
+              options={pieOptions}
             />
           </div>
         </div>
@@ -69,6 +85,7 @@ export default function PayoutOverview({
             <DynamicPieChart
               pieData={pieDataStatus}
               colors={['#2A9D90', '#DC3545']}
+              options={pieOptions}
             />
           </div>
         </div>

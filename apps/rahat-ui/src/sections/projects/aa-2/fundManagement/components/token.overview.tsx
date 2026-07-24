@@ -10,7 +10,6 @@ import {
   useProjectStore,
 } from '@rahat-ui/query';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
-import { INFO_TOOL_TIPS } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useChains } from 'connectkit';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -19,6 +18,7 @@ import DynamicPieChart from '../../../components/dynamicPieChart';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function TokensOverview() {
   const t = useTranslations('AA Project');
@@ -45,6 +45,14 @@ export default function TokensOverview() {
   }));
   const project = useProjectStore((p) => p.singleProject);
   const projectBalance = useProjectBalance(projectId);
+  const formatNum = useNumberFormat();
+
+  const getNameKey = (name: string) =>
+    name === 'Token Price' ? 'TOKEN_PRICE' :
+    name === 'Average Disbursement time' ? 'AVERAGE_DISBURSEMENT_TIME' :
+    name === 'Average Duration' ? 'AVERAGE_DURATION' :
+    name.toUpperCase().replace(/\s+/g, '_');
+
   // const projectBalance = useFundAssignmentStore(
   //   (state) => state.projectBalance,
   // );
@@ -83,7 +91,7 @@ export default function TokensOverview() {
             {/* <DataCard
               className="rounded-sm h-[116px]"
               title="Project Balance"
-              smallNumber={`Rs ${projectBalance}`}
+              smallNumber={`Rs ${formatNum(projectBalance)}`}
               infoIcon={true}
               infoTooltip={'Project Balance'}
               subtitle=" "
@@ -92,7 +100,7 @@ export default function TokensOverview() {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
               const isBudget = item.name === 'Budget Assigned';
-              const infoTooltip = INFO_TOOL_TIPS[item.name];
+              const infoTooltip = t(getNameKey(item.name) + '_TOOLTIP');
 
               if (isToken) {
                 const assetUrl = getExplorerUrl({
@@ -115,8 +123,8 @@ export default function TokensOverview() {
                   >
                     <DataCard
                       className="rounded-sm h-[116px]"
-                      title={item.name}
-                      smallNumber={item.value}
+                      title={t('TOKEN')}
+                      smallNumber={formatNum(item.value)}
                       infoIcon={!!infoTooltip}
                       infoTooltip={infoTooltip}
                       subtitle=" "
@@ -131,7 +139,7 @@ export default function TokensOverview() {
                     key={index}
                     className="rounded-sm h-[116px]"
                     title={t('N1_TOKEN_VALUE')}
-                    smallNumber={`Rs ${item.value}`}
+                    smallNumber={`Rs ${formatNum(item.value)}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
                     subtitle=" "
@@ -145,7 +153,7 @@ export default function TokensOverview() {
                     key={index}
                     className="rounded-sm h-[116px]"
                     title={t('BUDGET_ASSIGNED')}
-                    smallNumber={`Rs ${item.value}`}
+                    smallNumber={`Rs ${formatNum(item.value)}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
                     subtitle=" "
@@ -157,8 +165,8 @@ export default function TokensOverview() {
                 <DataCard
                   key={index}
                   className="rounded-sm h-[116px] p-0"
-                  title={item.name}
-                  smallNumber={String(item.value)}
+                  title={t(getNameKey(item.name))}
+                  smallNumber={formatNum(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
                     subtitle={
@@ -177,7 +185,7 @@ export default function TokensOverview() {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
               const isBudget = item.name === 'Budget Assigned';
-              const infoTooltip = INFO_TOOL_TIPS[item.name];
+              const infoTooltip = t(getNameKey(item.name) + '_TOOLTIP');
 
               // if (isToken) {
               //   return (
@@ -231,8 +239,8 @@ export default function TokensOverview() {
                 <DataCard
                   key={index}
                   className="rounded-sm h-[116px] p-0"
-                  title={item.name}
-                  smallNumber={String(item.value)}
+                  title={t(getNameKey(item.name))}
+                  smallNumber={formatNum(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
                     subtitle={
@@ -246,21 +254,21 @@ export default function TokensOverview() {
             <DataCard
               className="rounded-sm h-[116px] p-0"
               title={t('PENDING_DISBURSEMENT')}
-              smallNumber={String(
-                getTokenStat?.tokenStats?.pendingDisbursement ?? '-',
-              )}
-              infoIcon={!!INFO_TOOL_TIPS['Pending Disbursement']}
-              infoTooltip={INFO_TOOL_TIPS['Pending Disbursement']}
+              smallNumber={formatNum(
+                getTokenStat?.tokenStats?.pendingDisbursement,
+              ) || '-'}
+              infoIcon={true}
+              infoTooltip={t('PENDING_DISBURSEMENT_TOOLTIP')}
               subtitle=" "
             />
             <DataCard
               className="rounded-sm h-[116px] p-0"
               title={t('REDEEMED_TOKENS')}
-              smallNumber={String(
-                getTokenStat?.tokenStats?.redeemedTokens ?? '-',
-              )}
-              infoIcon={!!INFO_TOOL_TIPS['Redeemed Tokens']}
-              infoTooltip={INFO_TOOL_TIPS['Redeemed Tokens']}
+              smallNumber={formatNum(
+                getTokenStat?.tokenStats?.redeemedTokens,
+              ) || '-'}
+              infoIcon={true}
+              infoTooltip={t('REDEEMED_TOKENS_TOOLTIP')}
               subtitle=" "
             />
           </div>
@@ -275,6 +283,33 @@ export default function TokensOverview() {
             <DynamicPieChart
               pieData={tokenStatus()}
               colors={['#2A9D90', '#E53935', '#BDBDBD']}
+              options={{
+                tooltip: {
+                  y: {
+                    formatter: (val: number) => formatNum(val),
+                  },
+                },
+                plotOptions: {
+                  pie: {
+                    donut: {
+                      labels: {
+                        value: {
+                          formatter: (val: number | string) => formatNum(val),
+                        },
+                        total: {
+                          formatter: (w: any) =>
+                            formatNum(
+                              w.globals.seriesTotals.reduce(
+                                (a: number, b: number) => a + b,
+                                0,
+                              ),
+                            ),
+                        },
+                      },
+                    },
+                  },
+                },
+              }}
             />
           </div>
         </div>

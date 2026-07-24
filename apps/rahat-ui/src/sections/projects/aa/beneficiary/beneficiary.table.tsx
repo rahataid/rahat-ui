@@ -200,7 +200,7 @@ function BeneficiaryDetailTableView() {
                       {projectBeneficiaries.isLoading ? (
                         <TableLoader />
                       ) : (
-                        'No data available.'
+                        t('NO_DATA_AVAILABLE')
                       )}
                     </TableCell>
                   </TableRow>

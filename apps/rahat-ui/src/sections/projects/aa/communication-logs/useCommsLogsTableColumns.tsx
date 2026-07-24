@@ -2,9 +2,11 @@ import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export default function useCommsLogsTableColumns() {
   const t = useTranslations('AA Project');
+  const formatDate = useDateFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
@@ -32,7 +34,7 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'timeStamp',
       header: t('TIMESTAMP'),
-      cell: ({ row }) => <div>{renderDateTime(row?.original?.createdAt)}</div>,
+      cell: ({ row }) => <div>{formatDate(row?.original?.createdAt)}</div>,
     },
     {
       accessorKey: 'duration',
@@ -43,16 +45,6 @@ export default function useCommsLogsTableColumns() {
     },
   ];
   return columns;
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
 }
 
 function renderBadgeBg(status: string) {

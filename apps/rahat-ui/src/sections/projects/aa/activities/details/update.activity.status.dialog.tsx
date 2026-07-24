@@ -72,12 +72,12 @@ export default function UpdateActivityStatusDialog({
   const updateStatus = useUpdateActivityStatus();
 
   const FormSchema = z.object({
-    status: z.string().min(1, { message: 'Please select status' }),
+    status: z.string().min(1, { message: t('PLEASE_SELECT_STATUS') }),
     notes: z
       .string()
       .optional()
       .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     activityDocuments: z
       .array(

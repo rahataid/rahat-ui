@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { getSessionColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 interface IndividualCommonLogRow {
   title?: string;
@@ -29,6 +30,7 @@ export default function useIndividualCommonLogsTableColumns(
   const t = useTranslations('AA Project');
   const { id } = useParams();
   const router = useRouter();
+  const formatDate = useDateFormat();
   const [isPlaying, setIsPlaying] = React.useState(false);
 
   const columns: ColumnDef<IndividualCommonLogRow>[] = [
@@ -85,13 +87,7 @@ export default function useIndividualCommonLogsTableColumns(
       accessorKey: 'timestamp',
       header: t('TIMESTAMP'),
       cell: ({ row }) => {
-        const timestamp = new Date(row.original.timestamp).toLocaleString(
-          'en-US',
-          {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-          },
-        );
+        const timestamp = formatDate(row.original.timestamp);
         return <TruncatedCell text={timestamp} maxLength={25} />;
       },
     },

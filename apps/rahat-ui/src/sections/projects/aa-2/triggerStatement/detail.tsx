@@ -26,7 +26,7 @@ import {
   DocumentsSection,
   ForecastDataSection,
 } from './components';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
@@ -36,6 +36,7 @@ import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
 
 export default function TriggerStatementDetail() {
+  const formatDate = useDateFormat();
   const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
@@ -261,7 +262,7 @@ export default function TriggerStatementDetail() {
             {trigger?.isTriggered && (
               <div>
                 <p className="mb-1">{t('TRIGGERED_AT')}</p>
-                <p>{dateFormat(trigger?.triggeredAt)}</p>
+                <p>{formatDate(trigger?.triggeredAt)}</p>
               </div>
             )}
             {trigger?.triggeredBy && (
@@ -300,7 +301,7 @@ export default function TriggerStatementDetail() {
             <div className="bg-gray-100 rounded-sm p-4">
               <p className="text-sm/4 mb-1">{trigger?.notes}</p>
               <p className="text-gray-500 text-sm/4">
-                {dateFormat(trigger?.updatedAt)}
+                {formatDate(trigger?.updatedAt)}
               </p>
             </div>
           </div>

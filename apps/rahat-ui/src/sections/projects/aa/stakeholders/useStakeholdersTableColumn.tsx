@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -27,6 +28,8 @@ import { UUID } from 'crypto';
 import { setPaginationToLocalStorage } from '../prev.pagination.storage';
 
 export default function useStakeholdersTableColumn() {
+  const t = useTranslations('GLOBAL');
+  const tc = useTranslations('Confirmation & Alert Dialogs');
   const { id } = useParams();
   const router = useRouter();
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -109,7 +112,7 @@ export default function useStakeholdersTableColumn() {
                   />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Edit</p>
+                  <p className="text-xs font-medium">{t('EDIT')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -128,26 +131,25 @@ export default function useStakeholdersTableColumn() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          Are you absolutely sure?
+                          {t('ARE_YOU_ABSOLUTELY_SURE')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete this stakeholder.
+                          {tc('THIS_ACTION_CANNOT_BE_UNDONE_THIS', { name: 'stakeholder' })}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{t('CANCEL')}</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => removeStakeholder(row.original)}
                         >
-                          Continue
+                          {t('CONTINUE')}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Delete</p>
+                  <p className="text-xs font-medium">{t('DELETE')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

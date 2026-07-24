@@ -1,5 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -72,6 +73,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const t = useTranslations('AA Project');
   const tv = useTranslations('AA Project with Cash Tracker');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id, detailID } = useParams();
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
@@ -183,7 +185,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         if (payoutType === 'FSP')
           return (
             <div>
-              <TruncatedCell text={`Rs. ${amount}`} maxLength={15} />
+              <TruncatedCell text={`Rs. ${formatNum(amount)}`} maxLength={15} />
             </div>
           );
         else {
@@ -192,12 +194,12 @@ export default function useBeneficiaryGroupDetailsLogColumns(
 
           return status === 'COMPLETED' ? (
             row.original?.amount ? (
-              <TruncatedCell text={`Rs. ${amount}`} maxLength={15} />
+              <TruncatedCell text={`Rs. ${formatNum(amount)}`} maxLength={15} />
             ) : (
-              'Rs. 0'
+              `Rs. ${formatNum(0)}`
             )
           ) : (
-            'Rs. 0'
+            `Rs. ${formatNum(0)}`
           );
         }
       },

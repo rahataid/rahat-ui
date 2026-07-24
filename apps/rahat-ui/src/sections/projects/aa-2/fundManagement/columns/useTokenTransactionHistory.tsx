@@ -1,8 +1,9 @@
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { ColumnDef } from '@tanstack/react-table';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
@@ -24,6 +25,8 @@ export const useTokenTransactionHistory = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -89,6 +92,7 @@ export const useTokenTransactionHistory = () => {
     {
       header: tg('AMOUNT'),
       accessorKey: 'value',
+      cell: ({ row }) => <div>{formatNum(row.original.value)}</div>,
     },
     {
       header: tg('DATE'),
@@ -96,7 +100,7 @@ export const useTokenTransactionHistory = () => {
       cell: ({ row }) => {
         const date = new Date(Number(row.original.blockTimeStamp) * 1000);
         const formattedDate = row.original.blockTimeStamp
-          ? dateFormat(date)
+          ? formatDate(date)
           : tg('N_A');
         return formattedDate;
       },

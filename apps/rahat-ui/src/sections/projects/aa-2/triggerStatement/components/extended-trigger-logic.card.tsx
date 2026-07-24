@@ -1,4 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Settings2 } from 'lucide-react';
@@ -54,10 +55,11 @@ function GroupCard({
   index: number;
   triggers: TriggerItem[];
 }) {
+  const formatNum = useNumberFormat();
   return (
     <div className="bg-gray-50 rounded-lg p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-700">Group {index + 1}</p>
+        <p className="text-sm font-medium text-gray-700">Group {formatNum(index + 1)}</p>
         <Badge
           variant="outline"
           className={`text-xs ${

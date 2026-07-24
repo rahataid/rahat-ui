@@ -84,19 +84,19 @@ export default function EditActivity() {
   };
 
   const FormSchema = z.object({
-    title: z.string().min(2, { message: 'Title must be at least 4 character' }),
+    title: z.string().min(2, { message: t('TITLE_MUST_BE_AT_LEAST_4_CHARACTER') }),
     responsibility: z
       .string()
-      .min(2, { message: 'Please enter responsibility' }),
-    source: z.string().min(2, { message: 'Please enter source' }),
-    phaseId: z.string().min(1, { message: 'Please select phase' }),
-    categoryId: z.string().min(1, { message: 'Please select category' }),
-    leadTime: z.string().min(2, { message: 'Please enter lead time' }),
+      .min(2, { message: t('PLEASE_ENTER_RESPONSIBILITY') }),
+    source: z.string().min(2, { message: t('PLEASE_ENTER_SOURCE') }),
+    phaseId: z.string().min(1, { message: t('PLEASE_SELECT_PHASE') }),
+    categoryId: z.string().min(1, { message: t('PLEASE_SELECT_CATEGORY') }),
+    leadTime: z.string().min(2, { message: t('PLEASE_ENTER_LEAD_TIME') }),
     description: z
       .string()
       .optional()
       .refine((val) => !val || val.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     isAutomated: z.boolean().optional(),
     activityDocuments: z
@@ -109,11 +109,11 @@ export default function EditActivity() {
       .optional(),
     activityCommunication: z.array(
       z.object({
-        groupType: z.string().min(1, { message: 'Please select group type' }),
-        groupId: z.string().min(1, { message: 'Please select group' }),
+        groupType: z.string().min(1, { message: t('PLEASE_SELECT_GROUP_TYPE') }),
+        groupId: z.string().min(1, { message: t('PLEASE_SELECT_GROUP') }),
         transportId: z
           .string()
-          .min(1, { message: 'Please select communication type' }),
+          .min(1, { message: t('PLEASE_SELECT_COMMUNICATION_TYPE') }),
         message: z.string().or(z.object({})).optional(),
         audioURL: z
           .string()

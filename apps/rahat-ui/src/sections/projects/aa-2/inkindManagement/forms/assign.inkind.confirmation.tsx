@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Loader2, UserRound } from 'lucide-react';
 import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';
@@ -35,6 +36,7 @@ export default function AssignInkindConfirmation({
 }: Props) {
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -47,7 +49,7 @@ export default function AssignInkindConfirmation({
   const cardData = [
     { label: tv('INKIND_ITEM'), value: formData.inkindName },
     { label: tv('BENEFICIARY_GROUP'), value: formData.groupName },
-    { label: tv('AVAILABLE_STOCK'), value: formData.availableStock },
+    { label: tv('AVAILABLE_STOCK'), value: formatNum(formData.availableStock) },
     { label: tv('ASSIGN_MODE'), value: formData.mode ?? tv('ONLINE') },
     ...(formData.vendorName
       ? [{ label: tv('VENDOR'), value: formData.vendorName }]

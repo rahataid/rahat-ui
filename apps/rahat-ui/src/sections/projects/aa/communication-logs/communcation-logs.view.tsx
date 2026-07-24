@@ -1,9 +1,11 @@
 import { useTranslations } from 'next-intl';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import CommsActivitiesTable from './comms.activities.table';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function CommunicationLogsView() {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const commStats = [
     {
       componentType: 'DATACARD',
@@ -71,7 +73,7 @@ export default function CommunicationLogsView() {
                     <Icon size={16} strokeWidth={2.5} />
                   </div>
                 </div>
-                <p className="text-primary font-semibold text-xl">{d.value}</p>
+                <p className="text-primary font-semibold text-xl">{formatNum(d.value)}</p>
               </div>
             );
           }

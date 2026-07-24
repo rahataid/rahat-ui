@@ -6,6 +6,7 @@ import { ITransactions } from '../types/transactions';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { format } from 'date-fns';
 import { dateFormat } from '../utils/dateFormate';
+import { useNumberFormat } from '../utils/useNumberFormat';
 import { getExplorerUrl, intlDateFormat, intlFormatDate } from '../utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -31,6 +32,7 @@ export function TransactionCard({
   loading = false,
   cardHeight = 'h-[calc(80vh-200px)]',
 }: IProps) {
+  const formatNum = useNumberFormat();
   const uuid = useParams().id;
   const projectId = uuid as UUID;
   const project = useProjectStore((p) => p.singleProject);
@@ -149,7 +151,7 @@ export function TransactionCard({
                         isSuccessful ? 'text-green-600' : 'text-red-600'
                       }`}
                     >
-                      {i.numberOfTokens}
+                      {formatNum(i.numberOfTokens)}
                     </p>
                   </div>
                 </a>

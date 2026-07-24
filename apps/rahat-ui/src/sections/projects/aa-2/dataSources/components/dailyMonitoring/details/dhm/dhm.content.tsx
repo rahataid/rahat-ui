@@ -5,6 +5,7 @@ import MonitoringCard from './monitorig.card';
 import { useForecastData } from './useForcastData';
 import { BarChart2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface ForecastData {
   title: string;
@@ -12,7 +13,9 @@ interface ForecastData {
   data: { label: string; value: string | number }[];
 }
 
-const ForecastCard = ({ title, data }: ForecastData) => (
+const ForecastCard = ({ title, data }: ForecastData) => {
+  const formatNum = useNumberFormat();
+  return (
   <MonitoringCard title={title} className="">
     <div className="space-y-2">
       {data.map((item, index) => (
@@ -20,13 +23,14 @@ const ForecastCard = ({ title, data }: ForecastData) => (
           <BarChart2 />
           <div>
             <p className="font-medium">{item.label}</p>
-            <p className="text-sm text-slate-500">{item.value}</p>
+            <p className="text-sm text-slate-500">{formatNum(item.value)}</p>
           </div>
         </div>
       ))}
     </div>
   </MonitoringCard>
-);
+  );
+};
 
 export const DhmContent = ({ data }: { data: any }) => {
   const t = useTranslations('AA Project');

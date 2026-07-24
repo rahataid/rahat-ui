@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type WaterLevelInfoProps = {
   data: any;
@@ -37,6 +38,7 @@ const renderStatus = ({ warningLevel, dangerLevel, waterLevel }: any) => {
 };
 
 const WaterLevelInfo: FC<WaterLevelInfoProps> = ({ data }) => {
+  const formatNum = useNumberFormat();
   if (!data) {
     return (
       <div className="grid grid-cols-1 rounded-sm bg-card p-4 mb-2 shadow">
@@ -62,20 +64,20 @@ const WaterLevelInfo: FC<WaterLevelInfoProps> = ({ data }) => {
           <p className="font-light">Location</p>
         </div>
         <div>
-          <p className="font-medium text-primary">{data?.data?.waterLevel}</p>
+            <p className="font-medium text-primary">{formatNum(data?.data?.waterLevel)}</p>
           <p className="font-light">Water Level</p>
         </div>
       </div>
       <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
         <div>
           <p className="font-medium text-primary">
-            {data?.Schedule?.warningLevel}
+            {formatNum(data?.Schedule?.warningLevel)}
           </p>
           <p className="font-light">Warning Level</p>
         </div>
         <div>
           <p className="font-medium text-primary">
-            {data?.Schedule?.dangerLevel}
+            {formatNum(data?.Schedule?.dangerLevel)}
           </p>
           <p className="font-light">Danger Level</p>
         </div>

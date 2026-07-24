@@ -63,7 +63,7 @@ import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from '../../../utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const labelMap: Record<string, string> = {
   senior_citizen__70: 'Senior Citizen >70',
@@ -99,6 +99,11 @@ const VulnerableAndSocialProtectionOverview = ({
   }));
 
   const chartOpts = {
+    xaxis: {
+      labels: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
     yaxis: {
       labels: {
         formatter: (val: number) => formatNum(val),

@@ -5,8 +5,10 @@ import { useSingleGroupReservedFunds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import Back from '../../components/back';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const FundManagementDetails = () => {
+  const formatNum = useNumberFormat();
   const { id: projectID, fundId } = useParams();
 
   const { data, isLoading } = useSingleGroupReservedFunds(
@@ -36,7 +38,7 @@ const FundManagementDetails = () => {
           <div>
             <h1 className="font-medium">No. of Token</h1>
             <p className="text-xl text-primary font-semibold">
-              {data?.numberOfTokens}
+              {formatNum(data?.numberOfTokens)}
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { roundValue } from '../components/aws/utils/color.utils';
 import { useTranslations } from 'next-intl';
 
@@ -8,6 +9,8 @@ export const useTemperatureTableColumns = (
   unit = '°C',
 ) => {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const label = t('TEMPERATURE_LABEL');
   const columns: ColumnDef<any>[] = [
     {
@@ -15,7 +18,7 @@ export const useTemperatureTableColumns = (
       header: t('DATE_AND_TIME'),
       cell: ({ row }) => {
         const getDateAndTime = row.getValue('datetime') as string;
-        const formatted = dateFormat(
+        const formatted = formatDate(
           getDateAndTime,
           'eee, MMM d yyyy, hh:mm:ss a',
         );
@@ -31,7 +34,7 @@ export const useTemperatureTableColumns = (
         return (
           <div>
             {val !== undefined && val !== null
-              ? `${roundValue(val)} ${unit}`
+              ? `${formatNum(roundValue(val))} ${unit}`
               : 'N/A'}
           </div>
         );

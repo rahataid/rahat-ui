@@ -6,6 +6,7 @@ import { UUID } from 'crypto';
 import { DataCard, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useGetGctData } from '@rahat-ui/query';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
+import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
 const TREASURY_COLORS = ['#009688', '#FBCA14', '#B0BEC5'];
 const STATUS_COLORS = [
@@ -24,6 +25,7 @@ export default function GctOverview() {
   const { data, isPending } = useGetGctData(id as UUID);
 
   const stats = data?.data ?? data ?? null;
+  const formatNum = useNumberFormat();
 
   const totalAllocated = stats?.totalAllocatedAmount ?? 0;
   const totalDisbursed = stats?.totalDisbursedAmount ?? 0;
@@ -55,19 +57,19 @@ export default function GctOverview() {
   const cards = [
     {
       title: t('TOTAL_FUND_TRANSFERRED'),
-      value: totalDisbursed.toLocaleString(),
+      value: formatNum(totalDisbursed),
       subtitle: t('TOTAL_FUNDS_TRANSFERRED_TO_GROUPS'),
       show: totalDisbursed !== 0,
     },
     {
       title: t('REMAINING_BALANCE'),
-      value: treasuryBalance.toLocaleString(),
+      value: formatNum(treasuryBalance),
       subtitle: t('TOTAL_BALANCE_REMAINING_IN_TREASURY'),
       show: treasuryBalance !== 0,
     },
     {
       title: t('TOTAL_FUNDS_ASSIGNED'),
-      value: totalAllocated.toLocaleString(),
+      value: formatNum(totalAllocated),
       subtitle: t('TOTAL_FUNDS_ASSIGNED_TO_GROUPS'),
       show: totalAllocated !== 0,
     },
@@ -102,7 +104,7 @@ export default function GctOverview() {
             key={card.title}
             className="rounded-sm h-[116px]"
             title={card.title}
-            smallNumber={String(card.value)}
+            smallNumber={formatNum(card.value)}
             subtitle={card.subtitle}
             loading={false}
           />
@@ -121,15 +123,15 @@ export default function GctOverview() {
           <p className="text-xs text-muted-foreground mb-3">
             {t('BALANCE')}:{' '}
             <span className="font-medium text-foreground">
-              {treasuryBalance.toLocaleString()}
+              {formatNum(treasuryBalance)}
             </span>
             &nbsp;·&nbsp; {t('ALLOCATED')}:{' '}
             <span className="font-medium text-foreground">
-              {totalAllocated.toLocaleString()}
+              {formatNum(totalAllocated)}
             </span>
             &nbsp;·&nbsp; {t('DISBURSED')}:{' '}
             <span className="font-medium text-foreground">
-              {totalDisbursed.toLocaleString()}
+              {formatNum(totalDisbursed)}
             </span>
           </p>
           <div className="w-full aspect-square max-h-[260px]">

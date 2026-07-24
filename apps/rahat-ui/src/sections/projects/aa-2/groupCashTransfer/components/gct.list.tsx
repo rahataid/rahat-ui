@@ -35,10 +35,12 @@ import GctDeleteDialog from './gct.delete.dialog';
 import GctActionBtn from './gct.action-btn';
 import { GctItem } from '../types/gct.types';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function GctList() {
   const t = useTranslations('AA Project with Cash Tracker');
   const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -161,7 +163,7 @@ export default function GctList() {
                 </Badge>
                 {rest.length > 0 && (
                   <Badge className="bg-gray-200 text-gray-600 hover:bg-gray-200 text-xs shrink-0">
-                    +{rest.length}
+                    +{formatNum(rest.length)}
                   </Badge>
                 )}
               </div>
@@ -282,7 +284,7 @@ export default function GctList() {
         />
       </div>
 
-      <DemoTable table={table} loading={isLoading} />
+      <DemoTable table={table} loading={isLoading} message={tGlobal('NO_RESULTS')} />
 
       <CustomPagination
         currentPage={pagination.page}

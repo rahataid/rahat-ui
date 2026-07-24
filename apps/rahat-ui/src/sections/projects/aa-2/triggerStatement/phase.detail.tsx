@@ -21,12 +21,13 @@ import {
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useTranslations } from 'next-intl';
 
 export default function PhaseDetail() {
+  const formatDate = useDateFormat();
   const t = useTranslations('AA Project');
   const router = useRouter();
   const params = useParams();
@@ -155,7 +156,7 @@ export default function PhaseDetail() {
                 {t('PHASE_HAS_BEEN_TRIGGERED')}
               </AlertTitle>
               <AlertDescription className="text-xs text-gray-700">
-                <p>{dateFormat(phase?.activatedAt)}</p>
+                <p>{formatDate(phase?.activatedAt)}</p>
               </AlertDescription>
             </div>
           </Alert>

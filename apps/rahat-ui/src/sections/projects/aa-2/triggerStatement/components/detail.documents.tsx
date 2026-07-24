@@ -1,6 +1,7 @@
 import { Heading } from 'apps/rahat-ui/src/common';
 import { File } from 'lucide-react';
 import Link from 'next/link';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useTranslations } from 'next-intl';
 
 type IProps = {
@@ -9,6 +10,7 @@ type IProps = {
 };
 
 export function DocumentsSection({ triggerDocuments, date }: IProps) {
+  const formatDate = useDateFormat();
   const t = useTranslations('AA Project');
   return (
     <div className="p-4 border rounded-sm shadow">
@@ -30,7 +32,7 @@ export function DocumentsSection({ triggerDocuments, date }: IProps) {
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm/6 truncate">{d.fileName}</p>
               <p className="text-sm/4 text-muted-foreground">
-                {new Date(date).toLocaleString()}
+                {formatDate(date)}
               </p>
             </div>
           </Link>

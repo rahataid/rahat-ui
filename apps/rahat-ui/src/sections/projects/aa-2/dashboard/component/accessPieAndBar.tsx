@@ -3,6 +3,7 @@
 import React from 'react';
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useTranslations } from 'next-intl';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 
@@ -14,6 +15,7 @@ const chartTitleKeys: Record<string, string> = {
 const AccessAndResilienceOverview = ({ data }: { data: any }) => {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const stats = data || [];
 
   const getStat = (name) => stats.find((item) => item.name === name);
@@ -26,6 +28,14 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
   const chartColors = ['#00796B', '#CFD8DC'];
 
   const channelUsageStats = getStat('CHANNEL_USAGE_STATS')?.data || [];
+
+  const pieChartOpts = {
+    tooltip: {
+      y: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
+  };
 
   return (
     <div className="flex flex-col mt-4">
@@ -51,7 +61,7 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
             >
               <h1 className="text-sm font-medium">{t(chartTitleKeys[key])}</h1>
               <div className="w-full flex-1 p-4 pt-0">
-                <DynamicPieChart pieData={pieData} colors={chartColors} />
+                <DynamicPieChart pieData={pieData} colors={chartColors} options={pieChartOpts} />
               </div>
             </div>
           );
@@ -77,6 +87,23 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
                   xaxisTitle={t('INFORMATION_CHANNEL')}
                   yaxisTitle={tg('NO_OF_BENEFICIARIES')}
                   columnWidth="23%"
+                  options={{
+                    xaxis: {
+                      labels: {
+                        formatter: (val: number) => formatNum(val),
+                      },
+                    },
+                    yaxis: {
+                      labels: {
+                        formatter: (val: number) => formatNum(val),
+                      },
+                    },
+                    tooltip: {
+                      y: {
+                        formatter: (val: number) => formatNum(val),
+                      },
+                    },
+                  }}
                 />
               )}
             </div>

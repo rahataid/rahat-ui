@@ -27,7 +27,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useUpdateGroupCashTransfer } from '@rahat-ui/query';
-import { GctGroupSchema, GctGroupValues, applyDuplicateErrors } from '../types/gct.schemas';
+import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from '../types/gct.schemas';
 import { BasicInfoSection, BankDetailsSection } from './gct.form-sections';
 
 interface GctUpdateSheetProps {
@@ -52,6 +52,7 @@ export default function GctUpdateSheet({
   const [pendingValues, setPendingValues] = useState<GctGroupValues | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const GctGroupSchema = buildGctGroupSchema(t);
   const form = useForm<GctGroupValues>({
     resolver: zodResolver(GctGroupSchema),
     defaultValues: {
@@ -125,7 +126,7 @@ export default function GctUpdateSheet({
     } catch (error: any) {
       const msg: string = error?.response?.data?.message || error?.message || '';
       applyDuplicateErrors(msg, (field, err) =>
-        form.setError(field as keyof GctGroupValues, err),
+        form.setError(field as keyof GctGroupValues, err), t,
       );
     }
   };

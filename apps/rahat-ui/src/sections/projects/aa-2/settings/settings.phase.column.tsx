@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import React, { useState } from 'react';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -16,6 +17,7 @@ import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 
 function DisbursementCell({ methods }: { methods: string[] }) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? methods : methods.slice(0, 2);
 
@@ -34,7 +36,7 @@ function DisbursementCell({ methods }: { methods: string[] }) {
           onClick={() => setShowAll(!showAll)}
           className="text-[10px] text-primary underline cursor-pointer ml-1"
         >
-          {showAll ? t('VIEW_LESS') : `+${methods.length - 2} ${t('MORE')}`}
+          {showAll ? t('VIEW_LESS') : `+${formatNum(methods.length - 2)} ${t('MORE')}`}
         </button>
       )}
     </div>

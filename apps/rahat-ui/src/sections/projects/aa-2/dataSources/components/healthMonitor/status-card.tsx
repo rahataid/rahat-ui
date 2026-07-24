@@ -11,7 +11,7 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { formatDurationFromMinutes } from 'apps/rahat-ui/src/utils/formatDurationFromMinutes';
 import {
   Clock,
@@ -34,6 +34,7 @@ interface ApiStatusCardProps {
 export function StatusCard({ data, className }: ApiStatusCardProps) {
   const t = useTranslations('AA Project');
   const severity = getSeverityFromData(data.currentStatus, data.errors);
+  const formatDate = useDateFormat();
   const { clickToCopy, copyAction } = useCopy();
 
   return (
@@ -112,7 +113,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>{t('LAST_CHECKED')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {dateFormat(data.last_checked) ?? '-'}
+              {formatDate(data.last_checked) ?? '-'}
             </span>
           </div>
 
@@ -169,7 +170,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                     .join(' ')}
                 </span>
                 <span className="text-xs ml-auto text-right">
-                  {dateFormat(data?.errors[0]?.timestamp)}
+                  {formatDate(data?.errors[0]?.timestamp)}
                 </span>
               </div>
               <span className="text-xs">{data?.errors[0]?.message}</span>

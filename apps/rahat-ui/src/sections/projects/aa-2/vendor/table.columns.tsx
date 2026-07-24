@@ -9,9 +9,10 @@ import { Pagination } from '@rumsan/sdk/types';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { UUID } from 'crypto';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -109,6 +110,8 @@ export const useProjectVendorRedemptionTableColumns = () => {
   const { id }: { id: UUID } = useParams();
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { user } = useUserStore((s) => ({ user: s.user }));
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
@@ -154,7 +157,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
         <TruncatedCell
           text={
             row.getValue('tokenAmount')
-              ? `${Number(row.getValue('tokenAmount'))} ${getAssetCode(
+              ? `${formatNum(Number(row.getValue('tokenAmount')))} ${getAssetCode(
                 settings,
                 id,
               )}`
@@ -173,7 +176,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
           : 0;
         return (
           <TruncatedCell
-            text={row.getValue('tokenAmount') ? `Rs. ${totalAmount}` : tg('N_A')}
+            text={row.getValue('tokenAmount') ? `Rs. ${formatNum(totalAmount)}` : tg('N_A')}
             maxLength={15}
           />
         );
@@ -272,7 +275,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
                     text={
                       row.original?.redemptionStatus === 'APPROVED' &&
                         row.original?.approvedAt
-                        ? dateFormat(row.original?.approvedAt)
+                        ? formatDate(row.original?.approvedAt)
               : tg('N_A')
                     }
                     maxLength={30}

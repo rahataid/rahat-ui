@@ -1,7 +1,9 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DocumentCard from '../../../components/document.card';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export default function ActivityDetailCard({ activityDetail }: any) {
+  const formatDate = useDateFormat();
   const detailData = [
     {
       title: 'Category',
@@ -26,15 +28,7 @@ export default function ActivityDetailCard({ activityDetail }: any) {
     {
       title: 'Completed At',
       content: (
-        <p>
-          {(() => {
-            if (!activityDetail?.completedAt) return 'N/A';
-            const d = new Date(activityDetail?.completedAt);
-            const localeDate = d.toLocaleDateString();
-            const localeTime = d.toLocaleTimeString();
-            return `${localeDate} ${localeTime}`;
-          })()}
-        </p>
+        <p>{activityDetail?.completedAt ? formatDate(activityDetail?.completedAt) : 'N/A'}</p>
       ),
     },
   ];

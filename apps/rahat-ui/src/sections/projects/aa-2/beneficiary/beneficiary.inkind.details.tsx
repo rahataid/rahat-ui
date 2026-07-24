@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface InKindItem {
   inkindName: string;
@@ -24,6 +25,7 @@ const InkindDetails = ({
 }) => {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const columns: ColumnDef<InKindItem>[] = [
     {
       header: t('INKIND_ITEM'),
@@ -41,17 +43,19 @@ const InkindDetails = ({
       header: t('ASSIGNED'),
       accessorKey: 'assignedAmount',
       cell: ({ row }) => {
-        const assigned = row.original.assignedAmount ?? '-';
-        return <>{assigned}</>;
+        const assigned = row.original.assignedAmount;
+        return <>{assigned != null ? formatNum(assigned) : '-'}</>;
       },
     },
     {
       header: t('REDEEMED'),
       accessorKey: 'redeemedAmount',
+      cell: ({ row }) => <>{formatNum(row.original.redeemedAmount)}</>,
     },
     {
       header: t('AVAILABLE'),
       accessorKey: 'availableAmount',
+      cell: ({ row }) => <>{formatNum(row.original.availableAmount)}</>,
     },
     {
       header: tg('STATUS'),

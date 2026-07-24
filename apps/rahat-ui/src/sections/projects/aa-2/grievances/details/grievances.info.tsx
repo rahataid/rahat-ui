@@ -5,7 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useTranslations } from 'next-intl';
 import {
   Calendar,
@@ -26,6 +27,8 @@ type IProps = {
 };
 
 const GrievanceInfo = ({ grievance }: IProps) => {
+  const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
   return (
@@ -45,8 +48,8 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 </p>
                 <p className="mt-1 text-sm font-semibold text-gray-900">
                   <TooltipText
-                    title={grievance?.id || tg('N_A')}
-                    content={grievance?.id || tg('N_A')}
+                    title={formatDigits(grievance?.id) || tg('N_A')}
+                    content={formatDigits(grievance?.id) || tg('N_A')}
                     contentClassName="w-68"
                   />
                 </p>
@@ -239,7 +242,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 </div>
                 <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
                   {grievance?.createdAt
-                    ? formatDateFull(grievance?.createdAt)
+                    ? formatDate(grievance?.createdAt, 'MMM d, yyyy, h:mm a')
                     : tg('N_A')}
                 </div>
               </div>
@@ -257,10 +260,10 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
                   {grievance?.status === GrievanceStatus.CLOSED
                     ? grievance?.closedAt
-                      ? formatDateFull(grievance?.closedAt)
+                      ? formatDate(grievance?.closedAt, 'MMM d, yyyy, h:mm a')
                       : tg('N_A')
                     : grievance?.updatedAt
-                    ? formatDateFull(grievance?.updatedAt)
+                    ? formatDate(grievance?.updatedAt, 'MMM d, yyyy, h:mm a')
                     : tg('N_A')}
                 </div>
               </div>

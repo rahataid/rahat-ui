@@ -6,8 +6,9 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
@@ -30,6 +31,8 @@ export const useVendorsTransactionTableColumns = () => {
   const projectId = id as string;
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -81,7 +84,7 @@ export const useVendorsTransactionTableColumns = () => {
           <TruncatedCell
             text={
               amountNum > 0
-                ? `Rs. ${Intl.NumberFormat('en-IN').format(
+                ? `Rs. ${formatNum(
                     Math.round(convertedAmount),
                   )}`
                 : tg('N_A')
@@ -149,7 +152,7 @@ export const useVendorsTransactionTableColumns = () => {
       cell: ({ row }) => (
         <TruncatedCell
           text={
-            row?.original?.updatedAt ? dateFormat(row?.original?.updatedAt) : ''
+            row?.original?.updatedAt ? formatDate(row?.original?.updatedAt) : ''
           }
           maxLength={30}
         />

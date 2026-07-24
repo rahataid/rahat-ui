@@ -9,6 +9,7 @@ import type { InkindDetailsValues } from '../schemas/inkind.validation';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface Props {
   formData: InkindDetailsValues;
@@ -21,6 +22,7 @@ export default function InkindConfirmation({
 }: Props) {
   const tg = useTranslations('AA Project with Gnosis');
   const tglob = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -66,7 +68,7 @@ export default function InkindConfirmation({
               <div>
                 <p className="text-sm text-muted-foreground">{tg('QUANTITY')}</p>
                 <p className="text-lg font-semibold text-primary">
-                  {formData.quantity}
+                  {formatNum(formData.quantity)}
                 </p>
               </div>
             )}

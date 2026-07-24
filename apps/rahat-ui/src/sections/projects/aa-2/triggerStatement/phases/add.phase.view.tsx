@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
   AddPhaseFormValues,
-  AddPhaseSchema,
+  buildAddPhaseSchema,
   getAddPhaseDefaultValues,
 } from './phase.schema';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
@@ -73,6 +73,7 @@ export default function AddPhaseView() {
     navigation || 'trigger-statements'
   }?tab=${tab}`;
 
+  const AddPhaseSchema = buildAddPhaseSchema(t);
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
     defaultValues: getAddPhaseDefaultValues(riverBasin || ''),

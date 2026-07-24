@@ -13,7 +13,7 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { Home, Users } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
-import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const t = useTranslations('AA Project');

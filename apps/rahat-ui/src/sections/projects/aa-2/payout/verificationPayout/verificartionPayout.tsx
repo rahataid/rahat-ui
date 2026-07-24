@@ -49,12 +49,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useVerifyManualPayout } from '@rahat-ui/query';
 import { normalizeCell } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const DOWNLOAD_FILE_URL = '/files/verify-payout-sample.xlsx';
 
 export default function VerificationPayout() {
   const tv = useTranslations('AA Project with Cash Tracker');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const id = params.id as UUID;
   const payoutId = params.detailID as UUID;
@@ -87,11 +89,11 @@ export default function VerificationPayout() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="inline-block w-full min-h-[1.5rem]">
-                        {value?.toString() || '--'}
+                        {formatNum(value ?? 0)}
                       </span>
                     </TooltipTrigger>
                     <TooltipContent side="top">
-                      {value?.toString()}
+                      {formatNum(value ?? 0)}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

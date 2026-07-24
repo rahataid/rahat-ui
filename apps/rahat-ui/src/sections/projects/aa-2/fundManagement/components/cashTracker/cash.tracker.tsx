@@ -29,6 +29,7 @@ import SpinnerLoader from '../../../../components/spinner.loader';
 import { AARoles } from '@rahat-ui/auth';
 import { User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 // Types for our fund transfer system
 type StakeholderType =
@@ -60,6 +61,7 @@ export interface FundTransfer {
 export function CashTracker() {
   const tv = useTranslations('AA Project with Cash Tracker');
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const uuid = useParams().id as UUID;
   const router = useRouter();
 

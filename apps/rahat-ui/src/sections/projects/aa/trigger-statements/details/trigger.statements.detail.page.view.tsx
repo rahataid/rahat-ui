@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -34,6 +35,8 @@ import ManualTriggerDocumentsCard from './manual.trigger.documents.card';
 import Back from '../../../components/back';
 
 export default function TriggerStatementsDetailView() {
+  const t = useTranslations('GLOBAL');
+  const tc = useTranslations('Confirmation & Alert Dialogs');
   const { id: projectID } = useParams();
   const router = useRouter();
   const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];
@@ -78,25 +81,24 @@ export default function TriggerStatementsDetailView() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete this trigger statement.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={removeTrigger}>
-                        Continue
-                      </AlertDialogAction>
+                    <AlertDialogTitle>
+                      {t('ARE_YOU_ABSOLUTELY_SURE')}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {tc('THIS_ACTION_CANNOT_BE_UNDONE_THIS', { name: 'trigger statement' })}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t('CANCEL')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={removeTrigger}>
+                      {t('CONTINUE')}
+                    </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Delete</p>
+                <p className="text-xs font-medium">{t('DELETE')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

@@ -41,6 +41,7 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import { PaymentDialog } from './payment.dialog';
@@ -70,6 +71,7 @@ export default function PaymentInitiation() {
   const projectID = params.id as UUID;
 
   const router = useRouter();
+  const formatNum = useNumberFormat();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const { data: paymentProviders } = usePaymentProviders({
@@ -332,7 +334,7 @@ export default function PaymentInitiation() {
                 {tv('SELECTED')} {formState?.group?.name}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {formState?.group?.groupedBeneficiaries?.length} {tg('TOTAL_BENEFICIARIES')}
+                {formatNum(formState?.group?.groupedBeneficiaries?.length ?? 0)} {tg('TOTAL_BENEFICIARIES')}
               </p>
             </div>
             <div className="flex justify-end space-x-2">

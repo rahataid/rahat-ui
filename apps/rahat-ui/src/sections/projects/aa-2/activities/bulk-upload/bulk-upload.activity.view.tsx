@@ -34,9 +34,11 @@ import {
   generateSampleWorkbook,
   parseUploadedSheet,
 } from './bulk-upload.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function BulkUploadActivities() {
   const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams() as { id: UUID };
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,9 +59,10 @@ export default function BulkUploadActivities() {
     roles: 'admin , manager',
   });
 
+  const formatNum = useNumberFormat();
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<string[][]>([]);
-  const [fileName, setFileName] = useState('No File Choosen');
+  const [fileName, setFileName] = useState(tg('NO_FILE_CHOSEN'));
   const [results, setResults] = useState<RowResult[] | null>(null);
 
   const { mutateAsync: validateActivities, isPending: isValidating } =
@@ -102,7 +105,7 @@ export default function BulkUploadActivities() {
       setHeaders([]);
       setRows([]);
       setResults(null);
-      setFileName(file?.name ?? 'No File Choosen');
+      setFileName(file?.name ?? tg('NO_FILE_CHOSEN'));
       if (!file) return;
 
       const reader = new FileReader();
@@ -127,7 +130,7 @@ export default function BulkUploadActivities() {
     setHeaders([]);
     setRows([]);
     setResults(null);
-    setFileName('No File Choosen');
+    setFileName(tg('NO_FILE_CHOSEN'));
     if (inputRef.current) inputRef.current.value = '';
   }, []);
 
@@ -155,7 +158,7 @@ export default function BulkUploadActivities() {
       if (failedCount === 0) {
         toast.success('All rows are valid.');
       } else {
-        toast.error(`${failedCount} of ${rows.length} row(s) failed validation.`);
+        toast.error(formatNum(failedCount) + ' of ' + formatNum(rows.length) + ' row(s) failed validation.');
       }
     } catch {
       // toast already shown by useValidateBulkAddActivities's onError
@@ -229,7 +232,7 @@ export default function BulkUploadActivities() {
               className="rounded-sm"
             >
               <CloudDownload className="mr-1" size={16} />
-              Download Sample
+                {t('DOWNLOAD_SAMPLE')}
             </Button>
           </div>
         </div>
@@ -255,7 +258,7 @@ export default function BulkUploadActivities() {
                 ) : (
                   <>
                     <Share className="mr-1" size={16} />
-                    Choose File
+                    {t('CHOOSE_FILE')}
                   </>
                 )}
               </span>
@@ -317,7 +320,7 @@ export default function BulkUploadActivities() {
       <div className="flex justify-between items-center py-2 px-4 border-t mt-4 sticky bottom-0 bg-background z-10">
         <div>
           {rows.length > 0 && (
-            <p className="text-sm text-muted-foreground">Total Count: {rows.length}</p>
+            <p className="text-sm text-muted-foreground">Total Count: {formatNum(rows.length)}</p>
           )}
         </div>
         <div className="flex gap-2">

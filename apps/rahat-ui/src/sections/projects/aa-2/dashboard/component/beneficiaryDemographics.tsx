@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Home, Users } from 'lucide-react';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
-import { useNumberFormat, useLabelDigits } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type Props = {
   data: {
@@ -66,6 +66,11 @@ const BeneficiaryDemographics = ({
   ];
 
   const chartOpts = {
+    xaxis: {
+      labels: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
     yaxis: {
       labels: {
         formatter: (val: number) => formatNum(val),

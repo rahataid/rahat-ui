@@ -44,8 +44,10 @@ import {
 } from '@rahat-ui/query';
 import StakeholdersTableFilters from './component/stakeholders.table.filters';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const UpdateOrAddStakeholdersGroup = () => {
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.editId as UUID;
@@ -263,7 +265,7 @@ const UpdateOrAddStakeholdersGroup = () => {
                   >
                     {isEditing ? t('UPDATE') : t('ADD')}
                     {Object.keys(selectedListItems).length > 0 &&
-                      ` (${Object.keys(selectedListItems).length} stakeholders)`}
+                      ` (${formatNum(Object.keys(selectedListItems).length)} stakeholders)`}
                   </Button>
                 </div>
               </div>

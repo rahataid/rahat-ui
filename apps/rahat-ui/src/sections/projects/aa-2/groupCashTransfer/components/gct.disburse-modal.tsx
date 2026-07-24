@@ -40,6 +40,7 @@ import {
   usePaymentProviders,
   usePhasePayoutStatus,
 } from '@rahat-ui/query';
+import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
 type PaymentProvider = { id: number | string; name: string; type: string; createdAt: string };
 
@@ -73,8 +74,9 @@ export function DisburseModal({
   const [providerId, setProviderId] = useState<string>('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const swal = useSwal();
+  const formatNum = useNumberFormat();
 
-  const amountFmt = `Nrs. ${record?.amount?.toLocaleString() || '—'}`;
+  const amountFmt = `Nrs. ${formatNum(record?.amount ?? 0)}`;
   const selectedProvider = providers?.find((p: PaymentProvider) => String(p.id) === providerId);
 
   const summaryRows: [string, string][] = [

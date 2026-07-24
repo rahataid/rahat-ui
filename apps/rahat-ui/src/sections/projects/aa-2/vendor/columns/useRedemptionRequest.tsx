@@ -3,12 +3,13 @@ import { useUserStore } from '@rumsan/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { IProjectRedemption } from '../types';
 import { useTranslations } from 'next-intl';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
@@ -21,6 +22,8 @@ export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { user } = useUserStore((s) => ({ user: s.user }));
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
@@ -32,7 +35,7 @@ export const useRedemptionRequestColumn = () => {
       header: t('TOKEN_AMOUNT'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={`${row.original?.tokenAmount} ${getAssetCode(settings, id)}`}
+          text={`${formatNum(Number(row.original?.tokenAmount))} ${getAssetCode(settings, id)}`}
         />
       ),
     },
@@ -46,7 +49,7 @@ export const useRedemptionRequestColumn = () => {
 
         return (
           <TruncatedCell
-            text={row.original?.tokenAmount ? `Rs. ${totalAmount}` : tg('N_A')}
+            text={row.original?.tokenAmount ? `Rs. ${formatNum(totalAmount)}` : tg('N_A')}
           />
         );
       },
@@ -132,7 +135,7 @@ export const useRedemptionRequestColumn = () => {
       cell: ({ row }) => (
         <div className="flex gap-1">
           {row?.original?.createdAt ? (
-            <TruncatedCell text={dateFormat(row.original?.createdAt)} />
+            <TruncatedCell text={formatDate(row.original?.createdAt)} />
           ) : (
             tg('N_A')
           )}
@@ -146,7 +149,7 @@ export const useRedemptionRequestColumn = () => {
         <div className="flex gap-1">
           {row.original?.redemptionStatus === 'APPROVED' &&
           row?.original?.approvedAt ? (
-            <TruncatedCell text={dateFormat(row.original?.approvedAt)} />
+            <TruncatedCell text={formatDate(row.original?.approvedAt)} />
           ) : (
             tg('N_A')
           )}

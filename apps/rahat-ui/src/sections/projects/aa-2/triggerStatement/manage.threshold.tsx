@@ -46,16 +46,16 @@ export default function ManageThreshold() {
     requiredMandatoryTriggers: z.preprocess(
       (val) => Number(val),
       z
-        .number({ invalid_type_error: 'Please enter a valid number' })
-        .int('Please enter an integer')
-        .nonnegative('Value cannot be negative'),
+        .number({ invalid_type_error: t('PLEASE_ENTER_VALID_NUMBER') })
+        .int(t('PLEASE_ENTER_INTEGER'))
+        .nonnegative(t('VALUE_CANNOT_BE_NEGATIVE')),
     ),
     requiredOptionalTriggers: z.preprocess(
       (val) => Number(val),
       z
-        .number({ invalid_type_error: 'Please enter a valid number' })
-        .int('Please enter an integer')
-        .nonnegative('Value cannot be negative'),
+        .number({ invalid_type_error: t('PLEASE_ENTER_VALID_NUMBER') })
+        .int(t('PLEASE_ENTER_INTEGER'))
+        .nonnegative(t('VALUE_CANNOT_BE_NEGATIVE')),
     ),
   });
 

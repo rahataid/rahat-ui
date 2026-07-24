@@ -6,7 +6,8 @@ import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 interface PayoutTransactionLogRow {
@@ -25,6 +26,8 @@ export default function usePayoutTransactionLogTableColumn() {
   const t = useTranslations('AA Project');
   const tv = useTranslations('AA Project with Cash Tracker');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id: projectID } = useParams();
   const router = useRouter();
 
@@ -47,7 +50,7 @@ export default function usePayoutTransactionLogTableColumn() {
       header: tg('TOTAL_BENEFICIARIES'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.getValue('totalBeneficiaries')}
+          text={formatNum(row.getValue('totalBeneficiaries'))}
           maxLength={15}
         />
       ),
@@ -58,7 +61,7 @@ export default function usePayoutTransactionLogTableColumn() {
       header: tv('AMOUNT_DISBURSED'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={`Rs. ${row.original.totalSuccessAmount}`}
+          text={`Rs. ${formatNum(row.original.totalSuccessAmount)}`}
           maxLength={10}
         />
       ),
@@ -71,7 +74,7 @@ export default function usePayoutTransactionLogTableColumn() {
           (row.original.totalTokenAssigned * 1) /
           row.original.totalBeneficiaries;
         return (
-          <TruncatedCell text={`Rs. ${amountPerBeneficiary}`} maxLength={10} />
+          <TruncatedCell text={`Rs. ${formatNum(amountPerBeneficiary)}`} maxLength={10} />
         );
       },
     },
@@ -126,7 +129,7 @@ export default function usePayoutTransactionLogTableColumn() {
         const time = row.getValue('timeStamp') as string;
         return (
           <div className="flex gap-1 text-[10px]">
-            <TruncatedCell text={dateFormat(time)} maxLength={15} />
+            <TruncatedCell text={formatDate(time)} maxLength={15} />
           </div>
         );
       },

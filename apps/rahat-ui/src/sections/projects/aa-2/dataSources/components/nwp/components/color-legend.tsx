@@ -1,6 +1,7 @@
 'use client';
 
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 interface ColorLegendProps {
   selectedLayerId: string;
 }
@@ -101,6 +102,7 @@ function getContrastColor(hexColor: string): string {
 }
 
 export function ColorLegend({ selectedLayerId }: ColorLegendProps) {
+  const formatNum = useNumberFormat();
   const layerType = getLayerType(selectedLayerId);
   const config = legendConfigs[layerType];
 
@@ -145,7 +147,7 @@ export function ColorLegend({ selectedLayerId }: ColorLegendProps) {
                       : '1px 1px 2px rgba(255,255,255,0.8)',
                 }}
               >
-                {stop.value}
+                {formatNum(stop.value)}
               </div>
             );
           })}

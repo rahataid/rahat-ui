@@ -24,7 +24,7 @@ import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
   AddPhaseFormValues,
-  AddPhaseSchema,
+  buildAddPhaseSchema,
   getAddPhaseDefaultValues,
 } from './phase.schema';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
@@ -86,6 +86,7 @@ export default function EditPhaseView() {
     navigation || 'trigger-statements'
   }?tab=${tab}`;
 
+  const AddPhaseSchema = buildAddPhaseSchema(t);
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
     defaultValues: getAddPhaseDefaultValues(riverBasin || ''),

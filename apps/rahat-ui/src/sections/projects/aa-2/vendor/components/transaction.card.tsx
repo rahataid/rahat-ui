@@ -9,6 +9,7 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { UUID } from 'crypto';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
@@ -97,7 +98,7 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
       </div>
       <div>
         <p className="font-semibold text-[14px] leading-[24px]">
-          {amount} {type === 'cva' ? getAssetCode(settings, projectId) : ''}
+          {formatNum(Number(amount))} {type === 'cva' ? getAssetCode(settings, projectId) : ''}
         </p>
       </div>
     </div>
@@ -158,6 +159,7 @@ export default function TransactionCard({
   loading,
 }: Props) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const [activeTab, setActiveTab] = useState('cva');
 
   const cvaTransactions =
@@ -206,7 +208,7 @@ export default function TransactionCard({
                       : 'bg-gray-300 text-gray-600'
                   }`}
                 >
-                  {tab.count}
+                  {formatNum(tab.count)}
                 </span>
               </TabsTrigger>
             ))}

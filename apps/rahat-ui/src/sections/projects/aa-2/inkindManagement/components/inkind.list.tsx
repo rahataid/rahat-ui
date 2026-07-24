@@ -82,6 +82,7 @@ import {
   UpdateDialogState,
 } from '../types';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 function ActionButton({
@@ -131,6 +132,7 @@ const EMPTY_CONFIRM: ConfirmDialogState = {
 export default function InkindList() {
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -361,7 +363,7 @@ export default function InkindList() {
         header: tv('AVAILABLE_STOCK'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('availableStock') ?? 0}
+            {formatNum(row.getValue('availableStock') ?? 0)}
           </span>
         ),
       },
@@ -370,7 +372,7 @@ export default function InkindList() {
         header: tv('ASSIGNED_STOCK'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('totalAssigned') ?? 0}
+            {formatNum(row.getValue('totalAssigned') ?? 0)}
           </span>
         ),
       },
@@ -379,7 +381,7 @@ export default function InkindList() {
         header: tv('REDEEMED_STOCK'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('totalRedeemed') ?? 0}
+            {formatNum(row.getValue('totalRedeemed') ?? 0)}
           </span>
         ),
       },

@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { useTranslations } from 'next-intl';
 import { Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -31,12 +32,15 @@ type IProps = {
 export function EditButton({
   path,
   className,
-  description = 'This action will redirect you to the edit page',
+  description,
   onFallback,
   label = '',
   disabled = false,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
+  const tc = useTranslations('Confirmation & Alert Dialogs');
   const router = useRouter();
+  const defaultDescription = tc('THIS_ACTION_WILL_REDIRECT_YOU_TO');
   const handleClick = () => {
     if (path) {
       router.push(path);
@@ -68,28 +72,28 @@ export function EditButton({
             <AlertDialogContent className="max-w-[clamp(260px,30vw,512px)] p-[clamp(10px,2vw,24px)] gap-[clamp(6px,1.2vw,16px)]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-[clamp(14px,1.6vw,18px)]">
-                  Are you absolutely sure?
+                  {t('ARE_YOU_ABSOLUTELY_SURE')}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-[clamp(11px,1vw,14px)]">
-                  {description}
+                  {description || defaultDescription}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]">
-                  Cancel
+                  {t('CANCEL')}
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleClick}
                   className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]"
                 >
-                  Continue
+                  {t('CONTINUE')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </TooltipTrigger>
         <TooltipContent className="bg-secondary">
-          <p className="text-[clamp(10px,0.9vw,12px)] font-medium">Edit</p>
+          <p className="text-[clamp(10px,0.9vw,12px)] font-medium">{t('EDIT')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

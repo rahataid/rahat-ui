@@ -18,12 +18,14 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import PayoutTransactionList from './table/payoutTransactionList';
 import PayoutOverview from './component/payout-overview';
 
 export default function PayoutView() {
   const t = useTranslations('AA Project');
   const tv = useTranslations('AA Project with Cash Tracker');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectID = params.id as UUID;
   const route = useRouter();
@@ -49,7 +51,7 @@ export default function PayoutView() {
       {
         label: tv('TOTAL_CASH_DISTRIBUTION'),
         value:
-          `Rs. ${statsPayout?.payoutStats?.totalCashDistribution}` || 'N/A',
+          `Rs. ${formatNum(statsPayout?.payoutStats?.totalCashDistribution)}` || 'N/A',
         infoIcon: true,
         infoTooltip: tv('TOTAL_CASH_DISTRIBUTION_TOOLTIP'),
       },

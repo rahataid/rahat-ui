@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { Table } from '@tanstack/react-table';
 import {
   Select,
@@ -23,6 +24,7 @@ type IProps = {
 
 export function ClientSidePagination({ table }: IProps) {
   const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
 
@@ -48,7 +50,7 @@ export function ClientSidePagination({ table }: IProps) {
                   value={size}
                   className="text-[clamp(11px,1vw,14px)]"
                 >
-                  {size}
+                  {formatNum(size)}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -56,7 +58,7 @@ export function ClientSidePagination({ table }: IProps) {
         </Select>
       </div>
       <div>
-        {t('PAGE')} {pageIndex + 1} of {pageCount}
+        {t('PAGE')} {formatNum(pageIndex + 1)} of {formatNum(pageCount)}
       </div>
       <div className="flex gap-[clamp(4px,0.6vw,8px)]">
         <Button

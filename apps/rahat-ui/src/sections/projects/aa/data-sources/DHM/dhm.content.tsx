@@ -5,6 +5,8 @@ import DHMBulletinDialog from './dhm.bulletin.edit.dialog';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { StyledMapWrapper } from '@rahat-ui/shadcn/src/components/maps';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   let status;
@@ -48,6 +50,8 @@ const getLineChartCategories = (t: (key: string) => string) => [
 
 export default function DHMContent({ data, dhmDangerLevel }: any) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   console.log(dhmDangerLevel)
 
@@ -60,8 +64,7 @@ export default function DHMContent({ data, dhmDangerLevel }: any) {
   const dhmData = data;
 
   const xAxisLabel = dhmData?.map((d: any) => {
-    const date = new Date(d?.data?.waterLevelOn);
-    return date.toLocaleTimeString();
+    return formatDate(d?.data?.waterLevelOn, 'hh:mm a');
   });
 
   // do not remove
@@ -182,19 +185,19 @@ export default function DHMContent({ data, dhmDangerLevel }: any) {
             </div>
             <div>
               <h1 className="text-muted-foreground text-sm">{t('WATER_LEVEL')}</h1>
-              <p>{parseFloat(latestData.data.waterLevel).toFixed(2)}</p>
+              <p>{formatNum(parseFloat(latestData.data.waterLevel))}</p>
             </div>
             <div className="text-right">
               <h1 className="text-muted-foreground text-sm">{t('WATER_LEVEL_ON')}</h1>
-              <p>{new Date(latestData.data.waterLevelOn).toLocaleString()}</p>
+              <p>{formatDate(latestData.data.waterLevelOn)}</p>
             </div>
             <div>
               <h1 className="text-muted-foreground text-sm">{t('LONGITUDE')}</h1>
-              <p>{parseFloat(longitude).toFixed(2)}</p>
+              <p>{formatNum(parseFloat(longitude))}</p>
             </div>
             <div className="text-right">
               <h1 className="text-muted-foreground text-sm">{t('LATITUDE')}</h1>
-              <p>{parseFloat(latitude).toFixed(2)}</p>
+              <p>{formatNum(parseFloat(latitude))}</p>
             </div>
             <div className="col-span-2">
               <h1 className="text-muted-foreground text-sm">{t('DESCRIPTION')}</h1>

@@ -7,6 +7,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { BarChart2, Cloud } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import React from 'react';
 
@@ -15,6 +16,7 @@ interface IProps {
 }
 export default function WeatherDashboard({ data }: IProps) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   console.log(data?.[0].data?.extremeWeatherOutlook);
   const sanitizedData = React.useMemo(() => {
     return [
@@ -60,7 +62,7 @@ export default function WeatherDashboard({ data }: IProps) {
             </CardHeader>
 
             <CardContent className="pt-4  ">
-              <div className="text-md font-normal break-words">{d.value}</div>
+              <div className="text-md font-normal break-words">{formatNum(d.value)}</div>
             </CardContent>
           </Card>
         ))}

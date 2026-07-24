@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { SEP, toLabel, TriggerStatement } from '../utils';
 import { SOURCE_CONFIG } from '../trigger.statement.schema';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
@@ -56,6 +56,7 @@ export default function TriggerCard({
   id,
   triggerStatement: tgSt,
 }: IProps) {
+  const formatDate = useDateFormat();
   const t = useTranslations('AA Project');
   const router = useRouter();
 
@@ -140,12 +141,12 @@ export default function TriggerCard({
 
       {createdAt && (
         <p className="text-muted-foreground text-sm/4 mb-1">
-          {t('CREATED_AT_COLON')} {dateFormat(createdAt)}
+          {t('CREATED_AT_COLON')} {formatDate(createdAt)}
         </p>
       )}
       {triggeredAt && (
         <p className="text-muted-foreground text-sm/4">
-          {t('TRIGGERED_AT_COLON')} {dateFormat(triggeredAt)}
+          {t('TRIGGERED_AT_COLON')} {formatDate(triggeredAt)}
         </p>
       )}
     </div>

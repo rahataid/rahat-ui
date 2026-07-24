@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import GFHCard from './gfhCard';
 import { Heading } from 'apps/rahat-ui/src/common';
@@ -12,6 +13,7 @@ interface IRiverInfoProps {
 }
 const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   return (
     <div>
       <GFHCard
@@ -49,7 +51,7 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
               <div className="h-2 w-2 rounded-full bg-[#FFA500] mt-2" />
               <div>
                 <p className="text-gray-500">{t('WARNING')}</p>
-                <p>{riverInfo.warningLevel || 'N/A'}</p>
+                <p>{riverInfo.warningLevel != null ? formatNum(riverInfo.warningLevel) : 'N/A'}</p>
               </div>
             </div>
 
@@ -57,7 +59,7 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
               <div className="h-2 w-2 rounded-full bg-[#FF0000] mt-2" />
               <div>
                 <p className="text-gray-500">{t('DANGER')}</p>
-                <p>{riverInfo.dangerLevel || 'N/A'}</p>
+                <p>{riverInfo.dangerLevel != null ? formatNum(riverInfo.dangerLevel) : 'N/A'}</p>
               </div>
             </div>
 
@@ -65,7 +67,7 @@ const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
               <div className="h-2 w-2 rounded-full bg-[#A51D1D] mt-2" />
               <div>
                 <p className="text-gray-500">{t('EXTREME')}</p>
-                <p>{riverInfo.extremeDangerLevel || 'N/A'}</p>
+                <p>{riverInfo.extremeDangerLevel != null ? formatNum(riverInfo.extremeDangerLevel) : 'N/A'}</p>
               </div>
             </div>
           </div>

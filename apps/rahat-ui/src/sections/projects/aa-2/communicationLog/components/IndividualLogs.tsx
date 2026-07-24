@@ -16,6 +16,7 @@ import { useTransportSessionStats } from '@rahat-ui/query';
 import { normalizeTransportName } from 'apps/rahat-ui/src/utils/string';
 import { DEFAULT_TRANSPORTS } from 'apps/rahat-ui/src/constants/communication.const';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const TRANSPORT_LABEL_KEYS: Record<string, string> = {
   VOICE: 'VOICE',
@@ -33,6 +34,7 @@ type TransportStat = {
 
 export function IndividualLogTab() {
   const g = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
@@ -122,7 +124,7 @@ export function IndividualLogTab() {
                     subTab === tabValue ? 'bg-blue-500' : 'bg-gray-500'
                   }`}
                 >
-                  {stat.total}
+                  {formatNum(stat.total)}
                 </Badge>
               </TabsTrigger>
             );

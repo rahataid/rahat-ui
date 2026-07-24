@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function Stock({}: {}) {
   const t = useTranslations('AA Project');
@@ -40,6 +41,7 @@ export default function Stock({}: {}) {
   const id = useParams().id as UUID;
   const router = useRouter();
   const createBudget = useCreateBudget(id);
+  const formatNum = useNumberFormat();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +140,7 @@ export default function Stock({}: {}) {
           <div className="flex flex-col items-center justify-center py-4">
             <div className="bg-gray-100 rounded-lg px-6 py-4 w-full text-center">
               <div className="text-2xl font-bold text-gray-900">
-                {formData.amount} {formData.currency}
+                {formatNum(formData.amount)} {formData.currency}
               </div>
               <div className="text-sm text-gray-700 mt-1">{tg('STOCK_CREATED')}</div>
             </div>

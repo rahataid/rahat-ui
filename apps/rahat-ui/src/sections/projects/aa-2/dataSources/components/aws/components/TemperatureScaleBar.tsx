@@ -1,3 +1,5 @@
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+
 interface TemperatureScaleBarProps {
   unit?: string;
   temperatures?: number[];
@@ -7,6 +9,7 @@ export function TemperatureScaleBar({
   unit = '°C',
   temperatures = [45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25],
 }: TemperatureScaleBarProps) {
+  const formatNum = useNumberFormat();
   return (
     <div className="flex-shrink-0 bg-white rounded-sm border shadow p-3 w-20">
       <p className="text-xs font-semibold text-gray-700 mb-3 text-center">
@@ -23,7 +26,7 @@ export function TemperatureScaleBar({
               key={temp}
               className="text-white text-xs font-semibold text-center leading-none"
             >
-              {temp}
+              {formatNum(temp)}
             </div>
           ))}
         </div>
@@ -43,6 +46,7 @@ export function HumidityScaleBar({
     100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0,
   ],
 }: HumidityScaleBarProps) {
+  const formatNum = useNumberFormat();
   return (
     <div className="flex-shrink-0 bg-white rounded-sm border shadow p-3 w-20">
       <p className="text-xs font-semibold text-gray-700 mb-3 text-center">
@@ -59,7 +63,7 @@ export function HumidityScaleBar({
               key={humidity}
               className="text-white text-xs font-semibold text-center leading-none drop-shadow-sm"
             >
-              {humidity}
+              {formatNum(humidity)}
             </div>
           ))}
         </div>

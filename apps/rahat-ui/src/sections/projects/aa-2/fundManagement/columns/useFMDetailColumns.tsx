@@ -4,6 +4,7 @@ import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
@@ -13,6 +14,7 @@ export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
   const router = useRouter();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const handleViewClick = (fmId: string) => {
     console.log('benefwallet', fmId);
     router.push(`/projects/aa/${id}/beneficiary/${fmId}?fundId=${fundId}`);
@@ -38,7 +40,7 @@ export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
     {
       accessorKey: 'tokensAssigned',
       header: t('TOKEN_AMOUNT'),
-      cell: () => <div>{tokensPerBeneficiary ?? tg('N_A')}</div>,
+      cell: () => <div>{tokensPerBeneficiary != null ? formatNum(tokensPerBeneficiary) : tg('N_A')}</div>,
     },
     {
       id: 'actions',

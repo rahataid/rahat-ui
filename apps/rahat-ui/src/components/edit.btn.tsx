@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { useTranslations } from 'next-intl';
 import { Pencil } from 'lucide-react';
 import Link from 'next/link';
 
@@ -25,6 +26,8 @@ type IProps = {
 };
 
 export default function EditButton({ path, className }: IProps) {
+  const t = useTranslations('GLOBAL');
+  const tc = useTranslations('Confirmation & Alert Dialogs');
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
@@ -42,22 +45,22 @@ export default function EditButton({ path, className }: IProps) {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>{t('ARE_YOU_ABSOLUTELY_SURE')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action will redirect you to the edit page
+                  {tc('THIS_ACTION_WILL_REDIRECT_YOU_TO')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{t('CANCEL')}</AlertDialogCancel>
                 <Link href={path}>
-                  <AlertDialogAction>Continue</AlertDialogAction>
+                  <AlertDialogAction>{t('CONTINUE')}</AlertDialogAction>
                 </Link>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </TooltipTrigger>
         <TooltipContent className="bg-secondary">
-          <p className="text-xs font-medium">Edit</p>
+          <p className="text-xs font-medium">{t('EDIT')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

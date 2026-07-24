@@ -31,9 +31,11 @@ import {
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const BeneficiaryGroupsDetails = () => {
   const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
@@ -133,7 +135,7 @@ const BeneficiaryGroupsDetails = () => {
           iconStyle="bg-white text-secondary-muted"
           title={t('TOTAL_BENEFICIARIES')}
           Icon={User}
-          number={groupDetails?.groupedBeneficiaries?.length || 0}
+          number={formatNum(groupDetails?.groupedBeneficiaries?.length ?? 0)}
         />
         {/* <DataCard
           className="border-solid w-1/4 rounded-xl"

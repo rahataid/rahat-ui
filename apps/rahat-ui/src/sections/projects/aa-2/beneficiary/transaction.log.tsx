@@ -13,7 +13,7 @@ import {
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import {
   Tabs,
@@ -23,6 +23,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { TransactionLogItem } from './TransactionLogItem';
 import { InKindLog } from '../vendor/types';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type TransactionProps = {
   uuid: string;
@@ -39,6 +40,8 @@ type TransactionProps = {
 
 const TransactionLogs = () => {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
@@ -84,8 +87,8 @@ const TransactionLogs = () => {
   // 2. Tab config with counts
   const TabsTriggerStats = [
     { value: 'fsp', title: 'FSP', count: fspTransactions.length },
-    { value: 'cva', title: 'CVA', count: cvaTransactions.length },
-    { value: 'inkind', title: 'In-kind', count: inkindTransactions.length },
+    { value: 'cva', title: t('CVA'), count: cvaTransactions.length },
+    { value: 'inkind', title: t('IN_KIND'), count: inkindTransactions.length },
   ];
 
   // 3. Reusable renderer for FSP/CVA transactions
@@ -115,9 +118,9 @@ const TransactionLogs = () => {
           subtitle={subtitleParts.join(' • ')}
           txHash={txn?.txHash}
           txUrl={txnUrl ?? ''}
-          amount={`RS. ${txn?.tokenAmount}`}
-          date={dateFormat(txn?.updatedAt, 'dd MMMM, yyyy')}
-          time={dateFormat(txn?.updatedAt, 'hh:mm:ss a')}
+          amount={`${t('RS')} ${txn?.tokenAmount}`}
+          date={formatDate(txn?.updatedAt, 'dd MMMM, yyyy')}
+          time={formatDate(txn?.updatedAt, 'hh:mm:ss a')}
           onCopy={() => clickToCopy(txn?.txHash, txn?.uuid)}
           isCopied={copyAction === txn?.txHash}
         />
@@ -145,8 +148,8 @@ const TransactionLogs = () => {
           txHash={item?.txHash}
           txUrl={txnUrl || '#'}
           amount={item?.quantity}
-          date={dateFormat(item?.redeemedAt, 'dd MMMM, yyyy')}
-          time={dateFormat(item?.redeemedAt, 'hh:mm:ss a')}
+          date={formatDate(item?.redeemedAt, 'dd MMMM, yyyy')}
+          time={formatDate(item?.redeemedAt, 'hh:mm:ss a')}
           onCopy={() => clickToCopy(item?.txHash, item?.uuid)}
           isCopied={copyAction === item?.txHash}
         />
@@ -178,7 +181,7 @@ const TransactionLogs = () => {
                     : 'bg-gray-300 text-gray-600'
                 }`}
               >
-                {tab.count}
+                {formatNum(tab.count)}
               </span>
             </TabsTrigger>
           ))}

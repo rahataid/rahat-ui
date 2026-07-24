@@ -1,6 +1,6 @@
 import React from 'react';
 import { getCellColor } from './utils/getPeriodDataCellColor';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 interface IGlofasPeriodDataTableProps {
   headerData: string[];
   bodyData: string[][];
@@ -12,6 +12,7 @@ const GlofasPeriodDataTable = ({
   bodyData,
   title,
 }: IGlofasPeriodDataTableProps) => {
+  const formatDate = useDateFormat();
   if (!headerData && !bodyData) {
     return;
   }
@@ -45,7 +46,7 @@ const GlofasPeriodDataTable = ({
                         className={`p-2 border border-gray-200 text-center text-sm text-gray-700`}
                         key={cellIndex}
                       >
-                        {dateFormat(cell, 'MMM dd, yyyy')}
+                        {formatDate(cell, 'MMM dd')}
                       </td>
                     );
                   }

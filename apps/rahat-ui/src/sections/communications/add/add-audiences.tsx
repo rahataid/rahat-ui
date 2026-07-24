@@ -36,6 +36,7 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import React, { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { z } from 'zod';
 import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
@@ -66,6 +67,7 @@ const AddAudience: FC<AddAudienceProps> = ({
 }) => {
   const t = useTranslations('Communications – Add Campaign');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -304,18 +306,18 @@ const AddAudience: FC<AddAudienceProps> = ({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="1">1</SelectItem>
-                            <SelectItem value="10">10</SelectItem>
-                            <SelectItem value="20">20</SelectItem>
-                            <SelectItem value="30">30</SelectItem>
-                            <SelectItem value="40">40</SelectItem>
-                            <SelectItem value="50">50</SelectItem>
+                            <SelectItem value="1">{formatNum(1)}</SelectItem>
+                            <SelectItem value="10">{formatNum(10)}</SelectItem>
+                            <SelectItem value="20">{formatNum(20)}</SelectItem>
+                            <SelectItem value="30">{formatNum(30)}</SelectItem>
+                            <SelectItem value="40">{formatNum(40)}</SelectItem>
+                            <SelectItem value="50">{formatNum(50)}</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
-                      {tg('PAGE_CURRENT_OF_TOTAL', { current: table.getState().pagination.pageIndex + 1, total: table.getPageCount() })}
+                      {tg('PAGE_CURRENT_OF_TOTAL', { current: formatNum(table.getState().pagination.pageIndex + 1), total: formatNum(table.getPageCount()) })}
                     </div>
                     <div className="space-x-4">
                       <Button

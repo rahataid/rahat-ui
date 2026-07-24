@@ -42,6 +42,7 @@ import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { AudioRecorder } from './recorder';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import {
   Tabs,
   TabsContent,
@@ -92,6 +93,7 @@ export default function AddCommunicationForm({
 }: AddCommunicationFormProps) {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
   const [customFileName, setCustomFileName] = useState('');
@@ -775,7 +777,7 @@ export default function AddCommunicationForm({
                       <FormMessage>{errors.message.message}</FormMessage>
                     )}
                     <p className="ml-auto text-xs text-muted-foreground">
-                      {field.value?.length || 0} / {maxLen} {charactersText}
+                      {formatNum(field.value?.length ?? 0)} / {formatNum(maxLen)} {charactersText}
                     </p>
                   </div>
                 </FormItem>

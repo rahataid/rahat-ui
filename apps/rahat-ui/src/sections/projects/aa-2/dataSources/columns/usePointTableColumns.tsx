@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useTranslations } from 'next-intl';
 
 interface UsePointTableColumnsProps {
@@ -9,6 +10,7 @@ interface UsePointTableColumnsProps {
 
 export const usePointTableColumns = ({ unit }: UsePointTableColumnsProps) => {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
@@ -28,7 +30,7 @@ export const usePointTableColumns = ({ unit }: UsePointTableColumnsProps) => {
       header: t('POINT'),
       cell: ({ row }) => (
         <div>
-          {row.getValue('value')} {unit}
+          {formatNum(row.getValue('value'))} {unit}
         </div>
       ),
     },

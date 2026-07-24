@@ -11,7 +11,7 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useCreateGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
-import { GctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
+import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
 import { BasicInfoSection, BankDetailsSection } from './components/gct.form-sections';
 
 const DEFAULT_VALUES: GctGroupValues = {
@@ -43,6 +43,7 @@ export default function AddGct() {
   const createGct = useCreateGroupCashTransfer(projectUUID);
   const validateBank = useValidateBankAccount(projectUUID);
 
+  const GctGroupSchema = buildGctGroupSchema(t);
   const form = useForm<GctGroupValues>({
     resolver: zodResolver(GctGroupSchema),
     defaultValues: DEFAULT_VALUES,
@@ -93,7 +94,7 @@ export default function AddGct() {
     } catch (error: any) {
       const msg: string = error?.response?.data?.message || error?.message || '';
       applyDuplicateErrors(msg, (field, err) =>
-        form.setError(field as keyof GctGroupValues, err),
+        form.setError(field as keyof GctGroupValues, err), t,
       );
     }
   };

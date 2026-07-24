@@ -1,3 +1,5 @@
+'use client';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import React, { useState } from 'react';
 
 type SimpleBarProps = {
@@ -23,6 +25,7 @@ export function SimpleHorizontalBar({
   height = 16,
   labels = ['Mandatory', 'Optional'],
 }: SimpleBarProps) {
+  const formatNum = useNumberFormat();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [tooltipX, setTooltipX] = useState(0);
 
@@ -37,7 +40,7 @@ export function SimpleHorizontalBar({
     return (
       <div className="w-full mb-2">
         <div className="flex gap-2 items-center justify-center  mt-4">
-          <span className="text-2xl font-medium text-blue-500">0</span>
+          <span className="text-2xl font-medium text-blue-500">{formatNum(0)}</span>
           <span className="text-sm text-gray-600">Total Triggers</span>
         </div>
         <div className="w-full rounded-full bg-gray-200" style={{ height }} />
@@ -49,7 +52,7 @@ export function SimpleHorizontalBar({
     <div className="w-full  mb-2">
       {/* Header */}
       <div className="flex gap-2 items-center justify-center mt-4 ">
-        <span className="text-2xl font-medium text-blue-500">{total}</span>
+        <span className="text-2xl font-medium text-blue-500">{formatNum(total)}</span>
         <span className="text-sm text-gray-600">Total Triggers</span>
       </div>
 
@@ -97,7 +100,7 @@ export function SimpleHorizontalBar({
             }}
           >
             {labels[hoveredIndex] ?? `Segment ${hoveredIndex + 1}`}:{' '}
-            <span className="font-bold">{values[hoveredIndex]}</span>
+            <span className="font-bold">{formatNum(values[hoveredIndex])}</span>
           </div>
         )}
       </div>

@@ -13,10 +13,12 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   const [showAll, setShowAll] = React.useState(false);
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
 
   if (!supportArea || supportArea.length === 0) return null;
 
@@ -37,7 +39,7 @@ const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
           }}
           className="text-[clamp(8px,0.6vw,10px)] text-primary hover:underline whitespace-nowrap"
         >
-          {showAll ? t('SHOW_LESS') : `+${supportArea.length - 1} ${t('MORE')}`}
+          {showAll ? t('SHOW_LESS') : `+${formatNum(supportArea.length - 1)} ${t('MORE')}`}
         </button>
       )}
     </div>

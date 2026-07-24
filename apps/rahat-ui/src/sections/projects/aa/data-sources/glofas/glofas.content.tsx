@@ -1,5 +1,6 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const getCellColor = (cell: string) => {
   const cellValue = cell ? Number(cell) : 0;
@@ -17,6 +18,7 @@ const getCellColor = (cell: string) => {
 
 export default function GlofasContent({ location, glofasData }: any) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   if (!glofasData) {
     return <p>{t('DATA_NOT_AVAILABLE_GLOFAS')}</p>;
   }
@@ -46,19 +48,19 @@ export default function GlofasContent({ location, glofasData }: any) {
               <h1 className="text-muted-foreground text-sm">
                 {pointForecast?.maxProbability?.header}
               </h1>
-              <p>{pointForecast?.maxProbability?.data}</p>
+              <p>{formatNum(pointForecast?.maxProbability?.data)}</p>
             </div>
             <div className="text-right">
               <h1 className="text-muted-foreground text-sm">
                 {pointForecast?.alertLevel?.header}
               </h1>
-              <p>{pointForecast?.alertLevel?.data}</p>
+              <p>{formatNum(pointForecast?.alertLevel?.data)}</p>
             </div>
             <div>
               <h1 className="text-muted-foreground text-sm">
                 {pointForecast?.maxProbabilityStep?.header}
               </h1>
-              <p>{pointForecast?.maxProbabilityStep?.data}</p>
+              <p>{formatNum(pointForecast?.maxProbabilityStep?.data)}</p>
             </div>
             <div className="text-right">
               <h1 className="text-muted-foreground text-sm">
@@ -76,7 +78,7 @@ export default function GlofasContent({ location, glofasData }: any) {
                 {' '}
                 {pointForecast?.peakForecasted?.header}
               </h1>
-              <p> {pointForecast?.peakForecasted?.data}</p>
+              <p> {formatNum(pointForecast?.peakForecasted?.data)}</p>
             </div>
           </div>
         </div>

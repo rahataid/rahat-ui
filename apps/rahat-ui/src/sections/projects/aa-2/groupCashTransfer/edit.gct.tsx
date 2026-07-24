@@ -23,7 +23,7 @@ import {
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useGetOneGroupCashTransfer, useUpdateGroupCashTransfer } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
-import { GctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
+import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
 import { BasicInfoSection, BankDetailsSection } from './components/gct.form-sections';
 
 export default function EditGct() {
@@ -43,6 +43,7 @@ export default function EditGct() {
   const item = data?.data ?? data ?? null;
   const updateGct = useUpdateGroupCashTransfer(projectUUID);
 
+  const GctGroupSchema = buildGctGroupSchema(t);
   const form = useForm<GctGroupValues>({
     resolver: zodResolver(GctGroupSchema),
     defaultValues: {
@@ -120,7 +121,7 @@ export default function EditGct() {
     } catch (error: any) {
       const msg: string = error?.response?.data?.message || error?.message || '';
       applyDuplicateErrors(msg, (field, err) =>
-        form.setError(field as keyof GctGroupValues, err),
+        form.setError(field as keyof GctGroupValues, err), t,
       );
     }
   };

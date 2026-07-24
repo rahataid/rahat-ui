@@ -69,46 +69,45 @@ export default function AddGrievances() {
   // Custom validation for email or phone number
   const emailOrPhone = z.string().refine(
     (value) => {
-      // Check if it's a valid email or a valid phone number (minimum 10 digits)
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const phoneRegex = /^[0-9]{10,15}$/; // Assuming phone numbers are 10-15 digits
+      const phoneRegex = /^[0-9]{10,15}$/;
       return emailRegex.test(value) || phoneRegex.test(value);
     },
     {
-      message: 'Please enter a valid email or phone number',
+      message: t('PLEASE_ENTER_VALID_EMAIL_OR_PHONE'),
     },
   );
 
   const FormSchema = z.object({
     reportedBy: z
       .string()
-      .min(1, { message: 'Reporter name is required' })
-      .max(100, { message: 'Reporter name must be less than 100 characters' }),
+      .min(1, { message: t('REPORTER_NAME_IS_REQUIRED') })
+      .max(100, { message: t('REPORTER_NAME_MAX_100') }),
 
     reporterContact: emailOrPhone,
 
     title: z
       .string()
-      .min(5, { message: 'Title must be at least 5 characters' })
-      .max(100, { message: 'Title must be less than 100 characters' }),
+      .min(5, { message: t('TITLE_MUST_BE_5_CHARACTERS') })
+      .max(100, { message: t('TITLE_MAX_100_CHARACTERS') }),
 
     type: z.nativeEnum(GrievanceType, {
-      required_error: 'Please select a grievance type',
+      required_error: t('PLEASE_SELECT_GRIEVANCE_TYPE'),
     }),
 
     description: z
       .string()
-      .min(10, { message: 'Description must be at least 10 characters' })
-      .max(1000, { message: 'Description must be less than 1000 characters' }),
+      .min(10, { message: t('DESCRIPTION_MUST_BE_10_CHARACTERS') })
+      .max(1000, { message: t('DESCRIPTION_MAX_1000_CHARACTERS') }),
 
     status: z
       .nativeEnum(GrievanceStatus, {
-        required_error: 'Status is required',
+        required_error: t('STATUS_IS_REQUIRED'),
       })
       .default(GrievanceStatus.NEW),
 
     priority: z.nativeEnum(GrievancePriority, {
-      required_error: 'Please select a grievance priority',
+      required_error: t('PLEASE_SELECT_GRIEVANCE_PRIORITY'),
     }),
 
     tags: z.array(z.object({ id: z.string(), text: z.string() })).optional(),

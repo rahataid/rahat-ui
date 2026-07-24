@@ -12,6 +12,7 @@ import {
   grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { formatDuration } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
 import { AlertTriangle, Clock } from 'lucide-react';
@@ -39,6 +40,7 @@ export default function GrievanceOverview({
   className,
 }: GrievanceOverviewProps) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -121,7 +123,7 @@ export default function GrievanceOverview({
     {
       icon: <AlertTriangle className="w-5 h-5 text-muted-foreground" />,
       label: t('TOTAL_GRIEVANCE'),
-      value: totalGrievances.toString(),
+      value: formatNum(totalGrievances),
     },
     {
       icon: <Clock className="w-5 h-5 text-muted-foreground" />,
@@ -167,7 +169,7 @@ export default function GrievanceOverview({
           return (
             <DataCard
               title={stat.label}
-              number={stat.value as string}
+              number={formatNum(stat.value as unknown as number)}
               className="rounded-sm w-full"
               key={stat.label}
               truncate={stat.label === t('AVERAGE_RESOLVE_TIME') ? false : true}

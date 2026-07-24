@@ -6,6 +6,7 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { UUID } from 'crypto';
 import { LandmarkIcon, Phone, Users, Banknote } from 'lucide-react';
@@ -20,6 +21,7 @@ const BeneficiaryGroups = () => {
   const router = useRouter();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
 
   const { isLoading } = useBeneficiariesGroups(id as UUID, {
     sort: 'updatedAt',
@@ -101,13 +103,13 @@ const BeneficiaryGroups = () => {
                       <div className="flex text-sm text-gray-500 justify-between items-center">
                         <div className="flex items-center gap-1">
                           <Users size={18} strokeWidth={2} />
-                          {i?._count?.beneficiaries || 0} {t('BENEFICIARIES')}
+                          {formatNum(i?._count?.beneficiaries || 0)} {t('BENEFICIARIES')}
                         </div>
 
                         {i?.tokensReserved?.numberOfTokens && (
                           <div className="flex justify-center items-center gap-1">
                             <Banknote className="h-4 w-4" />
-                            {i?.tokensReserved?.numberOfTokens}
+                            {formatNum(i?.tokensReserved?.numberOfTokens ?? 0)}
                           </div>
                         )}
                       </div>

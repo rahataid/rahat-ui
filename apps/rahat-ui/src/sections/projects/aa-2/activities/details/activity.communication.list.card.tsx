@@ -24,6 +24,7 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useMemo } from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { RoleAuth } from 'libs/auth/src/lib/roleAuth';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { AARoles } from 'libs/auth/src/enums/aaRoles';
 import { PlusIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -72,6 +73,7 @@ export default function CommunicationList({
   }, [activityCommunication]);
 
   const { activeTab, setActiveTab } = useActiveTab(defaultTab);
+  const formatNum = useNumberFormat();
   return (
     <div className="border px-4 pt-2 rounded-xl ">
       <div className="mb-4 flex items-center justify-between">
@@ -113,7 +115,7 @@ export default function CommunicationList({
                 activeTab === 'communications' ? 'bg-blue-500 ' : 'bg-gray-500'
               }`}
             >
-              {pendingCommunications?.length}
+              {formatNum(pendingCommunications?.length ?? 0)}
             </Badge>
           </TabsTrigger>
 
@@ -127,7 +129,7 @@ export default function CommunicationList({
                 activeTab === 'history' ? 'bg-blue-500 ' : 'bg-gray-500'
               }`}
             >
-              {completedCommunications?.length}
+              {formatNum(completedCommunications?.length ?? 0)}
             </Badge>
           </TabsTrigger>
         </TabsList>

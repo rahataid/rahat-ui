@@ -1,5 +1,6 @@
 import { BarChart, ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import PieChartCard from '../../components/pie.chart.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
@@ -8,6 +9,21 @@ type IProps = {
 };
 
 export default function ChartsContainer({ allStats = [] }: IProps) {
+  const formatNum = useNumberFormat();
+
+  const chartAxOptions = {
+    yaxis: {
+      labels: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
+    tooltip: {
+      y: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
+  };
+
   const genderStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_GENDER',
   )[0]?.data;
@@ -65,6 +81,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                 donutSize="70%"
                 width={360}
                 height={290}
+                options={chartAxOptions}
               />
             </div>
           </div>
@@ -76,7 +93,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
           <div className="p-4">
             <h1 className="text-md font-medium mb-1">Vulnerability Status</h1>
             <p className="text-primary font-semibold text-2xl">
-              {vulnerableStatusStats?.length ?? '0'}
+              {formatNum(vulnerableStatusStats?.length ?? 0)}
             </p>
           </div>
           <Separator />
@@ -89,6 +106,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
               xaxisLabels={false}
               barHeight={30}
               height={280}
+              options={chartAxOptions}
             />
           </div>
         </div>
@@ -102,7 +120,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                 Beneficiary Associated Bank
               </h1>
               <p className="text-primary font-semibold text-2xl">
-                {countByBankStats?.length}
+                {formatNum(countByBankStats?.length ?? 0)}
               </p>
             </div>
             <Separator />
@@ -118,6 +136,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                   barHeight={15}
                   width={450}
                   height={countByBankStats?.length > 10 ? 500 : 265}
+                  options={chartAxOptions}
                 />
               </div>
             </ScrollArea>

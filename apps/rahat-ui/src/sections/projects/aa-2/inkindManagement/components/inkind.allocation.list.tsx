@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -81,6 +82,7 @@ export function formatLabel(value: string) {
 export default function InkindAllocationList() {
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
@@ -202,13 +204,15 @@ export default function InkindAllocationList() {
           const isWalkIn = row.original.inkindType === 'WALK_IN';
           return (
             <span className="font-semibold">
-              {row.original.quantityRedeemed}{' '}
+              {formatNum(row.original.quantityRedeemed)}{' '}
               <span className="text-xs font-normal">
                 /{' '}
-                {isWalkIn
-                  ? row.original.inkindAvailableStock +
-                    row.original.quantityRedeemed
-                  : row.original.beneficiaryCount}
+                {formatNum(
+                  isWalkIn
+                    ? row.original.inkindAvailableStock +
+                      row.original.quantityRedeemed
+                    : row.original.beneficiaryCount,
+                )}
               </span>
             </span>
           );

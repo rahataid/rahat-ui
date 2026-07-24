@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import { formatNumber, trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
+import { trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { ChartDonut } from 'libs/shadcn/src/components/charts';
 import React from 'react';
 
@@ -18,6 +19,7 @@ export default function OverviewCard({
   redemptionStatsLoading,
 }: Props) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
   const isBalanceError = data?.balances?.name === 'NotFoundError';
 
   const balance =
@@ -62,7 +64,7 @@ export default function OverviewCard({
             <p className="text-xs">{t('TOKEN_DISBURSED')}</p>
             <p className="text-2xl font-semibold">
               {data?.vendorAssignedBalance
-                ? formatNumber(Number(data?.vendorAssignedBalance))
+                ? formatNum(Number(data?.vendorAssignedBalance))
                 : 'N/A'}
             </p>
           </div>
@@ -70,7 +72,7 @@ export default function OverviewCard({
             <p className="text-xs">{t('TOKEN_REDEEMED')}</p>
             <p className="text-2xl font-semibold">
               {redemptionStats?.totalTokensApproved
-                ? formatNumber(Number(redemptionStats?.totalTokensApproved))
+                ? formatNum(Number(redemptionStats?.totalTokensApproved))
                 : 'N/A'}
             </p>
           </div>
@@ -78,7 +80,7 @@ export default function OverviewCard({
             <p className="text-xs">{t('AMOUNT_DISBURSED')}</p>
             <p className="text-2xl font-semibold">
               {data?.vendorAssignedBalance
-                ? `Rs. ${formatNumber(
+                ? `Rs. ${formatNum(
                     Number(data?.vendorAssignedBalance) *
                       TOKEN_TO_AMOUNT_MULTIPLIER,
                   )}`
@@ -89,7 +91,7 @@ export default function OverviewCard({
             <p className="text-xs">{t('AMOUNT_REDEEMED')}</p>
             <p className="text-2xl font-semibold">
               {redemptionStats?.totalTokensApproved
-                ? `Rs. ${formatNumber(
+                ? `Rs. ${formatNum(
                     Number(redemptionStats?.totalTokensApproved) *
                       TOKEN_TO_AMOUNT_MULTIPLIER,
                   )}`

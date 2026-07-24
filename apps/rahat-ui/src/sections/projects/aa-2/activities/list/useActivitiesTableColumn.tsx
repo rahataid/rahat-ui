@@ -9,6 +9,7 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 // function getStatusBg(status: string) {
 //   if (status === 'NOT_STARTED') {
@@ -35,6 +36,7 @@ export default function useActivitiesTableColumn() {
   const tg = useTranslations('GLOBAL');
   const { id: projectID, title } = useParams();
   const router = useRouter();
+  const formatDate = useDateFormat();
 
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
@@ -100,11 +102,16 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
         const bgColor = getStatusBg(status);
+        const statusLabel =
+          status === 'NOT_STARTED' ? t('NOT_STARTED') :
+          status === 'WORK_IN_PROGRESS' ? t('IN_PROGRESS') :
+          status === 'COMPLETED' ? tg('COMPLETED') :
+          status === 'DELAYED' ? tg('DELAYED') : status;
         return (
           <Badge
             className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
           >
-            <TruncatedCell text={status} maxLength={10} />
+            <TruncatedCell text={statusLabel} maxLength={10} />
           </Badge>
         );
       },
@@ -123,10 +130,7 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => {
         const completedAt = row.getValue('completedAt') as string;
         if (completedAt) {
-          const d = new Date(completedAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return <TruncatedCell text={`${localeDate} ${localeTime}`} />;
+          return <TruncatedCell text={formatDate(completedAt)} />;
         }
         return tg('N_A');
       },

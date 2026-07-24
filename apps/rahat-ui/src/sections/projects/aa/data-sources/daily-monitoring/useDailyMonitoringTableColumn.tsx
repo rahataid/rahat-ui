@@ -2,10 +2,12 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
   const router = useRouter();
+  const formatDate = useDateFormat();
 
   const handleEyeClick = (id: any) => {
     setPaginationToLocalStorage();
@@ -21,10 +23,7 @@ export default function useDailyMonitoringTableColumn() {
       cell: ({ row }) => {
         const createdAt = row.getValue('createdAt') as string;
         if (createdAt) {
-          const d = new Date(createdAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return `${localeDate} ${localeTime}`;
+          return formatDate(createdAt);
         }
         return 'N/A';
       },

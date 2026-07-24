@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useTranslations } from 'next-intl';
 import { Minus, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import TransactionTable from './beneficiary.transaction.table';
@@ -38,6 +39,7 @@ export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   const walletAddress = beneficiaryDetails.walletAddress;
 
   const isLoading = false;
@@ -72,7 +74,7 @@ export default function BeneficiaryDetail({
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Close</p>
+                  <p className="text-xs font-medium">{t('CLOSE')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

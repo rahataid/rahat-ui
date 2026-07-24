@@ -66,11 +66,14 @@ export default function ActivitiesTableFilters({
         <SelectContent>
           <SelectGroup>
             <SelectItem value="all">{t('ALL_CATEGORIES')}</SelectItem>
-            {categories.map((item) => (
-              <SelectItem key={item.id} value={item.uuid}>
-                {item.name}
-              </SelectItem>
-            ))}
+            {categories.map((item) => {
+              const catKey = item.name.toUpperCase().replace(/\s+/g, '_');
+              return (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {t.has(catKey) ? t(catKey) : item.name}
+                </SelectItem>
+              );
+            })}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -103,13 +106,12 @@ export default function ActivitiesTableFilters({
         <SelectContent>
           <SelectGroup>
             <SelectItem value="all">{t('ALL_STATUS')}</SelectItem>
-            {statusList.map((status) => (
-              <SelectItem key={status} value={status}>
-                {status
-                  .toLowerCase()
-                  .split('_')
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(' ')}
+            {statusList.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s === 'NOT_STARTED' ? t('NOT_STARTED') :
+                 s === 'WORK_IN_PROGRESS' ? t('IN_PROGRESS') :
+                 s === 'COMPLETED' ? tGlobal('COMPLETED') :
+                 s === 'DELAYED' ? tGlobal('DELAYED') : s}
               </SelectItem>
             ))}
           </SelectGroup>

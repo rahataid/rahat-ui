@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { useAddTriggerStatementToPhase, useSinglePhase } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   useCreateTriggerStatement,
   PROJECT_SETTINGS_KEYS,
@@ -20,6 +21,7 @@ const steps = [
 ];
 
 const MultiStepForm = () => {
+  const t = useTranslations('AA Project');
   const router = useRouter();
   const { id } = useParams();
   const projectId = id as UUID;
@@ -56,7 +58,7 @@ const MultiStepForm = () => {
   const riverBasin = dataSources?.glofas?.location;
 
   const ManualFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid title' }),
+    title: z.string().min(2, { message: t('PLEASE_ENTER_VALID_TITLE') }),
     isMandatory: z.boolean().optional(),
   });
 
@@ -69,18 +71,18 @@ const MultiStepForm = () => {
   });
 
   const AutomatedFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid name' }),
-    dataSource: z.string().min(1, { message: 'Please select data source' }),
+    title: z.string().min(2, { message: t('PLEASE_ENTER_VALID_NAME') }),
+    dataSource: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
     isMandatory: z.boolean().optional(),
     minLeadTimeDays: z
       .string()
-      .min(1, { message: 'Please enter minimum lead time days' }),
+      .min(1, { message: t('PLEASE_ENTER_MINIMUM_LEAD_TIME_DAYS') }),
     maxLeadTimeDays: z
       .string()
-      .min(1, { message: 'Please enter maximum lead time days' }),
+      .min(1, { message: t('PLEASE_ENTER_MAXIMUM_LEAD_TIME_DAYS') }),
     probability: z
       .string()
-      .min(1, { message: 'Please enter forecast probability' }),
+      .min(1, { message: t('PLEASE_ENTER_FORECAST_PROBABILITY') }),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({

@@ -12,7 +12,7 @@ import {
   RadioTower,
   RefreshCw,
 } from 'lucide-react';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 const InfoModal = dynamic(
   () => import('apps/rahat-ui/src/components/infoModal'),
 );
@@ -40,6 +40,7 @@ const GFHCard = ({
   basinSize,
 }: IGFHCardProps) => {
   const t = useTranslations('AA Project');
+  const formatDate = useDateFormat();
   const googleFloodHubInfoModal = useBoolean();
 
   const handleAssignModalClick = () => {
@@ -68,7 +69,7 @@ const GFHCard = ({
         {updatedAt && (
           <div className="flex items-center gap-1 text-xs text-green-500 mt-0.5 whitespace-nowrap">
             <RefreshCw size={12} />
-            <span>Last Synced at: {dateFormat(updatedAt)}</span>
+            <span>Last Synced at: {formatDate(updatedAt)}</span>
           </div>
         )}
 
@@ -124,7 +125,7 @@ const GFHCard = ({
             <div>
               <p className="text-sm font-medium">{t('DATE')}</p>
               <p className="text-sm text-gray-600">
-                {dateFormat(forecastDate, 'eee, MMMM d, yyyy') || 'N/A'}
+                {formatDate(forecastDate, 'eee, MMMM d, yyyy') || 'N/A'}
               </p>
             </div>
           </div>

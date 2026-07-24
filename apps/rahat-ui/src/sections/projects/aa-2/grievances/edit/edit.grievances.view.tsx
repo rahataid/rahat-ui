@@ -45,57 +45,56 @@ import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
-const emailOrPhone = z.string().refine(
-  (value) => {
-    // Check if it's a valid email or a valid phone number (minimum 10 digits)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[0-9]{10,15}$/; // Assuming phone numbers are 10-15 digits
-    return emailRegex.test(value) || phoneRegex.test(value);
-  },
-  {
-    message: 'Please enter a valid email or phone number',
-  },
-);
-
-const grievanceFormSchema = z.object({
-  reportedBy: z
-    .string()
-    .min(1, { message: 'Reporter name is required' })
-    .max(100, { message: 'Reporter name must be less than 100 characters' }),
-
-  reporterContact: emailOrPhone,
-
-  title: z
-    .string()
-    .min(5, { message: 'Title must be at least 5 characters' })
-    .max(100, { message: 'Title must be less than 100 characters' }),
-
-  type: z.nativeEnum(GrievanceType, {
-    required_error: 'Please select a grievance type',
-  }),
-
-  description: z
-    .string()
-    .min(10, { message: 'Description must be at least 10 characters' })
-    .max(1000, { message: 'Description must be less than 1000 characters' }),
-
-  status: z
-    .nativeEnum(GrievanceStatus, {
-      required_error: 'Status is required',
-    })
-    .default(GrievanceStatus.NEW),
-
-  priority: z.nativeEnum(GrievancePriority, {
-    required_error: 'Please select a grievance priority',
-  }),
-
-  tags: z.array(z.object({ id: z.string(), text: z.string() })).optional(),
-});
-
-type GrievanceFormValues = z.infer<typeof grievanceFormSchema>;
-
 export default function EditGrievance() {
   const t = useTranslations('AA Project');
+
+  const emailOrPhone = z.string().refine(
+    (value) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^[0-9]{10,15}$/;
+      return emailRegex.test(value) || phoneRegex.test(value);
+    },
+    {
+      message: t('PLEASE_ENTER_VALID_EMAIL_OR_PHONE'),
+    },
+  );
+
+  const grievanceFormSchema = z.object({
+    reportedBy: z
+      .string()
+      .min(1, { message: t('REPORTER_NAME_IS_REQUIRED') })
+      .max(100, { message: t('REPORTER_NAME_MAX_100') }),
+
+    reporterContact: emailOrPhone,
+
+    title: z
+      .string()
+      .min(5, { message: t('TITLE_MUST_BE_5_CHARACTERS') })
+      .max(100, { message: t('TITLE_MAX_100_CHARACTERS') }),
+
+    type: z.nativeEnum(GrievanceType, {
+      required_error: t('PLEASE_SELECT_GRIEVANCE_TYPE'),
+    }),
+
+    description: z
+      .string()
+      .min(10, { message: t('DESCRIPTION_MUST_BE_10_CHARACTERS') })
+      .max(1000, { message: t('DESCRIPTION_MAX_1000_CHARACTERS') }),
+
+    status: z
+      .nativeEnum(GrievanceStatus, {
+        required_error: t('STATUS_IS_REQUIRED'),
+      })
+      .default(GrievanceStatus.NEW),
+
+    priority: z.nativeEnum(GrievancePriority, {
+      required_error: t('PLEASE_SELECT_GRIEVANCE_PRIORITY'),
+    }),
+
+    tags: z.array(z.object({ id: z.string(), text: z.string() })).optional(),
+  });
+
+  type GrievanceFormValues = z.infer<typeof grievanceFormSchema>;
   const labelMap: Record<string, string> = {
     'Technical': t('TECHNICAL'),
     'Non-Technical': t('NON_TECHNICAL'),

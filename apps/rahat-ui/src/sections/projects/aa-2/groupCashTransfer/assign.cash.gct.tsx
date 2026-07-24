@@ -37,7 +37,8 @@ import {
   useAssignGroupCashTransferFund,
   useGetAllValidGroupCashTransfers,
 } from '@rahat-ui/query';
-import { AssignCashSchema, AssignCashValues } from './types/gct.schemas';
+import { buildAssignCashSchema, AssignCashValues } from './types/gct.schemas';
+import { useNumberFormat } from '../../../../utils/useNumberFormat';
 import { SectionCard } from './components/gct.form-sections';
 
 export default function AssignCashGct() {
@@ -57,6 +58,7 @@ export default function AssignCashGct() {
   const [groupSearch, setGroupSearch] = useState('');
   const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
   const [selectedGroupName, setSelectedGroupName] = useState('');
+  const formatNum = useNumberFormat();
   const [pendingValues, setPendingValues] = useState<AssignCashValues | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -66,6 +68,7 @@ export default function AssignCashGct() {
     return groups.filter((g) => g.name.toLowerCase().includes(lower));
   }, [groups, groupSearch]);
 
+  const AssignCashSchema = buildAssignCashSchema(t);
   const form = useForm<AssignCashValues>({
     resolver: zodResolver(AssignCashSchema),
     defaultValues: { title: '', groupCashTransferId: '', amount: '' },
@@ -90,7 +93,7 @@ export default function AssignCashGct() {
       const msg: string = error?.response?.data?.message || error?.message || '';
       if (/already|duplicate|reserved/i.test(msg)) {
         form.setError('groupCashTransferId', {
-          message: 'This group already has funds reserved.',
+          message: t('THIS_GROUP_ALREADY_HAS_FUNDS_RESERVED'),
         });
       }
     }
@@ -256,7 +259,7 @@ export default function AssignCashGct() {
             <AlertDialogTitle>{t('CONFIRM_ASSIGN_CASH')}</AlertDialogTitle>
             <AlertDialogDescription>
               {t('ARE_YOU_SURE_YOU_WANT_TO_ASSIGN', {
-                amount: `NPR ${Number(pendingValues?.amount).toLocaleString()}`,
+                amount: `NPR ${formatNum(Number(pendingValues?.amount ?? 0))}`,
                 groupName: selectedGroupName,
               })}
             </AlertDialogDescription>

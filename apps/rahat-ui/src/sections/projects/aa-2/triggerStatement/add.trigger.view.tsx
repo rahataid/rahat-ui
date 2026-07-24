@@ -48,16 +48,27 @@ import {
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
-export const AutomatedFormSchema = z.object({
-  title: z.string().min(2, { message: 'Please enter trigger title' }),
-  description: z.string().optional(),
-  source: z.string().min(1, { message: 'Please select data source' }),
-  isMandatory: z.boolean().optional(),
-  triggerStatement: triggerStatementSchema,
-});
+export function buildAutomatedFormSchema(t?: any) {
+  const _t = t || ((s: string) => {
+    const fallback: Record<string, string> = {
+      PLEASE_ENTER_TRIGGER_TITLE: 'Please enter trigger title',
+      PLEASE_SELECT_DATA_SOURCE: 'Please select data source',
+    };
+    return fallback[s] || s;
+  });
+  return z.object({
+    title: z.string().min(2, { message: _t('PLEASE_ENTER_TRIGGER_TITLE') }),
+    description: z.string().optional(),
+    source: z.string().min(1, { message: _t('PLEASE_SELECT_DATA_SOURCE') }),
+    isMandatory: z.boolean().optional(),
+    triggerStatement: triggerStatementSchema,
+  });
+}
+
+export const AutomatedFormSchema = buildAutomatedFormSchema();
 
 const componentMap = {
   manual: ManualTriggerAddForm,
@@ -67,6 +78,7 @@ const componentMap = {
 type TriggerTabKey = keyof typeof componentMap;
 
 export default function AddTriggerView() {
+  const formatDate = useDateFormat();
   const t = useTranslations('AA Project');
   const [activeTab, setActiveTab] = React.useState<string>('');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
@@ -122,7 +134,7 @@ export default function AddTriggerView() {
   const addTriggers = useCreateTriggerStatement();
 
   const ManualFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter trigger title' }),
+    title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
     description: z.string().optional(),
     isMandatory: z.boolean().optional(),
   });
@@ -136,6 +148,7 @@ export default function AddTriggerView() {
     },
   });
 
+  const AutomatedFormSchema = buildAutomatedFormSchema(t);
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
@@ -309,11 +322,9 @@ export default function AddTriggerView() {
           <AlertCircleIcon />
           <AlertTitle>{t('NO_TRIGGER_TYPES_CONFIGURED')}</AlertTitle>
           <AlertDescription>
-            <p>
-              Please configure trigger types before creating trigger statements.
-            </p>
+            <p>{t('PLEASE_CONFIGURE_TRIGGER_TYPES')}</p>
             <ul className="list-inside list-disc text-sm">
-              <li>Check triggers settings &apos;TRIGGER_TAB&apos;</li>
+              <li>{t('CHECK_TRIGGER_SETTINGS_TRIGGER_TAB')}</li>
             </ul>
           </AlertDescription>
         </Alert>
@@ -334,7 +345,7 @@ export default function AddTriggerView() {
                     value={tab.value}
                     className="w-full data-[state=active]:bg-white"
                   >
-                    {tab.label}
+                    {t(tab.value.toUpperCase())}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -377,7 +388,7 @@ export default function AddTriggerView() {
                   }
                 }}
               >
-                Clear
+                {t('CLEAR')}
               </Button>
               <ConfirmAddTrigger
                 open={open}
@@ -399,16 +410,16 @@ export default function AddTriggerView() {
                   <div className="flex justify-between items-center space-x-4 mb-2">
                     <div className="flex items-center space-x-4">
                       <Badge className="font-medium">
-                        {t.isMandatory ? 'Mandatory' : 'Optional'}
+                        {t.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
                       </Badge>
                       <Badge className="font-medium">
-                        {t.type.charAt(0).toUpperCase() + t.type.slice(1)}
+                        {t(t.type.toUpperCase())}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
                       <EditButton
                         className="border-none bg-blue-50"
-                        description="This action will refill the form with the selected trigger's data for editing."
+                        description={t('THIS_ACTION_WILL_REFILL_FORM_WITH_TRIGGER_DATA')}
                         onFallback={() => handleEdit(t)}
                       />
                       <DeleteButton
@@ -441,9 +452,9 @@ export default function AddTriggerView() {
                       <>
                         {SEP}
                         <span>
-                          {dateFormat(t.time, 'hh:mm a')}
+                          {formatDate(t.time, 'hh:mm a')}
                           <br />
-                          {dateFormat(t.time, 'MMMM dd, yyyy')}
+                          {formatDate(t.time, 'MMMM dd, yyyy')}
                         </span>
                       </>
                     )}

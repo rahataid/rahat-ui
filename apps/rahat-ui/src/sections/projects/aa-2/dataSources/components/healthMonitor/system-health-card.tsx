@@ -1,5 +1,6 @@
 import { HealthCacheData } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -9,7 +10,7 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { CheckCircle, Info, X } from 'lucide-react';
 import { getDynamicColors } from './utils/getDynamicColor';
 
@@ -19,6 +20,8 @@ export function SystemHealthCard({
   sources,
 }: HealthCacheData) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const statusColors: any = {
     HEALTHY: 'bg-green-50 text-green-700',
     UNHEALTHY: 'bg-red-50 text-red-700',
@@ -107,21 +110,21 @@ export function SystemHealthCard({
               <span className="flex items-center  text-xs text-green-500">
                 {' '}
                 <CheckCircle size={13} className="pr-1 w-4 h-4" />
-                {calcHEALTHY}/{sources?.length} sources HEALTHY
+                {formatNum(calcHEALTHY)}/{formatNum(sources?.length ?? 0)} sources HEALTHY
               </span>
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {calcUNHEALTHY} sources UNHEALTHY
+                {formatNum(calcUNHEALTHY)} sources UNHEALTHY
               </span>
 
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {calcDEGRADED} sources DEGRADED
+                {formatNum(calcDEGRADED)} sources DEGRADED
               </span>
             </div>
 
             <span className="text-xs text-gray-500 ml-auto">
-              Last Updated: {dateFormat(last_updated)}
+              Last Updated: {formatDate(last_updated)}
             </span>
           </div>
         </div>

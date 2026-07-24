@@ -33,21 +33,23 @@ import { useGetOneGctRecord, useUpdateGctRecord } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 import { SectionCard } from './components/gct.form-sections';
 
-const EditGctRecordSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  amount: z
-    .string()
-    .min(1, 'Amount is required')
-    .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
-      message: 'Amount must be a positive number',
-    }),
-});
-// Note: zod validation messages stay in English (technical/error messages)
+type EditGctRecordValues = z.infer<ReturnType<typeof buildEditGctRecordSchema>>;
 
-type EditGctRecordValues = z.infer<typeof EditGctRecordSchema>;
+function buildEditGctRecordSchema(t: (key: string) => string) {
+  return z.object({
+    title: z.string().min(1, t('TITLE_IS_REQUIRED')),
+    amount: z
+      .string()
+      .min(1, t('AMOUNT_IS_REQUIRED'))
+      .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
+        message: t('AMOUNT_MUST_BE_POSITIVE_NUMBER'),
+      }),
+  });
+}
 
 export default function EditGctRecord() {
   const t = useTranslations('AA Project with Cash Tracker');
+  const EditGctRecordSchema = buildEditGctRecordSchema(t);
   const tGlobal = useTranslations('GLOBAL');
   const { id, recordUuid } = useParams();
   const router = useRouter();

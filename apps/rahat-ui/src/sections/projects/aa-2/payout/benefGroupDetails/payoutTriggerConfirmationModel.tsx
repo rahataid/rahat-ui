@@ -14,6 +14,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type IProps = {
   payoutData: PayoutTransaction;
@@ -26,6 +27,7 @@ export default function PayoutConfirmationDialog({
 }: IProps) {
   const tv = useTranslations('AA Project with Cash Tracker');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   return (
     <AlertDialog>
       <RoleAuth
@@ -84,15 +86,17 @@ export default function PayoutConfirmationDialog({
           <div className="flex justify-between">
             <span className="font-medium">{tg('TOTAL_BENEFICIARIES')}</span>
             <span>
-              {
+              {formatNum(
                 payoutData?.beneficiaryGroupToken?.beneficiaryGroup?._count
-                  ?.beneficiaries
-              }
+                  ?.beneficiaries ?? 0,
+              )}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="font-medium">{tv('TOTAL_TOKENS')}</span>
-            <span>{payoutData?.beneficiaryGroupToken?.numberOfTokens}</span>
+            <span>
+              {formatNum(payoutData?.beneficiaryGroupToken?.numberOfTokens ?? 0)}
+            </span>
           </div>
         </div>
 

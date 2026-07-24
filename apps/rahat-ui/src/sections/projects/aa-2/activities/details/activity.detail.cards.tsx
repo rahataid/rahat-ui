@@ -4,7 +4,7 @@ import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Clock, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
@@ -16,6 +16,7 @@ export default function ActivityDetailCards({
   loading,
 }: ActivityDetailCardsProps) {
   const t = useTranslations('AA Project');
+  const formatDate = useDateFormat();
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
       <SpinnerLoader />
@@ -84,7 +85,7 @@ export default function ActivityDetailCards({
           </TooltipWrapper>
 
           {activityDetail?.description && (
-            <TooltipWrapper                 tip={`${tg('DESCRIPTION')}: ${activityDetail?.description}`}>
+            <TooltipWrapper                 tip={`${t('DESCRIPTION')}: ${activityDetail?.description}`}>
               <p className="text-gray-600 text-sm mt-1 leading-tight cursor-pointer">
                 {activityDetail?.description?.substring(0, 100)}...
               </p>
@@ -139,10 +140,10 @@ export default function ActivityDetailCards({
             <div className="flex items-center text-green-700 text-xs mt-2">
               <Clock className="w-4 h-4 mr-2 ml-1" />
               <TooltipWrapper
-                tip={`${t('COMPLETED_AT')}: ${dateFormat(activityDetail?.completedAt)}`}
+                tip={`${t('COMPLETED_AT')}: ${formatDate(activityDetail?.completedAt)}`}
               >
                 <span className="cursor-pointer">
-                  {t('COMPLETED_AT')}: {dateFormat(activityDetail?.completedAt)}
+                  {t('COMPLETED_AT')}: {formatDate(activityDetail?.completedAt)}
                 </span>
               </TooltipWrapper>
             </div>

@@ -1,5 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -26,6 +27,7 @@ export function PaymentDialog({
   const tv = useTranslations('AA Project with Cash Tracker');
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   // State goes here
   const [open, setOpen] = useState(false);
 
@@ -90,7 +92,7 @@ export function PaymentDialog({
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">{tg('TOTAL_BENEFICIARIES')}</div>
             <div className="font-medium text-muted-foreground">
-              {formState?.group?._count?.beneficiaries}
+              {formatNum(formState?.group?._count?.beneficiaries)}
             </div>
           </div>
 
@@ -108,7 +110,7 @@ export function PaymentDialog({
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">{tv('TOTAL_TOKENS')}</div>
             <div className="font-medium text-muted-foreground">
-              {formState?.group?.tokensReserved?.[0]?.numberOfTokens}
+              {formatNum(formState?.group?.tokensReserved?.[0]?.numberOfTokens)}
             </div>
           </div>
         </div>

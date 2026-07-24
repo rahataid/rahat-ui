@@ -58,7 +58,7 @@ export default function EditTrigger() {
   const updateTrigger = useUpdateTriggerStatement();
 
   const ManualFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter trigger title' }),
+    title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
     isMandatory: z.boolean().optional(),
     description: z.string().optional(),
   });
@@ -74,9 +74,9 @@ export default function EditTrigger() {
 
   const AutomatedFormSchema = z
     .object({
-      title: z.string().min(2, { message: 'Please enter trigger title' }),
+      title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
       description: z.string().optional(),
-      source: z.string().min(1, { message: 'Please select data source' }),
+      source: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
       isMandatory: z.boolean().optional(),
       triggerStatement: triggerStatementSchema,
       minLeadTimeDays: z.string().optional(),
@@ -94,7 +94,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['dangerLevel'],
-            message: 'Danger Level is required',
+            message: t('DANGER_LEVEL_IS_REQUIRED'),
           });
         } else if (
           isNaN(Number(data.dangerLevel)) ||
@@ -103,7 +103,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['dangerLevel'],
-            message: 'Danger Level must be a positive number',
+            message: t('DANGER_LEVEL_POSITIVE_NUMBER'),
           });
         }
       }
@@ -112,7 +112,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['warningLevel'],
-            message: 'Warning Level is required',
+            message: t('WARNING_LEVEL_IS_REQUIRED'),
           });
         } else if (
           isNaN(Number(data.warningLevel)) ||
@@ -121,7 +121,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['warningLevel'],
-            message: 'Warning Level must be a positive number',
+            message: t('WARNING_LEVEL_POSITIVE_NUMBER'),
           });
         }
       }
@@ -135,7 +135,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['forecast'],
-            message: 'Forecast is required',
+            message: t('FORECAST_IS_REQUIRED'),
           });
         }
 
@@ -146,7 +146,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['daysToConsiderPrior'],
-            message: 'Days To Consider Prior is required',
+            message: t('DAYS_TO_CONSIDER_PRIOR_IS_REQUIRED'),
           });
         } else if (
           isNaN(Number(data.daysToConsiderPrior)) ||
@@ -155,7 +155,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['daysToConsiderPrior'],
-            message: 'Days To Consider Prior must be a positive number',
+            message: t('DAYS_TO_CONSIDER_PRIOR_POSITIVE_NUMBER'),
           });
         }
 
@@ -166,7 +166,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['forecastStatus'],
-            message: 'forecast Status is required',
+            message: t('FORECAST_STATUS_IS_REQUIRED'),
           });
         }
       }
@@ -183,7 +183,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['maxLeadTimeDays'],
-            message: 'Max Lead TimeDays is required',
+            message: t('MAX_LEAD_TIME_DAYS_IS_REQUIRED'),
           });
         } else if (
           isNaN(Number(data.maxLeadTimeDays)) ||
@@ -192,7 +192,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['maxLeadTimeDays'],
-            message: 'Max Lead Time Days must be a positive number',
+            message: t('MAX_LEAD_TIME_DAYS_POSITIVE_NUMBER'),
           });
         }
 
@@ -203,7 +203,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['minLeadTimeDays'],
-            message: 'Min Lead Time Days is required',
+            message: t('MIN_LEAD_TIME_DAYS_IS_REQUIRED'),
           });
         } else if (
           isNaN(Number(data.minLeadTimeDays)) ||
@@ -212,7 +212,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['minLeadTimeDays'],
-            message: 'Min Lead Time Days must be a positive number',
+            message: t('MIN_LEAD_TIME_DAYS_POSITIVE_NUMBER'),
           });
         }
 
@@ -220,7 +220,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['probability'],
-            message: 'Forecast probability is required',
+            message: t('FORECAST_PROBABILITY_IS_REQUIRED'),
           });
         } else if (
           isNaN(Number(data.probability)) ||
@@ -229,7 +229,7 @@ export default function EditTrigger() {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['probability'],
-            message: 'Forecast probability must be a positive number',
+            message: t('FORECAST_PROBABILITY_POSITIVE_NUMBER'),
           });
         }
       }

@@ -35,7 +35,8 @@ import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLo
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -43,6 +44,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const t = useTranslations('AA Project');
   const tv = useTranslations('AA Project with Cash Tracker');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const payoutId = params.detailID as UUID;
@@ -88,7 +91,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       (row: Record<string, unknown>) => {
         return {
           ...row,
-          'Updated At': dateFormat(row['Updated At'] as string),
+          'Updated At': formatDate(row['Updated At'] as string),
         };
       },
     );
@@ -309,31 +312,28 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         <div className="grid lg:grid-cols-4 gap-4 pt-2">
           <DataCard
             title={tv('TOTAL_NO_OF_BENEFICIARIES')}
-            smallNumber={
-              payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
-                ?.beneficiaries ?? 0
-            }
+            smallNumber={formatNum(payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
             infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}
           />
           <DataCard
             title={tv('SUCCESSFUL_TRANSACTIONS')}
-            smallNumber={payout?.totalSuccessRequests}
+            smallNumber={formatNum(payout?.totalSuccessRequests ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
             infoTooltip={tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
             title={tv('FAILED_TRANSACTIONS')}
-            smallNumber={payout?.totalFailedPayoutRequests}
+            smallNumber={formatNum(payout?.totalFailedPayoutRequests ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
             infoTooltip={tv('FAILED_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
             title={tv('PAYOUT_GAP')}
-            smallNumber={payout?.payoutGap}
+            smallNumber={formatNum(payout?.payoutGap ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
             infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}

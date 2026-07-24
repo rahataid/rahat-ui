@@ -83,7 +83,7 @@ export default function UpdateStatus() {
   const nextId = React.useRef(0);
 
   const FormSchema = z.object({
-    status: z.string().min(1, { message: 'Please select status' }),
+    status: z.string().min(1, { message: t('PLEASE_SELECT_STATUS') }),
     notes: z.string().optional(),
     activityDocuments: z
       .array(

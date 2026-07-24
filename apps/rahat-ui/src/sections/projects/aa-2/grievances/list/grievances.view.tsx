@@ -22,10 +22,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useTranslations } from 'next-intl';
 
 function GrievancesView() {
+  const formatDate = useDateFormat();
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
@@ -61,11 +62,11 @@ function GrievancesView() {
         'Reporter Contact': item.reporterContact || tg('N_A'),
         Tags: item.tags?.join(', ') || tg('N_A'),
         'Created By': item.createdByUser?.name || tg('N_A'),
-        'Created At': item?.createdAt ? formatDateFull(item.createdAt) : tg('N_A'),
-        'Updated At': item?.updatedAt ? formatDateFull(item.updatedAt) : tg('N_A'),
-        'Closed At': item?.closedAt ? formatDateFull(item.closedAt) : tg('N_A'),
+        'Created At': item?.createdAt ? formatDate(item.createdAt, 'MMM d, yyyy, h:mm a') : tg('N_A'),
+        'Updated At': item?.updatedAt ? formatDate(item.updatedAt, 'MMM d, yyyy, h:mm a') : tg('N_A'),
+        'Closed At': item?.closedAt ? formatDate(item.closedAt, 'MMM d, yyyy, h:mm a') : tg('N_A'),
         'Resolved At': item?.resolvedAt
-          ? formatDateFull(item.resolvedAt)
+          ? formatDate(item.resolvedAt, 'MMM d, yyyy, h:mm a')
           : tg('N_A'),
       };
     });

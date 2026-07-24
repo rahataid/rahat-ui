@@ -39,6 +39,7 @@ import {
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
@@ -82,6 +83,7 @@ export default function PaymentInitiation() {
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
   const router = useRouter();
+  const formatNum = useNumberFormat();
   const { data: payoutTypes, isLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.PAYOUT_TYPE_CONFIG,
@@ -376,7 +378,7 @@ export default function PaymentInitiation() {
                         {tv('SELECTED')} {formState.group.name}
                       </h1>
                       <p className="text-sm text-muted-foreground">
-                        {groupDetails?.groupedBeneficiaries?.length} {tg('TOTAL_BENEFICIARIES')}
+                        {formatNum(groupDetails?.groupedBeneficiaries?.length ?? 0)} {tg('TOTAL_BENEFICIARIES')}
                       </p>
                     </div>
                   </div>

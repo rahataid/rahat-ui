@@ -8,6 +8,7 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';
 import SearchDropdownComponent from 'apps/rahat-ui/src/common/searchDropdownComponent';
 import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
+import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 import { UUID } from 'crypto';
 import { Dot } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -71,6 +72,7 @@ export default function MapView({
   const { data: mapLocation, isLoading: mapLoading } =
     useProjectDashboardBeneficiaryMapLocation(projectId, filters);
 
+  const formatNum = useNumberFormat();
   const project = useProjectStore((p) => p.singleProject);
   const uniueWard =
     benefStats?.find((stat) => stat.name === 'UNIQUE_WARDS')?.data || [];
@@ -78,8 +80,8 @@ export default function MapView({
   const transformedWardNumber =
     (uniueWard &&
       uniueWard.map((item) => ({
-        label: item.ward.toString(),
-        value: item.ward.toString(),
+        label: formatNum(item.ward),
+        value: formatNum(item.ward),
       }))) ||
     [];
 

@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { Table } from "@tanstack/react-table";
 import {
     Select,
@@ -16,6 +17,7 @@ type IProps = {
 
 export default function ClientSidePagination({ table }: IProps) {
     const t = useTranslations('GLOBAL');
+    const formatNum = useNumberFormat();
     return (
         <div className="flex items-center justify-end space-x-8 border-t px-4 py-2">
             <div className="flex items-center gap-2">
@@ -29,19 +31,19 @@ export default function ClientSidePagination({ table }: IProps) {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                            <SelectItem value="5">5</SelectItem>
-                            <SelectItem value="10">10</SelectItem>
-                            <SelectItem value="20">20</SelectItem>
-                            <SelectItem value="30">30</SelectItem>
-                            <SelectItem value="40">40</SelectItem>
-                            <SelectItem value="50">50</SelectItem>
+                            <SelectItem value="5">{formatNum(5)}</SelectItem>
+                            <SelectItem value="10">{formatNum(10)}</SelectItem>
+                            <SelectItem value="20">{formatNum(20)}</SelectItem>
+                            <SelectItem value="30">{formatNum(30)}</SelectItem>
+                            <SelectItem value="40">{formatNum(40)}</SelectItem>
+                            <SelectItem value="50">{formatNum(50)}</SelectItem>
                         </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>
             <div>
-                {t('PAGE')} {table.getState().pagination.pageIndex + 1} of{' '}
-                {table.getPageCount()}
+                {t('PAGE')} {formatNum(table.getState().pagination.pageIndex + 1)} of{' '}
+                {formatNum(table.getPageCount())}
             </div>
             <div className="space-x-4">
                 <Button

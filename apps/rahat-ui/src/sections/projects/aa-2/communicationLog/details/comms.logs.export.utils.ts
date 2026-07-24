@@ -1,6 +1,17 @@
 import { BroadcastStatus } from '@rumsan/connect/src/types';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import * as XLSX from 'xlsx';
+
+const formatDate = (date: Date | string | undefined | null, pattern?: string) => {
+  if (!date) return 'N/A';
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return 'N/A';
+    return new Intl.DateTimeFormat('ne-NP', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true,
+    }).format(d);
+  } catch { return 'N/A'; }
+};
 
 type SessionLog = {
   address: string;
@@ -96,10 +107,10 @@ function buildRowMapper(logs: LogsData) {
       logs?.communicationDetail?.communicationTitle || 'N/A',
     ...getTypeFields(log, logs),
     'Triggered Date': logs?.sessionDetails?.updatedAt
-      ? dateFormat(logs.sessionDetails.updatedAt)
+      ? formatDate(logs.sessionDetails.updatedAt)
       : 'N/A',
-    'Created Date': log.createdAt ? dateFormat(log.createdAt) : 'N/A',
-    'Updated Date': log.updatedAt ? dateFormat(log.updatedAt) : 'N/A',
+    'Created Date': log.createdAt ? formatDate(log.createdAt) : 'N/A',
+    'Updated Date': log.updatedAt ? formatDate(log.updatedAt) : 'N/A',
   });
 }
 

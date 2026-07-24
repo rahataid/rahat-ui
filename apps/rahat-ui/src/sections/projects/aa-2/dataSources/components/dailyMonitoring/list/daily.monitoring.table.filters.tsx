@@ -53,7 +53,7 @@ const SelectComponent = ({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value={t('ALL')}{t('ALL')}/SelectItem>
+          <SelectItem value="all">{t('ALL')}</SelectItem>
           {options.map((item) => (
             <SelectItem key={item.label} value={item.value}>
               {item.label}

@@ -26,6 +26,7 @@ import { fmt, DetailRow } from './gct.ui';
 import { DisburseButton, DisburseModal } from './gct.disburse-modal';
 import { DisbursementInfoCard } from './gct.disbursement-info';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
 export default function GctRecordDetail() {
   const t = useTranslations('AA Project with Cash Tracker');
@@ -46,6 +47,7 @@ export default function GctRecordDetail() {
   }));
 
   const [disburseOpen, setDisburseOpen] = useState(false);
+  const formatNum = useNumberFormat();
 
   const record = data?.data ?? data ?? null;
   const group = record?.groupCashTransfer ?? null;
@@ -140,7 +142,7 @@ export default function GctRecordDetail() {
             </p>
             <DetailRow
               label={t('AMOUNT_COL')}
-              value={record?.amount?.toLocaleString()}
+              value={formatNum(record?.amount ?? 0)}
             />
             <div className="flex flex-col gap-0.5 py-2.5 border-b">
               <span className="text-xs text-muted-foreground">{t('STATUS_COL')}</span>

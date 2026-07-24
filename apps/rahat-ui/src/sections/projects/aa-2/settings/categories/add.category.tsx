@@ -23,17 +23,17 @@ type IProps = {
   onClose: () => void;
 };
 
-const FormSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required' }),
-});
-
-type FormValues = z.infer<typeof FormSchema>;
-
 export default function AddCategoryDialog({ open, onClose }: IProps) {
   const t = useTranslations('AA Project');
   const { id } = useParams();
   const projectUUID = id as UUID;
   const { mutateAsync: addCategory, isPending } = useAddActivityCategory();
+
+  const FormSchema = z.object({
+    name: z.string().min(1, { message: t('NAME_IS_REQUIRED') }),
+  });
+
+  type FormValues = z.infer<typeof FormSchema>;
 
   const {
     register,

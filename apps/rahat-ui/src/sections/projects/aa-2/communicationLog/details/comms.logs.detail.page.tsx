@@ -28,7 +28,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
@@ -51,10 +51,13 @@ import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function CommsLogsDetailPage() {
   const tGlobal = useTranslations('GLOBAL');
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
 
   const [communicationId, activityId, sessionId] = (
@@ -376,12 +379,12 @@ export default function CommsLogsDetailPage() {
               <div className=" flex-1 flex flex-wrap gap-4">
                 <DataCard
                   title={t('SUCCESSFULLY_DELIVERED')}
-                  smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
+                  smallNumber={formatNum(count?.data?.data?.SUCCESS ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
                   title={t('FAILED_DELIVERED')}
-                  smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
+                  smallNumber={formatNum(count?.data?.data?.FAIL ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
               </div>
@@ -405,21 +408,21 @@ export default function CommsLogsDetailPage() {
                 <div>
                   <p className="text-sm text-gray-500">{t('TRIGGERED_DATE')}</p>
                   <p className="font-medium">
-                    {dateFormat(logs?.sessionDetails?.updatedAt)}
+                    {formatDate(logs?.sessionDetails?.updatedAt)}
                   </p>
                 </div>
 
                 {/* Total Audience */}
                 <div>
                   <p className="text-sm text-gray-500">{t('TOTAL_AUDIENCE')}</p>
-                  <p className="font-medium">{logsMeta?.total}</p>
+                  <p className="font-medium">{formatNum(logsMeta?.total ?? 0)}</p>
                 </div>
 
                 {logs?.sessionDetails?.status === 'COMPLETED' && (
                   <div>
                     <p className="text-sm text-gray-500">{t('COMPLETED_AT')}</p>
                     <p className="font-medium">
-                      {dateFormat(logs?.sessionDetails?.updatedAt)}
+                      {formatDate(logs?.sessionDetails?.updatedAt)}
                     </p>
                   </div>
                 )}

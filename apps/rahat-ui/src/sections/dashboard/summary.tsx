@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { BadgeCent, HeartHandshake, Home, Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
-import { useNumberFormat } from '../../utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const DashboardSummary = ({ data }: { data: any }) => {
   const t = useTranslations('AA Project');

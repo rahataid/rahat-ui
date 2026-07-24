@@ -34,6 +34,7 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
@@ -94,6 +95,7 @@ function formatLogs(raw: any[]): LogRow[] {
 export default function InkindAllocationDetail() {
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id, allocationId } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
@@ -420,7 +422,7 @@ export default function InkindAllocationDetail() {
           <DataCard
             key={card.name}
             title={card.name}
-            number={String(card.amount)}
+            number={formatNum(card.amount)}
             className="border-solid rounded-sm"
             iconStyle="bg-white text-secondary-muted"
           />

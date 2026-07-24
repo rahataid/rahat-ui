@@ -9,9 +9,13 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { TriangleAlertIcon } from 'lucide-react';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 export default function useCommsLogsTableColumns(transportName: string) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
+  const renderDateTime = (dateTime: string) => formatDate(dateTime);
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
@@ -33,7 +37,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
       accessorKey: 'attempts',
       header: t('ATTEMPTS'),
       cell: ({ row }) => {
-        return <div className="ml-8">{row?.original?.attempts}</div>;
+        return <div className="ml-8">{formatNum(row?.original?.attempts ?? 0)}</div>;
       },
     },
     // hide duration column for EMAIL and SMS transports
@@ -44,7 +48,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
             header: t('DURATION'),
             cell: ({ row }) => (
               <div>
-                {row?.original?.disposition?.cdr?.billableseconds || 'N/A'}
+                {row?.original?.disposition?.cdr?.billableseconds != null ? formatNum(row?.original?.disposition?.cdr?.billableseconds) : 'N/A'}
               </div>
             ),
           },
@@ -56,7 +60,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2 gap-2">
-            {dateFormat(row?.original?.updatedAt)}
+            {formatDate(row?.original?.updatedAt)}
             {transportName === 'VOICE' && row?.original?.status === 'FAIL' && (
               <TooltipProvider>
                 <Tooltip>
@@ -91,16 +95,6 @@ export default function useCommsLogsTableColumns(transportName: string) {
     },
   ];
   return columns;
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
 }
 
 function renderBadgeBg(status: string) {

@@ -27,6 +27,7 @@ import {
 import Link from 'next/link';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export function TemplateDetailsDialog({
   open,
@@ -37,6 +38,7 @@ export function TemplateDetailsDialog({
 }: TemplateDetailsDialogProps) {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   if (!template) return null;
   const appTransports = useListAllTransports();
 
@@ -268,7 +270,7 @@ export function TemplateDetailsDialog({
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {t('COMPLETED_AT')}:{' '}
-                  {new Date(template.completedAt).toLocaleString()}
+                  {formatDate(template.completedAt)}
                 </p>
               </Section>
             </>

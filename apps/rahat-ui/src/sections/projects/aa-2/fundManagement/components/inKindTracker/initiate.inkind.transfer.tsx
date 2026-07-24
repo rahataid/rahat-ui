@@ -22,10 +22,12 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Entities } from './types';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function InitiateInKindTransfer({}: {}) {
   const t = useTranslations('AA Project');
   const tg = useTranslations('AA Project with Gnosis');
+  const formatNum = useNumberFormat();
   const [formData, setFormData] = useState({
     from: '',
     to: '',
@@ -102,14 +104,13 @@ export default function InitiateInKindTransfer({}: {}) {
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">{tg('TOTAL_STOCK')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {Number(balance?.data?.formatted) + Number(balance?.data?.sent) ||
-              0}
+            {formatNum(Number(balance?.data?.formatted) + Number(balance?.data?.sent) || 0)}
           </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">{tg('REMAINING_STOCK')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {balance?.data?.formatted || 0}
+            {formatNum(balance?.data?.formatted || 0)}
           </p>
         </div>
       </div>

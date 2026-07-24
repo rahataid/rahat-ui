@@ -5,7 +5,7 @@ import { UUID } from 'crypto';
 import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import {
   getHumidityColor,
   getLatestValue,
@@ -18,9 +18,12 @@ import { TemperatureValueCard, HumidityScaleBar } from './components';
 import TimeSeriesChart from '../dhm/chart';
 import WaterLevelTable from '../dhm/table';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function HumidityWatchDetails() {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id: projectId } = useParams() as { id: UUID };
 
   const { data, isLoading, error } =
@@ -144,7 +147,7 @@ export default function HumidityWatchDetails() {
                 <p className="text-sm text-green-600">
                   {t('LAST_SYNCED_AT')}{' '}
                   {updatedAt
-                    ? dateFormat(updatedAt, 'MMMM dd, yyyy, hh:mm:ss a')
+                    ? formatDate(updatedAt, 'MMMM dd, yyyy, hh:mm:ss a')
                     : 'Not available'}
                 </p>
               </div>
@@ -170,7 +173,7 @@ export default function HumidityWatchDetails() {
                     <div>
                       <p className="text-sm/6 font-medium mb-1">{item.label}</p>
                       <p className="text-sm/4 text-gray-600">
-                        {item.value ?? '--'}
+                        {formatNum(item.value ?? 0)}
                       </p>
                     </div>
                   </div>

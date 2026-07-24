@@ -16,6 +16,7 @@ import { FundWithPayoutSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/p
 import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/utils/utils';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function Confirmation({
   payoutData,
@@ -45,6 +46,7 @@ export default function Confirmation({
   );
 
   const reserveTokenForGroups = useReserveTokenForGroups();
+  const formatNum = useNumberFormat();
 
   // Handlers goes here
   const cardData = useMemo(
@@ -121,7 +123,7 @@ export default function Confirmation({
             {cardData.map((i) => (
               <div key={i.label}>
                 <p className="text-sm text-muted-foreground">{i.label}</p>
-                <p className="text-lg font-semibold text-primary">{i.value}</p>
+                <p className="text-lg font-semibold text-primary">{formatNum(i.value)}</p>
               </div>
             ))}
           </div>

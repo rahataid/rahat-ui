@@ -4,7 +4,7 @@ import MapView from '../mapComponent/mapView';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat, useLabelDigits } from '../../../utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const STATS_CONSTANT = [
   'AGE_GROUPS',
@@ -35,6 +35,11 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
     mappedStats['TOTAL_NUMBER_FAMILY_MEMBERS']?.count ?? 0;
 
   const chartOpts = {
+    xaxis: {
+      labels: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
     yaxis: {
       labels: {
         formatter: (val: number) => formatNum(val),

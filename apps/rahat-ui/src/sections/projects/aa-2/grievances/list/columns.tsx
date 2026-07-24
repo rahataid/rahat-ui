@@ -13,7 +13,8 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { StatusChip, PriorityChip, TypeChip } from '../components';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
-import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
@@ -31,6 +32,8 @@ interface GrievanceTableRow {
   status: string;
 }
 export const useGrievancesTableColumns = () => {
+  const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
@@ -42,7 +45,7 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'id',
       header: t('ID'),
-      cell: ({ row }) => <div> {row.getValue('id')}</div>,
+      cell: ({ row }) => <div> {formatDigits(row.getValue('id'))}</div>,
     },
     {
       accessorKey: 'title',
@@ -77,7 +80,7 @@ export const useGrievancesTableColumns = () => {
       accessorKey: 'createdAt',
       header: t('CREATED_ON'),
       cell: ({ row }) => (
-        <TruncatedCell text={formatDateFull(row.getValue('createdAt'))} />
+        <TruncatedCell text={formatDate(row.getValue('createdAt'), 'MMM d, yyyy, h:mm a')} />
       ),
     },
     {

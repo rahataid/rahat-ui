@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Select,
@@ -31,11 +32,12 @@ export default function CustomPagination({
   total,
 }: IProps) {
   const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const lastPage = meta?.lastPage || 1;
   return (
     <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
       <div className="flex-1 text-sm text-muted-foreground">
-        {t('TOTAL_COUNT')} : {meta?.total || total}
+        {t('TOTAL_COUNT')} : {formatNum(meta?.total ?? total ?? 0)}
       </div>
       {handlePageSizeChange && (
         <div className="flex items-center gap-2">
@@ -51,7 +53,7 @@ export default function CustomPagination({
               <SelectGroup>
                 {pageSizes.map((size) => (
                   <SelectItem key={size} value={size}>
-                    {size}
+                    {formatNum(size)}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -60,7 +62,7 @@ export default function CustomPagination({
         </div>
       )}
       <div className="text-sm">
-        {t('PAGE')} {currentPage} of {lastPage}
+        {t('PAGE')} {formatNum(currentPage)} of {formatNum(lastPage)}
       </div>
       <div className="space-x-2">
         <Button

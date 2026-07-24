@@ -31,6 +31,7 @@ import {
 import { Info } from 'lucide-react';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function InitiateFundTransfer({}: {}) {
   const tv = useTranslations('AA Project with Cash Tracker');
@@ -94,6 +95,7 @@ export default function InitiateFundTransfer({}: {}) {
   }, [transactions]);
 
   const remainingBalance = Number(balance?.data?.formatted || 0);
+  const formatNum = useNumberFormat();
   // Check if a recipient should be disabled based on sender restrictions
   const isRecipientDisabled = (recipient: Entities): boolean => {
     // Don't allow sending to self
@@ -206,13 +208,13 @@ export default function InitiateFundTransfer({}: {}) {
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">{tv('PROJECT_BUDGET')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {remainingBalance + Number(balance?.data?.sent) || 0}
+            {formatNum(remainingBalance + Number(balance?.data?.sent ?? 0))}
           </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">{tv('REMAINING_BALANCE')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {remainingBalance || 0}
+            {formatNum(remainingBalance ?? 0)}
           </p>
         </div>
         {currentEntityAlias === AARoles.UNICEFNepalCO && (

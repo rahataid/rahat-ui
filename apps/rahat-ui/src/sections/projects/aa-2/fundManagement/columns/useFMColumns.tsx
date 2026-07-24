@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronDown, Eye, TriangleAlert } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -31,6 +32,7 @@ export const useFundManagementTableColumns = () => {
   const t = useTranslations('AA Project');
   const tv = useTranslations('AA Project with Cash Tracker');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
 
   const handleViewClick = (fmId: string) => {
     router.push(`/projects/aa/${id}/fund-management/${fmId}`);
@@ -73,15 +75,17 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'tokens',
       header: tv('TOTAL_TOKENS'),
-      cell: ({ row }) => <div>{row?.original?.numberOfTokens}</div>,
+      cell: ({ row }) => <div>{formatNum(row?.original?.numberOfTokens)}</div>,
     },
     {
       accessorKey: 'tokensperBenef',
       header: t('TOKEN_PER_BENEFICIARY'),
       cell: ({ row }) => (
         <div>
-          {row?.original?.numberOfTokens /
-            row.original.group.groupedBeneficiaries.length}
+          {formatNum(
+            row?.original?.numberOfTokens /
+              row.original.group.groupedBeneficiaries.length,
+          )}
         </div>
       ),
     },

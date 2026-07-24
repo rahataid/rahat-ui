@@ -17,6 +17,7 @@ import {
   ChevronsRight,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 type IProps = {
   handleNextPage: () => void;
 
@@ -48,6 +49,7 @@ export function CustomPagination({
   showChevrons,
 }: IProps) {
   const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const lastPage = meta?.lastPage || 1;
   if (showChevrons === undefined) {
     showChevrons = true;
@@ -92,7 +94,7 @@ export function CustomPagination({
                     value={size}
                     className="text-[clamp(11px,1vw,14px)]"
                   >
-                    {size}
+                    {formatNum(size)}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -103,10 +105,10 @@ export function CustomPagination({
       <div>
         {meta?.total && meta.total > 0 ? (
           <>
-            {t('PAGE')} {currentPage} of {lastPage}
+            {t('PAGE')} {formatNum(currentPage)} of {formatNum(lastPage)}
           </>
         ) : (
-          <>{t('PAGE')} {currentPage}</>
+          <>{t('PAGE')} {formatNum(currentPage)}</>
         )}
       </div>
       <div className="flex gap-[clamp(4px,0.6vw,8px)] items-center justify-center">

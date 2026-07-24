@@ -24,7 +24,7 @@ import {
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import MessageWithToggle from '../../activities/components/messageWithToggle';
@@ -78,6 +78,7 @@ export function CommunicationDetailCard({
   const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const formatDate = useDateFormat();
 
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
@@ -238,12 +239,12 @@ export function CommunicationDetailCard({
 
         {activityCommunication?.sessionStatus === 'COMPLETED' && (
           <TooltipWrapper
-            tip={`${t('COMPLETED_AT')}: ${dateFormat(
+            tip={`${t('COMPLETED_AT')}: ${formatDate(
               activityCommunication.completedAt,
             )}`}
           >
             <p className="mt-3 text-sm text-gray-500">
-              {t('COMPLETED_AT')}: {dateFormat(activityCommunication.completedAt)}
+              {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
             </p>
           </TooltipWrapper>
         )}

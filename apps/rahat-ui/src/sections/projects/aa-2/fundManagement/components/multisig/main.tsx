@@ -20,7 +20,7 @@ import {
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import {
@@ -53,6 +53,7 @@ export default function MultiSigWalletView() {
   const { clickToCopy, copyAction } = useCopy();
   const t = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
 
   const {
     data: safeOwners,
@@ -264,7 +265,7 @@ export default function MultiSigWalletView() {
                           {tg('TO')}: {truncateEthAddress(tx?.to)}
                         </p>
                         <p className="text-xs text-gray-600">
-                          {dateFormat(tx?.submissionDate)}
+                           {formatDate(tx?.submissionDate)}
                         </p>
                       </div>
                       <div className="text-right">

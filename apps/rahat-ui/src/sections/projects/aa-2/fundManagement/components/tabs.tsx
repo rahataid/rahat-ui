@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   PROJECT_SETTINGS_KEYS,
   useEntities,
@@ -43,6 +44,7 @@ interface BackendTab {
 type ComponentKey = keyof typeof componentMap;
 
 export default function FundManagementTabs() {
+  const t = useTranslations('AA Project');
   const { activeTab, setActiveTab } = useActiveTab('');
   const { id: projectID } = useParams();
 
@@ -110,15 +112,18 @@ export default function FundManagementTabs() {
         onValueChange={setActiveTab}
       >
         <TabsList className="border bg-secondary rounded mb-2">
-          {availableTabsConfig.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
+          {availableTabsConfig.map((tab) => {
+            const labelKey = tab.label.toUpperCase().replace(/\s+/g, '_');
+            return (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+              >
+                {t.has(labelKey) ? t(labelKey) : tab.label}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
         {availableTabsConfig.map((tab) => {

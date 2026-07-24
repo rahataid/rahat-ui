@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 interface IGlofasHydrographChartProps {
   series: { date: string; min: number; max: number; mean: number }[];
@@ -20,11 +20,12 @@ interface IGlofasHydrographChartProps {
 
 const GlofasHydrographChart = ({ series }: IGlofasHydrographChartProps) => {
   const t = useTranslations('AA Project');
+  const formatDate = useDateFormat();
   if (!series?.length) return null;
 
   const chartData = series.map((d) => ({
     ...d,
-    date: dateFormat(d.date, 'MMM dd'),
+    date: formatDate(d.date, 'MMM dd'),
     range: [d.min, d.max],
   }));
 

@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -52,6 +53,7 @@ const ViewTemplate = ({
 }: ViewTemplateProps) => {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id }: { id: UUID } = useParams();
   const { pagination, filters, setNextPage, setPrevPage, setFilters } =
     usePagination();
@@ -366,7 +368,7 @@ const ViewTemplate = ({
 
                 <div className="px-4 py-2 rounded-md bg-muted text-center flex-1">
                   <span className="text-sm font-medium">
-                    {tg('PAGE_CURRENT_OF_TOTAL', { current: templates.meta.currentPage, total: templates.meta.lastPage })}
+                    {tg('PAGE_CURRENT_OF_TOTAL', { current: formatNum(templates.meta.currentPage), total: formatNum(templates.meta.lastPage) })}
                   </span>
                 </div>
 

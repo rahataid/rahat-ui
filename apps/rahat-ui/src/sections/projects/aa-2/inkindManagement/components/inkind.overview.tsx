@@ -34,6 +34,7 @@ import { UUID } from 'crypto';
 import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 import {
@@ -165,6 +166,7 @@ export default function InkindOverview() {
 
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
 
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -186,7 +188,7 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title={tv('TOTAL_INKIND_TYPES')}
-          number={String(
+          number={formatNum(
             inkindItemsSummary?.totalInkindTypes
               ? inkindItemsSummary.totalInkindTypes
               : 0,
@@ -196,7 +198,7 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title={tv('AVAILABLE_STOCK')}
-          number={String(
+          number={formatNum(
             inkindItemsSummary?.totalAvailableStock
               ? inkindItemsSummary.totalAvailableStock
               : 0,
@@ -206,7 +208,7 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title={tv('REDEEMED_STOCK')}
-          number={String(
+          number={formatNum(
             inkindItemsSummary?.totalRedeemedStock
               ? inkindItemsSummary.totalRedeemedStock
               : 0,
@@ -287,7 +289,7 @@ export default function InkindOverview() {
                               style={{ width: `${(r.count / max) * 100}%` }}
                             />
                           </div>
-                          <div className="text-xs font-medium w-6 shrink-0 text-right">{r.count}</div>
+                          <div className="text-xs font-medium w-6 shrink-0 text-right">{formatNum(r.count)}</div>
                         </div>
                       ))}
                     </div>

@@ -25,26 +25,26 @@ type IProps = {
   projectUUID: UUID;
 };
 
-const FormSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required' }),
-  field: z.array(
-    z.object({
-      value: z.object({
-        key: z.string().min(1, { message: 'Key is required' }),
-        value: z.string().min(1, { message: 'Value is required' }),
-      }),
-    }),
-  ),
-  requiredFields: z.array(
-    z.string().min(1, { message: 'Required Fields is required' }),
-  ),
-  isReadOnly: z.boolean(),
-  isPrivate: z.boolean(),
-});
-
 export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) {
   const t = useTranslations('AA Project');
   const addSetting = useAAProjectSettingsAdd();
+
+  const FormSchema = z.object({
+    name: z.string().min(1, { message: t('NAME_IS_REQUIRED') }),
+    field: z.array(
+      z.object({
+        value: z.object({
+          key: z.string().min(1, { message: t('KEY_IS_REQUIRED') }),
+          value: z.string().min(1, { message: t('VALUE_IS_REQUIRED') }),
+        }),
+      }),
+    ),
+    requiredFields: z.array(
+      z.string().min(1, { message: t('REQUIRED_FIELDS_IS_REQUIRED') }),
+    ),
+    isReadOnly: z.boolean(),
+    isPrivate: z.boolean(),
+  });
 
   const {
     handleSubmit,

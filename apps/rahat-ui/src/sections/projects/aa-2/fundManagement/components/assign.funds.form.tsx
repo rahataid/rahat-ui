@@ -40,7 +40,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 import {
-  FundAssignmentFormSchema,
+  buildFundAssignmentFormSchema,
   FundAssignmentFormValues,
 } from './schemas/funds.validation';
 
@@ -69,6 +69,7 @@ export default function AssignFundsForm({
 
   const validateTokenAction = useValidateTokenAssignment();
 
+  const FundAssignmentFormSchema = buildFundAssignmentFormSchema(t);
   const form = useForm<FundAssignmentFormValues>({
     resolver: zodResolver(FundAssignmentFormSchema),
     defaultValues: DEFAULT_VALUES,

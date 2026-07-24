@@ -20,7 +20,7 @@ import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
@@ -61,6 +61,7 @@ export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
   const t = useTranslations('AA Project');
+  const formatDate = useDateFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();
   const router = useRouter();
@@ -273,12 +274,12 @@ export function CommunicationCard({
         {/* Completed At */}
         {activityCommunication?.sessionStatus === 'COMPLETED' && (
           <TooltipWrapper
-            tip={`${t('COMPLETED_AT')}: ${dateFormat(
+            tip={`${t('COMPLETED_AT')}: ${formatDate(
               activityCommunication.completedAt,
             )}`}
           >
             <p className="mt-3 text-sm text-gray-500">
-              {t('COMPLETED_AT')}: {dateFormat(activityCommunication.completedAt)}
+              {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
             </p>
           </TooltipWrapper>
         )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -121,6 +122,7 @@ export const columns: ColumnDef<any, any>[] = [
 
 export default function UserTable({ handleClick }: IProps) {
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { userQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -288,19 +290,19 @@ export default function UserTable({ handleClick }: IProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="5">5</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="30">30</SelectItem>
-                    <SelectItem value="40">40</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="5">{formatNum(5)}</SelectItem>
+                    <SelectItem value="10">{formatNum(10)}</SelectItem>
+                    <SelectItem value="20">{formatNum(20)}</SelectItem>
+                    <SelectItem value="30">{formatNum(30)}</SelectItem>
+                    <SelectItem value="40">{formatNum(40)}</SelectItem>
+                    <SelectItem value="50">{formatNum(50)}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
             <div>
-                {tg('PAGE')} {table.getState().pagination.pageIndex + 1} {tg('OF')}{' '}
-              {table.getPageCount()}
+                {tg('PAGE')} {formatNum(table.getState().pagination.pageIndex + 1)} {tg('OF')}{' '}
+              {formatNum(table.getPageCount())}
             </div>
             <div className="space-x-2">
               <Button

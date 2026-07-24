@@ -39,6 +39,7 @@ import {
 import GctDeleteDialog from './gct.delete.dialog';
 import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
+import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -69,6 +70,7 @@ export default function GctDetail() {
   const records: GctFundRecord[] = item?.groupCashTransferRecords ?? [];
   const hasFund = records.length > 0;
   const totalAssigned: number = item?.totalAssignedAmount ?? 0;
+  const formatNum = useNumberFormat();
 
   const handleValidateBankAccount = async () => {
     setValidationResult(null);
@@ -112,7 +114,7 @@ export default function GctDetail() {
         header: t('AMOUNT_COL'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.original.amount.toLocaleString()}
+            {formatNum(row.original.amount)}
           </span>
         ),
       },
@@ -301,7 +303,7 @@ export default function GctDetail() {
             <Separator />
             <DetailRow
               label={t('TOTAL_RESERVED_AMOUNT')}
-              value={totalAssigned.toLocaleString()}
+              value={formatNum(totalAssigned)}
             />
           </CardContent>
         </Card>

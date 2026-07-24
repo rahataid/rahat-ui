@@ -8,10 +8,12 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export const useTriggerStatementTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
+  const formatDate = useDateFormat();
 
   const columns: ColumnDef<any>[] = [
     {
@@ -94,10 +96,7 @@ export const useTriggerStatementTableColumns = () => {
       cell: ({ row }) => {
         const triggeredAt = row.getValue('triggeredAt') as string;
         if (triggeredAt) {
-          const d = new Date(triggeredAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return `${localeDate} ${localeTime}`;
+          return formatDate(triggeredAt);
         }
         return 'N/A';
       },

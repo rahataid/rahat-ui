@@ -11,6 +11,7 @@ import {
   usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
@@ -36,6 +37,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function ActivitiesList() {
   const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();
   const [filtersApplied, setFiltersApplied] = React.useState(false);
@@ -94,6 +96,7 @@ export default function ActivitiesList() {
     filtersApplied ? { perPage: activitiesMeta?.total, ...filters } : null,
   );
 
+  const formatDate = useDateFormat();
   const columns = useActivitiesTableColumn();
 
   const table = useReactTable({
@@ -135,10 +138,7 @@ export default function ActivitiesList() {
     const mappedData = allData?.map((item: Record<string, any>) => {
       let timeStamp;
       if (item?.completedAt) {
-        const d = new Date(item.completedAt);
-        const localeDate = d.toLocaleDateString();
-        const localeTime = d.toLocaleTimeString();
-        timeStamp = `${localeDate} ${localeTime}`;
+        timeStamp = formatDate(item.completedAt);
       }
       // leadTime is stored server-side as "<value> <unit>" (e.g. "3 days"),
       // split back into two columns to match the bulk-upload sheet format.
@@ -147,12 +147,16 @@ export default function ActivitiesList() {
         'Activity Title': item.title || 'N/A',
         Category: item.category || 'N/A',
         Phase: item.phase || 'N/A',
-        Type: item.isAutomated ? 'Automated' : 'Manual',
+        Type: item.isAutomated ? t('AUTOMATED') : t('MANUAL'),
         Responsibility: item.responsibility,
         'Responsible Station': item.responsibleStation || 'N/A',
         'Lead Time': leadTimeValue || 'N/A',
         'Time Frame': leadTimeUnit || 'N/A',
-        Status: item.status || 'N/A',
+        Status: item.status === 'NOT_STARTED' ? t('NOT_STARTED') :
+          item.status === 'WORK_IN_PROGRESS' ? t('IN_PROGRESS') :
+          item.status === 'COMPLETED' ? tg('COMPLETED') :
+          item.status === 'DELAYED' ? tg('DELAYED') :
+          item.status || 'N/A',
         Timestamp: timeStamp || 'N/A',
         'Completed by': item.completedBy || 'N/A',
         'Difference in trigger and activity completion':

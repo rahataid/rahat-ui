@@ -46,7 +46,7 @@ export default function AddUser() {
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST4') }),
-    email: z.string().email(),
+    email: z.string().email({ message: t('INVALID_EMAIL_ADDRESS') }),
     gender: z.string().min(1, { message: t('PLEASE_SELECT_GENDER') }),
     roles: z.array(z.string()).length(1, { message: t('PLEASE_SELECT_ROLE') }),
     phone: z.string(),

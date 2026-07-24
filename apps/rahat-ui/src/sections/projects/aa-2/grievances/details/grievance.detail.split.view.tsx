@@ -14,7 +14,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
-import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { UUID } from 'crypto';
 import { Expand, Pencil, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -52,6 +52,7 @@ type IProps = {
 export default function GrievanceDetailSplitView({
   grievance: initialGrievance,
 }: IProps) {
+  const formatDate = useDateFormat();
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
   const labelMap: Record<string, string> = {
@@ -275,7 +276,7 @@ export default function GrievanceDetailSplitView({
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 {grievance?.createdAt
-                  ? formatDateFull(grievance?.createdAt)
+                  ? formatDate(grievance?.createdAt, 'MMM d, yyyy, h:mm a')
                   : tg('N_A')}
               </span>
             </div>
@@ -289,10 +290,10 @@ export default function GrievanceDetailSplitView({
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 {grievance?.status === GrievanceStatus.CLOSED
                   ? grievance?.closedAt
-                    ? formatDateFull(grievance?.closedAt)
+                    ? formatDate(grievance?.closedAt, 'MMM d, yyyy, h:mm a')
                     : tg('N_A')
                   : grievance?.updatedAt
-                  ? formatDateFull(grievance?.updatedAt)
+                  ? formatDate(grievance?.updatedAt, 'MMM d, yyyy, h:mm a')
                   : tg('N_A')}
               </span>
             </div>

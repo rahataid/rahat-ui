@@ -51,7 +51,7 @@ function BeneficiaryView() {
       <TabsContent value="beneficiaryGroups">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">
-            {t('BENEFICIARY_GROUP')}s
+            {t('BENEFICIARY_GROUPS')}
           </h1>
         </div>
       </TabsContent>
@@ -73,7 +73,7 @@ function BeneficiaryView() {
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryGroups"
           >
-            {t('BENEFICIARY_GROUP')}s
+            {t('BENEFICIARY_GROUPS')}
           </TabsTrigger>
         </TabsList>
 

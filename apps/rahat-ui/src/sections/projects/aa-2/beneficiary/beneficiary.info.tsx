@@ -4,6 +4,7 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import InkindDetails from './beneficiary.inkind.details';
@@ -25,6 +26,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const beneficiaryId = params.uuid as UUID;
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { clickToCopy, copyAction } = useCopy();
 
   const { data: tokenData, isPending } = useTokenDetails({
@@ -87,7 +89,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           <div className=" text-sm text-muted-foreground font-medium flex gap-1 capitalize">
             <p>{beneficiary?.projectData?.location || ''}</p>
             {beneficiary?.extras?.ward_no && (
-              <p>{t('WARD')} no - {beneficiary?.extras?.ward_no}</p>
+              <p>{t('WARD')} {t('NO')} - {beneficiary?.extras?.ward_no}</p>
             )}
             <p>
               {!beneficiary?.extras?.location &&
@@ -142,16 +144,16 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
             <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
               <p className="text-sm text-gray-500">{t('ASSIGNED')}</p>
               <h3 className="text-xl font-bold">
-                {tokenData?.assignedToken} {t('TOKENS')}
+                {formatNum(tokenData?.assignedToken)} {t('TOKENS')}
               </h3>
-              <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
+              <p className="text-gray-600">NPR {formatNum(tokenData?.assignedToken)}</p>
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
               <p className="text-sm text-gray-500">{t('REDEEMED')}</p>
               <h3 className="text-xl font-bold">
-                {tokenData?.redemmedToken} {t('TOKENS')}
+                {formatNum(tokenData?.redemmedToken)} {t('TOKENS')}
               </h3>
-              <p className="text-gray-600">NPR {tokenData?.redemmedToken}</p>
+              <p className="text-gray-600">NPR {formatNum(tokenData?.redemmedToken)}</p>
             </div>
           </div>
         ) : null}

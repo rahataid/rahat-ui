@@ -42,6 +42,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const data: Transaction[] = [];
 
@@ -154,6 +155,7 @@ export default function BeneficiaryDetailTableView({
   tableSpacing,
 }: IProps) {
   const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -256,20 +258,20 @@ export default function BeneficiaryDetailTableView({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="40">40</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="5">{formatNum(5)}</SelectItem>
+                  <SelectItem value="10">{formatNum(10)}</SelectItem>
+                  <SelectItem value="20">{formatNum(20)}</SelectItem>
+                  <SelectItem value="30">{formatNum(30)}</SelectItem>
+                  <SelectItem value="40">{formatNum(40)}</SelectItem>
+                  <SelectItem value="50">{formatNum(50)}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
           <div>
             {t('PAGE_CURRENT_OF_TOTAL', {
-                current: table.getState().pagination.pageIndex + 1,
-                total: table.getPageCount(),
+                current: formatNum(table.getState().pagination.pageIndex + 1),
+                total: formatNum(table.getPageCount()),
               })}
           </div>
           <div className="space-x-4">

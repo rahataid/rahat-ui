@@ -4,7 +4,7 @@ import { BroadcastStats } from 'apps/rahat-ui/src/types/dashboard';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from '../../../utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const CommunicationsAndOutreach = ({
   commsStats,
@@ -15,6 +15,11 @@ const CommunicationsAndOutreach = ({
   const formatNum = useNumberFormat();
 
   const chartOpts = {
+    xaxis: {
+      labels: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
     yaxis: {
       labels: {
         formatter: (val: number) => formatNum(val),

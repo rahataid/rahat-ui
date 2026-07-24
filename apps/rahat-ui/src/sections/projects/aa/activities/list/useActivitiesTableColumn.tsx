@@ -5,6 +5,7 @@ import { Eye } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import UpdateActivityStatusDialog from '../details/update.activity.status.dialog';
 import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {
@@ -45,6 +46,7 @@ function getStatusBg(status: string) {
 export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
+  const formatDate = useDateFormat();
 
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
@@ -121,10 +123,7 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => {
         const completedAt = row.getValue('completedAt') as string;
         if (completedAt) {
-          const d = new Date(completedAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return `${localeDate} ${localeTime}`;
+          return formatDate(completedAt);
         }
         return 'N/A';
       },

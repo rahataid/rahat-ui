@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -21,6 +22,7 @@ export default function ActivitiesView() {
   const { id: projectID } = useParams();
   const { state } = useSidebar();
   const router = useRouter();
+  const formatDate = useDateFormat();
   const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
@@ -127,10 +129,7 @@ export default function ActivitiesView() {
       activitiesData?.map((item: IActivitiesItem) => {
         let timeStamp;
         if (item?.completedAt) {
-          const d = new Date(item.completedAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          timeStamp = `${localeDate} ${localeTime}`;
+          timeStamp = formatDate(item.completedAt);
         }
         // leadTime is stored server-side as "<value> <unit>" (e.g. "3 days"),
         // split back into two columns to match the bulk-upload sheet format.

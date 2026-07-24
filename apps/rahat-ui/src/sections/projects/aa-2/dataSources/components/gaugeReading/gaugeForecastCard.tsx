@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useTranslations } from 'next-intl';
 
 export interface IGaugeForecastCardProps {
@@ -30,6 +30,7 @@ const GaugeForecastCard = ({
   unit,
 }: IGaugeForecastCardProps) => {
   const t = useTranslations('AA Project');
+  const formatDate = useDateFormat();
   return (
     <Card className="px-4 py-3 rounded-xl mb-4">
       <div className="grid grid-cols-4 gap-4 items-center">
@@ -84,7 +85,7 @@ const GaugeForecastCard = ({
               <div>
                 <p className="text-sm font-medium text-gray-700">{t('CREATED_DATE')}</p>
                 <p className="text-sm text-gray-600">
-                  {dateFormat(date, 'eee, MMMM d, yyyy') || 'N/A'}
+                  {formatDate(date, 'eee, MMMM d, yyyy') || 'N/A'}
                 </p>
               </div>
           </div>

@@ -2,7 +2,7 @@ import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { InKindLog } from '../types';
 import { ColumnDef } from '@tanstack/react-table';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -10,6 +10,7 @@ import {
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { UUID } from 'crypto';
 
 export const useInkindLogsColumn = () => {
@@ -17,6 +18,8 @@ export const useInkindLogsColumn = () => {
   const projectId = params.id as UUID;
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -67,6 +70,7 @@ export const useInkindLogsColumn = () => {
     {
       accessorKey: 'quantity',
       header: t('IN_KIND_QUANTITY'),
+      cell: ({ row }) => <div>{formatNum(row.original.quantity)}</div>,
     },
     {
       accessorKey: 'txHash',
@@ -104,7 +108,7 @@ export const useInkindLogsColumn = () => {
         <TruncatedCell
           text={
             row?.original?.redeemedAt
-              ? dateFormat(row?.original?.redeemedAt)
+              ? formatDate(row?.original?.redeemedAt)
               : ''
           }
           maxLength={10}

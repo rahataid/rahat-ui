@@ -2,7 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useTranslations } from 'next-intl';
 
 import { Heading } from 'apps/rahat-ui/src/common';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import {
   renderCardColor,
   renderStatusColor,
@@ -10,6 +10,7 @@ import {
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 interface InfoProp {
   riverWatch: {
     stationIndex: number;
@@ -30,6 +31,8 @@ interface InfoProp {
 
 export function Info({ riverWatch, updatedAt }: InfoProp) {
   const t = useTranslations('AA Project');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const cardData = React.useMemo(
     () => [
       {
@@ -85,7 +88,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
                 </div>
                 <div>
                   <p className="text-sm/6 font-medium mb-1">{d.label}</p>
-                  <p className="text-sm/4 text-gray-600">{d.value}</p>
+                  <p className="text-sm/4 text-gray-600">{formatNum(d.value)}</p>
                 </div>
               </div>
             );
@@ -98,12 +101,12 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
         )}`}
       >
         <p className="text-primary font-semibold text-3xl/10">
-          {truncateValue(riverWatch?.waterLevel?.value, 2)}
+          {formatNum(truncateValue(riverWatch?.waterLevel?.value, 2))}
           {riverWatch?.unit}
         </p>
         <p className="text-sm/6 font-medium">{t('WATER_LEVEL')}</p>
         <p className="text-gray-500 text-sm/6">
-          {dateFormat(
+          {formatDate(
             riverWatch?.waterLevel?.datetime,
             'eee, MMM d yyyy, hh:mm:ss a',
           )}

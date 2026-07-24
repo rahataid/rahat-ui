@@ -3,7 +3,7 @@ import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from '../../../utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const findStat = (data: any[], name: string) => {
   return data?.find((s) => s.name === name)?.data ?? [];
@@ -59,6 +59,11 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
   ];
 
   const chartOpts = {
+    xaxis: {
+      labels: {
+        formatter: (val: number) => formatNum(val),
+      },
+    },
     yaxis: {
       labels: {
         formatter: (val: number) => formatNum(val),

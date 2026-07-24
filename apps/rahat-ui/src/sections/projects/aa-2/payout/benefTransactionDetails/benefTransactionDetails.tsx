@@ -85,6 +85,7 @@ export default function BeneficiaryTransactionLogDetails() {
       }&txnDetailsId=${uuid}`,
     );
   };
+
   return (
     <div className="p-4 md:p-6  space-y-6">
       <div className=" flex justify-between items-center">
@@ -204,12 +205,12 @@ export default function BeneficiaryTransactionLogDetails() {
               </Badge>
             </InfoItem>
 
-            {data?.data?.payout?.mediaUrl && (
+            {data?.data?.info?.mediaUrl && (
               <InfoItem label="Proof of Payment">
                 <FilePreview
-                  url={data.data.payout.mediaUrl}
+                  url={data.data.info.mediaUrl}
                   fileName={
-                    data.data.payout.mediaUrl.split('/').pop() || 'Receipt'
+                    data.data.info.fileName
                   }
                 />
               </InfoItem>

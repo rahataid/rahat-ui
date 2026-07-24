@@ -1030,8 +1030,7 @@ export default function ComposeScheduleView() {
                                   </span>
                                   <span
                                     className={cn(
-                                      (plasgateSmsInfo.exceeded ||
-                                        plasgateSmsInfo.remaining <= 10) &&
+                                      plasgateSmsInfo.exceeded &&
                                         'text-destructive font-medium',
                                     )}
                                   >

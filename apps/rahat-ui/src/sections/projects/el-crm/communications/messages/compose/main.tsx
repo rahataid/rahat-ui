@@ -643,8 +643,7 @@ export default function ComposeMessageView() {
                               </span>
                               <span
                                 className={cn(
-                                  (plasgateSmsInfo.exceeded ||
-                                    plasgateSmsInfo.remaining <= 10) &&
+                                  plasgateSmsInfo.exceeded &&
                                     'text-destructive font-medium',
                                 )}
                               >

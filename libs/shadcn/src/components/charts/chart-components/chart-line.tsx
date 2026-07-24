@@ -1,5 +1,6 @@
 // components
 
+import merge from 'lodash/merge';
 import Chart from '../chart';
 import useChart from '../use-chart';
 
@@ -19,7 +20,7 @@ export default function ChartLine({
   lineChartOptions,
   categories,
 }: Props) {
-  const defaultOptions = {
+  const defaultOptions: ApexCharts.ApexOptions = {
     xaxis: {
       categories: categories || [
         'Jan',
@@ -44,7 +45,7 @@ export default function ChartLine({
     },
   };
 
-  const options = lineChartOptions ? lineChartOptions : defaultOptions;
+  const options = merge({}, defaultOptions, lineChartOptions ?? {});
 
   const chartOptions = useChart(options);
 

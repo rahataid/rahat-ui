@@ -60,9 +60,9 @@ export default function AuthPage() {
 
   return (
     <div className="sm:h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-card border rounded-sm rounded-lg p-6">
+      <div className="max-w-md w-full bg-card border rounded-lg shadow-elevated p-8">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {!optSent ? 'Sign in' : 'OTP has been sent'}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
@@ -74,8 +74,8 @@ export default function AuthPage() {
 
         {/* Email Form */}
         {!optSent ? (
-          <form onSubmit={onRequestOtp} className="mt-4">
-            <div className="grid gap-2">
+          <form onSubmit={onRequestOtp} className="mt-6">
+            <div className="grid gap-3">
               <Label htmlFor="email" className="sr-only">
                 Email
               </Label>
@@ -88,12 +88,11 @@ export default function AuthPage() {
                 onChange={(e) => setAddress(e.target.value)}
               />
               {error && (
-                <p className="text-red-500 text-center">
+                <p className="text-destructive text-sm text-center">
                   {error?.response?.data?.message}
                 </p>
               )}
               <Button
-                className="text-white hover:border hover:border-blue-500 hover:text-blue-500"
                 type="submit"
                 disabled={isPending || !isEmailValid}
               >
@@ -102,8 +101,8 @@ export default function AuthPage() {
             </div>
           </form>
         ) : (
-          <form onSubmit={onVerifyOtp} className="mt-4">
-            <div className="grid gap-2">
+          <form onSubmit={onVerifyOtp} className="mt-6">
+            <div className="grid gap-3">
               <Label htmlFor="otp" className="sr-only">
                 OTP
               </Label>
@@ -124,12 +123,11 @@ export default function AuthPage() {
                 }}
               />
               {otpinputError && (
-                <div className="text-red-700 text-sm">
+                <div className="text-destructive text-sm">
                   Please enter valid OTP
                 </div>
               )}
               <Button
-                className="text-white hover:border hover:border-blue-500 hover:text-blue-500"
                 type="submit"
                 disabled={otp?.length !== 6}
               >

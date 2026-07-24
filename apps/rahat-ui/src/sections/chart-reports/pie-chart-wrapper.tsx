@@ -7,6 +7,8 @@ type PiechartData = {
 };
 
 const PieChartWrapper = ({ actualData, component, source }: PiechartData) => {
+  if (!Array.isArray(actualData)) return null;
+
   const chartStatsData = actualData?.find(
     (d: any) => d.name === component?.dataMap,
   );

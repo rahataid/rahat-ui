@@ -18,7 +18,7 @@ export const useGetProjectDatasource = (projectUUID?: UUID) => {
   const { rumsanService } = useRSQuery();
 
   return useQuery({
-    queryKey: ['datasource'],
+    queryKey: ['datasource', 'project', projectUUID],
     queryFn: async () => {
       const res = await rumsanService.client.get(
         `/projects/${projectUUID}/statsSources`,

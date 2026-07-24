@@ -12,27 +12,46 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type DatePickerType = {
   placeholder: string;
   type: string;
   handleDateChange: any;
+  value?: Date;
 };
 
 export function DatePicker({
   placeholder,
   handleDateChange,
   type,
+  value,
 }: DatePickerType) {
-  const [date, setDate] = useState<Date>();
+  const [internalDate, setInternalDate] = useState<Date | undefined>();
+
+  useEffect(() => {
+    setInternalDate(value);
+  }, [value]);
+
+  const date = value ?? internalDate;
+
+  const handleSelect = (selectedDate?: Date) => {
+    if (!selectedDate) return;
+
+    if (!value) {
+      setInternalDate(selectedDate);
+    }
+
+    handleDateChange(selectedDate, type);
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={'outline'}
+          variant="outline"
           className={cn(
-            'w-[280px] justify-start text-left rounded-sm font-normal',
+            'w-[280px] justify-start text-left rounded-md font-normal',
             !date && 'text-muted-foreground',
           )}
         >
@@ -40,14 +59,12 @@ export function DatePicker({
           {date ? format(date, 'PPP') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
           selected={date}
-          onSelect={(date) => {
-            handleDateChange(date, type);
-            setDate(date);
-          }}
+          onSelect={handleSelect}
           initialFocus
         />
       </PopoverContent>

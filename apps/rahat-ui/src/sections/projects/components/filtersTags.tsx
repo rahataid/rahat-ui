@@ -28,7 +28,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
                 {filter?.key.charAt(0).toUpperCase() + filter?.key.slice(1)}:{' '}
                 <span
                   onClick={() => handleFilterArrayChange(filter.key)}
-                  className="cursor-pointer bg-primary py-1 px-2 text-white rounded text-xs flex items-center gap-2"
+                  className="cursor-pointer bg-primary/10 text-primary py-1 px-2 rounded-md text-xs flex items-center gap-2 hover:bg-primary/20 transition-colors"
                 >
                   {typeof filter.value === 'object' ? (
                     <>{format(filter.value, 'MMM dd yyyy')}</>

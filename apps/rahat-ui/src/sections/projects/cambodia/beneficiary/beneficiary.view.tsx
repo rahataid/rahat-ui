@@ -1,5 +1,11 @@
 'use client';
-import { useCambodiaBeneficiaries, usePagination } from '@rahat-ui/query';
+import {
+  MS_CAM_ACTIONS,
+  normalizeCambodiaBeneficiaryListResponse,
+  useCambodiaBeneficiaries,
+  usePagination,
+  useProjectAction,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
@@ -14,7 +20,7 @@ import { UUID } from 'crypto';
 import { CloudUpload, Download, UserRoundX } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
@@ -40,21 +46,21 @@ export default function BeneficiaryView() {
   // const { name, type, ...otherFilters } = filters;
   const debouncedSearch = useDebounce(filters, 500);
 
+  const [isExporting, setIsExporting] = useState(false);
+  const exportAction = useProjectAction([
+    MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+    'export',
+    id,
+  ]);
+
   const { data, isLoading } = useCambodiaBeneficiaries({
+    ...(debouncedSearch as any),
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
-  });
-  const { data: allData } = useCambodiaBeneficiaries({
-    page: pagination.page,
-    perPage: data?.response?.meta?.total,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...(debouncedSearch as any),
+    enabled: true,
   });
 
   useEffect(() => {
@@ -65,20 +71,21 @@ export default function BeneficiaryView() {
 
   const processedData = {
     ...data,
-    data: data?.data.map((benef) => ({
-      ...benef,
-      name: benef?.piiData?.name,
-    })),
+    data:
+      data?.data?.map((benef) => ({
+        ...benef,
+        name: benef?.piiData?.name,
+      })) ?? [],
   };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
+      setFilters((prev: Record<string, string>) => ({
+        ...prev,
         [name]: filterValue,
-      });
+      }));
     }
   };
 
@@ -94,7 +101,7 @@ export default function BeneficiaryView() {
     onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
-      return originalRow.walletAddress;
+      return originalRow.uuid ?? originalRow.walletAddress;
     },
 
     state: {
@@ -103,20 +110,49 @@ export default function BeneficiaryView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = allData?.data || [];
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((item: any) => ({
-      Name: item.piiData?.name,
-      Phone: item.piiData?.phone,
-      Type: item.type,
-      Gender: item.projectData?.gender,
-      HealthWorker: item.healthWorker?.name,
-      TimeStamp: new Date(item.createdAt).toLocaleDateString(),
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
+    const total = processedData?.response?.meta?.total;
+    if (!total || total <= 0) return;
 
-    XLSX.writeFile(workbook, 'Beneficiaries.xlsx');
+    setIsExporting(true);
+    try {
+      const raw = await exportAction.mutateAsync({
+        uuid: id,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+          payload: {
+            page: 1,
+            perPage: total,
+            order: 'desc',
+            sort: 'createdAt',
+            projectUUID: id,
+            ...(typeof debouncedSearch?.name === 'string' &&
+            debouncedSearch.name.trim()
+              ? { name: debouncedSearch.name.trim() }
+              : {}),
+            ...(typeof debouncedSearch?.type === 'string' && debouncedSearch.type
+              ? { type: debouncedSearch.type }
+              : {}),
+          },
+        },
+      });
+      const rowsToDownload =
+        normalizeCambodiaBeneficiaryListResponse(raw)?.data || [];
+      const workbook = XLSX.utils.book_new();
+      const worksheetData = rowsToDownload?.map((item: any) => ({
+        Name: item.piiData?.name,
+        Phone: item.piiData?.phone,
+        Type: item.type,
+        Gender: item.projectData?.gender,
+        HealthWorker: item.healthWorker?.name,
+        TimeStamp: new Date(item.createdAt).toLocaleDateString(),
+      }));
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
+
+      XLSX.writeFile(workbook, 'Beneficiaries.xlsx');
+    } finally {
+      setIsExporting(false);
+    }
   };
   return (
     <>
@@ -151,13 +187,9 @@ export default function BeneficiaryView() {
         <div className="rounded-lg border bg-card p-4 ">
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
-              isDisabled={true}
               name="name"
-              className="w-[100%] cursor-not-allowed"
-              value={
-                (table.getColumn('name')?.getFilterValue() as string) ??
-                filters?.name
-              }
+              className="w-[100%]"
+              value={filters?.name ?? ''}
               onSearch={(event) => handleFilterChange(event)}
             />
             <div className="flex justify-between space-x-2 w-[40%]">

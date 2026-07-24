@@ -6,11 +6,15 @@ type MapData = {
 };
 
 const MapWrapper = ({ actualData, component }: MapData) => {
+  if (!Array.isArray(actualData)) return null;
+
   const mapStatsData = actualData?.find(
     (d: any) => d.name === component?.dataMap,
   );
 
-  if (mapStatsData) return <DashboardMap coordinates={mapStatsData?.data} />;
+  if (!mapStatsData) return null;
+
+  return <DashboardMap coordinates={mapStatsData?.data} />;
 };
 
 export default MapWrapper;

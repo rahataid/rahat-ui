@@ -36,6 +36,8 @@ type IProps = {
 export function NavMain(items: IProps) {
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
+  const activeSubPath = currentPath.split('/')[5];
+
   const { setOpenMobile, setOpen } = useSidebar();
 
   const handleMobileClose = useCallback(() => {
@@ -58,7 +60,14 @@ export function NavMain(items: IProps) {
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={
+                      isActive
+                        ? 'bg-primary text-primary-foreground rounded-md shadow-sm'
+                        : 'text-muted-foreground rounded-md hover:bg-accent hover:text-foreground transition-colors'
+                    }
+                  >
                     {item.icon}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -66,33 +75,46 @@ export function NavMain(items: IProps) {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.children?.map((subItem, subIndex) => (
-                      <SidebarMenuSubItem
-                        key={subItem.title || `subitem-${subIndex}`}
-                      >
-                        <SidebarMenuSubButton asChild>
-                          {subItem?.path ? (
-                            <Link
-                              onClick={handleMobileClose}
-                              href={subItem.path || '#'}
-                              className="w-full flex items-center"
-                            >
-                              <span>{subItem.title}</span>
-                            </Link>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                subItem.onClick?.();
-                                handleMobileClose();
-                              }}
-                              className="w-full flex items-center"
-                            >
-                              <span>{subItem.title}</span>
-                            </button>
-                          )}
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                    {item.children?.map((subItem, subIndex) => {
+                      const isSubActive =
+                        (subItem.path as string)?.split('/')[5] ===
+                        activeSubPath;
+                      return (
+                        <SidebarMenuSubItem
+                          key={subItem.title || `subitem-${subIndex}`}
+                        >
+                          <SidebarMenuSubButton asChild>
+                            {subItem?.path ? (
+                              <Link
+                                onClick={handleMobileClose}
+                                href={subItem.path || '#'}
+                                className={`w-full flex items-center ${
+                                  isSubActive
+                                    ? 'bg-primary text-white rounded-md shadow-sm'
+                                    : 'text-muted-foreground rounded hover:text-foreground'
+                                }`}
+                              >
+                                <span>{subItem.title}</span>
+                              </Link>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  subItem.onClick?.();
+                                  handleMobileClose();
+                                }}
+                                className={`w-full flex items-center ${
+                                  isSubActive
+                                    ? 'bg-primary text-white rounded-md shadow-sm'
+                                    : 'text-muted-foreground rounded hover:text-foreground'
+                                }`}
+                              >
+                                <span>{subItem.title}</span>
+                              </button>
+                            )}
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>
@@ -105,7 +127,7 @@ export function NavMain(items: IProps) {
                     tooltip={item.title}
                     className={
                       isActive
-                        ? 'bg-blue-500 text-white rounded'
+                        ? 'bg-primary text-white rounded'
                         : 'text-muted-foreground rounded hover:text-foreground'
                     }
                   >

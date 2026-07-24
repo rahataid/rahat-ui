@@ -113,8 +113,8 @@ export default function ListSetting() {
   };
 
   return (
-    <div className="w-full mt-1 p-1 bg-secondary">
-      <div className="flex items-center mb-2">
+    <div className="w-full p-4">
+      <div className="flex items-center mb-4 gap-2">
         <Input
           placeholder="Search by name..."
           name="name"
@@ -153,10 +153,10 @@ export default function ListSetting() {
         </DropdownMenu>
       </div>
 
-      <div className="rounded border bg-white">
+      <div className="rounded-lg border bg-card shadow-card">
         <TableComponent>
           <ScrollArea className="h-[calc(100vh-190px)]">
-            <TableHeader className="bg-card sticky top-0">
+            <TableHeader className="bg-muted/50 sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {

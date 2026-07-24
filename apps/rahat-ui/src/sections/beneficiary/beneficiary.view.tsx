@@ -163,19 +163,19 @@ function BeneficiaryView() {
 
   return (
     <Tabs defaultValue="beneficiary">
-      <div className="p-4">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-          <TabsList className="border w-full sm:w-auto bg-secondary rounded flex">
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+          <TabsList className="bg-muted rounded-lg w-full sm:w-auto inline-flex p-1">
             <TabsTrigger
               id="beneficiary"
-              className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
+              className="w-full min-w-[140px] text-center rounded-md px-4 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               value="beneficiary"
             >
               Beneficiary
             </TabsTrigger>
             <TabsTrigger
               id="beneficiaryGroups"
-              className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
+              className="w-full min-w-[140px] text-center rounded-md px-4 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               value="beneficiaryGroups"
             >
               Beneficiary Groups

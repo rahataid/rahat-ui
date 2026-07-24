@@ -3,19 +3,17 @@
 import * as React from 'react';
 import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';
 
-import { ProjectTypes } from '@rahataid/sdk/enums';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
+  CambodiaSubgraphProvider,
   PROJECT_SETTINGS_KEYS,
-  useAAProjectSettingsDatasource,
-  useAAProjectSettingsHazardType,
+  resolveCambodiaSubgraphUrl,
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
-import { CambodiaSubgraphProvider } from '@rahat-ui/query';
 import { cacheExchange, Client, fetchExchange } from '@urql/core';
 
 export default function ProjectLayoutRoot({
@@ -29,8 +27,22 @@ export default function ProjectLayoutRoot({
   useProjectContractSettings(uuid);
   useProjectSubgraphSettings(uuid);
 
-  const subgraphSettings = useProjectSettingsStore(
+  const projectSubgraphUrl = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
+  );
+
+  const resolvedSubgraphUrl = React.useMemo(
+    () => resolveCambodiaSubgraphUrl(projectSubgraphUrl),
+    [projectSubgraphUrl],
+  );
+
+  const subgraphClient = React.useMemo(
+    () =>
+      new Client({
+        url: resolvedSubgraphUrl,
+        exchanges: [cacheExchange, fetchExchange],
+      }),
+    [resolvedSubgraphUrl],
   );
 
   const renderChildren = () => {
@@ -41,16 +53,7 @@ export default function ProjectLayoutRoot({
     return children;
   };
   return (
-    <CambodiaSubgraphProvider
-      subgraphClient={
-        new Client({
-          url:
-            subgraphSettings ||
-            'http://localhost:8000/subgraphs/name/rahat/Cambodia/',
-          exchanges: [cacheExchange, fetchExchange],
-        })
-      }
-    >
+    <CambodiaSubgraphProvider subgraphClient={subgraphClient}>
       <ProjectLayout projectType={'el-cambodia'}>
         {renderChildren()}
       </ProjectLayout>

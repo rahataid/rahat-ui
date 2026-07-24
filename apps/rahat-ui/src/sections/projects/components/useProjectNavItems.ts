@@ -8,8 +8,11 @@ import { useNavItems as useC2CNavItems } from '../c2c/useNavItems';
 import { useNavItems as useRPNavItems } from '../rp/useRPNavItems';
 import { useNavItems as useSmsVoucherNavItems } from '../sms-voucher/useELKenyaNavItems';
 import { useNavItems as useCambodiaNavItems } from '../cambodia/useCambodiaNavItems';
+import { useNavItems as useVillageDoctorNavItems } from '../village-doctor/useVillageDoctorNavItems';
 import { useNavItems as useCommsNavItems } from '../comms/useCommsNavItems';
 import { useNavItems as useELKenyaNavItems } from '../el-kenya/useELKenyaNavItems';
+import { useNavItems as useELCRMNavItems } from '../el-crm';
+import { useNavItems as useELWOMNavItems } from '../el-wom/useELKenyaNavItems';
 
 const hooks = {
   [ProjectTypes.ANTICIPATORY_ACTION]: useAANavItems,
@@ -20,7 +23,10 @@ const hooks = {
   [ProjectTypes.COMMS || 'COMMS']: useCommsNavItems,
   'el-kenya': useELKenyaNavItems,
   'el-cambodia': useCambodiaNavItems,
+  'el-village-doctor': useVillageDoctorNavItems,
   'sms-voucher': useSmsVoucherNavItems,
+  'el-crm': useELCRMNavItems,
+  'el-wom': useELWOMNavItems, // Reusing EL Kenya nav items for EL WOM since they are similar in structure. This can be changed to a dedicated hook if needed in the future.
   ALL: useProjectListNavItems,
 };
 

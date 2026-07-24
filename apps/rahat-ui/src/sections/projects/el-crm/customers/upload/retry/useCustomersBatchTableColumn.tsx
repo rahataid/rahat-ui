@@ -1,0 +1,267 @@
+import { useDeleteFailedBatch, useRetryCustomerImport } from '@rahat-ui/query';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { ColumnDef } from '@tanstack/react-table';
+import { formatDateTime } from 'apps/rahat-ui/src/utils';
+import { UUID } from 'crypto';
+import { Eye, RotateCcw, Trash2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+
+function HighlightMatch({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="bg-yellow-200 dark:bg-yellow-500/40 rounded-sm px-0.5">
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
+    </>
+  );
+}
+
+export const useCustomersBatchTableColumn = (searchQuery = '') => {
+  const { id: projectUUID } = useParams() as {
+    id: UUID;
+  };
+  const router = useRouter();
+
+  const retryImport = useRetryCustomerImport();
+  const deleteBatch = useDeleteFailedBatch();
+
+  const handleRetryImport = async (batchUUID: UUID) => {
+    await retryImport.mutateAsync({
+      projectUUID,
+      payload: {
+        batchUUID,
+      },
+    });
+    router.push(`/projects/el-crm/${projectUUID}/customers`);
+  };
+
+  const handleDeleteBatch = async (batchUUID: UUID) => {
+    await deleteBatch.mutateAsync({
+      projectUUID,
+      batchUUID,
+    });
+  };
+
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: 'updatedAt',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Date
+        </span>
+      ),
+      cell: ({ row }) => {
+        const date = row?.original?.updatedAt as string;
+        if (!date) return <span className="text-sm">\u2014</span>;
+        const { dateStr, timeStr } = formatDateTime(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'failedVendors',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Failed Customers
+        </span>
+      ),
+      cell: ({ row }) => {
+        const vendors = row.getValue('failedVendors') as string[];
+        if (!Array.isArray(vendors) || vendors.length === 0)
+          return <span className="text-muted-foreground/60">—</span>;
+        const preview = vendors.slice(0, 3);
+        const remaining = vendors.length - 3;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm truncate max-w-[220px] block cursor-default">
+                {preview.map((code, i) => (
+                  <span key={i}>
+                    {i > 0 && ', '}
+                    <HighlightMatch text={code} query={searchQuery} />
+                  </span>
+                ))}
+                {remaining > 0 && (
+                  <span className="text-muted-foreground ml-1">
+                    +{remaining} more
+                  </span>
+                )}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="max-w-[400px] max-h-[300px] overflow-y-auto p-3"
+            >
+              <p className="text-xs font-medium mb-1.5">
+                {vendors.length} failed customers
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {vendors.map((code, i) => {
+                  const isMatch =
+                    searchQuery &&
+                    code.toLowerCase().includes(searchQuery.toLowerCase());
+                  return (
+                    <span
+                      key={i}
+                      className={`text-xs px-1.5 py-0.5 rounded ${
+                        isMatch
+                          ? 'bg-yellow-200 dark:bg-yellow-500/40 font-medium ring-1 ring-yellow-300 dark:ring-yellow-500/50'
+                          : 'bg-muted'
+                      }`}
+                    >
+                      <HighlightMatch text={code} query={searchQuery} />
+                    </span>
+                  );
+                })}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
+      ),
+      cell: ({ row }) => {
+        const rawCause = row.original?.errorCause;
+        const errorCause =
+          typeof rawCause === 'string' && rawCause !== '[object Object]'
+            ? rawCause
+            : null;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="destructive" className="cursor-default">
+                {(row.getValue('status') as string)?.split('_').join(' ')}
+              </Badge>
+            </TooltipTrigger>
+            {errorCause && (
+              <TooltipContent side="bottom" className="max-w-[300px]">
+                <p className="text-xs">{errorCause}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
+    },
+    {
+      accessorKey: 'retryCount',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Retries
+        </span>
+      ),
+      cell: ({ row }) => (
+        <span className="text-sm tabular-nums font-medium">
+          {row.getValue('retryCount')}
+        </span>
+      ),
+    },
+    {
+      accessorKey: 'lastRetryAt',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Last Retry
+        </span>
+      ),
+      cell: ({ row }) => {
+        const date = row.getValue('lastRetryAt') as string;
+        if (!date) return <span className="text-muted-foreground/60">—</span>;
+        const { dateStr, timeStr } = formatDateTime(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
+          </span>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Actions
+        </span>
+      ),
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-1.5">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() =>
+                    router.push(
+                      `/projects/el-crm/${projectUUID}/customers/upload/retry/${row.original.uuid}`,
+                    )
+                  }
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View failed customers and fix errors</p>
+              </TooltipContent>
+            </Tooltip>
+            {row.original.status !== 'CRM_VALIDATION_FAILED' && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 gap-1.5"
+                    onClick={() => handleRetryImport(row.original.uuid)}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Retry
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Retry importing this batch as-is</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  onClick={() => handleDeleteBatch(row.original.uuid)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete this batch log</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
+      },
+    },
+  ];
+  return columns;
+};

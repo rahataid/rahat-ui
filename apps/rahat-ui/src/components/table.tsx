@@ -7,7 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  ScrollArea,
+  ScrollBar,
+} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from './table.loader';
 
 type IProps = {
@@ -22,8 +25,8 @@ export default function DemoTable({ table, tableHeight, loading }: IProps) {
       {loading ? (
         <TableLoader />
       ) : (
-        <TableComponent>
-          <TableHeader className="sticky top-0 bg-card">
+        <TableComponent className="min-w-max">
+          <TableHeader className="sticky top-0 z-10 bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -71,6 +74,7 @@ export default function DemoTable({ table, tableHeight, loading }: IProps) {
           </TableBody>
         </TableComponent>
       )}
+      <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );
 }

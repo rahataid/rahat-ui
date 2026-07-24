@@ -20,13 +20,17 @@ import {
 } from '@radix-ui/react-tooltip';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
+const startOfDayMs = (value: Date) =>
+  new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+
 type DatePickerType = {
   placeholder: string;
-  // selectedDate: DateRange | undefined;
   type: string;
   handleDateChange: (date: DateRange | undefined) => void;
   className?: string;
   handleClearDate: VoidFunction;
+  onIncompleteRange?: () => void;
+  onInvalidRange?: () => void;
 };
 
 export function DateRangePicker({
@@ -34,29 +38,42 @@ export function DateRangePicker({
   handleDateChange,
   type,
   handleClearDate,
+  onIncompleteRange,
+  onInvalidRange,
   className,
 }: DatePickerType) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
+  // The first-clicked day, held while we wait for the second click. We track it
+  // ourselves instead of relying on react-day-picker's reordering so we can
+  // detect when the user's second click lands before the anchor.
+  const [anchor, setAnchor] = React.useState<Date | undefined>(undefined);
   const [isOpen, setIsOpen] = React.useState(false);
+
   const handleClose = () => {
     handleClearDate();
-    setDate({
-      from: undefined,
-      to: undefined,
-    });
+    setDate({ from: undefined, to: undefined });
+    setAnchor(undefined);
   };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open && date?.from && !date?.to) {
+      onIncompleteRange?.();
+    }
+    setIsOpen(open);
+  };
+
   const handlePopoverClose = (selectedRange: DateRange | undefined) => {
     if (selectedRange?.from && selectedRange?.to) {
-      setIsOpen(false); // This ensures the popover closes immediately after selection
+      setIsOpen(false);
     }
   };
 
   return (
     <div className={cn('grid gap-2', className)}>
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isOpen} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -128,10 +145,37 @@ export function DateRangePicker({
             mode="range"
             selected={date}
             onSelect={(selectedRange) => {
-              handleDateChange(selectedRange);
-              setDate(selectedRange);
-              handlePopoverClose(selectedRange);
+              // Nothing selected (e.g. clicked to deselect everything).
+              if (!selectedRange?.from) {
+                setAnchor(undefined);
+                setDate(undefined);
+                handleDateChange(undefined);
+                return;
+              }
+
+              // We have a pending anchor → this is the SECOND click completing
+              // the range. react-day-picker always orders the earlier date into
+              // `from`, so if `from` is now before the anchor the user clicked a
+              // day earlier than their first pick → reject as an invalid range.
+              if (anchor && !date?.to) {
+                if (startOfDayMs(selectedRange.from) < startOfDayMs(anchor)) {
+                  onInvalidRange?.();
+                  return; // keep anchor highlighted so the user can retry
+                }
+
+                setAnchor(undefined);
+                setDate(selectedRange);
+                handleDateChange(selectedRange);
+                handlePopoverClose(selectedRange);
+                return;
+              }
+
+              // Otherwise this is a fresh FIRST click: start a new range and wait
+              // for the second pick. Don't propagate an incomplete range upward.
+              setAnchor(selectedRange.from);
+              setDate({ from: selectedRange.from, to: undefined });
             }}
+            disabled={{ after: new Date() }}
             defaultMonth={date?.from}
             numberOfMonths={2}
             initialFocus

@@ -55,10 +55,10 @@ export default function ProjectListView() {
 
 
   return (
-    <div className=" p-4 bg-card">
-      <div className="mb-4">
-        <h1 className="font-semibold text-2xl">Projects</h1>
-        <p className="text-muted-foreground">
+    <div className="p-4 sm:p-6">
+      <div className="mb-6">
+        <h1 className="font-semibold text-2xl tracking-tight">Projects</h1>
+        <p className="text-muted-foreground text-sm mt-1">
           Here is a list of all the projects
         </p>
       </div>
@@ -66,7 +66,7 @@ export default function ProjectListView() {
         open={AddProjectModal.value}
         handleClose={closeAddProjectModal}
       />
-      <div className="p-4 border rounded shadow">
+      <div className="p-4 border rounded-lg shadow-card">
         <div className="flex items-center space-x-2 mb-4">
           <Input
             placeholder="Filter projects..."

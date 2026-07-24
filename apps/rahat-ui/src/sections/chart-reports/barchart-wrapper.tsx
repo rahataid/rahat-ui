@@ -7,6 +7,8 @@ type BarChartData = {
 };
 
 const BarChartWrapper = ({ actualData, component }: BarChartData) => {
+  if (!Array.isArray(actualData)) return null;
+
   const barData = actualData?.find((d: any) => d.name === component?.dataMap);
 
   const categories = barData?.data.map((b: any) => b.id);

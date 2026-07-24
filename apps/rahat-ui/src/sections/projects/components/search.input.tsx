@@ -6,6 +6,7 @@ import { cn } from '@rahat-ui/shadcn/src';
 type IProps = {
   name: string;
   className?: string;
+  placeholder?: string;
   onSearch:
     | VoidFunction
     | ((event: React.ChangeEvent<HTMLInputElement>) => void);
@@ -16,6 +17,7 @@ type IProps = {
 export default function SearchInput({
   name,
   className,
+  placeholder,
   onSearch,
   isDisabled = false,
   value,
@@ -29,7 +31,7 @@ export default function SearchInput({
       />
       <Input
         name={name}
-        placeholder={`Search ${name}...`}
+        placeholder={placeholder ?? `Search ${name}...`}
         className="pl-8"
         value={value}
         onChange={onSearch}

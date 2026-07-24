@@ -6,6 +6,8 @@ type LineChartData = {
 };
 
 const LineChartWrapper = ({ actualData, component }: LineChartData) => {
+  if (!Array.isArray(actualData)) return null;
+
   const lineChartStatsData = actualData?.find(
     (d: any) => d.name === component?.dataMap,
   );

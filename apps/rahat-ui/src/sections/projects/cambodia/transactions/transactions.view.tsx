@@ -1,9 +1,5 @@
 'use client';
-import {
-  useCambodiaProjectSubgraphStore,
-  useCambodiaProjectTransactions,
-  usePagination,
-} from '@rahat-ui/query';
+import { useCambodiaProjectTransactions } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -14,18 +10,20 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import React from 'react';
 import SearchInput from '../../components/search.input';
 import CambodiaTable from '../table.component';
 import { useTableColumns } from './use.table.columns';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import ViewColumns from '../../components/view.columns';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 export default function TransactionsView() {
-  const { id } = useParams() as { id: UUID };
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -34,7 +32,8 @@ export default function TransactionsView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading } = useCambodiaProjectTransactions();
+  const { data, isLoading, isError, error, refetch } =
+    useCambodiaProjectTransactions();
   const tableData: any = React.useMemo(() => {
     if (data) return data;
     else return [];
@@ -69,6 +68,44 @@ export default function TransactionsView() {
           </p>
         </div>
         <div className="rounded border bg-card p-4">
+          {isError ? (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Could not load subgraph transactions</AlertTitle>
+              <AlertDescription className="mt-2 space-y-2 text-left">
+                <p>
+                  The UI calls your project&apos;s{' '}
+                  <strong>SUBGRAPH_URL</strong> (GraphQL). This request failed:
+                  {' '}
+                  {error instanceof Error ? error.message : String(error)}
+                </p>
+                <p className="text-muted-foreground">
+                  Fix: run Graph Node / deploy the Cambodia subgraph, set the
+                  correct URL in project settings, or override locally with{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    NEXT_PUBLIC_CAMBODIA_SUBGRAPH_URL
+                  </code>{' '}
+                  (for example{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    http://localhost:8000/subgraphs/name/rahat/cambodia/
+                  </code>
+                  ). Stale{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    localhost:5001
+                  </code>{' '}
+                  URLs from settings are ignored in the app and fall back to
+                  that default when no env override is set.
+                </p>
+                <button
+                  type="button"
+                  className="text-sm font-medium underline underline-offset-2"
+                  onClick={() => void refetch()}
+                >
+                  Try again
+                </button>
+              </AlertDescription>
+            </Alert>
+          ) : null}
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"
@@ -85,7 +122,7 @@ export default function TransactionsView() {
           <CambodiaTable
             table={table}
             tableHeight="h-[calc(100vh-300px)]"
-            loading={isLoading}
+            loading={isLoading && !isError}
           />
         </div>
 

@@ -91,6 +91,7 @@ const allowedCountries = [
   'ZM',
   'NG',
   'BD',
+  'ID',
 ];
 
 const CountrySelect = ({

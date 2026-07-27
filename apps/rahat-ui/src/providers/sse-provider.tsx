@@ -2,6 +2,9 @@
 
 import { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { PHASE_QUERY_KEYS } from '@rahat-ui/query';
 
 type EVENT =
   | 'phase.updated'
@@ -11,23 +14,24 @@ type EVENT =
 
 interface SseServerEvent {
   event: EVENT;
+  data: any;
 }
 
 const SseStatusContext = createContext<string>('Disconnected');
 
 export function SseProvider({ children }: { children: ReactNode }) {
+  const uuid = useParams().id as UUID;
+
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const eventSource = new EventSource(
       `${process.env['NEXT_PUBLIC_API_HOST_URL']}/v1/events`,
     );
-    console.log('eventSource:', eventSource);
     eventSource.onmessage = (event) => {
       try {
         const payload: SseServerEvent = JSON.parse(event.data);
         const eventType = payload.event;
-        console.log('eventType:', eventType);
         switch (eventType) {
           case 'beneficiaries.updated':
             queryClient.invalidateQueries({
@@ -37,19 +41,19 @@ export function SseProvider({ children }: { children: ReactNode }) {
 
           case 'phase.updated':
             queryClient.invalidateQueries({
-              queryKey: ['phases'],
+              queryKey: [PHASE_QUERY_KEYS.PHASES, uuid],
             });
             break;
 
           case 'phase.created':
             queryClient.invalidateQueries({
-              queryKey: ['phases'],
+              queryKey: [PHASE_QUERY_KEYS.PHASES],
             });
             break;
 
           case 'phase.deleted':
             queryClient.invalidateQueries({
-              queryKey: ['phases'],
+              queryKey: [PHASE_QUERY_KEYS.PHASES],
             });
             break;
 

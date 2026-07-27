@@ -4,7 +4,6 @@ import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsContract,
   useEntities,
-  usePhaseSSE,
   useProjectChainSettings,
   useProjectContractSettings,
   useProjectSettingsStore,
@@ -16,6 +15,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import GrievancesLayout from '../../../../sections/projects/aa-2/grievances/grievances.layout';
+import { SseProvider } from 'apps/rahat-ui/src/providers/sse-provider';
 import { ProjectLayout } from '../../../../sections/projects/components';
 
 export default function ProjectLayoutRoot({
@@ -26,7 +26,6 @@ export default function ProjectLayoutRoot({
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;
-  usePhaseSSE(uuid);
   const { isLoading: isContractLoading } = useProjectContractSettings(uuid);
   const { isLoading: isSubgraphLoading } = useProjectSubgraphSettings(uuid);
   const { isLoading: isAAContractLoading } = useAAProjectSettingsContract(uuid);
@@ -65,9 +64,11 @@ export default function ProjectLayoutRoot({
   return (
     // <GarphQlProvider>
     <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-      <GrievancesLayout>
-        {secondPanel ? [children, secondPanel] : children}
-      </GrievancesLayout>
+      <SseProvider>
+        <GrievancesLayout>
+          {secondPanel ? [children, secondPanel] : children}
+        </GrievancesLayout>
+      </SseProvider>
     </ProjectLayout>
     // </GarphQlProvider>
   );

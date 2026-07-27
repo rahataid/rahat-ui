@@ -23,7 +23,12 @@ const nextConfig = {
       /@web3auth[\\/]web3auth/,
       /@walletconnect[\\/]universal-provider/,
       new RegExp('@metamask/sdk|@wagmi/connectors|connectkit|encoding'),
+      /@x402|@coinbase[\\/]cdp-sdk/,
     ];
+
+    config.plugins.push(
+      new webpack.IgnorePlugin({ resourceRegExp: /^@x402(\/|$)/ }),
+    );
 
     // Exclude 'react-native' from resolving for @walletconnect/universal-provider
     config.resolve.alias = {

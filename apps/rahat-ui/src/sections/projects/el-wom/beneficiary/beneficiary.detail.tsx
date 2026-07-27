@@ -40,6 +40,12 @@ export default function BeneficiaryDetail() {
   const eyeCheckupStatus = searchParams.get('eyeCheckupStatus') || '';
   const age = searchParams.get('age');
   const createdAtRaw = searchParams.get('createdAt') || '-';
+  const listHash = searchParams.get('listHash') || '';
+  const backPath = listHash
+    ? `/projects/el-wom/${id}/beneficiary?listHash=${encodeURIComponent(
+        listHash,
+      )}`
+    : `/projects/el-wom/${id}/beneficiary`;
 
   const clickToCopy = (addr: string) => {
     navigator.clipboard.writeText(addr);
@@ -52,7 +58,7 @@ export default function BeneficiaryDetail() {
         <HeaderWithBack
           title="Consumer details"
           subtitle="Profile and voucher status for this consumer"
-          path={`/projects/el-wom/${id}/beneficiary`}
+          path={backPath}
         />
       </div>
 

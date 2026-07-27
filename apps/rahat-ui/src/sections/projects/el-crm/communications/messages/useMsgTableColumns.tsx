@@ -4,7 +4,7 @@ import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Eye } from 'lucide-react';
 import React from 'react';
 import Link from 'next/link';
-import { targetTypeMap } from '../const';
+import { getCampaignGroupLabel } from '../const';
 import {
   Tooltip,
   TooltipContent,
@@ -74,12 +74,11 @@ export const useMsgTableColumn = (
           Group
         </span>
       ),
-      cell: ({ row }) => {
-        const value = row.getValue('targetType') as keyof typeof targetTypeMap;
-        return (
-          <span className="text-sm">{targetTypeMap[value] || '\u2014'}</span>
-        );
-      },
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {getCampaignGroupLabel(row.original as any)}
+        </span>
+      ),
     },
     {
       accessorKey: 'recipientCount',

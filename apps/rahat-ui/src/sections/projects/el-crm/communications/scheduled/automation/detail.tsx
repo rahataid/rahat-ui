@@ -23,7 +23,7 @@ import DemoTable from 'apps/rahat-ui/src/components/table';
 import SelectComponent from '../../../../cambodia/select.component';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
-import { targetTypeMap } from '../../const';
+import { CHANNELS, targetTypeMap } from '../../const';
 
 const STATUS_OPTIONS = ['ALL', 'SUCCESS', 'PENDING', 'FAIL', 'SCHEDULED'];
 
@@ -117,6 +117,9 @@ export default function AutomationDetailPage() {
                 projectUUID={projectUUID}
                 sessionIds={sessionIds}
                 campaignName={rule.campaign?.name || rule.name}
+                isWhatsApp={rule.campaign?.transportName === CHANNELS.WHATSAPP}
+                targetType={rule.targetType}
+                messageBody={rule.campaign?.body}
                 filters={{ status: activeStatus }}
               />
             </div>

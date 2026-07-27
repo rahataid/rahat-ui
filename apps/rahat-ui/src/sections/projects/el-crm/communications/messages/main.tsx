@@ -38,6 +38,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   useListElCrmCampaign,
   useListElCrmTemplate,
+  useListElCrmTransport,
   usePagination,
 } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -79,6 +80,9 @@ export default function MessagesView() {
   const [automationStatusFilter, setAutomationStatusFilter] = useState<
     'ALL' | 'ACTIVE' | 'PAUSED' | 'NO_RULE'
   >('ALL');
+  const [channelFilter, setChannelFilter] = useState<string>('ALL');
+
+  const { data: transports } = useListElCrmTransport(projectUUID);
 
   const { pagination, setNextPage, setPrevPage, setPerPage, resetPagination } =
     usePagination();
@@ -99,7 +103,13 @@ export default function MessagesView() {
   useEffect(() => {
     resetPagination();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, statusFilter, automationStatusFilter, activeTab]);
+  }, [
+    debouncedSearch,
+    statusFilter,
+    automationStatusFilter,
+    channelFilter,
+    activeTab,
+  ]);
 
   // Status filter only applies to the Regular tab.
   const serverStatus =
@@ -134,6 +144,7 @@ export default function MessagesView() {
     ...(serverAutomationStatus
       ? { automationStatus: serverAutomationStatus }
       : {}),
+    ...(channelFilter !== 'ALL' ? { transportId: channelFilter } : {}),
   });
   const { data: approvedTemplates } = useListElCrmTemplate(projectUUID, {
     status: 'APPROVED',
@@ -143,13 +154,15 @@ export default function MessagesView() {
   const activeFilterCount =
     (debouncedSearch !== '' ? 1 : 0) +
     (activeTab !== 'automatic' && statusFilter !== 'ALL' ? 1 : 0) +
-    (activeTab === 'automatic' && automationStatusFilter !== 'ALL' ? 1 : 0);
+    (activeTab === 'automatic' && automationStatusFilter !== 'ALL' ? 1 : 0) +
+    (channelFilter !== 'ALL' ? 1 : 0);
   const hasActiveFilters = activeFilterCount > 0;
 
   const resetFilters = () => {
     setSearchQuery('');
     setStatusFilter('ALL');
     setAutomationStatusFilter('ALL');
+    setChannelFilter('ALL');
   };
 
   const table = useReactTable({
@@ -408,6 +421,30 @@ export default function MessagesView() {
                           </Select>
                         </div>
                       )}
+                      <div className="space-y-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Channel
+                        </Label>
+                        <Select
+                          value={channelFilter}
+                          onValueChange={setChannelFilter}
+                        >
+                          <SelectTrigger className="w-[160px] h-9 text-sm">
+                            <SelectValue placeholder="All Channels" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ALL">All Channels</SelectItem>
+                            {(transports || []).map((transport: any) => (
+                              <SelectItem
+                                key={transport.cuid}
+                                value={transport.cuid}
+                              >
+                                {transport.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     {activeFilterCount > 0 && (
                       <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border/50">

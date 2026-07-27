@@ -16,9 +16,9 @@ import { mapTopic } from '../const';
 export const useElkenyaTransactionsTableColumns = ({ setSorting }: any) => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
-  const clickToCopy = (walletAddress: string, uuid: string) => {
+  const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(uuid);
+    setWalletAddressCopied(walletAddress);
   };
   const columns: ColumnDef<any>[] = [
     {
@@ -30,12 +30,12 @@ export const useElkenyaTransactionsTableColumns = ({ setSorting }: any) => {
             <TooltipTrigger
               className="flex items-center gap-3 cursor-pointer"
               onClick={() =>
-                clickToCopy(row.getValue('beneficiary'), row?.original?.uuid)
+                clickToCopy(row.getValue('beneficiary'))
               }
             >
               <p>{truncateEthAddress(row.getValue('beneficiary'))}</p>
               {walletAddressCopied &&
-              walletAddressCopied === row?.original?.uuid ? (
+              walletAddressCopied === row?.original?.beneficiary ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
                 <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -44,7 +44,7 @@ export const useElkenyaTransactionsTableColumns = ({ setSorting }: any) => {
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
                 {walletAddressCopied &&
-                walletAddressCopied === row?.original?.uuid
+                walletAddressCopied === row?.original?.beneficiary
                   ? 'copied'
                   : 'click to copy'}
               </p>

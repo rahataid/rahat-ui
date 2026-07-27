@@ -1030,8 +1030,7 @@ export default function ComposeScheduleView() {
                                   </span>
                                   <span
                                     className={cn(
-                                      (plasgateSmsInfo.exceeded ||
-                                        plasgateSmsInfo.remaining <= 10) &&
+                                      plasgateSmsInfo.exceeded &&
                                         'text-destructive font-medium',
                                     )}
                                   >
@@ -1458,7 +1457,11 @@ export default function ComposeScheduleView() {
                           setRuleConditions([emptyCondition()]);
                         }}
                       >
-                        <Plus className="h-3.5 w-3.5" />
+                        {showRuleBuilder ? (
+                          <X className="h-3.5 w-3.5" />
+                        ) : (
+                          <Plus className="h-3.5 w-3.5" />
+                        )}
                         {showRuleBuilder ? 'Cancel' : 'Create Rule'}
                       </Button>
                     )}

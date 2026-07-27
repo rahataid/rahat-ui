@@ -10,7 +10,9 @@ type EVENT =
   | 'phase.updated'
   | 'phase.created'
   | 'phase.deleted'
-  | 'beneficiaries.updated';
+  | 'beneficiaries.updated'
+  | 'trigger.updated'
+  | 'trigger.created';
 
 interface SseServerEvent {
   event: EVENT;
@@ -41,6 +43,9 @@ export function SseProvider({ children }: { children: ReactNode }) {
 
           case 'phase.updated':
             queryClient.invalidateQueries({
+              queryKey: [PHASE_QUERY_KEYS.PHASE],
+            });
+            queryClient.invalidateQueries({
               queryKey: [PHASE_QUERY_KEYS.PHASES, uuid],
             });
             break;
@@ -48,6 +53,18 @@ export function SseProvider({ children }: { children: ReactNode }) {
           case 'phase.created':
             queryClient.invalidateQueries({
               queryKey: [PHASE_QUERY_KEYS.PHASES],
+            });
+            break;
+
+          case 'trigger.updated':
+            queryClient.invalidateQueries({
+              queryKey: [PHASE_QUERY_KEYS.PHASE],
+            });
+            break;
+
+          case 'trigger.created':
+            queryClient.invalidateQueries({
+              queryKey: [PHASE_QUERY_KEYS.PHASE],
             });
             break;
 

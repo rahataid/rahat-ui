@@ -32,6 +32,7 @@ import {
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserList } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
+import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
 import { UUID } from 'crypto';
@@ -558,27 +559,26 @@ export default function AddActivities() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Responsibility</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select responsibility" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {users?.data.map((item) => (
-                              <SelectItem
-                                key={item.id}
-                                value={item.uuid as string}
-                              >
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            users?.data?.find(
+                              (item) => item.uuid === field.value,
+                            )?.name
+                          }
+                          placeholder="Select responsibility"
+                          searchPlaceholder="Search users..."
+                          emptyMessage="No user found."
+                          options={
+                            users?.data.map((item) => ({
+                              label: item.name,
+                              value: item.uuid as string,
+                              data: item,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
@@ -638,24 +638,25 @@ export default function AddActivities() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {categories.map((item) => (
-                              <SelectItem key={item.id} value={item.uuid}>
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            categories?.find((c) => c.uuid === field.value)
+                              ?.name
+                          }
+                          placeholder="Select category"
+                          searchPlaceholder="Search categories..."
+                          emptyMessage="No category found."
+                          options={
+                            categories?.map((c: any) => ({
+                              label: c.name,
+                              value: c.uuid,
+                              data: c,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}

@@ -45,6 +45,7 @@ import {
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { Back, Heading, NoResult } from 'apps/rahat-ui/src/common';
+import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { DurationData } from '../add/add.activity.view';
@@ -451,27 +452,25 @@ export default function EditActivity() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Responsibility</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select responsibility" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {users?.data.map((item) => (
-                              <SelectItem
-                                key={item.uuid}
-                                value={item.uuid as string}
-                              >
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            users?.data?.find((u) => u.uuid === field.value)
+                              ?.name
+                          }
+                          placeholder="Select responsibility"
+                          searchPlaceholder="Search users..."
+                          emptyMessage="No user found."
+                          options={
+                            users?.data?.map((u: any) => ({
+                              label: u.name,
+                              value: u.uuid,
+                              data: u,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
@@ -530,24 +529,25 @@ export default function EditActivity() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {categories.map((item) => (
-                              <SelectItem key={item.id} value={item.uuid}>
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            categories?.find((c) => c.uuid === field.value)
+                              ?.name
+                          }
+                          placeholder="Select category"
+                          searchPlaceholder="Search categories..."
+                          emptyMessage="No category found."
+                          options={
+                            categories?.map((c: any) => ({
+                              label: c.name,
+                              value: c.uuid,
+                              data: c,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}

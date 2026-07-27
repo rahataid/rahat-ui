@@ -92,6 +92,7 @@ export default function EditActivity() {
   const { data: users } = useUserList({
     page: 1,
     perPage: 9999,
+    roles: 'admin , manager',
   });
 
   useActivitiesCategories(projectID as UUID);

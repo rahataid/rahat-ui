@@ -80,7 +80,7 @@ const DropdownSearch = (props: DropdownSearchProps) => {
                   {options.map((opt) => (
                     <CommandItem
                       key={opt.value}
-                      value={opt.label}
+                      value={`${opt.label} ${opt.value}`}
                       onSelect={() => {
                         onSelect(opt.data);
                         setOpen(false);

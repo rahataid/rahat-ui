@@ -47,7 +47,7 @@ const DigitalAccessOverview = ({ stats }: Props) => {
           return (
             <div
               key={stat.name}
-              className="border rounded-sm pt-2 flex flex-col h-full min-h-[280px]"
+              className="border rounded-sm pt-2 flex flex-col h-full min-h-[200px] sm:min-h-[280px]"
             >
               <h1 className="text-sm font-medium px-2 ">{title}</h1>
               <div className="w-full flex-1 pt-0">

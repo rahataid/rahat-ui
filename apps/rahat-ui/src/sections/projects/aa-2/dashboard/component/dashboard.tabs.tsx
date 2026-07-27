@@ -132,7 +132,7 @@ export default function DashboardTabs({
       </TabsList>
       {allTabs.map((tab) => (
         <TabsContent key={tab.value} value={tab.value} className="mt-4">
-          <ScrollArea className="h-[calc(100vh-220px)]">
+          <ScrollArea className="h-[calc(100vh-260px)] sm:h-[calc(100vh-220px)]">
             <div className="pr-4">{tab.content}</div>
           </ScrollArea>
         </TabsContent>

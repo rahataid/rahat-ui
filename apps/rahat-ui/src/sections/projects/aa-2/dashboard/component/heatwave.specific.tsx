@@ -37,7 +37,7 @@ export default function HeatwaveSpecific({
           return (
             <div
               key={section.name}
-              className="border rounded-sm p-2 flex flex-col h-full min-h-[260px]"
+              className="border rounded-sm p-2 flex flex-col h-full min-h-[200px] sm:min-h-[260px]"
             >
               <h1 className="text-sm font-medium mb-1">{section.title}</h1>
               <div className="flex-1">

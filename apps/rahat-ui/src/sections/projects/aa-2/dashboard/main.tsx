@@ -28,12 +28,12 @@ const Main = () => {
   if (isProjectInfoLoading || isLoading) return <DashboardSkeleton />;
 
   return (
-    <div className="space-y-4 p-5">
-      <div className="flex justify-between">
+    <div className="space-y-3 sm:space-y-4 p-3 sm:p-5">
+      <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
         <Heading
           title="Project Dashboard"
           description="Overview of your system"
-          titleStyle="text-xl xl:text-3xl"
+          titleStyle="text-lg sm:text-xl xl:text-3xl"
         />
         <IconLabelBtn
           name={isSyncing ? 'Updating' : 'Sync Stats'}

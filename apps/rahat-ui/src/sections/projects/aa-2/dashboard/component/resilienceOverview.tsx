@@ -40,7 +40,7 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
     { src: '/projects/project3.png' },
   ];
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2  min-h-[400px] gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[300px] sm:min-h-[400px] gap-4">
       {/* Left Content Section */}
       <div className="flex flex-col justify-between space-y-2">
         {/* Header */}

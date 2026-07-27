@@ -49,6 +49,7 @@ type LogRow = {
   quantity: number;
   txHash: string | null;
   redeemedAt?: string;
+  otpExemptionReason: string | null;
 };
 
 function deriveStatus(
@@ -66,6 +67,11 @@ const STATUS_STYLE: Record<string, string> = {
   Completed: 'bg-green-100 text-green-500',
 };
 
+function formatOtpReason(reason: string | null): string {
+  if (!reason) return 'N/A';
+  return reason.split('_').join(' ').toLowerCase();
+}
+
 function formatLogs(raw: any[]): LogRow[] {
   return raw.map((r) => ({
     uuid: r.uuid ?? r.id ?? '',
@@ -80,6 +86,7 @@ function formatLogs(raw: any[]): LogRow[] {
     quantity: r.quantity ?? r.quantityDisbursed ?? 0,
     txHash: r.txHash ?? null,
     redeemedAt: r.redeemedAt ?? r.createdAt,
+    otpExemptionReason: r.otpExemptionReason ?? null,
   }));
 }
 
@@ -309,6 +316,19 @@ export default function InkindAllocationDetail() {
       ),
     },
     {
+      accessorKey: 'otpExemptionReason',
+      header: 'Skipped OTP',
+      cell: ({ row }) => {
+        const reason = row.original.otpExemptionReason;
+        const skipped = reason !== null;
+        return (
+          <span>
+            {skipped ? 'Yes' : 'No'}
+          </span>
+        );
+      },
+    },
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
@@ -323,6 +343,7 @@ export default function InkindAllocationDetail() {
           txHash: r.txHash ?? '',
           quantity: String(r.quantity),
           redeemedAt: r.redeemedAt ?? '',
+          otpExemptionReason: r.otpExemptionReason ?? '',
           inkindName,
           groupName,
           inkindType,

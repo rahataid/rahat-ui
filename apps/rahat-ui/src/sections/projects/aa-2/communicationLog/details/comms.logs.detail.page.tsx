@@ -194,7 +194,6 @@ export default function CommsLogsDetailPage() {
       }
       const logsData = sessionLogs?.httpReponse?.data?.data;
       const total = logsMeta?.total ?? 0;
-
       exportAllLogs(logsData, logs, activityDetail, count.data.data, total);
       toast.success('Communication logs exported successfully!');
     } catch (error) {
@@ -403,7 +402,7 @@ export default function CommsLogsDetailPage() {
                 <div>
                   <p className="text-sm text-gray-500">Triggered Date</p>
                   <p className="font-medium">
-                    {dateFormat(logs?.sessionDetails?.createdAt)}
+                    {dateFormat(logs?.sessionDetails?.updatedAt)}
                   </p>
                 </div>
 

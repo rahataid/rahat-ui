@@ -132,13 +132,13 @@ const BeneficiaryGroupsDetails = () => {
           Icon={User}
           number={groupDetails?.groupedBeneficiaries?.length || 0}
         />
-        <DataCard
+        {/* <DataCard
           className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
           title="Total Token Assigned"
           Icon={Coins}
           number={totalTokensAssigned}
-        />
+        /> */}
       </div>
       <div className="p-4 rounded-sm border">
         <SearchInput

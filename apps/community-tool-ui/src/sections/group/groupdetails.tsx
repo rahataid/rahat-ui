@@ -10,6 +10,7 @@ import {
   Download,
   MoreVertical,
   Share,
+  Upload,
   Trash,
   Wallet,
   X,
@@ -33,6 +34,7 @@ import {
   useCommunitySettingList,
   useExportPinnedListBeneficiary,
   usePurgeGroupedBeneficiary,
+  useUploadBulkBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
@@ -62,6 +64,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { GroupPurge } from '@rahataid/community-tool-sdk';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
@@ -97,6 +106,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
+  const updateBulkBeneficiary = useUploadBulkBeneficiaryUpdate();
   const purgeCommunityGroup = usePurgeGroupedBeneficiary();
   const { data: settingsData } = useCommunitySettingList({
     page: 1,
@@ -126,7 +136,12 @@ export default function GroupDetail({ uuid }: IProps) {
   });
 
   const [labels, setLabels] = React.useState<any[]>([]);
+
   const [open, setOpen] = React.useState(false);
+
+  const [uploadOpen, setUploadOpen] = React.useState(false);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [uniqueField, setUniqueField] = React.useState<string>('none');
 
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
@@ -242,8 +257,12 @@ export default function GroupDetail({ uuid }: IProps) {
 
         if (item.hasOwnProperty(dehumanizedString)) {
           filteredItem[dehumanizedString] = item[dehumanizedString];
+        } else {
+          filteredItem[dehumanizedString] = '';
         }
       });
+      filteredItem['uuid'] =
+        item['uuid'] ?? item['beneficiary']?.['uuid'] ?? '';
       return filteredItem;
     });
 
@@ -253,7 +272,6 @@ export default function GroupDetail({ uuid }: IProps) {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
     XLSX.writeFile(wb, 'beneficiaries.xlsx');
-    setLabels([]);
   };
 
   const handleVerificationLink = async () => {
@@ -281,6 +299,82 @@ export default function GroupDetail({ uuid }: IProps) {
         );
       }
     });
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      Swal.fire('Please select a file', '', 'warning');
+      return;
+    }
+    try {
+      const buffer = await selectedFile.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const rows: Record<string, string | number | boolean>[] =
+        XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+      if (rows.length > 0) {
+        const allColumns = Object.keys(rows[0]);
+        const nonEmptyColumns = allColumns.filter((col) =>
+          rows.some(
+            (row) =>
+              row[col] !== '' && row[col] !== null && row[col] !== undefined,
+          ),
+        );
+        const cleanedRows = rows.map((row) =>
+          nonEmptyColumns.reduce((acc, col) => {
+            acc[col] = row[col];
+            return acc;
+          }, {} as Record<string, string | number | boolean>),
+        );
+
+        const newWorkbook = XLSX.utils.book_new();
+        const newWorksheet = XLSX.utils.json_to_sheet(cleanedRows);
+        XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, sheetName);
+        const excelBuffer = XLSX.write(newWorkbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+        const cleanedFile = new File(
+          [
+            new Blob([excelBuffer], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            }),
+          ],
+          selectedFile.name,
+          {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          },
+        );
+
+        const formData = new FormData();
+        formData.append('file', cleanedFile);
+
+        await updateBulkBeneficiary.mutateAsync({
+          groupUUID: uuid,
+          data: formData,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
+        });
+      } else {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        await updateBulkBeneficiary.mutateAsync({
+          groupUUID: uuid,
+          data: formData,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
+        });
+      }
+
+      setSelectedFile(null);
+      router.push('/group');
+    } catch (error) {
+      Swal.fire(
+        'Upload failed',
+        (error as any)?.response?.data?.message || 'Unknown error',
+        'error',
+      );
+    }
   };
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
@@ -338,6 +432,10 @@ export default function GroupDetail({ uuid }: IProps) {
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Download
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setUploadOpen(true)}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Bulk Update
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
@@ -454,8 +552,8 @@ export default function GroupDetail({ uuid }: IProps) {
                 <AlertDialogFooter>
                   <Button
                     variant="outline"
-                    onClick={() => setLabels([])}
-                    disabled={labels.length === 0}
+                    onClick={() => setLabels(['uuid'])}
+                    disabled={labels.length <= 1}
                   >
                     Clear All
                   </Button>
@@ -465,6 +563,65 @@ export default function GroupDetail({ uuid }: IProps) {
                   >
                     Download
                   </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            {/* Upload Dialog */}
+            <AlertDialog open={uploadOpen} onOpenChange={setUploadOpen}>
+              <AlertDialogContent className="w-full max-w-md">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Upload File</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <div className="flex flex-col space-y-4">
+                      <input
+                        type="file"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setSelectedFile(e.target.files[0]);
+                          }
+                        }}
+                        className="border rounded p-2"
+                      />
+                      <div className="flex flex-col space-y-2 mt-4 text-left">
+                        <Label className="text-sm font-medium text-foreground">
+                          Unique Field
+                        </Label>
+                        <Select
+                          value={uniqueField}
+                          onValueChange={setUniqueField}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select unique field" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="phone">Phone</SelectItem>
+                            <SelectItem value="govtIDNumber">
+                              Govt ID Number
+                            </SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="koboId">Kobo ID</SelectItem>
+                            <SelectItem value="none">--- None ---</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setUploadOpen(false)}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      setUploadOpen(false);
+                      await handleUpload();
+                    }}
+                  >
+                    Upload
+                  </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

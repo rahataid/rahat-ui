@@ -25,6 +25,12 @@ export default function InkindTransactionDetail() {
   const groupName = sp.get('groupName') ?? 'N/A';
   const inkindType = sp.get('inkindType') ?? '';
   const inkindAvailableStock = sp.get('inkindAvailableStock') ?? '0';
+  const otpExemptionReason = sp.get('otpExemptionReason') || '';
+
+  const formatOtpReason = (reason: string): string => {
+    if (!reason) return 'N/A';
+    return reason.split('_').join(' ').toLowerCase();
+  };
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -99,6 +105,12 @@ export default function InkindTransactionDetail() {
               value={vendorWalletAddress || undefined}
               copyable
             />
+            {otpExemptionReason && (
+              <InfoItem
+                label="OTP Exemption Reason"
+                value={formatOtpReason(otpExemptionReason)}
+              />
+            )}
           </div>
         </CardContent>
       </Card>

@@ -58,24 +58,27 @@ export default function ListView({
       <BulkAssignToProjectModal
         handleSubmit={handleBulkAssign}
         projectModal={projectModal}
-        selectedBeneficiaries={Object.keys(table.getState().rowSelection).filter(
-          (k) => table.getState().rowSelection[k],
-        )}
+        selectedBeneficiaries={Object.keys(
+          table.getState().rowSelection,
+        ).filter((k) => table.getState().rowSelection[k])}
       />
       <CreateGroupModal
         handleSubmit={handleCreateGroup}
         groupModal={groupModal}
-        selectedBeneficiaries={Object.keys(table.getState().rowSelection).filter(
-          (k) => table.getState().rowSelection[k],
-        )}
+        selectedBeneficiaries={Object.keys(
+          table.getState().rowSelection,
+        ).filter((k) => table.getState().rowSelection[k])}
       />
       <div className="border rounded shadow p-3">
         <div className="flex space-x-2 items-center mb-2">
           <Input
             placeholder="Search name..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
+            value={filters?.name ?? ''}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                name: e.target.value,
+              })
             }
             className="rounded"
           />
@@ -107,8 +110,10 @@ export default function ListView({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="ml-2">
-                  {Object.values(table.getState().rowSelection).filter(Boolean)
-                    .length}{' '}
+                  {
+                    Object.values(table.getState().rowSelection).filter(Boolean)
+                      .length
+                  }{' '}
                   - Beneficiary Selected
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>

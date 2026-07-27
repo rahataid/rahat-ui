@@ -251,3 +251,46 @@ export const useBulkGenerateVerificationLink = () => {
     queryClient,
   );
 };
+
+export const useUploadBulkBeneficiaryUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+
+  const beneficiaryGroupClient = getGroupClient(rumsanService.client);
+
+  return useMutation({
+    mutationKey: [TAGS.UPDATE_BULK_BENEFICIARY],
+
+    mutationFn: async ({
+      groupUUID,
+      data,
+
+      uniqueField,
+    }: {
+      groupUUID: string;
+      data: FormData;
+      uniqueField?: string;
+    }) => {
+      return beneficiaryGroupClient.updateInBulk(
+        groupUUID,
+        data,
+        undefined,
+        uniqueField,
+      );
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+      });
+    },
+
+    onError: (error: any) => {
+      Swal.fire({
+        icon: 'error',
+        title:
+          error?.response?.data?.message ||
+          'Encountered an error while updating data',
+      });
+    },
+  });
+};

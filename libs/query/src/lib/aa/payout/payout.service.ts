@@ -450,6 +450,7 @@ export const useVerifyManualPayout = () => {
       projectId?: UUID;
       payload?: {
         payoutUUID: string;
+        matchBy?: 'bankAccount' | 'phoneNumber';
       };
     }) => {
       const formData = new FormData();

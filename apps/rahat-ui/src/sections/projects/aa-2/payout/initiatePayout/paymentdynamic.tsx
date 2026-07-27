@@ -12,6 +12,7 @@ import {
   useBeneficiariesGroups,
   useCreatePayout,
   usePaymentProviders,
+  useSingleBeneficiaryGroup,
   useTabConfiguration,
 } from '@rahat-ui/query';
 
@@ -119,20 +120,24 @@ export default function PaymentInitiation() {
   const initiatePayout = useCreatePayout();
   const columns = useBeneficiariesGroupTableColumn();
 
+  const { data: groupDetails, isLoading: isGroupDetailsLoading } =
+    useSingleBeneficiaryGroup(projectID, formState.group?.uuid);
+
   // prepare table data based on selected group
   const tableData = useMemo(() => {
     const group = formState.group;
-    if (!group?.groupedBeneficiaries?.length) return [];
+    const groupedBeneficiaries = groupDetails?.groupedBeneficiaries;
+    if (!group || !groupedBeneficiaries?.length) return [];
 
-    const totalTokens = group.tokensReserved?.numberOfTokens || 0;
-    const beneficiaryCount = group.groupedBeneficiaries.length;
+    const totalTokens = group.tokensReserved?.[0]?.numberOfTokens || 0;
+    const beneficiaryCount = groupedBeneficiaries.length;
     const tokensPerBeneficiary = totalTokens / beneficiaryCount;
 
-    return group.groupedBeneficiaries.map((d: any) => ({
+    return groupedBeneficiaries.map((d: any) => ({
       walletAddress: d?.Beneficiary?.walletAddress,
       assignedTokens: tokensPerBeneficiary,
     }));
-  }, [formState.group]);
+  }, [formState.group, groupDetails]);
 
   const table = useReactTable({
     data: tableData,
@@ -150,7 +155,7 @@ export default function PaymentInitiation() {
     const payload: any = {
       type: formState.method === 'CVA' ? PayoutType.VENDOR : formState.method,
       mode: formState.mode,
-      groupId: formState.group?.tokensReserved?.uuid,
+      groupId: formState.group?.tokensReserved?.[0]?.uuid,
     };
 
     if (formState.paymentProvider?.id) {
@@ -367,7 +372,7 @@ export default function PaymentInitiation() {
                         Selected: {formState.group.name}
                       </h1>
                       <p className="text-sm text-muted-foreground">
-                        {formState.group.groupedBeneficiaries?.length} Total
+                        {groupDetails?.groupedBeneficiaries?.length} Total
                         Beneficiaries
                       </p>
                     </div>
@@ -388,7 +393,10 @@ export default function PaymentInitiation() {
                           ?.setFilterValue(e.target.value)
                       }
                     />
-                    <BeneficiariesGroupTable table={table} />
+                    <BeneficiariesGroupTable
+                      table={table}
+                      loading={isGroupDetailsLoading}
+                    />
                     <ClientSidePagination table={table} />
                   </div>
                 </>

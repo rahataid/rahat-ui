@@ -26,6 +26,9 @@ import {
   CartesianGrid,
   AreaChart,
   Area,
+  ComposedChart,
+  Bar,
+  Line,
   ResponsiveContainer,
   Label,
   RadialBarChart,
@@ -65,6 +68,8 @@ import {
   type RecentCampaign,
   type RecentImport,
   type CustomersByMonthEntry,
+  type ConversionByMonthEntry,
+  type ConversionRate,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { formatRate } from '../communications/const';
@@ -118,6 +123,53 @@ function formatDate(dateStr: string): string {
   });
 }
 
+function ConversionTooltip({
+  active,
+  label,
+  data,
+}: {
+  active?: boolean;
+  label?: string;
+  data: ConversionByMonthEntry[];
+}) {
+  if (!active || !label) return null;
+  const entry = data.find((d) => d.month === label);
+  if (!entry) return null;
+
+  return (
+    <div className="rounded-lg border bg-background px-3 py-2 shadow-md text-xs">
+      <p className="font-medium text-foreground mb-1.5">{formatMonth(label)}</p>
+      <p className="text-foreground font-semibold mb-1">
+        {formatRate(entry.rate)}
+        <span className="text-muted-foreground font-normal">
+          {' '}
+          — {formatNumber(entry.converted)} of {formatNumber(entry.base)} lapsed
+        </span>
+      </p>
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        <span
+          className="h-2 w-2 rounded-full"
+          style={{ backgroundColor: COLORS.newlyInactive }}
+        />
+        From newly inactive
+        <span className="text-foreground font-medium tabular-nums ml-auto pl-3">
+          {formatNumber(entry.fromNewlyInactive)}
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        <span
+          className="h-2 w-2 rounded-full"
+          style={{ backgroundColor: COLORS.inactive }}
+        />
+        From inactive
+        <span className="text-foreground font-medium tabular-nums ml-auto pl-3">
+          {formatNumber(entry.fromInactive)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // -- Color Palette ------------------------------------------------------------
 
 const COLORS = {
@@ -129,6 +181,7 @@ const COLORS = {
   skipped: '#f59e0b', // amber-500
   gauge: '#6366f1',
   gaugeTrack: '#e2e8f0', // slate-200
+  conversionRate: '#10b981', // emerald-500
 };
 
 // =============================================================================
@@ -156,6 +209,14 @@ export default function DashboardView() {
     getStat(stats, 'NEWLY_INACTIVE_CUSTOMER') || 0;
   const customersByMonth: CustomersByMonthEntry[] =
     getStat(stats, 'CUSTOMERS_BY_MONTH') || [];
+  const conversionByMonth: ConversionByMonthEntry[] =
+    getStat(stats, 'CONVERSION_BY_MONTH') || [];
+  const conversionRate: ConversionRate = getStat(stats, 'CONVERSION_RATE') || {
+    month: null,
+    rate: 0,
+    converted: 0,
+    base: 0,
+  };
 
   // Communication stats are now provided as individual stats, not a combined object
   const totalMessagesSent: number = getStat(stats, 'TOTAL_MESSAGES_SENT') || 0;
@@ -268,6 +329,17 @@ export default function DashboardView() {
     });
   }, [customersByMonth, fromMonth, toMonth]);
 
+  // Conversion trend shares the same From/To pickers as the category trend, so
+  // both charts stay in step.
+  const filteredConversionData = useMemo(() => {
+    if (!conversionByMonth.length) return [];
+    return conversionByMonth.filter((entry: ConversionByMonthEntry) => {
+      if (fromMonth && entry.month < fromMonth) return false;
+      if (toMonth && entry.month > toMonth) return false;
+      return true;
+    });
+  }, [conversionByMonth, fromMonth, toMonth]);
+
   // Delivery gauge data for radial bar
   // value is always 100; the arc length is controlled by endAngle
   const deliveryGaugeData = useMemo(
@@ -349,6 +421,18 @@ export default function DashboardView() {
           ? 'Needs improvement'
           : 'Critical',
     },
+    {
+      title: 'Conversion Rate',
+      value: formatRate(conversionRate.rate),
+      icon: TrendingUp,
+      bgColor: 'bg-teal-500/10',
+      iconColor: 'text-teal-500',
+      subtitle: conversionRate.month
+        ? `${formatNumber(conversionRate.converted)} of ${formatNumber(
+            conversionRate.base,
+          )} reactivated`
+        : 'No data yet',
+    },
   ];
 
   // ==========================================================================
@@ -386,7 +470,7 @@ export default function DashboardView() {
         <ScrollArea className="h-[calc(100vh-155px)]">
           <div className="flex-1 p-6 space-y-6">
             {/* ── SECTION 1: KPI Summary Strip ──────────────────── */}
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
               {kpiCards.map((card) => (
                 <Card
                   key={card.title}
@@ -932,6 +1016,151 @@ export default function DashboardView() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* ── SECTION 3b: Reactivation Conversion Trend ────── */}
+            <Card className="transition-all duration-200 hover:shadow-md">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="rounded-lg p-2 bg-teal-500/10 shrink-0">
+                    <TrendingUp className="h-4 w-4 text-teal-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <CardTitle className="text-base font-semibold">
+                      Reactivation Conversion
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Inactive customers returning to active, per month — shares
+                      the date range above
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {filteredConversionData.length > 0 ? (
+                  <>
+                    <ChartContainer
+                      config={{
+                        fromNewlyInactive: {
+                          label: 'From Newly Inactive',
+                          color: COLORS.newlyInactive,
+                        },
+                        fromInactive: {
+                          label: 'From Inactive',
+                          color: COLORS.inactive,
+                        },
+                        rate: {
+                          label: 'Conversion Rate',
+                          color: COLORS.conversionRate,
+                        },
+                      }}
+                      className="h-[280px] w-full"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <ComposedChart
+                          data={filteredConversionData}
+                          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                        >
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            vertical={false}
+                            stroke="hsl(var(--border))"
+                            strokeOpacity={0.5}
+                          />
+                          <XAxis
+                            dataKey="month"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 11 }}
+                            dy={8}
+                            tickFormatter={formatMonth}
+                            interval="preserveStartEnd"
+                          />
+                          <YAxis
+                            yAxisId="count"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 11 }}
+                            dx={-4}
+                            width={40}
+                          />
+                          <YAxis
+                            yAxisId="rate"
+                            orientation="right"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 11 }}
+                            width={44}
+                            tickFormatter={(v) => `${Number(v).toFixed(0)}%`}
+                          />
+                          <ChartTooltip
+                            content={
+                              <ConversionTooltip
+                                data={filteredConversionData}
+                              />
+                            }
+                          />
+                          <Bar
+                            yAxisId="count"
+                            dataKey="fromNewlyInactive"
+                            stackId="conv"
+                            fill={COLORS.newlyInactive}
+                            radius={[0, 0, 0, 0]}
+                          />
+                          <Bar
+                            yAxisId="count"
+                            dataKey="fromInactive"
+                            stackId="conv"
+                            fill={COLORS.inactive}
+                            radius={[3, 3, 0, 0]}
+                          />
+                          <Line
+                            yAxisId="rate"
+                            type="monotone"
+                            dataKey="rate"
+                            stroke={COLORS.conversionRate}
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        </ComposedChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                    <div className="flex justify-center gap-6 mt-3 text-sm">
+                      {[
+                        {
+                          label: 'From Newly Inactive',
+                          color: COLORS.newlyInactive,
+                        },
+                        { label: 'From Inactive', color: COLORS.inactive },
+                        {
+                          label: 'Conversion Rate',
+                          color: COLORS.conversionRate,
+                        },
+                      ].map((item) => (
+                        <div
+                          key={item.label}
+                          className="flex items-center gap-2"
+                        >
+                          <span
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="text-muted-foreground text-xs font-medium">
+                            {item.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                    <TrendingUp className="h-8 w-8 mb-2 opacity-30" />
+                    <p className="text-sm">
+                      No reactivation data for this period
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

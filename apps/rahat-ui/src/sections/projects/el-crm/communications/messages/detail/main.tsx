@@ -63,7 +63,7 @@ import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
 import { DateRangePicker } from '../../../customers/dateRangePicker';
-import { computeRate, formatRate, getCampaignGroupLabel } from '../../const';
+import { CHANNELS, computeRate, formatRate, getCampaignGroupLabel } from '../../const';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -443,6 +443,9 @@ export default function MessageDetailPage() {
                       : [campaign.sessionId]
                   }
                   campaignName={campaign.name}
+                  isWhatsApp={campaign.transportName === CHANNELS.WHATSAPP}
+                  targetType={campaign.targetType}
+                  messageBody={campaign.body}
                   filters={{
                     status: filters?.status,
                     address: filters?.address,

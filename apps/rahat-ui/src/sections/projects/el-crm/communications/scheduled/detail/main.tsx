@@ -47,7 +47,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
-import { computeRate, formatRate, targetTypeMap } from '../../const';
+import { CHANNELS, computeRate, formatRate, targetTypeMap } from '../../const';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {
@@ -205,8 +205,9 @@ export default function MessageDetailPage() {
     setPagination({ ...pagination, page: 1 });
   };
 
-  const meta: PaginatedResult<any>['meta'] =
-    (logs?.response.meta as PaginatedResult<any>['meta'] | undefined) || {
+  const meta: PaginatedResult<any>['meta'] = (logs?.response.meta as
+    | PaginatedResult<any>['meta']
+    | undefined) || {
     total: 0,
     lastPage: 1,
     currentPage: 1,
@@ -326,7 +327,13 @@ export default function MessageDetailPage() {
                   projectUUID={projectUUID}
                   sessionIds={[campaign.sessionId]}
                   campaignName={campaign.name}
-                  filters={{ status: filters?.status, address: filters?.address }}
+                  isWhatsApp={campaign.transportName === CHANNELS.WHATSAPP}
+                  targetType={campaign.targetType}
+                  messageBody={campaign.body}
+                  filters={{
+                    status: filters?.status,
+                    address: filters?.address,
+                  }}
                 />
               </div>
             )}
@@ -508,7 +515,9 @@ export default function MessageDetailPage() {
                       <SelectComponent
                         name="Status"
                         options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                        onChange={(value) => handleFilterChange('status', value)}
+                        onChange={(value) =>
+                          handleFilterChange('status', value)
+                        }
                         value={filters?.status ?? 'ALL'}
                       />
                     </div>

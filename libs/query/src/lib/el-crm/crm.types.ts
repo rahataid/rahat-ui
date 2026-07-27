@@ -83,3 +83,21 @@ export interface CustomersByMonthEntry {
   INACTIVE: number;
   NEWLY_INACTIVE: number;
 }
+
+export interface ConversionByMonthEntry {
+  month: string;
+  converted: number;
+  fromNewlyInactive: number;
+  fromInactive: number;
+  base: number;
+  newlyInactiveBase: number;
+  inactiveBase: number;
+  rate: number;
+}
+
+export interface ConversionRate {
+  month: string | null;
+  rate: number;
+  converted: number;
+  base: number;
+}

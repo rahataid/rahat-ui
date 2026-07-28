@@ -46,4 +46,4 @@ RUN if [ -f package.json ]; then pnpm install --prod --ignore-scripts; fi
 
 EXPOSE 3000
 
-CMD ["pnpm", "exec", "next", "start"]
+CMD ["node", ".next/standalone/apps/rahat-ui/server.js"]

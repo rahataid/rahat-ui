@@ -30,52 +30,24 @@ export function SseProvider({ children }: { children: ReactNode }) {
     const eventSource = new EventSource(
       `${process.env['NEXT_PUBLIC_API_HOST_URL']}/v1/events`,
     );
+
+    const EVENT_QUERY_MAP: Record<string, (string | UUID)[][]> = {
+      'beneficiaries.updated': [['beneficiaries']],
+      'phase.updated': [[PHASE_QUERY_KEYS.PHASE], [PHASE_QUERY_KEYS.PHASES, uuid]],
+      'phase.created': [[PHASE_QUERY_KEYS.PHASES]],
+      'phase.deleted': [[PHASE_QUERY_KEYS.PHASES]],
+      'trigger.updated': [[PHASE_QUERY_KEYS.PHASE]],
+      'trigger.created': [[PHASE_QUERY_KEYS.PHASE]],
+    };
+
     eventSource.onmessage = (event) => {
       try {
         const payload: SseServerEvent = JSON.parse(event.data);
-        const eventType = payload.event;
-        switch (eventType) {
-          case 'beneficiaries.updated':
-            queryClient.invalidateQueries({
-              queryKey: ['beneficiaries'],
-            });
-            break;
-
-          case 'phase.updated':
-            queryClient.invalidateQueries({
-              queryKey: [PHASE_QUERY_KEYS.PHASE],
-            });
-            queryClient.invalidateQueries({
-              queryKey: [PHASE_QUERY_KEYS.PHASES, uuid],
-            });
-            break;
-
-          case 'phase.created':
-            queryClient.invalidateQueries({
-              queryKey: [PHASE_QUERY_KEYS.PHASES],
-            });
-            break;
-
-          case 'trigger.updated':
-            queryClient.invalidateQueries({
-              queryKey: [PHASE_QUERY_KEYS.PHASE],
-            });
-            break;
-
-          case 'trigger.created':
-            queryClient.invalidateQueries({
-              queryKey: [PHASE_QUERY_KEYS.PHASE],
-            });
-            break;
-
-          case 'phase.deleted':
-            queryClient.invalidateQueries({
-              queryKey: [PHASE_QUERY_KEYS.PHASES],
-            });
-            break;
-
-          default:
-            console.warn('Unhandled SSE event type:', eventType);
+        const queryKeys = EVENT_QUERY_MAP[payload.event];
+        if (queryKeys) {
+          queryKeys.forEach((key) => queryClient.invalidateQueries({ queryKey: key }));
+        } else {
+          console.warn('Unhandled SSE event type:', payload.event);
         }
       } catch (error) {
         console.error('Failed to parse SSE payload', error);

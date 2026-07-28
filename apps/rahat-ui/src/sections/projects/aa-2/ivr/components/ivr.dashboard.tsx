@@ -64,7 +64,7 @@ function IvrCard({
               {item.name}
             </CardTitle>
           </div>
-          {item.status !== 'archived' && (
+          <div className={item.status === 'archived' ? 'invisible' : ''}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -82,7 +82,7 @@ function IvrCard({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>

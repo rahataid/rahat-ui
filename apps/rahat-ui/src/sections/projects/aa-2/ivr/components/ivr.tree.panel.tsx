@@ -160,17 +160,19 @@ function TreeItem({
             </Button>
           </TooltipWrapper>
 
-          <TooltipWrapper tip="Delete this node">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-transparent hover:text-inherit"
-              onClick={handleDelete}
-              title="Delete"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </TooltipWrapper>
+          {level > 0 && (
+            <TooltipWrapper tip="Delete this node">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-transparent hover:text-inherit"
+                onClick={handleDelete}
+                title="Delete"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TooltipWrapper>
+          )}
         </div>
       </div>
 

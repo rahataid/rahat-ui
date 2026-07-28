@@ -3,14 +3,12 @@ on:
   workflow_dispatch:
 
 env:
-  CI: false
-  env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_SOUTHAFRICA }}
+  CI: true
 
 jobs:
   rahat-ui:
     name: rahat-ui
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'release/') && github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
@@ -24,18 +22,16 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 20.10.0
 
       - name: Install pnpm
-        run: |
-          npm install -g pnpm@10.12.1
+        run: npm install -g pnpm@8.14.1
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile  
+        run: pnpm install
 
-      - name: Build apps
-        run: |
-          pnpm build:all
+      # - name: Build apps
+      #   run: pnpm build:all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -47,23 +43,19 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract version from package.json
-        id: extract_version
         run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
 
       - name: Extract Timestamp
-        id: extract-timestamp
         run: |
           TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")
           echo "timestamp=$TIMESTAMP" >> $GITHUB_ENV
 
-      # Rahat-UI Image
       - name: build && push rahat-ui
-        id: build-push-rahat-ui
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.rahat-ui
-          push: ${{ github.event_name == 'workflow_dispatch' }}
+          push: true
           build-args: |
             NEXT_PUBLIC_API_HOST_URL=${{ env.NEXT_PUBLIC_API_HOST_URL }}
             NEXT_PUBLIC_API_COMMUNICATION_URL=${{ env.NEXT_PUBLIC_API_COMMUNICATION_URL }}

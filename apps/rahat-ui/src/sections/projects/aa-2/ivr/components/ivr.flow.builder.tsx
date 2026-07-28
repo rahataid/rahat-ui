@@ -14,6 +14,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { ArrowLeft, Settings, Code, Download, Loader2 } from 'lucide-react';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 import {
   IvrFlowNode,
@@ -68,6 +69,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isSimulationOpen, setIsSimulationOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isEditorDirty, setIsEditorDirty] = useState(false);
+  const [pendingNodeId, setPendingNodeId] = useState<string | null>(null);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const populatedRef = useRef(false);
 
   const flow = flows.find((f) => f.id === ivrId);
@@ -130,6 +134,20 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     if (selectedNodeId === nodeId) setSelectedNodeId(null);
   };
 
+  const handleSelectNode = (nodeId: string) => {
+    if (isEditorDirty) {
+      setPendingNodeId(nodeId);
+      setShowUnsavedDialog(true);
+    } else {
+      setSelectedNodeId(nodeId);
+    }
+  };
+
+  const handleDismissDialog = () => {
+    setPendingNodeId(null);
+    setShowUnsavedDialog(false);
+  };
+
   if (!flow) {
     return (
       <div className="h-[calc(100vh-80px)] flex items-center justify-center">
@@ -181,7 +199,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
         {/* Left - Tree Panel */}
-        <div className="w-full lg:w-[70%] bg-white rounded-sm border overflow-hidden flex flex-col relative">
+        <div className="w-full lg:w-[70%] lg:h-full bg-white rounded-sm border overflow-hidden flex flex-col relative">
           {isFetchingFlow && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
               <div className="flex flex-col items-center gap-3">
@@ -195,7 +213,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
           <TreePanel
             flow={flow}
             selectedNodeId={selectedNodeId}
-            onSelectNode={setSelectedNodeId}
+            onSelectNode={handleSelectNode}
             onAddNode={handleAddNode}
             onDeleteNode={handleDeleteNode}
             onSimulate={() => setIsSimulationOpen(true)}
@@ -203,7 +221,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         </div>
 
         {/* Right - Editor + JSON Preview */}
-        <div className="w-full lg:w-[30%] flex flex-col">
+        <div className="w-full lg:w-[30%] lg:h-full min-w-0 overflow-hidden flex flex-col">
           <Tabs defaultValue="editor" className="flex flex-col h-full">
             <TabsList className="border bg-secondary rounded w-full">
               <TabsTrigger
@@ -230,6 +248,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
                       flow={flow}
                       selectedNodeId={selectedNodeId}
                       onUpdateNode={handleUpdateNode}
+                      onEditingChange={setIsEditorDirty}
                     />
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-3">
@@ -277,6 +296,14 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         onExported={() => {
           populatedRef.current = false;
         }}
+      />
+
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showUnsavedDialog}
+        onCancel={handleDismissDialog}
+        onConfirm={handleDismissDialog}
+        dialogTitle="Unsaved Changes"
+        dialogMessage="Please save or cancel your changes in the editor before switching to another node."
       />
     </div>
   );

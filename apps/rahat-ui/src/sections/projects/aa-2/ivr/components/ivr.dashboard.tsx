@@ -18,12 +18,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useIvrTemplates, useIvrTemplateDelete } from '@rahat-ui/query';
 import { IvrListItem } from '../types/ivr.flow.types';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   Trash2,
   MoreHorizontal,
@@ -67,11 +67,7 @@ function IvrCard({
           <div className={item.status === 'archived' ? 'invisible' : ''}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                >
+                <Button variant="ghost" size="icon">
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -91,7 +87,7 @@ function IvrCard({
             {item.status}
           </Badge>
           <span className="text-sm text-muted-foreground">
-            {new Date(item.lastModified).toLocaleDateString()}
+            {dateFormat(new Date(item.lastModified))}
           </span>
         </div>
       </CardContent>
@@ -145,7 +141,9 @@ export default function IvrDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-[clamp(20px,2.5vw,28px)] font-bold text-foreground">IVR Manager</h1>
+            <h1 className="text-[clamp(20px,2.5vw,28px)] font-bold text-foreground">
+              IVR Manager
+            </h1>
             <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
               Build and manage IVR flows
             </p>
@@ -215,7 +213,10 @@ export default function IvrDashboard() {
         onCancel={() => setDeleteTarget(null)}
         onConfirm={async () => {
           if (!deleteTarget) return;
-          await deleteIvr.mutateAsync({ projectUUID: projectUUID as UUID, id: deleteTarget.id });
+          await deleteIvr.mutateAsync({
+            projectUUID: projectUUID as UUID,
+            id: deleteTarget.id,
+          });
           setDeleteTarget(null);
         }}
         dialogTitle="Archive IVR"

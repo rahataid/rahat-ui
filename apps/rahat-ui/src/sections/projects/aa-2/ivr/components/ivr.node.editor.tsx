@@ -39,12 +39,14 @@ interface NodeEditorPanelProps {
   flow: IvrFlow;
   selectedNodeId: string;
   onUpdateNode: (nodeId: string, updates: Partial<IvrFlowNode>) => void;
+  onEditingChange?: (editing: boolean) => void;
 }
 
 export default function NodeEditorPanel({
   flow,
   selectedNodeId,
   onUpdateNode,
+  onEditingChange,
 }: NodeEditorPanelProps) {
   const selectedItem = findNodeById(flow.rootMenu, selectedNodeId);
   const [isEditing, setIsEditing] = useState(false);
@@ -54,11 +56,14 @@ export default function NodeEditorPanel({
   );
   const [isUploadPending, setIsUploadPending] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
+  const snapshotRef = useRef<Partial<IvrFlowNode> | null>(null);
   const breadcrumbPath = getBreadcrumbPath(flow.rootMenu, selectedNodeId);
 
   useEffect(() => {
     setIsEditing(false);
     setIsPreviewPlaying(false);
+    snapshotRef.current = null;
+    onEditingChange?.(false);
   }, [selectedNodeId]);
 
   if (!selectedItem) {
@@ -112,7 +117,16 @@ export default function NodeEditorPanel({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsEditing(true)}
+            onClick={() => {
+              snapshotRef.current = {
+                label: selectedItem.label,
+                prompt: selectedItem.prompt,
+                hangup: selectedItem.hangup,
+                digit: selectedItem.digit,
+              };
+              setIsEditing(true);
+              onEditingChange?.(true);
+            }}
             className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
           >
             <Pencil className="w-4 h-4" />
@@ -235,14 +249,35 @@ export default function NodeEditorPanel({
 
       <div className="flex items-center justify-between">
         <h3 className="text-base md:text-lg font-semibold">Edit Node</h3>
-        <Button
-          variant="outline"
-          size="sm"
-          className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
-          onClick={() => setIsEditing(false)}
-        >
-          Done
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
+            onClick={() => {
+              if (snapshotRef.current) {
+                onUpdateNode(selectedNodeId, snapshotRef.current);
+              }
+              snapshotRef.current = null;
+              setIsEditing(false);
+              onEditingChange?.(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
+            onClick={() => {
+              snapshotRef.current = null;
+              setIsEditing(false);
+              onEditingChange?.(false);
+            }}
+          >
+            Save
+          </Button>
+        </div>
       </div>
 
       <Separator />

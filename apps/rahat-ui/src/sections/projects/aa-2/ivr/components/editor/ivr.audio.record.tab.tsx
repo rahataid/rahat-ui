@@ -115,14 +115,18 @@ export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: 
   return (
     <div className="space-y-2">
       {phase === 'idle' && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-[clamp(36px,4vw,44px)] w-[clamp(36px,4vw,44px)] rounded-full"
+        <div
+          className="border-2 border-dashed border-muted-foreground/30 rounded-sm p-4 md:p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
           onClick={startRecording}
         >
-          <Mic className="w-4 h-4" />
-        </Button>
+          <Mic className="w-6 h-6 md:w-8 md:h-8 mx-auto text-muted-foreground mb-2" />
+          <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
+            Click to start recording
+          </p>
+          <p className="text-[clamp(10px,0.9vw,12px)] text-muted-foreground mt-1">
+            Your browser will ask for microphone access
+          </p>
+        </div>
       )}
       {phase === 'recording' && (
         <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-sm">

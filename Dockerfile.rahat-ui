@@ -21,4 +21,4 @@ RUN chown -R node:node /usr/src/app
 
 USER node
 
-CMD [ "pnpm", "start" ]
+CMD [ "pnpm", "exec", "next", "start" ]

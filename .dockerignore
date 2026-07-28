@@ -5,6 +5,6 @@ node_modules/
 .env.*
 Dockerfile
 .nx/
-
+dist
 # Local 
 apps/**/.next/

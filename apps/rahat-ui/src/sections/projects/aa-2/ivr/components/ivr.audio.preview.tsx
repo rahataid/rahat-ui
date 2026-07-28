@@ -51,7 +51,7 @@ export function AudioPreviewPlayer({
   };
 
   return (
-    <div className="p-4 border rounded-sm space-y-2">
+    <div className="p-3 md:p-4 border rounded-sm space-y-2">
       <div className="flex items-center gap-2">
         <Button
           size="sm"

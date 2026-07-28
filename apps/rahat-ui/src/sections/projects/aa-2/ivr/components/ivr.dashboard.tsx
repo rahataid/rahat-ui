@@ -142,11 +142,11 @@ export default function IvrDashboard() {
 
   return (
     <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">IVR Manager</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-[clamp(20px,2.5vw,28px)] font-bold text-foreground">IVR Manager</h1>
+            <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
               Build and manage IVR flows
             </p>
           </div>
@@ -159,16 +159,16 @@ export default function IvrDashboard() {
           placeholder="Search IVRs..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 rounded-sm"
+          className="flex-1 rounded-sm h-[clamp(32px,3vw,40px)]"
         />
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {(['all', 'draft', 'active', 'archived'] as const).map((status) => (
             <Button
               key={status}
               size="sm"
               variant={statusFilter === status ? 'default' : 'outline'}
               onClick={() => setStatusFilter(status)}
-              className="capitalize rounded-sm"
+              className="capitalize rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             >
               {status}
             </Button>
@@ -176,7 +176,7 @@ export default function IvrDashboard() {
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100%-120px)]">
+      <ScrollArea className="h-[calc(100%-140px)]">
         {isLoading ? (
           <Card className="rounded-sm">
             <CardContent className="flex flex-col items-center justify-center py-16">

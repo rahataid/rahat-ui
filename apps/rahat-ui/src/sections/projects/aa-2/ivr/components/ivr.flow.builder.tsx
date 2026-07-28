@@ -151,15 +151,15 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   return (
     <div className="h-[calc(100vh-80px)] flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-3">
-        <div className="flex items-center justify-between">
+      <div className="bg-white border-b px-4 md:px-6 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={handleBack}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div>
-              <h1 className="text-xl font-bold">{displayName}</h1>
-              <p className="text-sm text-muted-foreground">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-[clamp(16px,2vw,24px)] font-bold truncate">{displayName}</h1>
+              <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground truncate">
                 {displayDescription}
               </p>
             </div>
@@ -167,7 +167,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 rounded-sm"
+            className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             onClick={() => setIsExportOpen(true)}
           >
             <Download className="w-4 h-4" />
@@ -177,9 +177,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
         {/* Left - Tree Panel */}
-        <div className="w-[65%] bg-white rounded-sm border overflow-hidden flex flex-col relative">
+        <div className="w-full lg:w-[65%] bg-white rounded-sm border overflow-hidden flex flex-col relative">
           {isFetchingFlow && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
               <div className="flex flex-col items-center gap-3">
@@ -201,7 +201,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         </div>
 
         {/* Right - Editor + JSON Preview */}
-        <div className="w-[35%] flex flex-col">
+        <div className="w-full lg:w-[35%] flex flex-col">
           <Tabs defaultValue="editor" className="flex flex-col h-full">
             <TabsList className="border bg-secondary rounded w-full">
               <TabsTrigger

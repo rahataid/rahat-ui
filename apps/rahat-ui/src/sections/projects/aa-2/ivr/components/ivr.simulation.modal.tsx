@@ -138,8 +138,8 @@ export default function SimulationModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-background rounded-sm shadow-lg w-full max-w-md">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 md:p-4">
+      <div className="bg-background rounded-sm shadow-lg w-full max-w-[clamp(320px,90vw,500px)]">
         <div className="flex justify-between items-start border-b p-4">
           <div>
             <h2 className="text-lg font-bold">IVR Flow Simulator</h2>

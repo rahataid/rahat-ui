@@ -83,8 +83,8 @@ export default function NodeEditorPanel({
 
   if (!isEditing) {
     return (
-      <div className="p-6 space-y-6 overflow-y-auto h-full">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 flex-wrap">
+      <div className="p-3 md:p-6 space-y-4 md:space-y-6 overflow-y-auto h-full">
+        <div className="flex items-center gap-2 text-[clamp(11px,1vw,14px)] text-muted-foreground mb-4 flex-wrap">
           {breadcrumbPath.map((label, idx) => (
             <div key={idx} className="flex items-center gap-2">
               <span
@@ -105,13 +105,13 @@ export default function NodeEditorPanel({
 
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold">Node Properties</h3>
+            <h3 className="text-base md:text-lg font-semibold">Node Properties</h3>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setIsEditing(true)}
-            className="gap-2 rounded-sm"
+            className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
           >
             <Pencil className="w-4 h-4" />
             Edit
@@ -212,8 +212,8 @@ export default function NodeEditorPanel({
   }
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto h-full">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 flex-wrap">
+    <div className="p-3 md:p-6 space-y-4 md:space-y-6 overflow-y-auto h-full">
+      <div className="flex items-center gap-2 text-[clamp(11px,1vw,14px)] text-muted-foreground mb-4 flex-wrap">
         {breadcrumbPath.map((label, idx) => (
           <div key={idx} className="flex items-center gap-2">
             <span
@@ -233,11 +233,11 @@ export default function NodeEditorPanel({
       </div>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Edit Node</h3>
+        <h3 className="text-base md:text-lg font-semibold">Edit Node</h3>
         <Button
           variant="outline"
           size="sm"
-          className="rounded-sm"
+          className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
           onClick={() => setIsEditing(false)}
         >
           Done

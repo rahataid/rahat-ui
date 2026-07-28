@@ -11,13 +11,13 @@ type AudioUrlTabProps = {
 export default function AudioUrlTab({ prompt, onUpdate }: AudioUrlTabProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="prompt-url-input">Audio URL</Label>
+      <Label htmlFor="prompt-url-input" className="text-[clamp(12px,1vw,14px)]">Audio URL</Label>
       <Input
         id="prompt-url-input"
         value={prompt}
         onChange={(e) => onUpdate({ prompt: e.target.value })}
         placeholder="https://example.com/audio.mp3"
-        className="text-xs"
+        className="text-xs h-[clamp(32px,3vw,40px)]"
       />
     </div>
   );

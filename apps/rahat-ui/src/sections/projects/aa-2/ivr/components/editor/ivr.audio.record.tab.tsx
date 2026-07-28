@@ -118,7 +118,7 @@ export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: 
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-full"
+          className="h-[clamp(36px,4vw,44px)] w-[clamp(36px,4vw,44px)] rounded-full"
           onClick={startRecording}
         >
           <Mic className="w-4 h-4" />
@@ -126,14 +126,14 @@ export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: 
       )}
       {phase === 'recording' && (
         <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-sm">
-          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
           <span className="text-sm font-mono font-bold">
             {formatTime(timer)}
           </span>
           <Button
             size="sm"
             variant="destructive"
-            className="gap-2 ml-auto rounded-sm"
+            className="gap-2 ml-auto rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             onClick={stopRecording}
           >
             <Square className="w-4 h-4" />

@@ -103,11 +103,11 @@ function TreeItem({
     <div className="group">
       <div
         className={cn(
-          'flex items-center gap-2 px-4 py-3 mb-2 rounded-sm border transition-colors cursor-pointer',
+          'flex items-center gap-2 px-2 md:px-4 py-2 md:py-3 mb-2 rounded-sm border transition-colors cursor-pointer',
           getLevelColor(level, isSelected),
         )}
         onClick={() => onSelectNode(item.id)}
-        style={{ marginLeft: `${level * 20}px` }}
+        style={{ marginLeft: `${level * 16}px` }}
       >
         {hasChildren ? (
           <button
@@ -204,23 +204,23 @@ export default function TreePanel({
 }: TreePanelProps) {
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-4">
-        <div className="flex items-center gap-12">
-          <h3 className="text-2xl font-bold whitespace-nowrap">IVR Flow</h3>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-3 md:px-4 py-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+          <h3 className="text-[clamp(18px,2vw,24px)] font-bold">IVR Flow</h3>
 
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 md:gap-3 text-[clamp(10px,0.9vw,12px)] text-muted-foreground flex-wrap">
             <span className="font-medium">Levels:</span>
 
             {LEVEL_COLORS.map((lvl) => (
               <div key={lvl.name} className="flex items-center gap-1">
                 <span
                   className={cn(
-                    'inline-block w-3 h-3 rounded border',
+                    'inline-block w-2.5 h-2.5 md:w-3 md:h-3 rounded border',
                     lvl.selectedBg,
                     lvl.selectedBorder,
                   )}
                 />
-                <span>{lvl.name}</span>
+                <span className="hidden sm:inline">{lvl.name}</span>
               </div>
             ))}
           </div>
@@ -228,7 +228,7 @@ export default function TreePanel({
 
         <Button
           variant="default"
-          className="gap-2 rounded-sm"
+          className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
           size="sm"
           onClick={onSimulate}
         >

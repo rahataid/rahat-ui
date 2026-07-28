@@ -56,14 +56,14 @@ export default function AudioUploadTab({ onUpdate, onUploadingChange }: AudioUpl
     <div className="space-y-2">
       {!pendingUrl ? (
         <div
-          className="border-2 border-dashed border-muted-foreground/30 rounded-sm p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
+          className="border-2 border-dashed border-muted-foreground/30 rounded-sm p-4 md:p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
           onClick={() => fileInputRef.current?.click()}
         >
-          <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">
+          <Upload className="w-6 h-6 md:w-8 md:h-8 mx-auto text-muted-foreground mb-2" />
+          <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
             Click to browse or drag audio file here
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-[clamp(10px,0.9vw,12px)] text-muted-foreground mt-1">
             MP3, WAV, OGG, WEBM
           </p>
         </div>

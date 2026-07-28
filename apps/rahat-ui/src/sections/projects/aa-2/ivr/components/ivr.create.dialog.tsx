@@ -68,12 +68,12 @@ export default function CreateIVRDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-2 rounded-sm">
+        <Button size="sm" className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]">
           <Plus className="w-4 h-4" />
           New IVR
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-[clamp(320px,90vw,500px)] rounded-sm">
         <DialogHeader>
           <DialogTitle>Create New IVR</DialogTitle>
           <DialogDescription>

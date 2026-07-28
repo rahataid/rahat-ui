@@ -26,14 +26,14 @@ export default function JSONPreviewPanel({ flow }: JSONPreviewPanelProps) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-3 p-4">
+    <div className="flex flex-col h-full gap-3 p-3 md:p-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold">IVR Flow JSON</h3>
+        <h3 className="font-semibold text-[clamp(13px,1.2vw,16px)]">IVR Flow JSON</h3>
         <Button
           size="sm"
           variant="outline"
           onClick={handleCopy}
-          className="gap-2 rounded-sm"
+          className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
         >
           {copied ? (
             <Check className="w-4 h-4 text-green-600" />

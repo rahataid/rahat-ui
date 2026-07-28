@@ -28,7 +28,7 @@ jobs:
           npm install -g pnpm@8.14.1 
 
       - name: Install dependencies
-        run: pnpm install     
+        run: pnpm install --frozen-lockfile  
 
       - name: Build apps
         run: |

@@ -44,7 +44,9 @@ export default function ActivitiesTableFilters({
   category,
   status,
 }: IProps) {
+  const tAdd = useTranslations('GLOBAL');
   const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
   const { categories, phases } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,
@@ -65,11 +67,11 @@ export default function ActivitiesTableFilters({
         onValueChange={(value) => handleFilter('phase', value)}
       >
         <SelectTrigger className={phase ? '' : 'text-muted-foreground'}>
-          <SelectValue placeholder="Select a phase" />
+          <SelectValue placeholder={t('SELECT_A_PHASE')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="all">All Phases</SelectItem>
+            <SelectItem value="all">{t('ALL_PHASES')}</SelectItem>
             {phases.map((item) => (
               <SelectItem key={item.id} value={item.uuid}>
                 {item.name}
@@ -84,11 +86,11 @@ export default function ActivitiesTableFilters({
         onValueChange={(value) => handleFilter('category', value)}
       >
         <SelectTrigger className={category ? '' : 'text-muted-foreground'}>
-          <SelectValue placeholder="Select a category" />
+          <SelectValue placeholder={t('SELECT_A_CATEGORY')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">{t('ALL_CATEGORIES')}</SelectItem>
             {categories.map((item) => (
               <SelectItem key={item.id} value={item.uuid}>
                 {item.name}
@@ -103,14 +105,14 @@ export default function ActivitiesTableFilters({
         onValueChange={(value) => handleFilter('status', value)}
       >
         <SelectTrigger className={status ? '' : 'text-muted-foreground'}>
-          <SelectValue placeholder="Select a status" />
+          <SelectValue placeholder={t('SELECT_A_STATUS')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="all">{t('ALL_STATUS')}</SelectItem>
             {statusList.map((status) => (
               <SelectItem key={status} value={status}>
-                {status}
+                {tGlobal(status)}
               </SelectItem>
             ))}
           </SelectGroup>
@@ -128,7 +130,7 @@ export default function ActivitiesTableFilters({
       {/* Add Activities Btn */}
       <AddButton
         path={`/projects/aa/${projectID}/activities/add`}
-        name="Activities"
+        name={tAdd('ACTIVITIES')}
       />
     </div>
   );

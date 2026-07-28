@@ -116,7 +116,7 @@ export default function AddInkindView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {step.title}
+                  {t(step.titleKey)}
                 </span>
               </div>
             </div>

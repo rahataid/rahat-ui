@@ -85,7 +85,7 @@ export default function BulkUploadActivities() {
     const categoryNames = categories.map((c) => c.name);
 
     if (!userNames.length || !phaseNames.length || !categoryNames.length) {
-      toast.error('Reference data is still loading, please try again in a moment.');
+      toast.error(t('REFERENCE_DATA_STILL_LOADING'));
       return;
     }
 
@@ -156,9 +156,9 @@ export default function BulkUploadActivities() {
 
       const failedCount = rowResults.filter((r) => r.error).length;
       if (failedCount === 0) {
-        toast.success('All rows are valid.');
+        toast.success(t('ALL_ROWS_ARE_VALID'));
       } else {
-        toast.error(formatNum(failedCount) + ' of ' + formatNum(rows.length) + ' row(s) failed validation.');
+        toast.error(t('X_OF_Y_ROWS_FAILED_VALIDATION', { failedCount: formatNum(failedCount), totalCount: formatNum(rows.length) }));
       }
     } catch {
       // toast already shown by useValidateBulkAddActivities's onError
@@ -168,13 +168,13 @@ export default function BulkUploadActivities() {
   const submitRows = useCallback(
     async (rowsToSubmit: RowResult[]) => {
       try {
-        toast.loading('Uploading activity details...', { autoClose: false });
+        toast.loading(t('UPLOADING_ACTIVITY_DETAILS'), { autoClose: false });
         await submitActivities({
           projectUUID: projectID,
           activities: rowsToSubmit.map((r) => r.payload),
         });
         toast.dismiss();
-        toast.success('Activities uploaded successfully.');
+        toast.success(t('ACTIVITIES_UPLOADED_SUCCESSFULLY'));
         const phaseParam = searchParams.get('phase');
         router.push(
           phaseParam
@@ -183,7 +183,7 @@ export default function BulkUploadActivities() {
         );
       } catch (error) {
         toast.dismiss();
-        toast.error('Failed to upload activities. Please try again.');
+        toast.error(t('FAILED_TO_UPLOAD_ACTIVITIES'));
       }
     },
     [submitActivities, projectID, router, searchParams],

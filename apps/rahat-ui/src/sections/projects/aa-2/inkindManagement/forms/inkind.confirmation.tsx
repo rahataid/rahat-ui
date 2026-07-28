@@ -60,7 +60,7 @@ export default function InkindConfirmation({
               <p className="text-sm text-muted-foreground">{tglob('TYPE')}</p>
               <div className="mt-1 w-fit">
                 <p className="text-lg font-semibold text-primary">
-                  {INKIND_TYPE_LABELS[formData.type]}
+                  {tglob(formData.type)}
                 </p>
               </div>
             </div>

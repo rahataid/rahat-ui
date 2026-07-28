@@ -4,7 +4,8 @@ import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
-import { dateFormat } from '../utils/dateFormate';
+import { useTranslations } from 'next-intl';
+import { useDateFormat } from '../utils/useDateFormat';
 
 interface IProps {
   title: string;
@@ -28,6 +29,8 @@ export function Heading({
   path,
 }: IProps) {
   const router = useRouter();
+  const tg = useTranslations('GLOBAL');
+  const dateFormat = useDateFormat();
 
   const handleBack = () => {
     if (path) {
@@ -63,7 +66,9 @@ export function Heading({
       {updatedAt && (
         <div className="flex items-center gap-1 text-xs text-green-500 mt-1 whitespace-nowrap">
           <RefreshCw size={12} />
-          <span>Last Synced at: {dateFormat(updatedAt)}</span>
+          <span>
+            {tg('LAST_SYNCED_AT')} {dateFormat(updatedAt)}
+          </span>
         </div>
       )}
     </div>

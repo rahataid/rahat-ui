@@ -97,8 +97,8 @@ export default function Budget({}: {}) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="NPR">NPR</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="NPR">{t('CURRENCY_NPR')}</SelectItem>
+                <SelectItem value="USD">{t('CURRENCY_USD')}</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex flex-col gap-1">

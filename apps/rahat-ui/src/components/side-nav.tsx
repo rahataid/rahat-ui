@@ -14,10 +14,22 @@ import React, { act, createElement } from 'react';
 import { useNavData } from '../app/config-nav';
 import getIcon from '../utils/getIcon';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+
+const NAV_TITLE_KEYS: Record<string, string> = {
+  'Dashboard': 'DASHBOARD',
+  'Project': 'PROJECT',
+  'Beneficiaries': 'BENEFICIARIES',
+  'Vendors': 'VENDORS',
+  'Users': 'USERS',
+};
 
 export default function SideNav() {
+  const t = useTranslations('GLOBAL');
   const { data, subData } = useNavData();
   const [more, setMore] = React.useState(false);
+
+  const getTitle = (title: string) => t(NAV_TITLE_KEYS[title] || title);
 
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[1];
@@ -48,10 +60,10 @@ export default function SideNav() {
                     ) : (
                       <span className="text-2xl">{item.title[0]}</span>
                     )}
-                    <span className="sr-only">{item.title}</span>
+                    <span className="sr-only">{getTitle(item.title)}</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{item.title}</TooltipContent>
+                <TooltipContent side="right">{getTitle(item.title)}</TooltipContent>
               </Tooltip>
             );
           })}
@@ -67,10 +79,10 @@ export default function SideNav() {
                     setMore(!more);
                   }}
                 />
-                <span className="sr-only">more</span>
+                <span className="sr-only">{t('MORE')}</span>
               </div>
             </TooltipTrigger>
-            <TooltipContent side="right">More</TooltipContent>
+            <TooltipContent side="right">{t('MORE')}</TooltipContent>
           </Tooltip>
           {more &&
             subData.map((item) => {
@@ -92,10 +104,10 @@ export default function SideNav() {
                       ) : (
                         <span className="text-2xl">{item.title[0]}</span>
                       )}
-                      <span className="sr-only">{item.title}</span>
+                      <span className="sr-only">{getTitle(item.title)}</span>
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent side="right">{item.title}</TooltipContent>
+                  <TooltipContent side="right">{getTitle(item.title)}</TooltipContent>
                 </Tooltip>
               );
             })}
@@ -114,10 +126,10 @@ export default function SideNav() {
                 }`}
               >
                 <Settings className="h-5 w-5" />
-                <span className="sr-only">Settings</span>
+                <span className="sr-only">{t('SETTINGS')}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Settings</TooltipContent>
+            <TooltipContent side="right">{t('SETTINGS')}</TooltipContent>
           </Tooltip>
         </nav>
       </aside>

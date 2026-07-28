@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useTranslations } from 'next-intl';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 
 import BeneficiaryDetail from './beneficiary.detail';
@@ -17,6 +18,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const tg = useTranslations('GLOBAL');
 
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
@@ -55,8 +57,8 @@ export const useProjectBeneficiaryTableColumns = () => {
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
                 {walletAddressCopied === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
+                  ? tg('COPIED')
+                  : tg('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>

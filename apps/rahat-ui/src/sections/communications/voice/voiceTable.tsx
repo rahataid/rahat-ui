@@ -52,6 +52,7 @@ import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 const data: Voice[] = VoiceTableData;
 
@@ -236,7 +237,7 @@ export default function VoiceTableView() {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {getColumnLabel(column)}
                   </DropdownMenuCheckboxItem>
                 );
               })}

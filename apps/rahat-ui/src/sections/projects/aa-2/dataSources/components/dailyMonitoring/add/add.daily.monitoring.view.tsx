@@ -106,7 +106,9 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: [field],
-                  message: `${fieldLabels[field] ?? field} is required.`,
+                  message: t('FIELD_IS_REQUIRED', {
+                    field: fieldLabels[field] ? t(fieldLabels[field]) : field,
+                  }),
                 });
               }
             }
@@ -207,13 +209,17 @@ export default function AddDailyMonitoring() {
                   ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: [field],
-                    message: `${fieldLabels[field]} must be a positive number.`,
+                    message: t('FIELD_MUST_BE_POSITIVE_NUMBER', {
+                      field: fieldLabels[field] ? t(fieldLabels[field]) : field,
+                    }),
                   });
                 } else if (!/^\d+(\.\d+)?$/.test(String(value))) {
                   ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: [field],
-                    message: `${fieldLabels[field]} must be a valid decimal number.`,
+                    message: t('FIELD_MUST_BE_VALID_DECIMAL_NUMBER', {
+                      field: fieldLabels[field] ? t(fieldLabels[field]) : field,
+                    }),
                   });
                 }
               });

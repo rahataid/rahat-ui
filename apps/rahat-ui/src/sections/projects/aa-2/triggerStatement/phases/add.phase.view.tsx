@@ -113,7 +113,7 @@ export default function AddPhaseView() {
     if (isDuplicate) {
       form.setError('name', {
         type: 'manual',
-        message: 'This phase already exists.',
+        message: t('THIS_PHASE_ALREADY_EXISTS'),
       });
       return;
     }

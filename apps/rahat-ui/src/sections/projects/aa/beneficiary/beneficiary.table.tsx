@@ -42,6 +42,7 @@ import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useRouter } from 'next/navigation';
 import TableLoader from '../../../../components/table.loader';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export type Transaction = {
   name: string;
@@ -146,7 +147,7 @@ function BeneficiaryDetailTableView() {
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {getColumnLabel(column)}
                     </DropdownMenuCheckboxItem>
                   );
                 })}

@@ -34,7 +34,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
         <form>
           <div className="mt-4 grid gap-4">
             <FormItem className="w-full">
-              <FormLabel>Selected Phase</FormLabel>
+              <FormLabel>{t('SELECTED_PHASE')}</FormLabel>
               <FormControl>
                 <Input type="text" value={selectedPhase.name} disabled />
               </FormControl>
@@ -47,7 +47,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Trigger Title</FormLabel>
+                    <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
@@ -75,7 +75,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
                         />
                       </FormControl>
                       <FormLabel className="text-sm font-normal">
-                        Is Mandatory Trigger?
+                        {t('IS_MANDATORY_TRIGGER')}
                       </FormLabel>
                       <FormMessage />
                     </FormItem>

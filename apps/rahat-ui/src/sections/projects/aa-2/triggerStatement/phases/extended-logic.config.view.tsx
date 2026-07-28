@@ -373,8 +373,8 @@ export default function ExtendedLogicConfigView() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="AND">AND</SelectItem>
-                  <SelectItem value="OR">OR</SelectItem>
+                  <SelectItem value="AND">{t('AND')}</SelectItem>
+                  <SelectItem value="OR">{t('OR')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -412,8 +412,8 @@ export default function ExtendedLogicConfigView() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="AND">AND</SelectItem>
-                        <SelectItem value="OR">OR</SelectItem>
+                        <SelectItem value="AND">{t('AND')}</SelectItem>
+                        <SelectItem value="OR">{t('OR')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button

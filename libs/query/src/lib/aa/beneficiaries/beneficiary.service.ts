@@ -2,6 +2,7 @@ import { UUID } from 'crypto';
 import { useProjectAction } from '../../projects';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSwal } from 'libs/query/src/swal';
+import { useTranslations } from 'next-intl';
 
 function useToast() {
   const alert = useSwal();
@@ -47,6 +48,7 @@ export const useGetBeneficiariesQr = (payload: {
 };
 
 export const useGenerateQrPdf = (projectUuid: UUID) => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -69,7 +71,7 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
         queryKey: ['beneficiariesQr', { projectUuid, groupId }],
       });
       toast.fire({
-        title: 'QR generated successfully',
+        title: t('QR_GENERATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },

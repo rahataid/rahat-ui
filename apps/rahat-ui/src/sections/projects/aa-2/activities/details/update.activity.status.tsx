@@ -114,11 +114,11 @@ export default function UpdateStatus() {
       for (const file of filesArray) {
         const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -133,7 +133,7 @@ export default function UpdateStatus() {
         } catch (error) {
           // Remove the document from the list if upload fails
           setDocuments((prev) => prev.filter((doc) => doc.name !== file.name));
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         }
       }
 
@@ -179,6 +179,9 @@ export default function UpdateStatus() {
     }
   };
   const formatStatus = (status: string) => {
+    // Status slugs (NOT_STARTED) have GLOBAL keys; fall back to the prettified
+    // slug for any status the constants add later.
+    if (tg.has(status as never)) return tg(status as never);
     return status
       .replace(/_/g, ' ')
       .replace(/\b\w/g, (char) => char.toUpperCase());

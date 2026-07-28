@@ -9,7 +9,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { useProjectSelectStakeholdersTableColumns } from './columns';
-import { stakeholderGroupSchema } from './schemas/stakeholder-group.validation';
+import { buildStakeholderGroupSchema } from './schemas/stakeholder-group.validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -54,6 +54,11 @@ const UpdateOrAddStakeholdersGroup = () => {
   const router = useRouter();
   const isEditing = Boolean(groupId);
   const t = useTranslations('AA Project');
+
+  const stakeholderGroupSchema = React.useMemo(
+    () => buildStakeholderGroupSchema(t),
+    [t],
+  );
 
   const form = useForm<z.infer<typeof stakeholderGroupSchema>>({
     resolver: zodResolver(stakeholderGroupSchema),
@@ -151,7 +156,7 @@ const UpdateOrAddStakeholdersGroup = () => {
     if (groupExists) {
       setError('name', {
         type: 'manual',
-        message: 'A group with this name already exists',
+        message: t('GROUP_WITH_THIS_NAME_ALREADY_EXISTS'),
       });
       return;
     }

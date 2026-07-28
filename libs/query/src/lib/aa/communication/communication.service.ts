@@ -4,6 +4,7 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { title } from 'process';
 import { group } from 'console';
+import { useTranslations } from 'next-intl';
 
 export const useGetCommunicationLogs = (
   uuid: UUID,
@@ -38,6 +39,7 @@ export const useRetryFailedBroadcast = (
   communicationId: string,
   activityId: string,
 ) => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -65,7 +67,7 @@ export const useRetryFailedBroadcast = (
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Success!',
+        title: t('SUCCESS'),
         icon: 'success',
       });
     },
@@ -74,7 +76,7 @@ export const useRetryFailedBroadcast = (
         error?.response?.data?.message || 'An error occured!';
       q.reset();
       toast.fire({
-        title: 'Error while adding activity.',
+        title: t('ERROR_WHILE_ADDING_ACTIVITY'),
         icon: 'error',
         text: errorMessage,
       });

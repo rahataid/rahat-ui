@@ -17,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   name: string;
@@ -33,6 +34,7 @@ export function DeleteButton({
   label = '',
   disabled = false,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip disableHoverableContent>
@@ -57,29 +59,28 @@ export function DeleteButton({
             <AlertDialogContent className="max-w-[clamp(260px,30vw,512px)] p-[clamp(10px,2vw,24px)] gap-[clamp(6px,1.2vw,16px)]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-[clamp(14px,1.6vw,18px)]">
-                  Are you absolutely sure?
+                  {t('ARE_YOU_ABSOLUTELY_SURE')}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-[clamp(11px,1vw,14px)]">
-                  This action cannot be undone. This will permanently delete
-                  this {name}.
+                  {t('DELETE_CONFIRMATION', { name })}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]">
-                  Cancel
+                  {t('CANCEL')}
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleContinueClick}
                   className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]"
                 >
-                  Continue
+                  {t('CONTINUE')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </TooltipTrigger>
         <TooltipContent className="bg-secondary ">
-          <p className="text-[clamp(10px,0.9vw,12px)] font-medium">Delete</p>
+          <p className="text-[clamp(10px,0.9vw,12px)] font-medium">{t('DELETE')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

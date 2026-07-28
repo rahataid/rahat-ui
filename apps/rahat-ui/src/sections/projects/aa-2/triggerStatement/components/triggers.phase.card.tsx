@@ -72,7 +72,7 @@ export default function TriggersPhaseCard({
               title={title}
               titleStyle="text-xl"
               description={subtitle}
-              status={isActive ? 'Triggered' : 'Not Triggered'}
+              status={isActive ? t('TRIGGERED') : t('NOT_TRIGGERED')}
               badgeStyle={`${
                 isActive
                   ? 'text-red-500 bg-red-100'
@@ -207,8 +207,8 @@ export default function TriggersPhaseCard({
             <TooltipWrapper
               tip={
                 isActive
-                  ? 'Cannot add triggers to an active phase'
-                  : 'Add a trigger to this phase'
+                  ? t('CANNOT_ADD_TRIGGERS_TO_ACTIVE_PHASE')
+                  : t('ADD_TRIGGER_TO_THIS_PHASE')
               }
             >
               <IconLabelBtn

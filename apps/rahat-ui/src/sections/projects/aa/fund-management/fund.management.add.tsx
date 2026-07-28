@@ -162,7 +162,7 @@ export default function AddFundManagementView() {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>{t('TITLE')}</FormLabel>
                     <FormControl>
                       <Input type="text" placeholder={t('ENTER_TITLE')} {...field} />
                     </FormControl>
@@ -177,7 +177,7 @@ export default function AddFundManagementView() {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Beneficiary Group</FormLabel>
+                    <FormLabel>{t('BENEFICIARY_GROUP')}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -236,7 +236,7 @@ export default function AddFundManagementView() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Total tokens reserved</FormLabel>
+                      <FormLabel>{t('TOTAL_TOKENS_RESERVED')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"

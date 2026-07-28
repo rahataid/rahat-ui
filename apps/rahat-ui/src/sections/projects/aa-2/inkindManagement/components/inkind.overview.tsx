@@ -357,9 +357,9 @@ export default function InkindOverview() {
                               maxLength={30}
                             />
                             <Badge className="bg-gray-200 text-gray-600">
-                              {formatLabel(
-                                INKIND_TYPE_LABELS[movement.inkind?.type],
-                              )}
+                              {movement.inkind?.type
+                                ? tg(movement.inkind.type)
+                                : ''}
                             </Badge>
                           </div>
                           {movement.groupInkind && (
@@ -510,11 +510,7 @@ export default function InkindOverview() {
                           label={tg('TYPE')}
                           value={
                             <Badge className="bg-gray-200 text-gray-600">
-                              {formatLabel(
-                                INKIND_TYPE_LABELS[
-                                  selectedMovement.inkind.type
-                                ],
-                              )}
+                              {tg(selectedMovement.inkind.type)}
                             </Badge>
                           }
                         />

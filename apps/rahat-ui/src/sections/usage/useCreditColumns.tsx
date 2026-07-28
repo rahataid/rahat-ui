@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export type CreditRow = {
   date: string;
@@ -14,6 +15,7 @@ export type CreditRow = {
 export function useCreditColumns() {
   const t = useTranslations('Usage');
   const g = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
 
   const creditColumns: ColumnDef<CreditRow>[] = [
     {
@@ -35,14 +37,17 @@ export function useCreditColumns() {
     {
       accessorKey: 'credits',
       header: t('CREDITS'),
+      cell: ({ row }) => formatNum(row.getValue('credits')),
     },
     {
       accessorKey: 'sessions',
       header: t('SESSIONS'),
+      cell: ({ row }) => formatNum(row.getValue('sessions')),
     },
     {
       accessorKey: 'broadcasts',
       header: t('BROADCASTS'),
+      cell: ({ row }) => formatNum(row.getValue('broadcasts')),
     },
   ];
 

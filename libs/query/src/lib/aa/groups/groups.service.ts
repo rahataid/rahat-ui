@@ -18,6 +18,7 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
 import { BeneficiaryGroupListItem } from '@rahat-ui/types';
+import { useTranslations } from 'next-intl';
 
 type StakeholderGroupArgs = {
   projectUUID: UUID;
@@ -39,6 +40,7 @@ export const useCreateStakeholdersGroups = <
     'mutationFn'
   >,
 ): UseMutationResult<TData, TError, StakeholderGroupArgs, TContext> => {
+  const t = useTranslations('AA Project');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -72,16 +74,16 @@ export const useCreateStakeholdersGroups = <
       });
       options?.onSuccess?.(data, variables, ctx);
       toast.fire({
-        title: 'Stakeholders Group added successfully',
+        title: t('STAKEHOLDERS_GROUP_ADDED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error, variables, ctx) => {
       q.reset();
       options?.onError?.(error, variables, ctx);
-      const errorMessage = (error as any)?.response?.data?.message || 'Error';
+      const errorMessage = (error as any)?.response?.data?.message || t('ERROR');
       toast.fire({
-        title: 'Error while adding stakeholders group.',
+        title: t('ERROR_WHILE_ADDING_STAKEHOLDERS_GROUP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -99,6 +101,7 @@ export const useCreateStakeholdersGroups = <
   };
 };
 export const useCreateBenficiariesGroups = () => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -131,15 +134,15 @@ export const useCreateBenficiariesGroups = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Beneficiaries Group added successfully',
+        title: t('BENEFICIARIES_GROUP_ADDED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while adding beneficiaries group.',
+        title: t('ERROR_WHILE_ADDING_BENEFICIARIES_GROUP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -148,6 +151,7 @@ export const useCreateBenficiariesGroups = () => {
 };
 
 export const useReserveTokenForGroups = () => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -189,15 +193,15 @@ export const useReserveTokenForGroups = () => {
       q.reset();
       if (data?.status === 'error') return;
       toast.fire({
-        title: 'Token reserve added successfully.',
+        title: t('TOKEN_RESERVE_ADDED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while reserving tokens.',
+        title: t('ERROR_WHILE_RESERVING_TOKENS'),
         icon: 'error',
         text: errorMessage,
       });
@@ -425,6 +429,7 @@ export const useBeneficiariesGroups = (
 };
 
 export const useUpdateStakeholdersGroups = () => {
+  const t = useTranslations('AA Project');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -472,15 +477,15 @@ export const useUpdateStakeholdersGroups = () => {
         ],
       });
       toast.fire({
-        title: 'Stakeholders group updated successfully',
+        title: t('STAKEHOLDERS_GROUP_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while updating stakeholders group.',
+        title: t('ERROR_WHILE_UPDATING_STAKEHOLDERS_GROUP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -489,6 +494,7 @@ export const useUpdateStakeholdersGroups = () => {
 };
 
 export const useDeleteStakeholdersGroups = () => {
+  const t = useTranslations('AA Project');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -526,16 +532,16 @@ export const useDeleteStakeholdersGroups = () => {
           queryKey: ['stakeholdersGroups', 'stakeholders'],
         });
         toast.fire({
-          title: 'Stakeholders Group removed successfully',
+          title: t('STAKEHOLDERS_GROUP_REMOVED_SUCCESSFULLY'),
           icon: 'success',
         });
       }
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while removing stakeholders group.',
+        title: t('ERROR_WHILE_REMOVING_STAKEHOLDERS_GROUP'),
         icon: 'error',
         text: errorMessage,
       });

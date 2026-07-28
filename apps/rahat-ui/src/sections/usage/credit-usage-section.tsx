@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import {
   useReactTable,
   getCoreRowModel,
@@ -82,6 +83,7 @@ export default function CreditUsageSection({
   defaultTo,
 }: CreditUsageSectionProps) {
   const t = useTranslations('Usage');
+  const formatNum = useNumberFormat();
   const creditColumns = useCreditColumns();
   const chartData = useMemo(
     () => transformCreditsForChart(credits ?? []),
@@ -134,6 +136,23 @@ export default function CreditUsageSection({
               <ChartLine
                 series={chartData.series}
                 categories={chartData.categories}
+                lineChartOptions={{
+                  // Supplying this replaces ChartLine's own defaults, so they
+                  // are restated here alongside the localised formatters.
+                  xaxis: { categories: chartData.categories },
+                  tooltip: {
+                    x: { show: false },
+                    marker: { show: false },
+                    y: { formatter: (val: number) => formatNum(val) },
+                  },
+                  dataLabels: {
+                    enabled: true,
+                    formatter: (val: number | string) => formatNum(val),
+                  },
+                  yaxis: {
+                    labels: { formatter: (val: number) => formatNum(val) },
+                  },
+                }}
               />
             </CardContent>
           </Card>

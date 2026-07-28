@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import {
   Card,
   CardContent,
@@ -46,6 +47,7 @@ export default function UsageByTransport({
   byTransport,
 }: UsageByTransportProps) {
   const t = useTranslations('Usage');
+  const formatNum = useNumberFormat();
   if (!byTransport || byTransport.length === 0) return null;
 
   const pieData = {
@@ -54,6 +56,45 @@ export default function UsageByTransport({
       value: t.broadcasts,
     })),
     colors: byTransport.map((t, i) => getColor(t.transportType, i)),
+    // PieChart spreads these over its own defaults, so the donut/tooltip
+    // formatters have to be restated in full to keep the numerals localised.
+    options: {
+      dataLabels: {
+        enabled: true,
+        formatter: (val: number | string) =>
+          `${formatNum(Number(val).toFixed(1))}%`,
+      },
+      tooltip: {
+        fillSeriesColor: true,
+        y: {
+          formatter: (val: number) => formatNum(val),
+          title: { formatter: (seriesName: string) => `${seriesName}` },
+        },
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '70%',
+            labels: {
+              show: true,
+              value: { formatter: (val: number | string) => formatNum(val) },
+              total: {
+                show: true,
+                formatter: (w: { globals: { seriesTotals: number[] } }) =>
+                  formatNum(
+                    w.globals.seriesTotals.reduce((a, b) => a + b, 0),
+                  ),
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const barNumberOptions = {
+    yaxis: { labels: { formatter: (val: number) => formatNum(val) } },
+    tooltip: { y: { formatter: (val: number) => formatNum(val) } },
   };
 
   const barSeries = [
@@ -103,6 +144,7 @@ export default function UsageByTransport({
               height={300}
               width="100%"
               custom
+              options={barNumberOptions}
             />
           </CardContent>
         </Card>

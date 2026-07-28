@@ -14,6 +14,7 @@ import AddButton from '../../projects/components/add.btn';
 import HeaderWithBack from '../../projects/components/header.with.back';
 
 export default function RoleView() {
+  const tAdd = useTranslations('GLOBAL');
   const tGlobal = useTranslations('GLOBAL');
   const t = useTranslations('Users – Roles & Permissions');
   const { data: rolesList, isLoading } = useRoleList();
@@ -43,7 +44,7 @@ export default function RoleView() {
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
           />
-          <AddButton name="Role" path="/users/roles/add" />
+          <AddButton name={tAdd('ROLE')} path="/users/roles/add" />
         </div>
         <DemoTable
           table={table}

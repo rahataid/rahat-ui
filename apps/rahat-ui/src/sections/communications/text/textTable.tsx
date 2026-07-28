@@ -47,6 +47,7 @@ import { usePagination } from '@rahat-ui/query';
 import TableLoader from '../../../components/table.loader';
 import CommunicationSummary from '../components/communication.summary';
 import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export default function TextTableView() {
   const tg = useTranslations('GLOBAL');
@@ -146,7 +147,7 @@ export default function TextTableView() {
                           column.toggleVisibility(!!value)
                         }
                       >
-                        {column.id}
+                        {getColumnLabel(column)}
                       </DropdownMenuCheckboxItem>
                     );
                   })}

@@ -151,7 +151,7 @@ export default function TriggerStatementDetail() {
                 className={`rounded flex gap-1 items-center text-sm font-medium ${
                   version && 'hidden'
                 }`}
-                name="trigger"
+                name={t('TRIGGER')}
                 label={t('DELETE')}
                 handleContinueClick={handleDelete}
                 disabled={isEditDeleteDisabled}

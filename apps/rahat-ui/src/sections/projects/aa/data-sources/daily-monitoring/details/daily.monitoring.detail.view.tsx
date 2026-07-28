@@ -131,7 +131,7 @@ export default function DailyMonitoringDetailView() {
         </div>
         <div className="flex gap-4 items-center">
           <EditButton path={dailyMonitoringEditPath} />
-          <DeleteButton name="project" handleContinueClick={onDelete} />
+          <DeleteButton name={t('PROJECT')} handleContinueClick={onDelete} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">

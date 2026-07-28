@@ -5,6 +5,7 @@ import { useProjectAction } from '../../projects';
 import { useStatsStore } from './stats.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { useTranslations } from 'next-intl';
 
 export const usePhasesStats = (uuid: UUID) => {
   const q = useProjectAction();
@@ -145,6 +146,7 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
 };
 
 export const useTransportSessionStats = (uuid: UUID) => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -172,7 +174,7 @@ export const useTransportSessionStats = (uuid: UUID) => {
         const errorMessage =
           error?.response?.data?.message || 'Failed to fetch transport stats';
         toast.fire({
-          title: 'Error loading transport stats',
+          title: t('ERROR_LOADING_TRANSPORT_STATS'),
           text: errorMessage,
           icon: 'error',
         });

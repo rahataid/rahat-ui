@@ -113,7 +113,13 @@ export default function FundManagementTabs() {
       >
         <TabsList className="border bg-secondary rounded mb-2">
           {availableTabsConfig.map((tab) => {
-            const labelKey = tab.label.toUpperCase().replace(/\s+/g, '_');
+            // Tab labels come from the backend, so punctuation has to be folded
+            // out before they can be used as keys: "Multi-Sig (Gnosis)" would
+            // otherwise derive "MULTI-SIG_(GNOSIS)" and never match.
+            const labelKey = tab.label
+              .toUpperCase()
+              .replace(/[^A-Z0-9]+/g, '_')
+              .replace(/^_+|_+$/g, '');
             return (
               <TabsTrigger
                 key={tab.value}

@@ -28,14 +28,17 @@ const WeatherMap = dynamic(
   () => import('./components/weather-map').then((mod) => mod.WeatherMap),
   {
     ssr: false,
-    loading: () => (
-      <div className="h-full w-full flex items-center justify-center bg-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-          <p className="text-sm text-muted-foreground">{t('LOADING_MAP')}</p>
+    loading: function LoadingMap() {
+      const loadingT = useTranslations('AA Project');
+      return (
+        <div className="h-full w-full flex items-center justify-center bg-muted">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+            <p className="text-sm text-muted-foreground">{loadingT('LOADING_MAP')}</p>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
 );
 

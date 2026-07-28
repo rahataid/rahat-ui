@@ -176,11 +176,11 @@ export default function AddActivities() {
         const isDuplicateFile = isDuplicateInFiles || isDuplicateInOriginals;
 
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -228,7 +228,7 @@ export default function AddActivities() {
             (f) => !(f.fileName === file.name && f.mediaURL === ''),
           );
           form.setValue('activityDocuments', filteredFiles);
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         } finally {
           setUploadingFileName(null);
         }
@@ -383,7 +383,7 @@ export default function AddActivities() {
     if (selectedUser && !selectedUser.email) {
       form.setError('responsibility', {
         type: 'manual',
-        message: 'Selected user has no email',
+        message: t('SELECTED_USER_HAS_NO_EMAIL'),
       });
     } else {
       form.clearErrors('responsibility');

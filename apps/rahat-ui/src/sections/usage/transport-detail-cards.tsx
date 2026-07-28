@@ -2,6 +2,10 @@
 
 import { useTranslations } from 'next-intl';
 import {
+  useNumberFormat,
+  useLabelDigits,
+} from 'apps/rahat-ui/src/utils/useNumberFormat';
+import {
   MessageSquare,
   Mail,
   Phone,
@@ -53,6 +57,8 @@ export default function TransportDetailCards({
   loading,
 }: TransportDetailCardsProps) {
   const t = useTranslations('Usage');
+  const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
   if (!byTransport || byTransport.length === 0) return null;
 
   return (
@@ -89,7 +95,7 @@ export default function TransportDetailCards({
                       {t('BROADCASTS')}
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {transport.broadcasts}
+                    {formatNum(transport.broadcasts)}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -98,7 +104,7 @@ export default function TransportDetailCards({
                       {t('SUCCESS')}
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {successRate}%
+                    {formatNum(successRate)}%
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -107,7 +113,7 @@ export default function TransportDetailCards({
                       {t('CREDITS')}
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {transport.credits}
+                    {formatNum(transport.credits)}
                   </span>
                 </div>
                 {transport.transportType === 'VOICE' && (
@@ -117,7 +123,7 @@ export default function TransportDetailCards({
                       {t('DURATION')}
                     </span>
                     <span className="text-sm font-medium ml-auto">
-                      {formatDuration(transport.duration)}
+                      {formatDigits(formatDuration(transport.duration))}
                     </span>
                   </div>
                 )}
@@ -131,7 +137,7 @@ export default function TransportDetailCards({
                       {t('SEGMENTS')}
                     </span>
                     <span className="text-sm font-medium ml-auto">
-                      {transport.segments}
+                      {formatNum(transport.segments)}
                     </span>
                   </div>
                 )}

@@ -163,7 +163,7 @@ export default function DailyMonitoringDetailView() {
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
           >
-            <DeleteButton name="project" handleContinueClick={onDelete} />
+            <DeleteButton name={t('PROJECT')} handleContinueClick={onDelete} />
           </RoleAuth>
         </div>
       </div>

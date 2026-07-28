@@ -1,5 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   status: boolean;
@@ -16,6 +17,7 @@ export default function ManualTriggerDetailCard({
   triggeredAt,
   triggeredBy
 }: IProps) {
+  const t = useTranslations('AA Project');
 
   const formatDate = useDateFormat();
 
@@ -30,7 +32,7 @@ export default function ManualTriggerDetailCard({
               status ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
             }
           >
-            {status ? 'Triggered' : 'Not Triggered'}
+            {status ? t('TRIGGERED') : t('NOT_TRIGGERED')}
           </Badge>
         </div>
         <div>

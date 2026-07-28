@@ -36,6 +36,7 @@ function getPhaseColor(phase: string) {
 }
 export default function useCommsActivitiesTableColumns() {
   const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id } = useParams();
   const formatDate = useDateFormat();
@@ -64,7 +65,7 @@ export default function useCommsActivitiesTableColumns() {
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const className = getPhaseColor(phase);
-        return <Badge className={className}>{phase}</Badge>;
+        return <Badge className={className}>{tg(phase)}</Badge>;
       },
     },
     {
@@ -72,7 +73,7 @@ export default function useCommsActivitiesTableColumns() {
       header: t('STATUS'),
       cell: ({ row }) => {
         const className = getStatusBg(row.original?.commStatus);
-        return <Badge className={className}>{row.original?.commStatus}</Badge>;
+        return <Badge className={className}>{t(row.original?.commStatus?.replace(/\s+/g, '_').toUpperCase())}</Badge>;
       },
     },
     {

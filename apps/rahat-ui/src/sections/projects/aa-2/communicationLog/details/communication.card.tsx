@@ -153,7 +153,7 @@ export function CommunicationDetailCard({
                 tip={`${t('COMMUNICATION_STATUS')}: ${
                   activityCommunication?.sessionStatus
                     ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'
+                    : t('UNKNOWN')
                 }`}
               >
                 <Badge
@@ -163,7 +163,7 @@ export function CommunicationDetailCard({
                 >
                   {activityCommunication?.sessionStatus
                     ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'}
+                    : t('UNKNOWN')}
                 </Badge>
               </TooltipWrapper>
             </div>

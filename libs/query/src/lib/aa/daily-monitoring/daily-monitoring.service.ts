@@ -3,6 +3,7 @@ import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useTranslations } from 'next-intl';
 
 export type HealthStatus = 'HEALTHY' | 'UNHEALTHY' | 'DEGRADED';
 
@@ -51,6 +52,7 @@ export interface HealthCacheData {
 }
 
 export const useCreateDailyMonitoring = () => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -78,15 +80,15 @@ export const useCreateDailyMonitoring = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Added successfully',
+        title: t('ADDED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while adding.',
+        title: t('ERROR_WHILE_ADDING'),
         icon: 'error',
         text: errorMessage,
       });
@@ -191,6 +193,7 @@ export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
 };
 
 export const useUpdateMonitoring = () => {
+  const t = useTranslations('AA Project');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -222,15 +225,15 @@ export const useUpdateMonitoring = () => {
         queryKey: ['dailyMonitorings', 'dailyMonitoring'],
       });
       toast.fire({
-        title: 'Updated successfully',
+        title: t('UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while updating.',
+        title: t('ERROR_WHILE_UPDATING'),
         icon: 'error',
         text: errorMessage,
       });
@@ -239,6 +242,7 @@ export const useUpdateMonitoring = () => {
 };
 
 export const useRemoveMonitoring = () => {
+  const t = useTranslations('AA Project');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -270,15 +274,15 @@ export const useRemoveMonitoring = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['dailyMonitorings'] });
       toast.fire({
-        title: 'Removed successfully',
+        title: t('REMOVED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while removing.',
+        title: t('ERROR_WHILE_REMOVING'),
         icon: 'error',
         text: errorMessage,
       });

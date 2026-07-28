@@ -115,7 +115,7 @@ const StakeholdersGroupsDetails = () => {
             hasContent={false}
           >
             <DeleteButton
-              name="stakeholders group"
+              name={t('STAKEHOLDER')}
               handleContinueClick={handleDeleteClick}
               className="rounded-sm w-full flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
               label={t('DELETE_GROUP')}

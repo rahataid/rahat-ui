@@ -1,4 +1,5 @@
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -11,6 +12,8 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export const useTriggerStatementTableColumns = () => {
+  const t = useTranslations('AA Project');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();
   const formatDate = useDateFormat();
@@ -18,14 +21,14 @@ export const useTriggerStatementTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
-      header: 'Title',
+      header: t('TITLE'),
       cell: ({ row }) => {
         return <div className="w-80">{row.getValue('title')}</div>;
       },
     },
     {
       accessorKey: 'dataSource',
-      header: 'Data Source',
+      header: t('DATA_SOURCE'),
       cell: ({ row }) => {
         if (row.getValue('dataSource') === 'DHM') {
           return (
@@ -35,7 +38,7 @@ export const useTriggerStatementTableColumns = () => {
                   <TooltipTrigger>DHM</TooltipTrigger>
                   <TooltipContent className="bg-secondary ">
                     <p className="text-xs font-medium">
-                      Department of Hydrology and Meteorology
+                      {t('DHM_FULL')}
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -48,33 +51,33 @@ export const useTriggerStatementTableColumns = () => {
     },
     {
       accessorKey: 'location',
-      header: 'River Basin',
+      header: t('RIVER_BASIN'),
       cell: ({ row }) => (
         <div className="cursor-pointer w-max">
-          {row.getValue('location') || 'N/A'}
+          {row.getValue('location') || t('NA')}
         </div>
       ),
     },
     {
       accessorKey: 'phase',
-      header: 'Phase',
+      header: t('PHASE'),
       cell: ({ row }) => (
         <div className="cursor-pointer w-max">
-          {row.original?.phase?.name || 'N/A'}
+          {row.original?.phase?.name || t('NA')}
         </div>
       ),
     },
     {
       accessorKey: 'isMandatory',
-      header: 'Type',
+      header: tg('TYPE'),
       cell: ({ row }) => {
         const isMandatory = row.getValue('isMandatory');
-        return <Badge>{isMandatory ? 'Required' : 'Optional'}</Badge>;
+        return <Badge>{isMandatory ? t('REQUIRED') : t('OPTIONAL')}</Badge>;
       },
     },
     {
       accessorKey: 'isTriggered',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => {
         const isTriggered = row.getValue('isTriggered');
         return (
@@ -85,7 +88,7 @@ export const useTriggerStatementTableColumns = () => {
                 : 'bg-red-100 text-red-600'
             }
           >
-            {isTriggered ? 'Triggered' : 'Not Triggered'}
+            {isTriggered ? t('TRIGGERED') : t('NOT_TRIGGERED')}
           </Badge>
         );
       },
@@ -98,7 +101,7 @@ export const useTriggerStatementTableColumns = () => {
         if (triggeredAt) {
           return formatDate(triggeredAt);
         }
-        return 'N/A';
+        return t('NA');
       },
     },
     {
@@ -109,7 +112,7 @@ export const useTriggerStatementTableColumns = () => {
         if (triggeredBy) {
           return triggeredBy;
         }
-        return 'N/A';
+        return t('NA');
       },
     },
     {

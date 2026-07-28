@@ -20,6 +20,7 @@ export default function StakeholdersTableFilters({
   filters,
   setFilters,
 }: IProps) {
+  const tAdd = useTranslations('GLOBAL');
   const tGlobal = useTranslations('GLOBAL');
   const [stakeholderSearchText, setStakeholderSearchText] = React.useState('');
   const [organizationSearchText, setOrganizationSearchText] =
@@ -68,7 +69,7 @@ export default function StakeholdersTableFilters({
       {/* Add Stakeholders Btn */}
       <AddButton
         path={`/projects/aa/${projectID}/stakeholders/add?fromGroup=${fromGroup}`}
-        name="Stakeholder"
+        name={tAdd('STAKEHOLDER')}
       />
     </div>
   );

@@ -31,16 +31,16 @@ const ActionCards = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="1">
-                                            SMS
+                                            {t('SMS')}
                                         </SelectItem>
                                         <SelectItem value="2">
-                                            EMAIL
+                                            {t('EMAIL')}
                                         </SelectItem>
                                         <SelectItem value="3">
-                                            IVR
+                                            {t('IVR')}
                                         </SelectItem>
                                         <SelectItem value="4">
-                                            PAYOUT
+                                            {t('PAYOUT')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>

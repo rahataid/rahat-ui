@@ -41,14 +41,15 @@ const SelectComponent = ({
   value,
   handleFilter,
 }: ISelectComponent) => {
+  const tGlobal = useTranslations('GLOBAL');
   return (
     <Select value={value} onValueChange={(value) => handleFilter(name, value)}>
       <SelectTrigger>
-        <SelectValue placeholder={`Select a ${name}`} />
+        <SelectValue placeholder={`${tGlobal('SELECT')} ${name}`} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="all">{tGlobal('ALL')}</SelectItem>
           {options.map((item) => (
             <SelectItem key={item.label} value={item.value}>
               {item.label}
@@ -68,6 +69,7 @@ export default function DailyMonitoringTableFilters({
   handleFilter,
 }: IProps) {
   const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA Project');
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">
@@ -94,7 +96,7 @@ export default function DailyMonitoringTableFilters({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+            {date ? format(date, 'PPP') : <span>{tGlobal('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -108,9 +110,9 @@ export default function DailyMonitoringTableFilters({
         </PopoverContent>
       </Popover>
       {date && (
-        <Button type="button" onClick={() => handleFilter('createdAt', '')}>
-          Clear date
-        </Button>
+          <Button type="button" onClick={() => handleFilter('createdAt', '')}>
+            {tGlobal('CLEAR_DATE')}
+          </Button>
       )}
     </div>
   );

@@ -55,6 +55,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useUserList } from '@rumsan/react-query';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 type IProps = {
   handleClick: (item: IUserItem) => void;
@@ -208,7 +209,7 @@ export default function UserTable({ handleClick }: IProps) {
                             column.toggleVisibility(!!value)
                           }
                         >
-                          {column.id}
+                          {getColumnLabel(column)}
                         </DropdownMenuCheckboxItem>
                       );
                     })}

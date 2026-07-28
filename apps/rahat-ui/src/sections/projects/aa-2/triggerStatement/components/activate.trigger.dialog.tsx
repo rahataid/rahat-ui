@@ -58,7 +58,7 @@ export default function ActivateTriggerDialog({
       .string()
       .optional()
       .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     triggerDocuments: z
       .array(
@@ -88,11 +88,11 @@ export default function ActivateTriggerDialog({
       for (const file of filesArray) {
         const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -107,7 +107,7 @@ export default function ActivateTriggerDialog({
         } catch (error) {
           // Remove the document from the list if upload fails
           setDocuments((prev) => prev.filter((doc) => doc.name !== file.name));
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         }
       }
 
@@ -153,7 +153,7 @@ export default function ActivateTriggerDialog({
             <DialogHeader>
               <DialogTitle className="text-center">{t('CONFIRM_TRIGGER')}</DialogTitle>
               <DialogDescription className="text-center">
-                Fill out the details below and press confirm to trigger
+                {t('FILL_OUT_DETAILS_TO_TRIGGER')}
               </DialogDescription>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
@@ -190,7 +190,7 @@ export default function ActivateTriggerDialog({
                               className="text-primary"
                             />
                             <p className="text-sm font-medium text-primary">
-                              Choose file to upload.
+                              {t('CHOOSE_FILE_TO_UPLOAD')}
                             </p>
                           </div>
                           <Input
@@ -203,8 +203,7 @@ export default function ActivateTriggerDialog({
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-muted-foreground font-medium">
-                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                        CSV under 5 MB.
+                        {t('FILES_MUST_BE_UNDER_5MB')}
                       </p>
                       {documents?.map((file) => (
                         <div

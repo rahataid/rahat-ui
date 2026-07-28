@@ -36,6 +36,7 @@ import {
   ServiceContext,
   ServiceContextType,
 } from '../../../providers/service.provider';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 type IProps = {
   handleClick: (item: IRoleItem) => void;
@@ -182,7 +183,7 @@ export default function RoleTable({ handleClick }: IProps) {
                           column.toggleVisibility(!!value)
                         }
                       >
-                        {column.id}
+                        {getColumnLabel(column)}
                       </DropdownMenuCheckboxItem>
                     );
                   })}

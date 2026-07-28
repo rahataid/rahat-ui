@@ -51,19 +51,19 @@ export default function TriggersListTabs({
           className="w-full data-[state=active]:bg-white"
           value="Not Triggered"
         >
-          Not Triggered
+          {t('NOT_TRIGGERED')}
         </TabsTrigger>
         <TabsTrigger
           className="w-full data-[state=active]:bg-white"
           value="Triggered"
         >
-          Triggered
+          {t('TRIGGERED')}
         </TabsTrigger>
         <TabsTrigger
           className="w-full data-[state=active]:bg-white"
           value="History"
         >
-          History
+          {t('HISTORY')}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All">

@@ -73,6 +73,10 @@ export default function EditActivity() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
+  const [editBackup, setEditBackup] = useState<{
+    index: number;
+    data: CommunicationData;
+  } | null>(null);
 
   // Ref goes here
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -144,11 +148,11 @@ export default function EditActivity() {
           (f) => f.fileName === file.name,
         );
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -184,7 +188,7 @@ export default function EditActivity() {
             (f) => !(f.fileName === file.name && f.mediaURL === ''),
           );
           form.setValue('activityDocuments', filteredFiles);
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         } finally {
           setUploadingFileName(null);
         }
@@ -251,7 +255,15 @@ export default function EditActivity() {
       sessionId: communicationFormData?.sessionId || '',
       communicationId: communicationFormData?.communicationId || '',
     };
-    setCommunicationData([...communicationData, newCommunication]);
+
+    if (editBackup) {
+      const updated = [...communicationData];
+      updated.splice(editBackup.index, 0, newCommunication);
+      setCommunicationData(updated);
+      setEditBackup(null);
+    } else {
+      setCommunicationData([...communicationData, newCommunication]);
+    }
 
     communicationForm.reset(defaultCommunicationValues);
   };
@@ -263,11 +275,26 @@ export default function EditActivity() {
     setCommunicationData(updatedCommunications);
   };
 
+  const handleEdit = (index: number) => {
+    setEditBackup({ index, data: communicationData[index] });
+    handleRemove(index);
+  };
+
+  const handleCancelEdit = () => {
+    if (editBackup) {
+      const restored = [...communicationData];
+      restored.splice(editBackup.index, 0, editBackup.data);
+      setCommunicationData(restored);
+      setEditBackup(null);
+    }
+  };
+
   const handleReset = () => {
     form.reset();
     communicationForm.reset(defaultCommunicationValues);
     setOpen(false);
     editCommunicationForm.onFalse();
+    setEditBackup(null);
 
     if (
       activityDetail?.activityCommunication &&
@@ -303,6 +330,20 @@ export default function EditActivity() {
       }
     }
   }, [isActivityLoading, open, editCommunicationForm.value]);
+
+  // Handle #comm hash to auto-open communication form
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isActivityLoading) return;
+    if (window.location.hash === '#comm') {
+      setOpen(true);
+      window.history.replaceState(
+        null,
+        '',
+        window.location.pathname + window.location.search,
+      );
+    }
+  }, [isActivityLoading]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -626,7 +667,9 @@ export default function EditActivity() {
                                       key={item.value}
                                       value={item.value}
                                     >
-                                      {item.label}
+                                      {item.value === 'hours'
+                                        ? t('HOURS')
+                                        : t('DAYS')}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -750,6 +793,7 @@ export default function EditActivity() {
                     appTransports={appTransports}
                     isMultiSelect={open}
                     editMode={editCommunicationForm}
+                    onCancelEdit={handleCancelEdit}
                   />
                 )}
               </div>
@@ -759,6 +803,7 @@ export default function EditActivity() {
                 communicationData={communicationData}
                 appTransports={appTransports}
                 onRemove={handleRemove}
+                onEdit={handleEdit}
                 setOpen={editCommunicationForm.setValue}
                 open={editCommunicationForm.value}
               />

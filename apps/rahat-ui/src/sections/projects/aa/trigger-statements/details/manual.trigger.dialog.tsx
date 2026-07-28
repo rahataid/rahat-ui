@@ -48,7 +48,7 @@ export default function ManualTriggerDialog() {
       .string()
       .optional()
       .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     triggerDocuments: z
       .array(
@@ -75,9 +75,9 @@ export default function ManualTriggerDialog() {
     if (file) {
       const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
       if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
+        return toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILES'));
       }
-      if (!validateFile(file)) {
+      if (!validateFile(file, t)) {
         return;
       }
 
@@ -135,7 +135,7 @@ export default function ManualTriggerDialog() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Add note</FormLabel>
+                      <FormLabel>{t('ADD_NOTE')}</FormLabel>
                       <FormControl>
                         <Textarea placeholder={t('WRITE_NOTE')} {...field} />
                       </FormControl>

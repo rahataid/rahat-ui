@@ -8,6 +8,7 @@ import { QueryProvider } from '../providers/query-provider';
 import { SecondPanelProvider } from '../providers/second-panel-provider';
 import { ServiceProvider } from '../providers/service.provider';
 import { ThemeProvider } from '../providers/theme-provider';
+import TranslationBridge from '../providers/translation-bridge';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
@@ -41,6 +42,7 @@ export default async function RootLayout({
                   <CommunicationQueryProvider>
                     <ServiceProvider>
                       <SecondPanelProvider>
+                        <TranslationBridge />
                         <ThemeProvider
                           attribute="class"
                           defaultTheme="light"

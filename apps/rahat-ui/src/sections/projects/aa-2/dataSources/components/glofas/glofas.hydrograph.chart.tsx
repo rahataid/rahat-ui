@@ -41,14 +41,14 @@ const GlofasHydrographChart = ({ series }: IGlofasHydrographChartProps) => {
           <Legend />
           <Area
             dataKey="range"
-            name="Min-Max range"
+            name={t('MIN_MAX_RANGE')}
             stroke="none"
             fill="#93c5fd"
             fillOpacity={0.4}
           />
           <Line
             dataKey="mean"
-            name="Mean discharge"
+            name={t('MEAN_DISCHARGE')}
             stroke="#1d4ed8"
             dot={false}
             strokeWidth={2}

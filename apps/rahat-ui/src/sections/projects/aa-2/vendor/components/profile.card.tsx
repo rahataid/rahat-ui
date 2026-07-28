@@ -2,6 +2,7 @@
 import { useTranslations } from 'next-intl';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck, Phone, User } from 'lucide-react';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 type ProfileCardProps = {
   data: any;
@@ -9,6 +10,7 @@ type ProfileCardProps = {
 
 export default function ProfileCard({ data }: ProfileCardProps) {
   const t = useTranslations('AA Project');
+  const formatPhone = usePhoneFormat();
   const { clickToCopy, copyAction } = useCopy();
   return (
     <div className="border rounded-sm p-4">
@@ -47,7 +49,7 @@ export default function ProfileCard({ data }: ProfileCardProps) {
               </div>
               <div>
                 <p className="text-sm font medium">{t('PHONE_NUMBER')}</p>
-                <p className="text-sm text-muted-foreground">{data?.phone}</p>
+                <p className="text-sm text-muted-foreground">{formatPhone(data?.phone)}</p>
               </div>
             </div>
           </div>

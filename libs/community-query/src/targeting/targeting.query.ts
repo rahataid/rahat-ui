@@ -9,6 +9,7 @@ import { getTargetClient, getExportClient } from '@rahataid/community-tool-sdk/c
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
 import { Pagination } from '@rumsan/sdk/types';
+import { getTranslate } from '../translate';
 
 export const useTargetingList = (
   payload: Pagination & { [key: string]: string },
@@ -42,9 +43,10 @@ export const useTargetingCreate = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Failed to create targeting!',
+          t('ERROR'),
+          error.response.data.message || t('FAILED_TO_CREATE_TARGETING'),
           'error',
         );
       },
@@ -84,7 +86,8 @@ export const useTargetingLabelUpdate = () => {
       mutationKey: [TAGS.UPDATE_TARGETING_LABEL],
       mutationFn: targetingClient.patchLabel,
       onSuccess: () => {
-        Swal.fire('Beneficiaries added to the group', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('BENEFICIARIES_ADDED_TO_GROUP'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_TARGETING_BENEFICIARIES,
@@ -95,9 +98,10 @@ export const useTargetingLabelUpdate = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Failed to update targeting label!',
+          t('ERROR'),
+          error.response.data.message || t('FAILED_TO_UPDATE_TARGETING_LABEL'),
           'error',
         );
       },
@@ -126,34 +130,35 @@ export const useExportPinnedListBeneficiary = () => {
     {
       mutationKey: [TAGS.EXPORT_TARGETED_BENEFICIARIES],
       mutationFn: async (payload: any) => {
+        const t = getTranslate();
         if (!payload.config || Object.keys(payload.config).length === 0) {
           await Swal.fire({
             icon: 'info',
-            title: 'No Settings Available',
-            text: 'Please add app URL from settings',
-            confirmButtonText: 'Ok',
+            title: t('NO_SETTINGS_AVAILABLE'),
+            text: t('ADD_APP_URL_FROM_SETTINGS'),
+            confirmButtonText: t('OK'),
           });
           return null;
         }
 
         return Swal.fire({
-          title: 'Export Beneficiary',
+          title: t('EXPORT_BENEFICIARY_TITLE'),
           showCancelButton: true,
-          confirmButtonText: 'Export',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: t('EXPORT'),
+          cancelButtonText: t('CANCEL'),
           input: 'select',
           inputOptions: payload.config,
-          inputPlaceholder: '--Select Your App--',
+          inputPlaceholder: t('SELECT_APP_PLACEHOLDER'),
           preConfirm: (value) => {
             if (!value) {
               return Swal.showValidationMessage(
-                'Please select app to proceed!',
+                t('SELECT_APP_TO_PROCEED'),
               );
             }
             return new Promise((resolve, reject) => {
               let confirmButton = Swal.getConfirmButton();
               if (!confirmButton) return;
-              confirmButton.innerHTML = 'Exporting...';
+              confirmButton.innerHTML = t('EXPORTING');
               confirmButton.disabled = true;
               const inputData = {
                 groupUUID: payload?.groupUUID,
@@ -168,6 +173,7 @@ export const useExportPinnedListBeneficiary = () => {
         })
           .then((result) => {
             if (!result || !result.value) return;
+            const tt = getTranslate();
             Swal.fire(result?.value?.data?.message, '', 'success');
             queryClient.invalidateQueries({
               queryKey: [
@@ -180,9 +186,10 @@ export const useExportPinnedListBeneficiary = () => {
           })
           .catch((error) => {
             console.log('ExportError=>', error);
+            const tt = getTranslate();
             Swal.fire(
-              'Error',
-              error?.response?.data?.message || 'Failed to export beneficiary!',
+              tt('ERROR'),
+              error?.response?.data?.message || tt('FAILED_TO_EXPORT_BENEFICIARY'),
               'error',
             );
           });

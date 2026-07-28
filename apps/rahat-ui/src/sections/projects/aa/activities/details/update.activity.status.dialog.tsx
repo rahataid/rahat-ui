@@ -106,9 +106,9 @@ export default function UpdateActivityStatusDialog({
     if (file) {
       const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
       if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
+        return toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILES'));
       }
-      if (!validateFile(file)) {
+      if (!validateFile(file, t)) {
         return;
       }
 
@@ -182,7 +182,7 @@ export default function UpdateActivityStatusDialog({
                 name="status"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Status:</FormLabel>
+                    <FormLabel>{t('STATUS')}:</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -198,7 +198,7 @@ export default function UpdateActivityStatusDialog({
                               <RadioGroupItem value={status} />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {status}
+                              {t(status)}
                             </FormLabel>
                           </FormItem>
                         ))}
@@ -214,7 +214,7 @@ export default function UpdateActivityStatusDialog({
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Add note</FormLabel>
+                      <FormLabel>{t('ADD_NOTE')}</FormLabel>
                       <FormControl>
                         <Textarea placeholder={t('WRITE_NOTE')} {...field} />
                       </FormControl>

@@ -353,7 +353,7 @@ export default function InkindList() {
           const type = row.getValue('type') as InkindType;
           return (
             <Badge className="bg-gray-200 text-gray-600">
-              {formatLabel(INKIND_TYPE_LABELS[type])}
+              {tg(type)}
             </Badge>
           );
         },
@@ -491,7 +491,7 @@ export default function InkindList() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
               {typeFilter
-                ? INKIND_TYPE_LABELS[typeFilter as InkindType]
+                ? tg(typeFilter as InkindType)
                 : tv('ALL_TYPES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
@@ -513,7 +513,7 @@ export default function InkindList() {
                   setPagination({ ...pagination, page: 1 });
                 }}
               >
-                {INKIND_TYPE_LABELS[t]}
+                {tg(t)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

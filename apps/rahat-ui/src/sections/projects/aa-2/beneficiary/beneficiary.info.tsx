@@ -5,6 +5,7 @@ import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import InkindDetails from './beneficiary.inkind.details';
@@ -27,6 +28,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
+  const formatPhone = usePhoneFormat();
   const { clickToCopy, copyAction } = useCopy();
 
   const { data: tokenData, isPending } = useTokenDetails({
@@ -82,7 +84,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         />
         <DataItem
           label={tg('PHONE_NUMBER')}
-          value={beneficiary?.extras?.phone || tg('N_A')}
+          value={formatPhone(beneficiary?.extras?.phone) || tg('N_A')}
         />
         <div>
           <h1 className="text-lg text-black">{tg('ADDRESS')}</h1>
@@ -146,14 +148,14 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
               <h3 className="text-xl font-bold">
                 {formatNum(tokenData?.assignedToken)} {t('TOKENS')}
               </h3>
-              <p className="text-gray-600">NPR {formatNum(tokenData?.assignedToken)}</p>
+              <p className="text-gray-600">{t('CURRENCY_NPR')} {formatNum(tokenData?.assignedToken)}</p>
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
               <p className="text-sm text-gray-500">{t('REDEEMED')}</p>
               <h3 className="text-xl font-bold">
                 {formatNum(tokenData?.redemmedToken)} {t('TOKENS')}
               </h3>
-              <p className="text-gray-600">NPR {formatNum(tokenData?.redemmedToken)}</p>
+              <p className="text-gray-600">{t('CURRENCY_NPR')} {formatNum(tokenData?.redemmedToken)}</p>
             </div>
           </div>
         ) : null}

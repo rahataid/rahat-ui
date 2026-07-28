@@ -24,6 +24,7 @@ interface CommunicationDataCardProps {
   communicationData: CommunicationData[];
   appTransports: Transport[] | undefined;
   onRemove: (index: number) => void;
+  onEdit: (index: number) => void;
   setOpen: Dispatch<SetStateAction<boolean>>;
   open: boolean;
 }
@@ -33,6 +34,7 @@ const CommunicationDataCard = ({
   communicationData,
   appTransports,
   onRemove,
+  onEdit,
   setOpen,
   open = false,
 }: CommunicationDataCardProps) => {
@@ -47,11 +49,10 @@ const CommunicationDataCard = ({
 
   // Handle the edit button click
   const handleEditClick = (i: number) => {
-    const itemData = communicationData[i];
-
-    onRemove(i);
+    onEdit(i);
     setOpen(true);
 
+    const itemData = communicationData[i];
     form.reset({
       communicationTitle: itemData.communicationTitle || '',
       sessionId: itemData.sessionId,

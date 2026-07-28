@@ -98,7 +98,7 @@ export default function useIndividualCommonLogsTableColumns(
         const status = row.getValue('sessionStatus') as string;
         const className = getSessionColor(status as string);
 
-        return <Badge className={className}>{status}</Badge>;
+        return <Badge className={className}>{t(status.replace(/\s+/g, '_').toUpperCase())}</Badge>;
       },
     },
     {

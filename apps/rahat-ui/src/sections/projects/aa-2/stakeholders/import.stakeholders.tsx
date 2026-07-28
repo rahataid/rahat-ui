@@ -367,7 +367,7 @@ export default function ImportStakeholder() {
       const extension = file.name.split('.').pop()?.toLowerCase();
       if (!extension || !isValidExtension(extension)) {
         toast.error(
-          'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+          t('UNSUPPORTED_FILE_FORMAT_LONG'),
         );
         return;
       }
@@ -388,7 +388,7 @@ export default function ImportStakeholder() {
         );
 
         if (filteredData.length === 0) {
-          toast.error('No data found in the file');
+          toast.error(t('NO_DATA_FOUND_IN_FILE'));
           return;
         }
 
@@ -402,7 +402,7 @@ export default function ImportStakeholder() {
         for (const required of REQUIRED_HEADERS) {
           if (!normalizedHeaders.includes(required)) {
             toast.error(
-              `File is missing the required field: "${required}". Download the sample file for reference.`,
+              t('FILE_IS_MISSING_REQUIRED_FIELD', { fieldName: required }),
               { autoClose: 5000 },
             );
             return;
@@ -451,12 +451,12 @@ export default function ImportStakeholder() {
 
         // Validate row count
         if (normalizedData.length === 1) {
-          toast.error('No stakeholders found in the file');
+          toast.error(t('NO_STAKEHOLDERS_FOUND_IN_FILE'));
           return;
         }
         if (normalizedData.length > MAX_STAKEHOLDERS_PER_UPLOAD + 1) {
           toast.error(
-            `Maximum ${MAX_STAKEHOLDERS_PER_UPLOAD} stakeholders can be uploaded at a time`,
+            t('MAX_STAKEHOLDERS_UPLOAD_LIMIT', { max: formatNum(MAX_STAKEHOLDERS_PER_UPLOAD) }),
           );
           return;
         }
@@ -486,25 +486,25 @@ export default function ImportStakeholder() {
 
   const handleValidate = useCallback(async () => {
     if (!selectedFile) {
-      toast.error('Please select a file to upload');
+      toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
       return;
     }
 
     if (hasEmptyRequiredFields()) {
-      toast.error('Fill all required fields first');
+      toast.error(t('FILL_ALL_REQUIRED_FIELDS_FIRST'));
       return;
     }
 
     if (hasFrontendErrors) {
       toast.error(
-        'Fix the duplicate phone/email errors highlighted in the sheet',
+        t('FIX_DUPLICATE_PHONE_EMAIL_ERRORS'),
       );
       return;
     }
 
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     if (!extension || !isValidExtension(extension)) {
-      toast.error('Unsupported file format');
+      toast.error(tg('UNSUPPORTED_FILE_FORMAT'));
       return;
     }
 
@@ -544,18 +544,18 @@ export default function ImportStakeholder() {
 
       if (validationData.errors?.length > 0) {
         toast.error(
-          `${validationData.errors.length} validation error(s) found. Fix the errors highlighted in the sheet.`,
+          t('VALIDATION_ERRORS_FOUND', { errorCount: formatNum(validationData.errors.length) }),
         );
         setValidationCooldown(VALIDATION_COOLDOWN_SECONDS);
       } else {
         toast.success(
-          'Validation successful! You can now import the stakeholders.',
+          t('VALIDATION_SUCCESSFUL_IMPORT'),
         );
       }
     } catch (error: unknown) {
       const errMsg =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message ?? 'Validation failed';
+          ?.data?.message ?? t('VALIDATION_FAILED');
       toast.error(errMsg);
       setValidationCooldown(VALIDATION_COOLDOWN_SECONDS);
     } finally {
@@ -571,19 +571,19 @@ export default function ImportStakeholder() {
 
   const handleUpload = useCallback(() => {
     if (!selectedFile) {
-      toast.error('Please select a file to upload');
+      toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
       return;
     }
 
     if (hasValidationErrors) {
-      toast.error('Fix the errors highlighted in the sheet before importing');
+      toast.error(t('FIX_ERRORS_BEFORE_IMPORTING'));
       return;
     }
 
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     if (!extension || !isValidExtension(extension)) {
       toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+        t('UNSUPPORTED_FILE_FORMAT_LONG'),
       );
       return;
     }
@@ -618,9 +618,7 @@ export default function ImportStakeholder() {
             ? ` Group "${groupNameValue}" created.`
             : '';
         toast.success(
-          `${successCount == 0 ? '' : successCount} ${
-            successCount <= 1 ? 'Stakeholder' : 'Stakeholders'
-          } imported successfully!${groupMsg}`,
+          t('STAKEHOLDERS_IMPORTED_SUCCESSFULLY', { count: successCount }) + groupMsg,
         );
 
         resetValidationState();
@@ -642,7 +640,7 @@ export default function ImportStakeholder() {
       } catch (error: unknown) {
         const errMsg =
           (error as { response?: { data?: { message?: string } } })?.response
-            ?.data?.message ?? 'Import failed';
+            ?.data?.message ?? t('IMPORT_FAILED');
         toast.error(errMsg);
       }
     },
@@ -673,7 +671,7 @@ export default function ImportStakeholder() {
         window.URL.revokeObjectURL(url);
       })
       .catch((error) => {
-        toast.error(`Error downloading file: ${error}`);
+        toast.error(tg('ERROR_DOWNLOADING_FILE') + ': ' + (error instanceof Error ? error.message : error));
       });
   }, []);
 

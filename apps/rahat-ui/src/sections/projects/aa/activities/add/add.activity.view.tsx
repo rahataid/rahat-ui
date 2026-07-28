@@ -152,9 +152,9 @@ export default function AddActivities() {
     if (file) {
       const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
       if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
+        return toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILES'));
       }
-      if (!validateFile(file)) {
+      if (!validateFile(file, t)) {
         return;
       }
 
@@ -241,7 +241,7 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem className="col-span-2">
-                        <FormLabel>Activity title</FormLabel>
+                        <FormLabel>{t('ACTIVITY_TITLE')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -260,7 +260,7 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Responsibility</FormLabel>
+                        <FormLabel>{t('RESPONSIBILITY')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -279,7 +279,7 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Responsible Station</FormLabel>
+                        <FormLabel>{t('RESPONSIBLE_STATION')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -297,7 +297,7 @@ export default function AddActivities() {
                   name="phaseId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phase</FormLabel>
+                      <FormLabel>{t('PHASE')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -325,7 +325,7 @@ export default function AddActivities() {
                   name="categoryId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>{t('CATEGORY')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -365,7 +365,7 @@ export default function AddActivities() {
                             />
                           </FormControl>
                           <FormLabel className="text-sm font-normal ml-2">
-                            Is Automated Activity?
+                            {t('IS_AUTOMATED_ACTIVITY')}
                           </FormLabel>
                           <FormMessage />
                         </FormItem>
@@ -379,7 +379,7 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Lead Time</FormLabel>
+                        <FormLabel>{t('LEAD_TIME')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -399,7 +399,7 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem className="col-span-2">
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>{t('DESCRIPTION')}</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder={t('ENTER_DESCRIPTION')}

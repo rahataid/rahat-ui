@@ -26,6 +26,8 @@ import {
 import { toast } from 'react-toastify';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { useTranslations } from 'next-intl';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 function ImportActionCell({ row }: { row: any }) {
   const t = useTranslations('Import Beneficiary List');
@@ -41,7 +43,7 @@ function ImportActionCell({ row }: { row: any }) {
   const handleStartImport = async () => {
     try {
       await startImport.mutateAsync(uuid);
-      toast.success('Import has started. Please reload the page to check the status.');
+      toast.success(t('IMPORT_HAS_STARTED'));
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to start import');
     }
@@ -165,9 +167,19 @@ function StatusCell({ row }: { row: any }) {
               : 'bg-blue-100 text-blue-800'
       }`}
     >
-      {status}
+      {tg.has(status as never) ? tg(status as never) : status}
       </div>
   );
+}
+
+function CreatedAtCell({ row }: { row: any }) {
+  const formatDate = useDateFormat();
+  return <div>{formatDate(row.getValue('createdAt'), 'MMM d, yyyy, h:mm a')}</div>;
+}
+
+function BeneficiaryCountCell({ row }: { row: any }) {
+  const formatNum = useNumberFormat();
+  return <div>{formatNum(row.getValue('beneficiaryCount'))}</div>;
 }
 
 export const useImportListTableColumns = () => {
@@ -182,7 +194,7 @@ export const useImportListTableColumns = () => {
     {
       header: t('BENEFICIARY_COUNT'),
       accessorKey: 'beneficiaryCount',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryCount')}</div>,
+      cell: ({ row }) => <BeneficiaryCountCell row={row} />,
     },
     {
       header: tg('STATUS'),
@@ -192,19 +204,7 @@ export const useImportListTableColumns = () => {
     {
       header: tg('CREATED_AT'),
       accessorKey: 'createdAt',
-      cell: ({ row }) => {
-        const createdAt = row.getValue('createdAt');
-        const formatDate = new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-          timeZone: 'Asia/Kathmandu',
-        }).format(new Date(createdAt as string));
-        return <div>{formatDate}</div>;
-      },
+      cell: ({ row }) => <CreatedAtCell row={row} />,
     },
     {
       id: 'actions',

@@ -34,7 +34,7 @@ import {
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
-import { triggerStatementSchema } from './trigger.statement.schema';
+import { buildTriggerStatementSchema } from './trigger.statement.schema';
 import {
   buildSourceOptions,
   buildSubtypeOptions,
@@ -64,7 +64,7 @@ export function buildAutomatedFormSchema(t?: any) {
     description: z.string().optional(),
     source: z.string().min(1, { message: _t('PLEASE_SELECT_DATA_SOURCE') }),
     isMandatory: z.boolean().optional(),
-    triggerStatement: triggerStatementSchema,
+    triggerStatement: buildTriggerStatementSchema(_t),
   });
 }
 
@@ -424,7 +424,7 @@ export default function AddTriggerView() {
                       />
                       <DeleteButton
                         className="border-none bg-red-50"
-                        name="trigger"
+                        name={t('TRIGGER')}
                         handleContinueClick={() => handleDelete(t)}
                       />
                     </div>

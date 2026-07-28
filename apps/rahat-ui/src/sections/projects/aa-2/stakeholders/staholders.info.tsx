@@ -2,7 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-// import DataCard from '../../common/dataCard';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 type IProps = {
   stakeholder: any;
@@ -10,6 +10,7 @@ type IProps = {
 
 const StakeHolderInfo = ({ stakeholder }: IProps) => {
   const t = useTranslations('AA Project');
+  const formatPhone = usePhoneFormat();
   return (
     <>
       <div className="flex items-center">
@@ -25,7 +26,7 @@ const StakeHolderInfo = ({ stakeholder }: IProps) => {
       </div>
 
       <div className="grid grid-cols-3 gap-[clamp(8px,1.5vw,24px)] px-[clamp(8px,1.5vw,24px)] py-[clamp(4px,1vw,16px)]">
-        <DataItem label={t('PHONE_NUMBER')} value={stakeholder?.phone} />
+        <DataItem label={t('PHONE_NUMBER')} value={formatPhone(stakeholder?.phone)} />
         <DataItem label={t('EMAIL')} value={stakeholder?.email} />
         <DataItem label={t('DESIGNATION')} value={stakeholder?.designation} />
         <DataItem label={t('ORGANIZATION')} value={stakeholder?.organization} />

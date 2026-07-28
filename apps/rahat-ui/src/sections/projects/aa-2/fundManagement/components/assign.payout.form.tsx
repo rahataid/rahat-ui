@@ -47,7 +47,7 @@ import BeneficiariesGroupTable from 'apps/rahat-ui/src/sections/projects/aa-2/pa
 import { PayoutSkeleton } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/pauoutSkeleton';
 import {
   PaymentSchema,
-  payoutFundSchema,
+  buildPayoutFundSchema,
   FundWithPayoutSchema,
 } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
 import useBeneficiariesGroupTableColumn from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/useBeneficiariesGroupTablecolumn';
@@ -77,6 +77,7 @@ export default function PayoutFundManagementForm({
   onWantsPayoutChange,
 }: PayoutFundManagementFormProps) {
   const t = useTranslations('AA Project');
+  const payoutFundSchema = useMemo(() => buildPayoutFundSchema(t), [t]);
   // Router goes here
   const params = useParams();
   const projectID = params.id as UUID;

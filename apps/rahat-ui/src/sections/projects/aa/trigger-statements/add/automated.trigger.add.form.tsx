@@ -60,7 +60,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
         <form>
           <div className="mt-4 grid gap-4 ">
             <FormItem className="w-full">
-              <FormLabel>Selected Phase</FormLabel>
+              <FormLabel>{t('SELECTED_PHASE')}</FormLabel>
               <FormControl>
                 <Input type="text" value={selectedPhase.name} disabled />
               </FormControl>
@@ -73,7 +73,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
-                      <FormLabel>Trigger Title</FormLabel>
+                      <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
@@ -96,14 +96,14 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormLabel>Source</FormLabel>
+                        <FormLabel>{t('SOURCE')}</FormLabel>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder={t('SELECT_SOURCE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={'GLOFAS'}>GloFAS</SelectItem>
+                          <SelectItem value={'GLOFAS'}>{t('GLOFAS')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -114,7 +114,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
             </div>
             <div className="w-full flex gap-4">
               <FormItem className="w-full">
-                <FormLabel>River Basin</FormLabel>
+                <FormLabel>{t('RIVER_BASIN')}</FormLabel>
                 <FormControl>
                   <Input type="text" value={riverBasin} disabled />
                 </FormControl>
@@ -129,7 +129,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
-                      <FormLabel>Minimum Lead Time Days</FormLabel>
+                      <FormLabel>{t('MINIMUM_LEAD_TIME_DAYS')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -152,7 +152,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
-                      <FormLabel>Maximum Lead Time Days</FormLabel>
+                      <FormLabel>{t('MAXIMUM_LEAD_TIME_DAYS')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -176,7 +176,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Forecast Probability</FormLabel>
+                    <FormLabel>{t('FORECAST_PROBABILITY')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -206,7 +206,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         />
                       </FormControl>
                       <FormLabel className="text-sm font-normal">
-                        Is Mandatory Trigger?
+                        {t('IS_MANDATORY_TRIGGER')}
                       </FormLabel>
                       <FormMessage />
                     </FormItem>

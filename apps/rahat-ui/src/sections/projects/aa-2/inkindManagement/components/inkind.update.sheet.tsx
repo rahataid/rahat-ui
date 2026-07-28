@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -33,7 +33,7 @@ import { Loader2 } from 'lucide-react';
 import { useUpdateInkind } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import {
-  InkindDetailsSchema,
+  buildInkindDetailsSchema,
   InkindDetailsValues,
   InkindType,
   INKIND_TYPES,
@@ -56,7 +56,12 @@ export default function InkindUpdateSheet({
 }: InkindUpdateSheetProps) {
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const tAA = useTranslations('AA Project');
   const updateInkind = useUpdateInkind(projectUUID);
+  const InkindDetailsSchema = useMemo(
+    () => buildInkindDetailsSchema(tAA),
+    [tAA],
+  );
 
   const form = useForm<InkindDetailsValues>({
     resolver: zodResolver(InkindDetailsSchema),
@@ -151,7 +156,7 @@ export default function InkindUpdateSheet({
                     <SelectContent>
                       {INKIND_TYPES.map((t) => (
                         <SelectItem key={t} value={t}>
-                          {INKIND_TYPE_LABELS[t]}
+                          {tg(t)}
                         </SelectItem>
                       ))}
                     </SelectContent>

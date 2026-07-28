@@ -37,8 +37,8 @@ import {
 } from 'libs/shadcn/src/components/ui/command';
 import { Check, ChevronDown } from 'lucide-react';
 import {
-  AssignInkindOfflineSchema,
-  AssignInkindSchema,
+  buildAssignInkindOfflineSchema,
+  buildAssignInkindSchema,
   AssignInkindValues,
 } from './schema/inkinds.schema';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
@@ -61,6 +61,7 @@ interface Props {
 export default function AssignInkindForm({ onNext }: Props) {
   const tv = useTranslations('AA Project with Gnosis');
   const tg = useTranslations('GLOBAL');
+  const tAA = useTranslations('AA Project');
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -75,8 +76,8 @@ export default function AssignInkindForm({ onNext }: Props) {
   const form = useForm<AssignInkindValues>({
     resolver: (values, context, options) => {
       const schema = isOfflineRef.current
-        ? AssignInkindOfflineSchema
-        : AssignInkindSchema;
+        ? buildAssignInkindOfflineSchema(tAA)
+        : buildAssignInkindSchema(tAA);
       return zodResolver(schema)(values, context, options);
     },
     defaultValues: { inkindId: '', groupId: '', vendorId: '' },

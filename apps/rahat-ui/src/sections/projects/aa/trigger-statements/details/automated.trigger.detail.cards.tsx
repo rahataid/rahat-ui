@@ -1,7 +1,9 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Info, Text, SignalHigh, Gauge } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
+  const t = useTranslations('AA Project');
   const detailCardData = [
     {
       title: 'Status',
@@ -13,7 +15,7 @@ export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
               : 'bg-red-100 text-red-600'
           }
         >
-          {triggerDetail?.isTriggered ? 'Triggered' : 'Not Triggered'}
+          {triggerDetail?.isTriggered ? t('TRIGGERED') : t('NOT_TRIGGERED')}
         </Badge>
       ),
       icon: <Info size={25} />,

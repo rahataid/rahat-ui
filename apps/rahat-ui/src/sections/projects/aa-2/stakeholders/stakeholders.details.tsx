@@ -75,7 +75,7 @@ const StakeholdersDetail = () => {
           <div className="flex flex-end justify-end gap-[clamp(4px,0.6vw,12px)] mt-auto">
             <DeleteButton
               className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-              name="stakeholder"
+              name={t('STAKEHOLDER')}
               label={t('DELETE')}
               handleContinueClick={handleDelete}
             />

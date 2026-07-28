@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from 'libs/shadcn/src/components/ui/button';
@@ -21,7 +22,7 @@ import {
   SelectValue,
 } from 'libs/shadcn/src/components/ui/select';
 import {
-  InkindDetailsSchema,
+  buildInkindDetailsSchema,
   InkindDetailsValues,
   INKIND_TYPES,
   INKIND_TYPE_LABELS,
@@ -51,6 +52,11 @@ export default function InkindDetailsForm({
 }: Props) {
   const tg = useTranslations('AA Project with Gnosis');
   const tglob = useTranslations('GLOBAL');
+  const tAA = useTranslations('AA Project');
+  const InkindDetailsSchema = useMemo(
+    () => buildInkindDetailsSchema(tAA),
+    [tAA],
+  );
   const form = useForm<InkindDetailsValues>({
     resolver: zodResolver(InkindDetailsSchema),
     defaultValues: {
@@ -160,7 +166,7 @@ export default function InkindDetailsForm({
                   <SelectContent>
                     {INKIND_TYPES.map((t) => (
                       <SelectItem key={t} value={t}>
-                        {INKIND_TYPE_LABELS[t]}
+                        {tglob(t)}
                       </SelectItem>
                     ))}
                   </SelectContent>

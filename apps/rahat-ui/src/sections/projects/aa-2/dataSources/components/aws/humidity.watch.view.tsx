@@ -12,8 +12,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { getHumidityColor, getLatestValue } from './utils/color.utils';
 import { TemperatureValueCard } from './components';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function HumidityWatchView() {
+  const formatNum = useNumberFormat();
   const t = useTranslations('AA Project');
   const params = useParams();
   const router = useRouter();
@@ -100,7 +102,7 @@ export default function HumidityWatchView() {
                     <p className="text-sm/6 font-medium mb-1">{t('LATITUDE')}</p>
                     <p className="text-sm/4 text-gray-600">
                       {humInfo?.latitude !== undefined
-                        ? humInfo.latitude
+                        ? formatNum(humInfo.latitude)
                         : '--'}
                     </p>
                   </div>
@@ -112,7 +114,7 @@ export default function HumidityWatchView() {
                     <p className="text-sm/6 font-medium mb-1">{t('LONGITUDE')}</p>
                     <p className="text-sm/4 text-gray-600">
                       {humInfo?.longitude !== undefined
-                        ? humInfo.longitude
+                        ? formatNum(humInfo.longitude)
                         : '--'}
                     </p>
                   </div>

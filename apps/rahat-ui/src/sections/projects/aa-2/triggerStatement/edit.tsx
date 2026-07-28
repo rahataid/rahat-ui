@@ -22,7 +22,7 @@ import {
   REVERSE_SOURCE_MAPPING,
   GLOFAS_LEGACY_MAPPING,
 } from './utils';
-import { triggerStatementSchema } from './trigger.statement.schema';
+import { buildTriggerStatementSchema } from './trigger.statement.schema';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { useTranslations } from 'next-intl';
 
@@ -78,7 +78,7 @@ export default function EditTrigger() {
       description: z.string().optional(),
       source: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
       isMandatory: z.boolean().optional(),
-      triggerStatement: triggerStatementSchema,
+      triggerStatement: buildTriggerStatementSchema(t),
       minLeadTimeDays: z.string().optional(),
       maxLeadTimeDays: z.string().optional(),
       probability: z.string().optional(),

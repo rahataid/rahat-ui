@@ -40,12 +40,25 @@ import GctDeleteDialog from './gct.delete.dialog';
 import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
 import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctDetail() {
   const t = useTranslations('AA Project with Cash Tracker');
   const tGlobal = useTranslations('GLOBAL');
+
+  // Bank validation messages come from the API, so there is no key to look up
+  // directly. Derive one from the message text and use it when a translation
+  // exists, otherwise show the server's wording unchanged.
+  const localiseValidationMessage = (message: string) => {
+    const key = String(message)
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    return t.has(key as never) ? t(key as never) : message;
+  };
   const { id, uuid } = useParams();
   const projectUUID = id as UUID;
   const gctUUID = uuid as string;
@@ -71,6 +84,7 @@ export default function GctDetail() {
   const hasFund = records.length > 0;
   const totalAssigned: number = item?.totalAssignedAmount ?? 0;
   const formatNum = useNumberFormat();
+  const formatPhone = usePhoneFormat();
 
   const handleValidateBankAccount = async () => {
     setValidationResult(null);
@@ -217,7 +231,7 @@ export default function GctDetail() {
           <CardContent className="px-4 pb-4">
             <DetailRow label={tGlobal('NAME')} value={item?.name} />
             <Separator />
-            <DetailRow label={tGlobal('PHONE')} value={item?.phone} />
+            <DetailRow label={tGlobal('PHONE')} value={formatPhone(item?.phone)} />
             <Separator />
             <DetailRow label={tGlobal('EMAIL')} value={extras?.email} />
             <Separator />
@@ -290,7 +304,7 @@ export default function GctDetail() {
                     : 'bg-red-50 text-red-600'
                 }`}
               >
-                {validationResult.message}
+                {localiseValidationMessage(validationResult.message)}
               </div>
             )}
             <DetailRow label={t('BANK_NAME')} value={bankDetails?.bankName} />

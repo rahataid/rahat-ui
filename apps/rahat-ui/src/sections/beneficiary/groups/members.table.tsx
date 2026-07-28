@@ -35,6 +35,7 @@ export default function MembersTable({
   isSearching,
   onSearch,
 }: IProps) {
+  const tAdd = useTranslations('GLOBAL');
   const t = useTranslations('GLOBAL');
   return (
     <>
@@ -51,7 +52,7 @@ export default function MembersTable({
             <AddButton
               variant="outline"
               className="border-primary text-primary"
-              name="Beneficiary"
+              name={tAdd('BENEFICIARY')}
               path={`/beneficiaries/groups/${groupUUID}/select`}
             />
           ) : null}
@@ -124,7 +125,7 @@ export default function MembersTable({
                             {t('ADD_BENEFICIARY_TO_GROUP') || 'Add beneficiary to the group to display data'}
                           </p>
                           <AddButton
-                            name="Beneficiary"
+                            name={tAdd('BENEFICIARY')}
                             path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
                           />
                         </div>

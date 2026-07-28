@@ -13,7 +13,15 @@ import InkindList from './inkind.list';
 import InkindOverview from './inkind.overview';
 import InkindAllocationList from './inkind.allocation.list';
 
-type InkindTabValue = (typeof INKIND_TABS)[number]['value'];
+// The labelled tab list lives inside the component so it can call `tv()`, so the
+// values it keys off are declared here at module scope for componentMap to use.
+const INKIND_TAB_VALUES = [
+  'inkindOverview',
+  'inkindList',
+  'inkindAllocation',
+] as const;
+
+type InkindTabValue = (typeof INKIND_TAB_VALUES)[number];
 
 const componentMap: Record<InkindTabValue, ComponentType> = {
   inkindList: InkindList,

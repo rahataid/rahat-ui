@@ -27,6 +27,7 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 // import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 // import CreateGroupModal from './components/createGroupModal';
 
@@ -147,7 +148,7 @@ export default function ListView({
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {getColumnLabel(column)}
                     </DropdownMenuCheckboxItem>
                   );
                 })}

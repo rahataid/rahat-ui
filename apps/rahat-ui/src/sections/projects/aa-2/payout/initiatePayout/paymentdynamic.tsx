@@ -48,7 +48,7 @@ import { PayoutSkeleton } from './pauoutSkeleton';
 import { AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { paymentSchema } from './schemas/payout.validation';
+import { buildPaymentSchema } from './schemas/payout.validation';
 import {
   Form,
   FormField,
@@ -78,6 +78,7 @@ export default function PaymentInitiation() {
   const tv = useTranslations('AA Project with Cash Tracker');
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
+  const paymentSchema = useMemo(() => buildPaymentSchema(t), [t]);
   const params = useParams();
   const projectID = params.id as UUID;
   const searchParams = useSearchParams();

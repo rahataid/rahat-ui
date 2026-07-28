@@ -11,30 +11,35 @@ export const INKIND_TYPE_LABELS: Record<InkindType, string> = {
 export const NAME_MAX = 100;
 export const DESCRIPTION_MAX = 500;
 
-export const InkindDetailsSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Name is required')
-    .max(NAME_MAX, `Name must be ${NAME_MAX} characters or fewer`),
-  description: z
-    .string()
-    .min(1, 'Description is required')
-    .max(
-      DESCRIPTION_MAX,
-      `Description must be ${DESCRIPTION_MAX} characters or fewer`,
-    ),
-  type: z.string().refine((val) => INKIND_TYPES.includes(val as any), {
-    message: 'Type is required',
-  }),
-  quantity: z
-    .string()
-    .optional()
-    .refine((val) => !val || (Number(val) > 0 && /^\d+$/.test(val)), {
-      message: 'Quantity must be a positive number',
-    }),
-});
+type Translator = (key: string, values?: Record<string, any>) => string;
 
-export type InkindDetailsValues = z.infer<typeof InkindDetailsSchema>;
+export const buildInkindDetailsSchema = (t: Translator) =>
+  z.object({
+    name: z
+      .string()
+      .min(1, t('NAME_IS_REQUIRED'))
+      .max(NAME_MAX, t('NAME_MAX_CHARACTERS_OR_FEWER', { max: NAME_MAX })),
+    description: z
+      .string()
+      .min(1, t('DESCRIPTION_REQUIRED'))
+      .max(
+        DESCRIPTION_MAX,
+        t('DESCRIPTION_MAX_CHARACTERS_OR_FEWER', { max: DESCRIPTION_MAX }),
+      ),
+    type: z.string().refine((val) => INKIND_TYPES.includes(val as any), {
+      message: t('TYPE_IS_REQUIRED'),
+    }),
+    quantity: z
+      .string()
+      .optional()
+      .refine((val) => !val || (Number(val) > 0 && /^\d+$/.test(val)), {
+        message: t('QUANTITY_MUST_BE_A_POSITIVE_NUMBER'),
+      }),
+  });
+
+export type InkindDetailsValues = z.infer<
+  ReturnType<typeof buildInkindDetailsSchema>
+>;
 
 export const InkindGroupSchema = z.object({
   beneficiaryGroupId: z.string().optional(),

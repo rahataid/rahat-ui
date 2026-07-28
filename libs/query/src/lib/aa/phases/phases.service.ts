@@ -6,12 +6,14 @@ import { useSwal } from 'libs/query/src/swal';
 import { usePhasesStore } from './phases.store';
 import React, { useEffect } from 'react';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useTranslations } from 'next-intl';
 
 export const useSinglePhase = (
   uuid: UUID,
   phaseId: UUID,
   options?: { enabled?: boolean },
 ) => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const { setThreshhold } = usePhasesStore((state) => ({
     setThreshhold: state.setThreshold,
@@ -41,7 +43,7 @@ export const useSinglePhase = (
         return mutate.data;
       } catch (error: any) {
         toast.fire({
-          title: 'Error while fetching phase details',
+          title: t('ERROR_WHILE_FETCHING_PHASE_DETAILS'),
           icon: 'error',
           text: error.message,
         });
@@ -60,6 +62,7 @@ export const useSinglePhase = (
 };
 
 export const useRevertPhase = () => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -94,15 +97,15 @@ export const useRevertPhase = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatements'] });
       qc.invalidateQueries({ queryKey: ['phaseHistory'] });
       toast.fire({
-        title: 'Phase reverted successfully.',
+        title: t('PHASE_REVERTED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while reverting phase.',
+        title: t('ERROR_WHILE_REVERTING_PHASE'),
         icon: 'error',
         text: errorMessage,
       });
@@ -174,6 +177,7 @@ export const usePhases = (uuid: UUID) => {
 };
 
 export const useConfigureThreshold = () => {
+  const t = useTranslations('AA Project');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -206,15 +210,15 @@ export const useConfigureThreshold = () => {
       q.reset();
 
       toast.fire({
-        title: 'Threshold configure successfully.',
+        title: t('THRESHOLD_CONFIGURE_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while configuring  threshold.',
+        title: t('ERROR_WHILE_CONFIGURING_THRESHOLD'),
         icon: 'error',
         text: errorMessage,
       });

@@ -82,7 +82,7 @@ export default function StakeholdersGroupDetailView() {
             <div className="flex gap-4 items-center">
               <EditButton path={editPath} />
               <DeleteButton
-                name="Stakeholders Group"
+                name={tGlobal('STAKEHOLDER')}
                 handleContinueClick={handleDelete}
               />
             </div>

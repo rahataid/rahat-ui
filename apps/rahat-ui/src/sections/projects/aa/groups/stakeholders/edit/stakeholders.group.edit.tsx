@@ -124,7 +124,7 @@ export default function StakeholdersGroupEdit() {
       (key) => selectedListItems[key],
     );
     if (!stakeholders.length) {
-      return toast.error('Please select members to update group');
+      return toast.error(t('PLEASE_SELECT_MEMBERS_TO_UPDATE_GROUP'));
     }
     const stakeholdersList = stakeholders?.map((stakeholder) => ({
       uuid: stakeholder,

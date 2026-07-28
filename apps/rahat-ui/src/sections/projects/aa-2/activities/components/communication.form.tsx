@@ -80,6 +80,7 @@ interface AddCommunicationFormProps {
   setOpen: Dispatch<SetStateAction<boolean>>;
   isMultiSelect?: boolean;
   editMode?: UseBooleanReturnType;
+  onCancelEdit?: VoidFunction;
 }
 
 export default function AddCommunicationForm({
@@ -90,6 +91,7 @@ export default function AddCommunicationForm({
   setOpen,
   isMultiSelect = false,
   editMode,
+  onCancelEdit,
 }: AddCommunicationFormProps) {
   const t = useTranslations('AA Project');
   const tg = useTranslations('GLOBAL');
@@ -229,6 +231,13 @@ export default function AddCommunicationForm({
   };
 
   const clearCommunicationForm = () => {
+    if (editMode?.value && onCancelEdit) {
+      onCancelEdit();
+      setOpen(false);
+      editMode.onFalse();
+      form.reset();
+      return;
+    }
     form.reset();
     fileUpload.reset();
   };
@@ -396,9 +405,10 @@ export default function AddCommunicationForm({
       setTimeout(() => {
         form.setError('groupId', {
           type: 'manual',
-          message: `${fieldName} is missing for some beneficiaries in: ${result.invalidGroups.join(
-            ', ',
-          )}`,
+          message: t('FIELD_MISSING_FOR_SOME_BENEFICIARIES', {
+            field: fieldName,
+            groups: result.invalidGroups.join(', '),
+          }),
         });
       }, 0);
     } else {
@@ -579,7 +589,7 @@ export default function AddCommunicationForm({
                         key={transport?.cuid}
                         value={transport?.cuid as string}
                       >
-                        {transport?.name}
+                        {tg(transport?.name as any) || transport?.name}
                       </SelectItem>
                     );
                   })}

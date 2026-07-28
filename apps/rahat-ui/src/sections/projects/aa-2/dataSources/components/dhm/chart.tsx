@@ -89,6 +89,22 @@ const TimeSeriesChart = ({
       zoom: { enabled: false },
       offsetX: 0,
       offsetY: 10,
+      // The export menu is rendered by ApexCharts itself, so its labels can only
+      // be translated through Apex's own `locales` option.
+      locales: [
+        {
+          name: 'app',
+          options: {
+            toolbar: {
+              exportToSVG: t('DOWNLOAD_SVG'),
+              exportToPNG: t('DOWNLOAD_PNG'),
+              exportToCSV: t('DOWNLOAD_CSV'),
+              download: t('CHART_MENU'),
+            },
+          },
+        },
+      ],
+      defaultLocale: 'app',
     },
     xaxis: {
       type: 'datetime',

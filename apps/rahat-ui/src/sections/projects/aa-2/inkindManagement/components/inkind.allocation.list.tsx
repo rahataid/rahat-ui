@@ -315,7 +315,7 @@ export default function InkindAllocationList() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
               {typeFilter
-                ? INKIND_TYPE_LABELS[typeFilter as InkindType]
+                ? tg(typeFilter as InkindType)
                 : tv('ALL_TYPES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
@@ -337,7 +337,7 @@ export default function InkindAllocationList() {
                   setPagination({ ...pagination, page: 1 });
                 }}
               >
-                {INKIND_TYPE_LABELS[t]}
+                {tg(t)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

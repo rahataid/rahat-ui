@@ -34,6 +34,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Role } from '@rumsan/sdk/types';
 import { useRoleTableColumns } from './useRoleTableColumns';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 type IProps = {
   roleData: Role[];
@@ -97,7 +98,7 @@ export default function ListView({ roleData }: IProps) {
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {getColumnLabel(column)}
                     </DropdownMenuCheckboxItem>
                   );
                 })}

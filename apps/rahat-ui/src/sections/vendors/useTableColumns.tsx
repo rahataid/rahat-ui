@@ -87,7 +87,15 @@ export const useTableColumns = (handleAssignClick: any) => {
         return status === filterValue;
       },
       cell: ({ row }) => (
-        <Badge className="capitalize">{row.getValue('status')}</Badge>
+        <Badge className="capitalize">
+          {(() => {
+            // Status arrives from the API as "Assigned" / "Pending"; resolve it
+            // through GLOBAL and fall back to the raw value for unknown states.
+            const s = row.getValue('status') as string;
+            const key = String(s ?? '').toUpperCase();
+            return g.has(key as never) ? g(key as never) : s;
+          })()}
+        </Badge>
       ),
     },
     {

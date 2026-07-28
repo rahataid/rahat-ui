@@ -11,6 +11,7 @@ import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Settings2 } from 'lucide-react';
 import { Table } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 type IProps = {
   table: Table<any>;
@@ -40,7 +41,7 @@ export function ToggleColumns({ table }: IProps) {
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {getColumnLabel(column)}
               </DropdownMenuCheckboxItem>
             );
           })}

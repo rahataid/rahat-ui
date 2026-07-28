@@ -17,6 +17,8 @@ export default function DynamicTriggersList({
   riverBasin,
 }: IProps) {
   const t = useTranslations('AA Project');
+  // `t` is shadowed by the map item below, so keep a stable alias.
+  const tr = t;
   const allTriggers = triggers?.length
     ? triggers
     : history?.flatMap((group) =>
@@ -36,14 +38,14 @@ export default function DynamicTriggersList({
               key={t?.uuid}
               projectId={projectId}
               triggerId={t?.uuid}
-              type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
+              type={t?.source === 'MANUAL' ? tr('MANUAL') : tr('AUTOMATED')}
               isTriggered={t?.isTriggered}
               title={t?.title || 'N/A'}
               dataSource={t?.source === 'MANUAL' ? '' : t?.source}
               riverBasin={riverBasin || t?.phase.riverBasin}
               createdAt={t?.createdAt}
               triggeredAt={t?.triggeredAt}
-              triggerType={t?.isMandatory ? 'Mandatory' : 'Optional'}
+              triggerType={t?.isMandatory ? tr('MANDATORY') : tr('OPTIONAL')}
               version={t?.version}
               triggerStatement={t?.triggerStatement}
             />

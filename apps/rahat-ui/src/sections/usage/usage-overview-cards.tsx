@@ -3,6 +3,7 @@
 import { DataCard } from '../../common/data.card';
 import { Radio, CheckCircle, XCircle, Coins } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type UsageTotals = {
   sessions: number;
@@ -26,6 +27,7 @@ export default function UsageOverviewCards({
   loading,
 }: UsageOverviewCardsProps) {
   const t = useTranslations('Usage');
+  const formatNum = useNumberFormat();
 
   const successRate =
     totals && totals.broadcasts > 0
@@ -36,22 +38,22 @@ export default function UsageOverviewCards({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <DataCard
         title={t('TOTAL_BROADCASTS')}
-        number={String(totals?.broadcasts ?? 0)}
+        number={formatNum(totals?.broadcasts ?? 0)}
         Icon={Radio}
         loading={loading}
         subtitle={t('MESSAGES_SENT')}
       />
       <DataCard
         title={t('SUCCESS_RATE')}
-        number={`${successRate}%`}
+        number={`${formatNum(successRate)}%`}
         Icon={CheckCircle}
         loading={loading}
-        subtitle={`${totals?.success ?? 0} ${t('DELIVERED')}`}
+        subtitle={`${formatNum(totals?.success ?? 0)} ${t('DELIVERED')}`}
         iconStyle="text-green-600 bg-green-100"
       />
       <DataCard
         title={t('FAILED')}
-        number={String(totals?.fail ?? 0)}
+        number={formatNum(totals?.fail ?? 0)}
         Icon={XCircle}
         loading={loading}
         subtitle={t('DELIVERY_FAILURES')}
@@ -59,7 +61,7 @@ export default function UsageOverviewCards({
       />
       <DataCard
         title={t('CREDITS_USED')}
-        number={String(totals?.credits ?? 0)}
+        number={formatNum(totals?.credits ?? 0)}
         Icon={Coins}
         loading={loading}
         subtitle={t('TOTAL_CREDITS_CONSUMED')}

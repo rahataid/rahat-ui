@@ -32,12 +32,13 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 
+// Labels are translation keys; resolved with `t()` where the options render.
 const operatorOptions = [
-  { label: 'Greater than (>)', value: '>' },
-  { label: 'Less than (<)', value: '<' },
-  { label: 'Equal (=)', value: '=' },
-  { label: 'Greater than or equal (>=)', value: '>=' },
-  { label: 'Less than or equal (<=)', value: '<=' },
+  { labelKey: 'GREATER_THAN', value: '>' },
+  { labelKey: 'LESS_THAN', value: '<' },
+  { labelKey: 'EQUAL', value: '=' },
+  { labelKey: 'GREATER_THAN_OR_EQUAL', value: '>=' },
+  { labelKey: 'LESS_THAN_OR_EQUAL', value: '<=' },
 ];
 
 const SOURCE_META = {
@@ -114,7 +115,7 @@ export default function AddAutomatedTriggerForm({
   }, [sourceOptions, projectType]);
 
   const computedStationHeading =
-    projectType === 'HEAT_WAVE' ? 'Heatwave Station' : stationHeading;
+    projectType === 'HEAT_WAVE' ? t('HEATWAVE_STATION') : stationHeading;
 
   React.useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
@@ -194,7 +195,11 @@ export default function AddAutomatedTriggerForm({
           {subTypeOptions?.[source]?.length ? (
             subTypeOptions?.[source]?.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {/* Subtype slugs ("daily") map to AA Project keys; fall back to
+                    the derived English label for any slug not yet translated. */}
+                {t.has(String(option.value).toUpperCase() as never)
+                  ? t(String(option.value).toUpperCase() as never)
+                  : option.label}
               </SelectItem>
             ))
           ) : (
@@ -410,7 +415,7 @@ export default function AddAutomatedTriggerForm({
                                       key={option.value}
                                       value={option.value}
                                     >
-                                      {option.label}
+                                      {t(option.labelKey)}
                                     </SelectItem>
                                   ))
                                 ) : isLoading ? (

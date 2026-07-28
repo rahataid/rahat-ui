@@ -46,6 +46,7 @@ import TooltipWrapper from '../../components/tooltip.wrapper';
 import SelectComponent from '../projects/el-kenya/select.component';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export type IVendor = {
   id: string;
@@ -154,7 +155,7 @@ export default function VendorsTable({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {getColumnLabel(column)}
                   </DropdownMenuCheckboxItem>
                 );
               })}

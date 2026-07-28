@@ -134,7 +134,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
     } catch (e: unknown) {
       console.error(e);
       const errorMessage =
-        e instanceof Error ? e.message : 'Failed to approve redemption request';
+        e instanceof Error ? e.message : t('FAILED_TO_APPROVE_REDEMPTION_REQUEST');
       return toast.error(errorMessage);
     }
   };

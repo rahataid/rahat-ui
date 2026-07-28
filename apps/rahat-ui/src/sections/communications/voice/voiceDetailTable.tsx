@@ -46,6 +46,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export type VoiceDetail = {
   _id: string;
@@ -181,7 +182,7 @@ export default function VoiceDetailTableView({ data }: IProps) {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {getColumnLabel(column)}
                   </DropdownMenuCheckboxItem>
                 );
               })}

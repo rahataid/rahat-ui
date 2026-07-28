@@ -24,12 +24,13 @@ type ProjectNavViewProps = {
 };
 
 function SidebarToggle() {
+  const t = useTranslations('AA Project');
   const { toggleSidebar, open } = useSidebar();
   return (
     <button
       onClick={toggleSidebar}
       className="absolute top-4 -right-3 z-30 bg-background border border-sidebar-border text-sidebar-foreground hover:text-sidebar-accent-foreground rounded-full p-1 transition-colors shadow-sm"
-      aria-label="Toggle Sidebar"
+      aria-label={t('TOGGLE_SIDEBAR')}
     >
       {open ? (
         <ChevronLeft className="size-[clamp(12px,1.2vw,16px)]" />

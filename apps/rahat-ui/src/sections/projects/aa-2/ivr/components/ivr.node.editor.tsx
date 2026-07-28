@@ -120,48 +120,46 @@ export default function NodeEditorPanel({
 
         <Separator />
 
-        <div className="space-y-4">
+        <div className="border rounded-sm p-4 space-y-3">
           <h4 className="font-semibold">Audio Prompt</h4>
           {selectedItem.prompt ? (
-            <div className="border rounded-sm p-4 space-y-3">
-              <div className="flex items-center gap-4">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2 rounded-sm"
-                  onClick={() => {
-                    if (isPreviewPlaying && previewAudioRef.current) {
-                      previewAudioRef.current.pause();
-                      previewAudioRef.current = null;
-                      setIsPreviewPlaying(false);
-                      return;
-                    }
-                    if (!selectedItem.prompt) return;
-                    const audio = new Audio(selectedItem.prompt);
-                    previewAudioRef.current = audio;
-                    audio.onended = () => setIsPreviewPlaying(false);
-                    audio.onerror = () => setIsPreviewPlaying(false);
-                    audio
-                      .play()
-                      .then(() => setIsPreviewPlaying(true))
-                      .catch(() => setIsPreviewPlaying(false));
-                  }}
-                >
-                  {isPreviewPlaying ? (
-                    <Square className="w-3 h-3" />
-                  ) : (
-                    <Play className="w-3 h-3" />
-                  )}
-                  {isPreviewPlaying ? 'Stop' : 'Preview'}
-                </Button>
-                <span className="text-xs text-muted-foreground truncate flex-1">
-                  {selectedItem.prompt.startsWith('blob:')
-                    ? 'Recorded file'
-                    : selectedItem.prompt.startsWith('data:')
-                    ? 'Uploaded file'
-                    : selectedItem.prompt}
-                </span>
-              </div>
+            <div className="flex items-center gap-4">
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-2 rounded-sm shrink-0"
+                onClick={() => {
+                  if (isPreviewPlaying && previewAudioRef.current) {
+                    previewAudioRef.current.pause();
+                    previewAudioRef.current = null;
+                    setIsPreviewPlaying(false);
+                    return;
+                  }
+                  if (!selectedItem.prompt) return;
+                  const audio = new Audio(selectedItem.prompt);
+                  previewAudioRef.current = audio;
+                  audio.onended = () => setIsPreviewPlaying(false);
+                  audio.onerror = () => setIsPreviewPlaying(false);
+                  audio
+                    .play()
+                    .then(() => setIsPreviewPlaying(true))
+                    .catch(() => setIsPreviewPlaying(false));
+                }}
+              >
+                {isPreviewPlaying ? (
+                  <Square className="w-3 h-3" />
+                ) : (
+                  <Play className="w-3 h-3" />
+                )}
+                {isPreviewPlaying ? 'Stop' : 'Preview'}
+              </Button>
+              <span className="text-xs text-muted-foreground truncate">
+                {selectedItem.prompt.startsWith('blob:')
+                  ? 'Recorded file'
+                  : selectedItem.prompt.startsWith('data:')
+                  ? 'Uploaded file'
+                  : selectedItem.prompt}
+              </span>
             </div>
           ) : (
             <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-sm text-sm text-yellow-900">
@@ -196,24 +194,18 @@ export default function NodeEditorPanel({
           </div>
         )}
 
-        <div className="space-y-3">
-          <h4 className="font-semibold">Settings</h4>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 border rounded-sm">
-              <span className="text-sm">Hangup After Action</span>
-              <span>{selectedItem.hangup ? 'Yes' : 'No'}</span>
-            </div>
-            <div className="flex items-center justify-between p-3 border rounded-sm">
+        <div className="border rounded-sm p-4 space-y-4">
+          <h4 className="font-semibold">Options</h4>
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Hangup After Action</span>
+            <span>{selectedItem.hangup ? 'Yes' : 'No'}</span>
+          </div>
+          {isDigitItem && (
+            <div className="flex items-center justify-between">
               <span className="text-sm">Digit Key</span>
               <span className="font-mono">{selectedItem.digit || '—'}</span>
             </div>
-            <div className="flex items-center justify-between p-3 border rounded-sm">
-              <span className="text-sm">Webhook URL</span>
-              <span className="text-sm text-muted-foreground truncate ml-2">
-                {selectedItem.webhookUrl || '—'}
-              </span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     );
@@ -253,45 +245,6 @@ export default function NodeEditorPanel({
       </div>
 
       <Separator />
-
-      {isDigitItem ? (
-        <div className="space-y-3">
-          <Label>Menu Item</Label>
-          <div className="flex gap-2 items-center">
-            <div className="px-3 py-2 bg-muted rounded text-sm font-medium">
-              Digit
-            </div>
-            <Select
-              value={digitNumber || '1'}
-              onValueChange={(value) => {
-                handleUpdate({ label: `Digit ${value}`, digit: value });
-              }}
-            >
-              <SelectTrigger className="w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 9 }, (_, i) => String(i + 1)).map(
-                  (num) => (
-                    <SelectItem key={num} value={num}>
-                      {num}
-                    </SelectItem>
-                  ),
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <Label>Label</Label>
-          <Input
-            value={selectedItem.label}
-            onChange={(e) => handleUpdate({ label: e.target.value })}
-            placeholder="Menu item label"
-          />
-        </div>
-      )}
 
       <div className="space-y-3 relative">
         {isUploadPending && (
@@ -361,26 +314,44 @@ export default function NodeEditorPanel({
       </div>
 
       <div className="space-y-3">
-        <Label>Options</Label>
-        <div className="space-y-2 max-h-40 overflow-y-auto">
-          {selectedItem.children.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No options yet — use the + button in the tree to add options
-            </p>
-          ) : (
-            selectedItem.children.map((child) => (
-              <div
-                key={child.id}
-                className="flex items-center gap-3 p-2 border rounded-sm text-sm"
-              >
-                <span className="font-mono font-bold w-8 text-center">
-                  {child.digit || '?'}
-                </span>
-                <span className="flex-1 truncate">{child.label}</span>
+        {isDigitItem ? (
+          <div className="space-y-3">
+            <Label>Menu Item</Label>
+            <div className="flex gap-2 items-center">
+              <div className="px-3 py-2 bg-muted rounded text-sm font-medium">
+                Digit
               </div>
-            ))
-          )}
-        </div>
+              <Select
+                value={digitNumber || '1'}
+                onValueChange={(value) => {
+                  handleUpdate({ label: `Digit ${value}`, digit: value });
+                }}
+              >
+                <SelectTrigger className="w-24">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 9 }, (_, i) => String(i + 1)).map(
+                    (num) => (
+                      <SelectItem key={num} value={num}>
+                        {num}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Label>Label</Label>
+            <Input
+              value={selectedItem.label}
+              onChange={(e) => handleUpdate({ label: e.target.value })}
+              placeholder="Menu item label"
+            />
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">
@@ -392,19 +363,6 @@ export default function NodeEditorPanel({
             onCheckedChange={(checked) => handleUpdate({ hangup: checked })}
           />
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Webhook URL (Optional)</Label>
-        <Input
-          value={selectedItem.webhookUrl || ''}
-          onChange={(e) => handleUpdate({ webhookUrl: e.target.value })}
-          placeholder="https://example.com/webhook"
-          className="text-xs"
-        />
-        <p className="text-xs text-muted-foreground">
-          Webhook to call when this option is selected
-        </p>
       </div>
     </div>
   );

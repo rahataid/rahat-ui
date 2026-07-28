@@ -6,6 +6,7 @@ import { UUID } from 'crypto';
 import { useIvrFlowStore } from '../store/ivr.flow.store';
 import { useIvrTemplateDetail } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Tabs,
   TabsContent,
@@ -71,7 +72,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
 
   const flow = flows.find((f) => f.id === ivrId);
 
-  const { data: templateDetail } = useIvrTemplateDetail(id as UUID, Number(ivrId));
+  const { data: templateDetail } = useIvrTemplateDetail(
+    id as UUID,
+    Number(ivrId),
+  );
   const [isFetchingFlow, setIsFetchingFlow] = useState(
     !!templateDetail?.flowUrl,
   );
@@ -175,7 +179,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
         {/* Left - Tree Panel */}
-        <div className="w-1/2 bg-white rounded-sm border overflow-hidden flex flex-col relative">
+        <div className="w-[65%] bg-white rounded-sm border overflow-hidden flex flex-col relative">
           {isFetchingFlow && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
               <div className="flex flex-col items-center gap-3">
@@ -197,57 +201,58 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         </div>
 
         {/* Right - Editor + JSON Preview */}
-        <div className="w-1/2 bg-white rounded-sm border overflow-hidden flex flex-col">
+        <div className="w-[35%] flex flex-col">
           <Tabs defaultValue="editor" className="flex flex-col h-full">
-            <div className="px-4 pt-3">
-              <TabsList className="border bg-secondary rounded w-full">
-                <TabsTrigger
-                  value="editor"
-                  className="w-full gap-2 data-[state=active]:bg-white"
-                >
-                  <Settings className="w-4 h-4" />
-                  Node Editor
-                </TabsTrigger>
-                <TabsTrigger
-                  value="json"
-                  className="w-full gap-2 data-[state=active]:bg-white"
-                >
-                  <Code className="w-4 h-4" />
-                  JSON Preview
-                </TabsTrigger>
-              </TabsList>
-            </div>
+            <TabsList className="border bg-secondary rounded w-full">
+              <TabsTrigger
+                value="editor"
+                className="w-full gap-2 data-[state=active]:bg-white"
+              >
+                <Settings className="w-4 h-4" />
+                Node Editor
+              </TabsTrigger>
+              <TabsTrigger
+                value="json"
+                className="w-full gap-2 data-[state=active]:bg-white"
+              >
+                <Code className="w-4 h-4" />
+                JSON Preview
+              </TabsTrigger>
+            </TabsList>
 
-            <TabsContent
-              value="editor"
-              className="flex-1 overflow-y-auto m-0 p-0"
-            >
-              {selectedNodeId ? (
-                <NodeEditorPanel
-                  flow={flow}
-                  selectedNodeId={selectedNodeId}
-                  onUpdateNode={handleUpdateNode}
-                />
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-3">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                    <Settings className="w-6 h-6 text-muted-foreground/60" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-medium">No Node Selected</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Select a menu item from the tree to edit its properties
-                    </p>
-                  </div>
-                </div>
-              )}
+            <TabsContent value="editor" className="flex-1 pt-3 overflow-hidden">
+              <Card className="h-full rounded-sm overflow-hidden">
+                <CardContent className="p-0 h-full">
+                  {selectedNodeId ? (
+                    <NodeEditorPanel
+                      flow={flow}
+                      selectedNodeId={selectedNodeId}
+                      onUpdateNode={handleUpdateNode}
+                    />
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-3">
+                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                        <Settings className="w-6 h-6 text-muted-foreground/60" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-medium">No Node Selected</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Select a menu item from the tree to edit its
+                          properties
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
 
-            <TabsContent
-              value="json"
-              className="flex-1 overflow-hidden m-0 p-0"
-            >
-              <JSONPreviewPanel flow={flow} />
+            <TabsContent value="json" className="flex-1 pt-3 overflow-hidden">
+              <Card className="h-full rounded-sm overflow-hidden">
+                <CardContent className="p-0 h-full">
+                  <JSONPreviewPanel flow={flow} />
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>

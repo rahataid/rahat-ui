@@ -6,6 +6,7 @@ import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { ChevronDown, ChevronRight, Play, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src';
 import { IvrFlow, IvrFlowNode } from '../types/ivr.flow.types';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 const LEVEL_COLORS = [
   {
@@ -145,25 +146,31 @@ function TreeItem({
           </div>
         </div>
 
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6"
-            onClick={handleAddChild}
-            disabled={maxReached}
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 hover:text-destructive"
-            onClick={handleDelete}
-            title="Delete"
-          >
-            <Trash2 className="w-3 h-3" />
-          </Button>
+        <div className="flex items-center gap-2">
+          <TooltipWrapper tip="Add child node">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-transparent hover:text-inherit"
+              onClick={handleAddChild}
+              disabled={maxReached}
+              title="Add child"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </TooltipWrapper>
+
+          <TooltipWrapper tip="Delete this node">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-transparent hover:text-inherit"
+              onClick={handleDelete}
+              title="Delete"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </TooltipWrapper>
         </div>
       </div>
 

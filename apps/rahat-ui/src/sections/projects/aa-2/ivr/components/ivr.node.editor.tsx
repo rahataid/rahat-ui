@@ -105,7 +105,9 @@ export default function NodeEditorPanel({
 
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base md:text-lg font-semibold">Node Properties</h3>
+            <h3 className="text-base md:text-lg font-semibold">
+              Node Properties
+            </h3>
           </div>
           <Button
             variant="outline"
@@ -168,10 +170,23 @@ export default function NodeEditorPanel({
           )}
         </div>
 
-        {selectedItem.children.length > 0 && (
-          <div className="space-y-3">
-            <h4 className="font-semibold">Options</h4>
-            <div className="space-y-2">
+        <div className="border rounded-sm p-4 space-y-4">
+          <h4 className="font-semibold">Options</h4>
+          <Separator />
+          {isDigitItem && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Digit Key</span>
+              <span className="font-mono">{selectedItem.digit || '—'}</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Hangup After Action</span>
+            <span>{selectedItem.hangup ? 'Yes' : 'No'}</span>
+          </div>
+
+          {isDigitItem && selectedItem.children.length > 0 && (
+            <div className="space-y-2 pt-2 border-t">
               {selectedItem.children.map((child) => (
                 <div
                   key={child.id}
@@ -190,20 +205,6 @@ export default function NodeEditorPanel({
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        <div className="border rounded-sm p-4 space-y-4">
-          <h4 className="font-semibold">Options</h4>
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Hangup After Action</span>
-            <span>{selectedItem.hangup ? 'Yes' : 'No'}</span>
-          </div>
-          {isDigitItem && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Digit Key</span>
-              <span className="font-mono">{selectedItem.digit || '—'}</span>
             </div>
           )}
         </div>
@@ -246,7 +247,7 @@ export default function NodeEditorPanel({
 
       <Separator />
 
-      <div className="space-y-3 relative">
+      <div className="border rounded-sm p-4 space-y-4 relative">
         {isUploadPending && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 rounded-sm">
             <div className="flex items-center gap-3">
@@ -259,11 +260,11 @@ export default function NodeEditorPanel({
         )}
         <div
           className={cn(
-            'space-y-3 relative',
+            'space-y-4 relative',
             isUploadPending && 'blur-sm pointer-events-none',
           )}
         >
-          <Label>Audio Prompt</Label>
+          <h4 className="font-semibold">Audio Prompt</h4>
           <Tabs
             value={promptMode}
             onValueChange={(value) =>
@@ -313,50 +314,45 @@ export default function NodeEditorPanel({
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="border rounded-sm p-6 space-y-4">
+        <h4 className="font-semibold">Options</h4>
+        <Separator />
         {isDigitItem ? (
-          <div className="space-y-3">
-            <Label>Menu Item</Label>
-            <div className="flex gap-2 items-center">
-              <div className="px-3 py-2 bg-muted rounded text-sm font-medium">
-                Digit
-              </div>
-              <Select
-                value={digitNumber || '1'}
-                onValueChange={(value) => {
-                  handleUpdate({ label: `Digit ${value}`, digit: value });
-                }}
-              >
-                <SelectTrigger className="w-24">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 9 }, (_, i) => String(i + 1)).map(
-                    (num) => (
-                      <SelectItem key={num} value={num}>
-                        {num}
-                      </SelectItem>
-                    ),
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Digit</span>
+            <Select
+              value={digitNumber || '1'}
+              onValueChange={(value) => {
+                handleUpdate({ label: `Digit ${value}`, digit: value });
+              }}
+            >
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 9 }, (_, i) => String(i + 1)).map(
+                  (num) => (
+                    <SelectItem key={num} value={num}>
+                      {num}
+                    </SelectItem>
+                  ),
+                )}
+              </SelectContent>
+            </Select>
           </div>
         ) : (
-          <div className="space-y-2">
-            <Label>Label</Label>
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Label</span>
             <Input
               value={selectedItem.label}
               onChange={(e) => handleUpdate({ label: e.target.value })}
               placeholder="Menu item label"
+              className="w-48"
             />
           </div>
         )}
-      </div>
 
-      <div className="space-y-3">
-        <Label>Hangup After Action</Label>
-        <div className="flex items-center justify-between p-3 border rounded-sm">
+        <div className="flex items-center justify-between">
           <span className="text-sm">End call after this action</span>
           <Switch
             checked={selectedItem.hangup}

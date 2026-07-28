@@ -158,7 +158,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div className="min-w-0 flex-1">
-              <h1 className="text-[clamp(16px,2vw,24px)] font-bold truncate">{displayName}</h1>
+              <h1 className="text-[clamp(16px,2vw,24px)] font-bold truncate">
+                {displayName}
+              </h1>
               <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground truncate">
                 {displayDescription}
               </p>
@@ -179,7 +181,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
         {/* Left - Tree Panel */}
-        <div className="w-full lg:w-[65%] bg-white rounded-sm border overflow-hidden flex flex-col relative">
+        <div className="w-full lg:w-[70%] bg-white rounded-sm border overflow-hidden flex flex-col relative">
           {isFetchingFlow && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
               <div className="flex flex-col items-center gap-3">
@@ -201,7 +203,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         </div>
 
         {/* Right - Editor + JSON Preview */}
-        <div className="w-full lg:w-[35%] flex flex-col">
+        <div className="w-full lg:w-[30%] flex flex-col">
           <Tabs defaultValue="editor" className="flex flex-col h-full">
             <TabsList className="border bg-secondary rounded w-full">
               <TabsTrigger

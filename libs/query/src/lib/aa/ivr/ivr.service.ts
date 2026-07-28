@@ -12,6 +12,7 @@ const MS_ACTIONS = {
     CREATE: 'aaProject.ivrTemplates.create',
     UPDATE: 'aaProject.ivrTemplates.update',
     DELETE: 'aaProject.ivrTemplates.delete',
+    SEND_TEST_CALL: 'aaProject.ivrTemplates.sendTestCall',
   },
 };
 
@@ -224,6 +225,52 @@ export const useIvrTemplateDelete = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
         title: 'Error while deleting IVR template.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useIvrTestCall = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: { phoneNumber: string; flowUrl: string };
+    }) => {
+      const res = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_ACTIONS.IVR_TEMPLATES.SEND_TEST_CALL,
+          payload,
+        },
+      });
+      return res?.data;
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Test call sent successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      q.reset();
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error sending test call.',
         icon: 'error',
         text: errorMessage,
       });

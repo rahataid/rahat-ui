@@ -19,7 +19,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { useUploadFile, useIvrTemplateUpdate } from '@rahat-ui/query';
+import { useUploadFile, useIvrTemplateUpdate, useIvrTestCall } from '@rahat-ui/query';
 import { Link, Copy, Check, Globe, Phone, ExternalLink } from 'lucide-react';
 
 interface ExportModalProps {
@@ -41,8 +41,11 @@ export default function ExportModal({
   const [ipfsLink, setIpfsLink] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [testPhone, setTestPhone] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const uploadFile = useUploadFile();
   const updateTemplate = useIvrTemplateUpdate();
+  const sendTestCall = useIvrTestCall();
 
   const handleClose = () => {
     setIpfsLink('');
@@ -80,10 +83,34 @@ export default function ExportModal({
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+  const handleSendTestCall = async () => {
+    if (!testPhone) return;
+    setIsSending(true);
+    try {
+      const blob = new Blob([jsonContent], { type: 'application/json' });
+      const file = new File([blob], 'ivr-flow.json', {
+        type: 'application/json',
+      });
+      const formData = new FormData();
+      formData.append('file', file);
+      const { data: uploaded } = await uploadFile.mutateAsync(formData);
+      await sendTestCall.mutateAsync({
+        projectUUID: projectUUID as UUID,
+        payload: {
+          phoneNumber: testPhone,
+          flowUrl: uploaded.mediaURL,
+        },
+      });
+      setTestPhone('');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent
-        className="!rounded-sm max-w-md"
+        className="!rounded-sm max-w-[clamp(320px,90vw,550px)]"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -206,14 +233,27 @@ export default function ExportModal({
             </p>
             <div className="space-y-2">
               <Label>Phone Number</Label>
-              <Input placeholder="Enter phone number" />
+              <Input
+                placeholder="Enter phone number"
+                value={testPhone}
+                onChange={(e) => setTestPhone(e.target.value)}
+              />
               <p className="text-xs text-muted-foreground">
                 Standard call rates may apply depending on your provider
               </p>
             </div>
-            <Button variant="default" className="w-full gap-2 rounded-sm">
-              <Phone className="w-4 h-4" />
-              Send Test Call
+            <Button
+              variant="default"
+              className="w-full gap-2 rounded-sm"
+              disabled={isSending || !testPhone}
+              onClick={handleSendTestCall}
+            >
+              {isSending ? (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Phone className="w-4 h-4" />
+              )}
+              {isSending ? 'Sending...' : 'Send Test Call'}
             </Button>
           </TabsContent>
         </Tabs>

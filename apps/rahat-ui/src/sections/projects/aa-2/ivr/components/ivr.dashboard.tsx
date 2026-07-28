@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useMemo, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -9,100 +9,16 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useIvrTemplates, useIvrTemplateDelete } from '@rahat-ui/query';
-import { IvrListItem } from '../types/ivr.flow.types';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
-  Trash2,
-  MoreHorizontal,
-  ArrowRight,
   Voicemail,
-  Archive,
 } from 'lucide-react';
-import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import CreateIVRDialog from './ivr.create.dialog';
-
-const statusColors: Record<string, string> = {
-  draft: 'bg-yellow-100 text-yellow-800',
-  active: 'bg-green-100 text-green-800',
-  archived: 'bg-gray-100 text-gray-800',
-};
-
-function IvrCard({
-  item,
-  onDelete,
-}: {
-  item: IvrListItem;
-  onDelete: (item: IvrListItem) => void;
-}) {
-  const router = useRouter();
-  const { id } = useParams();
-  const managePath = `/projects/aa/${id}/ivr/manage/${item.id}`;
-
-  return (
-    <Card className="group hover:shadow transition-shadow rounded-sm">
-      <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <CardTitle
-              className="group-hover:text-primary transition-colors cursor-pointer truncate"
-              onClick={() => router.push(managePath)}
-            >
-              {item.name}
-            </CardTitle>
-          </div>
-          <div className={item.status === 'archived' ? 'invisible' : ''}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onDelete(item)}>
-                  <Archive className="w-4 h-4 mr-2" />
-                  Archive
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-3">
-          <Badge className={statusColors[item.status] || ''}>
-            {item.status}
-          </Badge>
-          <span className="text-sm text-muted-foreground">
-            {dateFormat(new Date(item.lastModified))}
-          </span>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <IconLabelBtn
-          variant="outline"
-          className="border-primary text-primary flex-1 flex-row-reverse gap-2"
-          Icon={ArrowRight}
-          name="View Details"
-          handleClick={() => router.push(managePath)}
-        />
-      </CardFooter>
-    </Card>
-  );
-}
+import IvrCard from './ivr.card';
 
 export default function IvrDashboard() {
   const { id: projectUUID } = useParams();
@@ -118,23 +34,46 @@ export default function IvrDashboard() {
 
   const deleteIvr = useIvrTemplateDelete();
 
-  const ivrList: IvrListItem[] = (templates || []).map((t) => ({
-    id: String(t.id),
-    name: t.name,
-    description: t.description,
-    status: t.status.toLowerCase() as 'draft' | 'active' | 'archived',
-    itemCount: 0,
-    lastModified: new Date(t.updatedAt).getTime(),
-  }));
+  const ivrList = useMemo(
+    () =>
+      (templates || []).map((t) => ({
+        id: String(t.id),
+        name: t.name,
+        description: t.description,
+        status: t.status.toLowerCase() as 'draft' | 'active' | 'archived',
+        itemCount: 0,
+        lastModified: new Date(t.updatedAt).getTime(),
+      })),
+    [templates],
+  );
 
-  const filteredList = ivrList.filter((item) => {
-    const matchesSearch = item.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === 'all' || item.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredList = useMemo(
+    () =>
+      ivrList.filter((item) => {
+        const matchesSearch = item.name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesStatus =
+          statusFilter === 'all' || item.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      }),
+    [ivrList, searchQuery, statusFilter],
+  );
+
+  const handleDelete = useCallback(
+    (item: { id: string; name: string }) =>
+      setDeleteTarget({ id: Number(item.id), name: item.name }),
+    [],
+  );
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    await deleteIvr.mutateAsync({
+      projectUUID: projectUUID as UUID,
+      id: deleteTarget.id,
+    });
+    setDeleteTarget(null);
+  }, [deleteTarget, deleteIvr, projectUUID]);
 
   return (
     <div className="p-4">
@@ -199,9 +138,7 @@ export default function IvrDashboard() {
               <IvrCard
                 key={item.id}
                 item={item}
-                onDelete={(i) =>
-                  setDeleteTarget({ id: Number(i.id), name: i.name })
-                }
+                onDelete={handleDelete}
               />
             ))}
           </div>
@@ -211,14 +148,7 @@ export default function IvrDashboard() {
       <ConfirmationDialog
         isConfirmationDialogOpen={!!deleteTarget}
         onCancel={() => setDeleteTarget(null)}
-        onConfirm={async () => {
-          if (!deleteTarget) return;
-          await deleteIvr.mutateAsync({
-            projectUUID: projectUUID as UUID,
-            id: deleteTarget.id,
-          });
-          setDeleteTarget(null);
-        }}
+        onConfirm={handleConfirmDelete}
         dialogTitle="Archive IVR"
         dialogMessage={`Are you sure you want to archive "${deleteTarget?.name}"? This action will archive the IVR template and cannot be undone.`}
       />

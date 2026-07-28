@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import {
@@ -19,18 +18,11 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
-  Link2,
-  Mic,
-  Upload,
-  Play,
-  Pencil,
-  Square,
-  Loader2,
-} from 'lucide-react';
+import { Link2, Mic, Upload, Pencil, Loader2 } from 'lucide-react';
 import { IvrFlow, IvrFlowNode } from '../types/ivr.flow.types';
 import { findNodeById, getBreadcrumbPath } from '../utils/utils';
 import { cn } from '@rahat-ui/shadcn/src';
+import { AudioPreviewPlayer } from './ivr.audio.preview';
 import AudioUrlTab from './editor/ivr.audio.url.tab';
 import AudioRecordTab from './editor/ivr.audio.record.tab';
 import AudioUploadTab from './editor/ivr.audio.upload.tab';
@@ -48,23 +40,55 @@ export default function NodeEditorPanel({
   onUpdateNode,
   onEditingChange,
 }: NodeEditorPanelProps) {
-  const selectedItem = findNodeById(flow.rootMenu, selectedNodeId);
+  const selectedItem = useMemo(
+    () => findNodeById(flow.rootMenu, selectedNodeId),
+    [flow.rootMenu, selectedNodeId],
+  );
+  const breadcrumbPath = useMemo(
+    () => getBreadcrumbPath(flow.rootMenu, selectedNodeId),
+    [flow.rootMenu, selectedNodeId],
+  );
+
   const [isEditing, setIsEditing] = useState(false);
-  const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const [promptMode, setPromptMode] = useState<'url' | 'record' | 'upload'>(
     'url',
   );
   const [isUploadPending, setIsUploadPending] = useState(false);
-  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const snapshotRef = useRef<Partial<IvrFlowNode> | null>(null);
-  const breadcrumbPath = getBreadcrumbPath(flow.rootMenu, selectedNodeId);
 
-  useEffect(() => {
-    setIsEditing(false);
-    setIsPreviewPlaying(false);
+  const handleUpdate = useCallback(
+    (updates: Partial<IvrFlowNode>) => {
+      onUpdateNode(selectedNodeId, updates);
+    },
+    [onUpdateNode, selectedNodeId],
+  );
+
+  const handleEdit = useCallback(() => {
+    if (!selectedItem) return;
+    snapshotRef.current = {
+      label: selectedItem.label,
+      prompt: selectedItem.prompt,
+      hangup: selectedItem.hangup,
+      digit: selectedItem.digit,
+    };
+    setIsEditing(true);
+    onEditingChange?.(true);
+  }, [selectedItem, onEditingChange]);
+
+  const handleCancel = useCallback(() => {
+    if (snapshotRef.current) {
+      onUpdateNode(selectedNodeId, snapshotRef.current);
+    }
     snapshotRef.current = null;
+    setIsEditing(false);
     onEditingChange?.(false);
-  }, [selectedNodeId]);
+  }, [onUpdateNode, selectedNodeId, onEditingChange]);
+
+  const handleSave = useCallback(() => {
+    snapshotRef.current = null;
+    setIsEditing(false);
+    onEditingChange?.(false);
+  }, [onEditingChange]);
 
   if (!selectedItem) {
     return (
@@ -82,31 +106,31 @@ export default function NodeEditorPanel({
     ? selectedItem.label.replace('Digit ', '')
     : null;
 
-  const handleUpdate = (updates: Partial<IvrFlowNode>) => {
-    onUpdateNode(selectedNodeId, updates);
-  };
+  const breadcrumb = (
+    <div className="flex items-center gap-2 text-[clamp(11px,1vw,14px)] text-muted-foreground mb-4 flex-wrap">
+      {breadcrumbPath.map((label, idx) => (
+        <div key={idx} className="flex items-center gap-2">
+          <span
+            className={
+              idx === breadcrumbPath.length - 1
+                ? 'text-foreground font-medium'
+                : ''
+            }
+          >
+            {label}
+          </span>
+          {idx < breadcrumbPath.length - 1 && (
+            <span className="text-xs text-muted-foreground">/</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 
   if (!isEditing) {
     return (
       <div className="p-3 md:p-6 space-y-4 md:space-y-6 overflow-y-auto h-full">
-        <div className="flex items-center gap-2 text-[clamp(11px,1vw,14px)] text-muted-foreground mb-4 flex-wrap">
-          {breadcrumbPath.map((label, idx) => (
-            <div key={idx} className="flex items-center gap-2">
-              <span
-                className={
-                  idx === breadcrumbPath.length - 1
-                    ? 'text-foreground font-medium'
-                    : ''
-                }
-              >
-                {label}
-              </span>
-              {idx < breadcrumbPath.length - 1 && (
-                <span className="text-xs text-muted-foreground">/</span>
-              )}
-            </div>
-          ))}
-        </div>
+        {breadcrumb}
 
         <div className="flex items-center justify-between">
           <div>
@@ -117,16 +141,7 @@ export default function NodeEditorPanel({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              snapshotRef.current = {
-                label: selectedItem.label,
-                prompt: selectedItem.prompt,
-                hangup: selectedItem.hangup,
-                digit: selectedItem.digit,
-              };
-              setIsEditing(true);
-              onEditingChange?.(true);
-            }}
+            onClick={handleEdit}
             className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
           >
             <Pencil className="w-4 h-4" />
@@ -139,44 +154,18 @@ export default function NodeEditorPanel({
         <div className="border rounded-sm p-4 space-y-3">
           <h4 className="font-semibold">Audio Prompt</h4>
           {selectedItem.prompt ? (
-            <div className="flex items-center gap-4">
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-2 rounded-sm shrink-0"
-                onClick={() => {
-                  if (isPreviewPlaying && previewAudioRef.current) {
-                    previewAudioRef.current.pause();
-                    previewAudioRef.current = null;
-                    setIsPreviewPlaying(false);
-                    return;
-                  }
-                  if (!selectedItem.prompt) return;
-                  const audio = new Audio(selectedItem.prompt);
-                  previewAudioRef.current = audio;
-                  audio.onended = () => setIsPreviewPlaying(false);
-                  audio.onerror = () => setIsPreviewPlaying(false);
-                  audio
-                    .play()
-                    .then(() => setIsPreviewPlaying(true))
-                    .catch(() => setIsPreviewPlaying(false));
-                }}
-              >
-                {isPreviewPlaying ? (
-                  <Square className="w-3 h-3" />
-                ) : (
-                  <Play className="w-3 h-3" />
-                )}
-                {isPreviewPlaying ? 'Stop' : 'Preview'}
-              </Button>
-              <span className="text-xs text-muted-foreground truncate">
-                {selectedItem.prompt.startsWith('blob:')
+            <AudioPreviewPlayer
+              src={selectedItem.prompt}
+              fileName={
+                selectedItem.prompt.startsWith('blob:')
                   ? 'Recorded file'
                   : selectedItem.prompt.startsWith('data:')
                   ? 'Uploaded file'
-                  : selectedItem.prompt}
-              </span>
-            </div>
+                  : selectedItem.prompt
+              }
+              hideActions
+              noCard
+            />
           ) : (
             <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-sm text-sm text-yellow-900">
               No prompt set — click Edit to add one
@@ -193,34 +182,10 @@ export default function NodeEditorPanel({
               <span className="font-mono">{selectedItem.digit || '—'}</span>
             </div>
           )}
-
           <div className="flex items-center justify-between">
             <span className="text-sm">Hangup After Action</span>
             <span>{selectedItem.hangup ? 'Yes' : 'No'}</span>
           </div>
-
-          {isDigitItem && selectedItem.children.length > 0 && (
-            <div className="space-y-2 pt-2 border-t">
-              {selectedItem.children.map((child) => (
-                <div
-                  key={child.id}
-                  className="flex items-center justify-between p-3 border rounded-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono font-bold text-lg">
-                      {child.digit || '?'}
-                    </span>
-                    <div>
-                      <div className="text-sm font-medium">{child.label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {child.prompt ? 'Has audio' : 'No audio'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     );
@@ -228,24 +193,7 @@ export default function NodeEditorPanel({
 
   return (
     <div className="p-3 md:p-6 space-y-4 md:space-y-6 overflow-y-auto h-full">
-      <div className="flex items-center gap-2 text-[clamp(11px,1vw,14px)] text-muted-foreground mb-4 flex-wrap">
-        {breadcrumbPath.map((label, idx) => (
-          <div key={idx} className="flex items-center gap-2">
-            <span
-              className={
-                idx === breadcrumbPath.length - 1
-                  ? 'text-foreground font-medium'
-                  : ''
-              }
-            >
-              {label}
-            </span>
-            {idx < breadcrumbPath.length - 1 && (
-              <span className="text-xs text-muted-foreground">/</span>
-            )}
-          </div>
-        ))}
-      </div>
+      {breadcrumb}
 
       <div className="flex items-center justify-between">
         <h3 className="text-base md:text-lg font-semibold">Edit Node</h3>
@@ -254,14 +202,7 @@ export default function NodeEditorPanel({
             variant="outline"
             size="sm"
             className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
-            onClick={() => {
-              if (snapshotRef.current) {
-                onUpdateNode(selectedNodeId, snapshotRef.current);
-              }
-              snapshotRef.current = null;
-              setIsEditing(false);
-              onEditingChange?.(false);
-            }}
+            onClick={handleCancel}
           >
             Cancel
           </Button>
@@ -269,11 +210,7 @@ export default function NodeEditorPanel({
             variant="default"
             size="sm"
             className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
-            onClick={() => {
-              snapshotRef.current = null;
-              setIsEditing(false);
-              onEditingChange?.(false);
-            }}
+            onClick={handleSave}
           >
             Save
           </Button>
@@ -386,7 +323,6 @@ export default function NodeEditorPanel({
             />
           </div>
         )}
-
         <div className="flex items-center justify-between">
           <span className="text-sm">End call after this action</span>
           <Switch

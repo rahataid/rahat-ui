@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useIvrFlowStore } from '../store/ivr.flow.store';
-import { useIvrTemplateDetail } from '@rahat-ui/query';
+import { useIvrTemplateDetail, useUploadFile, useIvrTemplateUpdate } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -13,7 +13,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { ArrowLeft, Settings, Code, Download, Loader2 } from 'lucide-react';
+import { ArrowLeft, Settings, Code, Download, Save, Loader2 } from 'lucide-react';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 import {
@@ -71,7 +71,6 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isEditorDirty, setIsEditorDirty] = useState(false);
   const [pendingNodeId, setPendingNodeId] = useState<string | null>(null);
-  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const populatedRef = useRef(false);
 
   const flow = flows.find((f) => f.id === ivrId);
@@ -83,6 +82,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   const [isFetchingFlow, setIsFetchingFlow] = useState(
     !!templateDetail?.flowUrl,
   );
+  const [isSaving, setIsSaving] = useState(false);
+  const uploadFile = useUploadFile();
+  const updateTemplate = useIvrTemplateUpdate();
 
   const flowJsonString = useMemo(() => {
     if (!flow) return '';
@@ -115,38 +117,91 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     };
 
     fetchAndPopulate();
-  }, [templateDetail, ivrId, setFlowRootMenu]);
+  }, [templateDetail, ivrId, setFlowRootMenu, setIsFetchingFlow]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.push(`/projects/aa/${id}/ivr`);
-  };
+  }, [router, id]);
 
-  const handleAddNode = (parentId: string) => {
-    addNode(parentId, {});
-  };
+  const handleAddNode = useCallback(
+    (parentId: string) => {
+      addNode(parentId, {});
+    },
+    [addNode],
+  );
 
-  const handleUpdateNode = (nodeId: string, updates: Partial<IvrFlowNode>) => {
-    updateNode(nodeId, updates);
-  };
+  const handleUpdateNode = useCallback(
+    (nodeId: string, updates: Partial<IvrFlowNode>) => {
+      updateNode(nodeId, updates);
+    },
+    [updateNode],
+  );
 
-  const handleDeleteNode = (nodeId: string) => {
-    deleteNode(nodeId);
-    if (selectedNodeId === nodeId) setSelectedNodeId(null);
-  };
+  const handleDeleteNode = useCallback(
+    (nodeId: string) => {
+      deleteNode(nodeId);
+      setSelectedNodeId((prev) => (prev === nodeId ? null : prev));
+    },
+    [deleteNode],
+  );
 
-  const handleSelectNode = (nodeId: string) => {
-    if (isEditorDirty) {
-      setPendingNodeId(nodeId);
-      setShowUnsavedDialog(true);
-    } else {
-      setSelectedNodeId(nodeId);
-    }
-  };
+  const handleSelectNode = useCallback(
+    (nodeId: string) => {
+      if (isEditorDirty) {
+        setPendingNodeId(nodeId);
+      } else {
+        setSelectedNodeId(nodeId);
+      }
+    },
+    [isEditorDirty],
+  );
 
-  const handleDismissDialog = () => {
+  const handleDismissDialog = useCallback(() => {
     setPendingNodeId(null);
-    setShowUnsavedDialog(false);
-  };
+  }, []);
+
+  const handleSimulate = useCallback(
+    () => setIsSimulationOpen(true),
+    [],
+  );
+
+  const handleCloseSimulation = useCallback(
+    () => setIsSimulationOpen(false),
+    [],
+  );
+
+  const handleSaveFlow = useCallback(async () => {
+    if (!flow || isSaving) return;
+    setIsSaving(true);
+    try {
+      const blob = new Blob([flowJsonString], { type: 'application/json' });
+      const file = new File([blob], 'ivr-flow.json', {
+        type: 'application/json',
+      });
+      const formData = new FormData();
+      formData.append('file', file);
+      const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+      await updateTemplate.mutateAsync({
+        projectUUID: id as UUID,
+        id: Number(ivrId),
+        payload: { flowUrl: afterUpload.mediaURL },
+      });
+    } catch {
+      // error handled by mutation toast
+    } finally {
+      setIsSaving(false);
+    }
+  }, [flow, flowJsonString, id, ivrId, uploadFile, updateTemplate, isSaving]);
+
+  const handleExport = useCallback(
+    () => setIsExportOpen(true),
+    [],
+  );
+
+  const handleCloseExport = useCallback(
+    () => setIsExportOpen(false),
+    [],
+  );
 
   if (!flow) {
     return (
@@ -168,7 +223,6 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
 
   return (
     <div className="h-[calc(100vh-80px)] flex flex-col">
-      {/* Header */}
       <div className="bg-white border-b px-4 md:px-6 py-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-4">
@@ -184,21 +238,35 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               </p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
-            onClick={() => setIsExportOpen(true)}
-          >
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
+              onClick={handleSaveFlow}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
+              onClick={handleExport}
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
-        {/* Left - Tree Panel */}
         <div className="w-full lg:w-[70%] lg:h-full bg-white rounded-sm border overflow-hidden flex flex-col relative">
           {isFetchingFlow && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
@@ -216,11 +284,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
             onSelectNode={handleSelectNode}
             onAddNode={handleAddNode}
             onDeleteNode={handleDeleteNode}
-            onSimulate={() => setIsSimulationOpen(true)}
+            onSimulate={handleSimulate}
           />
         </div>
 
-        {/* Right - Editor + JSON Preview */}
         <div className="w-full lg:w-[30%] lg:h-full min-w-0 overflow-hidden flex flex-col">
           <Tabs defaultValue="editor" className="flex flex-col h-full">
             <TabsList className="border bg-secondary rounded w-full">
@@ -245,6 +312,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
                 <CardContent className="p-0 h-full">
                   {selectedNodeId ? (
                     <NodeEditorPanel
+                      key={selectedNodeId}
                       flow={flow}
                       selectedNodeId={selectedNodeId}
                       onUpdateNode={handleUpdateNode}
@@ -279,18 +347,16 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         </div>
       </div>
 
-      {/* Simulation Modal */}
       {isSimulationOpen && (
         <SimulationModal
           flow={flow}
-          onClose={() => setIsSimulationOpen(false)}
+          onClose={handleCloseSimulation}
         />
       )}
 
-      {/* Export Modal */}
       <ExportModal
         open={isExportOpen}
-        onClose={() => setIsExportOpen(false)}
+        onClose={handleCloseExport}
         ivrId={Number(ivrId)}
         jsonContent={flowJsonString}
         onExported={() => {
@@ -299,7 +365,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
       />
 
       <ConfirmationDialog
-        isConfirmationDialogOpen={showUnsavedDialog}
+        isConfirmationDialogOpen={!!pendingNodeId}
         onCancel={handleDismissDialog}
         onConfirm={handleDismissDialog}
         dialogTitle="Unsaved Changes"

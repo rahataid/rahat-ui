@@ -7,9 +7,11 @@ import { Play, Pause, Upload } from 'lucide-react';
 type AudioPreviewPlayerProps = {
   src: string;
   fileName: string;
-  onUpload: () => void;
-  onCancel: () => void;
+  onUpload?: () => void;
+  onCancel?: () => void;
   uploadLabel?: string;
+  hideActions?: boolean;
+  noCard?: boolean;
 };
 
 export function AudioPreviewPlayer({
@@ -17,6 +19,8 @@ export function AudioPreviewPlayer({
   fileName,
   onUpload,
   onCancel,
+  hideActions,
+  noCard,
 }: AudioPreviewPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -51,7 +55,7 @@ export function AudioPreviewPlayer({
   };
 
   return (
-    <div className="p-3 md:p-4 border rounded-sm space-y-2">
+    <div className={noCard ? 'space-y-2' : 'p-3 md:p-4 border rounded-sm space-y-2'}>
       <div className="flex items-center gap-2">
         <Button
           size="sm"
@@ -81,25 +85,27 @@ export function AudioPreviewPlayer({
         </span>
       </div>
       <div className="text-xs text-muted-foreground truncate">{fileName}</div>
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          className="rounded-sm flex-1"
-          onClick={onCancel}
-        >
-          Discard
-        </Button>
-        <Button
-          size="sm"
-          variant="default"
-          className="gap-2 rounded-sm flex-1"
-          onClick={onUpload}
-        >
-          <Upload className="w-4 h-4" />
-          Upload
-        </Button>
-      </div>
+      {!hideActions && (
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-sm flex-1"
+            onClick={onCancel}
+          >
+            Discard
+          </Button>
+          <Button
+            size="sm"
+            variant="default"
+            className="gap-2 rounded-sm flex-1"
+            onClick={onUpload}
+          >
+            <Upload className="w-4 h-4" />
+            Upload
+          </Button>
+        </div>
+      )}
       <audio
         ref={audioRef}
         src={src}

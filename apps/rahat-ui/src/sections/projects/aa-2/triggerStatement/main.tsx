@@ -3,11 +3,7 @@ import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  useAATriggerStatements,
-  usePhases,
-  usePhaseSSE,
-} from '@rahat-ui/query';
+import { useAATriggerStatements, usePhases } from '@rahat-ui/query';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';

@@ -35,5 +35,3 @@ export * from './utils/amountFormate';
 export * from './utils/useGraphQLErrorHandler';
 export * from './utils/debounceHooks';
 export * from './utils/fieldSuggestionApi';
-export * from './utils/use-sse';
-

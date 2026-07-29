@@ -154,9 +154,15 @@ export default function InkindOverview() {
   const [perPage, setPerPage] = useState(10);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
-  const activeRange = dateRange?.from && dateRange?.to ? { startDate: dateRange.from, endDate: dateRange.to } : undefined;
+  const activeRange =
+    dateRange?.from && dateRange?.to
+      ? { startDate: dateRange.from, endDate: dateRange.to }
+      : undefined;
 
-  const { data: summaryData, isPending } = useInkindsSummary(projectUUID, activeRange);
+  const { data: summaryData, isPending } = useInkindsSummary(
+    projectUUID,
+    activeRange,
+  );
   const { data: txData, isFetching: txFetching } = useInkindTransactions(
     projectUUID,
     { page, perPage, ...activeRange },
@@ -173,9 +179,9 @@ export default function InkindOverview() {
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
-  if (isPending) {
-    return <SpinnerLoader />;
-  }
+  // if (isPending) {
+  //   return <SpinnerLoader />;
+  // }
 
   return (
     <div className="flex flex-col h-full">
@@ -203,7 +209,7 @@ export default function InkindOverview() {
           />
         </div>
       </div>
-
+      {(isPending || !summaryData) && <SpinnerLoader />}
       <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
         <DataCard
           className="rounded-sm"

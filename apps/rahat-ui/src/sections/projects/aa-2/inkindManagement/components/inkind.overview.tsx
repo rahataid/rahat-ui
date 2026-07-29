@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { DateRange } from 'react-day-picker';
 import {
   CustomPagination,
   DataCard,
   Heading,
+  IconLabelBtn,
   SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -26,6 +28,7 @@ import {
   Calendar,
   Hash,
   Layers,
+  CloudDownloadIcon,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
@@ -41,6 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 
 type Movement = {
   id: number;
@@ -148,11 +152,14 @@ export default function InkindOverview() {
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
-  const { data: summaryData, isPending } = useInkindsSummary(projectUUID);
+  const activeRange = dateRange?.from && dateRange?.to ? { startDate: dateRange.from, endDate: dateRange.to } : undefined;
+
+  const { data: summaryData, isPending } = useInkindsSummary(projectUUID, activeRange);
   const { data: txData, isFetching: txFetching } = useInkindTransactions(
     projectUUID,
-    { page, perPage },
+    { page, perPage, ...activeRange },
   );
 
   const inkindItemsSummary = summaryData?.data ?? [];
@@ -172,11 +179,30 @@ export default function InkindOverview() {
 
   return (
     <div className="flex flex-col h-full">
-      <Heading
-        title="Inkind Overview"
-        titleStyle="font-medium text-lg"
-        description="Overview of all in-kind items and stock movements"
-      />
+      <div className="flex items-center justify-between">
+        <Heading
+          title="Inkind Overview"
+          titleStyle="font-medium text-lg"
+          description="Overview of all in-kind items and stock movements"
+        />
+        <div className="flex gap-2 items-center">
+          <IconLabelBtn
+            Icon={CloudDownloadIcon}
+            // handleClick={handleDownloadReport}
+            // name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
+            name={'Export Report'}
+            variant="outline"
+            // disabled={isDownloading || !meta?.total}
+            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+          />
+          <DateRangePicker
+            placeholder="Pick date range"
+            handleDateChange={(range) => setDateRange(range)}
+            handleClearDate={() => setDateRange(undefined)}
+            type="range"
+          />
+        </div>
+      </div>
 
       <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
         <DataCard
@@ -218,8 +244,17 @@ export default function InkindOverview() {
           <div className="w-full h-48">
             <DynamicPieChart
               pieData={[
-                { label: 'Predefined', value: inkindItemsSummary?.chartData?.redemptionType?.predefined || 0 },
-                { label: 'Walk-in', value: inkindItemsSummary?.chartData?.redemptionType?.walkIn || 0 },
+                {
+                  label: 'Predefined',
+                  value:
+                    inkindItemsSummary?.chartData?.redemptionType?.predefined ||
+                    0,
+                },
+                {
+                  label: 'Walk-in',
+                  value:
+                    inkindItemsSummary?.chartData?.redemptionType?.walkIn || 0,
+                },
               ]}
               colors={['#F4A462', '#2A9D90']}
             />
@@ -231,8 +266,18 @@ export default function InkindOverview() {
           <div className="w-full h-48">
             <DynamicPieChart
               pieData={[
-                { label: 'Redeemed', value: inkindItemsSummary?.totalRedeemedStock || 0 },
-                { label: 'Not Redeemed', value: Math.max(0, (inkindItemsSummary?.totalAssignedStock || 0) - (inkindItemsSummary?.totalRedeemedStock || 0)) },
+                {
+                  label: 'Redeemed',
+                  value: inkindItemsSummary?.totalRedeemedStock || 0,
+                },
+                {
+                  label: 'Not Redeemed',
+                  value: Math.max(
+                    0,
+                    (inkindItemsSummary?.totalAssignedStock || 0) -
+                      (inkindItemsSummary?.totalRedeemedStock || 0),
+                  ),
+                },
               ]}
               colors={['#FFA500', '#10B981']}
             />
@@ -249,8 +294,16 @@ export default function InkindOverview() {
             <div className="w-full h-48">
               <DynamicPieChart
                 pieData={[
-                  { label: 'Skipped', value: inkindItemsSummary?.chartData?.otpStatus?.skipped || 0 },
-                  { label: 'Not Skipped', value: inkindItemsSummary?.chartData?.otpStatus?.notSkipped || 0 },
+                  {
+                    label: 'Skipped',
+                    value:
+                      inkindItemsSummary?.chartData?.otpStatus?.skipped || 0,
+                  },
+                  {
+                    label: 'Not Skipped',
+                    value:
+                      inkindItemsSummary?.chartData?.otpStatus?.notSkipped || 0,
+                  },
                 ]}
                 colors={['#FFA500', '#10B981']}
               />
@@ -259,38 +312,52 @@ export default function InkindOverview() {
 
           <div className="border rounded-sm p-4">
             <h3 className="text-sm font-medium mb-3">OTP Skip Reasons</h3>
-            {inkindItemsSummary?.chartData?.otpSkipReasons && inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (() => {
-              const reasons: {reason: string; count: number}[] = [...inkindItemsSummary.chartData.otpSkipReasons].sort((a, b) => b.count - a.count);
-              const max = reasons[0].count;
-              return (
-                <TooltipProvider>
-                  <ScrollArea className="h-48">
-                    <div className="space-y-2 pr-2">
-                      {reasons.map((r, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <div className="w-4 text-xs text-muted-foreground shrink-0 text-right">{i + 1}</div>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-32 shrink-0 truncate text-xs cursor-default">{r.reason}</div>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs whitespace-normal">
-                              {r.reason}
-                            </TooltipContent>
-                          </Tooltip>
-                          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-indigo-500"
-                              style={{ width: `${(r.count / max) * 100}%` }}
-                            />
+            {inkindItemsSummary?.chartData?.otpSkipReasons &&
+            inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (
+              (() => {
+                const reasons: { reason: string; count: number }[] = [
+                  ...inkindItemsSummary.chartData.otpSkipReasons,
+                ].sort((a, b) => b.count - a.count);
+                const max = reasons[0].count;
+                return (
+                  <TooltipProvider>
+                    <ScrollArea className="h-48">
+                      <div className="space-y-2 pr-2">
+                        {reasons.map((r, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <div className="w-4 text-xs text-muted-foreground shrink-0 text-right">
+                              {i + 1}
+                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="w-32 shrink-0 truncate text-xs cursor-default">
+                                  {r.reason}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="top"
+                                className="max-w-xs whitespace-normal"
+                              >
+                                {r.reason}
+                              </TooltipContent>
+                            </Tooltip>
+                            <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-indigo-500"
+                                style={{ width: `${(r.count / max) * 100}%` }}
+                              />
+                            </div>
+                            <div className="text-xs font-medium w-6 shrink-0 text-right">
+                              {r.count}
+                            </div>
                           </div>
-                          <div className="text-xs font-medium w-6 shrink-0 text-right">{r.count}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </TooltipProvider>
-              );
-            })() : (
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </TooltipProvider>
+                );
+              })()
+            ) : (
               <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">
                 No data available
               </div>
@@ -309,109 +376,109 @@ export default function InkindOverview() {
             </p>
           )}
           <div className="relative flex-1 min-h-[150px]">
-          {txFetching && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 rounded-sm">
-              <div className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            </div>
-          )}
-          <ScrollArea className="flex-1 min-h-[120px] max-h-[40vh] overflow-auto items-center justify-center">
-            {movements.length === 0 ? (
-              <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
-                No records available.
-              </p>
-            ) : (
-              <div className="flex flex-col space-y-2">
-                {sortedMovements.map((movement) => {
-                  const config =
-                    MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
-                  const { Icon } = config;
-                  const isPositive =
-                    movement.type === 'ADD' || movement.type === 'UNLOCK';
-
-                  return (
-                    <button
-                      key={movement.uuid}
-                      onClick={() => setSelectedMovement(movement)}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 transition-colors text-left w-full"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
-                        >
-                          <Icon
-                            size={15}
-                            className={config.color}
-                            strokeWidth={2}
-                          />
-                        </div>
-                        <div>
-                          <div className="flex flex-row items-center gap-2">
-                            <TruncatedCell
-                              text={movement.inkind?.name || '—'}
-                              maxLength={30}
-                            />
-                            <Badge className="bg-gray-200 text-gray-600">
-                              {formatLabel(
-                                INKIND_TYPE_LABELS[movement.inkind?.type],
-                              )}
-                            </Badge>
-                          </div>
-                          {movement.groupInkind && (
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {movement.groupInkind?.group?.name || '-'}
-                            </p>
-                          )}
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {movement.createdAt
-                              ? format(
-                                  new Date(movement.createdAt),
-                                  'dd MMM yyyy, HH:mm',
-                                )
-                              : '—'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span
-                          className={`text-sm font-semibold ${config.color}`}
-                        >
-                          {isPositive ? '+' : '-'}
-                          {movement.quantity ?? 0}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`rounded-sm text-xs ${config.color} border-current`}
-                        >
-                          {config.label}
-                        </Badge>
-                      </div>
-                    </button>
-                  );
-                })}
+            {txFetching && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 rounded-sm">
+                <div className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
               </div>
             )}
-          </ScrollArea>
-        </div>
-        <CustomPagination
-          currentPage={page}
-          handleNextPage={() =>
-            setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))
-          }
-          handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
-          handlePageSizeChange={(size) => {
-            setPerPage(size as number);
-            setPage(1);
-          }}
-          meta={{
-            total: meta?.total ?? 0,
-            currentPage: page,
-            lastPage: meta?.lastPage ?? 1,
-            perPage,
-            next: meta?.next ?? null,
-            prev: meta?.prev ?? null,
-          }}
-          perPage={perPage}
-        />
+            <ScrollArea className="flex-1 min-h-[120px] max-h-[40vh] overflow-auto items-center justify-center">
+              {movements.length === 0 ? (
+                <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
+                  No records available.
+                </p>
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  {sortedMovements.map((movement) => {
+                    const config =
+                      MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
+                    const { Icon } = config;
+                    const isPositive =
+                      movement.type === 'ADD' || movement.type === 'UNLOCK';
+
+                    return (
+                      <button
+                        key={movement.uuid}
+                        onClick={() => setSelectedMovement(movement)}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 transition-colors text-left w-full"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
+                          >
+                            <Icon
+                              size={15}
+                              className={config.color}
+                              strokeWidth={2}
+                            />
+                          </div>
+                          <div>
+                            <div className="flex flex-row items-center gap-2">
+                              <TruncatedCell
+                                text={movement.inkind?.name || '—'}
+                                maxLength={30}
+                              />
+                              <Badge className="bg-gray-200 text-gray-600">
+                                {formatLabel(
+                                  INKIND_TYPE_LABELS[movement.inkind?.type],
+                                )}
+                              </Badge>
+                            </div>
+                            {movement.groupInkind && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {movement.groupInkind?.group?.name || '-'}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {movement.createdAt
+                                ? format(
+                                    new Date(movement.createdAt),
+                                    'dd MMM yyyy, HH:mm',
+                                  )
+                                : '—'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span
+                            className={`text-sm font-semibold ${config.color}`}
+                          >
+                            {isPositive ? '+' : '-'}
+                            {movement.quantity ?? 0}
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className={`rounded-sm text-xs ${config.color} border-current`}
+                          >
+                            {config.label}
+                          </Badge>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </ScrollArea>
+          </div>
+          <CustomPagination
+            currentPage={page}
+            handleNextPage={() =>
+              setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))
+            }
+            handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
+            handlePageSizeChange={(size) => {
+              setPerPage(size as number);
+              setPage(1);
+            }}
+            meta={{
+              total: meta?.total ?? 0,
+              currentPage: page,
+              lastPage: meta?.lastPage ?? 1,
+              perPage,
+              next: meta?.next ?? null,
+              prev: meta?.prev ?? null,
+            }}
+            perPage={perPage}
+          />
         </div>
       </div>
 

@@ -40,6 +40,8 @@ export function DateRangePicker({
     from: undefined,
     to: undefined,
   });
+  const [open, setOpen] = React.useState(false);
+
   const handleClose = () => {
     handleClearDate();
     setDate({
@@ -47,9 +49,10 @@ export function DateRangePicker({
       to: undefined,
     });
   };
+
   return (
     <div className={cn('grid gap-2', className)}>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -121,8 +124,11 @@ export function DateRangePicker({
             mode="range"
             selected={date}
             onSelect={(selectedRange) => {
-              handleDateChange(selectedRange);
               setDate(selectedRange);
+              if (selectedRange?.from && selectedRange?.to) {
+                handleDateChange(selectedRange);
+                setOpen(false);
+              }
             }}
             defaultMonth={date?.from}
             numberOfMonths={2}

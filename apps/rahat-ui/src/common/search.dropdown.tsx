@@ -32,6 +32,7 @@ interface DropdownSearchProps {
   searchPlaceholder?: string;
   emptyMessage?: string;
   isLoading?: boolean;
+  disabled?: boolean;
   onSelect: (data: Record<string, any>) => void;
 }
 
@@ -42,6 +43,7 @@ const DropdownSearch = (props: DropdownSearchProps) => {
     options,
     emptyMessage,
     isLoading,
+    disabled,
     placeholder,
     searchPlaceholder,
     selectedLabel,
@@ -51,12 +53,13 @@ const DropdownSearch = (props: DropdownSearchProps) => {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open && !disabled} onOpenChange={disabled ? () => {} : setOpen}>
       <PopoverTrigger asChild>
         <FormControl>
           <Button
             variant="outline"
             role="combobox"
+            disabled={disabled}
             className={cn(
               'w-full justify-between font-normal',
               !selectedLabel && 'text-muted-foreground',

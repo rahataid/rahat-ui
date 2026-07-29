@@ -609,25 +609,27 @@ export default function AddActivities() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Phase</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={phaseId || field.value}
-                          value={phaseId || field.value}
+                        <DropdownSearch
+                          selectedLabel={
+                            phases?.find(
+                              (p) => p.uuid === (phaseId || field.value),
+                            )?.name
+                          }
+                          placeholder="Select phase"
+                          searchPlaceholder="Search phases..."
+                          emptyMessage="No phase found."
                           disabled={!!phaseId}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select phase" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {phases.map((item) => (
-                              <SelectItem key={item.id} value={item.uuid}>
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          options={
+                            phases?.map((p) => ({
+                              label: p.name,
+                              value: p.uuid,
+                              data: p,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}

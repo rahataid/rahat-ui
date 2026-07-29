@@ -502,24 +502,25 @@ export default function EditActivity() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Phase</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger disabled>
-                              <SelectValue placeholder="Select phase" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {phases.map((item) => (
-                              <SelectItem key={item.id} value={item.uuid}>
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            phases?.find((p) => p.uuid === field.value)?.name
+                          }
+                          placeholder="Select phase"
+                          searchPlaceholder="Search phases..."
+                          emptyMessage="No phase found."
+                          disabled
+                          options={
+                            phases?.map((p) => ({
+                              label: p.name,
+                              value: p.uuid,
+                              data: p,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}

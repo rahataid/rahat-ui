@@ -356,12 +356,12 @@ export const useSendPayoutOtp = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, { payload }) => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
       toast.fire({
-        title: 'OTP sent successfully',
+        title: `Rahat Pin sent successfully to ${payload.email}`,
         icon: 'success',
       });
     },

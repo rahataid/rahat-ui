@@ -186,10 +186,10 @@ export const useSendGctOtp = (projectUUID: UUID) => {
   return useMutation({
     mutationFn: ({ email }: { email: string }) =>
       runAction(q, projectUUID, ACTION_NS + '.sendOtp', { email }),
-    onSuccess: () => {
+    onSuccess: (_data, { email }) => {
       q.reset();
       toast.fire({
-        title: 'OTP sent successfully',
+        title: `Rahat Pin sent successfully to ${email}`,
         icon: 'success',
       });
     },

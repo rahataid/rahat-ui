@@ -138,10 +138,14 @@ export function DisburseModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-lg p-0" onInteractOutside={(e) => e.preventDefault()}>
-          {disburse.isPending && (
+          {(disburse.isPending || sendOtp.isPending) && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground animate-pulse">Please wait, disbursement is initiating…</p>
+              <p className="text-sm text-muted-foreground animate-pulse">
+                {sendOtp.isPending
+                  ? 'Sending Rahat Pin to your email…'
+                  : 'Please wait, disbursement is initiating…'}
+              </p>
             </div>
           )}
           <Card className="rounded-sm border-0 shadow-none">

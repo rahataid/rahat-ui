@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { UUID } from 'crypto';
+import { Loader2 } from 'lucide-react';
 
 const OTP_LENGTH = 4;
 
@@ -111,6 +112,14 @@ export default function PayoutConfirmationDialog({
           )}
       </RoleAuth>
       <AlertDialogContent className="max-w-lg">
+        {sendPayoutOtp.isPending && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground animate-pulse">
+              Sending Rahat Pin to your email…
+            </p>
+          </div>
+        )}
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center text-lg font-semibold">
             Trigger Payout

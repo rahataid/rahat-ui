@@ -25,7 +25,6 @@ export function SseProvider({ children }: { children: ReactNode }) {
       try {
         const payload: SseServerEvent = JSON.parse(event.data);
         const queryKeys = EVENT_QUERY_MAP[payload.event]?.(projectId);
-        console.log('queryKeys:', queryKeys);
 
         if (queryKeys) {
           queryKeys.forEach((key) =>

@@ -9,16 +9,24 @@ export type EVENT =
   | 'trigger.updated'
   | 'trigger.created';
 
-export const EVENT_QUERY_MAP: Record<string, (string | UUID)[][]> = {
-  'beneficiaries.updated': [['beneficiaries']],
-  'phase.updated': [
-    [PHASE_QUERY_KEYS.PHASE],
-    [PHASE_QUERY_KEYS.PHASES],
-    [PHASE_QUERY_KEYS.TRIGGER_STATEMENTS],
-    [PHASE_QUERY_KEYS.TRIGGER_STATEMENT],
+export const EVENT_QUERY_MAP: Record<
+  string,
+  (projectUuid: UUID) => (string | UUID)[][]
+> = {
+  'beneficiaries.updated': (projectUuid) => [['beneficiaries', projectUuid]],
+
+  'phase.updated': (projectUuid) => [
+    [PHASE_QUERY_KEYS.PHASE, projectUuid],
+    [PHASE_QUERY_KEYS.PHASES, projectUuid],
+    [PHASE_QUERY_KEYS.TRIGGER_STATEMENTS, projectUuid],
+    [PHASE_QUERY_KEYS.TRIGGER_STATEMENT, projectUuid],
   ],
-  'phase.created': [[PHASE_QUERY_KEYS.PHASES]],
-  'phase.deleted': [[PHASE_QUERY_KEYS.PHASES]],
-  'trigger.updated': [[PHASE_QUERY_KEYS.PHASE]],
-  'trigger.created': [[PHASE_QUERY_KEYS.PHASE]],
+
+  'phase.created': (projectUuid) => [[PHASE_QUERY_KEYS.PHASES, projectUuid]],
+
+  'phase.deleted': (projectUuid) => [[PHASE_QUERY_KEYS.PHASES, projectUuid]],
+
+  'trigger.updated': (projectUuid) => [[PHASE_QUERY_KEYS.PHASE, projectUuid]],
+
+  'trigger.created': (projectUuid) => [[PHASE_QUERY_KEYS.PHASE, projectUuid]],
 };

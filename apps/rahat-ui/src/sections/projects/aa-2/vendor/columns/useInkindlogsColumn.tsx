@@ -16,7 +16,7 @@ import { UUID } from 'crypto';
 export const useInkindLogsColumn = () => {
   const params = useParams();
   const projectId = params.id as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
@@ -45,13 +45,13 @@ export const useInkindLogsColumn = () => {
     },
 
     {
-      accessorKey: 'beneficiaryWallet',
+      accessorKey: 'beneficiaryWALLET',
       header: t('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="flex gap-2 items-center">
-          <TruncatedCell text={row.original.beneficiaryWallet} maxLength={10} />
+          <TruncatedCell text={row.original.beneficiaryWALLET} maxLength={10} />
           <CopyTooltip
-            value={row.getValue('beneficiaryWallet')}
+            value={row.getValue('beneficiaryWALLET')}
             uniqueKey={row.original?.uuid}
           />
         </div>

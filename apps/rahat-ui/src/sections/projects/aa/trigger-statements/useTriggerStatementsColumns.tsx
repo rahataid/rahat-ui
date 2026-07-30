@@ -12,7 +12,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export const useTriggerStatementTableColumns = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();

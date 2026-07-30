@@ -37,7 +37,7 @@ export default function CommonCard({
   onTogglePin,
   hidePin = false,
 }: CardProps) {
-  const t = useTranslations('Projects List');
+  const t = useTranslations('PROJECTS_LIST');
   const router = useRouter();
 
   const isNotReady = status === 'NOT_READY';

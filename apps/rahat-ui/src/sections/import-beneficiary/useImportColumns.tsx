@@ -30,7 +30,7 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 function ImportActionCell({ row }: { row: any }) {
-  const t = useTranslations('Import Beneficiary List');
+  const t = useTranslations('IMPORT_BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const status = row.getValue('status') as string;
   const uuid = row.original.uuid;
@@ -183,7 +183,7 @@ function BeneficiaryCountCell({ row }: { row: any }) {
 }
 
 export const useImportListTableColumns = () => {
-  const t = useTranslations('Import Beneficiary List');
+  const t = useTranslations('IMPORT_BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const columns: ColumnDef<Import>[] = [
     {

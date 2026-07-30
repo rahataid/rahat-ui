@@ -38,7 +38,7 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
-  const t = useTranslations('Beneficiary Detail');
+  const t = useTranslations('BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
 
   const assignBeneficiary = useAssignBenToProject();

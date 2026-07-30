@@ -29,7 +29,7 @@ const WeatherMap = dynamic(
   {
     ssr: false,
     loading: function LoadingMap() {
-      const loadingT = useTranslations('AA Project');
+      const loadingT = useTranslations('AA_PROJECT');
       return (
         <div className="h-full w-full flex items-center justify-center bg-muted">
           <div className="text-center">
@@ -43,7 +43,7 @@ const WeatherMap = dynamic(
 );
 
 export function NWPSection() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const [groupedLayers, setGroupedLayers] = useState<GroupedLayers>({});
   const [availableTimes, setAvailableTimes] = useState<Date[]>([]);
   const [isLoadingLayers, setIsLoadingLayers] = useState(true);

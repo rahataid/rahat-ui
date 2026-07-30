@@ -20,7 +20,7 @@ const BeneficiaryGroups = () => {
   const [filters, setFilters] = React.useState({ search: '' });
   const router = useRouter();
   const tg = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
 
   const { isLoading } = useBeneficiariesGroups(id as UUID, {

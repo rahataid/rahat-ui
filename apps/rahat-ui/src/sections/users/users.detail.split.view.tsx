@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
-import { Copy, CopyCheck, X, Expand, Wallet, Phone, Mail } from 'lucide-react';
+import { Copy, CopyCheck, X, Expand, WALLET, Phone, Mail } from 'lucide-react';
 import Image from 'next/image';
 import TooltipComponent from '../../components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -32,14 +32,14 @@ export default function UsersDetailSplitView({
   userDetail,
   closeSecondPanel,
 }: IProps) {
-  const t = useTranslations('Users – Detail');
+  const t = useTranslations('USERS_DETAIL');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const removeUser = useUserRemove();
   const currentUser = useUserCurrentUser();
   const isSelf = currentUser?.data?.data?.uuid === userDetail.uuid;
 
-  const [walletAddressCopied, setWalletAddressCopied] =
+  const [walletAddressCopied, setWALLETAddressCopied] =
     React.useState<boolean>(false);
 
   const handleDeleteUser = async () => {
@@ -50,7 +50,7 @@ export default function UsersDetailSplitView({
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(true);
+    setWALLETAddressCopied(true);
   };
 
   return (
@@ -124,7 +124,7 @@ export default function UsersDetailSplitView({
               <h1 className="font-medium">{t('GENERAL_DETAILS')}</h1>
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
-                  <Wallet size={20} strokeWidth={1.5} />
+                  <WALLET size={20} strokeWidth={1.5} />
                   <p>{tg('WALLET_ADDRESS')}</p>
                 </div>
                 <div

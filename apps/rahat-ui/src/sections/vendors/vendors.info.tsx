@@ -17,17 +17,17 @@ interface IVendorsInfo {
   vendorData: {
     name: string | null;
     phone: string | null;
-    vendorWallet: string | null;
-    vendorWalletAddressCopied: boolean;
+    vendorWALLET: string | null;
+    vendorWALLETAddressCopied: boolean;
     vendorStatus: boolean;
     clickToCopy: () => void;
   };
 }
 
 const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
-  const t = useTranslations('Vendors – Info Card');
+  const t = useTranslations('VENDORS_INFO_CARD');
   const g = useTranslations('GLOBAL');
-  const { name, phone, vendorWallet, vendorStatus } = vendorData;
+  const { name, phone, vendorWALLET, vendorStatus } = vendorData;
   return (
     <>
       <Card className="mt-2 rounded shadow">
@@ -43,13 +43,13 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
                       onClick={vendorData.clickToCopy}
                     >
                       <p className="text-muted-foreground text-base">
-                        {vendorWallet
-                          ? vendorWallet.slice(0, 10) +
+                        {vendorWALLET
+                          ? vendorWALLET.slice(0, 10) +
                             '...' +
-                            vendorWallet.slice(-10)
+                            vendorWALLET.slice(-10)
                           : '-'}
                       </p>
-                      {vendorData?.vendorWalletAddressCopied ? (
+                      {vendorData?.vendorWALLETAddressCopied ? (
                         <CopyCheck size={12} strokeWidth={1.5} />
                       ) : (
                         <Copy
@@ -61,7 +61,7 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
-                        {vendorData.vendorWalletAddressCopied
+                        {vendorData.vendorWALLETAddressCopied
                           ? g('COPIED')
                           : g('CLICK_TO_COPY')}
                       </p>

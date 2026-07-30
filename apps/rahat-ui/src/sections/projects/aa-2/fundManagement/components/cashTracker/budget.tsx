@@ -25,7 +25,7 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function Budget({}: {}) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const [formData, setFormData] = useState({
     amount: '',
     currency: 'NPR',

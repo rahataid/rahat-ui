@@ -76,7 +76,7 @@ export default function PayoutFundManagementForm({
   wantsPayout,
   onWantsPayoutChange,
 }: PayoutFundManagementFormProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const payoutFundSchema = useMemo(() => buildPayoutFundSchema(t), [t]);
   // Router goes here
   const params = useParams();

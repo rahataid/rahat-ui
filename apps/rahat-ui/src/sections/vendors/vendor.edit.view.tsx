@@ -16,7 +16,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
-import { Loader2, Wallet } from 'lucide-react';
+import { Loader2, WALLET } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import {
@@ -30,7 +30,7 @@ import { useGetVendor, useUpdateVendor } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
 
 export default function EditVendors() {
-  const t = useTranslations('Vendors – Edit');
+  const t = useTranslations('VENDORS_EDIT');
   const g = useTranslations('GLOBAL');
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
@@ -207,7 +207,7 @@ export default function EditVendors() {
                         <FormLabel>{g('WALLET_ADDRESS')}</FormLabel>
                         <FormControl>
                           <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                               type="text"
                               placeholder={g('ENTER_WALLET_ADDRESS')}

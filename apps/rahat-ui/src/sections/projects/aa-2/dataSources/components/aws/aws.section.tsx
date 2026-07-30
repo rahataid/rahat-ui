@@ -9,7 +9,7 @@ import TemperatureWatchView from './temperature.watch.view';
 import HumidityWatchView from './humidity.watch.view';
 
 export function AWSSection() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <Tabs defaultValue="temperatureWatch">
       <TabsList className="mb-2">

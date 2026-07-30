@@ -24,7 +24,7 @@ type ProjectNavViewProps = {
 };
 
 function SidebarToggle() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { toggleSidebar, open } = useSidebar();
   return (
     <button
@@ -42,7 +42,7 @@ function SidebarToggle() {
 }
 
 export function ProjectSidebar(menuItems: ProjectNavViewProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   return (
     <Sidebar

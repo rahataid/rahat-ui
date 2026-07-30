@@ -25,7 +25,7 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 
 export default function EditCampaign() {
-  const t = useTranslations('Communications – Text/SMS');
+  const t = useTranslations('COMMUNICATIONS_TEXT_SMS');
   const params = useParams<{ tag: string; id: string }>();
   const router = useRouter();
 

@@ -24,7 +24,7 @@ import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 
 export default function CommsActivitiesTable() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const { id: projectId } = useParams();
 

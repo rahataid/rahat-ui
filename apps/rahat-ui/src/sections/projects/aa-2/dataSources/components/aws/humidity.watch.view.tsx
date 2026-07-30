@@ -16,7 +16,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function HumidityWatchView() {
   const formatNum = useNumberFormat();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;

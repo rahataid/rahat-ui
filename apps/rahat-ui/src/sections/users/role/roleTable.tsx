@@ -114,7 +114,7 @@ export function getRoleTableColumns(t: (key: string) => string): ColumnDef<Role,
 
 export default function RoleTable({ handleClick }: IProps) {
   const tg = useTranslations('GLOBAL');
-  const tr = useTranslations('Users – Roles & Permissions');
+  const tr = useTranslations('USERS_ROLES_PERMISSIONS');
   const columns = React.useMemo(() => getRoleTableColumns(tg), [tg]);
   const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const [sorting, setSorting] = React.useState<SortingState>([]);

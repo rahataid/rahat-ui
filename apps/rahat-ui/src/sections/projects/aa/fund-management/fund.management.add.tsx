@@ -37,7 +37,7 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
 export default function AddFundManagementView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();

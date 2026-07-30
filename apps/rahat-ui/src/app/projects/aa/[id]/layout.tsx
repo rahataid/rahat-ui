@@ -23,7 +23,7 @@ export default function ProjectLayoutRoot({
 }: {
   children: React.ReactNode;
 }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;

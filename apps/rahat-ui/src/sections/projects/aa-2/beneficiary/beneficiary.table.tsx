@@ -29,7 +29,7 @@ function BeneficiaryTable() {
   const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const uuid = id as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const {
     pagination,

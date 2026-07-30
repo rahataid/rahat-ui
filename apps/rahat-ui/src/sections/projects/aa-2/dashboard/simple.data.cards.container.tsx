@@ -34,7 +34,7 @@ export default function SimpleDataCardsContainer({
   projectId,
   commsStats,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const totalBeneficiaries = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_TOTAL',

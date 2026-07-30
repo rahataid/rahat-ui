@@ -4,8 +4,8 @@ import { KanbanSquare, Archive, Plus, List, ListCollapse } from 'lucide-react';
 import { NavItem } from './nav-items.types';
 
 export const useUsersNavItems = () => {
-  const t = useTranslations('Users – List');
-  const tr = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_LIST');
+  const tr = useTranslations('USERS_ROLES_PERMISSIONS');
   const tg = useTranslations('GLOBAL');
   const { setFilters } = usePagination();
 

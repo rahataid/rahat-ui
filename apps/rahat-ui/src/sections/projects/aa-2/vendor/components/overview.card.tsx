@@ -18,7 +18,7 @@ export default function OverviewCard({
   redemptionStats,
   redemptionStatsLoading,
 }: Props) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const isBalanceError = data?.balances?.name === 'NotFoundError';
 

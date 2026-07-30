@@ -80,7 +80,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   isSubmitting,
   selectedRows,
 }) => {
-  const t = useTranslations('Communications – Add Campaign');
+  const t = useTranslations('COMMUNICATIONS_ADD_CAMPAIGN');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { data: messageTemplate } = useGetApprovedTemplate();

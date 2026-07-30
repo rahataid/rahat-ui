@@ -22,8 +22,8 @@ import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.con
 import { ADAPTER_ID_FILTERS } from './utils/getAdapterIds';
 
 
-export default function MonitoringDashboard() {
-  const t = useTranslations('AA Project');
+export default function MonitoringDASHBOARD() {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const { data: apiHealthMonitor, isLoading: loading } =

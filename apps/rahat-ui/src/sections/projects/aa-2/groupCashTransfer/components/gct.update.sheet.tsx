@@ -43,7 +43,7 @@ export default function GctUpdateSheet({
   open,
   onOpenChange,
 }: GctUpdateSheetProps) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const updateGct = useUpdateGroupCashTransfer(projectUUID);
 

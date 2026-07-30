@@ -41,7 +41,7 @@ import { ValidationContent } from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
 
 export default function EditActivity() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();

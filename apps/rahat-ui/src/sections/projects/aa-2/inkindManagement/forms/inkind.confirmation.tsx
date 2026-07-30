@@ -20,7 +20,7 @@ export default function InkindConfirmation({
   formData,
   onSuccess,
 }: Props) {
-  const tg = useTranslations('AA Project with Gnosis');
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tglob = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { id } = useParams();

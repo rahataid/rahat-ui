@@ -38,7 +38,7 @@ const CommunicationDataCard = ({
   setOpen,
   open = false,
 }: CommunicationDataCardProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );

@@ -31,7 +31,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import HeaderWithBack from '../projects/components/header.with.back';
-import { Wallet } from 'lucide-react';
+import { WALLET } from 'lucide-react';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -41,7 +41,7 @@ import { useUserCreate } from '@rumsan/react-query';
 import Swal from 'sweetalert2';
 
 export default function AddUser() {
-  const t = useTranslations('Users – Add');
+  const t = useTranslations('USERS_ADD');
   const tg = useTranslations('GLOBAL');
 
   const FormSchema = z.object({
@@ -266,7 +266,7 @@ export default function AddUser() {
                       <FormLabel>{tg('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
-                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
                             placeholder={tg('ENTER_WALLET_ADDRESS')}

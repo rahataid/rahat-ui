@@ -30,7 +30,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
-import { Wallet } from 'lucide-react';
+import { WALLET } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function EditBeneficiary({ beneficiary }: any) {
@@ -341,7 +341,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
                       <FormLabel>{t('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
-                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
                             placeholder={t('ENTER_WALLET_ADDRESS')}

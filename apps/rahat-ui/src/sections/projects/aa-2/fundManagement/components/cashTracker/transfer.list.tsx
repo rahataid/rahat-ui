@@ -38,7 +38,7 @@ function TransferList({
   currentEntity?: any;
   onConfirmReceipt?: (payload: any) => void;
 }) {
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const id = useParams().id as UUID;
   const [confirmingTransferId, setConfirmingTransferId] = useState<

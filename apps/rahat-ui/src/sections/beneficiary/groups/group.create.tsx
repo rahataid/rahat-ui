@@ -21,7 +21,7 @@ export default function GroupCreateView() {
   const router = useRouter();
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const t = useTranslations('GLOBAL');
-  const tb = useTranslations('Beneficiary Group Create');
+  const tb = useTranslations('BENEFICIARY_GROUP_CREATE');
 
   const FormSchema = z.object({
     name: z

@@ -28,7 +28,7 @@ function getStatusBg(status: string) {
 }
 
 export default function useCommsActivitiesTableColumns() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   const columns: ColumnDef<any>[] = [
     {

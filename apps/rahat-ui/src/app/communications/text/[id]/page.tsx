@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import TextDetailView from '../../../../sections/communications/text/textDetailView';
 
 export async function generateMetadata() {
-  const t = await getTranslations('Communications – Navigation');
+  const t = await getTranslations('COMMUNICATIONS_NAVIGATION');
   return { title: t('TEXT_DETAIL') };
 }
 

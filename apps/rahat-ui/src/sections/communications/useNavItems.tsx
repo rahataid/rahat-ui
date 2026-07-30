@@ -6,7 +6,7 @@ import { paths } from '../../routes/paths';
 import { useTranslations } from 'next-intl';
 
 export const useNavItems = () => {
-    const t = useTranslations('Communications – Navigation');
+    const t = useTranslations('COMMUNICATIONS_NAVIGATION');
     const router = useRouter()
     const totalTextCampaign = useCampaignStore().totalTextCampaign;
     const handleGoBack = () => {

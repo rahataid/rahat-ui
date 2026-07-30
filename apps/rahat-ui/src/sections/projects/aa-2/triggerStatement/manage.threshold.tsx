@@ -32,7 +32,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 
 export default function ManageThreshold() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tGlobal = useTranslations('GLOBAL');
   const [open, setOpen] = useState(false);
   const router = useRouter();

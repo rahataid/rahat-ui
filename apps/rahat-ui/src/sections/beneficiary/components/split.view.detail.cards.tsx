@@ -10,7 +10,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
-  const t = useTranslations('Beneficiary Detail');
+  const t = useTranslations('BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
 
@@ -34,7 +34,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
                 {truncateEthAddress(beneficiaryDetail?.walletAddress) ?? 'N/A'}
               </p>
               <p className="text-sm font-normal text-muted-foreground">
-                Wallet Address
+                WALLET Address
               </p>
             </div> */}
             <div>

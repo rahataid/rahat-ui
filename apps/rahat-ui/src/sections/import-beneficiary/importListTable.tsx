@@ -35,7 +35,7 @@ export default function ImportListTable({
   pagination,
   loading,
 }: IProps) {
-  const t = useTranslations('Import Beneficiary List');
+  const t = useTranslations('IMPORT_BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const handleFilterChange = (event: any) => {
     if (event && event.target) {

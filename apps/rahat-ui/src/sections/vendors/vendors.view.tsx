@@ -24,7 +24,7 @@ import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select
 import { useTranslations } from 'next-intl';
 
 function VendorsView() {
-  const t = useTranslations('Vendors – List');
+  const t = useTranslations('VENDORS_LIST');
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
    
     usePagination();

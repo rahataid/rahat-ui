@@ -23,7 +23,7 @@ const CampaignModal = ({
   isSubmitting,
   selectedRows,
 }: Iprops) => {
-  const t = useTranslations('Communications – Add Campaign');
+  const t = useTranslations('COMMUNICATIONS_ADD_CAMPAIGN');
   const tg = useTranslations('GLOBAL');
   const submitBtnStatus = selectedRows?.length > 0 ? false : true;
   return (

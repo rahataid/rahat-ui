@@ -39,7 +39,7 @@ type TransactionProps = {
 };
 
 const TransactionLogs = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const params = useParams();
@@ -73,26 +73,26 @@ const TransactionLogs = () => {
     );
   }
   // 1. Categorize transactions
-  const fspTransactions =
+  const fspTRANSACTIONS =
     transactions?.filter((txn: TransactionProps) => txn.payoutType === 'FSP') ??
     [];
 
-  const cvaTransactions =
+  const cvaTRANSACTIONS =
     transactions?.filter(
       (txn: TransactionProps) => txn.payoutType === 'VENDOR',
     ) ?? [];
 
-  const inkindTransactions = inkindLogs ?? [];
+  const inkindTRANSACTIONS = inkindLogs ?? [];
 
   // 2. Tab config with counts
   const TabsTriggerStats = [
-    { value: 'fsp', title: 'FSP', count: fspTransactions.length },
-    { value: 'cva', title: t('CVA'), count: cvaTransactions.length },
-    { value: 'inkind', title: t('IN_KIND'), count: inkindTransactions.length },
+    { value: 'fsp', title: 'FSP', count: fspTRANSACTIONS.length },
+    { value: 'cva', title: t('CVA'), count: cvaTRANSACTIONS.length },
+    { value: 'inkind', title: t('IN_KIND'), count: inkindTRANSACTIONS.length },
   ];
 
   // 3. Reusable renderer for FSP/CVA transactions
-  const renderTransactions = (txnList: TransactionProps[]) => {
+  const renderTRANSACTIONS = (txnList: TransactionProps[]) => {
     if (!txnList.length) return <NoResult />;
 
     return txnList.map((txn) => {
@@ -129,7 +129,7 @@ const TransactionLogs = () => {
   };
 
   // 4. Reusable renderer for In-kind transactions
-  const renderInkindTransactions = (inkindList: typeof inkindTransactions) => {
+  const renderInkindTRANSACTIONS = (inkindList: typeof inkindTRANSACTIONS) => {
     if (!inkindList.length) return <NoResult />;
 
     return inkindList.map((item: InKindLog) => {
@@ -189,15 +189,15 @@ const TransactionLogs = () => {
 
         <ScrollArea className="h-[calc(100vh-500px)]">
           <TabsContent value="fsp">
-            {renderTransactions(fspTransactions)}
+            {renderTRANSACTIONS(fspTRANSACTIONS)}
           </TabsContent>
 
           <TabsContent value="cva">
-            {renderTransactions(cvaTransactions)}
+            {renderTRANSACTIONS(cvaTRANSACTIONS)}
           </TabsContent>
 
           <TabsContent value="inkind">
-            {renderInkindTransactions(inkindTransactions)}
+            {renderInkindTRANSACTIONS(inkindTRANSACTIONS)}
           </TabsContent>
         </ScrollArea>
       </Tabs>

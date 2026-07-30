@@ -29,7 +29,7 @@ export default function EditStakeholders() {
   const projectId = params.id as UUID;
   const stakeholdersId = params.stakeholdersId as UUID;
   const searchParams = useSearchParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const stakeholder = useStakeholderDetails(projectId, {
     uuid: stakeholdersId,
   });

@@ -37,7 +37,7 @@ export default function GctSupportAreaInput({
   shouldDirty = false,
   onUnsavedChange,
 }: GctSupportAreaInputProps) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const [tags, setTags] = useState<Tag[]>(
     initialTags ?? form.getValues('supportArea') ?? [],
   );

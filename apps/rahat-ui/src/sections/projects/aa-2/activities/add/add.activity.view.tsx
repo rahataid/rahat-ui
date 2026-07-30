@@ -86,7 +86,7 @@ export const DurationData = [
 ];
 
 export default function AddActivities() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const addCommunicationOpen = useBoolean(false);
   const editCommunicationOpen = useBoolean();

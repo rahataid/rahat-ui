@@ -11,7 +11,7 @@ import { IconLabelBtn } from './icon.label.btn';
 import { Trash2, X } from 'lucide-react';
 
 const FiltersTags = ({ filters, setFilters, total }: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
   });

@@ -60,7 +60,7 @@ interface CommunicationCardProps {
 export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();

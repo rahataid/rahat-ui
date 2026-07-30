@@ -26,7 +26,7 @@ export type InkindRedemptionData = {
   uuid: UUID;
   vendor: { name: string };
   beneficiaryName: string;
-  beneficiaryWallet: string;
+  beneficiaryWALLET: string;
   inkind: { name: string; type: InkindType };
   quantity: number;
   approvedAt: Date;

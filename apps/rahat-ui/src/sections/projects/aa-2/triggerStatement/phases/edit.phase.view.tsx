@@ -31,7 +31,7 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function EditPhaseView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;

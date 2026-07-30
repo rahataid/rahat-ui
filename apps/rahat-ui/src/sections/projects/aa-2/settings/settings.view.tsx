@@ -10,7 +10,7 @@ import AASettingsTable from './settings.table';
 import AAAddSetting from './add.settings';
 
 export default function AASettingsView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectUUID = id as UUID;

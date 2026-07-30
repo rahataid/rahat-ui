@@ -18,7 +18,7 @@ import {
   FolderPlus,
   Expand,
   FolderDot,
-  Wallet,
+  WALLET,
   Phone,
   Mail,
   Calendar,
@@ -57,10 +57,10 @@ export default function VendorsDetailSplitView({
   vendorsDetail,
   closeSecondPanel,
 }: IProps) {
-  const t = useTranslations('Vendors – Detail Split View');
+  const t = useTranslations('VENDORS_DETAIL_SPLIT_VIEW');
   const g = useTranslations('GLOBAL');
   const router = useRouter();
-  const [walletAddressCopied, setWalletAddressCopied] =
+  const [walletAddressCopied, setWALLETAddressCopied] =
     useState<boolean>(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const isVendorAssigned = React.useMemo(
@@ -79,7 +79,7 @@ export default function VendorsDetailSplitView({
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(true);
+    setWALLETAddressCopied(true);
   };
 
   const handleAssignProject = async () => {
@@ -210,7 +210,7 @@ export default function VendorsDetailSplitView({
 
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <Wallet size={20} strokeWidth={1.5} />
+              <WALLET size={20} strokeWidth={1.5} />
               <p>{g('WALLET_ADDRESS')}</p>
             </div>
             <div

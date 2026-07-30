@@ -11,7 +11,7 @@ type IProps = {
 
 export function DocumentsSection({ triggerDocuments, date }: IProps) {
   const formatDate = useDateFormat();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="p-4 border rounded-sm shadow">
       <Heading

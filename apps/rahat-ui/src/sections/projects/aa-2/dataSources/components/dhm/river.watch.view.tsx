@@ -21,7 +21,7 @@ import { truncateValue } from '../aws/utils/color.utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function RiverWatchView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const router = useRouter();

@@ -38,7 +38,7 @@ export default function EditSettings({
   closeSecondPanel,
   settingData,
 }: IProps) {
-  const t = useTranslations('Settings – Edit');
+  const t = useTranslations('SETTINGS_EDIT');
   const g = useTranslations('GLOBAL');
   const updateRahatSettings = useRahatSettingUpdate();
   const { data } = useGetRahatSettingByName(settingData?.name);

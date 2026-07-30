@@ -79,7 +79,7 @@ type TriggerTabKey = keyof typeof componentMap;
 
 export default function AddTriggerView() {
   const formatDate = useDateFormat();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const [activeTab, setActiveTab] = React.useState<string>('');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);

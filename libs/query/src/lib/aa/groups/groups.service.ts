@@ -40,7 +40,7 @@ export const useCreateStakeholdersGroups = <
     'mutationFn'
   >,
 ): UseMutationResult<TData, TError, StakeholderGroupArgs, TContext> => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -101,7 +101,7 @@ export const useCreateStakeholdersGroups = <
   };
 };
 export const useCreateBenficiariesGroups = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -151,7 +151,7 @@ export const useCreateBenficiariesGroups = () => {
 };
 
 export const useReserveTokenForGroups = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -429,7 +429,7 @@ export const useBeneficiariesGroups = (
 };
 
 export const useUpdateStakeholdersGroups = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -494,7 +494,7 @@ export const useUpdateStakeholdersGroups = () => {
 };
 
 export const useDeleteStakeholdersGroups = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();

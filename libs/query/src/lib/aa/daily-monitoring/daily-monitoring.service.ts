@@ -52,7 +52,7 @@ export interface HealthCacheData {
 }
 
 export const useCreateDailyMonitoring = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -193,7 +193,7 @@ export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
 };
 
 export const useUpdateMonitoring = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -242,7 +242,7 @@ export const useUpdateMonitoring = () => {
 };
 
 export const useRemoveMonitoring = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();

@@ -30,8 +30,8 @@ export default function CreateGroupModal({
   handleSubmit,
   selectedBeneficiaries,
 }: IProps) {
-  const t = useTranslations('Beneficiary Group Create');
-  const tb = useTranslations('Beneficiary List');
+  const t = useTranslations('BENEFICIARY_GROUP_CREATE');
+  const tb = useTranslations('BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const [groupName, setGroupName] = React.useState('');
 

@@ -13,7 +13,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useGetBeneficiaryBalance,
   useGetCash,
-  useGetTransactions,
+  useGetTRANSACTIONS,
   useInitateFundTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -59,8 +59,8 @@ export interface FundTransfer {
 }
 
 export function CashTracker() {
-  const tv = useTranslations('AA Project with Cash Tracker');
-  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const uuid = useParams().id as UUID;
   const router = useRouter();
@@ -68,7 +68,7 @@ export function CashTracker() {
   const entities = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
   );
-  const { data: transactions, isFetched } = useGetTransactions(uuid);
+  const { data: transactions, isFetched } = useGetTRANSACTIONS(uuid);
   const { data: beneficiaryBalance } = useGetBeneficiaryBalance(uuid);
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {

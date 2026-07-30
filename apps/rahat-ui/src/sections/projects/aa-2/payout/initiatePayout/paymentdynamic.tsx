@@ -75,8 +75,8 @@ const initialFormState: PaymentState = {
 };
 
 export default function PaymentInitiation() {
-  const tv = useTranslations('AA Project with Cash Tracker');
-  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const paymentSchema = useMemo(() => buildPaymentSchema(t), [t]);
   const params = useParams();

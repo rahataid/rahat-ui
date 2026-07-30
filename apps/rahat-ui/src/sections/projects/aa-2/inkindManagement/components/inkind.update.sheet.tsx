@@ -54,9 +54,9 @@ export default function InkindUpdateSheet({
   open,
   onOpenChange,
 }: InkindUpdateSheetProps) {
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
-  const tAA = useTranslations('AA Project');
+  const tAA = useTranslations('AA_PROJECT');
   const updateInkind = useUpdateInkind(projectUUID);
   const InkindDetailsSchema = useMemo(
     () => buildInkindDetailsSchema(tAA),

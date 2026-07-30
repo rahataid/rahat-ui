@@ -33,7 +33,7 @@ export default function ActivityDetailCards({
   activityDetail,
   loading,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   return (
     <div className="grid grid-cols-4 gap-4 mt-4">

@@ -38,7 +38,7 @@ export function EditButton({
   disabled = false,
 }: IProps) {
   const t = useTranslations('GLOBAL');
-  const tc = useTranslations('Confirmation & Alert Dialogs');
+  const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const router = useRouter();
   const defaultDescription = tc('THIS_ACTION_WILL_REDIRECT_YOU_TO');
   const handleClick = () => {

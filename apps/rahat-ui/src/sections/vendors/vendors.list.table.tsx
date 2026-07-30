@@ -79,7 +79,7 @@ export default function VendorsTable({
   projectModal,
   selectedRow,
 }: IProps) {
-  const t = useTranslations('Vendors – List');
+  const t = useTranslations('VENDORS_LIST');
   const g = useTranslations('GLOBAL');
   const projectList = useProjectList({ page: 1, perPage: 1000 });
 

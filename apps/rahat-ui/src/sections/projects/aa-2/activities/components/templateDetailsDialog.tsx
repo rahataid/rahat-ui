@@ -36,7 +36,7 @@ export function TemplateDetailsDialog({
   onSelectTemplate,
   setOpen,
 }: TemplateDetailsDialogProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
   if (!template) return null;

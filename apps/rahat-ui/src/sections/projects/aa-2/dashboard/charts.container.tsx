@@ -10,7 +10,7 @@ type IProps = {
 };
 
 export default function ChartsContainer({ allStats = [] }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const genderStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_GENDER',

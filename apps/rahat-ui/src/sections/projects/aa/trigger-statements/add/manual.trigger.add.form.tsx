@@ -23,7 +23,7 @@ type IProps = {
 };
 
 export default function AddManualTriggerForm({ form }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
   );

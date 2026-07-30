@@ -27,7 +27,7 @@ type CommonLogRow = Row<IndividualCommonLogRow>;
 export default function useIndividualCommonLogsTableColumns(
   type: 'sms' | 'email' | 'voice',
 ) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const router = useRouter();
   const formatDate = useDateFormat();

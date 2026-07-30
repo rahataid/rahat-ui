@@ -25,7 +25,7 @@ export default function FundManagementList() {
   const params = useParams();
   const searchParams = useSearchParams();
   const projectId = params.id as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const {
     pagination,

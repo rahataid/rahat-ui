@@ -39,7 +39,7 @@ type IProps = {
 };
 
 export default function AddAutomatedTriggerForm({ form }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const selectedPhase = JSON.parse(

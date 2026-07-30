@@ -52,7 +52,7 @@ export default function CommonLogsTable<T>({
   meta,
 }: ReusableLogsTableProps<T>) {
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const table = useReactTable({
     manualPagination: true,
     data: data || [],

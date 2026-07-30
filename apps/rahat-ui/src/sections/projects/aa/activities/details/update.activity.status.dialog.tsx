@@ -49,7 +49,7 @@ export default function UpdateActivityStatusDialog({
   triggerTitle = '',
   iconStyle,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
 

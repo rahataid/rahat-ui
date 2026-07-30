@@ -13,7 +13,7 @@ export default function TriggerHorizontalBar({
   labels,
   colors = DEFAULT_COLORS,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const total = series.reduce((a, b) => a + b, 0);
 
   return (

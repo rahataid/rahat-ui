@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 
 const CreateToken = ({ handleStepDataChange, stepData }) => {
-  const t = useTranslations('Treasury – Create Token');
+  const t = useTranslations('TREASURY_CREATE_TOKEN');
   const tg = useTranslations('GLOBAL');
   return (
     <div className="grid grid-cols-12 p-4 h-[calc(100vh-482px)] ">

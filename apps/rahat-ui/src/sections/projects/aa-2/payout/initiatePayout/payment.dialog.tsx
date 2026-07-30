@@ -24,8 +24,8 @@ export function PaymentDialog({
   handleSubmit,
   shouldTriggerDialog,
 }: PaymentDialogProps) {
-  const tv = useTranslations('AA Project with Cash Tracker');
-  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   // State goes here

@@ -11,7 +11,7 @@ import {
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { ChartColumnStacked } from '@rahat-ui/shadcn/src/components/charts';
 
-type TransportUsage = {
+type TransportUSAGE = {
   transportCuid: string;
   transportName: string;
   transportType: string;
@@ -25,8 +25,8 @@ type TransportUsage = {
   credits: number;
 };
 
-type UsageByTransportProps = {
-  byTransport?: TransportUsage[];
+type USAGEByTransportProps = {
+  byTransport?: TransportUSAGE[];
 };
 
 const TRANSPORT_COLORS: Record<string, string> = {
@@ -43,10 +43,10 @@ function getColor(transportType: string, index: number) {
   );
 }
 
-export default function UsageByTransport({
+export default function USAGEByTransport({
   byTransport,
-}: UsageByTransportProps) {
-  const t = useTranslations('Usage');
+}: USAGEByTransportProps) {
+  const t = useTranslations('USAGE');
   const formatNum = useNumberFormat();
   if (!byTransport || byTransport.length === 0) return null;
 

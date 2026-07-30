@@ -36,7 +36,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 // import ActivitiesTable from './activities.table';
 
 export default function ActivitiesList() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();

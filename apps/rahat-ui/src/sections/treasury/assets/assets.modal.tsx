@@ -22,7 +22,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 export function AssetsModal(tokenAddress: any) {
-  const t = useTranslations('Treasury – Assets');
+  const t = useTranslations('TREASURY_ASSETS');
   const tg = useTranslations('GLOBAL');
   const [amount, setAmount] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');

@@ -16,7 +16,7 @@ import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { useMemo } from 'react';
 
 export default function VendorsView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const { activeTab, setActiveTab } = useActiveTab('vendorList');

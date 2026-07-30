@@ -15,7 +15,7 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function TemperatureWatchView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const params = useParams();
   const router = useRouter();

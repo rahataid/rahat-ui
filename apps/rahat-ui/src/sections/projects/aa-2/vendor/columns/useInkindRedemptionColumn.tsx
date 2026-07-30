@@ -17,9 +17,9 @@ export const useInkindRedemptionColumn = (
   id: UUID,
   showActions: boolean = true,
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const approveRedemptionStatus = useUpdateVendorRedemptionStatus();

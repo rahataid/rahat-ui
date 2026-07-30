@@ -49,7 +49,7 @@ const ProjectNameCell = ({
 };
 
 export const useTableColumns = (handleAssignClick: any) => {
-  const t = useTranslations('Vendors – List');
+  const t = useTranslations('VENDORS_LIST');
   const g = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const handleAssign = (row: any) => {

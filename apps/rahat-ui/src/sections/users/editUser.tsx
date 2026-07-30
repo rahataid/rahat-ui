@@ -23,7 +23,7 @@ type Iprops = {
   userDetail: User;
 };
 export default function EditUser({ userDetail }: Iprops) {
-  const t = useTranslations('Users – Edit');
+  const t = useTranslations('USERS_EDIT');
   const tg = useTranslations('GLOBAL');
   const { closeSecondPanel } = useSecondPanel();
   const updateUser = useUserUpdate();

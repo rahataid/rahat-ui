@@ -42,7 +42,7 @@ export default function EditCommunicationForm({
   appTransports,
   setLoading,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const [audioFile, setAudioFile] = React.useState({});
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(

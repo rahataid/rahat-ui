@@ -27,7 +27,7 @@ export function RainFallMonitor({
   updatedAt,
   timeIntervals,
 }: RainFallMonitorProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   return (
     <div className="p-4 rounded-sm border shadow flex justify-between space-x-4 ">

@@ -23,7 +23,7 @@ export default function TriggersListTabs({
   triggers,
   riverBasin,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { data: phaseHistory } = usePhaseHistory(projectId as UUID, {
     phaseUuid: phaseId as UUID,
     phase: true,

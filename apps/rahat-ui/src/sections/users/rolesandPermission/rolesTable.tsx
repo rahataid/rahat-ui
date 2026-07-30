@@ -40,7 +40,7 @@ type IProps = {
   roleData: Role[];
 };
 export default function ListView({ roleData }: IProps) {
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const tg = useTranslations('GLOBAL');
   const columns = useRoleTableColumns();
 

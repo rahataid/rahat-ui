@@ -4,7 +4,7 @@ import CommsActivitiesTable from './comms.activities.table';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function CommunicationLogsView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const commStats = [
     {

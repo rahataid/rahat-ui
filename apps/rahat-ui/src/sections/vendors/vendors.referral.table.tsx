@@ -73,7 +73,7 @@ export const columns: ColumnDef<Transaction>[] = [
 ];
 
 export default function ReferralTable({ name, projectId, vendorId }) {
-  const t = useTranslations('Vendors – Referral Table');
+  const t = useTranslations('VENDORS_REFERRAL_TABLE');
   const g = useTranslations('GLOBAL');
 
   const [sorting, setSorting] = React.useState<SortingState>([]);

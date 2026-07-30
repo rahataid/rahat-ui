@@ -16,7 +16,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const { data, isLoading } = useSingleGroupReservedFunds(
     projectID as UUID,

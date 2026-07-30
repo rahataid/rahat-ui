@@ -20,8 +20,8 @@ import { useEffect, useState } from 'react';
 import { filterVendorsGeoJson } from '../../utils/getVendorInfo';
 import { useTranslations } from 'next-intl';
 
-export default function DashboardView() {
-  const t = useTranslations('Dashboard');
+export default function DASHBOARDView() {
+  const t = useTranslations('DASHBOARD');
   const g = useTranslations('GLOBAL');
   const reportData = [
     {

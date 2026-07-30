@@ -23,7 +23,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useSelectItems } from '../useSelectItems';
 
 export default function AddDailyMonitoring() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();

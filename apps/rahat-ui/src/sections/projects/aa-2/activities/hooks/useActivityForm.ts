@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export const useActivityForm = (appTransports?: Transport[]) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const activityFormSchema = useMemo(() => buildActivityFormSchema(t), [t]);
 

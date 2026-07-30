@@ -20,7 +20,7 @@ const TriggerDetailsCard = ({
   totalTriggered,
   totalRequiredTriggers,
 }: IProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className={`${bgColor} rounded-xl p-4 space-y-1`}>
       <p className="text-sm/4">{title} {t('TRIGGERS')}</p>

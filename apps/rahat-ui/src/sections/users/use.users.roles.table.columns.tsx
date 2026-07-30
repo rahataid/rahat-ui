@@ -18,7 +18,7 @@ export const useUsersRolesTableColumns = ({
   loggedUserRoles,
   userUUID,
 }: IProps) => {
-  const t = useTranslations('Users – Detail');
+  const t = useTranslations('USERS_DETAIL');
   const tg = useTranslations('GLOBAL');
   const removeUserRole = useUserRolesRemove();
 

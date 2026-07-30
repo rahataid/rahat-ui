@@ -30,7 +30,7 @@ import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
 
 export default function GctRecordDetail() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const { id, recordUuid } = useParams();
   const router = useRouter();

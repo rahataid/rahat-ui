@@ -24,7 +24,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -51,7 +51,7 @@ export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
 };
 
 export const useUpdateGroupCashTransfer = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -81,7 +81,7 @@ export const useUpdateGroupCashTransfer = (projectUUID: UUID) => {
 };
 
 export const useDeleteGroupCashTransfer = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -108,7 +108,7 @@ export const useDeleteGroupCashTransfer = (projectUUID: UUID) => {
 };
 
 export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -138,7 +138,7 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
 };
 
 export const useUpdateGctRecord = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -168,7 +168,7 @@ export const useUpdateGctRecord = (projectUUID: UUID) => {
 };
 
 export const useValidateBankAccount = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const toast = useToast();
 
@@ -202,7 +202,7 @@ export const useVerifyOtp = (_projectUUID: UUID) => {
 };
 
 export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -227,7 +227,7 @@ export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
 };
 
 export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();

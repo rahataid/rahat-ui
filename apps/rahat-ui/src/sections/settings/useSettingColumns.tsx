@@ -20,7 +20,7 @@ interface SettingData {
   value: any;
 }
 export const useSettingTableColumns = () => {
-  const t = useTranslations('Settings – Table Columns');
+  const t = useTranslations('SETTINGS_TABLE_COLUMNS');
   const g = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 

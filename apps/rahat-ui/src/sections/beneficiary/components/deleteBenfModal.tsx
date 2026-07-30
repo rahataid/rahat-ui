@@ -32,7 +32,7 @@ export default function DeleteBeneficiaryModal({
   deleteModal,
   closeSecondPanel
 }: IProps) {
-  const t = useTranslations('Beneficiary Detail');
+  const t = useTranslations('BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const deleteBeneficiary = useRemoveBeneficiary();
 

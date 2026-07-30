@@ -17,7 +17,7 @@ import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 type VendorTransactionRow = {
   transactionType?: string;
-  beneficiaryWalletAddress: string;
+  beneficiaryWALLETAddress: string;
   amount?: number | string;
   txHash?: string;
   info?: {
@@ -29,7 +29,7 @@ type VendorTransactionRow = {
 export const useVendorsTransactionTableColumns = () => {
   const { id } = useParams();
   const projectId = id as string;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
@@ -55,19 +55,19 @@ export const useVendorsTransactionTableColumns = () => {
       accessorKey: 'walletAddress',
       header: t('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => {
-        if (!row.original?.beneficiaryWalletAddress) {
+        if (!row.original?.beneficiaryWALLETAddress) {
           return <div>{t('N_A')}</div>;
         }
         return (
           <div className="flex flex-row">
             <TruncatedCell
-              text={row.original?.beneficiaryWalletAddress}
+              text={row.original?.beneficiaryWALLETAddress}
               maxLength={10}
               className="w-20"
             />
             <CopyTooltip
-              value={row.original?.beneficiaryWalletAddress}
-              uniqueKey={row.original?.beneficiaryWalletAddress}
+              value={row.original?.beneficiaryWALLETAddress}
+              uniqueKey={row.original?.beneficiaryWALLETAddress}
             />
           </div>
         );

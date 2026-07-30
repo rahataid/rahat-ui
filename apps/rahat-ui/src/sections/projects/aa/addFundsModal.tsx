@@ -30,7 +30,7 @@ type IProps = {
 };
 
 export default function AddFundsModal({ fundsModal }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const [tokens, setTokens] = React.useState('');
   const params = useParams();

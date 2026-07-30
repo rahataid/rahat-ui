@@ -29,7 +29,7 @@ import { useTranslations } from 'next-intl';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 export default function EditDailyMonitoring() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;

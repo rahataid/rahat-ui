@@ -81,7 +81,7 @@ const VulnerableAndSocialProtectionOverview = ({
 }: {
   statsData: any[];
 }) => {
-  const t = useTranslations('Dashboard \u2013 Vulnerable & Social Protection');
+  const t = useTranslations('DASHBOARD_VULNERABLE_SOCIAL_PROTECTION');
   const formatNum = useNumberFormat();
   // Extract stats from data array
   const socialProtection =

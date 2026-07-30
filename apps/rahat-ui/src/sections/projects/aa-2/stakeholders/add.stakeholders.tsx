@@ -22,7 +22,7 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 
 export default function AddStakeholders() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();

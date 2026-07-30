@@ -13,8 +13,8 @@ type projectIProps = {
   projectName: string | undefined;
 };
 
-const TreasuryCard = ({ projectAddress, projectName }: projectIProps) => {
-  const t = useTranslations('Treasury');
+const TREASURYCard = ({ projectAddress, projectName }: projectIProps) => {
+  const t = useTranslations('TREASURY');
   const appContracts = useSettingsStore((state) => state.contracts);
   const { data: projectBalance } = useReadRahatTokenBalanceOf({
     address: appContracts?.RAHATTOKEN?.ADDRESS,
@@ -50,4 +50,4 @@ const TreasuryCard = ({ projectAddress, projectName }: projectIProps) => {
   );
 };
 
-export default TreasuryCard;
+export default TREASURYCard;

@@ -48,7 +48,7 @@ function buildEditGctRecordSchema(t: (key: string) => string) {
 }
 
 export default function EditGctRecord() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const EditGctRecordSchema = buildEditGctRecordSchema(t);
   const tGlobal = useTranslations('GLOBAL');
   const { id, recordUuid } = useParams();

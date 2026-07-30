@@ -41,7 +41,7 @@ export default function ActivateTriggerDialog({
   version,
   notes,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);

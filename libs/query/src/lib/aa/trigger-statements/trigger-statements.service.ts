@@ -12,7 +12,7 @@ import { FORECAST_QUERY_KEYS } from './trigger-statements.constants';
 import { useTranslations } from 'next-intl';
 
 export const useCreateTriggerStatement = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -57,7 +57,7 @@ export const useCreateTriggerStatement = () => {
 };
 
 export const useCreatePhase = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -106,7 +106,7 @@ export const useCreatePhase = () => {
 };
 
 export const useUpdatePhase = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -156,7 +156,7 @@ export const useUpdatePhase = () => {
 };
 
 export const useConfigureExtendedLogic = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -213,7 +213,7 @@ export const useConfigureExtendedLogic = () => {
 };
 
 export const useDeletePhase = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -265,7 +265,7 @@ export const useDeletePhase = () => {
 };
 
 export const useAddTriggerStatementToPhase = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -310,7 +310,7 @@ export const useAddTriggerStatementToPhase = () => {
 };
 
 export const useDeleteTriggerStatement = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -489,7 +489,7 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
 };
 
 export const useSyncForecastData = (uuid: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
 
@@ -548,7 +548,7 @@ export const useSyncForecastData = (uuid: UUID) => {
 };
 
 export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -592,7 +592,7 @@ export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
 };
 
 export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -707,7 +707,7 @@ export const useDhmSingleSeriesHumidityLevels = (uuid: UUID) => {
 };
 
 export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -744,7 +744,7 @@ export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
 };
 
 export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -785,7 +785,7 @@ export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
 };
 
 export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -919,7 +919,7 @@ export const useSingleTriggerStatement = (
 };
 
 export const useActivateTrigger = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -980,7 +980,7 @@ export const useActivateTrigger = () => {
 };
 
 export const useUpdateTriggerStatement = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -1076,7 +1076,7 @@ export const useGetSeriesByDataSource = (
   type: string,
   levelType: string,
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,

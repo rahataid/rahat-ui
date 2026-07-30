@@ -24,7 +24,7 @@ export interface Phase {
   };
 }
 export default function AAProjectPhasesView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const router = useRouter();
   const params = useParams();

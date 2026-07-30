@@ -17,12 +17,12 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input';
-import { Loader2, Wallet } from 'lucide-react';
+import { Loader2, WALLET } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Back from '../projects/components/back';
 import HeaderWithBack from '../projects/components/header.with.back';
 
-export default function EditUserProfile() {
+export default function EditUserPROFILE() {
   const { user, setUser } = useUserStore((state) => ({
     user: state.user,
     setUser: state.setUser,
@@ -31,7 +31,7 @@ export default function EditUserProfile() {
 
   const router = useRouter();
 
-  const t = useTranslations('Profile – Edit');
+  const t = useTranslations('PROFILE_EDIT');
   const g = useTranslations('GLOBAL');
   const FormSchema = z.object({
     name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST2') }),
@@ -57,7 +57,7 @@ export default function EditUserProfile() {
 
   const editUser = useUserEdit();
 
-  const handleEditUserProfile = async (data: z.infer<typeof FormSchema>) => {
+  const handleEditUserPROFILE = async (data: z.infer<typeof FormSchema>) => {
     const payload = { uuid: userInfo?.uuid, data: data };
     try {
       const response = await editUser.mutateAsync(payload);
@@ -79,7 +79,7 @@ export default function EditUserProfile() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleEditUserProfile)}>
+      <form onSubmit={form.handleSubmit(handleEditUserPROFILE)}>
         <div className="p-4">
           <HeaderWithBack
             title={t('EDIT_USER_PROFILE')}
@@ -143,7 +143,7 @@ export default function EditUserProfile() {
                       <FormLabel>{g('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
-                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             disabled={userInfo?.wallet ? true : false}
                             type="text"

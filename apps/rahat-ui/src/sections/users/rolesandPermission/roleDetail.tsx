@@ -28,7 +28,7 @@ type IProps = {
 };
 
 export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const tg = useTranslations('GLOBAL');
   const { data: roleDetail } = useGetRole(roleData.name);
   const { data: currentUser } = useUserCurrentUser();

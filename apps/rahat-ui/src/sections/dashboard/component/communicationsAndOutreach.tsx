@@ -11,7 +11,7 @@ const CommunicationsAndOutreach = ({
 }: {
   commsStats: BroadcastStats;
 }) => {
-  const t = useTranslations('Dashboard \u2013 Communications & Outreach');
+  const t = useTranslations('DASHBOARD_COMMUNICATIONS_OUTREACH');
   const formatNum = useNumberFormat();
 
   const chartOpts = {

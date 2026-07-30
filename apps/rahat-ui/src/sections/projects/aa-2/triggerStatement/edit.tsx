@@ -27,7 +27,7 @@ import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { useTranslations } from 'next-intl';
 
 export default function EditTrigger() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;

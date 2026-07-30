@@ -19,7 +19,7 @@ export default function AddAnotherDataSource({
   index,
   showRemoveButton,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const fieldName = useCallback(
     (name: string) => `dataSource.${index}.${name}`,
     [index],

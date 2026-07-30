@@ -24,7 +24,7 @@ export default function AssignInkindView() {
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
   const router = useRouter();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const ASSIGN_INKIND_STEPS = [
     {

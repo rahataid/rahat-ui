@@ -11,7 +11,7 @@ import InfoItem from 'apps/rahat-ui/src/sections/projects/aa-2/payout/benefTrans
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function InkindTransactionDetail() {
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { id, allocationId } = useParams();
@@ -19,10 +19,10 @@ export default function InkindTransactionDetail() {
   const queryClient = useQueryClient();
   const sp = useSearchParams();
 
-  const beneficiaryWalletAddress = sp.get('beneficiaryWalletAddress') ?? '';
+  const beneficiaryWALLETAddress = sp.get('beneficiaryWALLETAddress') ?? '';
   const beneficiaryPhone = sp.get('beneficiaryPhone') || '';
   const vendorName = sp.get('vendorName') ?? '';
-  const vendorWalletAddress = sp.get('vendorWalletAddress') ?? '';
+  const vendorWALLETAddress = sp.get('vendorWALLETAddress') ?? '';
   const txHash = sp.get('txHash') || '';
   const quantity = sp.get('quantity') ?? '0';
   const redeemedAt = sp.get('redeemedAt') ?? '';
@@ -90,7 +90,7 @@ export default function InkindTransactionDetail() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-7">
             <InfoItem
               label={tv('BENEFICIARY_WALLET_ADDRESS')}
-              value={beneficiaryWalletAddress || undefined}
+              value={beneficiaryWALLETAddress || undefined}
               copyable
             />
             <InfoItem
@@ -107,7 +107,7 @@ export default function InkindTransactionDetail() {
             <InfoItem label={tv('VENDOR_NAME')} value={vendorName || undefined} />
             <InfoItem
               label={tv('VENDOR_WALLET_ADDRESS')}
-              value={vendorWalletAddress || undefined}
+              value={vendorWALLETAddress || undefined}
               copyable
             />
             {otpExemptionReason && (

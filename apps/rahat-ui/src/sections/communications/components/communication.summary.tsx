@@ -3,7 +3,7 @@ import { HeartHandshake, Home, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 const CommunicationSummary = (statsData: any, isLoading: boolean) => {
-  const t = useTranslations('Communications – Overview');
+  const t = useTranslations('COMMUNICATIONS_OVERVIEW');
   const tg = useTranslations('GLOBAL');
   return (
     <div className=" grid md:grid-cols-3 gap-2 mb-2">

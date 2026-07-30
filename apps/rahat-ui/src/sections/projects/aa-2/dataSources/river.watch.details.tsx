@@ -11,7 +11,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { format } from 'date-fns';
 
 export default function RiverWatchDetails() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectId, riverWatchId: seriesId } = useParams() as {
     id: UUID;
     riverWatchId: string;

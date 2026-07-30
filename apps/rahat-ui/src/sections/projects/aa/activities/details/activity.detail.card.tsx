@@ -4,7 +4,7 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useTranslations } from 'next-intl';
 
 export default function ActivityDetailCard({ activityDetail }: any) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
   const detailData = [

@@ -20,7 +20,7 @@ import { useAACategoryColumns } from './categories.columns';
 import AddCategoryDialog from './add.category';
 
 export default function AACategoriesView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const { id } = useParams();
   const projectUUID = id as UUID;

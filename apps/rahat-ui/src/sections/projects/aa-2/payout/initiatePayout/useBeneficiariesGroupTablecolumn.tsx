@@ -4,7 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 
 export default function useBeneficiariesGroupTableColumn() {
   const tg = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {

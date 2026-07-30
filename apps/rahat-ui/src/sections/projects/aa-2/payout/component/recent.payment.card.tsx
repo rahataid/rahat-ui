@@ -32,7 +32,7 @@ export default function RecentPaymentCard({
   vendorName,
   status,
 }: GroupCardProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();

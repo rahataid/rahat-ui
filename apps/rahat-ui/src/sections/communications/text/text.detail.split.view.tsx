@@ -30,7 +30,7 @@ export default function TextDetailSplitView({
   refetch,
 }: IProps) {
   const tg = useTranslations('GLOBAL');
-  const t = useTranslations('Communications – Text/SMS');
+  const t = useTranslations('COMMUNICATIONS_TEXT_SMS');
   const deleteCampaign = useDeleteCampaign();
 
   const router = useRouter();

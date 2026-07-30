@@ -16,7 +16,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function InKindManagementView() {
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const router = useRouter();
   const { id } = useParams();
   const searchParams = useSearchParams();

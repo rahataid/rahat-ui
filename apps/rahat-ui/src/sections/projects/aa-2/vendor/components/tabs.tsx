@@ -6,12 +6,12 @@ import {
   TabsTrigger,
   Tabs,
 } from 'libs/shadcn/src/components/ui/tabs';
-import VendorsTransactionsHistory from '../tables/transactions.history';
+import VendorsTRANSACTIONSHistory from '../tables/transactions.history';
 import VendorsBeneficiaryList from '../tables/beneficiary.table';
 import { useGetTxnRedemptionRequestList } from '@rahat-ui/query';
 
 export default function VendorDetailsTabs() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="rounded-md p-4 border">
       <Tabs defaultValue="transactionHistory">
@@ -30,7 +30,7 @@ export default function VendorDetailsTabs() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
-          <VendorsTransactionsHistory />
+          <VendorsTRANSACTIONSHistory />
         </TabsContent>
         <TabsContent value="beneficiaryList">
           <VendorsBeneficiaryList beneficiaryList={[]} loading={false} />

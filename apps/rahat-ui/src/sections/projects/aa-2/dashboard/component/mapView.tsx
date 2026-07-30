@@ -1,6 +1,6 @@
 import {
   usePagination,
-  useProjectDashboardBeneficiaryMapLocation,
+  useProjectDASHBOARDBeneficiaryMapLocation,
   useProjectStore,
 } from '@rahat-ui/query';
 import * as turf from '@turf/turf';
@@ -66,11 +66,11 @@ export default function MapView({
   projectId: UUID;
   benefStats: any;
 }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { filters, setFilters } = usePagination();
   const { data: mapLocation, isLoading: mapLoading } =
-    useProjectDashboardBeneficiaryMapLocation(projectId, filters);
+    useProjectDASHBOARDBeneficiaryMapLocation(projectId, filters);
 
   const formatNum = useNumberFormat();
   const project = useProjectStore((p) => p.singleProject);

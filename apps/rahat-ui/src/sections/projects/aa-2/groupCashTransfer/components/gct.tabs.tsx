@@ -32,7 +32,7 @@ const componentMap: Record<GctTabValue, ComponentType> = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctTabs() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const { activeTab, setActiveTab } = useActiveTab('overview');
 
   useEffect(() => {

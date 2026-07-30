@@ -54,7 +54,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 const DOWNLOAD_FILE_URL = '/files/verify-payout-sample.xlsx';
 
 export default function VerificationPayout() {
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const params = useParams();

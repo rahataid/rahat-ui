@@ -32,7 +32,7 @@ const savePinnedProjects = (ids: string[]) => {
 };
 
 export default function ProjectListView() {
-  const t = useTranslations('Projects List');
+  const t = useTranslations('PROJECTS_LIST');
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
   const [filterValue, setFilterValue] = useState([]);

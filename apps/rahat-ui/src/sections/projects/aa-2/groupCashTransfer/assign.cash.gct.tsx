@@ -42,7 +42,7 @@ import { useNumberFormat } from '../../../../utils/useNumberFormat';
 import { SectionCard } from './components/gct.form-sections';
 
 export default function AssignCashGct() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
 
   const { id } = useParams();

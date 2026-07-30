@@ -13,7 +13,7 @@ const CommunicationAnalytics = ({
   triggeersStats,
   projectId,
 }: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const getTriggerDataByName = (name: string) =>
     triggeersStats.find((item) => item.name.includes(name))?.data;

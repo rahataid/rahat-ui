@@ -14,7 +14,7 @@ export type Transaction = {
 };
 
 export const useTableColumns = () => {
-  const t = useTranslations('Treasury – Transactions');
+  const t = useTranslations('TREASURY_TRANSACTIONS');
   const tg = useTranslations('GLOBAL');
   const columns: ColumnDef<Transaction>[] = [
     {

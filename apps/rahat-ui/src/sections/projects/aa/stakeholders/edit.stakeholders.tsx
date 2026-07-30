@@ -27,7 +27,7 @@ type IProps = {
 };
 
 export default function EditStakeholders({ stakeholdersDetail }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const { closeSecondPanel } = useSecondPanel();

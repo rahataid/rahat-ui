@@ -26,7 +26,7 @@ type IProps = {
 };
 
 export default function AAAddSetting({ closeSecondPanel, projectUUID }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const addSetting = useAAProjectSettingsAdd();
 
   const FormSchema = z.object({

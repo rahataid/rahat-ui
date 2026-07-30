@@ -19,7 +19,7 @@ interface IGlofasHydrographChartProps {
 }
 
 const GlofasHydrographChart = ({ series }: IGlofasHydrographChartProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   if (!series?.length) return null;
 

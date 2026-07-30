@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
-  const t = useTranslations('Dashboard \u2013 Disaster Impact & Early Warning');
+  const t = useTranslations('DASHBOARD_DISASTER_IMPACT_EARLY_WARNING');
   const g = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   // Helper to find stat data by name
@@ -16,7 +16,7 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   const floodImpact = getStat('FLOOD_IMPACT_IN_LAST_5YEARS');
   const earlyWarningAccess = getStat('ACCES_TO_EARLY_WARNING_INFORMATION');
 
-  const channelUsageStats = getStat('CHANNEL_USAGE_STATS');
+  const channelUSAGEStats = getStat('CHANNEL_USAGE_STATS');
 
   const chartOpts = {
     xaxis: {
@@ -72,15 +72,15 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[340px] lg:col-span-2">
           <h1 className="text-sm font-medium">{t('INFORMATION_CHANNEL_USED')}</h1>
           <div className="flex-1 p-2">
-            {channelUsageStats?.length === 0 ? (
+            {channelUSAGEStats?.length === 0 ? (
               <div className="flex justify-center h-[300px] items-center">
                 <NoResult size="small" />
               </div>
             ) : (
               <BarChart
-                series={channelUsageStats.map((item: any) => item.count)}
-                // categories={channelUsageStats.map((item: any) => item.id)}
-                categories={channelUsageStats.map((item: any) =>
+                series={channelUSAGEStats.map((item: any) => item.count)}
+                // categories={channelUSAGEStats.map((item: any) => item.id)}
+                categories={channelUSAGEStats.map((item: any) =>
                   item.id.replace(/([A-Z])/g, ' $1').trim(),
                 )}
                 colors={['#4A90E2']}

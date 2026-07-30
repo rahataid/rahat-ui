@@ -11,7 +11,7 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useTranslations } from 'next-intl';
 
 export default function ExternalLinks() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4 mb-6">

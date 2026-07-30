@@ -65,7 +65,7 @@ export const AudioRecorder = ({
   resumeRecording,
   fileUploadPending,
 }: Props) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   useEffect(() => {
     if (!isRecording || !canvasRef.current || !analyserRef.current) return;

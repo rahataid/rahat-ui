@@ -17,7 +17,7 @@ import HeaderWithBack from '../projects/components/header.with.back';
 import { useTranslations } from 'next-intl';
 
 function ImportListView() {
-  const t = useTranslations('Import Beneficiary List');
+  const t = useTranslations('IMPORT_BENEFICIARY_LIST');
   const {
     pagination,
     selectedListItems,

@@ -18,7 +18,7 @@ type DailyMonitoringRow = {
 };
 
 export default function useDailyMonitoringTableColumn() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   const { id: projectId } = useParams();
   const router = useRouter();

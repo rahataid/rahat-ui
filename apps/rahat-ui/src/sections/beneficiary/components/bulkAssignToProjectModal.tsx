@@ -38,7 +38,7 @@ export default function BulkAssignToProjectModal({
   handleSubmit,
   selectedBeneficiaries,
 }: IProps) {
-  const t = useTranslations('Beneficiary List');
+  const t = useTranslations('BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const projectsList = useProjectList({});

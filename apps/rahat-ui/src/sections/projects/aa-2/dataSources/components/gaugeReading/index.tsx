@@ -34,7 +34,7 @@ interface GaugeData {
 const GaugeReading = ({ date }: IGaugeReadingProps) => {
   const params = useParams();
   const projectId = params.id as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { data: MonitoringData, isLoading } = useGaugeReading(projectId, {});
 
   const filteredData = useMemo(() => {

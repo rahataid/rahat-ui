@@ -40,7 +40,7 @@ import { ValidationContent } from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
 
 export default function AddActivities() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();

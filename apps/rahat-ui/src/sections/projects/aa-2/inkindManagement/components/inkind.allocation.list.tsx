@@ -80,7 +80,7 @@ export function formatLabel(value: string) {
 }
 
 export default function InkindAllocationList() {
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { id } = useParams();

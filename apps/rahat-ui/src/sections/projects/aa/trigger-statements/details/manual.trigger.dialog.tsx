@@ -29,7 +29,7 @@ import { validateFile } from '../../file.validation';
 import { toast } from 'react-toastify';
 
 export default function ManualTriggerDialog() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID, triggerID } = useParams();
   const router = useRouter();
   const uploadFile = useUploadFile();

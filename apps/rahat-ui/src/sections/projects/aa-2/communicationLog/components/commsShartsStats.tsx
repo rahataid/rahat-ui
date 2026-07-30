@@ -35,7 +35,7 @@ export default function CommunicationsChartsStats({
   commsStatsData,
   statsBenefStakeholders,
 }: CommunicationsChartsStatsProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   return (
     <div className="flex flex-col gap-2 w-full">

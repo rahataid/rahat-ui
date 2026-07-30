@@ -45,7 +45,7 @@ import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctDetail() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
 
   // Bank validation messages come from the API, so there is no key to look up

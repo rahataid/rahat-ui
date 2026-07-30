@@ -38,7 +38,7 @@ interface ITableColumnProps {
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const { id } = useParams();
   const router = useRouter();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
 
   const handleViewClick = (vendorId: string) => {
@@ -108,7 +108,7 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
 
 export const useProjectVendorRedemptionTableColumns = () => {
   const { id }: { id: UUID } = useParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();

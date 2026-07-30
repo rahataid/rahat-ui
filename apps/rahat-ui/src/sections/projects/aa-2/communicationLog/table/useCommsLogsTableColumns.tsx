@@ -12,7 +12,7 @@ import { TriangleAlertIcon } from 'lucide-react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 export default function useCommsLogsTableColumns(transportName: string) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const renderDateTime = (dateTime: string) => formatDate(dateTime);

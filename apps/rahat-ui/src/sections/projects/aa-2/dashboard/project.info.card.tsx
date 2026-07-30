@@ -14,7 +14,7 @@ type IProps = {
 export default function ProjectInfoCard({ project }: IProps) {
   const { id } = useParams();
   const projectId = id as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
 
   // const hazardType = useProjectSettingsStore(

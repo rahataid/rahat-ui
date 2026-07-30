@@ -18,7 +18,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function ActivitiesView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const { state } = useSidebar();
   const router = useRouter();

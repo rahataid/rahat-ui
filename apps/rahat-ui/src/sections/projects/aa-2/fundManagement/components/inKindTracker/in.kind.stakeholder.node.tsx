@@ -18,7 +18,7 @@ function InKindStakeholderNode({
   index?: number;
   isFirst?: boolean;
 }) {
-  const t = useTranslations('AA Project with Gnosis');
+  const t = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
 

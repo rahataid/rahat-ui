@@ -23,7 +23,7 @@ import Swal from 'sweetalert2';
 import { useUserRoleCreate } from '@rumsan/react-query';
 
 export default function UserAddRoleView() {
-  const t = useTranslations('Users – Add Role');
+  const t = useTranslations('USERS_ADD_ROLE');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
 

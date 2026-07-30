@@ -9,7 +9,7 @@ type IProps = {
 };
 
 const StakeHolderInfo = ({ stakeholder }: IProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatPhone = usePhoneFormat();
   return (
     <>

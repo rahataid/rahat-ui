@@ -39,7 +39,7 @@ interface GrievanceOverviewProps {
 export default function GrievanceOverview({
   className,
 }: GrievanceOverviewProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const { id } = useParams();
   const projectUUID = id as UUID;

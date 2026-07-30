@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 
 export default function AddAppAuthentication() {
-  const t = useTranslations('Auth Apps – Add');
+  const t = useTranslations('AUTH_APPS_ADD');
   const tg = useTranslations('GLOBAL');
   const createAuthApp = useCreateAuthApp();
 

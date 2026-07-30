@@ -26,7 +26,7 @@ import {
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function AddPhaseView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;

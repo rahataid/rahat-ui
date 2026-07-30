@@ -8,7 +8,7 @@ type RetryButtonProps = {
 };
 
 const RetryButton: React.FC<RetryButtonProps> = ({ queueType, jobId }) => {
-  const t = useTranslations('Queues');
+  const t = useTranslations('QUEUES');
   const retryMutation = useRetryJobMutation(queueType);
 
   return (

@@ -30,7 +30,7 @@ const componentMap: Record<InkindTabValue, ComponentType> = {
 };
 
 export default function InkindTabs() {
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const { activeTab, setActiveTab } = useActiveTab('inkindOverview');
 
   const INKIND_TABS = useMemo(() => [

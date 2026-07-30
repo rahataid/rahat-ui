@@ -15,7 +15,7 @@ export default function ActivityDetailCards({
   activityDetail,
   loading,
 }: ActivityDetailCardsProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">

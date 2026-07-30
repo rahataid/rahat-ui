@@ -32,7 +32,7 @@ const TimeSeriesChart = ({
   unit = '',
   yAxisFormatter,
 }: ChartProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const resolvedYaxisTitle = yaxisTitleProp ?? t('WATER_LEVEL_METERS');
   if (!data || data.length === 0) return null;

@@ -13,7 +13,7 @@ type IProps = {
 };
 
 export default function UsersRolesTabSplitView({ userDetail }: IProps) {
-  const t = useTranslations('Users – Detail');
+  const t = useTranslations('USERS_DETAIL');
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
 

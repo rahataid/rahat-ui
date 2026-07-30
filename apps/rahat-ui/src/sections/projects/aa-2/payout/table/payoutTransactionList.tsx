@@ -17,7 +17,7 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 export default function PayoutTransactionList() {
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams();
 

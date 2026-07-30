@@ -31,8 +31,8 @@ function InKindTransferList({
   onConfirmReceipt?: (payload: any) => void;
 }) {
   const id = useParams().id as UUID;
-  const t = useTranslations('AA Project');
-  const tg = useTranslations('AA Project with Gnosis');
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const [confirmingTransferId, setConfirmingTransferId] = useState<
     string | null
   >(null);

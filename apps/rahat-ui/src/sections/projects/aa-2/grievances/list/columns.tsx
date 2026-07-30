@@ -34,7 +34,7 @@ interface GrievanceTableRow {
 export const useGrievancesTableColumns = () => {
   const formatDate = useDateFormat();
   const formatDigits = useLabelDigits();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id: projectId } = useParams() as { id: UUID };

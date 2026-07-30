@@ -8,7 +8,7 @@ import {
 } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { useTreasuryTokenDetail } from 'libs/query/src/lib/treasury/treasury.service';
+import { useTREASURYTokenDetail } from 'libs/query/src/lib/treasury/treasury.service';
 import { Banknote, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { AssetsModal } from './assets.modal';
 
 const AssetsDetails = () => {
-  const t = useTranslations('Treasury – Assets');
+  const t = useTranslations('TREASURY_ASSETS');
   const tg = useTranslations('GLOBAL');
   const contractAddress = useParams()?.contractAddress;
   const projects = useProjectList();
@@ -27,7 +27,7 @@ const AssetsDetails = () => {
   const sendFundToProject = useSendFundToProject();
   const appContracts = useSettingsStore((state) => state.contracts);
 
-  const { data, isLoading } = useTreasuryTokenDetail(contractAddress as string);
+  const { data, isLoading } = useTREASURYTokenDetail(contractAddress as string);
 
   useEffect(() => {
     if (data) {

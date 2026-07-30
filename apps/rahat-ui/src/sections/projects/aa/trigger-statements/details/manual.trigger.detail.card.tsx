@@ -17,7 +17,7 @@ export default function ManualTriggerDetailCard({
   triggeredAt,
   triggeredBy
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const formatDate = useDateFormat();
 

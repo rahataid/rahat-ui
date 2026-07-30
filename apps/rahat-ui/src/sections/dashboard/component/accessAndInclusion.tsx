@@ -19,13 +19,13 @@ const colorMap: Record<string, string> = {
 };
 
 const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
-  const t = useTranslations('Dashboard \u2013 Access & Inclusion');
+  const t = useTranslations('DASHBOARD_ACCESS_INCLUSION');
   const g = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   // Extract relevant stats
   const mobileAccess = findStat(statsData, 'MOBILE_ACCESS');
   const internetAccess = findStat(statsData, 'INTERNET_ACCESS');
-  const digitalWalletUse = findStat(statsData, 'DIGITAL_WALLET_USE');
+  const digitalWALLETUse = findStat(statsData, 'DIGITAL_WALLET_USE');
   const typeOfPhone = findStat(statsData, 'TYPE_OF_PHONE');
   const bankAccountAccess = findStat(statsData, 'BANK_ACCOUNT_ACCESS');
   const socialSecurityLinked = findStat(
@@ -49,7 +49,7 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
   const charts = [
     { title: t('ACCESS_TO_MOBILE_PHONES'), data: mobileAccess },
     { title: g('INTERNET_ACCESS'), data: internetAccess },
-    { title: t('DIGITAL_WALLET_USE'), data: digitalWalletUse },
+    { title: t('DIGITAL_WALLET_USE'), data: digitalWALLETUse },
     { title: t('TYPES_OF_PHONE'), data: typeOfPhone },
     { title: t('BANK_ACCOUNT_ACCESS'), data: bankAccountAccess },
     {

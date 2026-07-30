@@ -10,7 +10,7 @@ import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { useFundAssignmentStore } from '@rahat-ui/query';
 
 export default function FundManagementView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const { id: projectUUID } = useParams() as { id: UUID };
   const projectBalance = useProjectBalance(projectUUID);

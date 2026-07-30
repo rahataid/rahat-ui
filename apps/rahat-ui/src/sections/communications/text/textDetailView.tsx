@@ -14,7 +14,7 @@ import TextDetailTable from './textDetailTable';
 import { useGetCampaign } from '@rumsan/communication-query';
 import { useTranslations } from 'next-intl';
 export default function TextDetailView() {
-  const t = useTranslations('Communications – Text/SMS');
+  const t = useTranslations('COMMUNICATIONS_TEXT_SMS');
   const tg = useTranslations('GLOBAL');
   const params = useParams<{ tag: string; id: string }>();
   const { data, isLoading} = useGetCampaign({

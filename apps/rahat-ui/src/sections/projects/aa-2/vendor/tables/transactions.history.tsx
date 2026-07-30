@@ -16,7 +16,7 @@ import React from 'react';
 import { useVendorsTransactionTableColumns } from '../columns/useTransactionColumns';
 import { useTranslations } from 'next-intl';
 
-export default function VendorsTransactionsHistory() {
+export default function VendorsTRANSACTIONSHistory() {
   const tGlobal = useTranslations('GLOBAL');
   const { id, vendorId } = useParams();
   const [columnVisibility, setColumnVisibility] =

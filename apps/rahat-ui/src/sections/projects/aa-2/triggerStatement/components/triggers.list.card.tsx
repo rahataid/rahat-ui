@@ -9,7 +9,7 @@ type IProps = {
 };
 
 export default function TriggersListCard({ projectId, triggers }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="p-4 rounded-xl border shadow-md">
       <Heading

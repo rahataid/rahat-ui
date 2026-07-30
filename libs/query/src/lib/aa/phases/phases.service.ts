@@ -13,7 +13,7 @@ export const useSinglePhase = (
   phaseId: UUID,
   options?: { enabled?: boolean },
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const { setThreshhold } = usePhasesStore((state) => ({
     setThreshhold: state.setThreshold,
@@ -62,7 +62,7 @@ export const useSinglePhase = (
 };
 
 export const useRevertPhase = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -177,7 +177,7 @@ export const usePhases = (uuid: UUID) => {
 };
 
 export const useConfigureThreshold = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({

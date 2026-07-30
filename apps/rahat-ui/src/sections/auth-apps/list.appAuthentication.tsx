@@ -30,7 +30,7 @@ import { useAppAuthenticationColumns } from './useAppAuthenticationColumns';
 import { useTranslations } from 'next-intl';
 
 export default function ListAppAuthentication() {
-  const t = useTranslations('Auth Apps – List');
+  const t = useTranslations('AUTH_APPS_LIST');
   const tg = useTranslations('GLOBAL');
   const columns = useAppAuthenticationColumns();
 

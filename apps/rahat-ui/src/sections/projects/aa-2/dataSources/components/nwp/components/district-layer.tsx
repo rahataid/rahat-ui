@@ -21,7 +21,7 @@ export function DistrictLayer({
   showRegions = true,
   onRegionHover,
 }: RegionLayerProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const map = useMap();
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
 

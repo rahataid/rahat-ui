@@ -11,8 +11,8 @@ import { GctTabs } from './components';
 // ─── View ─────────────────────────────────────────────────────────────────────
 
 export default function GroupCashTransferView() {
-  const t = useTranslations('AA Project');
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const router = useRouter();
   const { id } = useParams();
 

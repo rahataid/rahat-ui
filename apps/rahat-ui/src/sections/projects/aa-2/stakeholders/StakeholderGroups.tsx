@@ -17,7 +17,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 const StakeGoldersGroups = () => {
   const formatNum = useNumberFormat();
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();

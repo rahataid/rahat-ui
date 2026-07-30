@@ -9,7 +9,7 @@ interface UsePointTableColumnsProps {
 }
 
 export const usePointTableColumns = ({ unit }: UsePointTableColumnsProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {

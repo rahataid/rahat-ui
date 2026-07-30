@@ -41,7 +41,7 @@ type IHeadCardProps = {
 };
 
 export default function CommsLogsDetailPage() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string

@@ -35,7 +35,7 @@ export default function ValidateBenefBankAccountByGroupUuid({
   beneficiaryGroupDetail,
   onConfirm,
 }: IProps) {
-  const t = useTranslations('Beneficiary Group Detail');
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
   const tg = useTranslations('GLOBAL');
   const validateBenefGroup = useValidateBeneficaryBankAccount();
   const handleValidateBankAccount = async () => {

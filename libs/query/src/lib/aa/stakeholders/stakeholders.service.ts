@@ -33,7 +33,7 @@ type StakeholderArgs = {
   stakeholderPayload: any;
 };
 export const useStakeholders = (uuid: UUID, payload: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const { setStakeholders, setStakeholdersMeta } = useStakeholdersStore(
     (state) => ({
@@ -77,7 +77,7 @@ export const useCreateStakeholders = <
     'mutationFn'
   >,
 ): UseMutationResult<TData, TError, StakeholderArgs, TContext> => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -134,7 +134,7 @@ export const useCreateStakeholders = <
 };
 
 export const useUpdateStakeholders = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -181,7 +181,7 @@ export const useUpdateStakeholders = () => {
 };
 
 export const useDeleteStakeholders = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -258,7 +258,7 @@ export const useStakeholderDetails = (
 };
 
 export const useValidateStakeholders = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { rumsanService } = useRSQuery();
 
   return useMutation({
@@ -289,7 +289,7 @@ export const useValidateStakeholders = () => {
 };
 
 export const useUploadStakeholders = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
   const alert = useSwal();

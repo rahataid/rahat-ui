@@ -13,7 +13,7 @@ export type CreditRow = {
 };
 
 export function useCreditColumns() {
-  const t = useTranslations('Usage');
+  const t = useTranslations('USAGE');
   const g = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
 

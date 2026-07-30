@@ -42,7 +42,7 @@ export default function ListView({
   pagination,
   loading,
 }: IProps) {
-  const t = useTranslations('Community Beneficiary Detail');
+  const t = useTranslations('COMMUNITY_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const handleFilterChange = (event: any) => {
     if (event && event.target) {

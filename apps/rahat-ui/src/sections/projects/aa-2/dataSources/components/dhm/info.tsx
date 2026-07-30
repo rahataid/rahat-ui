@@ -30,7 +30,7 @@ interface InfoProp {
 }
 
 export function Info({ riverWatch, updatedAt }: InfoProp) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const cardData = React.useMemo(

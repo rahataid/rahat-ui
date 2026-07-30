@@ -19,7 +19,7 @@ const STATUS_COLORS = [
 ];
 
 export default function GctOverview() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const { data, isPending } = useGetGctData(id as UUID);
@@ -113,7 +113,7 @@ export default function GctOverview() {
 
       {/* Pie charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Treasury Status */}
+        {/* TREASURY Status */}
         <div className="border rounded-sm p-4 flex flex-col">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-sm/6 font-semibold text-neutral-800 dark:text-white">

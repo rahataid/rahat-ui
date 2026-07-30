@@ -103,7 +103,7 @@ export default function ImportStakeholder() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
 

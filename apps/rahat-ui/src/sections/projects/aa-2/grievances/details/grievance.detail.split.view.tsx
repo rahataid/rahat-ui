@@ -53,7 +53,7 @@ export default function GrievanceDetailSplitView({
   grievance: initialGrievance,
 }: IProps) {
   const formatDate = useDateFormat();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const labelMap: Record<string, string> = {
     'New': t('NEW'),

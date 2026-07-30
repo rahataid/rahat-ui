@@ -20,7 +20,7 @@ export default function SearchAndFilterToolbar({
   pagination,
 }: SearchAndFilterToolbarProps) {
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;

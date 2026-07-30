@@ -20,7 +20,7 @@ import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 
 export default function VendorDetail() {
-  const t = useTranslations('Vendors – Detail');
+  const t = useTranslations('VENDORS_DETAIL');
   const g = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -31,12 +31,12 @@ export default function VendorDetail() {
     [vendor],
   );
   const removeVendor = useRemoveVendor();
-  const [walletAddressCopied, setWalletAddressCopied] =
+  const [walletAddressCopied, setWALLETAddressCopied] =
     React.useState<string>();
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(walletAddress);
+    setWALLETAddressCopied(walletAddress);
   };
 
   const deleteVendor = async () => {

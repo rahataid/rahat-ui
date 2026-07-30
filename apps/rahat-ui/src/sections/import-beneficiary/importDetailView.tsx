@@ -47,7 +47,7 @@ import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 
 function ImportDetailView() {
-  const t = useTranslations('Import Beneficiary Detail');
+  const t = useTranslations('IMPORT_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const { uuid } = useParams();
   const searchParams = useSearchParams();

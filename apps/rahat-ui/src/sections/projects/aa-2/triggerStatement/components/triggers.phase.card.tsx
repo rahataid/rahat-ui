@@ -59,7 +59,7 @@ export default function TriggersPhaseCard({
   hasExtendedLogic = false,
   disbursementMethods,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
   return (
     <div className="p-4 rounded-xl border shadow-md flex flex-col justify-between">

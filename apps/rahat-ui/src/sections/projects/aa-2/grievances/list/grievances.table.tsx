@@ -39,7 +39,7 @@ import {
   grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 function GrievancesTable() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const uuid = id as UUID;

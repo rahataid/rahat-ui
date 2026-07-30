@@ -88,7 +88,7 @@ export default function AddAutomatedTriggerForm({
   stationHeading,
   projectType,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
@@ -195,7 +195,7 @@ export default function AddAutomatedTriggerForm({
           {subTypeOptions?.[source]?.length ? (
             subTypeOptions?.[source]?.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {/* Subtype slugs ("daily") map to AA Project keys; fall back to
+                {/* Subtype slugs ("daily") map to AA_PROJECT keys; fall back to
                     the derived English label for any slug not yet translated. */}
                 {t.has(String(option.value).toUpperCase() as never)
                   ? t(String(option.value).toUpperCase() as never)

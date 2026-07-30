@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { NavItem } from '.';
 
 export const useNavItems = () => {
-  const t = useTranslations('Communications – Navigation');
+  const t = useTranslations('COMMUNICATIONS_NAVIGATION');
   const router = useRouter();
   const totalTextCampaign = useCampaignStore().totalTextCampaign;
 

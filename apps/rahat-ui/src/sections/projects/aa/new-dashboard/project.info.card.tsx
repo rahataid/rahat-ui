@@ -9,7 +9,7 @@ type IProps = {
 };
 
 export default function ProjectInfoCard({ project }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectId = id as UUID;

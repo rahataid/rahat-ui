@@ -23,7 +23,7 @@ import { useTranslations } from 'next-intl';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 export default function AddDailyMonitoring() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();

@@ -26,12 +26,12 @@ import { useAuthStore, useUserStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../../app/config-nav';
 import { paths } from '../../routes/paths';
-import { WalletConnect } from '../connectWallet';
+import { WALLETConnect } from '../connectWALLET';
 import { ModeToggle } from '../dropdown';
 import MobileNav from '../mobileNav';
 
 export function Nav() {
-  const t = useTranslations('Top Navigation / Header');
+  const t = useTranslations('TOP_NAVIGATION_HEADER');
   const currentPath = usePathname();
   const navData = useNavData();
   const { user, clearUser } = useUserStore((state) => ({
@@ -107,7 +107,7 @@ export function Nav() {
       </div>
       <div className="flex gap-4 items-center">
         <ModeToggle />
-        <WalletConnect />
+        <WALLETConnect />
         <MobileNav />
         <DropdownMenu>
           <DropdownMenuTrigger>

@@ -41,7 +41,7 @@ export function ConflictDialog({
   closeButtonText = 'Understood',
   conflictType,
 }: ConflictDialogProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   // Determine the conflict type and data to use
   const isStakeholderConflict =
     conflictType === 'stakeholder' || groupNames || stakeholderName;

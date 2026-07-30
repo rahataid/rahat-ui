@@ -20,7 +20,7 @@ type IProps = {
 };
 
 export default function ActivitiesTable({ table, tableheight }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <ScrollArea className={`${tableheight ?? 'h-[calc(100vh-390px)]'}`}>
       <TableComponent>

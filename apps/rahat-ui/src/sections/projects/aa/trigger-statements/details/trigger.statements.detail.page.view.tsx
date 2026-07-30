@@ -36,7 +36,7 @@ import Back from '../../../components/back';
 
 export default function TriggerStatementsDetailView() {
   const t = useTranslations('GLOBAL');
-  const tc = useTranslations('Confirmation & Alert Dialogs');
+  const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const { id: projectID } = useParams();
   const router = useRouter();
   const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];

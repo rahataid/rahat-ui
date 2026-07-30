@@ -57,9 +57,9 @@ function BeneficiaryView() {
     setFilters,
     filters,
   } = usePagination();
-  const t = useTranslations('Beneficiary List');
+  const t = useTranslations('BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
-  const tbd = useTranslations('Beneficiary Group Detail');
+  const tbd = useTranslations('BENEFICIARY_GROUP_DETAIL');
 
   useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });

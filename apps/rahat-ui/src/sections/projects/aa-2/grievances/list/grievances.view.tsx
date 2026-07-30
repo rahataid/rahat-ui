@@ -27,7 +27,7 @@ import { useTranslations } from 'next-intl';
 
 function GrievancesView() {
   const formatDate = useDateFormat();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id } = useParams();

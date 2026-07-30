@@ -61,7 +61,7 @@ export default function UpdateGroupProposeModal({
   validateModal,
   beneficiaryGroupDetail,
 }: IProps) {
-  const t = useTranslations('Beneficiary Group Detail');
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
   const tg = useTranslations('GLOBAL');
   const [selectedPurpose, setSelectedPurpose] = React.useState<
     string | undefined

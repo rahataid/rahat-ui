@@ -3,7 +3,7 @@ import { NavItem } from './nav-items.types';
 import { useTranslations } from 'next-intl';
 
 export const useAppAuthenticationNavItems = () => {
-  const t = useTranslations('Auth Apps – List');
+  const t = useTranslations('AUTH_APPS_LIST');
   const tg = useTranslations('GLOBAL');
   const menuItems: NavItem[] = [
     {

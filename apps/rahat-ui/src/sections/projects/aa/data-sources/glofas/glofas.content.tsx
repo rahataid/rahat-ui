@@ -17,7 +17,7 @@ const getCellColor = (cell: string) => {
 };
 
 export default function GlofasContent({ location, glofasData }: any) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   if (!glofasData) {
     return <p>{t('DATA_NOT_AVAILABLE_GLOFAS')}</p>;

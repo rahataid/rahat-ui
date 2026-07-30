@@ -26,7 +26,7 @@ const typeLabels: Record<string, string> = {
 };
 
 export function TypeChip({ type, className, showIcon = true }: TypeChipProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const colorClass =
     type && type in typeColors

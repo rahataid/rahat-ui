@@ -60,7 +60,7 @@ export default function AssignFundsForm({
 }: {
   handleStepChange: (step: number) => void;
 }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
 

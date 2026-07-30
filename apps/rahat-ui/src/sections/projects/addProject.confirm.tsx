@@ -20,7 +20,7 @@ const AddProjectConfirmModal: React.FC<AddProjectConfirmModalProps> = ({
   open,
   handleClose,
 }) => {
-  const t = useTranslations('Projects List');
+  const t = useTranslations('PROJECTS_LIST');
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">

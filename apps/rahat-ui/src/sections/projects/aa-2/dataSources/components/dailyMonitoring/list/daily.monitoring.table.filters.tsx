@@ -72,7 +72,7 @@ export default function DailyMonitoringTableFilters({
   handleSearch,
   handleFilterChange,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tGlobal = useTranslations('GLOBAL');
   const { riverBasins } = useSelectItems();
   return (

@@ -27,7 +27,7 @@ import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from './typ
 import { BasicInfoSection, BankDetailsSection } from './components/gct.form-sections';
 
 export default function EditGct() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const { id, uuid } = useParams();
   const router = useRouter();

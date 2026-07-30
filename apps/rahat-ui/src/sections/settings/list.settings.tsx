@@ -36,7 +36,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Settings2 } from 'lucide-react';
 
 export default function ListSetting() {
-  const t = useTranslations('Settings – List');
+  const t = useTranslations('SETTINGS_LIST');
   const g = useTranslations('GLOBAL');
   const columns = useSettingTableColumns();
 

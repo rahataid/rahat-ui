@@ -19,7 +19,7 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { IndividualLogTab } from './components/IndividualLogs';
 
 export default function CommunicationMainLogsView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: ProjectId } = useParams();
   const { data: commsStatsData, isLoading: isLoadingCommsStats } =
     useCommsStats(ProjectId as UUID);

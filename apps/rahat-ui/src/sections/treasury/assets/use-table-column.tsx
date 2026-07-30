@@ -6,7 +6,7 @@ import { Eye } from 'lucide-react';
 
 export const useAssetsTableColumn = () => {
   const tg = useTranslations('GLOBAL');
-  const t = useTranslations('Treasury – Assets');
+  const t = useTranslations('TREASURY_ASSETS');
   const columns: ColumnDef<Assets>[] = [
     {
       id: 'select',

@@ -15,7 +15,7 @@ export default function AddInkindView() {
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<InkindDetailsValues>>({});

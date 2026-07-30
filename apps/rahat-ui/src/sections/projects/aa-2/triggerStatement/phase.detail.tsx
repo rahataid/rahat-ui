@@ -28,7 +28,7 @@ import { useTranslations } from 'next-intl';
 
 export default function PhaseDetail() {
   const formatDate = useDateFormat();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;

@@ -27,7 +27,7 @@ type IProps = {
 
 export default function EditButton({ path, className }: IProps) {
   const t = useTranslations('GLOBAL');
-  const tc = useTranslations('Confirmation & Alert Dialogs');
+  const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>

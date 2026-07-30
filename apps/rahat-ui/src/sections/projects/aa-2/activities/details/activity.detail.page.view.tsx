@@ -19,7 +19,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 export default function ActivitiesDetailView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;

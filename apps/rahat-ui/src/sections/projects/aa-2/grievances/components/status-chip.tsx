@@ -56,7 +56,7 @@ export function StatusChip({
   className,
   showIcon = true,
 }: StatusChipProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const colorClass =
     status && status in statusColors

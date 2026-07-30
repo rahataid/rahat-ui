@@ -52,7 +52,7 @@ export default function CommunicationList({
   const router = useRouter();
   const pathname = usePathname();
 
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const defaultTab = useMemo(() => {
     const active = activityCommunication?.some(
       (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',

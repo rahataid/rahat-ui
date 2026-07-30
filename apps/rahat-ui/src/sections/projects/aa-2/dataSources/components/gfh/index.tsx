@@ -20,7 +20,7 @@ import GfhStationDetails from './gfhStationDetails';
 import { IRiverData } from './types';
 
 const GFHDetails = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
 

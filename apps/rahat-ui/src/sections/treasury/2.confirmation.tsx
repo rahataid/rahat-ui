@@ -8,7 +8,7 @@ const Confirmation = ({
   handleStepDataChange: (e: any) => void;
   stepData: typeof initialStepData;
 }) => {
-  const t = useTranslations('Treasury – Create Token');
+  const t = useTranslations('TREASURY_CREATE_TOKEN');
   const tg = useTranslations('GLOBAL');
   return (
     <div className="grid grid-cols-12 p-4">

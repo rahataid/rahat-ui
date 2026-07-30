@@ -29,7 +29,7 @@ import { setPaginationToLocalStorage } from '../prev.pagination.storage';
 
 export default function useStakeholdersTableColumn() {
   const t = useTranslations('GLOBAL');
-  const tc = useTranslations('Confirmation & Alert Dialogs');
+  const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const { id } = useParams();
   const router = useRouter();
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();

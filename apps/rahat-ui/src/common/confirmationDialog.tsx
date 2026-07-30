@@ -27,7 +27,7 @@ const ConfirmationDialog = ({
   dialogMessage,
   children,
 }: ConfirmationDialogProps) => {
-  const t = useTranslations('Confirmation & Alert Dialogs');
+  const t = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const tg = useTranslations('GLOBAL');
 
   return (

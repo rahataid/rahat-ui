@@ -9,7 +9,7 @@ import { DetailRow } from './gct.ui';
 // Derives fields from nested offrampRequest / transaction paths.
 
 export function DisbursementInfoCard({ info, txUrl }: { info: any; txUrl?: string | null }) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tx = info?.result?.transaction;
   const batch = tx?.cipsBatchResponse;
   const cipsTxnMsg = tx?.cipsTxnResponseList?.[0]?.responseMessage;

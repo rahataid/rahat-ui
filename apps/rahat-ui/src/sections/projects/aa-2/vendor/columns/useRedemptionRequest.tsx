@@ -20,7 +20,7 @@ import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();

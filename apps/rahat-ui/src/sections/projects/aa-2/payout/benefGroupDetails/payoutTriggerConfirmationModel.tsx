@@ -25,7 +25,7 @@ export default function PayoutConfirmationDialog({
   payoutData,
   onConfirm,
 }: IProps) {
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   return (

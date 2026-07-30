@@ -46,7 +46,7 @@ export default function ActivitiesTableFilters({
 }: IProps) {
   const tAdd = useTranslations('GLOBAL');
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { categories, phases } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,

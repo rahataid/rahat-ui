@@ -31,7 +31,7 @@ import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function BeneficiaryTransactionLogDetails() {
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { id, uuid } = useParams();
@@ -173,12 +173,12 @@ export default function BeneficiaryTransactionLogDetails() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <InfoItem
               label={tv('BENEFICIARY_WALLET_ADDRESS')}
-              value={data?.data?.beneficiaryWalletAddress}
+              value={data?.data?.beneficiaryWALLETAddress}
               copyable
             />
             <InfoItem
               label={tv('TRANSACTION_WALLET_ID')}
-              value={data?.data?.info?.offrampWalletAddress}
+              value={data?.data?.info?.offrampWALLETAddress}
               copyable
             />
             <InfoItem

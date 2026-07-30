@@ -44,7 +44,7 @@ export default function GroupListView({
   pagination,
   loading,
 }: IProps) {
-  const t = useTranslations('Community Beneficiary List');
+  const t = useTranslations('COMMUNITY_BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const handleFilterChange = (event: any) => {
     if (event && event.target) {

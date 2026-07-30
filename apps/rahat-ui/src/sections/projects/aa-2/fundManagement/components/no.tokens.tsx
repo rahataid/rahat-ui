@@ -3,7 +3,7 @@ import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function NoTokens() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="p-4 border rounded-md flex flex-col space-y-2 items-center">
       <div className="p-4 rounded-full bg-red-50">

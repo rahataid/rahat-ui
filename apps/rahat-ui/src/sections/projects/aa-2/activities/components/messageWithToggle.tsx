@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useState } from 'react';
 
 const MessageWithToggle = ({ message }: { message: string }) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const [showFull, setShowFull] = useState(false);
   const maxLength = 150;
 

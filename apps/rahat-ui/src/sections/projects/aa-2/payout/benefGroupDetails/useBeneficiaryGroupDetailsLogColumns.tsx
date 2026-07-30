@@ -49,7 +49,7 @@ const editableStatuses: PayoutTransactionStatus[] = [
 
 type BeneficiaryGroupDetailsLogRow = {
   id: string;
-  beneficiaryWalletAddress: string;
+  beneficiaryWALLETAddress: string;
   uuid: UUID;
   txHash?: string;
   amount?: number;
@@ -61,7 +61,7 @@ type BeneficiaryGroupDetailsLogRow = {
     type?: string;
   };
   info?: {
-    offrampWalletAddress?: string;
+    offrampWALLETAddress?: string;
     error?: string;
   };
   isCompleted?: boolean;
@@ -70,8 +70,8 @@ type BeneficiaryGroupDetailsLogRow = {
 export default function useBeneficiaryGroupDetailsLogColumns(
   payoutType: string,
 ) {
-  const t = useTranslations('AA Project');
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { id, detailID } = useParams();
@@ -110,34 +110,34 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   };
   const columns: ColumnDef<BeneficiaryGroupDetailsLogRow>[] = [
     {
-      accessorKey: 'beneficiaryWalletAddress',
+      accessorKey: 'beneficiaryWALLETAddress',
       header: tv('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <TruncatedCell
-            text={row?.original?.beneficiaryWalletAddress || tg('N_A')}
+            text={row?.original?.beneficiaryWALLETAddress || tg('N_A')}
             maxLength={10}
           />
 
           <CopyTooltip
-            value={row?.original?.beneficiaryWalletAddress || ''}
+            value={row?.original?.beneficiaryWALLETAddress || ''}
             uniqueKey={row?.original?.id}
           />
         </div>
       ),
     },
     {
-      accessorKey: 'transactionWalletId',
+      accessorKey: 'transactionWALLETId',
       header: tv('TRANSACTION_WALLET_ID'),
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TruncatedCell
-              text={row?.original?.info?.offrampWalletAddress || tg('N_A')}
+              text={row?.original?.info?.offrampWALLETAddress || tg('N_A')}
               maxLength={10}
             />
             <CopyTooltip
-              value={row?.original?.info?.offrampWalletAddress || ''}
+              value={row?.original?.info?.offrampWALLETAddress || ''}
               uniqueKey={row?.original?.uuid}
             />
           </div>

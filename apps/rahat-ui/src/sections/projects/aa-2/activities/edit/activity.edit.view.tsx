@@ -63,7 +63,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 
 export default function EditActivity() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   // State goes here
   const [open, setOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);

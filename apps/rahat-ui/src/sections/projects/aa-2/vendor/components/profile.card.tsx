@@ -4,12 +4,12 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck, Phone, User } from 'lucide-react';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
-type ProfileCardProps = {
+type PROFILECardProps = {
   data: any;
 };
 
-export default function ProfileCard({ data }: ProfileCardProps) {
-  const t = useTranslations('AA Project');
+export default function PROFILECard({ data }: PROFILECardProps) {
+  const t = useTranslations('AA_PROJECT');
   const formatPhone = usePhoneFormat();
   const { clickToCopy, copyAction } = useCopy();
   return (

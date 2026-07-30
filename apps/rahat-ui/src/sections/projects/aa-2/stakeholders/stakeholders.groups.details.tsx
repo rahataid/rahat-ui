@@ -38,7 +38,7 @@ const StakeholdersGroupsDetails = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [conflictActivities, setConflictActivities] = useState<string[]>([]);
   const conflictDialogOpen = useBoolean();

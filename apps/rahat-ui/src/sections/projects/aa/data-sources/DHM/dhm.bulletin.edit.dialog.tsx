@@ -23,7 +23,7 @@ import { Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function DHMBulletinDialog() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const FormSchema = z.object({
     waterWay: z.string().min(5, { message: t('MUST_BE_AT_LEAST_5_CHARACTERS') }),
     river: z.string().min(5, { message: t('MUST_BE_AT_LEAST_5_CHARACTERS') }),

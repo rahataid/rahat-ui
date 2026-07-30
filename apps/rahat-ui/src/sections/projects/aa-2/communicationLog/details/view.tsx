@@ -123,7 +123,7 @@ const activityDetail = {
   ],
 };
 const CommunicationDetailsView = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const activityId = params.activityId as UUID;

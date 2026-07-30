@@ -25,7 +25,7 @@ import { useSelectItems } from '../useSelectItems';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function EditDailyMonitoring() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;

@@ -90,7 +90,7 @@ export default function ExtendedTriggerLogicCard({
   triggers = [],
   onConfigure,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const hasConfig =
     extendedTriggerLogic &&
     extendedTriggerLogic.groups &&

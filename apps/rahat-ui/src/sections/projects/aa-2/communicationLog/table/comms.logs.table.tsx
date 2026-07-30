@@ -20,7 +20,7 @@ export default function CommsLogsTable({
   table: Table<any>;
   isLoading?: boolean;
 }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <>
       <div className="mt-1">

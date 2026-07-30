@@ -65,7 +65,7 @@ export function CommunicationDetailCard({
   activityId,
   projectId,
 }: CommunicationCardProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { pagination, filters } = usePagination();
   const { data: sessionLogs } = useListSessionLogs(
     activityCommunication?.sessionId,

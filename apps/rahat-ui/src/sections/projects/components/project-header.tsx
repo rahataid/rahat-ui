@@ -24,7 +24,7 @@ import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { toast } from 'react-toastify';
 // SidebarTrigger moved into the sidebar header; no top-header trigger needed here.
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
-import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
+import ConnectWALLET from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { LanguageToggle } from 'apps/rahat-ui/src/components/language-toggle';
 
 export function ProjectNav({
@@ -34,7 +34,7 @@ export function ProjectNav({
   component?: React.ReactNode;
   isClosed?: boolean;
 }) {
-  const t = useTranslations('Top Navigation / Header');
+  const t = useTranslations('TOP_NAVIGATION_HEADER');
   const g = useTranslations('GLOBAL');
   const currentPath = usePathname();
   const params = useParams();
@@ -68,7 +68,7 @@ export function ProjectNav({
     <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
       <div className="flex items-center space-x-4">{component}</div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
-        {!isClosed && <ConnectWallet />}
+        {!isClosed && <ConnectWALLET />}
         {showNotification && <NotificationButton unreadCount={0} />}
         {isAAProject && <LanguageToggle />}
         <DropdownMenu>

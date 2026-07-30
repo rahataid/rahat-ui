@@ -1,5 +1,5 @@
 {
-  "AA Project": {
+  "AA_PROJECT": {
     "ACCESS_INCLUSION": "पहुँच र समावेशीकरण",
     "ACCESS_TO_EARLY_WARNING_INFORMATION": "पुर्व सूचना सम्बन्धि जानकारीमा पहुँच",
     "ACCESS_TO_INTERNET": "इन्टरनेटमा पहुँच",
@@ -1672,7 +1672,7 @@
     "INKIND_DETAILS": "इनकाइन्ड विवरण",
     "CONFIRMATION_STEP": "पुष्टिकरण"
   },
-  "AA Project with Cash Tracker": {
+  "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खाता धारकको नाम",
     "ACCOUNT_NUMBER": "खाता नम्बर",
     "ACTIVE_FUND_TRANSFER_TRACKER": "सक्रिय कोष स्थानान्तरण ट्रयाकर",
@@ -1988,7 +1988,7 @@
     "THIS_GROUP_ALREADY_HAS_FUNDS_RESERVED": "यो समूहमा पहिले नै रकम आरक्षित छ।",
     "BANK_NOT_REACHABLE": "बैंकसँग सम्पर्क हुन सकेन"
   },
-  "AA Project with Gnosis": {
+  "AA_PROJECT_WITH_GNOSIS": {
     "ACTIVE_OWNERS": "सक्रिय मालिकहरू",
     "ACTIVE_OWNERS_TOOLTIP": "Safe वालेटका सक्रिय मालिक वा प्रशासकहरूको कुल संख्या जो Gnosis बहु-हस्ताक्षर कारोबारहरूमा हस्ताक्षर र कार्यान्वयन गर्न अधिकृत छन्।",
     "ADDING": "थप्दै...",
@@ -2199,10 +2199,10 @@
     "CLEAR": "खाली गर्नुहोस्",
     "CONFIRM": "पुष्टि गर्नुहोस्"
   },
-  "App Shell": {
+  "APP_SHELL": {
     "WELCOME_TO_RAHAT": "राहतमा स्वागत छ"
   },
-  "Auth Apps – Add": {
+  "AUTH_APPS_ADD": {
     "ADD_NEW": "नयाँ थप्नुहोस्",
     "ENTER_APP_ADDRESS": "एप ठेगाना राख्नुहोस्",
     "ENTER_APP_NAME": "एपको नाम राख्नुहोस्",
@@ -2210,17 +2210,17 @@
     "NAME_MUST_BE_AT_LEAST2": "नाम कम्तिमा २ वर्णको हुनुपर्छ",
     "SHORT_DESCRIPTION_ABOUT_APP": "एपको बारेमा छोटो विवरण"
   },
-  "Auth Apps – List": {
+  "AUTH_APPS_LIST": {
     "APP_NAME": "एपको नाम",
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",
     "SEARCH_BY_NAME": "नामबाट खोज्नुहोस्..."
   },
-  "Beneficiary Add": {
+  "BENEFICIARY_ADD": {
     "CREATE_A_NEW_BENEFICIARY": "नयाँ लाभग्राही सिर्जना गर्नुहोस्",
     "CREATE_BENEFICIARY": "लाभग्राही सिर्जना गर्नुहोस्"
   },
-  "Beneficiary Detail": {
+  "BENEFICIARY_DETAIL": {
     "ARE_YOU_SURE": "तपाईं पक्का हुनुहुन्छ?",
     "ASSIGN_TO_PROJECT": "परियोजनामा असाइन गर्नुहोस्",
     "BANK_STATUS": "बैंक स्थिति",
@@ -2240,11 +2240,11 @@
     "THIS_ACTION_CANNOT_BE_UNDONE_ARE": "यो कार्य पूर्ववत गर्न सकिँदैन। तपाईं पक्का हुनुहुन्छ?",
     "VIEW_LINK": "लिङ्क हेर्नुहोस्"
   },
-  "Beneficiary Edit": {
+  "BENEFICIARY_EDIT": {
     "EDIT_BENEFICIARY": "लाभग्राही सम्पादन गर्नुहोस्",
     "EDIT_BENEFICIARY_DETAIL": "लाभग्राही विवरण सम्पादन गर्नुहोस्"
   },
-  "Beneficiary Excel Import": {
+  "BENEFICIARY_EXCEL_IMPORT": {
     "CANCEL_UPLOAD": "अपलोड रद्द गर्नुहोस्",
     "CHOOSE_FILE": "फाइल छान्नुहोस्",
     "DOWNLOAD_SAMPLE": "नमूना डाउनलोड गर्नुहोस्",
@@ -2254,7 +2254,7 @@
     "UPLOADING": "अपलोड गर्दै...",
     "UPLOAD_FILE": "फाइल अपलोड गर्नुहोस्"
   },
-  "Beneficiary Group Create": {
+  "BENEFICIARY_GROUP_CREATE": {
     "CREATE_A_NEW_BENEFICIARY_GROUP": "नयाँ लाभग्राही समूह सिर्जना गर्नुहोस्",
     "ENTER_GROUP_NAME": "समूहको नाम राख्नुहोस्",
     "GROUP_NAME_CANNOT_BE_EMPTY": "समूहको नाम खाली हुन सक्दैन।",
@@ -2264,7 +2264,7 @@
     "BENEFICIARY_GROUP_ADDED": "लाभग्राही समूह सफलतापूर्वक थपियो!",
     "FAILED_TO_ADD_GROUP": "लाभग्राही समूह थप्न असफल!"
   },
-  "Beneficiary Group Detail": {
+  "BENEFICIARY_GROUP_DETAIL": {
     "ADD_BENEFICIARY_TO_THE_GROUP_TO": "डेटा प्रदर्शन गर्न समूहमा लाभग्राही थप्नुहोस्",
     "ARCHIVE": "अभिलेख",
     "ARCHIVE_BENEFICIARY_GROUP": "अभिलेख लाभग्राही समूह",
@@ -2314,12 +2314,12 @@
     "BENEFICIARY_GROUP_ADDED_SUCCESSFULLY": "लाभग्राही समूह सफलतापूर्वक थपियो",
     "FAILED_TO_ADD_BENEFICIARY_GROUP": "लाभग्राही समूह थप्न असफल भयो"
   },
-  "Beneficiary Group Select Members": {
+  "BENEFICIARY_GROUP_SELECT_MEMBERS": {
     "SELECTED": "चयन गरिएको:",
     "SELECT_BENEFICIARIES_FROM_THE_LIST_BELOW": "तलको सूचीबाट लाभग्राहीहरू छान्नुहोस् तिनीहरूलाई चयन गरिएको समूहमा नियुक्त गर्नुहोस्",
     "SELECT_BENEFICIARY": "लाभग्राही चयन गर्नुहोस्"
   },
-  "Beneficiary Groups List": {
+  "BENEFICIARY_GROUPS_LIST": {
     "BENEFICIARIES": "लाभग्राहीहरू",
     "BENEFICIARY_GROUPS_SELECTED": "लाभग्राही समूह चयन गरियो",
     "FILTER_BENEFICIARY_GROUPS": "लाभग्राही समूहहरू फिल्टर गर्नुहोस्...",
@@ -2331,7 +2331,7 @@
     "THERE_ARE_NO_GROUPS_TO_DISPLAY": "यस समयमा प्रदर्शन गर्न कुनै समूहहरू छैनन्",
     "TOTAL_MEMBERS": "कुल सदस्यहरू"
   },
-  "Beneficiary List": {
+  "BENEFICIARY_LIST": {
     "ADD_BENEFICIARIES": "लाभग्राहीहरू थप्नुहोस्",
     "ADD_BENEFICIARIES2": "लाभग्राहीहरू थप्नुहोस्",
     "ALL_SELECTED_BENEFICIARIES_ALREADY_ASSIGNED": "सबै चयन गरिएका लाभग्राहीहरू पहिले नै परियोजनामा तोकिएका छन्",
@@ -2352,14 +2352,14 @@
     "SELECT_THE_PROJECT_TO_BE_ASSIGNED2": "लाभग्राहीलाई तोक्ने परियोजना चयन गर्नुहोस्",
     "THERE_ARE_NO_BENEFICIARIES_TO_DISPLAY": "अहिले देखाउनको लागि कुनै लाभग्राहीहरू छैनन्"
   },
-  "Buttons & Actions": {
+  "BUTTONS_ACTIONS": {
     "CREATE_NAME": "{name} सिर्जना गर्नुहोस्",
     "DOWNLOAD_REPORT": "रिपोर्ट डाउनलोड गर्नुहोस्",
     "LEARN_MORE": "थप जान्नुहोस्",
     "OK": "ठीक छ",
     "TOTAL_RESULTS_FOUND": "{कुल} परिणाम फेला पर्यो"
   },
-  "Comms – Beneficiary": {
+  "COMMS_BENEFICIARY": {
     "ADD_BENEFICIARIES": "थप्नुहोस् (लाभग्राहीहरू)",
     "ADD_BENEFICIARY": "लाभग्राही थप्नुहोस्",
     "ADD_BENEFICIARY_TO_THE_GROUP_TO": "डेटा प्रदर्शन गर्न समूहमा लाभग्राही थप्नुहोस्",
@@ -2394,7 +2394,7 @@
     "VOUCHER_STATUS": "भाउचर स्थिति",
     "VOUCHER_TYPE": "भाउचर प्रकार"
   },
-  "Comms – Beneficiary/Import": {
+  "COMMS_BENEFICIARY_IMPORT": {
     "CANCEL_UPLOAD": "अपलोड रद्द गर्नुहोस्",
     "CHOOSE_FILE": "फाइल छान्नुहोस्",
     "DOWNLOAD_SAMPLE": "नमूना डाउनलोड गर्नुहोस्",
@@ -2408,19 +2408,19 @@
     "UPLOADING": "अपलोड गर्दै...",
     "UPLOAD_FILE": "फाइल अपलोड गर्नुहोस्"
   },
-  "Comms – Campaigns/Add": {
+  "COMMS_CAMPAIGNS_ADD": {
     "ARE_YOU_SURE": "तपाईं पक्का हुनुहुन्छ?",
     "AUDIENCE_SELECTED": "दर्शक चयन गरियो",
     "CAMPAIGN_CREATED_SUCCESS": "अभियान सफल बनायो।"
   },
-  "Comms – Campaigns/IVR": {
+  "COMMS_CAMPAIGNS_IVR": {
     "ADD_IVR": "IVR थप्नुहोस्",
     "CHOOSE_A_JSON_FILE_TO_UPLOAD": "अपलोड गर्नको लागि JSON फाइल छान्नुहोस्।",
     "CLICK_HERE_TO_BROWSE": "ब्राउज गर्न यहाँ क्लिक गर्नुहोस्",
     "SELECTED_FILE": "चयन गरिएको फाइल:",
     "UPLOAD": "अपलोड गर्नुहोस्"
   },
-  "Comms – Campaigns/Text": {
+  "COMMS_CAMPAIGNS_TEXT": {
     "ADD_TEXT": "पाठ थप्नुहोस्",
     "ARE_YOU_SURE_YOU_WANT_TO": "के तपाईं सन्देश पठाउन चाहनु हुन्छ?",
     "CONFIRM": "पुष्टि गर्नुहोस् !!!",
@@ -2431,7 +2431,7 @@
     "TRIGGERING": "ट्रिगर गर्दै",
     "TRIGGERS": "ट्रिगरहरू"
   },
-  "Comms – Campaigns/Voice": {
+  "COMMS_CAMPAIGNS_VOICE": {
     "ADD_VOICE": "आवाज थप्नुहोस्",
     "ARE_YOU_SURE_YOU_WANT_TO": "के तपाईं सन्देश पठाउन चाहनु हुन्छ?",
     "AUDIO": "अडियो",
@@ -2445,12 +2445,12 @@
     "THERE_ARE_NO_LOGS_AT_THE": "अहिले कुनै लगहरू छैनन्।",
     "UPLOAD": "अपलोड गर्नुहोस्"
   },
-  "Comms – Project Overview": {
+  "COMMS_PROJECT_OVERVIEW": {
     "COMMUNICATIONS": "सञ्चार",
     "IVR": "Ivr",
     "TEXT": "पाठ"
   },
-  "Communications – Add Campaign": {
+  "COMMUNICATIONS_ADD_CAMPAIGN": {
     "ALL": "सबै",
     "CAMAPIGN_TYPE_IS_REQUIRED": "अभियान प्रकार आवश्यक छ।",
     "CAMPAIGN_CREATED_SUCCESS": "अभियान सफल बनायो।",
@@ -2468,7 +2468,7 @@
     "TRANSPORT_IS_REQUIRED": "यातायात आवश्यक छ।",
     "TYPES": "प्रकारहरू"
   },
-  "Communications – Navigation": {
+  "COMMUNICATIONS_NAVIGATION": {
     "ACTIONS": "कार्यहरू",
     "ADD_CAMPAIGN": "अभियान थप्नुहोस्",
     "CAMPAIGNS": "अभियानहरू",
@@ -2481,12 +2481,12 @@
     "TEXT_EDIT": "पाठ: सम्पादन गर्नुहोस्",
     "VOICE_DETAIL": "आवाज: विवरण"
   },
-  "Communications – Overview": {
+  "COMMUNICATIONS_OVERVIEW": {
     "FAILED_CAMPAIGN": "असफल अभियान",
     "SUCCESSFUL_CAMPAIGN": "सफल अभियान",
     "TOTAL_CAMPAIGN_SENT": "कुल अभियान पठाइयो"
   },
-  "Communications – Text/SMS": {
+  "COMMUNICATIONS_TEXT_SMS": {
     "CAMAPIGN_TYPE_IS_REQUIRED": "अभियान प्रकार आवश्यक छ।",
     "CAMPAIGN_EDIT_SUCCESS": "अभियान सम्पादन सफलता।",
     "CAMPAIGN_NAME_MUST_BE_AT_LEAST": "अभियानको नाम कम्तिमा २ वर्णको हुनुपर्छ।",
@@ -2494,7 +2494,7 @@
     "START_TIME_IS_REQUIRED": "सुरु समय आवश्यक छ।",
     "SUCCESSFULLY_DELETED_CAMPAIGN": "अभियान सफलतापूर्वक मेटियो"
   },
-  "Communications – Voice": {
+  "COMMUNICATIONS_VOICE": {
     "ARE_YOU_SURE": "के तपाईं पक्का हुनुहुन्छ ??",
     "ATTEMPTS": "प्रयासहरू",
     "DURATION": "अवधि",
@@ -2503,7 +2503,7 @@
     "SUCCESSFULL_IVR": "सफल IVR",
     "TOTAL_IVR_SENT": "कुल IVR पठाइयो"
   },
-  "Community Beneficiary Detail": {
+  "COMMUNITY_BENEFICIARY_DETAIL": {
     "ARE_YOU_SURE_YOU_WANT_TO": "के तपाईं यो लाभग्राही समूह राहातमा आयात गर्न निश्चित हुनुहुन्छ",
     "CREATED_AT": "सिर्जना गरिएको मिति",
     "GOVT_ID_NUMBER": "सरकार आईडी नम्बर",
@@ -2514,7 +2514,7 @@
     "NO_RESULT_FOUND": "कुनै परिणाम फेला परेन",
     "SEARCH_BENEFICIARY_NAME": "लाभग्राहीको नाम खोज्नुहोस्..."
   },
-  "Community Beneficiary List": {
+  "COMMUNITY_BENEFICIARY_LIST": {
     "ARE_YOU_SURE_YOU_WANT_TO": "के तपाईं यस लाभग्राही समूहलाई राहातमा आयात गर्न निश्चित हुनुहुन्छ?",
     "HERE_BENEFICIARY_GROUPS_FROM_THE_COMMUNITY": "यहाँ सामुदायिक उपकरणबाट लाभग्राही समूहहरू सूचीबद्ध छन् र आयातको लागि उपलब्ध छन्",
     "IMPORT": "आयात गर्नुहोस्",
@@ -2523,7 +2523,7 @@
     "SEARCH_GROUP_NAME": "समूहको नाम खोज्नुहोस्...",
     "THERE_ARE_NO_COMMUNITY_BENEFICIARIES_TO": "अहिले देखाउनका लागि कुनै पनि सामुदायिक लाभग्राहीहरू छैनन्"
   },
-  "Confirmation & Alert Dialogs": {
+  "CONFIRMATION_ALERT_DIALOGS": {
     "CANNOT_DELETE_YOURSELF": "आफैलाई मेटाउन सक्दैन",
     "CONFIRM_ACTION": "कार्य पुष्टि गर्नुहोस्",
     "DELETE_NAME": "मेट्नुहोस् {name}",
@@ -2531,7 +2531,7 @@
     "THIS_ACTION_CANNOT_BE_UNDONE_THIS": "यो कार्य पूर्ववत गर्न सकिँदैन। यसले स्थायी रूपमा यो {name} मेटाउनेछ।",
     "THIS_ACTION_WILL_REDIRECT_YOU_TO": "यो कार्यले तपाईंलाई सम्पादन पृष्ठमा रिडिरेक्ट गर्नेछ"
   },
-  "Dashboard": {
+  "DASHBOARD": {
     "DOWNLOAD": "डाउनलोड",
     "GRAPHS": "ग्राफहरू",
     "N21_JAN202407_FEB2024": "21 जनवरी 2024, 07 फेब्रु 2024",
@@ -2539,7 +2539,7 @@
     "OVERVIEW_OF_YOUR_SYSTEM": "तपाईंको प्रणालीको अवलोकन",
     "YOUR_HUB_FOR_REAL_TIME_ANALYTICS": "प्रणालीको वास्तविक-समय एनालिटिक्स र डाटा भिजुअलाइजेसनको लागि तपाईंको हब"
   },
-  "Dashboard – Access & Inclusion": {
+  "DASHBOARD_ACCESS_INCLUSION": {
     "ACCESS_INCLUSION": "पहुँच र समावेश",
     "ACCESS_TO_MOBILE_PHONES": "मोबाइल फोनहरूमा पहुँच",
     "BANK_ACCOUNTS": "बैंक खाताहरू",
@@ -2549,7 +2549,7 @@
     "SOCIAL_SECURITY_LINKED_TO_BANK_ACCOUNT": "बैंक खातामा जोडिएको सामाजिक सुरक्षा",
     "TYPES_OF_PHONE": "फोनका प्रकारहरू"
   },
-  "Dashboard – Beneficiary Demographics": {
+  "DASHBOARD_BENEFICIARY_DEMOGRAPHICS": {
     "AGE_GROUP": "उमेर समूह",
     "BENEFICIARY_DEMOGRAPHICS": "लाभग्राही जनसांख्यिकी",
     "GENDER_DISTRIBUTION": "लैङ्गिक वितरण",
@@ -2557,7 +2557,7 @@
     "TOTAL_NUMBER_OF_FAMILY_MEMBERS": "परिवारका सदस्यहरूको कुल संख्या",
     "TOTAL_RESPONDENTS": "कुल उत्तरदाताहरू"
   },
-  "Dashboard – Communications & Outreach": {
+  "DASHBOARD_COMMUNICATIONS_OUTREACH": {
     "COMMUNICATIONS_OUTREACH": "संचार र आउटरिच",
     "COMMUNICATION_CHANNELS_USED": "सञ्चार च्यानलहरू प्रयोग गरियो",
     "COMMUNICATION_SUCCESS_AND_FAILURE_RATE": "संचार सफलता र असफलता दर",
@@ -2567,7 +2567,7 @@
     "SUCCESS": "सफल",
     "TOTAL_COMMUNICATION_SENT": "कुल संचार पठाइयो"
   },
-  "Dashboard – Disaster Impact & Early Warning": {
+  "DASHBOARD_DISASTER_IMPACT_EARLY_WARNING": {
     "ACCESS_TO_EARLY_WARNING_INFORMATION": "पुर्व सूचना सम्बन्धि जानकारीमा पहुँच",
     "DISASTER_IMPACT_EARLY_WARNING": "प्रकोप प्रभाव र प्रारम्भिक चेतावनी",
     "FLOOD_IMPACT_HISTORY_EARLY_WARNING_ACCESS": "बाढीको ऎतिहासिक प्रभाव  र पुर्व सुचनामा पहुँच",
@@ -2578,7 +2578,7 @@
     "CHANNEL_USAGE_STATS": "च्यानल प्रयोग तथ्याङ्क",
     "FLOOD_IMPACT_IN_LAST_5YEARS": "पछिल्लो ५ वर्षमा बाढीको प्रभाव"
   },
-  "Dashboard – Vulnerable & Social Protection": {
+  "DASHBOARD_VULNERABLE_SOCIAL_PROTECTION": {
     "HOUSEHOLDS_RECEIVING_GOVERNMENT_SUPPORT": "सरकारी सहायता प्राप्त गर्ने घरधुरीहरु",
     "HOUSEHOLD_MEMBERS_WITH_SPECIFIC_NEEDS_OR": "विशेष आवश्यकता भएका वा विशेष सहयोग चाहिने परिवारका सदस्यहरू",
     "HOUSEHOLD_RECEIVING_SOCIAL_PROTECTION_BENEFITS": "सामाजिक सुरक्षा लाभहरू प्राप्त गर्ने परिवार",
@@ -2590,7 +2590,7 @@
     "TYPE_OF_SSA": "SSA को प्रकार",
     "VULNERABLE_GROUPS": "कमजोर समूहहरू"
   },
-  "Empty States & Loading": {
+  "EMPTY_STATES_LOADING": {
     "LOADING": "लोड गर्दै",
     "NO_TRANSACTIONS_MADE": "कुनै लेनदेन गरिएको छैन"
   },
@@ -2988,7 +2988,7 @@
     "SELECT_APP_TO_PROCEED": "कृपया अगाडि बढ्न एप चयन गर्नुहोस्!",
     "ERROR": "त्रुटि"
   },
-  "Import Beneficiary Detail": {
+  "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
     "BENEFICIARY_COUNT": "लाभग्राही गणना",
     "CONFIRM_IMPORT": "आयात पुष्टि गर्नुहोस्",
@@ -3008,7 +3008,7 @@
     "REVIEW_THE_DETAILS_BELOW_BEFORE_STARTING": "आयात सुरु गर्नु अघि तलका विवरणहरूको समीक्षा गर्नुहोस्।",
     "START_IMPORT": "आयात सुरु गर्नुहोस्"
   },
-  "Import Beneficiary List": {
+  "IMPORT_BENEFICIARY_LIST": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
     "BENEFICIARY_COUNT": "लाभग्राही गणना",
     "CONFIRM_IMPORT": "आयात पुष्टि गर्नुहोस्",
@@ -3023,7 +3023,7 @@
     "THERE_ARE_NO_IMPORTS_TO_DISPLAY": "हाल प्रदर्शन गर्न कुनै आयातहरू छैनन्",
     "IMPORT_HAS_STARTED": "आयात सुरु भयो। स्थिति जाँच गर्न कृपया पृष्ठ पुनः लोड गर्नुहोस्।"
   },
-  "Login": {
+  "LOGIN": {
     "AND": "र",
     "BY_CLICKING_CONTINUE_YOU_AGREE_TO": "जारी राख्नुहोस् क्लिक गरेर, तपाईं सहमत हुनुहुन्छ हाम्रो",
     "DIDNT_GET_ONE": "प्राप्त भएन?",
@@ -3038,12 +3038,12 @@
     "SEND_OTP": "ओटिपी पठाउनुहोस्",
     "SIGN_IN": "साइन इन",
     "TERMS_OF_SERVICE": "सेवाका सर्तहरू",
-    "TO_ENSURE_YOU_SECURITY_PLEASE_ENTER": "तपाईंको सुरक्षाको लागि कृपया आफ्नो ओटिपी राख्नुहोस्। ओटिपी {address} मा पठाइएको छ",
+    "TO_ENSURE_YOU_SECURITY_PLEASE_ENTER": "तपाईंको सुरक्षाको लागि कृपया आफ्नो एक पटकको पासवर्ड राख्नुहोस्। ओटिपी {address} मा पठाइएको छ",
     "VERIFY": "प्रमाणित गर्नुहोस्",
     "VERIFY_WITH_OTP": "ओटिपीबाट प्रमाणित गर्नुहोस्",
     "WELCOME_TO_RAHAT": "राहतमा स्वागत छ"
   },
-  "Navigation Sidebar": {
+  "NAVIGATION_SIDEBAR": {
     "EXIT_PROJECT": "परियोजनाबाट बाहिर निस्कनुहोस्",
     "MORE": "थप",
     "MORE2": "थप",
@@ -3051,7 +3051,7 @@
     "RAHAT": "राहत",
     "TOGGLE_SIDEBAR": "साइडबार टगल गर्नुहोस्"
   },
-  "Notifications": {
+  "NOTIFICATIONS": {
     "FAILED_TO_LOAD_NOTIFICATIONS_PLEASE_TRY": "सूचनाहरू लोड गर्न असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।",
     "HERE_IS_THE_LIST_OF_ALL": "यहाँ तपाईंका सबै सूचनाहरूको सूची छ",
     "ITS_QUIET_NOW": "अहिले शान्त छ",
@@ -3065,17 +3065,17 @@
     "VIEW_LESS": "कम हेर्नुहोस्",
     "YOUR_NOTIFICATIONS_WILL_APPEAR_HERE_ONCE": "समीक्षा गर्न को लागी केहि नयाँ भएपछि तपाईंका सूचनाहरू यहाँ देखा पर्नेछ"
   },
-  "Pagination & Tables": {
+  "PAGINATION_TABLES": {
     "NO_RESULTS_FOUND": "कुनै परिणाम फेला परेन",
     "PAGE_CURRENT_OF_TOTAL": "पृष्ठ {current} का {total}",
     "SELECTED_OF_TOTAL_ROW_S_SELECTED": "{कुल} पङ्क्ति(हरू) मध्ये {selected} चयन गरियो।",
     "TOTAL_COUNT_TOTAL": "कुल गणना : {कुल}"
   },
-  "Profile": {
+  "PROFILE": {
     "HERE_IS_THE_OVERVIEW_OF_THE": "यहाँ प्रयोगकर्ताको सिंहावलोकन छ",
     "USER_PROFILE": "प्रयोगकर्ता प्रोफाइल"
   },
-  "Profile – Edit": {
+  "PROFILE_EDIT": {
     "EDIT_USER_DETAILS": "प्रयोगकर्ता विवरणहरू सम्पादन गर्नुहोस्",
     "EDIT_USER_PROFILE": "प्रयोगकर्ता प्रोफाइल सम्पादन गर्नुहोस्",
     "ERROR_UPDATING_USER_PROFILE": "प्रयोगकर्ता प्रोफाइल अपडेट गर्दा त्रुटि",
@@ -3083,7 +3083,7 @@
     "NAME_MUST_BE_AT_LEAST2": "नाम कम्तिमा २ वर्णको हुनुपर्छ",
     "USER_UPDATED_SUCCESSFULLY": "प्रयोगकर्ता सफलतापूर्वक अद्यावधिक गरियो"
   },
-  "Projects List": {
+  "PROJECTS_LIST": {
     "ACTIVE": "सक्रिय",
     "ADD_PROJECT": "परियोजना थप्नुहोस्",
     "ALL": "सबै",
@@ -3104,7 +3104,7 @@
     "SEARCH_PROJECT_BY_NAME": "परियोजना नामले खोज्नुहोस्...",
     "UNPIN_PROJECT": "परियोजना अनपिन गर्नुहोस्"
   },
-  "Queues": {
+  "QUEUES": {
     "ACTIVE": "सक्रिय",
     "ATTEMPTS_MADE": "गरेका प्रयासहरू:",
     "BATCH_DETAILS": "ब्याच विवरण:",
@@ -3131,7 +3131,7 @@
     "STATUS": "स्थिति:",
     "WAITING": "प्रतिक्षा गर्दै"
   },
-  "Search & Filters": {
+  "SEARCH_FILTERS": {
     "CLEAR_DATE": "मिति खाली गर्नुहोस्",
     "FILTER_BENEFICIARY": "फिल्टर लाभग्राही...",
     "LOADING": "लोड गर्दै...",
@@ -3140,7 +3140,7 @@
     "SELECT_FIELD": "--क्षेत्र चयन गर्नुहोस्--",
     "SELECT_NAME": "चयन गर्नुहोस् {नाम}"
   },
-  "Settings – Add": {
+  "SETTINGS_ADD": {
     "ADD_FIELD": "फिल्ड थप्नुहोस्",
     "ADD_SETTINGS": "सेटिङहरू थप्नुहोस्",
     "COMMA_SEPARATED_KEYS_EG_KEY1_KEY2": "अल्पविरामद्वारा छुट्याइएका किज (Keys) हरू, जस्तै: key1, key2",
@@ -3154,7 +3154,7 @@
     "VALUE2": "मूल्य",
     "VALUE_IS_REQUIRED": "मान आवश्यक छ"
   },
-  "Settings – Edit": {
+  "SETTINGS_EDIT": {
     "ADD_FIELD": "फिल्ड थप्नुहोस्",
     "COMMA_SEPARATED_KEYS_EG_KEY1_KEY2": "अल्पविरामद्वारा छुट्याइएका किज (Keys) हरू, जस्तै: key1, key2",
     "EG_CLIENT_ID": "उदाहरण: ग्राहक-आईडी",
@@ -3167,23 +3167,23 @@
     "VALUE2": "मूल्य",
     "VALUE_IS_REQUIRED": "मान आवश्यक छ"
   },
-  "Settings – List": {
+  "SETTINGS_LIST": {
     "FILTERS": "फिल्टरहरू",
     "PUBLIC": "सार्वजनिक",
     "SEARCH_BY_NAME": "नामबाट खोज्नुहोस्..."
   },
-  "Settings – Navigation": {
+  "SETTINGS_NAVIGATION": {
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",
     "PROJECT_INFO": "परियोजना जानकारी"
   },
-  "Settings – Table Columns": {
+  "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "तथ्यांकको प्रकार",
     "ISPRIVATE": "निजी",
     "ISREADONLY": "पढ्ने मात्र",
     "REQUIREDFIELDS": "आवश्यक क्षेत्रहरू"
   },
-  "Stats & Charts": {
+  "STATS_CHARTS": {
     "LAST_SYNCED_AT_DATE": "पछिल्लो पटक सिंक गरिएको: {date}",
     "MANDATORY": "अनिवार्य",
     "OPTIONAL": "ऐच्छिक",
@@ -3199,19 +3199,19 @@
     "PHONE_COLUMN_NOT_FOUND": "अपलोड गरिएको फाइलमा फोनको Column फेला परेन",
     "MISSING_PHONE_NUMBER": "केही पङ्क्तिहरूमा फोन नम्बर छुटेको छ"
   },
-  "Stepper": {
+  "STEPPER": {
     "STEP_INDEX": "चरण {सूचकांक}"
   },
-  "Theme Toggle": {
+  "THEME_TOGGLE": {
     "DARK": "अँध्यारो",
     "LIGHT": "उज्यालो",
     "SYSTEM": "प्रणाली",
     "TOGGLE_THEME": "विषयवस्तु टगल गर्नुहोस्"
   },
-  "Tooltips": {
+  "TOOLTIPS": {
     "ADDITIONAL_INFORMATION_ABOUT_THIS_METRIC": "यस मेट्रिकको बारेमा थप जानकारी"
   },
-  "Top Navigation / Header": {
+  "TOP_NAVIGATION_HEADER": {
     "HOME": "घर",
     "LOGGED_OUT_SUCCESSFULLY": "सफलतापूर्वक लग आउट भयो।",
     "LOGOUT": "लगआउट",
@@ -3221,20 +3221,20 @@
     "PROJECT_PIN": "परियोजना पिन",
     "TRIGGER_PIN_PHASE": "ट्रिगर पिन चरण"
   },
-  "Transactions": {
+  "TRANSACTIONS": {
     "COPY_PAYMENT_TXHASH": "भुक्तानी Txhash प्रतिलिपि गर्नुहोस्",
     "DISBURSED": "निकासा गरियो",
     "TXHASH": "TxHash",
     "VOUCHERID": "भाउचर आईडी"
   },
-  "Treasury": {
+  "TREASURY": {
     "BUDGET": "बजेट",
     "PROJECTS": "परियोजनाहरू",
     "RECENT_DEPOSITS": "हालै भएका निकासीहरू",
     "SEARCH_PROJECTS": "परियोजना खोज्नुहोस्...",
     "TREASURY": "खजाना"
   },
-  "Treasury – Assets": {
+  "TREASURY_ASSETS": {
     "AMOUNT": "रकम",
     "BLOCKNUMBER": "ब्लक नम्बर",
     "CHOOSE_THE_AMOUNT_AND_PROJECT_YOU": "तपाईंले कोष गर्न चाहानु भएको रकम र परियोजना छान्नुहोस्।",
@@ -3252,7 +3252,7 @@
     "SYMBOL": "प्रतीक",
     "SEARCH_PROJECTS": "परियोजनाहरू खोज्नुहोस्"
   },
-  "Treasury – Create Token": {
+  "TREASURY_CREATE_TOKEN": {
     "CONFIRMATION": "पुष्टि",
     "CREATE_YOUR_ERC20_TOKEN": "आफ्नो ERC20 टोकन सिर्जना गर्नुहोस्",
     "ENTER_YOUR_TOKEN_INITIAL_SUPPLY": "आफ्नो टोकन प्रारम्भिक आपूर्ति राख्नुहोस्",
@@ -3266,20 +3266,20 @@
     "TOKEN_SYMBOL": "टोकन प्रतीक",
     "CREATE_TOKEN": "टोकन सिर्जना गर्नुहोस्"
   },
-  "Treasury – Navigation": {
+  "TREASURY_NAVIGATION": {
     "ASSETS": "सम्पत्तिहरू",
     "CREATE_TOKEN": "टोकन सिर्जना गर्नुहोस्",
     "GENERAL": "सामान्य",
     "TRANSACTIONS": "लेनदेन"
   },
-  "Treasury – Transactions": {
+  "TREASURY_TRANSACTIONS": {
     "AMOUNT": "रकम",
     "BLOCK_NUMBER": "ब्लक नम्बर",
     "FILTER_TRANSACTIONS": "फिल्टर लेनदेन...",
     "FROM": "बाट",
     "TRANSACTION_HASH": "लेनदेन ह्यास"
   },
-  "Usage": {
+  "USAGE": {
     "ALL_PROJECTS": "सबै परियोजनाहरू",
     "BROADCASTS": "प्रसारणहरू",
     "COMMUNICATION_USAGE": "सञ्चार प्रयोग",
@@ -3307,7 +3307,7 @@
     "USAGE": "प्रयोग",
     "USAGE_BY_TRANSPORT": "यातायात द्वारा उपयोग"
   },
-  "Users – Add": {
+  "USERS_ADD": {
     "AN_UNEXPECTED_ERROR_OCCURRED": "एउटा अनपेक्षित त्रुटि भएको छ।",
     "CREATE_A_NEW_USER_DETAIL": "नयाँ प्रयोगकर्ता विवरण सिर्जना गर्नुहोस्",
     "CREATE_USER": "प्रयोगकर्ता सिर्जना गर्नुहोस्",
@@ -3323,7 +3323,7 @@
     "USER_ROLE": "प्रयोगकर्ता भूमिका",
     "INVALID_EMAIL_ADDRESS": "गलत इमेल ठेगाना"
   },
-  "Users – Add Role": {
+  "USERS_ADD_ROLE": {
     "CREATE_A_NEW_ROLE_DETAIL": "नयाँ भूमिका विवरण सिर्जना गर्नुहोस्",
     "ENTER_ROLE_NAME": "भूमिकाको नाम राख्नुहोस्",
     "ERROR": "त्रुटि",
@@ -3337,7 +3337,7 @@
     "SOMETHING_WENT_WRONG": "केही गडबड भयो",
     "THIS_ROLE_IS_PART_OF_THE": "यो भूमिका प्रणालीको भाग हो"
   },
-  "Users – Detail": {
+  "USERS_DETAIL": {
     "ASSIGN_ROLE": "भूमिका तोक्नुहोस्",
     "ASSIGN_TO_PROJECT": "परियोजनामा असाइन गर्नुहोस्",
     "ERROR_ASSIGNING_ROLE": "भूमिका तोक्ने क्रममा त्रुटि",
@@ -3354,7 +3354,7 @@
     "USER_ROLES": "प्रयोगकर्ता भूमिकाहरू",
     "YOU_DO_NOT_HAVE_PERMISSION_TO": "तपाईंसँग भूमिका हटाउने अनुमति छैन"
   },
-  "Users – Edit": {
+  "USERS_EDIT": {
     "EDIT_USER": "प्रयोगकर्ता सम्पादन गर्नुहोस्",
     "EDIT_USER_DETAIL": "प्रयोगकर्ता विवरण सम्पादन गर्नुहोस्",
     "ENTER_USER_NAME": "प्रयोगकर्ता नाम राख्नुहोस्",
@@ -3367,7 +3367,7 @@
     "USER_UPDATED_SUCCESSFULLY": "प्रयोगकर्ता सफलतापूर्वक अद्यावधिक गरियो",
     "INVALID_EMAIL_ADDRESS": "गलत इमेल ठेगाना"
   },
-  "Users – List": {
+  "USERS_LIST": {
     "CREATE_USER": "प्रयोगकर्ता सिर्जना गर्नुहोस्",
     "HERE_IS_THE_LIST_OF_ALL": "यहाँ सबै प्रयोगकर्ताहरूको सूची छ",
     "MANAGE_ROLES": "भूमिकाहरू प्रबन्ध गर्नुहोस्",
@@ -3375,7 +3375,7 @@
     "SYSTEM_USERS": "प्रणाली प्रयोगकर्ताहरू",
     "USERS": "प्रयोगकर्ताहरू"
   },
-  "Users – Roles & Permissions": {
+  "USERS_ROLES_PERMISSIONS": {
     "ASSIGNED_PERMISSIONS": "तोकिएको अनुमतिहरू",
     "COLUMNS": "स्तम्भहरू",
     "CONFIRM": "पुष्टि गर्नुहोस्",
@@ -3410,20 +3410,20 @@
     "PERM_UPDATE": "अधावाधिक गर्नुहोस्",
     "PERM_DELETE": "डिलिट"
   },
-  "Users – Split View": {
+  "USERS_SPLIT_VIEW": {
     "ARCHIVE_USER": "अभिलेख प्रयोगकर्ता",
     "CONFIRM_IF_YOU_WANT_TO_ARCHIVE": "यदि तपाइँ प्रयोगकर्तालाई संग्रह गर्न चाहनुहुन्छ भने पुष्टि गर्नुहोस्।",
     "ROLE": "भूमिका",
     "ROLES": "भूमिकाहरू"
   },
-  "Vendors – Detail": {
+  "VENDORS_DETAIL": {
     "ASSIGNED_VENDOR_CANNOT_BE_DELETED": "तोकिएको विक्रेता मेटाउन सकिँदैन।",
     "HERE_IS_A_DETAILED_VIEW_OF": "यहाँ चयन गरिएको विक्रेताको विस्तृत दृश्य छ",
     "THIS_ACTION_CANNOT_BE_UNDONE": "यो कार्य पूर्ववत गर्न सकिँदैन।",
     "VENDOR_DETAILS": "विक्रेता विवरण",
     "VENDOR_NAME": "विक्रेता नाम"
   },
-  "Vendors – Detail Split View": {
+  "VENDORS_DETAIL_SPLIT_VIEW": {
     "ASSIGNED_VENDOR_CANNOT_BE_DELETED": "तोकिएको विक्रेता मेटाउन सकिँदैन।",
     "NO_PROJECT_FOUND": "कुनै परियोजना भेटिएन",
     "PLEASE_SELECT_A_PROJECT": "कृपया परियोजना चयन गर्नुहोस्",
@@ -3432,7 +3432,7 @@
     "SELECT_A_PROJECT_TO_ASSIGN": "असाइन गर्नको लागि एउटा परियोजना चयन गर्नुहोस्",
     "SHOW_LESS": "कम देखाउनुहोस्"
   },
-  "Vendors – Edit": {
+  "VENDORS_EDIT": {
     "EDIT_VENDOR": "विक्रेता सम्पादन गर्नुहोस्",
     "EDIT_VENDOR_DETAIL": "विक्रेता विवरण सम्पादन गर्नुहोस्",
     "ENTER_VENDOR_NAME": "विक्रेताको नाम राख्नुहोस्",
@@ -3441,12 +3441,12 @@
     "NAME_MUST_BE_AT_LEAST4": "नाम कम्तिमा पनि ४ अक्षरको हुनुपर्छ",
     "VENDOR_NAME": "विक्रेता नाम"
   },
-  "Vendors – Info Card": {
+  "VENDORS_INFO_CARD": {
     "APPROVED": "स्वीकृत",
     "NAME_NA": "नाम N/A",
     "NOT_APPPROVED": "स्वीकृत छैन"
   },
-  "Vendors – List": {
+  "VENDORS_LIST": {
     "HERE_IS_THE_LIST_OF_ALL": "यहाँ सबै विक्रेताहरूको सूची छ",
     "MORE": "थप",
     "NO_PROJECT_FOUND": "कुनै परियोजना भेटिएन",
@@ -3459,18 +3459,18 @@
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "यस समयमा प्रदर्शन गर्न कुनै विक्रेताहरू छैनन्",
     "VENDORS": "विक्रेताहरू"
   },
-  "Vendors – Redemption Table": {
+  "VENDORS_REDEMPTION_TABLE": {
     "REDEMPTION_STATUS": "मुक्ति स्थिति",
     "VOUCHER_AMOUNT": "भाउचर रकम",
     "VOUCHER_TYPE": "भाउचर प्रकार"
   },
-  "Vendors – Referral Table": {
+  "VENDORS_REFERRAL_TABLE": {
     "REFERRED_BY": "द्वारा सन्दर्भ गरिएको"
   },
-  "Vendors – Transaction List": {
+  "VENDORS_TRANSACTION_LIST": {
     "TXN_HASH": "Txn ह्यास"
   },
-  "Wallet": {
+  "WALLET": {
     "CONNECTED_TO_CONNECTOR": "{connector} मा जडान गरियो",
     "DISCONNECT": "जडान विच्छेद गर्नुहोस्"
   }

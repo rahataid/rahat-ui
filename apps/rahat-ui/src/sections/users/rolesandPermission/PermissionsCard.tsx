@@ -8,7 +8,7 @@ export default function PermissionsCard({
   onUpdate,
 }: any) {
   const tg = useTranslations('GLOBAL');
-  const tp = useTranslations('Users – Roles & Permissions');
+  const tp = useTranslations('USERS_ROLES_PERMISSIONS');
 
   // Subjects and actions arrive as lowercase slugs ("beneficiary", "manage").
   // Actions resolve against PERM_* first: GLOBAL's DELETE/UPDATE/CREATE are

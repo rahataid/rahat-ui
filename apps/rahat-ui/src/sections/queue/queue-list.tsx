@@ -62,7 +62,7 @@ export const renderNestedData = (data: any, depth = 0): React.ReactNode => {
 };
 
 const QueueList: React.FC = () => {
-  const t = useTranslations('Queues');
+  const t = useTranslations('QUEUES');
   const tg = useTranslations('GLOBAL');
   const [queueType, setQueueType] = useState(queueTypes[0].value);
   const [filters, setFilters] = useState({

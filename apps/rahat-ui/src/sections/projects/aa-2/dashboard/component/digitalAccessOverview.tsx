@@ -26,7 +26,7 @@ const findStat = (data: any[], name: string) => {
   return data.find((s) => s.name === name)?.data ?? [];
 };
 const DigitalAccessOverview = ({ stats }: Props) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
 

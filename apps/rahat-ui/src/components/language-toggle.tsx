@@ -17,7 +17,7 @@ const LOCALE_FLAGS: Record<string, string> = {
 };
 
 export function LanguageToggle() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const locale = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();

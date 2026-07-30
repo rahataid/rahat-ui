@@ -34,7 +34,7 @@ const GlofasDetails = () => {
     perPage: 9999,
   });
 
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   if (error) {
     return (

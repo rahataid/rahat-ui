@@ -40,7 +40,7 @@ function TemperatureWatchMap({
   unitLabel = '°C',
   indicatorGradient = 'from-red-500 via-yellow-500 to-green-500',
 }: TemperatureWatchMapProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const mapRef = React.useRef<MapRef>(null);
   const resolvedTitle = title ?? t('MAP');
   const resolvedDescription = description ?? t('TEMPERATURE_STATION_LOCATION');

@@ -17,7 +17,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 const NAV_TITLE_KEYS: Record<string, string> = {
-  'Dashboard': 'DASHBOARD',
+  'DASHBOARD': 'DASHBOARD',
   'Project': 'PROJECT',
   'Beneficiaries': 'BENEFICIARIES',
   'Vendors': 'VENDORS',

@@ -20,9 +20,9 @@ import { CashTracker } from './cashTracker/cash.tracker';
 import Counselling from './counselling';
 import InKind from './inKind';
 import { InKindTracker } from './inKindTracker';
-import { MultiSigWalletView } from './multisig';
+import { MultiSigWALLETView } from './multisig';
 import TokensOverview from './token.overview';
-import Treasury from './treasury';
+import TREASURY from './treasury';
 import { defaultFundManagementTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
 import { useEffect } from 'react';
 
@@ -33,8 +33,8 @@ const componentMap = {
   counselling: Counselling,
   cashTracker: CashTracker,
   inKindTracker: InKindTracker,
-  multisigWallet: MultiSigWalletView,
-  treasury: Treasury,
+  multisigWALLET: MultiSigWALLETView,
+  treasury: TREASURY,
 };
 
 interface BackendTab {
@@ -44,7 +44,7 @@ interface BackendTab {
 type ComponentKey = keyof typeof componentMap;
 
 export default function FundManagementTabs() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { activeTab, setActiveTab } = useActiveTab('');
   const { id: projectID } = useParams();
 

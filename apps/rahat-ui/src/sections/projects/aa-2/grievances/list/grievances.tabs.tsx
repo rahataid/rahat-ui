@@ -11,7 +11,7 @@ import GrievancesTable from './grievances.table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 
 export default function GrievancesTabs() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { closeSecondPanel } = useSecondPanel();
   const { activeTab, setActiveTab } = useActiveTab('overview');
 

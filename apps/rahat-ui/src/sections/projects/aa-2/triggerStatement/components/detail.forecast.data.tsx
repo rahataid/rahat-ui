@@ -16,7 +16,7 @@ export function ForecastDataSection({
   phase,
   triggerStatement,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const {
     value,
     source: triggerSource,

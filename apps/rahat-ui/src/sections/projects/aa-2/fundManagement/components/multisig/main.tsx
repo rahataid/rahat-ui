@@ -48,10 +48,10 @@ interface CardProps {
   icon: React.ReactNode;
 }
 
-export default function MultiSigWalletView() {
+export default function MultiSigWALLETView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const { clickToCopy, copyAction } = useCopy();
-  const t = useTranslations('AA Project with Gnosis');
+  const t = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
 
@@ -74,7 +74,7 @@ export default function MultiSigWalletView() {
   );
 
   const safeNetwork = chainSettings?.network || 'basesep';
-  const safeWallet = safeSettings?.address;
+  const safeWALLET = safeSettings?.address;
 
   const InfoCardData: CardProps[] = [
     {
@@ -104,7 +104,7 @@ export default function MultiSigWalletView() {
 
   const openSafeTx = () => {
     window.open(
-      `https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`,
+      `https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWALLET}`,
       '_blank',
       'noopener,noreferrer',
     );

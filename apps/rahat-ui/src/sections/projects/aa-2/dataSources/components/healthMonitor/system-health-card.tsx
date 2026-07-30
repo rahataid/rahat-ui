@@ -19,7 +19,7 @@ export function SystemHealthCard({
   last_updated,
   sources,
 }: HealthCacheData) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const statusColors: any = {

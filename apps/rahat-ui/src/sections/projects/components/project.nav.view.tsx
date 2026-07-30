@@ -10,7 +10,7 @@ type ProjectNavViewProps = {
 };
 
 const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const pathName = usePathname();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);

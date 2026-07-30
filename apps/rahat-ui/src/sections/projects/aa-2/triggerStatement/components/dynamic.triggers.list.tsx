@@ -16,7 +16,7 @@ export default function DynamicTriggersList({
   history,
   riverBasin,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   // `t` is shadowed by the map item below, so keep a stable alias.
   const tr = t;
   const allTriggers = triggers?.length

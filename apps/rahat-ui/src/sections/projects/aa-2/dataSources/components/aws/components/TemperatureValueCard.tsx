@@ -22,7 +22,7 @@ export function TemperatureValueCard({
   label: propLabel,
   colors,
 }: TemperatureValueCardProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tGlobal = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();

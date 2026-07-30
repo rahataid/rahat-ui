@@ -15,7 +15,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { DatePicker } from '../../components/datePicker';
 
-type UsageFiltersProps = {
+type USAGEFiltersProps = {
   selectedXref: string | null;
   onXrefChange: (xref: string | null) => void;
   onDateChange: (dateRange: { from?: string; to?: string }) => void;
@@ -24,15 +24,15 @@ type UsageFiltersProps = {
   defaultTo?: Date;
 };
 
-export default function UsageFilters({
+export default function USAGEFilters({
   selectedXref,
   onXrefChange,
   onDateChange,
   onDateClear,
   defaultFrom,
   defaultTo,
-}: UsageFiltersProps) {
-  const t = useTranslations('Usage');
+}: USAGEFiltersProps) {
+  const t = useTranslations('USAGE');
   const { data: projects } = useProjectList();
   const [fromDate, setFromDate] = useState<Date | undefined>(defaultFrom);
   const [toDate, setToDate] = useState<Date | undefined>(defaultTo);

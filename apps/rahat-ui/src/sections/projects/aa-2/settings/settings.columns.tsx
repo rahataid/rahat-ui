@@ -22,7 +22,7 @@ interface SettingData {
 }
 
 export const useAASettingColumns = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const columns: ColumnDef<SettingData>[] = [

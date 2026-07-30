@@ -39,7 +39,7 @@ interface CreatePayout {
 }
 
 export const useCreatePayout = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -183,7 +183,7 @@ export const useGetPayoutLog = (projectUUID: UUID, payload: any) => {
 };
 
 export const useUpdatePayout = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -232,7 +232,7 @@ export const useUpdatePayout = () => {
 };
 
 export const useTriggerForPayoutFailed = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -283,7 +283,7 @@ export const useTriggerForPayoutFailed = () => {
 };
 
 export const useTriggerForOnePayoutFailed = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -334,7 +334,7 @@ export const useTriggerForOnePayoutFailed = () => {
 };
 
 export const useTriggerPayout = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -434,7 +434,7 @@ export const usePayoutExportLogs = ({
 };
 
 export const useVerifyManualPayout = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
   const alert = useSwal();

@@ -25,8 +25,8 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function InitiateInKindTransfer({}: {}) {
-  const t = useTranslations('AA Project');
-  const tg = useTranslations('AA Project with Gnosis');
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const formatNum = useNumberFormat();
   const [formData, setFormData] = useState({
     from: '',

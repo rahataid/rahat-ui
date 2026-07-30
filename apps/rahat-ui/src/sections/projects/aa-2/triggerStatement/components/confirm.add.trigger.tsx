@@ -32,7 +32,7 @@ export default function ConfirmAddTrigger({
   onCancel,
   isSubmitting = false,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       {/* <AlertDialogTrigger asChild> */}

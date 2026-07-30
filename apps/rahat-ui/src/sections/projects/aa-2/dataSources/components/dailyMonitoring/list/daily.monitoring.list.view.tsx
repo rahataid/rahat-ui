@@ -41,7 +41,7 @@ import { useTranslations } from 'next-intl';
 // import DailyMonitoringTable from './daily.monitoring.table';
 
 export default function DailyMonitoringListView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tGlobal = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;

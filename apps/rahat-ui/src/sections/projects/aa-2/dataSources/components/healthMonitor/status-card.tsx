@@ -32,7 +32,7 @@ interface ApiStatusCardProps {
 }
 
 export function StatusCard({ data, className }: ApiStatusCardProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const severity = getSeverityFromData(data.currentStatus, data.errors);
   const formatDate = useDateFormat();
   const { clickToCopy, copyAction } = useCopy();

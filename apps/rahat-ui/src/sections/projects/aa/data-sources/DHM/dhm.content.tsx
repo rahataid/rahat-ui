@@ -49,7 +49,7 @@ const getLineChartCategories = (t: (key: string) => string) => [
 ];
 
 export default function DHMContent({ data, dhmDangerLevel }: any) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
 

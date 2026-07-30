@@ -13,7 +13,7 @@ import { NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import Link from 'next/link';
 
 export function GlofasSection() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
 

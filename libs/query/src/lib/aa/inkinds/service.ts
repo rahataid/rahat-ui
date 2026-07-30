@@ -80,7 +80,7 @@ export const useGetOneInkind = (projectUUID: UUID, inkindUUID: string) => {
 };
 
 export const useCreateInkind = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -110,7 +110,7 @@ export const useCreateInkind = (projectUUID: UUID) => {
 };
 
 export const useUpdateInkind = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -140,7 +140,7 @@ export const useUpdateInkind = (projectUUID: UUID) => {
 };
 
 export const useDeleteInkind = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -179,7 +179,7 @@ export const useInkindsSummary = (projectUUID: UUID) => {
   });
 };
 
-export const useInkindTransactions = (
+export const useInkindTRANSACTIONS = (
   projectUUID: UUID,
   params?: { page?: number; perPage?: number },
 ) => {
@@ -200,7 +200,7 @@ export const useInkindTransactions = (
 };
 
 export const useAddInkindStock = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -230,7 +230,7 @@ export const useAddInkindStock = (projectUUID: UUID) => {
 };
 
 export const useRemoveInkindStock = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -277,7 +277,7 @@ export const useGroupInkindAllocations = (projectUUID: UUID, payload?: any) => {
 };
 
 export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -405,7 +405,7 @@ export const useGetUnassignedGroupInkind = (
 };
 
 export const useAssignGroupInkind = (projectUUID: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();

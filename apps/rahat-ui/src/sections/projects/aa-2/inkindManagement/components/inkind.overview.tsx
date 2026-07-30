@@ -31,7 +31,7 @@ import {
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
+import { useInkindsSummary, useInkindTRANSACTIONS } from '@rahat-ui/query';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
@@ -152,7 +152,7 @@ export default function InkindOverview() {
   const [perPage, setPerPage] = useState(10);
 
   const { data: summaryData, isPending } = useInkindsSummary(projectUUID);
-  const { data: txData, isFetching: txFetching } = useInkindTransactions(
+  const { data: txData, isFetching: txFetching } = useInkindTRANSACTIONS(
     projectUUID,
     { page, perPage },
   );
@@ -164,7 +164,7 @@ export default function InkindOverview() {
     null,
   );
 
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
 

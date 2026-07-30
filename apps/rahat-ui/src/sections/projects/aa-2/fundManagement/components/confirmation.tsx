@@ -25,7 +25,7 @@ export default function Confirmation({
   payoutData: FundWithPayoutSchema | null;
   onPayoutData: (data: FundWithPayoutSchema | null) => void;
 }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   // State goes here
   const errorModule = useBoolean();
   const [errorData, setErrorData] = useState(null);

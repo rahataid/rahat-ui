@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from "react";
 
 const ActionCards = () => {
-    const t = useTranslations('AA Project');
+    const t = useTranslations('AA_PROJECT');
     const [vis, setVis] = useState(false)
 
     const handleValueChange = (val: any) => {

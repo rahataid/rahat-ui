@@ -35,7 +35,7 @@ function getPhaseColor(phase: string) {
   return '';
 }
 export default function useCommsActivitiesTableColumns() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id } = useParams();

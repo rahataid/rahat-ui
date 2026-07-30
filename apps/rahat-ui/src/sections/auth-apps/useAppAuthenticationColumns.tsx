@@ -15,7 +15,7 @@ interface AppAuthentication {
   publicKey: string;
 }
 export const useAppAuthenticationColumns = () => {
-  const t = useTranslations('Auth Apps – List');
+  const t = useTranslations('AUTH_APPS_LIST');
   const tg = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 

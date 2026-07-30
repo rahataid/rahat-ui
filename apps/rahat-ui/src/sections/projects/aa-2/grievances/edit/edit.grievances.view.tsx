@@ -46,7 +46,7 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
 export default function EditGrievance() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const emailOrPhone = z.string().refine(
     (value) => {

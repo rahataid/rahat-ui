@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 export default function UserView() {
-  const t = useTranslations('Users – List');
+  const t = useTranslations('USERS_LIST');
   const router = useRouter();
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);

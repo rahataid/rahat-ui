@@ -39,7 +39,7 @@ export default function EditBeneficiaryGroups({
   groupedBeneficiaries,
   isGroupAssignedToProject,
 }: IProps) {
-  const t = useTranslations('Beneficiary Group Detail');
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
   const tg = useTranslations('GLOBAL');
   const { closeSecondPanel } = useSecondPanel();
 
@@ -82,7 +82,7 @@ export default function EditBeneficiaryGroups({
     },
   });
 
-  const tc = useTranslations('Beneficiary Group Create');
+  const tc = useTranslations('BENEFICIARY_GROUP_CREATE');
   const FormSchema = z.object({
     name: z.string().min(2, { message: tc('GROUP_NAME_REQUIRED') }),
   });

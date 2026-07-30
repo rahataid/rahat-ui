@@ -1,7 +1,7 @@
 'use client';
 import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useTreasuryTokenCreate } from 'libs/query/src/lib/treasury/treasury.service';
+import { useTREASURYTokenCreate } from 'libs/query/src/lib/treasury/treasury.service';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { keccak256, stringToBytes } from 'viem';
@@ -17,7 +17,7 @@ export const initialStepData = {
 };
 
 const CreateTokenFlow = () => {
-  const t = useTranslations('Treasury – Create Token');
+  const t = useTranslations('TREASURY_CREATE_TOKEN');
   const tg = useTranslations('GLOBAL');
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
@@ -29,7 +29,7 @@ const CreateTokenFlow = () => {
   const [standardAddress, setStandardAddress] = useState('');
 
   const createToken = useTokenCreate();
-  const treasuryToken = useTreasuryTokenCreate();
+  const treasuryToken = useTREASURYTokenCreate();
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
@@ -146,7 +146,7 @@ const CreateTokenFlow = () => {
       decimals: 18,
       // TODO
       manager: appContracts?.RAHATACCESSMANAGER?.ADDRESS as `0x${string}`,
-      rahatTreasuryAddress: appContracts?.RAHATTREASURY
+      rahatTREASURYAddress: appContracts?.RAHATTREASURY
         ?.ADDRESS as `0x${string}`,
       initialSupply: stepData.initialSupply,
     });

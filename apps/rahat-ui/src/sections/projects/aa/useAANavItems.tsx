@@ -15,7 +15,7 @@ import { NavItem as BaseNavItem } from '../components/nav-items.types';
 type NavItem = BaseNavItem;
 
 const NAV_TITLE_KEYS: Record<string, string> = {
-  'Dashboard': 'DASHBOARD',
+  'DASHBOARD': 'DASHBOARD',
   'Project Beneficiaries': 'PROJECT_BENEFICIARIES',
   'Stakeholders': 'STAKEHOLDERS',
   'Forecast Data': 'FORECAST_DATA',
@@ -31,7 +31,7 @@ const NAV_TITLE_KEYS: Record<string, string> = {
 };
 
 export const useNavItems = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as string;
   const { data, isLoading } = useTabConfiguration(

@@ -45,7 +45,7 @@ function getStatusBg(status: string) {
 }
 
 export default function useActivitiesTableColumn() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams();
   const router = useRouter();

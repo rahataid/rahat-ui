@@ -217,7 +217,7 @@ export const useGetVendorTokenRedemptionList = (payload: any) => {
 };
 
 export const useApproveVendorTokenRedemption = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -420,7 +420,7 @@ export const useGetInkindRedemptionLogs = (payload: {
 };
 
 export const useUpdateVendorRedemptionStatus = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const qc = useQueryClient();

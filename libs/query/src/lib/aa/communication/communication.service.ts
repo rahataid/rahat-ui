@@ -39,7 +39,7 @@ export const useRetryFailedBroadcast = (
   communicationId: string,
   activityId: string,
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({

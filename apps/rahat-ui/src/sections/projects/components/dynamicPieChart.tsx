@@ -22,7 +22,7 @@ const DynamicPieChart = ({
   colors,
   options,
 }: IDynamicPieChartProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const total = pieData?.reduce(
     (s: number, it: { label: string; value: number }) =>
       s + Number(it.value || 0),

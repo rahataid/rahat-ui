@@ -39,7 +39,7 @@ const STATUS_CLASSES: Record<string, string> = {
 };
 
 export function StatusBadge({ status }: { status?: string }) {
-  const t = useTranslations('Projects List');
+  const t = useTranslations('PROJECTS_LIST');
   return (
     <Badge className={`border ${STATUS_CLASSES[status ?? ''] ?? 'bg-gray-100 text-gray-500 border-gray-300'}`}>
       {t(status ?? '')}
@@ -48,7 +48,7 @@ export function StatusBadge({ status }: { status?: string }) {
 }
 
 export default function ListProject() {
-  const t = useTranslations('Projects List');
+  const t = useTranslations('PROJECTS_LIST');
   const g = useTranslations('GLOBAL');
   const { data, isLoading } = useProjectList();
   const closeProject = useProjectClose();

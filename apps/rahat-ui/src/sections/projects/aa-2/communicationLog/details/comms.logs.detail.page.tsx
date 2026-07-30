@@ -55,7 +55,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function CommsLogsDetailPage() {
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();

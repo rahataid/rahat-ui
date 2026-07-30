@@ -24,7 +24,7 @@ type IProps = {
 };
 
 export default function UsersTable({ table }: IProps) {
-  const t = useTranslations('Users – List');
+  const t = useTranslations('USERS_LIST');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
 

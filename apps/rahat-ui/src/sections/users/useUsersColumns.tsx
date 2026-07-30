@@ -19,11 +19,11 @@ import UsersDetailSplitView from './users.detail.split.view';
 export const useUserTableColumns = () => {
   const tg = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const [walletAddressCopied, setWALLETAddressCopied] = useState<number>();
 
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(index);
+    setWALLETAddressCopied(index);
   };
 
   const openSplitDetailView = (rowDetail: User) => {

@@ -8,7 +8,7 @@ import { humanizeString } from '../../utils';
 import { useTranslations } from 'next-intl';
 
 export const useCommunityBeneficiaryTableColumns = () => {
-  const t = useTranslations('Community Beneficiary Detail');
+  const t = useTranslations('COMMUNITY_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const columns: ColumnDef<ListBeneficiary>[] = [
     {

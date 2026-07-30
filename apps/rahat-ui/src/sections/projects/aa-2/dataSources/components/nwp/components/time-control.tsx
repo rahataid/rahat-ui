@@ -24,7 +24,7 @@ export function TimeControl({
   onOpacityChange,
   availableTimes,
 }: TimeControlProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);

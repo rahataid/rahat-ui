@@ -65,7 +65,7 @@ const AddAudience: FC<AddAudienceProps> = ({
   audienceRequiredError,
   setAudienceRequiredError,
 }) => {
-  const t = useTranslations('Communications – Add Campaign');
+  const t = useTranslations('COMMUNICATIONS_ADD_CAMPAIGN');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const [columnVisibility, setColumnVisibility] = React.useState({});

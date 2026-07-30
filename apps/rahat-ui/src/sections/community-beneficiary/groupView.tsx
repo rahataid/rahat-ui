@@ -40,7 +40,7 @@ function ViewCommunityGroup() {
     ...(filters as any),
   });
 
-  const t = useTranslations('Community Beneficiary List');
+  const t = useTranslations('COMMUNITY_BENEFICIARY_LIST');
   const columns = useCommunityBeneficiaryGroupTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({

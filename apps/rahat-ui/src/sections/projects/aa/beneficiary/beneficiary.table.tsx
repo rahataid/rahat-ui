@@ -53,7 +53,7 @@ export type Transaction = {
 };
 
 function BeneficiaryDetailTableView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const route = useRouter();
   const id = useParams();
   // TODO: Refactor it

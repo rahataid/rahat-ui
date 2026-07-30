@@ -11,8 +11,8 @@ import { useTranslations } from 'next-intl';
 
 export default function AssignFundsView() {
   // Router goes here
-  const t = useTranslations('AA Project');
-  const tg = useTranslations('AA Project with Gnosis');
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const id = useParams().id;
   const router = useRouter();
 

@@ -20,7 +20,7 @@ const DeleteConfirmModal = ({
   handleSubmit,
   data,
 }: Iprops) => {
-  const tr = useTranslations('Users – Roles & Permissions');
+  const tr = useTranslations('USERS_ROLES_PERMISSIONS');
   const tg = useTranslations('GLOBAL');
   return (
     <Dialog open={open}>

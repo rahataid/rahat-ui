@@ -64,8 +64,8 @@ type IProps = {
 };
 
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
-  const t = useTranslations('Users – Detail');
-  const ts = useTranslations('Users – Split View');
+  const t = useTranslations('USERS_DETAIL');
+  const ts = useTranslations('USERS_SPLIT_VIEW');
   const tg = useTranslations('GLOBAL');
   const { data } = useUserCurrentUser();
   const removeUser = useUserRemove();
@@ -405,7 +405,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="grid grid-cols-subgrid col-span-2">
-                  <Input className="mt-3" type="wallet" placeholder="Wallet" />
+                  <Input className="mt-3" type="wallet" placeholder="WALLET" />
                 </div>
                 <div className="grid grid-cols-subgrid col-span-1 mt-3">
                   <Button

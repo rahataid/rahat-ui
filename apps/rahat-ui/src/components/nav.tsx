@@ -20,7 +20,7 @@ import { useAuthStore } from '@rumsan/react-query/auth';
 import { toast } from 'react-toastify';
 import { paths } from '../routes/paths';
 
-import ConnectWallet from './wallet/connect-wallet';
+import ConnectWALLET from './wallet/connect-wallet';
 import SearchInput from '../sections/projects/components/search.input';
 import React from 'react';
 
@@ -30,7 +30,7 @@ import { useProjectList } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
 
 export function Nav({ hasDefaultHeader = true }) {
-  const t = useTranslations('Top Navigation / Header');
+  const t = useTranslations('TOP_NAVIGATION_HEADER');
   const g = useTranslations('GLOBAL');
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
@@ -67,7 +67,7 @@ export function Nav({ hasDefaultHeader = true }) {
         <div className="flex space-x-6 items-center">
           {showNotification && <NotificationButton unreadCount={3} />}
           <LanguageToggle />
-          <ConnectWallet />
+          <ConnectWALLET />
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar className="h-10 w-10">

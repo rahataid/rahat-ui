@@ -30,7 +30,7 @@ const DEFAULT_VALUES: GctGroupValues = {
 };
 
 export default function AddGct() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();

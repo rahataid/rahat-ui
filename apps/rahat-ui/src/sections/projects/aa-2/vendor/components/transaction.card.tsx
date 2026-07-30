@@ -36,11 +36,11 @@ type Txn = {
 type Props = {
   loading: boolean;
   transaction: Txn[];
-  inkindTransactions: InKindLog[];
+  inkindTRANSACTIONS: InKindLog[];
 };
 
 const Transaction = ({ amount, date, hash, title, type }: Txn) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const projectId = id as string;
 
@@ -155,18 +155,18 @@ const TransactionView = ({ value, items, type }: TransactionViewProps) => (
 
 export default function TransactionCard({
   transaction,
-  inkindTransactions,
+  inkindTRANSACTIONS,
   loading,
 }: Props) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const [activeTab, setActiveTab] = useState('cva');
 
-  const cvaTransactions =
+  const cvaTRANSACTIONS =
     transaction?.filter((txn) => txn.title === 'VENDOR_REIMBURSEMENT') || [];
 
-  const normalizedInkindTransactions: Txn[] =
-    inkindTransactions?.map((txn) => ({
+  const normalizedInkindTRANSACTIONS: Txn[] =
+    inkindTRANSACTIONS?.map((txn) => ({
       amount: txn.quantity,
       date: txn.redeemedAt,
       hash: txn.txHash,
@@ -174,11 +174,11 @@ export default function TransactionCard({
     })) || [];
 
   const TabsTriggerStats = [
-    { value: 'cva', title: t('CVA'), count: cvaTransactions.length },
+    { value: 'cva', title: t('CVA'), count: cvaTRANSACTIONS.length },
     {
       value: 'inkind',
       title: t('IN_KIND'),
-      count: normalizedInkindTransactions.length,
+      count: normalizedInkindTRANSACTIONS.length,
     },
   ];
 
@@ -191,7 +191,7 @@ export default function TransactionCard({
       />
       {loading ? (
         <SkeletonTransaction />
-      ) : cvaTransactions.length || normalizedInkindTransactions.length ? (
+      ) : cvaTRANSACTIONS.length || normalizedInkindTRANSACTIONS.length ? (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="border bg-secondary rounded w-full">
             {TabsTriggerStats.map((tab) => (
@@ -215,10 +215,10 @@ export default function TransactionCard({
           </TabsList>
 
           <ScrollArea className="h-[calc(100vh-500px)]">
-            <TransactionView value="cva" items={cvaTransactions} type="cva" />
+            <TransactionView value="cva" items={cvaTRANSACTIONS} type="cva" />
             <TransactionView
               value="inkind"
-              items={normalizedInkindTransactions}
+              items={normalizedInkindTRANSACTIONS}
               type="inkind"
             />
           </ScrollArea>

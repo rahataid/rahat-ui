@@ -19,7 +19,7 @@ const StakeholdersDetail = () => {
   const projectId = params.id as UUID;
   const stakeholderId = params.stakeholdersId as UUID;
   const searchParams = useSearchParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const redirectTo = searchParams.get('groupId');
   const details = useStakeholderDetails(projectId, { uuid: stakeholderId });
   const removeStakeholder = useDeleteStakeholders();

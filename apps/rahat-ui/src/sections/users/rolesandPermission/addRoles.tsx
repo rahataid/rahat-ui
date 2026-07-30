@@ -19,7 +19,7 @@ import { useCreateRole } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
 
 export default function AddRoles() {
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const tg = useTranslations('GLOBAL');
   const [roleName, setRoleName] = useState('');
 

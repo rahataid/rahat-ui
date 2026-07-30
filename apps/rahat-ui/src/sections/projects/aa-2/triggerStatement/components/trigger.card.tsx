@@ -57,7 +57,7 @@ export default function TriggerCard({
   triggerStatement: tgSt,
 }: IProps) {
   const formatDate = useDateFormat();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
 
   const handleRoute = () => {

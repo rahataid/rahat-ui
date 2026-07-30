@@ -10,7 +10,7 @@ type IProps = {
 };
 
 export default function DHMCard({ data }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const renderFieldCardContainer = React.useCallback((data: any) => {
     const floodForecastData = React.useMemo(() => {
       if (data) {

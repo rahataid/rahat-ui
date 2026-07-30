@@ -29,7 +29,7 @@ function renderMessage(message: any) {
 }
 
 const CommunicationDetailCard = ({ comm, activityId }: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const router = useRouter();
 

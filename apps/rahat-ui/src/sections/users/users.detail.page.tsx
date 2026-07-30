@@ -33,8 +33,8 @@ import Swal from 'sweetalert2';
 import { User } from '@rumsan/sdk/types';
 
 export default function UsersDetailPage() {
-  const t = useTranslations('Users – Detail');
-  const tc = useTranslations('Confirmation & Alert Dialogs');
+  const t = useTranslations('USERS_DETAIL');
+  const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -51,12 +51,12 @@ export default function UsersDetailPage() {
 
   const removeUser = useUserRemove();
 
-  const [walletAddressCopied, setWalletAddressCopied] =
+  const [walletAddressCopied, setWALLETAddressCopied] =
     React.useState<string>();
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(walletAddress);
+    setWALLETAddressCopied(walletAddress);
   };
 
   const columns = useUsersRolesTableColumns({ loggedUserRoles, userUUID: id });

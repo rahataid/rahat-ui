@@ -24,7 +24,7 @@ import {
 } from 'apps/rahat-ui/src/providers/service.provider';
 
 export default function AddRole() {
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const [roleName, setRoleName] = useState('');
   const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
 

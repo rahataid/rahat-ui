@@ -20,7 +20,7 @@ export default function InputCalendar({
   selectedDate,
   setSelectedDate,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const today = new Date();
   const fourteenDaysAgo = new Date();
   fourteenDaysAgo.setHours(0, 0, 0, 0);

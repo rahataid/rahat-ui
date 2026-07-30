@@ -43,7 +43,7 @@ const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
 export default function UpdateStatus() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;

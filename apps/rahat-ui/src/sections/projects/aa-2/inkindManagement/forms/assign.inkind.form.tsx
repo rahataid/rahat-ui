@@ -59,9 +59,9 @@ interface Props {
 }
 
 export default function AssignInkindForm({ onNext }: Props) {
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
-  const tAA = useTranslations('AA Project');
+  const tAA = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const projectUUID = id as UUID;
 

@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 export const useTemperatureTableColumns = (
   unit = '°C',
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const label = t('TEMPERATURE_LABEL');

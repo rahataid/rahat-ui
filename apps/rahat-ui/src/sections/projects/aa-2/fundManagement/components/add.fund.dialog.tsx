@@ -49,7 +49,7 @@ type IProps = {
 };
 
 export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const addProjectFund = useAddProjectFund(projectUUID);
 
   const form = useForm<AddFundFormValues>({

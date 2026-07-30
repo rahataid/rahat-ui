@@ -32,7 +32,7 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 // }
 
 export default function useActivitiesTableColumn() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id: projectID, title } = useParams();
   const router = useRouter();

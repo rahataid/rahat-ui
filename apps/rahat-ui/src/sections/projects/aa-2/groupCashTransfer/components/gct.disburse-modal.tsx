@@ -64,7 +64,7 @@ export function DisburseModal({
   onOpenChange: (open: boolean) => void;
   disburseLoading?: boolean;
 }) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const router = useRouter();
   const recordsListPath = `/projects/aa/${projectUUID}/group-cash-transfer?tab=gctManagementList`;
@@ -188,7 +188,7 @@ export function DisburseButton({
   disabledReason?: string;
   onClick: () => void;
 }) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const { data: payoutStatus } = usePhasePayoutStatus(projectUUID);
   const canDisburse = !!payoutStatus?.isPayoutMethodPhaseActivated;
   const isDisabled = !canDisburse || loading || disabled;

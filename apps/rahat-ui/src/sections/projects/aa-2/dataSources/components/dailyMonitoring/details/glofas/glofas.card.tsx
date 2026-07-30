@@ -14,7 +14,7 @@ type IProps = {
 };
 
 export default function GLOFASCard({ data }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const sanitizedData = React.useMemo(() => {
     return [

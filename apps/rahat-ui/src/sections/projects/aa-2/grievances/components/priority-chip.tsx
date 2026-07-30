@@ -42,7 +42,7 @@ export function PriorityChip({
   className,
   showIcon = true,
 }: PriorityChipProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const colorClass =
     priority && priority in priorityColors

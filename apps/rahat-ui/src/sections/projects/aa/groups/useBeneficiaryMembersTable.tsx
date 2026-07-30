@@ -5,7 +5,7 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 
 export default function useBeneficiaryMembersTableColumn(members?: any) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const [prevData, setPrevData] = React.useState(members);
   const columns: ColumnDef<IStakeholdersItem>[] = [

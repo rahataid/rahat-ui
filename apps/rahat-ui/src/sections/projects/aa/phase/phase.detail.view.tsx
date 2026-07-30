@@ -17,7 +17,7 @@ import { generateExcel } from '../generate.excel';
 import { toast } from 'react-toastify';
 
 export default function PhaseDetailView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;

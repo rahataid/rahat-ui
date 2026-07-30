@@ -10,11 +10,11 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ArrowUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import TreasuryCard from './treasury.card';
+import TREASURYCard from './treasury.card';
 import { useProjectList } from '@rahat-ui/query';
 
-const TreasuryDetails = () => {
-  const t = useTranslations('Treasury');
+const TREASURYDetails = () => {
+  const t = useTranslations('TREASURY');
   const projects = useProjectList();
   return (
     <div className="grid grid-cols-12 gap-2">
@@ -31,7 +31,7 @@ const TreasuryDetails = () => {
           <div className="mt-4">
             <div className="grid grid-cols-2 gap-2 mb-4">
               {projects?.data?.data.map((project, index) => (
-                <TreasuryCard
+                <TREASURYCard
                   key={index}
                   projectName={project?.name}
                   projectAddress={
@@ -43,11 +43,11 @@ const TreasuryDetails = () => {
               ))}
             </div>
             {/* <div className="flex items-center justify-around">
-              <TreasuryCard
+              <TREASURYCard
                 projectName={'Jaleshwor Project'}
                 projectBudget={'100'}
               />
-              <TreasuryCard
+              <TREASURYCard
                 projectName={'Jaleshwor Project'}
                 projectBudget={'50'}
               />
@@ -898,4 +898,4 @@ const TreasuryDetails = () => {
   );
 };
 
-export default TreasuryDetails;
+export default TREASURYDetails;

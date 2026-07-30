@@ -41,7 +41,7 @@ export default function AddCommunicationForm({
   setLoading,
   appTransports
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const [audioFile, setAudioFile] = React.useState({});
   const [contentType, setContentType] = React.useState<ValidationContent | "">("");

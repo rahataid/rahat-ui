@@ -16,7 +16,7 @@ import posthog from 'posthog-js';
 import { useTranslations } from 'next-intl';
 
 export default function AuthPage() {
-  const t = useTranslations('Login');
+  const t = useTranslations('LOGIN');
   const g = useTranslations('GLOBAL');
   const [isEmailValid, setIsEmailValid] = React.useState<boolean>(false);
   const [otp, setOtp] = useState('');

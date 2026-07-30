@@ -10,7 +10,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useRoleTableColumns = () => {
   const tg = useTranslations('GLOBAL');
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const columns: ColumnDef<Role>[] = [

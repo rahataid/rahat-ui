@@ -24,7 +24,7 @@ import { DailyMonitoringListView } from './daily-monitoring';
 import { useTranslations } from 'next-intl';
 
 export default function DataSourcesView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const projectID = id as UUID;
   const { isLoading: isLoadingDhm, data: dhmData } =

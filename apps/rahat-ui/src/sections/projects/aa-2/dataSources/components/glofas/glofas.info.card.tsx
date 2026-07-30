@@ -18,7 +18,7 @@ type IProps = {
 };
 
 export default function GlofasInfoCard({ glofas }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const maxProbability = glofas?.info?.pointForecastData?.maxProbability?.data;

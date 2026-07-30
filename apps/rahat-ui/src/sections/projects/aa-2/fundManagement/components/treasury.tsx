@@ -13,7 +13,7 @@ import {
   IconLabelBtn,
   SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
-import { Wallet, Coins } from 'lucide-react';
+import { WALLET, Coins } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import {
   useGetTokenDetails,
@@ -28,8 +28,8 @@ import AddFundDialog from './add.fund.dialog';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
-export default function Treasury() {
-  const t = useTranslations('AA Project');
+export default function TREASURY() {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const [addFundOpen, setAddFundOpen] = useState(false);
@@ -90,7 +90,7 @@ export default function Treasury() {
               className="rounded-sm"
               title={t('PROJECT_BALANCE')}
               smallNumber={`${formatNum(tokenDetails?.data.projectBalance)} ${tokenDetails?.data.symbol}`}
-              Icon={Wallet}
+              Icon={WALLET}
               subtitle={t('TOKENS_CURRENTLY_HELD_IN_PROJECT_TREASURY')}
             />
           </div>

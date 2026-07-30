@@ -9,7 +9,7 @@ import RiverWatchView from './river.watch.view';
 import RainfallWatchView from './rainfall.watch.view';
 
 export function DHMSection() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <Tabs defaultValue="riverWatch">
       <TabsList className="mb-2">

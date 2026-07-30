@@ -393,12 +393,12 @@
     "SELECT_APP_TO_PROCEED": "Please select app to proceed!",
     "ERROR": "Error"
   },
-  "Login": {
+  "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
     "SIGN_IN": "Sign in",
     "VERIFY_WITH_OTP": "Verify with OTP",
     "ENTER_YOUR_EMAIL_ADDRESS_TO_RECEIVE": "Enter your email address to receive unique OTP code .",
-    "TO_ENSURE_YOU_SECURITY_PLEASE_ENTER": "To ensure you security please enter your One-Time-Password . \\n OTP has been sent to {address}",
+    "TO_ENSURE_YOU_SECURITY_PLEASE_ENTER": "To ensure your security please enter your One-Time-Password. OTP has been sent to {address}",
     "SEND_OTP": "Send OTP",
     "OTP": "OTP",
     "ENTER_OTP": "Enter OTP",
@@ -413,13 +413,13 @@
     "RAHAT_AN_OPEN_SOURCE_BLOCKCHAIN_BASED": "Rahat, an open-source blockchain-based financial access platform to support vulnerable communities. Our mission is to break the poverty cycle by providing immediate financial access, building resilience, and fostering financial literacy among the last billion.",
     "OTP_SUCCESSFULLY_RE_SENT": "Otp successfully re-sent"
   },
-  "Auth Apps – List": {
+  "AUTH_APPS_LIST": {
     "AUTH_APPS": "Auth Apps",
     "LIST": "List",
     "SEARCH_BY_NAME": "Search by name...",
     "APP_NAME": "App Name"
   },
-  "Auth Apps – Add": {
+  "AUTH_APPS_ADD": {
     "ADD_NEW": "Add New",
     "ENTER_APP_NAME": "Enter app name",
     "ENTER_APP_ADDRESS": "Enter app address",
@@ -427,7 +427,7 @@
     "NAME_MUST_BE_AT_LEAST2": "Name must be at least 2 characters",
     "INVALID_APP_ADDRESS": "Invalid app address"
   },
-  "Dashboard": {
+  "DASHBOARD": {
     "YOUR_HUB_FOR_REAL_TIME_ANALYTICS": "Your Hub for Real-Time Analytics and Data Visualization of the system",
     "OVERVIEW": "Overview",
     "GRAPHS": "Graphs",
@@ -435,7 +435,7 @@
     "N21_JAN202407_FEB2024": "21 Jan 2024, 07 Feb 2024",
     "DOWNLOAD": "Download"
   },
-  "Dashboard – Beneficiary Demographics": {
+  "DASHBOARD_BENEFICIARY_DEMOGRAPHICS": {
     "BENEFICIARY_DEMOGRAPHICS": "Beneficiary Demographics",
     "SUMMARY_OF_HOUSEHOLD_STATISTICS": "Summary of household statistics",
     "TOTAL_RESPONDENTS": "Total Respondents",
@@ -443,7 +443,7 @@
     "GENDER_DISTRIBUTION": "Gender Distribution",
     "AGE_GROUP": "Age Group"
   },
-  "Dashboard – Access & Inclusion": {
+  "DASHBOARD_ACCESS_INCLUSION": {
     "ACCESS_INCLUSION": "Access & Inclusion",
     "HOUSEHOLD_PARTICIPATION_IN_BANKING_AND_DIGITAL": "Household participation in banking and digital finance systems",
     "ACCESS_TO_MOBILE_PHONES": "Access to Mobile Phones",
@@ -453,7 +453,7 @@
     "SOCIAL_SECURITY_LINKED_TO_BANK_ACCOUNT": "Social Security Linked to Bank Account",
     "BANK_ACCOUNTS": "Bank Accounts"
   },
-  "Dashboard – Disaster Impact & Early Warning": {
+  "DASHBOARD_DISASTER_IMPACT_EARLY_WARNING": {
     "DISASTER_IMPACT_EARLY_WARNING": "Disaster Impact & Early Warning",
     "FLOOD_IMPACT_HISTORY_EARLY_WARNING_ACCESS": "Flood Impact History & Early Warning Access",
     "FLOOD_IMPACT_IN_LAST5_YEARS": "Flood Impact in Last 5 Years",
@@ -464,7 +464,7 @@
     "CHANNEL_USAGE_STATS": "Channel Usage Stats",
     "FLOOD_IMPACT_IN_LAST_5YEARS": "Flood Impact in Last 5 Years"
   },
-  "Dashboard – Vulnerable & Social Protection": {
+  "DASHBOARD_VULNERABLE_SOCIAL_PROTECTION": {
     "VULNERABLE_GROUPS": "Vulnerable Groups",
     "HOUSEHOLD_MEMBERS_WITH_SPECIFIC_NEEDS_OR": "Household members with specific needs or requiring special support",
     "PREGNANT_FEMALES": "Pregnant Females",
@@ -476,7 +476,7 @@
     "TYPE_OF_SSA": "Type of SSA",
     "NO_OF_HOUSEHOLDS": "No. of Households"
   },
-  "Dashboard – Communications & Outreach": {
+  "DASHBOARD_COMMUNICATIONS_OUTREACH": {
     "COMMUNICATIONS_OUTREACH": "Communications & Outreach",
     "REACH_AND_EFFECTIVENESS_OF_COMMUNICATION_CHANNELS": "Reach and effectiveness of communication channels",
     "TOTAL_COMMUNICATION_SENT": "Total Communication Sent",
@@ -486,11 +486,11 @@
     "SUCCESS": "Success",
     "FAILURE": "Failure"
   },
-  "Profile": {
+  "PROFILE": {
     "USER_PROFILE": "User Profile",
     "HERE_IS_THE_OVERVIEW_OF_THE": "Here is the overview of the user"
   },
-  "Profile – Edit": {
+  "PROFILE_EDIT": {
     "EDIT_USER_PROFILE": "Edit User Profile",
     "EDIT_USER_DETAILS": "Edit user details",
     "NAME_MUST_BE_AT_LEAST2": "Name must be at least 2 characters",
@@ -498,7 +498,7 @@
     "ERROR_UPDATING_USER_PROFILE": "Error updating user profile",
     "USER_UPDATED_SUCCESSFULLY": "User updated successfully"
   },
-  "Notifications": {
+  "NOTIFICATIONS": {
     "NOTIFICATIONS": "Notifications",
     "HERE_IS_THE_LIST_OF_ALL": "Here is the list of all your notifications",
     "TOTALNOTIFICATIONS_NOTIFICATIONS": "${totalNotifications} Notifications",
@@ -512,7 +512,7 @@
     "VIEW_LESS": "View less",
     "SEE_ALL_NOTIFICATIONS": "See all notifications →"
   },
-  "Beneficiary List": {
+  "BENEFICIARY_LIST": {
     "ADD_BENEFICIARIES": "Add beneficiaries",
     "IMPORT_BENEFICIARIES": "Import beneficiaries",
     "BENEFICIARIES_GROUPS": "Beneficiaries Groups",
@@ -533,7 +533,7 @@
     "ENTER_GROUP_NAME_TO_BE_CREATED2": "Enter group name to be created for the beneficiary",
     "ALL_SELECTED_BENEFICIARIES_ALREADY_ASSIGNED": "All selected beneficiaries are already assigned to the project"
   },
-  "Beneficiary Detail": {
+  "BENEFICIARY_DETAIL": {
     "CANNOT_DELETE_A_BENEFICIARY_ASSIGNED_TO": "Cannot delete a beneficiary assigned to project.",
     "BANK_STATUS": "Bank Status",
     "PROJECT_INVOLVED": "Project Involved",
@@ -553,15 +553,15 @@
     "EDIT_BENEFICIARY": "Edit Beneficiary",
     "EDIT_BENEFICIARY_DETAIL": "Edit beneficiary detail"
   },
-  "Beneficiary Add": {
+  "BENEFICIARY_ADD": {
     "CREATE_BENEFICIARY": "Create Beneficiary",
     "CREATE_A_NEW_BENEFICIARY": "Create a new beneficiary"
   },
-  "Beneficiary Edit": {
+  "BENEFICIARY_EDIT": {
     "EDIT_BENEFICIARY": "Edit Beneficiary",
     "EDIT_BENEFICIARY_DETAIL": "Edit Beneficiary Detail"
   },
-  "Beneficiary Groups List": {
+  "BENEFICIARY_GROUPS_LIST": {
     "TOTAL_MEMBERS": "Total Members",
     "NO_RESULT": "No result.",
     "BENEFICIARIES": "beneficiaries",
@@ -573,7 +573,7 @@
     "THERE_ARE_NO_GROUPS_TO_DISPLAY": "There are no groups to display at the moment",
     "NOT_ASSIGNED": "Not Assigned"
   },
-  "Beneficiary Group Detail": {
+  "BENEFICIARY_GROUP_DETAIL": {
     "HERE_IS_A_DETAILED_VIEW_OF": "Here is a detailed view of the selected beneficiary group",
     "BANK_ACCOUNT_VERIFIED": "Bank Account Verified",
     "PHONE_NUMBER_VERIFIED": "Phone Number Verified",
@@ -623,7 +623,7 @@
     "BENEFICIARY_GROUP_ADDED_SUCCESSFULLY": "Beneficiary group added successfully",
     "FAILED_TO_ADD_BENEFICIARY_GROUP": "Failed to add beneficiary group"
   },
-  "Beneficiary Group Create": {
+  "BENEFICIARY_GROUP_CREATE": {
     "CREATE_A_NEW_BENEFICIARY_GROUP": "Create a new beneficiary group",
     "ENTER_GROUP_NAME": "Enter group name",
     "GROUP_NAME_CANNOT_BE_EMPTY": "Group name cannot be empty.",
@@ -633,12 +633,12 @@
     "BENEFICIARY_GROUP_ADDED": "Beneficiary group added successfully!",
     "FAILED_TO_ADD_GROUP": "Failed to add beneficiary group!"
   },
-  "Beneficiary Group Select Members": {
+  "BENEFICIARY_GROUP_SELECT_MEMBERS": {
     "SELECT_BENEFICIARY": "Select Beneficiary",
     "SELECT_BENEFICIARIES_FROM_THE_LIST_BELOW": "Select beneficiaries from the list below to them assign to the selected group",
     "SELECTED": "Selected:"
   },
-  "Beneficiary Excel Import": {
+  "BENEFICIARY_EXCEL_IMPORT": {
     "SELECT_BENEFICIARY_FILE_TO_UPDATE_EXCEL": "Select beneficiary file to update (Excel file)",
     "CHOOSE_FILE": "Choose File",
     "TOTAL_COUNT": "Total Count:",
@@ -648,7 +648,7 @@
     "CANCEL_UPLOAD": "Cancel Upload",
     "UPLOAD_FILE": "Upload File"
   },
-  "Import Beneficiary List": {
+  "IMPORT_BENEFICIARY_LIST": {
     "IMPORT_BENEFICIARY": "Import Beneficiary",
     "HERE_ARE_THE_BENEFICIARY_IMPORTS_LISTED": "Here are the beneficiary imports listed from the imports API",
     "SEARCH_GROUP_NAME": "Search Group Name...",
@@ -663,7 +663,7 @@
     "DOWNLOAD_ERROR_REPORT": "Download Error Report",
     "IMPORT_HAS_STARTED": "Import has started. Please reload the page to check the status."
   },
-  "Import Beneficiary Detail": {
+  "IMPORT_BENEFICIARY_DETAIL": {
     "IMPORT_DETAIL": "Import Detail",
     "HERE_IS_THE_DETAILED_VIEW_OF": "Here is the detailed view of the selected import",
     "START_IMPORT": "Start Import",
@@ -683,7 +683,7 @@
     "DOWNLOAD_CSV": "Download CSV",
     "NO_CSV_DATA_AVAILABLE": "No CSV data available"
   },
-  "Community Beneficiary List": {
+  "COMMUNITY_BENEFICIARY_LIST": {
     "IMPORT_GROUP_FROM_COMMUNITY_TOOL": "Import Group from Community Tool",
     "HERE_BENEFICIARY_GROUPS_FROM_THE_COMMUNITY": "Here beneficiary groups from the Community Tool are listed and available for import",
     "SEARCH_GROUP_NAME": "Search Group Name...",
@@ -692,7 +692,7 @@
     "ARE_YOU_SURE_YOU_WANT_TO": "Are you sure you want to import this beneficiary group to Rahat?",
     "IMPORT": "Import"
   },
-  "Community Beneficiary Detail": {
+  "COMMUNITY_BENEFICIARY_DETAIL": {
     "HERE_IS_THE_DETAILED_VIEW_OF": "Here is the detailed view of selected beneficiary group",
     "IMPORT_TO_RAHAT": "Import to Rahat",
     "IMPORT_BENEFICIARY_GROUP": "Import Beneficiary Group",
@@ -703,7 +703,7 @@
     "NO_RESULT_FOUND": "No result found",
     "GOVT_ID_NUMBER": "Govt. ID Number"
   },
-  "Queues": {
+  "QUEUES": {
     "QUEUE_MANAGEMENT": "Queue Management",
     "CONTRACT_JOBS": "Contract Jobs",
     "RAHAT_JOBS": "Rahat Jobs",
@@ -730,12 +730,12 @@
     "FAILED_REASON": "Failed Reason:",
     "BATCH_DETAILS": "Batch Details:"
   },
-  "Comms – Project Overview": {
+  "COMMS_PROJECT_OVERVIEW": {
     "COMMUNICATIONS": "Communications",
     "TEXT": "Text",
     "IVR": "Ivr"
   },
-  "Comms – Beneficiary": {
+  "COMMS_BENEFICIARY": {
     "BENEFICIARY_GROUPS": "Beneficiary Groups",
     "IMPORT_BENEFICIARIES": "Import beneficiaries",
     "BENEFICIARY_TYPE": "Beneficiary Type",
@@ -770,7 +770,7 @@
     "SELECTED": "Selected:",
     "ADD_BENEFICIARIES": "Add ( Beneficiaries )"
   },
-  "Comms – Beneficiary/Import": {
+  "COMMS_BENEFICIARY_IMPORT": {
     "SELECT_BENEFICIARY_FILE_TO_UPDATE_EXCEL": "Select beneficiary file to update (Excel file)",
     "SELECT_BENEFICIARY_FILE_TO_UPDATE_EXCEL2": "Select beneficiary file to update (Excel, JSON or CSV file)",
     "CHOOSE_FILE": "Choose File",
@@ -784,12 +784,12 @@
     "UPLOAD_FILE": "Upload File",
     "ERROR_DOWNLOADING_FILE": "Error downloading file!"
   },
-  "Comms – Campaigns/Add": {
+  "COMMS_CAMPAIGNS_ADD": {
     "ARE_YOU_SURE": "Are you sure ?",
     "CAMPAIGN_CREATED_SUCCESS": "Campaign Created Success.",
     "AUDIENCE_SELECTED": "Audience selected"
   },
-  "Comms – Campaigns/Voice": {
+  "COMMS_CAMPAIGNS_VOICE": {
     "SUCCESSFUL_CALLS": "Successful Calls",
     "FILTER_COMMUNICATION": "Filter communication...",
     "THERE_ARE_NO_LOGS_AT_THE": "There are no logs at the moment.",
@@ -803,14 +803,14 @@
     "RECORD": "Record",
     "RECORD_AUDIO_AND_SUBMIT": "Record audio and submit."
   },
-  "Comms – Campaigns/IVR": {
+  "COMMS_CAMPAIGNS_IVR": {
     "ADD_IVR": "Add IVR",
     "UPLOAD": "Upload",
     "CHOOSE_A_JSON_FILE_TO_UPLOAD": "Choose a JSON file to upload.",
     "SELECTED_FILE": "Selected file:",
     "CLICK_HERE_TO_BROWSE": "Click here to browse"
   },
-  "Comms – Campaigns/Text": {
+  "COMMS_CAMPAIGNS_TEXT": {
     "TEXT": "Text",
     "SUCCESSFUL_MESSAGE_DELIVERED": "Successful Message Delivered",
     "FILTER_COMMUNICATIONS": "Filter communications...",
@@ -821,14 +821,14 @@
     "TRIGGERS": "Triggers",
     "TRIGGERING": "Triggering"
   },
-  "Treasury": {
+  "TREASURY": {
     "PROJECTS": "Projects",
     "SEARCH_PROJECTS": "Search Projects",
     "RECENT_DEPOSITS": "Recent Deposits",
     "BUDGET": "Budget",
     "TREASURY": "Treasury"
   },
-  "Treasury – Assets": {
+  "TREASURY_ASSETS": {
     "SYMBOL": "Symbol",
     "INITIAL_SUPPLY": "Initial Supply",
     "DECIMALS": "Decimals",
@@ -846,14 +846,14 @@
     "FUND_PROJECT": "Fund Project",
     "SEARCH_PROJECTS": "Search projects"
   },
-  "Treasury – Transactions": {
+  "TREASURY_TRANSACTIONS": {
     "FROM": "From",
     "BLOCK_NUMBER": "Block Number",
     "TRANSACTION_HASH": "Transaction Hash",
     "AMOUNT": "Amount",
     "FILTER_TRANSACTIONS": "Filter transactions..."
   },
-  "Treasury – Create Token": {
+  "TREASURY_CREATE_TOKEN": {
     "CREATE_YOUR_ERC20_TOKEN": "Create your ERC20 Token",
     "TOKEN_NAME": "Token Name",
     "ENTER_YOUR_TOKEN_NAME": "Enter your token name",
@@ -867,13 +867,13 @@
     "PROCEED": "Proceed",
     "CREATE_TOKEN": "Create Token"
   },
-  "Treasury – Navigation": {
+  "TREASURY_NAVIGATION": {
     "GENERAL": "General",
     "TRANSACTIONS": "Transactions",
     "ASSETS": "Assets",
     "CREATE_TOKEN": "Create Token"
   },
-  "Usage": {
+  "USAGE": {
     "USAGE": "Usage",
     "COMMUNICATION_USAGE": "Communication Usage",
     "TOTAL_BROADCASTS": "Total Broadcasts",
@@ -901,7 +901,7 @@
     "SESSIONS": "Sessions",
     "FAILED": "Failed"
   },
-  "Settings – Add": {
+  "SETTINGS_ADD": {
     "ADD_SETTINGS": "Add Settings",
     "REQUIRED_FIELDS": "Required Fields",
     "NAME_IS_REQUIRED": "Name is required",
@@ -915,7 +915,7 @@
     "VALUE_IS_REQUIRED": "Value is required",
     "ADD_FIELD": "Add Field"
   },
-  "Settings – Edit": {
+  "SETTINGS_EDIT": {
     "REQUIRED_FIELDS": "Required Fields",
     "NAME_IS_REQUIRED": "Name is required",
     "REQUIRED_FIELDS_IS_REQUIRED": "Required Fields is required",
@@ -928,23 +928,23 @@
     "VALUE_IS_REQUIRED": "Value is required",
     "ADD_FIELD": "Add Field"
   },
-  "Settings – List": {
+  "SETTINGS_LIST": {
     "SEARCH_BY_NAME": "Search by name...",
     "FILTERS": "Filters",
     "PUBLIC": "Public"
   },
-  "Settings – Table Columns": {
+  "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "DataType",
     "ISPRIVATE": "IsPrivate",
     "ISREADONLY": "IsReadOnly",
     "REQUIREDFIELDS": "RequiredFields"
   },
-  "Settings – Navigation": {
+  "SETTINGS_NAVIGATION": {
     "LIST": "List",
     "AUTH_APPS": "Auth Apps",
     "PROJECT_INFO": "Project Info"
   },
-  "Vendors – List": {
+  "VENDORS_LIST": {
     "VENDORS": "Vendors",
     "HERE_IS_THE_LIST_OF_ALL": "Here is the list of all the vendorss",
     "SEARCH_VENDORS": "Search Vendors",
@@ -957,14 +957,14 @@
     "SHOW_LESS": "Show less",
     "MORE": "more"
   },
-  "Vendors – Detail": {
+  "VENDORS_DETAIL": {
     "VENDOR_DETAILS": "Vendor details",
     "HERE_IS_A_DETAILED_VIEW_OF": "Here is a detailed view of the selected vendor",
     "THIS_ACTION_CANNOT_BE_UNDONE": "This action cannot be undone.",
     "VENDOR_NAME": "Vendor Name",
     "ASSIGNED_VENDOR_CANNOT_BE_DELETED": "Assigned vendor cannot be deleted."
   },
-  "Vendors – Edit": {
+  "VENDORS_EDIT": {
     "EDIT_VENDOR": "Edit Vendor",
     "EDIT_VENDOR_DETAIL": "Edit Vendor Detail",
     "VENDOR_NAME": "Vendor Name",
@@ -973,7 +973,7 @@
     "INVALID_PHONE_NUMBER": "Invalid phone number",
     "MUST_SELECT_A_GENDER": "Must select a Gender"
   },
-  "Vendors – Detail Split View": {
+  "VENDORS_DETAIL_SPLIT_VIEW": {
     "SHOW_LESS": "Show less",
     "REGISTERED_DATE": "Registered Date",
     "SELECT_A_PROJECT_TO_ASSIGN": "Select a project to assign",
@@ -982,23 +982,23 @@
     "ASSIGNED_VENDOR_CANNOT_BE_DELETED": "Assigned vendor cannot be deleted.",
     "PLEASE_SELECT_A_PROJECT": "Please select a project"
   },
-  "Vendors – Info Card": {
+  "VENDORS_INFO_CARD": {
     "NAME_NA": "Name N/A",
     "APPROVED": "Approved",
     "NOT_APPPROVED": "Not Appproved"
   },
-  "Vendors – Redemption Table": {
+  "VENDORS_REDEMPTION_TABLE": {
     "VOUCHER_AMOUNT": "Voucher Amount",
     "VOUCHER_TYPE": "Voucher Type",
     "REDEMPTION_STATUS": "Redemption Status"
   },
-  "Vendors – Referral Table": {
+  "VENDORS_REFERRAL_TABLE": {
     "REFERRED_BY": "Referred By"
   },
-  "Vendors – Transaction List": {
+  "VENDORS_TRANSACTION_LIST": {
     "TXN_HASH": "Txn Hash"
   },
-  "Users – List": {
+  "USERS_LIST": {
     "SYSTEM_USERS": "System Users",
     "USERS": "Users",
     "HERE_IS_THE_LIST_OF_ALL": "Here is the list of all the users",
@@ -1006,7 +1006,7 @@
     "SEARCH_USER": "Search User...",
     "CREATE_USER": "Create User"
   },
-  "Users – Add": {
+  "USERS_ADD": {
     "CREATE_USER": "Create User",
     "CREATE_A_NEW_USER_DETAIL": "Create a new user detail",
     "USER_NAME": "User Name",
@@ -1022,7 +1022,7 @@
     "ETH_ADDRESS_MUST_BE_EMPTY_OR42": "The Ethereum address must be empty or 42 characters long",
     "INVALID_EMAIL_ADDRESS": "Invalid email address"
   },
-  "Users – Edit": {
+  "USERS_EDIT": {
     "EDIT_USER": "Edit User",
     "EDIT_USER_DETAIL": "Edit user detail",
     "USER_NAME": "User Name",
@@ -1035,7 +1035,7 @@
     "ETH_ADDRESS_MUST_BE42": "The Ethereum address must be 42 characters long",
     "INVALID_EMAIL_ADDRESS": "Invalid email address"
   },
-  "Users – Detail": {
+  "USERS_DETAIL": {
     "USER_DETAILS": "User details",
     "HERE_IS_A_DETAILED_VIEW_OF": "Here is a detailed view of the selected user",
     "ASSIGN_TO_PROJECT": "Assign to Project",
@@ -1052,7 +1052,7 @@
     "USERS_ROLES": "Users Roles",
     "GENERAL_DETAILS": "General Details"
   },
-  "Users – Add Role": {
+  "USERS_ADD_ROLE": {
     "CREATE_A_NEW_ROLE_DETAIL": "Create a new role detail",
     "ROLE_NAME": "Role Name",
     "ENTER_ROLE_NAME": "Enter role name",
@@ -1066,7 +1066,7 @@
     "SOMETHING_WENT_WRONG": "Something went wrong",
     "NAME_MUST_BE_AT_LEAST4": "Name must be at least 4 character"
   },
-  "Users – Roles & Permissions": {
+  "USERS_ROLES_PERMISSIONS": {
     "ROLES_AND_PERMISSIONS": "Roles and Permissions",
     "HERE_IS_A_LIST_OF_ALL": "Here is a list of all the roles",
     "SEARCH_ROLE_BY_NAME": "Search Role by name...",
@@ -1101,13 +1101,13 @@
     "PERM_UPDATE": "Update",
     "PERM_DELETE": "Delete"
   },
-  "Users – Split View": {
+  "USERS_SPLIT_VIEW": {
     "ARCHIVE_USER": "Archive User",
     "CONFIRM_IF_YOU_WANT_TO_ARCHIVE": "Confirm if you want to archive user.",
     "ROLES": "Roles",
     "ROLE": "Role"
   },
-  "Communications – Navigation": {
+  "COMMUNICATIONS_NAVIGATION": {
     "COMMUNICATIONS": "Communications",
     "COMMUNICATIONS_TEXT": "Communications : Text",
     "COMMUNICATIONS_VOICE": "Communications : Voice",
@@ -1120,12 +1120,12 @@
     "ADD_CAMPAIGN": "Add Campaign",
     "EDIT_CAMPAIGN": "Edit Campaign"
   },
-  "Communications – Overview": {
+  "COMMUNICATIONS_OVERVIEW": {
     "TOTAL_CAMPAIGN_SENT": "Total Campaign Sent",
     "SUCCESSFUL_CAMPAIGN": "Successful Campaign",
     "FAILED_CAMPAIGN": "Failed Campaign"
   },
-  "Communications – Add Campaign": {
+  "COMMUNICATIONS_ADD_CAMPAIGN": {
     "CAMPAIGN_CREATED_SUCCESS": "Campaign Created Success.",
     "SEND_QR_CODE": "Send QR Code",
     "CONFIRM_CAMPAIGN": "Confirm Campaign",
@@ -1143,7 +1143,7 @@
     "SELECT_AUDIENCES": "Select Audiences",
     "START_TIME": "Start time"
   },
-  "Communications – Text/SMS": {
+  "COMMUNICATIONS_TEXT_SMS": {
     "SUCCESSFULLY_DELETED_CAMPAIGN": "Successfully Deleted Campaign",
     "LOADING": "Loading . . .",
     "CAMPAIGN_NAME_MUST_BE_AT_LEAST": "Campaign Name must be at least 2 characters.",
@@ -1151,7 +1151,7 @@
     "START_TIME_IS_REQUIRED": "Start time is required.",
     "CAMPAIGN_EDIT_SUCCESS": "Campaign Edit Success."
   },
-  "Communications – Voice": {
+  "COMMUNICATIONS_VOICE": {
     "ARE_YOU_SURE": "Are you sure??",
     "TOTAL_IVR_SENT": "Total IVR sent",
     "SUCCESSFULL_IVR": "Successfull IVR",
@@ -1160,10 +1160,10 @@
     "ATTEMPTS": "Attempts",
     "START_TIME": "Start Time"
   },
-  "App Shell": {
+  "APP_SHELL": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat"
   },
-  "Navigation Sidebar": {
+  "NAVIGATION_SIDEBAR": {
     "EXIT_PROJECT": "Exit project",
     "TOGGLE_SIDEBAR": "Toggle Sidebar",
     "MORE": "More",
@@ -1171,7 +1171,7 @@
     "RAHAT": "Rahat",
     "MORE3": "More..."
   },
-  "Projects List": {
+  "PROJECTS_LIST": {
     "PROJECTS": "Projects",
     "HERE_IS_A_LIST_OF_ALL": "Here is a list of all the projects",
     "SEARCH_PROJECT_BY_NAME": "Search Project by Name...",
@@ -1192,7 +1192,7 @@
     "UNPIN_PROJECT": "Unpin project",
     "OK": "Ok"
   },
-  "Top Navigation / Header": {
+  "TOP_NAVIGATION_HEADER": {
     "LOGGED_OUT_SUCCESSFULLY": "Logged out successfully.",
     "PROFILE": "Profile",
     "HOME": "Home",
@@ -1202,20 +1202,20 @@
     "PROJECT_PIN": "Project Pin",
     "TRIGGER_PIN_PHASE": "Trigger Pin Phase"
   },
-  "Theme Toggle": {
+  "THEME_TOGGLE": {
     "TOGGLE_THEME": "Toggle theme",
     "LIGHT": "Light",
     "DARK": "Dark",
     "SYSTEM": "System"
   },
-  "Buttons & Actions": {
+  "BUTTONS_ACTIONS": {
     "CREATE_NAME": "Create {name}",
     "OK": "Ok",
     "DOWNLOAD_REPORT": "Download Report",
     "LEARN_MORE": "Learn More",
     "TOTAL_RESULTS_FOUND": "{total} results found"
   },
-  "Confirmation & Alert Dialogs": {
+  "CONFIRMATION_ALERT_DIALOGS": {
     "CONFIRM_ACTION": "Confirm Action",
     "THIS_ACTION_CANNOT_BE_UNDONE_ARE": "This action cannot be undone. Are you sure you want to perform this action?",
     "THIS_ACTION_CANNOT_BE_UNDONE_THIS": "This action cannot be undone. This will permanently delete this {name}.",
@@ -1223,13 +1223,13 @@
     "CANNOT_DELETE_YOURSELF": "Cannot delete yourself",
     "THIS_ACTION_WILL_REDIRECT_YOU_TO": "This action will redirect you to the edit page"
   },
-  "Pagination & Tables": {
+  "PAGINATION_TABLES": {
     "PAGE_CURRENT_OF_TOTAL": "Page {current} of {total}",
     "TOTAL_COUNT_TOTAL": "Total Count : {total}",
     "NO_RESULTS_FOUND": "No results found",
     "SELECTED_OF_TOTAL_ROW_S_SELECTED": "{selected} of {total} row(s) selected."
   },
-  "Search & Filters": {
+  "SEARCH_FILTERS": {
     "SEARCH_NAME": "Search {name}...",
     "SELECT_NAME": "Select {name}",
     "SELECT_FIELD": "--Select Field--",
@@ -1238,24 +1238,24 @@
     "FILTER_BENEFICIARY": "Filter Beneficiary...",
     "CLEAR_DATE": "Clear Date"
   },
-  "Empty States & Loading": {
+  "EMPTY_STATES_LOADING": {
     "NO_TRANSACTIONS_MADE": "No transactions made",
     "LOADING": "Loading"
   },
-  "Tooltips": {
+  "TOOLTIPS": {
     "ADDITIONAL_INFORMATION_ABOUT_THIS_METRIC": "Additional information about this metric"
   },
-  "Wallet": {
+  "WALLET": {
     "CONNECTED_TO_CONNECTOR": "Connected to {connector}",
     "DISCONNECT": "Disconnect"
   },
-  "Transactions": {
+  "TRANSACTIONS": {
     "VOUCHERID": "VoucherId",
     "TXHASH": "TxHash",
     "COPY_PAYMENT_TXHASH": "Copy payment Txhash",
     "DISBURSED": "Disbursed"
   },
-  "Stats & Charts": {
+  "STATS_CHARTS": {
     "SUCCESS": "Success",
     "ACTIVE": "Active",
     "NO_FILE_CHOSEN": "No file chosen",
@@ -1271,10 +1271,10 @@
     "SEGMENT_INDEX": "Segment {index}",
     "LAST_SYNCED_AT_DATE": "Last Synced at: {date}"
   },
-  "Stepper": {
+  "STEPPER": {
     "STEP_INDEX": "Step {index}"
   },
-  "AA Project": {
+  "AA_PROJECT": {
     "ACCESS_INCLUSION": "Access & Inclusion",
     "ACCESS_TO_EARLY_WARNING_INFORMATION": "Access To Early Warning Information",
     "ACCESS_TO_INTERNET": "Access to Internet",
@@ -2947,7 +2947,7 @@
     "INKIND_DETAILS": "Inkind Details",
     "CONFIRMATION_STEP": "Confirmation"
   },
-  "AA Project with Gnosis": {
+  "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",
     "ACTIVE_OWNERS": "Active Owners",
     "ACTIVE_OWNERS_TOOLTIP": "The total number of active Safe wallet owners or admin who are authorized to sign and execute Gnosis multi-sig transactions.",
@@ -3158,7 +3158,7 @@
     "CLEAR": "Clear",
     "CONFIRM": "Confirm"
   },
-  "AA Project with Cash Tracker": {
+  "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "Account Holder Name",
     "ACCOUNT_NUMBER": "Account Number",
     "ACTIVE_FUND_TRANSFER_TRACKER": "Active Fund Transfer Tracker",

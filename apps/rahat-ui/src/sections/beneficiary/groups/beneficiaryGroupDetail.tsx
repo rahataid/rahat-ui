@@ -49,7 +49,7 @@ export default function BeneficiaryGroupDetail({
   beneficiaryGroupDetail,
   closeSecondPanel,
 }: IProps) {
-  const t = useTranslations('Beneficiary Group Detail');
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const projectModal = useBoolean();

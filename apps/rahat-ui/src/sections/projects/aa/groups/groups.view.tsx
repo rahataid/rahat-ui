@@ -12,7 +12,7 @@ import BeneficiaryGroupsListView from './beneficiary/beneficiary.groups.list.vie
 import AddButton from '../../components/add.btn';
 
 export default function GroupsView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectId } = useParams();
   const [activeTab, setActiveTab] =
     React.useState<string>('stakeholdersGroups');

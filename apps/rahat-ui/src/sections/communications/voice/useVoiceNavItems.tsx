@@ -5,7 +5,7 @@ import { NavItem } from '../components/nav-items.types';
 import { useTranslations } from 'next-intl';
 
 export const useNavItems = () => {
-    const t = useTranslations('Communications – Navigation');
+    const t = useTranslations('COMMUNICATIONS_NAVIGATION');
     const params = useParams();
     // const totalTextCampaign = useCampaignStore().totalTextCampaign;
     const navItems: NavItem[] = [

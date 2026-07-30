@@ -24,7 +24,7 @@ type IProps = {
 };
 
 export default function AddCategoryDialog({ open, onClose }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const projectUUID = id as UUID;
   const { mutateAsync: addCategory, isPending } = useAddActivityCategory();

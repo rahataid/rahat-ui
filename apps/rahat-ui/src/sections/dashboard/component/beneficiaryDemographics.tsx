@@ -15,7 +15,7 @@ const STATS_CONSTANT = [
 ];
 
 const BeneficiaryDemographics = ({ benefStats }: any) => {
-  const t = useTranslations('Dashboard \u2013 Beneficiary Demographics');
+  const t = useTranslations('DASHBOARD_BENEFICIARY_DEMOGRAPHICS');
   const g = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatLabel = useLabelDigits();

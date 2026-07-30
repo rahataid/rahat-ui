@@ -5,7 +5,7 @@ import { Radio, CheckCircle, XCircle, Coins } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
-type UsageTotals = {
+type USAGETotals = {
   sessions: number;
   broadcasts: number;
   success: number;
@@ -17,16 +17,16 @@ type UsageTotals = {
   credits: number;
 };
 
-type UsageOverviewCardsProps = {
-  totals?: UsageTotals;
+type USAGEOverviewCardsProps = {
+  totals?: USAGETotals;
   loading?: boolean;
 };
 
-export default function UsageOverviewCards({
+export default function USAGEOverviewCards({
   totals,
   loading,
-}: UsageOverviewCardsProps) {
-  const t = useTranslations('Usage');
+}: USAGEOverviewCardsProps) {
+  const t = useTranslations('USAGE');
   const formatNum = useNumberFormat();
 
   const successRate =

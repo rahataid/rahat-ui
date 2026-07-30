@@ -33,7 +33,7 @@ import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 
 export default function VoiceDetailView() {
-  const t = useTranslations('Communications – Voice');
+  const t = useTranslations('COMMUNICATIONS_VOICE');
   const tg = useTranslations('GLOBAL');
   const triggerCampaign = useTriggerCampaignMutation();
 

@@ -27,7 +27,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
   projectType,
   navFooter,
 }) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { navItems: menuItems } = useProjectNavItems(projectType);
   const { headerNav } = useProjectHeaderItems(projectType);
   const singleProject = useProjectStore((s) => s.singleProject);

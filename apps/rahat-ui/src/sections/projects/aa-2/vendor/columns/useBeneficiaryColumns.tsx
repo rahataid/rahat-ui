@@ -33,7 +33,7 @@ export const useVendorsBeneficiaryTableColumns = (
   mode: PayoutMode,
   pagination: Pagination,
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { settings } = useProjectSettingsStore((s) => ({

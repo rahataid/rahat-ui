@@ -31,7 +31,7 @@ import StakeholdersTableFilters from '../stakeholders/stakeholders.table.filters
 import StakeholdersTable from '../stakeholders/stakeholders.table';
 
 export default function AddStakeholdersGroups() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;

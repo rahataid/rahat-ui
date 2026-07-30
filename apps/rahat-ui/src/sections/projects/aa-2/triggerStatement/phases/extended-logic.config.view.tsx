@@ -64,7 +64,7 @@ const getTriggerKey = (trigger: ExistingTriggerRef): string => {
 };
 
 export default function ExtendedLogicConfigView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const router = useRouter();
   const params = useParams();

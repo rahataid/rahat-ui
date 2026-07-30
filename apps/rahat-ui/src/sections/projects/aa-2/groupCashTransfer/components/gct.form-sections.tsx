@@ -51,7 +51,7 @@ export function SectionCard({
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
 
   return (
     <div className="p-4 rounded-sm border bg-card space-y-4">
@@ -81,7 +81,7 @@ export function BasicInfoSection({
   shouldDirty,
   onUnsavedChange,
 }: BasicInfoSectionProps) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   return (
     <SectionCard titleKey="BASIC_INFO">
@@ -186,7 +186,7 @@ interface BankDetailsSectionProps {
 }
 
 export function BankDetailsSection({ form }: BankDetailsSectionProps) {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   return (
     <SectionCard titleKey="BANK_DETAILS">
       <div className="grid grid-cols-2 gap-4">

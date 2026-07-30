@@ -33,7 +33,7 @@ const ForecastCard = ({ title, data }: ForecastData) => {
 };
 
 export const DhmContent = ({ data }: { data: any }) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const {
     floodForecast,
     rainfallForecast,

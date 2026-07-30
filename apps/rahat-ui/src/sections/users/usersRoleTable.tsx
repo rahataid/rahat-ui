@@ -45,7 +45,7 @@ export function UsersRoleTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const tg = useTranslations('GLOBAL');
-  const td = useTranslations('Users – Detail');
+  const td = useTranslations('USERS_DETAIL');
   const [rowSelection, setRowSelection] = React.useState({});
   const removeUserRole = useUserRolesRemove();
   const { data } = useUserRoleList(uuid);

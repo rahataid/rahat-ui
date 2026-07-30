@@ -28,7 +28,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useTreasuryTokenList } from 'libs/query/src/lib/treasury/treasury.service';
+import { useTREASURYTokenList } from 'libs/query/src/lib/treasury/treasury.service';
 import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 
 export type Redeptions = {
@@ -41,7 +41,7 @@ export type Redeptions = {
 };
 
 export default function AssetsTable() {
-  const t = useTranslations('Treasury – Assets');
+  const t = useTranslations('TREASURY_ASSETS');
   const tg = useTranslations('GLOBAL');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -60,7 +60,7 @@ export default function AssetsTable() {
     },
   ];
 
-  const newData = useTreasuryTokenList();
+  const newData = useTREASURYTokenList();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});

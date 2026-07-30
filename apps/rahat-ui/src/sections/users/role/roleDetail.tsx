@@ -18,7 +18,7 @@ type IProps = {
 };
 
 export default function RoleDetail({ data }: IProps) {
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const tg = useTranslations('GLOBAL');
   const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const deleteRole = roleQuery.delete();

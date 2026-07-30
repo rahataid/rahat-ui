@@ -16,7 +16,7 @@ import { useTranslations } from 'next-intl';
 
 export default function CommsActivitiesTable() {
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectId } = useParams();
 
   const {

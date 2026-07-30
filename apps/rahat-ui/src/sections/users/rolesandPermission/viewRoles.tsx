@@ -16,7 +16,7 @@ import HeaderWithBack from '../../projects/components/header.with.back';
 export default function RoleView() {
   const tAdd = useTranslations('GLOBAL');
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const { data: rolesList, isLoading } = useRoleList();
 
   const columns = useRoleTableColumns();

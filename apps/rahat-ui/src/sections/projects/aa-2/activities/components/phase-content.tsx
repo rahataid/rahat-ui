@@ -24,7 +24,7 @@ export default function PhaseContent({
   isPinned = false,
   onTogglePin,
 }: PhaseContentProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
 

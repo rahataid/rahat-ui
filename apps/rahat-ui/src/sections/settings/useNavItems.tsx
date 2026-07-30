@@ -3,7 +3,7 @@ import { List, Plus, User } from 'lucide-react';
 import { NavItem } from './nav-items.types';
 
 export const useSettingFieldDefinitionNavItems = () => {
-  const t = useTranslations('Settings – Navigation');
+  const t = useTranslations('SETTINGS_NAVIGATION');
   const g = useTranslations('GLOBAL');
   const menuItems: NavItem[] = [
     {

@@ -69,7 +69,7 @@ export default function DailyMonitoringTableFilters({
   handleFilter,
 }: IProps) {
   const tGlobal = useTranslations('GLOBAL');
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">

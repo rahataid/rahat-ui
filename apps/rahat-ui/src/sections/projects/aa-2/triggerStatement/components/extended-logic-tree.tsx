@@ -132,7 +132,7 @@ function TriggerTooltip({
   y: number;
   containerWidth: number;
 }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const triggered = detail.isTriggered ?? detail.status;
 
@@ -332,7 +332,7 @@ export function ExtendedLogicTree({
   triggerDetails = {},
   onTriggerClick,
 }: ExtendedLogicTreeProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const hasMultipleGroups = groups.length > 1;
   const containerRef = React.useRef<HTMLDivElement>(null);
 

@@ -39,7 +39,7 @@ const savePinnedPhases = (projectId: string, ids: string[]) => {
 };
 
 export default function TriggerStatementView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;

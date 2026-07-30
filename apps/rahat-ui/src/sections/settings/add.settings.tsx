@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSettingsCreate } from '@rahat-ui/query';
 
 export default function AddSetting() {
-  const t = useTranslations('Settings – Add');
+  const t = useTranslations('SETTINGS_ADD');
   const g = useTranslations('GLOBAL');
   const createRahatSetting = useAppSettingsCreate();
   const FormSchema = z.object({

@@ -35,7 +35,7 @@ export default function PhaseCard({
   onUpdateStatus,
   className,
 }: PhaseCardProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const { id: ProjectId } = useParams();
 

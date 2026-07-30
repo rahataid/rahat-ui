@@ -15,21 +15,21 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@rahat-ui/shadcn/src/components/ui/avatar';
-import { Copy, CopyCheck, Mail, Phone, Wallet } from 'lucide-react';
+import { Copy, CopyCheck, Mail, Phone, WALLET } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
-export default function ProfileView() {
-  const t = useTranslations('Profile');
+export default function PROFILEView() {
+  const t = useTranslations('PROFILE');
   const g = useTranslations('GLOBAL');
   const user = useUserStore((state) => state.user);
   const userInfo = React.useMemo(() => user.data, [user]);
 
-  const [walletAddressCopied, setWalletAddressCopied] =
+  const [walletAddressCopied, setWALLETAddressCopied] =
     React.useState<string>();
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(walletAddress);
+    setWALLETAddressCopied(walletAddress);
   };
 
   return (
@@ -66,7 +66,7 @@ export default function ProfileView() {
           <div className="p-2 flex flex-col gap-3">
             <div className="flex justify-between">
               <div className="flex items-center gap-2 text-label">
-                <Wallet size={18} />
+                <WALLET size={18} />
                 <p className="text-sm font-medium">{g('WALLET_ADDRESS')}</p>
               </div>
               <div

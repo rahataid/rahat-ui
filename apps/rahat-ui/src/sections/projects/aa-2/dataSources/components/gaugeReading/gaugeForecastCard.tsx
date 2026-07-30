@@ -29,7 +29,7 @@ const GaugeForecastCard = ({
   latestGaugeReading,
   unit,
 }: IGaugeForecastCardProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   return (
     <Card className="px-4 py-3 rounded-xl mb-4">

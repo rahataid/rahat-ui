@@ -37,7 +37,7 @@ import {
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function BulkUploadActivities() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams() as { id: UUID };
   const router = useRouter();

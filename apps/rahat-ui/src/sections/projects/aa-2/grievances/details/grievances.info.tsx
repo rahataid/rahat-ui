@@ -29,7 +29,7 @@ type IProps = {
 const GrievanceInfo = ({ grievance }: IProps) => {
   const formatDate = useDateFormat();
   const formatDigits = useLabelDigits();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   return (
     <div className="flex flex-col gap-[16px] w-full">

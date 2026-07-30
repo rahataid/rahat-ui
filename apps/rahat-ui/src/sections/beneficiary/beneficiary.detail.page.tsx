@@ -20,16 +20,16 @@ export default function BeneficiaryDetail() {
   const groupId = searchParams.get('groupId');
   const txnDetailsId = searchParams.get('txnDetailsId');
 
-  const [walletAddressCopied, setWalletAddressCopied] =
+  const [walletAddressCopied, setWALLETAddressCopied] =
     React.useState<string>();
   useSingleBeneficiary(id as UUID);
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
-  const t = useTranslations('Beneficiary Detail');
+  const t = useTranslations('BENEFICIARY_DETAIL');
   const g = useTranslations('GLOBAL');
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(walletAddress);
+    setWALLETAddressCopied(walletAddress);
   };
 
   const routePath =
@@ -107,7 +107,7 @@ export default function BeneficiaryDetail() {
         </div>
 
         {/* <div>
-          <h1 className="text-md text-muted-foreground">Wallet</h1>
+          <h1 className="text-md text-muted-foreground">WALLET</h1>
           <Badge>{beneficiary?.walletAddress ?? 'N/A'}</Badge>
         </div> */}
 

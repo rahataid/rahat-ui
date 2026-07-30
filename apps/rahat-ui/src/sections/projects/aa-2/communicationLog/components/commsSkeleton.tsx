@@ -10,7 +10,7 @@ import {
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 export default function CommunicationsStatsSkeleton() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">

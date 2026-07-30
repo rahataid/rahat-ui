@@ -48,7 +48,7 @@ export const useGetBeneficiariesQr = (payload: {
 };
 
 export const useGenerateQrPdf = (projectUuid: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();

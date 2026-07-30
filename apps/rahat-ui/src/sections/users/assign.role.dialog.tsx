@@ -45,7 +45,7 @@ type IProps = {
   userDetails: User;
 };
 export default function AssignRoleDialog({ userDetails }: IProps) {
-  const t = useTranslations('Users – Detail');
+  const t = useTranslations('USERS_DETAIL');
   const tg = useTranslations('GLOBAL');
   const contractSettings = useSettingsStore((state) => state.accessManager);
   const roleSync = useSettingsStore((state) => state.roleOnChainSync);

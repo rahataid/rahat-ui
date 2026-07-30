@@ -53,7 +53,7 @@ export default function ListView({
   setFilters,
 }: IProps) {
   const router = useRouter();
-  const t = useTranslations('Beneficiary List');
+  const t = useTranslations('BENEFICIARY_LIST');
   const g = useTranslations('GLOBAL');
 
   return (

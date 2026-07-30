@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function RainfallWatchView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const formattedDate = format(new Date(), 'yyyy/MM/dd');

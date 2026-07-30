@@ -13,7 +13,7 @@ type IProps = {
 };
 
 export default function ConfirmDeleteDialog({ name }: IProps) {
-  const t = useTranslations('Confirmation & Alert Dialogs');
+  const t = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const tg = useTranslations('GLOBAL');
 
   return (

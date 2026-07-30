@@ -46,7 +46,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
   allPhases = [],
   currentPhaseId,
 }) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const watchCanTriggerPayout = form.watch('canTriggerPayout');
 
   const methodOptions = useMemo(() => {

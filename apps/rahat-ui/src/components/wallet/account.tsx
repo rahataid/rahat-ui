@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from 'wagmi';
 
 export function Account() {
-  const t = useTranslations('Wallet');
+  const t = useTranslations('WALLET');
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
   const { data: ensName } = useEnsName({ address });

@@ -35,7 +35,7 @@ import { useProjectBeneficiaryTableColumns } from './columns';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import BeneficiaryTable from './beneficiary.table';
 function BeneficiaryView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const uuid = id as UUID;

@@ -21,7 +21,7 @@ const Mark = styled.button`
 `;
 
 function RiverWatchMap({ coordinates }: any) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState(null) as any;
 

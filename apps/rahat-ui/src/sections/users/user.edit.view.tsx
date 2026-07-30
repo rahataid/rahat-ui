@@ -27,7 +27,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import HeaderWithBack from '../projects/components/header.with.back';
-import { Loader2, Wallet } from 'lucide-react';
+import { Loader2, WALLET } from 'lucide-react';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -38,7 +38,7 @@ import { Gender } from '@rumsan/sdk/enums';
 import Swal from 'sweetalert2';
 
 export default function EditUser() {
-  const t = useTranslations('Users – Edit');
+  const t = useTranslations('USERS_EDIT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -250,7 +250,7 @@ export default function EditUser() {
                       <FormLabel>{tg('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
-                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
                             placeholder={tg('ENTER_WALLET_ADDRESS')}

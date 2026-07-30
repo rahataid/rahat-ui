@@ -5,7 +5,7 @@ import { BroadcastStatus } from '@rumsan/connect/src/types';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export default function useCommsLogsTableColumns() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   const columns: ColumnDef<any>[] = [
     {

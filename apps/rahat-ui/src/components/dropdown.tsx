@@ -15,7 +15,7 @@ import {
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
-  const t = useTranslations('Theme Toggle');
+  const t = useTranslations('THEME_TOGGLE');
 
   return (
     <div className="hidden md:block">

@@ -21,7 +21,7 @@ const renderProgressBarColor = (phase: string) => {
 };
 
 export default function SimplePhaseCardContainer({ phasesStats }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const sortedPhaseStats = phasesStats?.sort((d1: any, d2: any) => {
     var c = new Date(d1?.phase?.createdAt).getTime();
     var d = new Date(d2?.phase?.createdAt).getTime();

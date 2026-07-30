@@ -9,7 +9,7 @@ interface CategoryData {
 }
 
 export const useAACategoryColumns = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const columns: ColumnDef<CategoryData>[] = [
     {
       header: t('NAME'),

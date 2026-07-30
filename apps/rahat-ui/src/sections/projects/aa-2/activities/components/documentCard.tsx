@@ -38,7 +38,7 @@ interface DocumentListProps {
 }
 
 export function DocumentList({ documents, loading }: DocumentListProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 ">
       <h3 className="text-lg font-semibold text-gray-900">{t('DOCUMENTS')}</h3>

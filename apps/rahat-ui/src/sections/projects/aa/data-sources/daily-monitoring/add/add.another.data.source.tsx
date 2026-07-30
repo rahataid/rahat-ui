@@ -12,7 +12,7 @@ type IProps = {
 };
 
 export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const fieldName = (name: string) => `dataSource.${index}.${name}`; // Dynamic field name generator
 
   const {

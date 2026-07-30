@@ -17,7 +17,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   const [showAll, setShowAll] = React.useState(false);
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
 
   if (!supportArea || supportArea.length === 0) return null;
@@ -51,7 +51,7 @@ export const useProjectStakeholdersTableColumns = (
 ) => {
   const router = useRouter();
   const { id } = useParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const removeStakeholder = useDeleteStakeholders();
 

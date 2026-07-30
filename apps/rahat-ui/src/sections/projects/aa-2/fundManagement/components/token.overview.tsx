@@ -1,11 +1,11 @@
-// import { dFMTransactionsData } from '../static';
+// import { dFMTRANSACTIONSData } from '../static';
 import {
   PROJECT_SETTINGS_KEYS,
   useFetchTokenStatsStellar,
   useFundAssignmentStore,
   useGroupsReservedFunds,
   usePagination,
-  useProjectDashboardReporting,
+  useProjectDASHBOARDReporting,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
@@ -21,16 +21,16 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function TokensOverview() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const tc = useTranslations('AA Project with Cash Tracker');
+  const tc = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const uuid = useParams().id;
   const projectId = uuid as UUID;
   const { data, isLoading } = useFetchTokenStatsStellar({
     projectUUID: uuid,
   });
 
-  const { data: getTokenStat } = useProjectDashboardReporting(projectId);
+  const { data: getTokenStat } = useProjectDASHBOARDReporting(projectId);
 
   const chains = useChains();
   const { pagination } = usePagination();

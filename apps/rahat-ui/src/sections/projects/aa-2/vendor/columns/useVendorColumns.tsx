@@ -10,7 +10,7 @@ import { useAAVendorsStore } from '@rahat-ui/query';
 export const useProjectVendorTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { vendors, setVendorDetails } = useAAVendorsStore((state) => ({
     vendors: state.vendors,

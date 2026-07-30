@@ -26,7 +26,7 @@ const SocialProtectionBenefits = ({
   triggeersStats,
   projectId,
 }: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const ssaRaw = benefStats.find((s) => s.name === 'TYPE_OF_SSA')?.data || [];
   const ssaBarData = ssaRaw.map((item: any) => ({

@@ -33,7 +33,7 @@ import Back from '../../../../components/back';
 import { toast } from 'react-toastify';
 
 export default function StakeholdersGroupEdit() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;

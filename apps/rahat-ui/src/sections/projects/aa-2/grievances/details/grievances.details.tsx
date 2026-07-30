@@ -16,7 +16,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import GrievanceInfo from './grievances.info';
 
 const GrievancesDetail = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const labelMap: Record<string, string> = {
     'New': t('NEW'),
     'Under Review': t('UNDER_REVIEW'),

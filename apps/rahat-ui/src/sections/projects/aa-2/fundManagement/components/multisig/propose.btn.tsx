@@ -26,7 +26,7 @@ export default function MultisigProposeBtn({
   tokenBalance,
   isTxPending,
 }: Props) {
-  const t = useTranslations('AA Project with Gnosis');
+  const t = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number | ''>('');
   const createSafeTransaction = useCreateAASafeTransaction();

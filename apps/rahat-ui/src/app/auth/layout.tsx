@@ -11,7 +11,7 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const t = useTranslations('Login');
+  const t = useTranslations('LOGIN');
   return (
     <GuestGuard>
       <div className="h-screen flex">
@@ -31,7 +31,9 @@ export default function AuthLayout({
           </div>
         </div>
         <div className="w-1/2 relative">
-          <div className="absolute top-4 right-4">
+          {/* The page below is itself `relative`, so with both at `z-index: auto`
+              it would paint over this toggle and swallow its clicks. */}
+          <div className="absolute top-4 right-4 z-20">
             <LanguageToggle />
           </div>
           {children}

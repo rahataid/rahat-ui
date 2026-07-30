@@ -48,7 +48,7 @@ export default function ConfigurePhase({
   prevStep,
   handleAddTrigger,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const mandatoryTriggers = phaseDetail?.triggers?.filter(
     (d: any) => d?.isMandatory,

@@ -122,11 +122,11 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
   return query;
 };
 
-export const useProjectDashboardReporting = (uuid: UUID) => {
+export const useProjectDASHBOARDReporting = (uuid: UUID) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['projectDashboard', uuid],
+    queryKey: ['projectDASHBOARD', uuid],
     staleTime: 1000 * 60 * 60 * 4,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -146,7 +146,7 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
 };
 
 export const useTransportSessionStats = (uuid: UUID) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -187,14 +187,14 @@ export const useTransportSessionStats = (uuid: UUID) => {
   return query;
 };
 
-export const useProjectDashboardBeneficiaryMapLocation = (
+export const useProjectDASHBOARDBeneficiaryMapLocation = (
   uuid: UUID,
   payload: any,
 ) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['projectDashboardBenefMap', payload, uuid],
+    queryKey: ['projectDASHBOARDBenefMap', payload, uuid],
     staleTime: 1000 * 60 * 60 * 4,
     queryFn: async () => {
       console.log('payload', payload);

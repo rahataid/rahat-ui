@@ -18,7 +18,7 @@ const BeneficiaryDemographics = ({
   triggeersStats,
   projectId,
 }: any) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatLabel = useLabelDigits();

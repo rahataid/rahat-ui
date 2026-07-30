@@ -49,7 +49,7 @@ import {
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 function ViewCommunityBeneficiaryByGroupName() {
-  const t = useTranslations('Community Beneficiary Detail');
+  const t = useTranslations('COMMUNITY_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const {
     selectedListItems,

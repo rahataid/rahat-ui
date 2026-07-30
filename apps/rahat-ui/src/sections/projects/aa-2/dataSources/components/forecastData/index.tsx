@@ -62,7 +62,7 @@ const ForeCastData = () => {
   } level`;
 
   if (isLoading) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
     return (
       <div className="h-full w-full flex items-center justify-center">
         <TableLoader />

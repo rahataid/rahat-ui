@@ -23,8 +23,8 @@ import PayoutTransactionList from './table/payoutTransactionList';
 import PayoutOverview from './component/payout-overview';
 
 export default function PayoutView() {
-  const t = useTranslations('AA Project');
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const formatNum = useNumberFormat();
   const params = useParams();
   const projectID = params.id as UUID;

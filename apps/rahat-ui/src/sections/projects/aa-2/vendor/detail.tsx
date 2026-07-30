@@ -12,12 +12,12 @@ import {
 import { useParams, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Back, Heading } from '../../../../common';
-import { OverviewCard, ProfileCard, TransactionCard } from './components';
+import { OverviewCard, PROFILECard, TransactionCard } from './components';
 import VendorsBeneficiaryList from './tables/beneficiary.table';
 import InKindBeneficiaryList from './tables/inkind.beneficiary.list';
 import InKindLogs from './tables/inkind.logs';
 import RedemptionRequestTable from './tables/redemption.request';
-import VendorsTransactionsHistory from './tables/transactions.history';
+import VendorsTRANSACTIONSHistory from './tables/transactions.history';
 import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
 import { getVendorRedirectRoute } from 'apps/rahat-ui/src/utils/navigation';
 import {
@@ -49,7 +49,7 @@ const TabsTriggerStats = (t: any) => [
 
 export default function Detail() {
   const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
     'tab',
     'vendorOverview',
@@ -142,7 +142,7 @@ export default function Detail() {
 
         <TabsContent value="vendorOverview">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <ProfileCard data={vendor?.User} />
+            <PROFILECard data={vendor?.User} />
             <OverviewCard
               data={data?.data}
               loading={isLoading}
@@ -151,7 +151,7 @@ export default function Detail() {
             />
             <TransactionCard
               transaction={data?.data?.transactions}
-              inkindTransactions={slicedData}
+              inkindTRANSACTIONS={slicedData}
               loading={isLoading || isLogsLoading}
             />
           </div>
@@ -159,7 +159,7 @@ export default function Detail() {
 
         {shouldRenderTab('transactionHistory') && (
           <TabsContent value="transactionHistory">
-            <VendorsTransactionsHistory />
+            <VendorsTRANSACTIONSHistory />
           </TabsContent>
         )}
 

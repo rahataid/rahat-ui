@@ -36,7 +36,7 @@ import { Settings2 } from 'lucide-react';
 import { useAASettingColumns } from './settings.columns';
 
 export default function AASettingsTable() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const { id } = useParams();
   const projectUUID = id as UUID;

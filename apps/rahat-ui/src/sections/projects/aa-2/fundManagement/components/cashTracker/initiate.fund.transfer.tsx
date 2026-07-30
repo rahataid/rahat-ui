@@ -1,7 +1,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useGetBalance,
-  useGetTransactions,
+  useGetTRANSACTIONS,
   useInitateFundTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -34,8 +34,8 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function InitiateFundTransfer({}: {}) {
-  const tv = useTranslations('AA Project with Cash Tracker');
-  const t = useTranslations('AA Project');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const t = useTranslations('AA_PROJECT');
   const [formData, setFormData] = useState({
     from: '',
     to: '',
@@ -73,7 +73,7 @@ export default function InitiateFundTransfer({}: {}) {
     id,
     currentEntity?.smartaccount || '',
   );
-  const { data: transactions } = useGetTransactions(id);
+  const { data: transactions } = useGetTRANSACTIONS(id);
 
   //get current entity pending transfer
   const pendingTransfers = useMemo(() => {

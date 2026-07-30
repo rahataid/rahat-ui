@@ -22,7 +22,7 @@ import AccumulatedCard from './ncmrwf/ncmrwf.accumulated.card';
 import FlashFloodRiskMonitoringCard from './flash-flood-risk-monitoring/flash.flood.risk.monitoring.card';
 
 export default function DailyMonitoringDetailView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();

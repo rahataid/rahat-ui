@@ -184,7 +184,7 @@ export const useSingleActivity = (
   uuid: UUID,
   activityId: string | string[],
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -225,7 +225,7 @@ export const useSingleActivity = (
 };
 
 export const useCreateActivities = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -274,7 +274,7 @@ export const useCreateActivities = () => {
 };
 
 export const useValidateBulkAddActivities = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -315,7 +315,7 @@ export const useValidateBulkAddActivities = () => {
 };
 
 export const useBulkAddActivities = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -358,7 +358,7 @@ export const useBulkAddActivities = () => {
 };
 
 export const useUpdateActivities = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -407,7 +407,7 @@ export const useUpdateActivities = () => {
 };
 
 export const useDeleteActivities = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -457,7 +457,7 @@ export const useDeleteActivities = () => {
 };
 
 export const useTriggerCommunication = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -505,7 +505,7 @@ export const useTriggerCommunication = () => {
 };
 
 export const useUpdateActivityStatus = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();

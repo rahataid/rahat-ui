@@ -25,7 +25,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
-import { Loader2, Wallet } from 'lucide-react';
+import { Loader2, WALLET } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
@@ -39,7 +39,7 @@ import { useTranslations } from 'next-intl';
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
   const router = useRouter();
-  const t = useTranslations('Beneficiary Add');
+  const t = useTranslations('BENEFICIARY_ADD');
   const g = useTranslations('GLOBAL');
 
   const FormSchema = z.object({
@@ -369,7 +369,7 @@ export default function AddBeneficiaryForm() {
                         <FormLabel>{g('WALLET_ADDRESS')}</FormLabel>
                         <FormControl>
                           <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                               type="text"
                               placeholder={g('ENTER_WALLET_ADDRESS')}

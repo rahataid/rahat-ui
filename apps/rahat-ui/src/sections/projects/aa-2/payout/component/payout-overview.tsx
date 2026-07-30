@@ -12,7 +12,7 @@ export default function PayoutOverview({
   payouts,
   statsPayout,
 }: PayoutOverviewProps) {
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const formatNum = useNumberFormat();
 
   const pieOptions = React.useMemo(

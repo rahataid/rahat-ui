@@ -43,7 +43,7 @@ import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 function StakeholdersView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();

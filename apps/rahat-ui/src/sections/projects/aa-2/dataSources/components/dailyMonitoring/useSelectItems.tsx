@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 
 export const useSelectItems = () => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const riverBasins = [
     { value: 'Karnali', label: 'Karnali' },
     { value: 'Mahakali', label: 'Mahakali' },

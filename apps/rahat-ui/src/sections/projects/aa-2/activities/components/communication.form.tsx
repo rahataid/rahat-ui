@@ -93,7 +93,7 @@ export default function AddCommunicationForm({
   editMode,
   onCancelEdit,
 }: AddCommunicationFormProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { id: projectId } = useParams();

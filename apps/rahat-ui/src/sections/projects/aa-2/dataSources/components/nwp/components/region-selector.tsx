@@ -14,7 +14,7 @@ export function RegionSelector({
   selectedRegion,
   onRegionChange,
 }: RegionSelectorProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const regions: { value: RegionType; label: string }[] = [
     { value: 'province', label: 'Province' },
     { value: 'district', label: 'District' },

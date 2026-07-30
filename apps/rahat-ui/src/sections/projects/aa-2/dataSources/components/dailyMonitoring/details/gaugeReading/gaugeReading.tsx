@@ -11,7 +11,7 @@ type IProps = {
 };
 
 export default function GaugereadingMonitoringCard({ data }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const renderColor = React.useCallback((status: string) => {
     if (status === 'Low Risk') return 'bg-green-100 text-green-500';
     if (status === 'Medium Risk') return 'bg-yellow-100 text-yellow-500';

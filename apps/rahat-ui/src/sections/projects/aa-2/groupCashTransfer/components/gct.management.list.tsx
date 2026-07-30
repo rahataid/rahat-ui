@@ -66,7 +66,7 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
 export default function GctManagementList() {
-  const t = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectUUID = id as UUID;

@@ -22,7 +22,7 @@ import { Plus, User } from 'lucide-react';
 import {
   PROJECT_SETTINGS_KEYS,
   useGetInkind,
-  useGetInkindTransactions,
+  useGetInkindTRANSACTIONS,
   useProjectSettingsStore,
   ConfirmReceipt,
 } from '@rahat-ui/query';
@@ -32,9 +32,9 @@ import { useTranslations } from 'next-intl';
 export function InKindTracker() {
   const uuid = useParams().id as UUID;
   const router = useRouter();
-  const t = useTranslations('AA Project');
-  const tg = useTranslations('AA Project with Gnosis');
-  const tc = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tc = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
 
   const entities = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
@@ -49,7 +49,7 @@ export function InKindTracker() {
     ); // Default to first entity for demo
   }, [currentUser, entities]);
 
-  const { data: transactions, isFetched } = useGetInkindTransactions(uuid);
+  const { data: transactions, isFetched } = useGetInkindTRANSACTIONS(uuid);
   const getInkind = useGetInkind(uuid);
 
   const [balances, setBalances] = useState<

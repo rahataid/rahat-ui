@@ -36,7 +36,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 
 export const useCommunityBeneficiaryGroupTableColumns = () => {
-  const t = useTranslations('Community Beneficiary List');
+  const t = useTranslations('COMMUNITY_BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const importTempBeneficiaries = useTempBeneficiaryImport();
   const router = useRouter();
@@ -146,7 +146,7 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
 };
 
 export const useCommunityBeneficiaryTableColumns = () => {
-  const t = useTranslations('Community Beneficiary Detail');
+  const t = useTranslations('COMMUNITY_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const { clickToCopy, copyAction } = useCopy();
   const columns: ColumnDef<ListBeneficiary>[] = [

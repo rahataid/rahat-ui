@@ -69,7 +69,7 @@ function DatePicker({
   date: Date | null;
   setDate: (val: Date | null) => void;
 }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="flex items-center">
       <Popover>
@@ -109,7 +109,7 @@ function DatePicker({
 }
 
 export default function DataSources() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { activeTab, setActiveTab } = useActiveTab('');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();

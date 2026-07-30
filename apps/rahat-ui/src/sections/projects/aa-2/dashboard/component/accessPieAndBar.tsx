@@ -13,7 +13,7 @@ const chartTitleKeys: Record<string, string> = {
 };
 
 const AccessAndResilienceOverview = ({ data }: { data: any }) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const stats = data || [];
@@ -27,7 +27,7 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
 
   const chartColors = ['#00796B', '#CFD8DC'];
 
-  const channelUsageStats = getStat('CHANNEL_USAGE_STATS')?.data || [];
+  const channelUSAGEStats = getStat('CHANNEL_USAGE_STATS')?.data || [];
 
   const pieChartOpts = {
     tooltip: {
@@ -70,14 +70,14 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
           <div className="border rounded-sm p-2 flex flex-col h-full min-h-[350px] lg:col-span-2 col-span-1">
             <h1 className="text-sm font-medium">{t('INFORMATION_CHANNELS_USED')}</h1>
             <div className="flex-1 p-2">
-              {channelUsageStats.length === 0 ? (
+              {channelUSAGEStats.length === 0 ? (
                 <div className="flex justify-center h-[300px] items-center">
                   <NoResult size="small" />
                 </div>
               ) : (
                 <BarChart
-                  series={channelUsageStats.map((item) => item.count)}
-                  categories={channelUsageStats.map((item) => item.id)}
+                  series={channelUSAGEStats.map((item) => item.count)}
+                  categories={channelUSAGEStats.map((item) => item.id)}
                   colors={['#4A90E2']}
                   xaxisLabels={true}
                   yaxisLabels={true}

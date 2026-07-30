@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ConnectKitButton } from 'connectkit';
 
-function ConnectWallet() {
+function ConnectWALLET() {
   const t = useTranslations('GLOBAL');
   return (
     <ConnectKitButton
@@ -15,4 +15,4 @@ function ConnectWallet() {
   );
 }
 
-export default ConnectWallet;
+export default ConnectWALLET;

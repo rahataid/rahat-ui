@@ -25,7 +25,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const params = useParams();
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatPhone = usePhoneFormat();

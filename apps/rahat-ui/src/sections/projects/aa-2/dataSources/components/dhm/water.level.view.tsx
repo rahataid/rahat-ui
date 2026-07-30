@@ -27,7 +27,7 @@ export function WaterLevelView({
   selectedDate,
   setSelectedDate,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="p-4 rounded-sm border shadow">
       <Tabs value={activeTab} onValueChange={setActiveTab}>

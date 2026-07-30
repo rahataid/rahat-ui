@@ -27,7 +27,7 @@ export default function AddManualTriggerForm({
   phase,
   stationHeading,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <>
       <Form {...form}>

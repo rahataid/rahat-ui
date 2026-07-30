@@ -46,7 +46,7 @@ import { Tag, TagInput } from 'emblor';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function AddGrievances() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const labelMap: Record<string, string> = {
     'Technical': t('TECHNICAL'),
     'Non-Technical': t('NON_TECHNICAL'),

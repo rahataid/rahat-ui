@@ -16,7 +16,7 @@ import { Phase } from './aa.phases';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 
 function DisbursementCell({ methods }: { methods: string[] }) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? methods : methods.slice(0, 2);
@@ -47,7 +47,7 @@ export const useAASettingsPhaseColumns = (
   handleEditClick: (phase: Phase) => void,
   projectType?: string,
 ) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const riverBasinHeader =
     projectType === 'HEAT_WAVE' ? t('STATION') : t('RIVER_BASIN');
   const columns: ColumnDef<Phase>[] = [

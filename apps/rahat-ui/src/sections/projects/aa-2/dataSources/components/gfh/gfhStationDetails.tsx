@@ -12,7 +12,7 @@ interface IRiverInfoProps {
   updatedAt: string
 }
 const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   return (
     <div>

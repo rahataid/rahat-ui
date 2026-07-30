@@ -39,7 +39,7 @@ const GFHCard = ({
   updatedAt,
   basinSize,
 }: IGFHCardProps) => {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   const googleFloodHubInfoModal = useBoolean();
 

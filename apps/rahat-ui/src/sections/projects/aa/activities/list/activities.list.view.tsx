@@ -20,7 +20,7 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useTranslations } from 'next-intl';
 
 export default function ActivitiesList() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const searchParams = useSearchParams();
   const [activitySearchText, setActivitySearchText] =

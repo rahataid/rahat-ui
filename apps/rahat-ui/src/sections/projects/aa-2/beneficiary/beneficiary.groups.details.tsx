@@ -39,7 +39,7 @@ const BeneficiaryGroupsDetails = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { data: groupDetails, isPending: isGroupLoading } =
     useSingleBeneficiaryGroup(projectId, groupId);
 

@@ -11,7 +11,7 @@ import React from 'react';
 import { useRedemptionRequestColumn } from '../columns/useRedemptionRequest';
 
 export default function RedemptionRequestTable() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const { id, vendorId } = useParams();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

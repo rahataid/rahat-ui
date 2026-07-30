@@ -46,7 +46,7 @@ export function LayerSelector({
   onShowLayerChange,
   isLoading,
 }: LayerSelectorProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const categories = Object.keys(groupedLayers);
   const [selectedCategory, setSelectedCategory] = useState(
     categories[0] || 'DHM-WRF',

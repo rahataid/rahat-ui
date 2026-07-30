@@ -8,7 +8,7 @@ type IProps = {
 };
 
 export default function FlashFloodRiskMonitoringCard({ data }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const tGlobal = useTranslations('GLOBAL');
   const renderColor = React.useCallback((status: string) => {
     if (status === 'Low Risk') return 'bg-green-100 text-green-500';

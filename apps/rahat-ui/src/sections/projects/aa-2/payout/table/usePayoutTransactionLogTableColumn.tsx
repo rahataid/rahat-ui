@@ -23,8 +23,8 @@ interface PayoutTransactionLogRow {
 }
 
 export default function usePayoutTransactionLogTableColumn() {
-  const t = useTranslations('AA Project');
-  const tv = useTranslations('AA Project with Cash Tracker');
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();

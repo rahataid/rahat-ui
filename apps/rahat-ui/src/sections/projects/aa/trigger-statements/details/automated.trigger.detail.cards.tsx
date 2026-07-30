@@ -3,7 +3,7 @@ import { Info, Text, SignalHigh, Gauge } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const detailCardData = [
     {
       title: 'Status',

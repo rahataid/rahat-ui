@@ -13,7 +13,7 @@ const BeneficiaryDetail = () => {
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
   const searchParams = useSearchParams();
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const redirectTo = searchParams.get('groupId') as string;
   const redirectToFund = searchParams.get('fundId') as string;
   const vendorId = searchParams.get('vendorId') as string;

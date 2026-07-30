@@ -42,12 +42,12 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type LogRow = {
   uuid: string;
   beneficiaryUuid: string;
-  beneficiaryWalletAddress: string;
+  beneficiaryWALLETAddress: string;
   beneficiaryPhone: string | null;
   beneficiaryName: string | null;
   vendorUuid: string;
   vendorName: string;
-  vendorWalletAddress: string;
+  vendorWALLETAddress: string;
   quantity: number;
   txHash: string | null;
   redeemedAt?: string;
@@ -78,13 +78,13 @@ function formatLogs(raw: any[]): LogRow[] {
   return raw.map((r) => ({
     uuid: r.uuid ?? r.id ?? '',
     beneficiaryUuid: r.beneficiary?.uuid ?? '',
-    beneficiaryWalletAddress:
+    beneficiaryWALLETAddress:
       r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
     beneficiaryPhone: r.beneficiary?.phone ?? null,
     beneficiaryName: r.beneficiary?.name ?? null,
     vendorUuid: r.vendor?.uuid ?? '',
     vendorName: r.vendor?.name ?? 'N/A',
-    vendorWalletAddress: r.vendor?.walletAddress ?? 'N/A',
+    vendorWALLETAddress: r.vendor?.walletAddress ?? 'N/A',
     quantity: r.quantity ?? r.quantityDisbursed ?? 0,
     txHash: r.txHash ?? null,
     redeemedAt: r.redeemedAt ?? r.createdAt,
@@ -93,7 +93,7 @@ function formatLogs(raw: any[]): LogRow[] {
 }
 
 export default function InkindAllocationDetail() {
-  const tv = useTranslations('AA Project with Gnosis');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const { id, allocationId } = useParams();
@@ -265,11 +265,11 @@ export default function InkindAllocationDetail() {
 
   const columns: ColumnDef<LogRow>[] = [
     {
-      accessorKey: 'beneficiaryWalletAddress',
+      accessorKey: 'beneficiaryWALLETAddress',
       header: tv('BENEFICIARY_WALLET'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.original.beneficiaryWalletAddress}
+          text={row.original.beneficiaryWALLETAddress}
           maxLength={18}
         />
       ),
@@ -340,11 +340,11 @@ export default function InkindAllocationDetail() {
       cell: ({ row }) => {
         const r = row.original;
         const params = new URLSearchParams({
-          beneficiaryWalletAddress: r.beneficiaryWalletAddress,
+          beneficiaryWALLETAddress: r.beneficiaryWALLETAddress,
           beneficiaryPhone: r.beneficiaryPhone ?? '',
           beneficiaryName: r.beneficiaryName ?? '',
           vendorName: r.vendorName,
-          vendorWalletAddress: r.vendorWalletAddress,
+          vendorWALLETAddress: r.vendorWALLETAddress,
           txHash: r.txHash ?? '',
           quantity: String(r.quantity),
           redeemedAt: r.redeemedAt ?? '',

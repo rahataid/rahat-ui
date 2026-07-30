@@ -53,7 +53,7 @@ const UpdateOrAddStakeholdersGroup = () => {
   const groupId = params.editId as UUID;
   const router = useRouter();
   const isEditing = Boolean(groupId);
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
 
   const stakeholderGroupSchema = React.useMemo(
     () => buildStakeholderGroupSchema(t),

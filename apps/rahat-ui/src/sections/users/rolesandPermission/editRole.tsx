@@ -31,7 +31,7 @@ type Iprops = {
 };
 
 export default function EditRole({ roleDetail, currentPerms }: Iprops) {
-  const t = useTranslations('Users – Roles & Permissions');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const { closeSecondPanel } = useSecondPanel();
   const edit = useUserRoleEdit();
 

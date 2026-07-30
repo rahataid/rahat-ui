@@ -17,7 +17,7 @@ export default function DataSourceCard({
   dataEntryBy,
   component,
 }: IProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="p-4 bg-secondary rounded-sm">
       <div className="mb-2 flex justify-between items-center">

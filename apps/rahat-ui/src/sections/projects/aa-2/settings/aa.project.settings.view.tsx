@@ -13,7 +13,7 @@ import AAProjectPhasesView from './aa.phases';
 import { useSearchParams } from 'next/navigation';
 
 export default function AAProjectSettingsView() {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'settings';
 

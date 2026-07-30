@@ -39,7 +39,7 @@ export function TemperatureHistorySection({
   yaxisLabel,
   noDataLabel,
 }: TemperatureHistorySectionProps) {
-  const t = useTranslations('AA Project');
+  const t = useTranslations('AA_PROJECT');
   const resolvedTitle = title ?? t('TEMPERATURE_HISTORY');
   const resolvedYaxisLabel = yaxisLabel ?? t('TEMPERATURE_LABEL');
   const resolvedNoDataLabel = noDataLabel ?? t('TEMPERATURE_LABEL');

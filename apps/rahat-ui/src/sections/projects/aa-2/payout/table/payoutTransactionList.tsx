@@ -129,7 +129,7 @@ export default function PayoutTransactionList() {
             <SelectComponent
               name={tv('PAYOUT_TYPE')}
               options={['ALL', 'FSP', 'CVA']}
-              labels={{ ALL: tg('ALL') }}
+              labels={{ ALL: tg('ALL'), FSP: tg('FSP'), CVA: tg('CVA') }}
               onChange={(value) =>
                 handleFilterChange({
                   target: { name: 'payoutType', value },

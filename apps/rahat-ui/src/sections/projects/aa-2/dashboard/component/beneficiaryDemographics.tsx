@@ -26,7 +26,7 @@ const BeneficiaryDemographics = ({
   const genderStats =
     benefStats.find((s) => s.name === 'BENEFICIARY_GENDER')?.data ?? [];
   const genderPieData = genderStats.map((item: any) => ({
-    label: item.id,
+    label: tg.has(item.id) ? tg(item.id) : item.id,
     value: item.count,
   }));
 
@@ -37,8 +37,9 @@ const BeneficiaryDemographics = ({
     OTHER: '#9B59B6',
     UNKNOWN: '#F1C40F',
   };
-  const genderColors = genderPieData.map(
-    (item) => genderColorsMap[item.label] || '#CCCCCC',
+  // Keyed off the raw enum, not the translated label, so colours survive locale changes.
+  const genderColors = genderStats.map(
+    (item: any) => genderColorsMap[item.id] || '#CCCCCC',
   );
 
   // Get age group stats from BENEFICIARY_AGEGROUPS

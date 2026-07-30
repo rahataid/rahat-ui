@@ -398,7 +398,9 @@
     "INVALID_PHONE": "Invalid phone number",
     "INVALID_EMAIL": "Invalid email address",
     "AGE_POSITIVE_INTEGER": "Age must be a positive integer",
-    "GENDER_REQUIRED": "Must select a Gender"
+    "GENDER_REQUIRED": "Must select a Gender",
+    "FSP": "FSP",
+    "CVA": "CVA"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -668,7 +670,13 @@
     "BENEFICIARIES_TO_IMPORT": "Beneficiaries to Import",
     "IF_THIS_GROUP_IS_ASSIGNED_TO": "If this group is assigned to any project, the beneficiaries will be automatically synced to those projects after import. Any existing beneficiary records in those projects will be updated with the latest imported data. Please ensure the imported data is accurate before proceeding.",
     "DOWNLOAD_ERROR_REPORT": "Download Error Report",
-    "IMPORT_HAS_STARTED": "Import has started. Please reload the page to check the status."
+    "IMPORT_HAS_STARTED": "Import has started. Please reload the page to check the status.",
+    "AGE_POSITIVE_INTEGER": "Age must be a positive integer",
+    "GENDER_REQUIRED": "Please select a gender",
+    "INVALID_EMAIL": "Invalid email address",
+    "INVALID_PHONE": "Invalid phone number",
+    "NAME_LETTERS_ONLY": "Name can only contain letters and spaces",
+    "NAME_MIN_LENGTH": "Name must be at least 4 characters"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "IMPORT_DETAIL": "Import Detail",
@@ -2952,7 +2960,8 @@
     "FILL_OUT_DETAILS_TO_TRIGGER": "Fill out the details below and press confirm to trigger",
     "FILES_MUST_BE_UNDER_5MB": "*Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or CSV under 5 MB.",
     "INKIND_DETAILS": "Inkind Details",
-    "CONFIRMATION_STEP": "Confirmation"
+    "CONFIRMATION_STEP": "Confirmation",
+    "FSP": "FSP"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",

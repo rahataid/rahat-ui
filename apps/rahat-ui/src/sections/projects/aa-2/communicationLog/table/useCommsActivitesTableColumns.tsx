@@ -65,7 +65,13 @@ export default function useCommsActivitiesTableColumns() {
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const className = getPhaseColor(phase);
-        return <Badge className={className}>{tg(phase)}</Badge>;
+        // Phase names come from the API and admins can create new ones, so an
+        // unmapped phase must render as-is rather than throwing MISSING_MESSAGE.
+        return (
+          <Badge className={className}>
+            {tg.has(phase as never) ? tg(phase as never) : phase}
+          </Badge>
+        );
       },
     },
     {

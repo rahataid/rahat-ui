@@ -86,7 +86,7 @@ const TransactionLogs = () => {
 
   // 2. Tab config with counts
   const TabsTriggerStats = [
-    { value: 'fsp', title: 'FSP', count: fspTransactions.length },
+    { value: 'fsp', title: t('FSP'), count: fspTransactions.length },
     { value: 'cva', title: t('CVA'), count: cvaTransactions.length },
     { value: 'inkind', title: t('IN_KIND'), count: inkindTransactions.length },
   ];

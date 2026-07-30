@@ -34,7 +34,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
                 {truncateEthAddress(beneficiaryDetail?.walletAddress) ?? 'N/A'}
               </p>
               <p className="text-sm font-normal text-muted-foreground">
-                WALLET Address
+                Wallet Address
               </p>
             </div> */}
             <div>

@@ -37,7 +37,7 @@ export const useProjectBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'wallet',
-      header: 'WALLET',
+      header: 'Wallet',
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>

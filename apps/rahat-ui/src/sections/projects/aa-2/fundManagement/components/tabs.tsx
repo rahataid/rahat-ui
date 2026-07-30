@@ -22,7 +22,7 @@ import InKind from './inKind';
 import { InKindTracker } from './inKindTracker';
 import { MultiSigWalletView } from './multisig';
 import TokensOverview from './token.overview';
-import TREASURY from './treasury';
+import Treasury from './treasury';
 import { defaultFundManagementTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
 import { useEffect } from 'react';
 
@@ -34,7 +34,7 @@ const componentMap = {
   cashTracker: CashTracker,
   inKindTracker: InKindTracker,
   multisigWallet: MultiSigWalletView,
-  treasury: TREASURY,
+  treasury: Treasury,
 };
 
 interface BackendTab {

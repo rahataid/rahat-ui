@@ -62,7 +62,7 @@ export const paths = {
 
 export const defaultNavigations = [
   {
-    title: 'DASHBOARD',
+    title: 'Dashboard',
     path: paths.dashboard.root,
     icon: 'LayoutDashboard',
   },

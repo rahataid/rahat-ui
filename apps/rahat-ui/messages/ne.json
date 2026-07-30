@@ -509,7 +509,7 @@
     "INSUFFICIENT_PROJECT_BALANCE_TO_ASSIGN": "नगद वितरणका लागि पर्याप्त रकम उपलब्ध छैन।",
     "INTERNET_TYPE": "इन्टरनेटको प्रकार",
     "IN_BETWEEN_TODAY_UNTIL7_DAYS": "यस बीचमा आज ७ दिनसम्म उचाइको सम्भावना छ",
-    "IN_KIND": "प्रकारको",
+    "IN_KIND": "इन-काइन्ड",
     "IN_KIND_BENEFICIARY_LIST": "इन-काइन्ड लाभग्राही सूची",
     "IN_KIND_ITEM": "इन-काइन्ड आइटम",
     "IN_KIND_LOGS": "इन-प्रकार लगहरू",
@@ -1360,7 +1360,7 @@
     "CONFIRM_UPDATE_PHASE_DESC": "के तपाईं यो चरण अद्यावधिक गर्न निश्चित हुनुहुन्छ?",
     "CREATED_AT_COLON": "सिर्जना मिति:",
     "CREATE_GROUP": "समूह सिर्जना गर्नुहोस्",
-    "CVA": "CVA",
+    "CVA": "सीभीए",
     "DATA_TYPE": "डाटा प्रकार",
     "DELETE_PHASE_CONFIRM": "के तपाईं यो चरण मेटाउन निश्चित हुनुहुन्छ?",
     "DELETING": "मेट्दै…",
@@ -1670,7 +1670,8 @@
     "FILL_OUT_DETAILS_TO_TRIGGER": "तलका विवरणहरू भर्नुहोस् र प्रक्रिया सुरु गर्न (Confirm) बटनमा थिचेर पुष्टि गर्नुहोस्।",
     "FILES_MUST_BE_UNDER_5MB": "फाइलहरू JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX वा CSV ढाँचामा हुनुपर्छ र फाइलको आकार ५ MB भन्दा कम हुनुपर्छ।",
     "INKIND_DETAILS": "इनकाइन्ड विवरण",
-    "CONFIRMATION_STEP": "पुष्टिकरण"
+    "CONFIRMATION_STEP": "पुष्टिकरण",
+    "FSP": "एफएसपी"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खाता धारकको नाम",
@@ -2993,7 +2994,9 @@
     "SELECT_APP_PLACEHOLDER": "--आफ्नो एप चयन गर्नुहोस्--",
     "SELECT_APP_TO_PROCEED": "कृपया अगाडि बढ्न एप चयन गर्नुहोस्!",
     "ERROR": "त्रुटि",
-    "OF": "को"
+    "OF": "को",
+    "FSP": "एफएसपी",
+    "CVA": "सीभीए"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",

@@ -113,7 +113,7 @@ export default function GctOverview() {
 
       {/* Pie charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* TREASURY Status */}
+        {/* Treasury Status */}
         <div className="border rounded-sm p-4 flex flex-col">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-sm/6 font-semibold text-neutral-800 dark:text-white">

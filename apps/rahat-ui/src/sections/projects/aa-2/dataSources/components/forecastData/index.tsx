@@ -55,6 +55,7 @@ const ForeCastData = () => {
     gaugeForecast: extractedParams.gaugeForecast,
   });
 
+  const t = useTranslations('AA_PROJECT');
   const unit = getGaugeUnit(extractedParams.gaugeForecast || '');
   const columns = usePointTableColumns({ unit });
   const forecastTitle = `${
@@ -62,7 +63,6 @@ const ForeCastData = () => {
   } level`;
 
   if (isLoading) {
-  const t = useTranslations('AA_PROJECT');
     return (
       <div className="h-full w-full flex items-center justify-center">
         <TableLoader />

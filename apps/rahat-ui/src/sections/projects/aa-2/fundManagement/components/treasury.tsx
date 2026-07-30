@@ -28,7 +28,7 @@ import AddFundDialog from './add.fund.dialog';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
-export default function TREASURY() {
+export default function Treasury() {
   const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;

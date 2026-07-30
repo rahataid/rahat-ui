@@ -192,6 +192,8 @@ export const useProjectStakeholdersTableColumns = (
 };
 
 export const useProjectStakeholdersGroupTableColumns = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id, groupId } = useParams();
 
@@ -281,6 +283,8 @@ export const useProjectStakeholdersGroupTableColumns = () => {
 };
 
 export const useProjectSelectStakeholdersTableColumns = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',

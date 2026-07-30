@@ -67,12 +67,13 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
   };
   const genderData = (mappedStats['BENEFICIARY_GENDER'] || []).map(
     (item: any) => ({
-      label: item.id,
+      label: g.has(item.id) ? g(item.id) : item.id,
       value: item.count,
     }),
   );
-  const genderColors = genderData.map(
-    (g) => genderColorsMap[g.label] || '#CCCCCC',
+  // Keyed off the raw enum, not the translated label, so colours survive locale changes.
+  const genderColors = (mappedStats['BENEFICIARY_GENDER'] || []).map(
+    (item: any) => genderColorsMap[item.id] || '#CCCCCC',
   );
 
   return (

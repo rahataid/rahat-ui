@@ -405,7 +405,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="grid grid-cols-subgrid col-span-2">
-                  <Input className="mt-3" type="wallet" placeholder="WALLET" />
+                  <Input className="mt-3" type="wallet" placeholder="Wallet" />
                 </div>
                 <div className="grid grid-cols-subgrid col-span-1 mt-3">
                   <Button

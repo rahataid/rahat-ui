@@ -61,6 +61,7 @@ export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();

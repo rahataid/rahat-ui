@@ -187,7 +187,7 @@ export default function GroupDetailView() {
     const worksheetData = rowsToDownload?.map((benef: any) => ({
       Name: benef?.Beneficiary?.pii.name,
       Phone: benef?.Beneficiary?.pii.phone,
-      WALLET_Address: benef?.Beneficiary?.walletAddress,
+      Wallet_Address: benef?.Beneficiary?.walletAddress,
       Reason: benef?.Beneficiary?.extras?.error,
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);

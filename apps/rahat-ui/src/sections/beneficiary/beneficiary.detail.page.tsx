@@ -107,7 +107,7 @@ export default function BeneficiaryDetail() {
         </div>
 
         {/* <div>
-          <h1 className="text-md text-muted-foreground">WALLET</h1>
+          <h1 className="text-md text-muted-foreground">Wallet</h1>
           <Badge>{beneficiary?.walletAddress ?? 'N/A'}</Badge>
         </div> */}
 

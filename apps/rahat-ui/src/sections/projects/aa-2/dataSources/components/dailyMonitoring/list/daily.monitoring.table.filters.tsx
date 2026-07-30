@@ -43,6 +43,7 @@ const SelectComponent = ({
   value,
   handleFilterChange,
 }: ISelectComponent) => {
+  const t = useTranslations('GLOBAL');
   return (
     <Select
       value={value}

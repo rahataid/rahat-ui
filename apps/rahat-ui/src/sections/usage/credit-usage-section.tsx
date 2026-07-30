@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import {
   useReactTable,
   getCoreRowModel,
@@ -41,12 +42,18 @@ type CreditUsageSectionProps = {
   defaultTo?: Date;
 };
 
-function transformCreditsForChart(credits: CreditData[]) {
+function transformCreditsForChart(
+  credits: CreditData[],
+  formatDate: (date: string | Date, pattern?: string) => string,
+) {
+  // Bucket by ISO date: it sorts chronologically as a plain string and stays
+  // locale-independent. The display label is derived separately, because a
+  // localised label ("जुल ०१") cannot be parsed back into a Date to sort by.
   const dateMap = new Map<string, Map<string, number>>();
   const transportNames = new Set<string>();
 
   credits.forEach((item) => {
-    const dateKey = format(new Date(item.date), 'MMM dd');
+    const dateKey = format(new Date(item.date), 'yyyy-MM-dd');
     transportNames.add(item.transportName);
 
     if (!dateMap.has(dateKey)) {
@@ -59,9 +66,7 @@ function transformCreditsForChart(credits: CreditData[]) {
     );
   });
 
-  const sortedDates = Array.from(dateMap.keys()).sort(
-    (a, b) => new Date(a).getTime() - new Date(b).getTime(),
-  );
+  const sortedDates = Array.from(dateMap.keys()).sort();
   const transports = Array.from(transportNames);
 
   const series = transports.map((name) => ({
@@ -69,7 +74,10 @@ function transformCreditsForChart(credits: CreditData[]) {
     data: sortedDates.map((date) => dateMap.get(date)?.get(name) ?? 0),
   }));
 
-  return { categories: sortedDates, series };
+  return {
+    categories: sortedDates.map((d) => formatDate(d, 'MMM dd')),
+    series,
+  };
 }
 
 export default function CreditUsageSection({
@@ -84,10 +92,11 @@ export default function CreditUsageSection({
 }: CreditUsageSectionProps) {
   const t = useTranslations('USAGE');
   const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const creditColumns = useCreditColumns();
   const chartData = useMemo(
-    () => transformCreditsForChart(credits ?? []),
-    [credits],
+    () => transformCreditsForChart(credits ?? [], formatDate),
+    [credits, formatDate],
   );
 
   const tableData: CreditRow[] = useMemo(

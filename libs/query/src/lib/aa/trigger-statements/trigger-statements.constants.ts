@@ -14,6 +14,8 @@ export const FORECAST_QUERY_KEYS = {
 export const PHASE_QUERY_KEYS = {
   PHASES: 'phases',
   PHASE: 'phase',
-  TRIGGER_STATEMENT: 'triggerstatements',
+  TRIGGER_STATEMENTS: 'triggerStatements',
+  TRIGGER_STATEMENT: 'triggerStatement',
   PHASE_HISTORY: 'phaseHistory',
 };
+// triggerStatement

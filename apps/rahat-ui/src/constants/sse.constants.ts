@@ -11,7 +11,12 @@ export type EVENT =
 
 export const EVENT_QUERY_MAP: Record<string, (string | UUID)[][]> = {
   'beneficiaries.updated': [['beneficiaries']],
-  'phase.updated': [[PHASE_QUERY_KEYS.PHASE], [PHASE_QUERY_KEYS.PHASES]],
+  'phase.updated': [
+    [PHASE_QUERY_KEYS.PHASE],
+    [PHASE_QUERY_KEYS.PHASES],
+    [PHASE_QUERY_KEYS.TRIGGER_STATEMENTS],
+    [PHASE_QUERY_KEYS.TRIGGER_STATEMENT],
+  ],
   'phase.created': [[PHASE_QUERY_KEYS.PHASES]],
   'phase.deleted': [[PHASE_QUERY_KEYS.PHASES]],
   'trigger.updated': [[PHASE_QUERY_KEYS.PHASE]],

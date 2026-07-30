@@ -188,13 +188,14 @@ export default function InkindOverview() {
             name={'Export Report'}
             variant="outline"
             disabled={!hasData}
-            // className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
           />
           <DateRangePicker
             placeholder="Pick date range"
             handleDateChange={handleDateChange}
             handleClearDate={handleClearDate}
             type="range"
+            className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] "
           />
         </div>
       </div>

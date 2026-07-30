@@ -1,5 +1,8 @@
-import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
-import { Heading } from 'apps/rahat-ui/src/common';
+import {
+  useCommuicationStatsforBeneficiaryandStakeHolders,
+  usePagination,
+} from '@rahat-ui/query';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import React from 'react';
@@ -14,20 +17,34 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { IndividualLogTab } from './components/IndividualLogs';
-import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
-import { X } from 'lucide-react';
+import { CloudDownloadIcon } from 'lucide-react';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 
 export default function CommunicationMainLogsView() {
   const { id: ProjectId } = useParams();
-  const [startDate, setStartDate] = React.useState<Date | undefined>();
-  const [endDate, setEndDate] = React.useState<Date | undefined>();
+  const { filters, setFilters } = usePagination();
 
   const { data, isLoading: isLoadingBenefStakeholdersStats } =
-    useCommuicationStatsforBeneficiaryandStakeHolders(ProjectId as UUID, {
-      start: startDate,
-      end: endDate,
-    });
+    useCommuicationStatsforBeneficiaryandStakeHolders(
+      ProjectId as UUID,
+      filters,
+    );
   const { activeTab, setActiveTab } = useActiveTab('overview');
+
+  const handleDateChange = (range: any) => {
+    if (range?.from && range?.to) {
+      setFilters({
+        ...filters,
+        startDate: range.from.toISOString(),
+        endDate: range.to.toISOString(),
+        _v: Date.now(),
+      });
+    }
+  };
+
+  const handleClearDate = () => {
+    setFilters({ _v: Date.now() });
+  };
 
   return (
     <div className="flex flex-col p-4">
@@ -75,30 +92,17 @@ export default function CommunicationMainLogsView() {
           </TabsList>
           {activeTab === 'overview' && (
             <div className="flex gap-2 items-center">
-              {(startDate || endDate) && (
-                <X
-                  className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-foreground shrink-0"
-                  onClick={() => {
-                    setStartDate(undefined);
-                    setEndDate(undefined);
-                  }}
-                />
-              )}
-              <DatePicker
-                placeholder="Pick Start Date"
-                handleDateChange={(date: Date) => setStartDate(date)}
-                type="start"
-                selectedDate={startDate}
-                maxDate={endDate}
-                className="w-[160px]"
+              <IconLabelBtn
+                Icon={CloudDownloadIcon}
+                name={'Export Report'}
+                variant="outline"
+                className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
               />
-              <DatePicker
-                placeholder="Pick End Date"
-                handleDateChange={(date: Date) => setEndDate(date)}
-                type="end"
-                selectedDate={endDate}
-                minDate={startDate}
-                className="w-[160px]"
+              <DateRangePicker
+                placeholder="Pick date range"
+                handleDateChange={handleDateChange}
+                handleClearDate={handleClearDate}
+                type="range"
               />
             </div>
           )}

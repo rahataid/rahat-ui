@@ -100,22 +100,30 @@ export const useSingleStat = (uuid: UUID, name: string) => {
 
 export const useCommuicationStatsforBeneficiaryandStakeHolders = (
   uuid: UUID,
-  dateRange?: { start?: Date; end?: Date },
+  payload: any,
 ) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['commsStatsForBeneficiaryandStakeHolders', uuid, dateRange],
+    queryKey: ['commsStatsForBeneficiaryandStakeHolders', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'ms.triggers.getTransportSessionStatsByGroup',
           payload: {
-            ...(dateRange?.start && {
-              startDate: dateRange.start.toISOString(),
+            ...(payload?.startDate && {
+              startDate:
+                typeof payload.startDate === 'string'
+                  ? payload.startDate
+                  : payload.startDate.toISOString(),
             }),
-            ...(dateRange?.end && { endDate: dateRange.end.toISOString() }),
+            ...(payload?.endDate && {
+              endDate:
+                typeof payload.endDate === 'string'
+                  ? payload.endDate
+                  : payload.endDate.toISOString(),
+            }),
           },
         },
       });

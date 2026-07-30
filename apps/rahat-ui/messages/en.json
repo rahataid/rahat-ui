@@ -391,7 +391,14 @@
     "EXPORT_BENEFICIARY_TITLE": "Export Beneficiary",
     "SELECT_APP_PLACEHOLDER": "--Select Your App--",
     "SELECT_APP_TO_PROCEED": "Please select app to proceed!",
-    "ERROR": "Error"
+    "ERROR": "Error",
+    "OF": "of",
+    "NAME_MIN_LENGTH": "Name must be at least 4 characters",
+    "NAME_LETTERS_ONLY": "Name can only contain letters and spaces",
+    "INVALID_PHONE": "Invalid phone number",
+    "INVALID_EMAIL": "Invalid email address",
+    "AGE_POSITIVE_INTEGER": "Age must be a positive integer",
+    "GENDER_REQUIRED": "Must select a Gender"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",

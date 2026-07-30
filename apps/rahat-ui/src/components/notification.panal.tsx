@@ -26,7 +26,7 @@ export default function NotificationPanel({
   isLoading = false,
 }: NotificationPanelProps) {
   const t = useTranslations('NOTIFICATIONS');
-  const displayedNOTIFICATIONS = notifications.slice(0, 4);
+  const displayedNotifications = notifications.slice(0, 4);
 
   if (!isOpen) return null;
 
@@ -72,7 +72,7 @@ export default function NotificationPanel({
             </div>
           ) : (
             <div className="space-y-1">
-              {displayedNOTIFICATIONS.map((notification: Notification) => (
+              {displayedNotifications.map((notification: Notification) => (
                 <NotificationItems
                   key={notification.id}
                   notification={notification}

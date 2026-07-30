@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { NavItem } from './nav-items.types';
 
-export const useTREASURYNavItems = () => {
+export const useTreasuryNavItems = () => {
   const t = useTranslations('TREASURY_NAVIGATION');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();

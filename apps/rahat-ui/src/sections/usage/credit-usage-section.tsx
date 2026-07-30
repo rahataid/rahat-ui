@@ -17,7 +17,7 @@ import {
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { DemoTable } from '../../common/table';
 import { useCreditColumns, CreditRow } from './useCreditColumns';
-import USAGEFilters from './usage-filters';
+import UsageFilters from './usage-filters';
 
 type CreditData = {
   date: string;
@@ -30,7 +30,7 @@ type CreditData = {
   sessionCuids: string[];
 };
 
-type CreditUSAGESectionProps = {
+type CreditUsageSectionProps = {
   credits?: CreditData[];
   loading?: boolean;
   xref: string | null;
@@ -72,7 +72,7 @@ function transformCreditsForChart(credits: CreditData[]) {
   return { categories: sortedDates, series };
 }
 
-export default function CreditUSAGESection({
+export default function CreditUsageSection({
   credits,
   loading,
   xref,
@@ -81,7 +81,7 @@ export default function CreditUSAGESection({
   onDateClear,
   defaultFrom,
   defaultTo,
-}: CreditUSAGESectionProps) {
+}: CreditUsageSectionProps) {
   const t = useTranslations('USAGE');
   const formatNum = useNumberFormat();
   const creditColumns = useCreditColumns();
@@ -115,7 +115,7 @@ export default function CreditUSAGESection({
         <CardTitle className="text-lg font-semibold">
           {t('CREDIT_CONSUMPTION')}
         </CardTitle>
-        <USAGEFilters
+        <UsageFilters
           selectedXref={xref}
           onXrefChange={onXrefChange}
           onDateChange={onDateChange}

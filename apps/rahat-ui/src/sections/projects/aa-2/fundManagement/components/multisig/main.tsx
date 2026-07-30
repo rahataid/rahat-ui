@@ -48,7 +48,7 @@ interface CardProps {
   icon: React.ReactNode;
 }
 
-export default function MultiSigWALLETView() {
+export default function MultiSigWalletView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const { clickToCopy, copyAction } = useCopy();
   const t = useTranslations('AA_PROJECT_WITH_GNOSIS');
@@ -74,7 +74,7 @@ export default function MultiSigWALLETView() {
   );
 
   const safeNetwork = chainSettings?.network || 'basesep';
-  const safeWALLET = safeSettings?.address;
+  const safeWallet = safeSettings?.address;
 
   const InfoCardData: CardProps[] = [
     {
@@ -104,7 +104,7 @@ export default function MultiSigWALLETView() {
 
   const openSafeTx = () => {
     window.open(
-      `https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWALLET}`,
+      `https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`,
       '_blank',
       'noopener,noreferrer',
     );

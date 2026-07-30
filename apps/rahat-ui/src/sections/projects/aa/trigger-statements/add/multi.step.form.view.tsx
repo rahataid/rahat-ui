@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { STEPPER, Step } from 'react-form-stepper';
+import { Stepper, Step } from 'react-form-stepper';
 import AddTriggerStatementView from './add.trigger.statements.view';
 import ConfigurePhase from './configure.phase';
 import { useForm } from 'react-hook-form';
@@ -207,7 +207,7 @@ const MultiStepForm = () => {
   return (
     <div className="p-4 bg-secondary">
       <div className="bg-card p-4 rounded">
-        <STEPPER
+        <Stepper
           activeStep={activeStep}
           styleConfig={{
             completedBgColor: '#10b981',
@@ -224,7 +224,7 @@ const MultiStepForm = () => {
           {steps.map((step, index) => (
             <Step key={index} label={step.label} />
           ))}
-        </STEPPER>
+        </Stepper>
         {activeStep === 0 && (
           <AddTriggerStatementView
             nextStep={nextStep}

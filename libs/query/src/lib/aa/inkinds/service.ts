@@ -179,7 +179,7 @@ export const useInkindsSummary = (projectUUID: UUID) => {
   });
 };
 
-export const useInkindTRANSACTIONS = (
+export const useInkindTransactions = (
   projectUUID: UUID,
   params?: { page?: number; perPage?: number },
 ) => {

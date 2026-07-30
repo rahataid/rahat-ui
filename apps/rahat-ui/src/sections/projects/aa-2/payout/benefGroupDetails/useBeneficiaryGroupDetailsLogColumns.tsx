@@ -49,7 +49,7 @@ const editableStatuses: PayoutTransactionStatus[] = [
 
 type BeneficiaryGroupDetailsLogRow = {
   id: string;
-  beneficiaryWALLETAddress: string;
+  beneficiaryWalletAddress: string;
   uuid: UUID;
   txHash?: string;
   amount?: number;
@@ -61,7 +61,7 @@ type BeneficiaryGroupDetailsLogRow = {
     type?: string;
   };
   info?: {
-    offrampWALLETAddress?: string;
+    offrampWalletAddress?: string;
     error?: string;
   };
   isCompleted?: boolean;
@@ -110,34 +110,34 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   };
   const columns: ColumnDef<BeneficiaryGroupDetailsLogRow>[] = [
     {
-      accessorKey: 'beneficiaryWALLETAddress',
+      accessorKey: 'beneficiaryWalletAddress',
       header: tv('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <TruncatedCell
-            text={row?.original?.beneficiaryWALLETAddress || tg('N_A')}
+            text={row?.original?.beneficiaryWalletAddress || tg('N_A')}
             maxLength={10}
           />
 
           <CopyTooltip
-            value={row?.original?.beneficiaryWALLETAddress || ''}
+            value={row?.original?.beneficiaryWalletAddress || ''}
             uniqueKey={row?.original?.id}
           />
         </div>
       ),
     },
     {
-      accessorKey: 'transactionWALLETId',
+      accessorKey: 'transactionWalletId',
       header: tv('TRANSACTION_WALLET_ID'),
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TruncatedCell
-              text={row?.original?.info?.offrampWALLETAddress || tg('N_A')}
+              text={row?.original?.info?.offrampWalletAddress || tg('N_A')}
               maxLength={10}
             />
             <CopyTooltip
-              value={row?.original?.info?.offrampWALLETAddress || ''}
+              value={row?.original?.info?.offrampWalletAddress || ''}
               uniqueKey={row?.original?.uuid}
             />
           </div>

@@ -20,7 +20,7 @@ export default function BeneficiaryDetail() {
   const groupId = searchParams.get('groupId');
   const txnDetailsId = searchParams.get('txnDetailsId');
 
-  const [walletAddressCopied, setWALLETAddressCopied] =
+  const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
   useSingleBeneficiary(id as UUID);
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
@@ -29,7 +29,7 @@ export default function BeneficiaryDetail() {
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWALLETAddressCopied(walletAddress);
+    setWalletAddressCopied(walletAddress);
   };
 
   const routePath =

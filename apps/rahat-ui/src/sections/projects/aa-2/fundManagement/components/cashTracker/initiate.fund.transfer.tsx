@@ -1,7 +1,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useGetBalance,
-  useGetTRANSACTIONS,
+  useGetTransactions,
   useInitateFundTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -73,7 +73,7 @@ export default function InitiateFundTransfer({}: {}) {
     id,
     currentEntity?.smartaccount || '',
   );
-  const { data: transactions } = useGetTRANSACTIONS(id);
+  const { data: transactions } = useGetTransactions(id);
 
   //get current entity pending transfer
   const pendingTransfers = useMemo(() => {

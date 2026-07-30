@@ -13,7 +13,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useGetBeneficiaryBalance,
   useGetCash,
-  useGetTRANSACTIONS,
+  useGetTransactions,
   useInitateFundTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -68,7 +68,7 @@ export function CashTracker() {
   const entities = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
   );
-  const { data: transactions, isFetched } = useGetTRANSACTIONS(uuid);
+  const { data: transactions, isFetched } = useGetTransactions(uuid);
   const { data: beneficiaryBalance } = useGetBeneficiaryBalance(uuid);
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {

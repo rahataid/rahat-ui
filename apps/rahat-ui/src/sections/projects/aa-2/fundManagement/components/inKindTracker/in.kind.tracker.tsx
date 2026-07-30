@@ -22,7 +22,7 @@ import { Plus, User } from 'lucide-react';
 import {
   PROJECT_SETTINGS_KEYS,
   useGetInkind,
-  useGetInkindTRANSACTIONS,
+  useGetInkindTransactions,
   useProjectSettingsStore,
   ConfirmReceipt,
 } from '@rahat-ui/query';
@@ -49,7 +49,7 @@ export function InKindTracker() {
     ); // Default to first entity for demo
   }, [currentUser, entities]);
 
-  const { data: transactions, isFetched } = useGetInkindTRANSACTIONS(uuid);
+  const { data: transactions, isFetched } = useGetInkindTransactions(uuid);
   const getInkind = useGetInkind(uuid);
 
   const [balances, setBalances] = useState<

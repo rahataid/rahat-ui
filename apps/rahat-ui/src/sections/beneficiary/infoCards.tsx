@@ -42,7 +42,7 @@ export default function InfoCards() {
 
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
   const setId = (id: any) => setSelectedRow(id);
-  const [walletAddressCopied, setWALLETAddressCopied] =
+  const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<boolean>(false);
 
   const handleAssignProject = async () => {
@@ -74,7 +74,7 @@ export default function InfoCards() {
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWALLETAddressCopied(true);
+    setWalletAddressCopied(true);
   };
 
   return (

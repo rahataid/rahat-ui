@@ -96,7 +96,7 @@ export default function DailyMonitoringTableFilters({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>{tGlobal('PICK_A_DATE')}</span>}
+            {date ? format(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>

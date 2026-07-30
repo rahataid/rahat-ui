@@ -32,9 +32,9 @@ import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { Transaction, useTableColumns } from './useTableColumns';
-import { useTREASURYTokenTransaction } from '@rahat-ui/query';
+import { useTreasuryTokenTransaction } from '@rahat-ui/query';
 
-export function TRANSACTIONSTable() {
+export function TransactionsTable() {
   const t = useTranslations('TREASURY_TRANSACTIONS');
   const tg = useTranslations('GLOBAL');
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -46,7 +46,7 @@ export function TRANSACTIONSTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const columns = useTableColumns();
 
-  const { data: tokenTransaction } = useTREASURYTokenTransaction();
+  const { data: tokenTransaction } = useTreasuryTokenTransaction();
 
   const table = useReactTable({
     data: tokenTransaction?.transfers ?? [],

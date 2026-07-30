@@ -19,10 +19,10 @@ export default function InkindTransactionDetail() {
   const queryClient = useQueryClient();
   const sp = useSearchParams();
 
-  const beneficiaryWALLETAddress = sp.get('beneficiaryWALLETAddress') ?? '';
+  const beneficiaryWalletAddress = sp.get('beneficiaryWalletAddress') ?? '';
   const beneficiaryPhone = sp.get('beneficiaryPhone') || '';
   const vendorName = sp.get('vendorName') ?? '';
-  const vendorWALLETAddress = sp.get('vendorWALLETAddress') ?? '';
+  const vendorWalletAddress = sp.get('vendorWalletAddress') ?? '';
   const txHash = sp.get('txHash') || '';
   const quantity = sp.get('quantity') ?? '0';
   const redeemedAt = sp.get('redeemedAt') ?? '';
@@ -90,7 +90,7 @@ export default function InkindTransactionDetail() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-7">
             <InfoItem
               label={tv('BENEFICIARY_WALLET_ADDRESS')}
-              value={beneficiaryWALLETAddress || undefined}
+              value={beneficiaryWalletAddress || undefined}
               copyable
             />
             <InfoItem
@@ -107,7 +107,7 @@ export default function InkindTransactionDetail() {
             <InfoItem label={tv('VENDOR_NAME')} value={vendorName || undefined} />
             <InfoItem
               label={tv('VENDOR_WALLET_ADDRESS')}
-              value={vendorWALLETAddress || undefined}
+              value={vendorWalletAddress || undefined}
               copyable
             />
             {otpExemptionReason && (

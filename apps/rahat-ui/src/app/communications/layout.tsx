@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import DASHBOARDLayout from '../dashboard/layout';
+import DashboardLayout from '../dashboard/layout';
 import { useNavItems } from '../../sections/communications/useNavItems';
 import { CommunicationLayout } from '../../sections/communications/components';
 import { usePathname } from 'next/navigation';
@@ -17,7 +17,7 @@ export default function CommunicationLayoutRoot({
   const menuItems = useNavItems();
   const allowedPaths = ['/communications/add'];
   return (
-    <DASHBOARDLayout>
+    <DashboardLayout>
       <title>{t('COMMUNICATIONS')}</title>
       {!allowedPaths.includes(pathName) ? (
         <>{children}</>
@@ -26,6 +26,6 @@ export default function CommunicationLayoutRoot({
           {children}
         </CommunicationLayout>
       )}
-    </DASHBOARDLayout>
+    </DashboardLayout>
   );
 }

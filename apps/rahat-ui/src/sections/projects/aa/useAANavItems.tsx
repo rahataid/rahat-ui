@@ -16,6 +16,7 @@ type NavItem = BaseNavItem;
 
 const NAV_TITLE_KEYS: Record<string, string> = {
   'DASHBOARD': 'DASHBOARD',
+  'Dashboard': 'DASHBOARD',
   'Project Beneficiaries': 'PROJECT_BENEFICIARIES',
   'Stakeholders': 'STAKEHOLDERS',
   'Forecast Data': 'FORECAST_DATA',
@@ -53,7 +54,7 @@ export const useNavItems = () => {
   // Map default nav items
   const mappedNavItems: NavItem[] = backendNavs.map((item: NavItem) => {
     const navItem: NavItem = {
-      title: t(NAV_TITLE_KEYS[item.title] || item.title),
+      title: t(NAV_TITLE_KEYS[item.title] || item.title.toUpperCase()),
       path: `/projects/aa/${projectId}/${item.path}`,
       icon: item.icon,
     };

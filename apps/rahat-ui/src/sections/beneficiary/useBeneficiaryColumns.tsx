@@ -21,7 +21,7 @@ import { useTranslations } from 'next-intl';
 export const useBeneficiaryTableColumns = () => {
   const t = useTranslations('GLOBAL');
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-  const [walletAddressCopied, setWALLETAddressCopied] = useState<string>();
+  const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
   const searchParam = useSearchParams();
 
@@ -29,7 +29,7 @@ export const useBeneficiaryTableColumns = () => {
 
   const clickToCopy = (walletAddress: string, uuid: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWALLETAddressCopied(uuid);
+    setWalletAddressCopied(uuid);
   };
   const openSplitDetailView = (rowDetail: ListBeneficiary) => {
     setSecondPanelComponent(

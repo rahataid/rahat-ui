@@ -17,8 +17,8 @@ interface IVendorsInfo {
   vendorData: {
     name: string | null;
     phone: string | null;
-    vendorWALLET: string | null;
-    vendorWALLETAddressCopied: boolean;
+    vendorWallet: string | null;
+    vendorWalletAddressCopied: boolean;
     vendorStatus: boolean;
     clickToCopy: () => void;
   };
@@ -27,7 +27,7 @@ interface IVendorsInfo {
 const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
   const t = useTranslations('VENDORS_INFO_CARD');
   const g = useTranslations('GLOBAL');
-  const { name, phone, vendorWALLET, vendorStatus } = vendorData;
+  const { name, phone, vendorWallet, vendorStatus } = vendorData;
   return (
     <>
       <Card className="mt-2 rounded shadow">
@@ -43,13 +43,13 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
                       onClick={vendorData.clickToCopy}
                     >
                       <p className="text-muted-foreground text-base">
-                        {vendorWALLET
-                          ? vendorWALLET.slice(0, 10) +
+                        {vendorWallet
+                          ? vendorWallet.slice(0, 10) +
                             '...' +
-                            vendorWALLET.slice(-10)
+                            vendorWallet.slice(-10)
                           : '-'}
                       </p>
-                      {vendorData?.vendorWALLETAddressCopied ? (
+                      {vendorData?.vendorWalletAddressCopied ? (
                         <CopyCheck size={12} strokeWidth={1.5} />
                       ) : (
                         <Copy
@@ -61,7 +61,7 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
-                        {vendorData.vendorWALLETAddressCopied
+                        {vendorData.vendorWalletAddressCopied
                           ? g('COPIED')
                           : g('CLICK_TO_COPY')}
                       </p>

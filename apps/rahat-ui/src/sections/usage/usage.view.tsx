@@ -11,26 +11,26 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
-  useCommsUSAGE,
-  useCommsUSAGEByXref,
+  useCommsUsage,
+  useCommsUsageByXref,
   useCommsCredits,
   useCommsCreditsByXref,
 } from '@rahat-ui/query';
-import USAGEFilters from './usage-filters';
-import USAGEOverviewCards from './usage-overview-cards';
-import USAGEByTransport from './usage-by-transport';
+import UsageFilters from './usage-filters';
+import UsageOverviewCards from './usage-overview-cards';
+import UsageByTransport from './usage-by-transport';
 import TransportDetailCards from './transport-detail-cards';
-import CreditUSAGESection from './credit-usage-section';
+import CreditUsageSection from './credit-usage-section';
 
 type DateRangeQuery = { from?: string; to?: string };
 
 const CREDIT_DEFAULT_FROM = subDays(new Date(), 30);
 const CREDIT_DEFAULT_TO = new Date();
 
-export default function USAGEView() {
+export default function UsageView() {
   const t = useTranslations('USAGE');
-  const [usageXref, setUSAGEXref] = useState<string | null>(null);
-  const [usageDateRange, setUSAGEDateRange] = useState<DateRangeQuery>({});
+  const [usageXref, setUsageXref] = useState<string | null>(null);
+  const [usageDateRange, setUsageDateRange] = useState<DateRangeQuery>({});
   const [creditXref, setCreditXref] = useState<string | null>(null);
   const [creditDateRange, setCreditDateRange] = useState<DateRangeQuery>({
     from: format(CREDIT_DEFAULT_FROM, 'yyyy-MM-dd'),
@@ -38,25 +38,25 @@ export default function USAGEView() {
   });
 
   const { data: usageData, isPending: usageLoading } =
-    useCommsUSAGE(usageXref ? undefined : usageDateRange);
+    useCommsUsage(usageXref ? undefined : usageDateRange);
   const { data: usageByXrefData, isPending: usageByXrefLoading } =
-    useCommsUSAGEByXref(usageXref ?? '', usageDateRange);
+    useCommsUsageByXref(usageXref ?? '', usageDateRange);
 
   const { data: creditsData, isPending: creditsLoading } =
     useCommsCredits(creditXref ? undefined : creditDateRange);
   const { data: creditsByXrefData, isPending: creditsByXrefLoading } =
     useCommsCreditsByXref(creditXref ?? '', creditDateRange);
 
-  const activeUSAGE = usageXref ? usageByXrefData : usageData;
-  const activeUSAGELoading = usageXref ? usageByXrefLoading : usageLoading;
+  const activeUsage = usageXref ? usageByXrefData : usageData;
+  const activeUsageLoading = usageXref ? usageByXrefLoading : usageLoading;
 
   const activeCredits = creditXref ? creditsByXrefData : creditsData;
   const activeCreditsLoading = creditXref
     ? creditsByXrefLoading
     : creditsLoading;
 
-  const totals = activeUSAGE?.data?.totals;
-  const byTransport = activeUSAGE?.data?.byTransport;
+  const totals = activeUsage?.data?.totals;
+  const byTransport = activeUsage?.data?.byTransport;
   const credits = activeCredits?.data;
 
   return (
@@ -69,24 +69,24 @@ export default function USAGEView() {
             <CardTitle className="text-lg font-semibold">
               {t('COMMUNICATION_USAGE')}
             </CardTitle>
-            <USAGEFilters
+            <UsageFilters
               selectedXref={usageXref}
-              onXrefChange={setUSAGEXref}
-              onDateChange={setUSAGEDateRange}
-              onDateClear={() => setUSAGEDateRange({})}
+              onXrefChange={setUsageXref}
+              onDateChange={setUsageDateRange}
+              onDateClear={() => setUsageDateRange({})}
             />
           </CardHeader>
           <CardContent className="space-y-6">
-            <USAGEOverviewCards totals={totals} loading={activeUSAGELoading} />
-            <USAGEByTransport byTransport={byTransport} />
+            <UsageOverviewCards totals={totals} loading={activeUsageLoading} />
+            <UsageByTransport byTransport={byTransport} />
             <TransportDetailCards
               byTransport={byTransport}
-              loading={activeUSAGELoading}
+              loading={activeUsageLoading}
             />
           </CardContent>
         </Card>
 
-        <CreditUSAGESection
+        <CreditUsageSection
           credits={credits}
           loading={activeCreditsLoading}
           xref={creditXref}

@@ -14,7 +14,7 @@ import React from 'react';
 interface IProps {
   data: any;
 }
-export default function WeatherDASHBOARD({ data }: IProps) {
+export default function WeatherDashboard({ data }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   console.log(data?.[0].data?.extremeWeatherOutlook);

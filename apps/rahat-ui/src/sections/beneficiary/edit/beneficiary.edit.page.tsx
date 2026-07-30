@@ -29,7 +29,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
-import { Loader2, WALLET } from 'lucide-react';
+import { Loader2, Wallet } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import {
@@ -63,19 +63,19 @@ export default function AddBeneficiaryForm() {
   const FormSchema = z.object({
     name: z
       .string()
-      .min(4, { message: 'Name must be at least 4 characters' })
+      .min(4, { message: g('NAME_MIN_LENGTH') })
       .regex(/^[a-zA-Z\s]+$/, {
-        message: 'Name can only contain letters and spaces',
+        message: g('NAME_LETTERS_ONLY'),
       }),
     walletAddress: z.string(),
     phone: z
       .string()
-      .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
+      .refine(isValidPhoneNumber, { message: g('INVALID_PHONE') }),
     email: z
       .string()
       .optional()
       .refine((email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
-        message: 'Invalid email address',
+        message: g('INVALID_EMAIL'),
       }),
     gender: z.string().optional(),
     bankedStatus: z.string().toUpperCase(),
@@ -86,7 +86,7 @@ export default function AddBeneficiaryForm() {
       .string()
       .optional()
       .refine((age) => !age || /^[1-9]\d*$/.test(age), {
-        message: 'Age must be a positive integer',
+        message: g('AGE_POSITIVE_INTEGER'),
       }),
   });
 
@@ -408,7 +408,7 @@ export default function AddBeneficiaryForm() {
                         <FormLabel>{g('WALLET_ADDRESS')}</FormLabel>
                         <FormControl>
                           <div className="relative w-full">
-                            <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                               type="text"
                               placeholder={g('ENTER_WALLET_ADDRESS')}

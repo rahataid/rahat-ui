@@ -12,12 +12,12 @@ import {
 import { useParams, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Back, Heading } from '../../../../common';
-import { OverviewCard, PROFILECard, TransactionCard } from './components';
+import { OverviewCard, ProfileCard, TransactionCard } from './components';
 import VendorsBeneficiaryList from './tables/beneficiary.table';
 import InKindBeneficiaryList from './tables/inkind.beneficiary.list';
 import InKindLogs from './tables/inkind.logs';
 import RedemptionRequestTable from './tables/redemption.request';
-import VendorsTRANSACTIONSHistory from './tables/transactions.history';
+import VendorsTransactionsHistory from './tables/transactions.history';
 import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
 import { getVendorRedirectRoute } from 'apps/rahat-ui/src/utils/navigation';
 import {
@@ -142,7 +142,7 @@ export default function Detail() {
 
         <TabsContent value="vendorOverview">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <PROFILECard data={vendor?.User} />
+            <ProfileCard data={vendor?.User} />
             <OverviewCard
               data={data?.data}
               loading={isLoading}
@@ -151,7 +151,7 @@ export default function Detail() {
             />
             <TransactionCard
               transaction={data?.data?.transactions}
-              inkindTRANSACTIONS={slicedData}
+              inkindTransactions={slicedData}
               loading={isLoading || isLogsLoading}
             />
           </div>
@@ -159,7 +159,7 @@ export default function Detail() {
 
         {shouldRenderTab('transactionHistory') && (
           <TabsContent value="transactionHistory">
-            <VendorsTRANSACTIONSHistory />
+            <VendorsTransactionsHistory />
           </TabsContent>
         )}
 

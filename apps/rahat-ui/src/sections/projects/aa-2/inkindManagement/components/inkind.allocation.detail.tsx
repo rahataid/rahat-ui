@@ -42,12 +42,12 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type LogRow = {
   uuid: string;
   beneficiaryUuid: string;
-  beneficiaryWALLETAddress: string;
+  beneficiaryWalletAddress: string;
   beneficiaryPhone: string | null;
   beneficiaryName: string | null;
   vendorUuid: string;
   vendorName: string;
-  vendorWALLETAddress: string;
+  vendorWalletAddress: string;
   quantity: number;
   txHash: string | null;
   redeemedAt?: string;
@@ -78,13 +78,13 @@ function formatLogs(raw: any[]): LogRow[] {
   return raw.map((r) => ({
     uuid: r.uuid ?? r.id ?? '',
     beneficiaryUuid: r.beneficiary?.uuid ?? '',
-    beneficiaryWALLETAddress:
+    beneficiaryWalletAddress:
       r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
     beneficiaryPhone: r.beneficiary?.phone ?? null,
     beneficiaryName: r.beneficiary?.name ?? null,
     vendorUuid: r.vendor?.uuid ?? '',
     vendorName: r.vendor?.name ?? 'N/A',
-    vendorWALLETAddress: r.vendor?.walletAddress ?? 'N/A',
+    vendorWalletAddress: r.vendor?.walletAddress ?? 'N/A',
     quantity: r.quantity ?? r.quantityDisbursed ?? 0,
     txHash: r.txHash ?? null,
     redeemedAt: r.redeemedAt ?? r.createdAt,
@@ -265,11 +265,11 @@ export default function InkindAllocationDetail() {
 
   const columns: ColumnDef<LogRow>[] = [
     {
-      accessorKey: 'beneficiaryWALLETAddress',
+      accessorKey: 'beneficiaryWalletAddress',
       header: tv('BENEFICIARY_WALLET'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.original.beneficiaryWALLETAddress}
+          text={row.original.beneficiaryWalletAddress}
           maxLength={18}
         />
       ),
@@ -340,11 +340,11 @@ export default function InkindAllocationDetail() {
       cell: ({ row }) => {
         const r = row.original;
         const params = new URLSearchParams({
-          beneficiaryWALLETAddress: r.beneficiaryWALLETAddress,
+          beneficiaryWalletAddress: r.beneficiaryWalletAddress,
           beneficiaryPhone: r.beneficiaryPhone ?? '',
           beneficiaryName: r.beneficiaryName ?? '',
           vendorName: r.vendorName,
-          vendorWALLETAddress: r.vendorWALLETAddress,
+          vendorWalletAddress: r.vendorWalletAddress,
           txHash: r.txHash ?? '',
           quantity: String(r.quantity),
           redeemedAt: r.redeemedAt ?? '',

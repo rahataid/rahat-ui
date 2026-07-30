@@ -26,7 +26,7 @@ import { useAuthStore, useUserStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../../app/config-nav';
 import { paths } from '../../routes/paths';
-import { WALLETConnect } from '../connectWALLET';
+import { WalletConnect } from '../connectWallet';
 import { ModeToggle } from '../dropdown';
 import MobileNav from '../mobileNav';
 
@@ -107,7 +107,7 @@ export function Nav() {
       </div>
       <div className="flex gap-4 items-center">
         <ModeToggle />
-        <WALLETConnect />
+        <WalletConnect />
         <MobileNav />
         <DropdownMenu>
           <DropdownMenuTrigger>

@@ -3,12 +3,12 @@
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ProjectLayout } from '../../sections/projects/components';
-import DASHBOARDLayout from '../dashboard/layout';
+import DashboardLayout from '../dashboard/layout';
 import GarphQlProvider from '@rahat-ui/query/lib/c2c/subgraph/graphql-query-client';
 import { UUID } from 'crypto';
 import {
   useProjectContractSettings,
-  useProjectSafeWALLETSettings,
+  useProjectSafeWalletSettings,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
@@ -30,7 +30,7 @@ export default function ProjectLayoutRoot({
   const uuid = useParams().id as UUID;
   useProjectContractSettings(uuid);
   useProjectSubgraphSettings(uuid);
-  useProjectSafeWALLETSettings(uuid);
+  useProjectSafeWalletSettings(uuid);
   const [checking, setChecking] = React.useState(true);
 
   // UUID format validation (simple regex for UUID v4)
@@ -54,7 +54,7 @@ export default function ProjectLayoutRoot({
 
   return (
     <GarphQlProvider>
-      <DASHBOARDLayout
+      <DashboardLayout
         hasDefaultHeader={allowNavPaths.includes(pathName)}
         margin="mt-0"
       >
@@ -64,7 +64,7 @@ export default function ProjectLayoutRoot({
         ) : (
           <ProjectLayout projectType="ALL">{children}</ProjectLayout>
         )}
-      </DASHBOARDLayout>
+      </DashboardLayout>
     </GarphQlProvider>
   );
 }

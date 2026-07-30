@@ -13,7 +13,7 @@ import {
   IconLabelBtn,
   SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
-import { WALLET, Coins } from 'lucide-react';
+import { Wallet, Coins } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import {
   useGetTokenDetails,
@@ -90,7 +90,7 @@ export default function TREASURY() {
               className="rounded-sm"
               title={t('PROJECT_BALANCE')}
               smallNumber={`${formatNum(tokenDetails?.data.projectBalance)} ${tokenDetails?.data.symbol}`}
-              Icon={WALLET}
+              Icon={Wallet}
               subtitle={t('TOKENS_CURRENTLY_HELD_IN_PROJECT_TREASURY')}
             />
           </div>

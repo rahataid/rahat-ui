@@ -50,6 +50,8 @@ export default function UpdateActivityStatusDialog({
   iconStyle,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  // Activity status slugs live in GLOBAL, not AA_PROJECT.
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
 
@@ -198,7 +200,7 @@ export default function UpdateActivityStatusDialog({
                               <RadioGroupItem value={status} />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {t(status)}
+                              {tg(status)}
                             </FormLabel>
                           </FormItem>
                         ))}

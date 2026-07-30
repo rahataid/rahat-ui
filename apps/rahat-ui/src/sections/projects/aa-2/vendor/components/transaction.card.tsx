@@ -36,7 +36,7 @@ type Txn = {
 type Props = {
   loading: boolean;
   transaction: Txn[];
-  inkindTRANSACTIONS: InKindLog[];
+  inkindTransactions: InKindLog[];
 };
 
 const Transaction = ({ amount, date, hash, title, type }: Txn) => {
@@ -155,18 +155,18 @@ const TransactionView = ({ value, items, type }: TransactionViewProps) => (
 
 export default function TransactionCard({
   transaction,
-  inkindTRANSACTIONS,
+  inkindTransactions,
   loading,
 }: Props) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const [activeTab, setActiveTab] = useState('cva');
 
-  const cvaTRANSACTIONS =
+  const cvaTransactions =
     transaction?.filter((txn) => txn.title === 'VENDOR_REIMBURSEMENT') || [];
 
-  const normalizedInkindTRANSACTIONS: Txn[] =
-    inkindTRANSACTIONS?.map((txn) => ({
+  const normalizedInkindTransactions: Txn[] =
+    inkindTransactions?.map((txn) => ({
       amount: txn.quantity,
       date: txn.redeemedAt,
       hash: txn.txHash,
@@ -174,11 +174,11 @@ export default function TransactionCard({
     })) || [];
 
   const TabsTriggerStats = [
-    { value: 'cva', title: t('CVA'), count: cvaTRANSACTIONS.length },
+    { value: 'cva', title: t('CVA'), count: cvaTransactions.length },
     {
       value: 'inkind',
       title: t('IN_KIND'),
-      count: normalizedInkindTRANSACTIONS.length,
+      count: normalizedInkindTransactions.length,
     },
   ];
 
@@ -191,7 +191,7 @@ export default function TransactionCard({
       />
       {loading ? (
         <SkeletonTransaction />
-      ) : cvaTRANSACTIONS.length || normalizedInkindTRANSACTIONS.length ? (
+      ) : cvaTransactions.length || normalizedInkindTransactions.length ? (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="border bg-secondary rounded w-full">
             {TabsTriggerStats.map((tab) => (
@@ -215,10 +215,10 @@ export default function TransactionCard({
           </TabsList>
 
           <ScrollArea className="h-[calc(100vh-500px)]">
-            <TransactionView value="cva" items={cvaTRANSACTIONS} type="cva" />
+            <TransactionView value="cva" items={cvaTransactions} type="cva" />
             <TransactionView
               value="inkind"
-              items={normalizedInkindTRANSACTIONS}
+              items={normalizedInkindTransactions}
               type="inkind"
             />
           </ScrollArea>

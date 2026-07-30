@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import {
-  useProjectDASHBOARDReporting,
+  useProjectDashboardReporting,
   useProjectInfo,
   useStellarSettings,
 } from '@rahat-ui/query';
@@ -14,7 +14,7 @@ import CommunicationAnalytics from './component/communicationAnalytics';
 import MapView from './component/mapView';
 import ResilienceOverview from './component/resilienceOverview';
 import SocialProtectionBenefits from './component/socialProtectionBenefits';
-import DASHBOARDSkeleton from './dashboard.skeleton';
+import DashboardSkeleton from './dashboard.skeleton';
 import DigitalAccessOverview from './component/digitalAccessOverview';
 import AccessAndResilienceOverview from './component/accessPieAndBar';
 
@@ -27,9 +27,9 @@ const Main = () => {
   useStellarSettings(projectId);
   useProjectInfo(projectId);
 
-  const { data, isLoading } = useProjectDASHBOARDReporting(projectId);
+  const { data, isLoading } = useProjectDashboardReporting(projectId);
 
-  if (isLoading) return <DASHBOARDSkeleton />;
+  if (isLoading) return <DashboardSkeleton />;
 
   return (
     <>

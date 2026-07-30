@@ -15,7 +15,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
-type TransportUSAGE = {
+type TransportUsage = {
   transportCuid: string;
   transportName: string;
   transportType: string;
@@ -30,7 +30,7 @@ type TransportUSAGE = {
 };
 
 type TransportDetailCardsProps = {
-  byTransport?: TransportUSAGE[];
+  byTransport?: TransportUsage[];
   loading?: boolean;
 };
 

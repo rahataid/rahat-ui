@@ -30,7 +30,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
-import { WALLET } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function EditBeneficiary({ beneficiary }: any) {
@@ -39,16 +39,16 @@ export default function EditBeneficiary({ beneficiary }: any) {
   const t = useTranslations('GLOBAL');
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z.string().min(2, { message: t('NAME_MIN_LENGTH') }),
     walletAddress: z.string(),
     phone: z
       .string()
-      .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
+      .refine(isValidPhoneNumber, { message: t('INVALID_PHONE') }),
     email: z.string().optional(),
     gender: z
       .string()
       .toUpperCase()
-      .min(4, { message: 'Must select a Gender' }),
+      .min(4, { message: t('GENDER_REQUIRED') }),
     bankedStatus: z.string().toUpperCase(),
     internetStatus: z.string().toUpperCase(),
     phoneStatus: z.string().toUpperCase(),
@@ -341,7 +341,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
                       <FormLabel>{t('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
-                          <WALLET className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
                             placeholder={t('ENTER_WALLET_ADDRESS')}

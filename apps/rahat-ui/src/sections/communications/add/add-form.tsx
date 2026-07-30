@@ -240,7 +240,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                               ? templatemessage.length > 50
                                 ? templatemessage.slice(0, 25) + '...'
                                 : templatemessage
-                              : t('SELECT_FROM_TEMPLATE')}
+                              : tg('SELECT_FROM_TEMPLATE')}
                             <ChevronDown />
                           </Button>
                         </FormControl>

@@ -32,7 +32,7 @@ export const resolveIcon = (iconName: string) => {
 export const defaultNavConfig: NavConfigDB = {
   navsettings: [
     {
-      title: 'Dashboard',
+      title: 'DASHBOARD',
       path: '',
       icon: 'LayoutDashboard',
       roles: [

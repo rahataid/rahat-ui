@@ -93,7 +93,7 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
-          queryKey: ['aa.cash-tracker.getTRANSACTIONS', projectUUID],
+          queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
         });
       }, 10000);
     },
@@ -145,7 +145,7 @@ export const useCreateBudget = (projectUUID: UUID) => {
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
-          queryKey: ['aa.cash-tracker.getTRANSACTIONS', projectUUID],
+          queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
         });
       }, 10000);
     },
@@ -161,18 +161,18 @@ export const useCreateBudget = (projectUUID: UUID) => {
   });
 };
 
-export const useGetTRANSACTIONS = (projectUUID: UUID) => {
+export const useGetTransactions = (projectUUID: UUID) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['aa.cash-tracker.getTRANSACTIONS', projectUUID],
+    queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
-          action: 'aa.cash-tracker.getTRANSACTIONS',
+          action: 'aa.cash-tracker.getTransactions',
           payload: {},
         },
       });
@@ -284,7 +284,7 @@ export const useGetCash = (projectUUID: UUID) => {
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
-          queryKey: ['aa.cash-tracker.getTRANSACTIONS', projectUUID],
+          queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
         });
         queryClient.invalidateQueries({
           queryKey: ['aa.cash-tracker.getApprovedByMe', projectUUID],
@@ -336,7 +336,7 @@ export const useInitateInkindTransfer = (projectUUID: UUID) => {
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
-          queryKey: ['aa.inkind-tracker.getTRANSACTIONS', projectUUID],
+          queryKey: ['aa.inkind-tracker.getTransactions', projectUUID],
         });
       }, 10000);
     },
@@ -352,18 +352,18 @@ export const useInitateInkindTransfer = (projectUUID: UUID) => {
   });
 };
 
-export const useGetInkindTRANSACTIONS = (projectUUID: UUID) => {
+export const useGetInkindTransactions = (projectUUID: UUID) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['aa.inkind-tracker.getTRANSACTIONS', projectUUID],
+    queryKey: ['aa.inkind-tracker.getTransactions', projectUUID],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
-          action: 'aa.inkind-tracker.getTRANSACTIONS',
+          action: 'aa.inkind-tracker.getTransactions',
           payload: {},
         },
       });
@@ -428,7 +428,7 @@ export const useGetInkind = (projectUUID: UUID) => {
       });
       // Invalidate the transactions query to refresh the data
       queryClient.invalidateQueries({
-        queryKey: ['aa.inkind-tracker.getTRANSACTIONS', projectUUID],
+        queryKey: ['aa.inkind-tracker.getTransactions', projectUUID],
       });
     },
     onError: (error: any) => {

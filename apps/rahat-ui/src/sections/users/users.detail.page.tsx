@@ -51,12 +51,12 @@ export default function UsersDetailPage() {
 
   const removeUser = useUserRemove();
 
-  const [walletAddressCopied, setWALLETAddressCopied] =
+  const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWALLETAddressCopied(walletAddress);
+    setWalletAddressCopied(walletAddress);
   };
 
   const columns = useUsersRolesTableColumns({ loggedUserRoles, userUUID: id });

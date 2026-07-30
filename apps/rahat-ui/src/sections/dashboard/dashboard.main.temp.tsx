@@ -2,7 +2,7 @@ import { useGetStatsCore } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Heading } from '../../common';
 import BeneficiaryDemographics from './component/beneficiaryDemographics';
-import DASHBOARDSkeleton from './component/dasboardSkeleton';
+import DashboardSkeleton from './component/dasboardSkeleton';
 import DigitalAccessOverview from './component/accessAndInclusion';
 import SocialProtectionOverview from './component/vulnerableAndSocialProtectionOverview';
 import DisasterImpactAndEarlyWarning from './component/disasterImpactAndEarlyWarning';
@@ -11,12 +11,12 @@ import VulnerableAndSocialProtectionOverview from './component/vulnerableAndSoci
 import CommunicationsAndOutreach from './component/communicationsAndOutreach';
 import { useTranslations } from 'next-intl';
 
-const DASHBOARDMain = () => {
+const DashboardMain = () => {
   const { data, isLoading } = useGetStatsCore();
   const t = useTranslations('DASHBOARD');
   const g = useTranslations('GLOBAL');
 
-  if (isLoading) return <DASHBOARDSkeleton />;
+  if (isLoading) return <DashboardSkeleton />;
   return (
     <div className=" p-2">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-4 mx-4">
@@ -34,4 +34,4 @@ const DASHBOARDMain = () => {
   );
 };
 
-export default DASHBOARDMain;
+export default DashboardMain;

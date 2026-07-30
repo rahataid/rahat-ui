@@ -27,7 +27,7 @@ import * as React from 'react';
 import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import TableLoader from '../../components/table.loader';
-import { useRPVendorTRANSACTIONS } from '@rahat-ui/query';
+import { useRPVendorTransactions } from '@rahat-ui/query';
 import {
   Select,
   SelectContent,
@@ -54,7 +54,7 @@ interface VendorTxnListProps {
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
   const t = useTranslations('VENDORS_TRANSACTION_LIST');
   const g = useTranslations('GLOBAL');
-  const { data: txns, isFetching } = useRPVendorTRANSACTIONS(walletAddress);
+  const { data: txns, isFetching } = useRPVendorTransactions(walletAddress);
 
   const columns: ColumnDef<any>[] = [
     {

@@ -34,12 +34,12 @@ type Transaction = {
 export const useTransactionTableColumns = () => {
   const t = useTranslations('TRANSACTIONS');
   const tg = useTranslations('GLOBAL');
-  const [walletAddressCopied, setWALLETAddressCopied] =
+  const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<number>();
 
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
-    setWALLETAddressCopied(index);
+    setWalletAddressCopied(index);
   };
 
   const columns: ColumnDef<Transaction>[] = [

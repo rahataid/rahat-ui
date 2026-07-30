@@ -45,13 +45,13 @@ export const useInkindLogsColumn = () => {
     },
 
     {
-      accessorKey: 'beneficiaryWALLET',
+      accessorKey: 'beneficiaryWallet',
       header: t('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="flex gap-2 items-center">
-          <TruncatedCell text={row.original.beneficiaryWALLET} maxLength={10} />
+          <TruncatedCell text={row.original.beneficiaryWallet} maxLength={10} />
           <CopyTooltip
-            value={row.getValue('beneficiaryWALLET')}
+            value={row.getValue('beneficiaryWallet')}
             uniqueKey={row.original?.uuid}
           />
         </div>

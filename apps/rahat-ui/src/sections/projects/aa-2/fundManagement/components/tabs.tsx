@@ -20,7 +20,7 @@ import { CashTracker } from './cashTracker/cash.tracker';
 import Counselling from './counselling';
 import InKind from './inKind';
 import { InKindTracker } from './inKindTracker';
-import { MultiSigWALLETView } from './multisig';
+import { MultiSigWalletView } from './multisig';
 import TokensOverview from './token.overview';
 import TREASURY from './treasury';
 import { defaultFundManagementTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
@@ -33,7 +33,7 @@ const componentMap = {
   counselling: Counselling,
   cashTracker: CashTracker,
   inKindTracker: InKindTracker,
-  multisigWALLET: MultiSigWALLETView,
+  multisigWallet: MultiSigWalletView,
   treasury: TREASURY,
 };
 

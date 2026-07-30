@@ -25,7 +25,7 @@ import { DhmContent } from './dhm/dhm.content';
 import FlashFloodRiskMonitoringCard from './flash-flood-risk-monitoring/flash.flood.risk.monitoring.card';
 import GLOFASCard from './glofas/glofas.card';
 import AccumulatedCard from './ncmrwf/ncmrwf.accumulated.card';
-import WeatherDASHBOARD from './ncmrwf/ncmwrf.deterministic.problastic.weatherCard';
+import WeatherDashboard from './ncmrwf/ncmwrf.deterministic.problastic.weatherCard';
 import GaugereadingMonitoringCard from './gaugeReading/gaugeReading';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
@@ -269,7 +269,7 @@ export default function DailyMonitoringDetailView() {
         </TabsContent>
         <TabsContent value="ncmrwf-deterministic">
           {NCMRWF_Deterministic_Probabilistic_data?.length ? (
-            <WeatherDASHBOARD data={NCMRWF_Deterministic_Probabilistic_data} />
+            <WeatherDashboard data={NCMRWF_Deterministic_Probabilistic_data} />
           ) : (
             <NoResult message={t('NO_NCMRWF_DETERMINISTIC_DATA')} />
           )}

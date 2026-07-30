@@ -17,12 +17,12 @@ import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-  const [walletAddressCopied, setWALLETAddressCopied] = useState<number>();
+  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
   const tg = useTranslations('GLOBAL');
 
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
-    setWALLETAddressCopied(id);
+    setWalletAddressCopied(id);
   };
 
   const openSplitDetailView = (rowDetail: any) => {

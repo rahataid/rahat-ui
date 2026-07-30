@@ -53,13 +53,13 @@ export default function BeneficiaryDetail({
     },
   });
 
-  const [walletAddressCopied, setWALLETAddressCopied] =
+  const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<boolean>(false);
 
   const clickToCopy = () => {
     if (walletAddress) {
       navigator.clipboard.writeText(walletAddress);
-      setWALLETAddressCopied(true);
+      setWalletAddressCopied(true);
     }
   };
 

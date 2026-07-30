@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 
 const NAV_TITLE_KEYS: Record<string, string> = {
   'DASHBOARD': 'DASHBOARD',
+  'Dashboard': 'DASHBOARD',
   'Project': 'PROJECT',
   'Beneficiaries': 'BENEFICIARIES',
   'Vendors': 'VENDORS',
@@ -29,7 +30,8 @@ export default function SideNav() {
   const { data, subData } = useNavData();
   const [more, setMore] = React.useState(false);
 
-  const getTitle = (title: string) => t(NAV_TITLE_KEYS[title] || title);
+  const getTitle = (title: string) =>
+    t(NAV_TITLE_KEYS[title] || title.toUpperCase());
 
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[1];

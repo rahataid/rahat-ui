@@ -21,7 +21,7 @@ type ValidateModalType = {
 type ErrorData = {
   isAssignable: boolean;
   message: string;
-  tokenAssignedBenfWALLET: string[];
+  tokenAssignedBenfWallet: string[];
   foundAssignedBenf: string[];
   fiatRedeemNotCompleted: string[];
   groupName?: string;
@@ -32,7 +32,7 @@ type IProps = {
   onContinue?: () => void;
 };
 
-const WALLETList = ({
+const WalletList = ({
   wallets,
   copyAction,
   clickToCopy,
@@ -87,7 +87,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
                 payout is finalized. Are you sure you want to continue?
               </DialogDescription>
             </DialogHeader>
-            <WALLETList
+            <WalletList
               wallets={errorData?.fiatRedeemNotCompleted ?? []}
               copyAction={copyAction}
               clickToCopy={clickToCopy}
@@ -110,13 +110,13 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              {errorData?.tokenAssignedBenfWALLET && errorData.tokenAssignedBenfWALLET.length > 0 && (
+              {errorData?.tokenAssignedBenfWallet && errorData.tokenAssignedBenfWallet.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-destructive uppercase tracking-wide">
                     Already assigned — remove from group to continue
                   </p>
-                  <WALLETList
-                    wallets={errorData.tokenAssignedBenfWALLET}
+                  <WalletList
+                    wallets={errorData.tokenAssignedBenfWallet}
                     copyAction={copyAction}
                     clickToCopy={clickToCopy}
                   />
@@ -127,7 +127,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
                   <p className="text-xs font-medium text-yellow-600 uppercase tracking-wide">
                     Assigned but disbursement still pending
                   </p>
-                  <WALLETList
+                  <WalletList
                     wallets={errorData.foundAssignedBenf}
                     copyAction={copyAction}
                     clickToCopy={clickToCopy}

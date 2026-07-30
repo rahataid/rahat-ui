@@ -33,7 +33,7 @@ import {
   Phone,
   Trash2,
   User,
-  WALLETIcon,
+  WalletIcon,
   Wifi,
   X,
 } from 'lucide-react';
@@ -71,7 +71,7 @@ export default function BeneficiaryDetail({
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
-  const [walletAddressCopied, setWALLETAddressCopied] =
+  const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
   const walletAddress = beneficiaryDetail.walletAddress || '';
   const t = useTranslations('BENEFICIARY_DETAIL');
@@ -84,7 +84,7 @@ export default function BeneficiaryDetail({
   // const clickToCopy = () => {
   //   if (walletAddress) {
   //     navigator.clipboard.writeText(walletAddress);
-  //     setWALLETAddressCopied(true);
+  //     setWalletAddressCopied(true);
   //   }
   // };
 
@@ -370,7 +370,7 @@ export default function BeneficiaryDetail({
 
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <WALLETIcon size={20} strokeWidth={1.5} />
+              <WalletIcon size={20} strokeWidth={1.5} />
               <p>{g('WALLET_ADDRESS')}</p>
             </div>
             <div className="flex items-center">

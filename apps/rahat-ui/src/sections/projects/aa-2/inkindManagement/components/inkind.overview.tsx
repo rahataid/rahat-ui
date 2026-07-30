@@ -17,11 +17,7 @@ import {
   SheetTitle,
 } from '@rahat-ui/shadcn/src/components/ui/sheet';
 import {
-  ArrowDown,
-  ArrowUp,
   Archive,
-  ArchiveRestore,
-  ShoppingBag,
   Package,
   Users,
   Calendar,
@@ -34,6 +30,11 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
+import {
+  exportInkindSummary,
+  hasInkindData,
+  MOVEMENT_CONFIG,
+} from '../utils/utils';
 import { formatLabel } from './inkind.allocation.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
@@ -78,41 +79,18 @@ type Movement = {
   } | null;
   redemption: unknown | null;
 };
-
-const MOVEMENT_CONFIG: Record<
-  string,
-  { label: string; color: string; bgColor: string; Icon: React.ElementType }
-> = {
-  ADD: {
-    label: 'Inkind Added',
-    color: 'text-green-600',
-    bgColor: 'bg-green-100',
-    Icon: ArrowUp,
-  },
-  REMOVE: {
-    label: 'Inkind Removed',
-    color: 'text-red-600',
-    bgColor: 'bg-red-100',
-    Icon: ArrowDown,
-  },
-  LOCK: {
-    label: 'Assigned to group',
-    color: 'text-yellow-600',
-    bgColor: 'bg-yellow-100',
-    Icon: Archive,
-  },
-  UNLOCK: {
-    label: 'Inkind Unlocked',
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
-    Icon: ArchiveRestore,
-  },
-  REDEEM: {
-    label: 'Distributed',
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-100',
-    Icon: ShoppingBag,
-  },
+type InkindSummary = {
+  totalInkindTypes: number;
+  totalStock: number;
+  totalAvailableStock: number;
+  totalAssignedStock: number;
+  totalRedeemedStock: number;
+  chartData: {
+    redemptionType: {
+      predefined: number;
+      walkIn: number;
+    };
+  };
 };
 
 function DetailRow({
@@ -175,7 +153,7 @@ export default function InkindOverview() {
     { page, perPage, startDate, endDate },
   );
 
-  const inkindItemsSummary = summaryData?.data ?? [];
+  const inkindItemsSummary: InkindSummary = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
   const meta = txData?.response?.meta;
   const [selectedMovement, setSelectedMovement] = useState<Movement | null>(
@@ -185,6 +163,11 @@ export default function InkindOverview() {
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+
+  const s = inkindItemsSummary;
+  const hasData = hasInkindData(s);
+
+  const handleDownloadReport = () => exportInkindSummary(s);
 
   // if (isPending) {
   //   return <SpinnerLoader />;
@@ -201,12 +184,11 @@ export default function InkindOverview() {
         <div className="flex gap-2 items-center">
           <IconLabelBtn
             Icon={CloudDownloadIcon}
-            // handleClick={handleDownloadReport}
-            // name={isDownloading ? 'Exporting...' : 'Export In-kind Logs'}
+            handleClick={handleDownloadReport}
             name={'Export Report'}
             variant="outline"
-            // disabled={isDownloading || !meta?.total}
-            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+            disabled={!hasData}
+            // className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
           />
           <DateRangePicker
             placeholder="Pick date range"

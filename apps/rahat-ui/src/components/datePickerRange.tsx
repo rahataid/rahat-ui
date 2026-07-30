@@ -42,7 +42,8 @@ export function DateRangePicker({
   });
   const [open, setOpen] = React.useState(false);
 
-  const handleClose = () => {
+  const handleClose = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     handleClearDate();
     setDate({
       from: undefined,
@@ -75,7 +76,7 @@ export function DateRangePicker({
                         <TooltipTrigger asChild>
                           <Button
                             type="button"
-                            onClick={handleClose}
+                            onClick={(e) => handleClose(e)}
                             className="w-6 h-6 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
                             variant="outline"
                             size="icon"

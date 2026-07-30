@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DateRange } from 'react-day-picker';
 import {
   CustomPagination,
   DataCard,
@@ -152,20 +151,28 @@ export default function InkindOverview() {
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
 
-  const activeRange =
-    dateRange?.from && dateRange?.to
-      ? { startDate: dateRange.from, endDate: dateRange.to }
-      : undefined;
+  const handleDateChange = (range: any) => {
+    if (range?.from && range?.to) {
+      setStartDate(range.from.toISOString());
+      setEndDate(range.to.toISOString());
+    }
+  };
 
-  const { data: summaryData, isPending } = useInkindsSummary(
-    projectUUID,
-    activeRange,
-  );
+  const handleClearDate = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
+
+  const { data: summaryData, isPending } = useInkindsSummary(projectUUID, {
+    startDate,
+    endDate,
+  });
   const { data: txData, isFetching: txFetching } = useInkindTransactions(
     projectUUID,
-    { page, perPage, ...activeRange },
+    { page, perPage, startDate, endDate },
   );
 
   const inkindItemsSummary = summaryData?.data ?? [];
@@ -203,8 +210,8 @@ export default function InkindOverview() {
           />
           <DateRangePicker
             placeholder="Pick date range"
-            handleDateChange={(range) => setDateRange(range)}
-            handleClearDate={() => setDateRange(undefined)}
+            handleDateChange={handleDateChange}
+            handleClearDate={handleClearDate}
             type="range"
           />
         </div>

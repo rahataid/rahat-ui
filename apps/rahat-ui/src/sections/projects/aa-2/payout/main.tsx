@@ -8,7 +8,7 @@ import {
   usePayoutStats,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import {
   Tabs,
@@ -30,10 +30,32 @@ export default function PayoutView() {
     page: 1,
     perPage: 999,
   });
-  const { data: statsPayout } = usePayoutStats(projectID);
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
+  const [version, setVersion] = useState(0);
+
+  const { data: statsPayout } = usePayoutStats(projectID, {
+    startDate,
+    endDate,
+    // _v: version,
+  });
   useFetchTokenStatsStellar({
     projectUUID: projectID,
   });
+
+  const handleDateChange = (range: any) => {
+    if (range?.from && range?.to) {
+      setStartDate(range.from.toISOString());
+      setEndDate(range.to.toISOString());
+      // setVersion((v) => v + 1);
+    }
+  };
+
+  const handleClearDate = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+    // setVersion((v) => v + 1);
+  };
 
   const payoutStats = useMemo(() => {
     return [
@@ -104,6 +126,8 @@ export default function PayoutView() {
               payoutStats={payoutStats}
               statsPayout={statsPayout}
               payouts={payouts || { data: [] }}
+              handleDateChange={handleDateChange}
+              handleClearDate={handleClearDate}
             />
           </TabsContent>
           <TabsContent value="payoutList">

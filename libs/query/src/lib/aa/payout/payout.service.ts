@@ -101,17 +101,23 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
   return query;
 };
 
-export const usePayoutStats = (projectUUID: UUID) => {
+export const usePayoutStats = (
+  projectUUID: UUID,
+  params?: { startDate?: string; endDate?: string; _v?: number },
+) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['payout-stats', projectUUID],
+    queryKey: ['payout-stats', projectUUID, params],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aa.jobs.payout.getPayoutStats',
-          payload: {},
+          payload: {
+            ...(params?.startDate && { startDate: params.startDate }),
+            ...(params?.endDate && { endDate: params.endDate }),
+          },
         },
       });
       return mutate.data;

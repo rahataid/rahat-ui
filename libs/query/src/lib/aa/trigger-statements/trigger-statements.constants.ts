@@ -18,4 +18,3 @@ export const PHASE_QUERY_KEYS = {
   TRIGGER_STATEMENT: 'triggerStatement',
   PHASE_HISTORY: 'phaseHistory',
 };
-// triggerStatement

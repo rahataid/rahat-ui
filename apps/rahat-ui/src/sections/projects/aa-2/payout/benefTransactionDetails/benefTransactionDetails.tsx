@@ -174,11 +174,6 @@ export default function BeneficiaryTransactionLogDetails() {
               copyable
             />
             <InfoItem
-              label="Transaction Wallet ID"
-              value={data?.data?.info?.offrampWalletAddress}
-              copyable
-            />
-            <InfoItem
               label="Transaction Hash"
               value={data?.data?.txHash}
               link

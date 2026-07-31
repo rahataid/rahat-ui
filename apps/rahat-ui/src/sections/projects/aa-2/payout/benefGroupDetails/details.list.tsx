@@ -126,14 +126,18 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     });
   }, [triggerForPayoutFailed]);
 
-  const handleTriggerPayout = React.useCallback(async () => {
-    triggerPayout.mutateAsync({
-      projectUUID: projectId,
-      payload: {
-        uuid: payoutId,
-      },
-    });
-  }, [triggerPayout]);
+  const handleTriggerPayout = React.useCallback(
+    async (otp: string) => {
+      return triggerPayout.mutateAsync({
+        projectUUID: projectId,
+        payload: {
+          uuid: payoutId,
+          otp,
+        },
+      });
+    },
+    [triggerPayout, projectId, payoutId],
+  );
 
   const payoutStats = [
     {
@@ -204,7 +208,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           {
             <div className="flex gap-2">
               <PayoutConfirmationDialog
-                onConfirm={() => handleTriggerPayout()}
+                projectId={projectId}
+                onConfirm={handleTriggerPayout}
                 payoutData={payout}
               />
               {payout?.type === 'FSP' && (

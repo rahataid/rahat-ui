@@ -48,6 +48,19 @@ export default function GctDetail() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
 
+  const statusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      NOT_STARTED: t('NOT_STARTED'),
+      PENDING: tGlobal('PENDING'),
+      STARTED: t('STARTED'),
+      COMPLETED: tGlobal('COMPLETED'),
+      SUCCESS: tGlobal('SUCCESS'),
+      FAILED: tGlobal('FAILED'),
+      REJECTED: t('REJECTED'),
+    };
+    return map[s] ?? s.replace(/_/g, ' ');
+  };
+
   // Bank validation messages come from the API, so there is no key to look up
   // directly. Derive one from the message text and use it when a translation
   // exists, otherwise show the server's wording unchanged.
@@ -146,7 +159,7 @@ export default function GctDetail() {
             <Badge
               className={`text-xs ${GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'}`}
             >
-              {s.replace('_', ' ')}
+              {statusLabel(s)}
             </Badge>
           );
         },

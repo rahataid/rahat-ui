@@ -45,7 +45,7 @@ function ImportActionCell({ row }: { row: any }) {
       await startImport.mutateAsync(uuid);
       toast.success(t('IMPORT_HAS_STARTED'));
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to start import');
+      toast.error(err?.response?.data?.message || t('FAILED_TO_START_IMPORT'));
     }
   };
 
@@ -53,7 +53,7 @@ function ImportActionCell({ row }: { row: any }) {
     try {
       await downloadErrors(uuid, groupName);
     } catch {
-      toast.error('Failed to download errors');
+      toast.error(t('FAILED_TO_DOWNLOAD_ERRORS'));
     }
   };
 

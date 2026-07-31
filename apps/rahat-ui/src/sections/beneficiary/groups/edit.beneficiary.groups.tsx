@@ -25,6 +25,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import useBeneficiaryTableColumn from './useBeneficiaryTableColumns';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type IProps = {
   groupUUID: UUID;
@@ -41,6 +42,7 @@ export default function EditBeneficiaryGroups({
 }: IProps) {
   const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
   const tg = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const { closeSecondPanel } = useSecondPanel();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
@@ -151,7 +153,8 @@ export default function EditBeneficiaryGroups({
                 <div className="flex gap-4">
                   {table.getSelectedRowModel().rows.length ? (
                     <Badge className="rounded h-10 px-4 py-2 w-max">
-                      {table.getSelectedRowModel().rows.length} - {t('MEMBER_SELECTED')}
+                      {formatDigits(table.getSelectedRowModel().rows.length)} -{' '}
+                      {t('MEMBER_SELECTED')}
                     </Badge>
                   ) : null}
                   <Button type="submit">{t('UPDATE_BENEFICIARY_GROUP')}</Button>

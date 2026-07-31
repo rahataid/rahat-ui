@@ -173,7 +173,7 @@ export default function Confirmation({
             {t('BENEFICIARIES_LIST')}
             {benefData?.length ? (
               <span className="text-muted-foreground font-normal ml-1">
-                ({benefData.length})
+                ({formatNum(benefData.length)})
               </span>
             ) : null}
           </p>

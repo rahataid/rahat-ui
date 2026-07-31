@@ -12,6 +12,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { formatDurationFromMinutes } from 'apps/rahat-ui/src/utils/formatDurationFromMinutes';
 import {
   Clock,
@@ -35,6 +36,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
   const t = useTranslations('AA_PROJECT');
   const severity = getSeverityFromData(data.currentStatus, data.errors);
   const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
   const { clickToCopy, copyAction } = useCopy();
 
   return (
@@ -84,7 +86,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               variant="outline"
               className={cn('text-xs font-medium', getDynamicColors(severity))}
             >
-              {severity}
+              {t(severity)}
             </Badge>
             <Badge
               variant="outline"
@@ -98,9 +100,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               ) : (
                 <X className="w-3 h-3 mr-1" />
               )}
-              {data.currentStatus === 'HEALTHY'
-                ? 'HEALTHY'
-                : data.currentStatus}
+              {t(data.currentStatus)}
             </Badge>
           </div>
         </div>
@@ -123,7 +123,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>{t('FETCH_INTERVAL')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {formatDurationFromMinutes(data?.fetch_frequency_minutes)}
+              {formatDurationFromMinutes(data?.fetch_frequency_minutes, t, formatNum)}
             </span>
           </div>
 
@@ -133,7 +133,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>{t('RESPONSE_TIME')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {data.response_time_ms ? `${data.response_time_ms}ms` : '-'}
+              {data.response_time_ms ? `${formatNum(data.response_time_ms)}ms` : '-'}
             </span>
           </div>
 
@@ -150,7 +150,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                 getDynamicColors(data.validity),
               )}
             >
-              {data.validity ?? '-'}
+              {data.validity ? t(data.validity) : '-'}
             </Badge>
           </div>
         </div>

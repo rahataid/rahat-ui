@@ -17,6 +17,19 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
   const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const fundStatusLabel = (status?: string) => {
+    if (!status) return status;
+    const map: Record<string, string> = {
+      NOT_DISBURSED: t('NOT_DISBURSED'),
+      DISBURSED: tv('DISBURSED'),
+      STARTED: tv('STARTED'),
+      FAILED: tg('FAILED'),
+      ERROR: tg('ERROR'),
+    };
+    return map[status] ?? status.replace(/_/g, ' ');
+  };
 
   const { data, isLoading } = useSingleGroupReservedFunds(
     projectID as UUID,
@@ -40,7 +53,7 @@ export default function FundManagementDetail() {
     },
     {
       name: t('N1_TOKEN_VALUE'),
-      amount: `Rs. ${ONE_TOKEN_VALUE}`,
+      amount: `Rs. ${formatNum(ONE_TOKEN_VALUE)}`,
     },
   ];
 
@@ -51,7 +64,7 @@ export default function FundManagementDetail() {
           path={`/projects/aa/${projectID}/fund-management?tab=fundManagementList`}
           title={isLoading ? <Skeleton className="h-7 w-56" /> : data?.title}
           subtitle={t('DETAILED_VIEW_OF_RESERVED_FUND')}
-          status={isLoading ? undefined : data?.status?.replace(/_/g, ' ')}
+          status={isLoading ? undefined : fundStatusLabel(data?.status)}
           badgeClassName={
             data?.status === 'DISBURSED'
               ? 'bg-green-100 text-green-500'

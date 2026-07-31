@@ -28,6 +28,7 @@ import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -55,6 +56,7 @@ export default function ListView({
   const router = useRouter();
   const t = useTranslations('BENEFICIARY_LIST');
   const g = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
 
   return (
     <>
@@ -110,10 +112,10 @@ export default function ListView({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="ml-2">
-                  {
+                  {formatNum(
                     Object.values(table.getState().rowSelection).filter(Boolean)
-                      .length
-                  }{' '}
+                      .length,
+                  )}{' '}
                   - {t('BENEFICIARY_SELECTED')}
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>

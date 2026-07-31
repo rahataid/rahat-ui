@@ -40,6 +40,7 @@ type TransactionProps = {
 
 const TransactionLogs = () => {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const params = useParams();
@@ -139,7 +140,10 @@ const TransactionLogs = () => {
         target: 'tx',
         value: item?.txHash,
       });
-      const inkindType = item.groupInkind.inkind.type.replace('_', ' ');
+      const rawInkindType = item.groupInkind.inkind.type;
+      const inkindType = tg.has(rawInkindType as never)
+        ? tg(rawInkindType as never)
+        : rawInkindType.replace('_', ' ');
       return (
         <TransactionLogItem
           key={item?.uuid}

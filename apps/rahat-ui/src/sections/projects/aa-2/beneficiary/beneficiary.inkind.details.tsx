@@ -35,8 +35,12 @@ const InkindDetails = ({
       header: tg('TYPE'),
       accessorKey: 'inkindType',
       cell: ({ row }) => {
-        const type = row.original.inkindType.replace('_', ' ');
-        return <div className="capitalize text-sm">{type}</div>;
+        const type = row.original.inkindType;
+        return (
+          <div className="capitalize text-sm">
+            {tg.has(type as never) ? tg(type as never) : type.replace('_', ' ')}
+          </div>
+        );
       },
     },
     {

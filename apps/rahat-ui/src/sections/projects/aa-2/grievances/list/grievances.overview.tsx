@@ -52,7 +52,7 @@ export default function GrievanceOverview({
   const grievancesByType = overviewData?.data?.grievanceType || {};
   const grievancesByStatus = overviewData?.data?.grievanceStatus || {};
   const averageResolveTime = (overviewData?.data as any)?.averageResolveTime
-    ? formatDuration(overviewData?.data?.averageResolveTime || 0)
+    ? formatDuration(overviewData?.data?.averageResolveTime || 0, t, formatNum)
     : 0;
 
   // Mapping functions to convert API keys to enum values

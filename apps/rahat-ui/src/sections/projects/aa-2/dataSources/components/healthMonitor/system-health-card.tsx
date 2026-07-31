@@ -20,6 +20,7 @@ export function SystemHealthCard({
   sources,
 }: HealthCacheData) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const statusColors: any = {
@@ -50,7 +51,7 @@ export function SystemHealthCard({
             <span className="text-sm font-medium">{t('OVERALL_SYSTEM_HEALTH')}</span>
 
             <Badge variant="outline" className={statusColors[overall_status]}>
-              {overall_status}
+              {t(overall_status)}
             </Badge>
 
             <HoverCard>
@@ -64,21 +65,20 @@ export function SystemHealthCard({
                 <div className="flex gap-2 flex-col">
                   <div>
                     <h4 className="text-sm font-medium mb-2">
-                      Overall Status Rules
+                      {t('OVERALL_STATUS_RULES')}
                     </h4>
                     <ul className="space-y-1 text-xs">
                       <li>
-                        <span className=" text-green-600">HEALTHY:</span> All
-                        sources are UP
+                        <span className=" text-green-600">{t('HEALTHY')}:</span>{' '}
+                        {t('HEALTH_RULE_HEALTHY')}
                       </li>
                       <li>
-                        <span className=" text-yellow-600">DEGRADED:</span> Some
-                        sources are DOWN/DEGRADED but core functionality
-                        available
+                        <span className=" text-yellow-600">{t('DEGRADED')}:</span>{' '}
+                        {t('HEALTH_RULE_DEGRADED')}
                       </li>
                       <li>
-                        <span className=" text-red-600">UNHEALTHY:</span>
-                        Critical sources are DOWN
+                        <span className=" text-red-600">{t('UNHEALTHY')}:</span>{' '}
+                        {t('HEALTH_RULE_UNHEALTHY')}
                       </li>
                     </ul>
                   </div>
@@ -87,17 +87,16 @@ export function SystemHealthCard({
                     <h4 className="text-sm font-medium mb-1">{t('VALIDITY_RULES')}</h4>
                     <ul className="space-y-1 text-xs">
                       <li>
-                        <span className=" text-green-600">VALID:</span> Data
-                        updated within expected interval (&lt;=15 mins)
+                        <span className=" text-green-600">{t('VALID')}:</span>{' '}
+                        {t('VALIDITY_RULE_VALID')}
                       </li>
                       <li>
-                        <span className=" text-yellow-600">STALE:</span> Data
-                        are older than expected but within tolerance (15–30
-                        mins)
+                        <span className=" text-yellow-600">{t('STALE')}:</span>{' '}
+                        {t('VALIDITY_RULE_STALE')}
                       </li>
                       <li>
-                        <span className=" text-red-600">EXPIRED:</span> Data too
-                        old to be reliable (&gt;30 mins)
+                        <span className=" text-red-600">{t('EXPIRED')}:</span>{' '}
+                        {t('VALIDITY_RULE_EXPIRED')}
                       </li>
                     </ul>
                   </div>
@@ -110,21 +109,24 @@ export function SystemHealthCard({
               <span className="flex items-center  text-xs text-green-500">
                 {' '}
                 <CheckCircle size={13} className="pr-1 w-4 h-4" />
-                {formatNum(calcHEALTHY)}/{formatNum(sources?.length ?? 0)} sources HEALTHY
+                {t('SOURCES_HEALTHY_RATIO', {
+                  count: formatNum(calcHEALTHY),
+                  total: formatNum(sources?.length ?? 0),
+                })}
               </span>
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {formatNum(calcUNHEALTHY)} sources UNHEALTHY
+                {t('SOURCES_UNHEALTHY_COUNT', { count: formatNum(calcUNHEALTHY) })}
               </span>
 
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {formatNum(calcDEGRADED)} sources DEGRADED
+                {t('SOURCES_DEGRADED_COUNT', { count: formatNum(calcDEGRADED) })}
               </span>
             </div>
 
             <span className="text-xs text-gray-500 ml-auto">
-              Last Updated: {formatDate(last_updated)}
+              {tg('LAST_UPDATED')}: {formatDate(last_updated)}
             </span>
           </div>
         </div>

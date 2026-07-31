@@ -270,7 +270,7 @@ const UpdateOrAddStakeholdersGroup = () => {
                   >
                     {isEditing ? t('UPDATE') : t('ADD')}
                     {Object.keys(selectedListItems).length > 0 &&
-                      ` (${formatNum(Object.keys(selectedListItems).length)} stakeholders)`}
+                      ` (${formatNum(Object.keys(selectedListItems).length)} ${t('STAKEHOLDERS').toLowerCase()})`}
                   </Button>
                 </div>
               </div>
@@ -302,9 +302,11 @@ const UpdateOrAddStakeholdersGroup = () => {
           <div className="rounded-md border p-3">
               <Heading
                 title=" "
-                description={`Select stakeholders from the list below to ${
-                  isEditing ? 'update' : 'create'
-                } group`}
+                description={
+                  isEditing
+                    ? t('SELECT_STAKEHOLDERS_TO_UPDATE_GROUP')
+                    : t('SELECT_STAKEHOLDERS_TO_CREATE_GROUP')
+                }
                 titleStyle="text-xl"
               />
 

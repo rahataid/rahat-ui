@@ -142,7 +142,7 @@ const BeneficiaryGroupsDetails = () => {
           iconStyle="bg-white text-secondary-muted"
           title={t('TOTAL_TOKEN_ASSIGNED')}
           Icon={Coins}
-          number={totalTokensAssigned}
+          number={formatNum(totalTokensAssigned)}
         /> */}
       </div>
       <div className="p-4 rounded-sm border">

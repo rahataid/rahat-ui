@@ -8,11 +8,13 @@ import { FUND_MANAGEMENT_TABS } from './consts/conts';
 import type { PayoutFormData } from './components/assign.payout.form';
 import { useFundAssignmentStore } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function AssignFundsView() {
   // Router goes here
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const formatDigits = useLabelDigits();
   const id = useParams().id;
   const router = useRouter();
 
@@ -105,7 +107,7 @@ export default function AssignFundsView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {tg('STEP', { index: index + 1 })}
+                  {tg('STEP', { index: formatDigits(index + 1) })}
                 </span>
                 <span
                   className={`text-md mt-0.5 text-center transition-colors ${

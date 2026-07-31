@@ -45,10 +45,12 @@ import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 function ImportDetailView() {
   const t = useTranslations('IMPORT_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const { uuid } = useParams();
   const searchParams = useSearchParams();
   const groupName = searchParams.get('name');
@@ -77,10 +79,10 @@ function ImportDetailView() {
   const handleStartImport = async () => {
     try {
       await startImport.mutateAsync(uuid as string);
-      toast.success('Import started');
+      toast.success(t('IMPORT_STARTED'));
       startListening();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to start import');
+      toast.error(err?.response?.data?.message || t('FAILED_TO_START_IMPORT'));
     }
   };
 
@@ -88,7 +90,7 @@ function ImportDetailView() {
     try {
       await downloadErrors(uuid as string, groupName || undefined);
     } catch {
-      toast.error('Failed to download errors');
+      toast.error(t('FAILED_TO_DOWNLOAD_ERRORS'));
     }
   };
 
@@ -168,7 +170,9 @@ function ImportDetailView() {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t('BENEFICIARIES_TO_IMPORT')}</span>
                       <span className="font-medium">
-                        {count || importData?.data?.beneficiaryCount || '-'}
+                        {formatDigits(
+                          count || importData?.data?.beneficiaryCount,
+                        ) || '-'}
                       </span>
                     </div>
                   </div>
@@ -232,11 +236,15 @@ function ImportDetailView() {
         {/* Completed summary */}
         {!isProcessing && progress && currentStatus === 'IMPORTED' && (
           <div className="mt-3 mb-1 p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-800">
-            {t('IMPORT_COMPLETED')} {progress.processed} of {progress.total}{' '}
-            {t('PROCESSED')}
-            {progress.failed > 0 && `, ${progress.failed} ${t('FAILED')}`}
+            {t('IMPORT_COMPLETED')}{' '}
+            {t('IMPORT_PROGRESS_SUMMARY', {
+              processed: formatDigits(progress.processed),
+              total: formatDigits(progress.total),
+            })}
+            {progress.failed > 0 &&
+              `, ${formatDigits(progress.failed)} ${t('FAILED')}`}
             {progress.duplicates > 0 &&
-              `, ${progress.duplicates} ${t('DUPLICATES')}`}
+              `, ${formatDigits(progress.duplicates)} ${t('DUPLICATES')}`}
           </div>
         )}
 
@@ -244,7 +252,9 @@ function ImportDetailView() {
           <DataCard
             title={t('BENEFICIARY_COUNT')}
             Icon={Users2}
-            smallNumber={count || importData?.data?.beneficiaryCount || 0}
+            smallNumber={formatDigits(
+              count || importData?.data?.beneficiaryCount || 0,
+            )}
           />
           <DataCard
             title={t('CREATED_AT')}

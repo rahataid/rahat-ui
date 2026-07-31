@@ -175,7 +175,9 @@ export default function InkindAllocationList() {
         header: tv('INKIND_TYPE'),
         cell: ({ row }) => (
           <Badge className="bg-gray-200 text-gray-600">
-            {formatLabel(row.original.inkindType)}
+            {tg.has(row.original.inkindType as never)
+              ? tg(row.original.inkindType as never)
+              : formatLabel(row.original.inkindType)}
           </Badge>
         ),
       },
@@ -294,7 +296,7 @@ export default function InkindAllocationList() {
               {label}
               {isActive && (
                 <Badge className="h-5 min-w-[20px] justify-center text-white px-2 py-0 bg-[#297AD6]">
-                  {meta?.total ?? rows.length}
+                  {formatNum(meta?.total ?? rows.length)}
                 </Badge>
               )}
             </button>

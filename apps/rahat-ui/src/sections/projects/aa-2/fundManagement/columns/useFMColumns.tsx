@@ -38,6 +38,17 @@ export const useFundManagementTableColumns = () => {
     router.push(`/projects/aa/${id}/fund-management/${fmId}`);
   };
 
+  function fundStatusLabel(status: string) {
+    const map: Record<string, string> = {
+      NOT_DISBURSED: t('NOT_DISBURSED'),
+      DISBURSED: tv('DISBURSED'),
+      STARTED: tv('STARTED'),
+      FAILED: tg('FAILED'),
+      ERROR: tg('ERROR'),
+    };
+    return map[status] ?? status.replace(/_/g, ' ');
+  }
+
   function renderBadgeStyle(status: FundStatus) {
     if (status === FundStatus.FAILED || status === FundStatus.ERROR) {
       return 'bg-red-100 text-red-500';
@@ -107,7 +118,7 @@ export const useFundManagementTableColumns = () => {
 
         return (
           <Badge className={renderBadgeStyle(status)}>
-            {status.replace(/_/g, ' ') || tg('N_A')}
+            {fundStatusLabel(status) || tg('N_A')}
           </Badge>
         );
       },

@@ -107,12 +107,12 @@ export default function AddBeneficiaryForm() {
         walletAddress: data.walletAddress,
       });
       if (result) {
-        toast.success('Beneficiary added successfully!');
+        toast.success(t('BENEFICIARY_ADDED_SUCCESSFULLY'));
         router.push('/beneficiary');
         form.reset();
       }
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Failed to add beneficiary');
+      toast.error(e?.response?.data?.message || t('FAILED_TO_ADD_BENEFICIARY'));
     }
   };
 

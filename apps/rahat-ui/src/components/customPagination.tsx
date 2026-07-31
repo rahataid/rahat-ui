@@ -62,7 +62,10 @@ export default function CustomPagination({
         </div>
       )}
       <div className="text-sm">
-        {t('PAGE')} {formatNum(currentPage)} of {formatNum(lastPage)}
+        {t('PAGE_CURRENT_OF_TOTAL', {
+          current: formatNum(currentPage),
+          total: formatNum(lastPage),
+        })}
       </div>
       <div className="space-x-2">
         <Button

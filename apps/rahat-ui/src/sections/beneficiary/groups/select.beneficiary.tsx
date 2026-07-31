@@ -18,6 +18,7 @@ import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
@@ -25,6 +26,7 @@ export default function SelectBeneficiaryView() {
   const { Id } = useParams() as { Id: UUID };
   const router = useRouter();
   const t = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
 
   const {
     pagination,
@@ -131,7 +133,9 @@ export default function SelectBeneficiaryView() {
         </div>
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
-        <p>{t('SELECTED')} {Object.keys(selectedListItems).length ?? 0}</p>
+        <p>
+          {t('SELECTED')} {formatDigits(Object.keys(selectedListItems).length ?? 0)}
+        </p>
         <div className="flex space-x-2">
           <Button
             type="button"
@@ -148,7 +152,9 @@ export default function SelectBeneficiaryView() {
         ) : ( */}
 
           <Button className="px-10" onClick={handleUpdateBeneficiaryGroup}>
-            {t('ADD_BENEFICIARIES2')} ({Object.keys(selectedListItems).length ?? 0} {t('BENEFICIARIES')} )
+            {t('ADD_BENEFICIARIES2')} (
+            {formatDigits(Object.keys(selectedListItems).length ?? 0)}{' '}
+            {t('BENEFICIARIES')} )
           </Button>
           {/* )} */}
         </div>

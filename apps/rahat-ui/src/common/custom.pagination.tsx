@@ -105,7 +105,10 @@ export function CustomPagination({
       <div>
         {meta?.total && meta.total > 0 ? (
           <>
-            {t('PAGE')} {formatNum(currentPage)} of {formatNum(lastPage)}
+            {t('PAGE_CURRENT_OF_TOTAL', {
+              current: formatNum(currentPage),
+              total: formatNum(lastPage),
+            })}
           </>
         ) : (
           <>{t('PAGE')} {formatNum(currentPage)}</>

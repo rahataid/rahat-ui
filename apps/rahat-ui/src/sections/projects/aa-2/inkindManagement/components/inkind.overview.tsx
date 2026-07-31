@@ -228,6 +228,12 @@ export default function InkindOverview() {
                 { label: tv('WALK_IN_BENEFICIARY_LIST'), value: inkindItemsSummary?.chartData?.redemptionType?.walkIn || 0 },
               ]}
               colors={['#F4A462', '#2A9D90']}
+              options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  y: { formatter: (val: number) => formatNum(val) },
+                },
+              }}
             />
           </div>
         </div>
@@ -241,6 +247,12 @@ export default function InkindOverview() {
                 { label: tv('NOT_REDEEMED'), value: Math.max(0, (inkindItemsSummary?.totalAssignedStock || 0) - (inkindItemsSummary?.totalRedeemedStock || 0)) },
               ]}
               colors={['#FFA500', '#10B981']}
+              options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  y: { formatter: (val: number) => formatNum(val) },
+                },
+              }}
             />
           </div>
         </div>
@@ -259,6 +271,12 @@ export default function InkindOverview() {
                   { label: tv('NOT_SKIPPED'), value: inkindItemsSummary?.chartData?.otpStatus?.notSkipped || 0 },
                 ]}
                 colors={['#FFA500', '#10B981']}
+                options={{
+                  tooltip: {
+                    fillSeriesColor: true,
+                    y: { formatter: (val: number) => formatNum(val) },
+                  },
+                }}
               />
             </div>
           </div>
@@ -274,7 +292,7 @@ export default function InkindOverview() {
                     <div className="space-y-2 pr-2">
                       {reasons.map((r, i) => (
                         <div key={i} className="flex items-center gap-2">
-                          <div className="w-4 text-xs text-muted-foreground shrink-0 text-right">{i + 1}</div>
+                          <div className="w-4 text-xs text-muted-foreground shrink-0 text-right">{formatNum(i + 1)}</div>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="w-32 shrink-0 truncate text-xs cursor-default">{r.reason}</div>
@@ -382,7 +400,7 @@ export default function InkindOverview() {
                           className={`text-sm font-semibold ${config.color}`}
                         >
                           {isPositive ? '+' : '-'}
-                          {movement.quantity ?? 0}
+                          {formatNum(movement.quantity ?? 0)}
                         </span>
                         <Badge
                           variant="outline"
@@ -489,7 +507,7 @@ export default function InkindOverview() {
                         value={
                           <span className={`font-bold ${config.color}`}>
                             {isPositive ? '+' : '-'}
-                            {selectedMovement.quantity}
+                            {formatNum(selectedMovement.quantity)}
                           </span>
                         }
                       />
@@ -519,7 +537,7 @@ export default function InkindOverview() {
                           label={tv('AVAILABLE_STOCK')}
                           value={
                             <span className="text-primary font-bold">
-                              {selectedMovement.inkind.availableStock}
+                              {formatNum(selectedMovement.inkind.availableStock)}
                             </span>
                           }
                         />

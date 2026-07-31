@@ -63,6 +63,8 @@ const WalletList = ({
 );
 
 const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { clickToCopy, copyAction } = useCopy();
 
   const isWarningOnly = errorData?.isAssignable === true;
@@ -79,12 +81,10 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <TriangleAlert className="w-5 h-5 text-yellow-500" />
-                Payout Not Yet Completed
+                {t('PAYOUT_NOT_YET_COMPLETED')}
               </DialogTitle>
               <DialogDescription>
-                The following beneficiaries have a fiat payout that is still in
-                progress. Proceeding will assign new funds before the previous
-                payout is finalized. Are you sure you want to continue?
+                {t('FIAT_PAYOUT_STILL_IN_PROGRESS_CONFIRM')}
               </DialogDescription>
             </DialogHeader>
             <WalletList
@@ -94,9 +94,9 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
             />
             <DialogFooter>
               <Button variant="outline" onClick={validateModal.onFalse}>
-                Cancel
+                {tg('CANCEL')}
               </Button>
-              <Button onClick={onContinue} disabled={!onContinue}>Continue Anyway</Button>
+              <Button onClick={onContinue} disabled={!onContinue}>{t('CONTINUE_ANYWAY')}</Button>
             </DialogFooter>
           </>
         ) : (
@@ -104,16 +104,14 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
             <DialogHeader>
               <DialogTitle>{errorData?.message}</DialogTitle>
               <DialogDescription>
-                The following conflicts were found in group{' '}
-                <span className="font-semibold">{errorData?.groupName}</span>.
-                Please resolve them before proceeding.
+                {t('CONFLICTS_FOUND', { groupName: errorData?.groupName ?? '' })}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               {errorData?.tokenAssignedBenfWallet && errorData.tokenAssignedBenfWallet.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-destructive uppercase tracking-wide">
-                    Already assigned — remove from group to continue
+                    {t('ALREADY_ASSIGNED')}
                   </p>
                   <WalletList
                     wallets={errorData.tokenAssignedBenfWallet}
@@ -125,7 +123,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
               {errorData?.foundAssignedBenf && errorData.foundAssignedBenf.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-yellow-600 uppercase tracking-wide">
-                    Assigned but disbursement still pending
+                    {t('ASSIGNED_BUT_DISBURSEMENT_PENDING')}
                   </p>
                   <WalletList
                     wallets={errorData.foundAssignedBenf}

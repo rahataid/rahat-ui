@@ -119,22 +119,34 @@ export const useBeneficiaryTableColumns = () => {
     {
       accessorKey: 'gender',
       header: t('GENDER'),
-      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+      cell: ({ row }) => {
+        const gender = row.getValue('gender') as string;
+        return <div>{gender ? t(gender) : ''}</div>;
+      },
     },
     {
       accessorKey: 'internetStatus',
       header: t('INTERNET_ACCESS'),
-      cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
+      cell: ({ row }) => {
+        const internetStatus = row.getValue('internetStatus') as string;
+        return <div>{internetStatus ? t(internetStatus) : ''}</div>;
+      },
     },
     {
       accessorKey: 'phoneStatus',
       header: t('PHONE_TYPE'),
-      cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
+      cell: ({ row }) => {
+        const phoneStatus = row.getValue('phoneStatus') as string;
+        return <div>{phoneStatus ? t(phoneStatus) : ''}</div>;
+      },
     },
     {
       accessorKey: 'bankedStatus',
       header: t('BANKING_STATUS'),
-      cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
+      cell: ({ row }) => {
+        const bankedStatus = row.getValue('bankedStatus') as string;
+        return <div>{bankedStatus ? t(bankedStatus) : ''}</div>;
+      },
     },
     {
       id: 'actions',
@@ -176,14 +188,14 @@ export const useBeneficiaryTableColumns = () => {
                       <span className="font-semibold text-sm/6">
                         {row?.original?.groupPurpose ===
                           GroupPurpose.BANK_TRANSFER &&
-                          'Bank Account Validation Failed'}
+                          t('BANK_ACCOUNT_VALIDATION_FAILED')}
                         {row?.original?.groupPurpose ===
                           GroupPurpose.MOBILE_MONEY &&
-                          'Phone Number Validation Failed'}
+                          t('PHONE_NUMBER_VALIDATION_FAILED')}
                       </span>
                     </div>
                     <p className="text-gray-500 text-sm mt-1 break-words">
-                      {row.original.error ?? 'Something went wrong!!'}
+                      {row.original.error ?? t('SOMETHING_WENT_WRONG')}
                     </p>
                   </TooltipContent>
                 </Tooltip>

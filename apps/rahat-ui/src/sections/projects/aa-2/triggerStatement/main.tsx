@@ -126,9 +126,9 @@ export default function TriggerStatementView() {
                 <TriggersPhaseCard
                   key={d.id}
                   title={d.name}
-                  subtitle={`Overview of ${d.name.toLowerCase()} phase`}
+                  subtitle={t('OVERVIEW_OF', { name: d.name.toLowerCase() })}
                   handleAddTrigger={() => handleAddTrigger(d)}
-                  chartLabels={['Mandatory', 'Optional']}
+                  chartLabels={[t('MANDATORY'), t('OPTIONAL')]}
                   chartSeries={[
                     d?.phaseStats?.totalMandatoryTriggers || 0,
                     d?.phaseStats?.totalOptionalTriggers || 0,

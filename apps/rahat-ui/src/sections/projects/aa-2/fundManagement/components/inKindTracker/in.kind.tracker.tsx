@@ -45,7 +45,7 @@ export function InKindTracker() {
     return (
       entities?.find((e: Entities) =>
         currentUser?.data?.roles?.includes(e.alias.replace(/\s+/g, '')),
-      ) || entities[0]
+      ) || entities?.[0]
     ); // Default to first entity for demo
   }, [currentUser, entities]);
 
@@ -111,8 +111,8 @@ export function InKindTracker() {
             comments: !resolveAlias(flow.from)
               ? tg('STOCK_CREATED')
               : flow.type === 'received'
-              ? t('CLAIMED_BY', { alias: entity.alias })
-              : t('IN_KIND_TRANSFER_FROM', { from: resolveAlias(flow.from) || t('UNKNOWN') }),
+                ? t('CLAIMED_BY', { alias: entity.alias })
+                : t('IN_KIND_TRANSFER_FROM', { from: resolveAlias(flow.from) || t('UNKNOWN') }),
           }));
 
         return [...(pendingTransfers || []), ...(successfulTransfers || [])];

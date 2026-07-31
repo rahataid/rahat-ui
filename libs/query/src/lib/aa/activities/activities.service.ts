@@ -256,8 +256,8 @@ export const useCreateActivities = () => {
       qc.invalidateQueries({ queryKey: ['activities'] });
       toast.fire({
         title: data?.data?.isTemplate
-          ? 'Activity and its template added successfully'
-          : 'Activity created successfully',
+          ? t('ACTIVITY_AND_TEMPLATE_ADDED_SUCCESSFULLY')
+          : t('ACTIVITY_CREATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },

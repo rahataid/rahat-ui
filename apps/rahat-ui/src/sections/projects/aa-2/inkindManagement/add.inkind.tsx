@@ -10,12 +10,14 @@ import type { InkindDetailsValues } from './schemas/inkind.validation';
 import { useInkinds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function AddInkindView() {
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
   const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<InkindDetailsValues>>({});
@@ -105,7 +107,7 @@ export default function AddInkindView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {t('STEP', { index: index + 1 })}
+                  {t('STEP', { index: formatDigits(index + 1) })}
                 </span>
                 <span
                   className={`text-md mt-0.5 text-center transition-colors ${

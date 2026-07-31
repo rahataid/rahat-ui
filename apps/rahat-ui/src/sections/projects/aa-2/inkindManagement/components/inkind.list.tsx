@@ -651,7 +651,7 @@ export default function InkindList() {
                     : 'text-muted-foreground'
                     }`}
                 >
-                  {updateDialog.name.length}/{NAME_MAX}
+                  {formatNum(updateDialog.name.length)}/{formatNum(NAME_MAX)}
                 </span>
               </div>
               <Input
@@ -690,7 +690,8 @@ export default function InkindList() {
                     : 'text-muted-foreground'
                     }`}
                 >
-                  {updateDialog.description.length}/{DESCRIPTION_MAX}
+                  {formatNum(updateDialog.description.length)}/
+                  {formatNum(DESCRIPTION_MAX)}
                 </span>
               </div>
               <Textarea

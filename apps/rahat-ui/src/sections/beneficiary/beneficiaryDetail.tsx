@@ -1,6 +1,7 @@
 'use client';
 
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import {
   Tooltip,
   TooltipContent,
@@ -76,6 +77,7 @@ export default function BeneficiaryDetail({
   const walletAddress = beneficiaryDetail.walletAddress || '';
   const t = useTranslations('BENEFICIARY_DETAIL');
   const g = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
 
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
@@ -189,7 +191,7 @@ export default function BeneficiaryDetail({
             <h1 className="font-semibold text-xl">
               {beneficiaryDetail?.piiData?.name}
             </h1>
-            <Badge>Active</Badge>
+            <Badge>{g('ACTIVE')}</Badge>
           </div>
           <TooltipProvider delayDuration={100}>
             <Tooltip>
@@ -286,12 +288,20 @@ export default function BeneficiaryDetail({
                 'John Doe'}
             </h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{beneficiaryDetail?.extras?.status ?? 'active'}</Badge>
+              <Badge>
+                {g(
+                  (beneficiaryDetail?.extras?.status ?? 'active').toUpperCase(),
+                )}
+              </Badge>
               <p className="text-base text-muted-foreground">
-                {beneficiaryDetail?.extras?.age ?? 'N/A'}
+                {beneficiaryDetail?.extras?.age
+                  ? formatNum(beneficiaryDetail.extras.age)
+                  : g('N_A')}
               </p>
               <p className="text-base text-muted-foreground">
-                {beneficiaryDetail?.gender ?? 'unknown'}
+                {beneficiaryDetail?.gender
+                  ? g(beneficiaryDetail.gender.toUpperCase())
+                  : g('UNKNOWN')}
               </p>
             </div>
           </div>

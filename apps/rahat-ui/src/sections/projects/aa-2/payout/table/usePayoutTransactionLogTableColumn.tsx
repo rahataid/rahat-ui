@@ -114,10 +114,12 @@ export default function usePayoutTransactionLogTableColumn() {
               status,
             )}`}
           >
-            {status
-              .toLowerCase()
-              .replace(/_/g, ' ')
-              .replace(/^./, (char) => char.toUpperCase())}
+            {tg.has(status as never)
+              ? tg(status as never)
+              : status
+                  .toLowerCase()
+                  .replace(/_/g, ' ')
+                  .replace(/^./, (char) => char.toUpperCase())}
           </Badge>
         );
       },

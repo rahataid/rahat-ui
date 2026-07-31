@@ -58,7 +58,10 @@ export function ClientSidePagination({ table }: IProps) {
         </Select>
       </div>
       <div>
-        {t('PAGE')} {formatNum(pageIndex + 1)} of {formatNum(pageCount)}
+        {t('PAGE_CURRENT_OF_TOTAL', {
+          current: formatNum(pageIndex + 1),
+          total: formatNum(pageCount),
+        })}
       </div>
       <div className="flex gap-[clamp(4px,0.6vw,8px)]">
         <Button

@@ -92,7 +92,9 @@ export const useInkindRedemptionColumn = (
         const type = row.original?.inkind?.type;
         return (
           <Badge className="bg-gray-200 text-gray-600">
-            {formatLabel(INKIND_TYPE_LABELS[type])}
+            {tg.has(type as never)
+              ? tg(type as never)
+              : formatLabel(INKIND_TYPE_LABELS[type])}
           </Badge>
         );
       },

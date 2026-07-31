@@ -72,13 +72,36 @@ export const formatDateFull = (dateString: string) => {
   });
 };
 
+type DurationTFunction = (key: string) => string;
+
+const defaultDurationT: DurationTFunction = (key) => {
+  const fallback: Record<string, string> = {
+    DURATION_DAY: 'day',
+    DURATION_DAYS: 'days',
+    DURATION_HOUR: 'hour',
+    DURATION_HOURS: 'hours',
+    DURATION_MINUTE: 'minute',
+    DURATION_MINUTES: 'minutes',
+    DURATION_SECOND: 'second',
+    DURATION_SECONDS: 'seconds',
+    DURATION_ZERO_SECONDS: '0 seconds',
+  };
+  return fallback[key] || key;
+};
+
 /**
  * Formats milliseconds into a human-readable duration string
  * @param milliseconds - Duration in milliseconds
+ * @param t - Optional translator function for localized unit labels
+ * @param formatNum - Optional number formatter for localized digits
  * @returns Formatted duration string (e.g., "2 hours 5 minutes", "45 seconds", "1 day 3 hours")
  */
-export const formatDuration = (milliseconds: number): string => {
-  if (!milliseconds || milliseconds < 0) return '0 seconds';
+export const formatDuration = (
+  milliseconds: number,
+  t: DurationTFunction = defaultDurationT,
+  formatNum: (value: number) => string = String,
+): string => {
+  if (!milliseconds || milliseconds < 0) return t('DURATION_ZERO_SECONDS');
 
   const seconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -88,21 +111,27 @@ export const formatDuration = (milliseconds: number): string => {
   const parts: string[] = [];
 
   if (days > 0) {
-    parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+    parts.push(`${formatNum(days)} ${t(days === 1 ? 'DURATION_DAY' : 'DURATION_DAYS')}`);
   }
   if (hours % 24 > 0) {
-    parts.push(`${hours % 24} ${hours % 24 === 1 ? 'hour' : 'hours'}`);
+    parts.push(
+      `${formatNum(hours % 24)} ${t(hours % 24 === 1 ? 'DURATION_HOUR' : 'DURATION_HOURS')}`,
+    );
   }
   if (minutes % 60 > 0) {
-    parts.push(`${minutes % 60} ${minutes % 60 === 1 ? 'minute' : 'minutes'}`);
+    parts.push(
+      `${formatNum(minutes % 60)} ${t(minutes % 60 === 1 ? 'DURATION_MINUTE' : 'DURATION_MINUTES')}`,
+    );
   }
   if (seconds % 60 > 0 && days === 0) {
-    parts.push(`${seconds % 60} ${seconds % 60 === 1 ? 'second' : 'seconds'}`);
+    parts.push(
+      `${formatNum(seconds % 60)} ${t(seconds % 60 === 1 ? 'DURATION_SECOND' : 'DURATION_SECONDS')}`,
+    );
   }
 
   // If no parts were added (duration < 1 second), show 0 seconds
   if (parts.length === 0) {
-    return '0 seconds';
+    return t('DURATION_ZERO_SECONDS');
   }
 
   return parts.join(' ');

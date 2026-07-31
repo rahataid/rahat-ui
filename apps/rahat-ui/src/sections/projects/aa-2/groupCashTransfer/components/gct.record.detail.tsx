@@ -32,6 +32,18 @@ import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
 export default function GctRecordDetail() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
+  const statusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      NOT_STARTED: t('NOT_STARTED'),
+      PENDING: tGlobal('PENDING'),
+      STARTED: t('STARTED'),
+      COMPLETED: tGlobal('COMPLETED'),
+      SUCCESS: tGlobal('SUCCESS'),
+      FAILED: tGlobal('FAILED'),
+      REJECTED: t('REJECTED'),
+    };
+    return map[s] ?? s.replace(/_/g, ' ');
+  };
   const { id, recordUuid } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -153,7 +165,7 @@ export default function GctRecordDetail() {
                   GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'
                 }`}
               >
-                {status.replace(/_/g, ' ')}
+                {statusLabel(status)}
               </Badge>
             </div>
             <DetailRow label={t('CREATED_BY_COL')} value={record?.createdBy} />

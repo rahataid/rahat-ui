@@ -103,7 +103,7 @@ const ForeCastData = () => {
             <Heading
               title={forecastTitle}
               titleStyle="text-xl capitalize"
-              description={`Chart and table showing ${forecastTitle}`}
+              description={t('CHART_AND_TABLE_SHOWING', { title: forecastTitle })}
             />
             <TimeSeriesChart
               data={data?.data}

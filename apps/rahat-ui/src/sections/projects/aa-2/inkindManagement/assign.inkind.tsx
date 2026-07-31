@@ -8,6 +8,7 @@ import AssignInkindConfirmation from './forms/assign.inkind.confirmation';
 import { AssignInkindValues } from './forms/schema/inkinds.schema';
 import { PayoutMode } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type AssignInkindSummary = AssignInkindValues & {
   inkindName: string;
@@ -25,6 +26,7 @@ export default function AssignInkindView() {
   const tab = searchParams.get('tab');
   const router = useRouter();
   const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
 
   const ASSIGN_INKIND_STEPS = [
     {
@@ -113,7 +115,7 @@ export default function AssignInkindView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {t('STEP', { index: index + 1 })}
+                  {t('STEP', { index: formatDigits(index + 1) })}
                 </span>
                 <span
                   className={`text-md mt-0.5 text-center transition-colors ${

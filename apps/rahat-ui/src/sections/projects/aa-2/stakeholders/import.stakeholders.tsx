@@ -236,43 +236,42 @@ export default function ImportStakeholder() {
       if (isMissing) {
         return {
           className: CELL_STYLES.missing,
-          tooltipMessage: 'Required field is missing',
+          tooltipMessage: t('REQUIRED_FIELD_IS_MISSING'),
         };
       }
       if (isDuplicatePhoneInFile) {
         return {
           className: CELL_STYLES.duplicatePhone,
-          tooltipMessage: 'Duplicate phone number in file',
+          tooltipMessage: t('DUPLICATE_PHONE_NUMBER_FOUND_IN_FILE'),
         };
       }
       if (isDuplicateEmailInFile) {
         return {
           className: CELL_STYLES.duplicateEmail,
-          tooltipMessage: 'Duplicate email in file',
+          tooltipMessage: t('DUPLICATE_EMAIL_FOUND_IN_FILE'),
         };
       }
       if (isErrorPhone || isErrorEmail) {
         return {
           className: CELL_STYLES.error,
-          tooltipMessage: errorMessage || 'Validation error',
+          tooltipMessage: errorMessage || t('VALIDATION_ERROR'),
         };
       }
       if (isUpdateStakeholder) {
         return {
           className: CELL_STYLES.update,
-          tooltipMessage:
-            'This data will overwrite existing stakeholder record',
+          tooltipMessage: t('THIS_DATA_WILL_OVERWRITE_EXISTING_STAKEHOLDER_RECORD'),
         };
       }
       if (isNewStakeholder) {
         return {
           className: CELL_STYLES.new,
-          tooltipMessage: 'New stakeholder',
+          tooltipMessage: t('NEW_STAKEHOLDER'),
         };
       }
       return { className: '', tooltipMessage: '' };
     },
-    [],
+    [t],
   );
 
   // Table goes here
@@ -467,13 +466,17 @@ export default function ImportStakeholder() {
 
         if (duplicatePhones.size > 0) {
           toast.warn(
-            `${formatNum(duplicatePhones.size)} duplicate phone number(s) found in file`,
+            t('DUPLICATE_PHONE_NUMBERS_FOUND_IN_FILE_COUNT', {
+              count: formatNum(duplicatePhones.size),
+            }),
             { autoClose: 5000 },
           );
         }
         if (duplicateEmails.size > 0) {
           toast.warn(
-            `${formatNum(duplicateEmails.size)} duplicate email(s) found in file`,
+            t('DUPLICATE_EMAILS_FOUND_IN_FILE_COUNT', {
+              count: formatNum(duplicateEmails.size),
+            }),
             { autoClose: 5000 },
           );
         }
@@ -739,7 +742,7 @@ export default function ImportStakeholder() {
       );
 
       if (groupExists) {
-        setGroupError('A group with this name already exists');
+        setGroupError(t('GROUP_NAME_ALREADY_EXISTS'));
         return;
       }
 
@@ -931,7 +934,7 @@ export default function ImportStakeholder() {
           <div>
             {data?.length > 0 && (
               <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
-                {tg('TOTAL_COUNT')}: {data.length - 1}
+                {tg('TOTAL_COUNT')}: {formatNum(data.length - 1)}
               </p>
             )}
           </div>

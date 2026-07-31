@@ -35,19 +35,19 @@ export function ForecastDataSection({
   ) => {
     switch (triggerSourceValue) {
       case 'prob_humidity':
-        return 'Humidity Level';
+        return t('HUMIDITY_LEVEL');
       case 'temperature_c':
-        return 'Temperature Level';
+        return t('TEMPERATURE_LEVEL');
       case 'rainfall_mm':
-        return 'Rainfall Level';
+        return t('RAINFALL_LEVEL');
       default:
         switch (triggerSourceSubTypeValue) {
           case 'warning_level':
-            return 'Warning Level';
+            return t('WARNING_LEVEL');
           case 'danger_level':
-            return 'Danger Level';
+            return t('DANGER_LEVEL');
           default:
-            return 'Water Level';
+            return t('WATER_LEVEL');
         }
     }
   };
@@ -59,11 +59,11 @@ export function ForecastDataSection({
 
       case 'GFH':
         return triggerSourceSubType === 'warning_discharge'
-          ? 'Warning Discharge'
-          : 'Danger Discharge';
+          ? t('WARNING_DISCHARGE')
+          : t('DANGER_DISCHARGE');
 
       case 'GLOFAS':
-        return 'Flood Probability';
+        return t('FLOOD_PROBABILITY');
 
       default:
         return '';
@@ -75,7 +75,7 @@ export function ForecastDataSection({
       <Heading
         title={t('FORECAST_DATA')}
         titleStyle="text-lg/7"
-        description={`Source: ${source} - ${sourceSubTypeLabel}`}
+        description={t('SOURCE_WITH_SUBTYPE', { source, subType: sourceSubTypeLabel })}
       />
       {Object.keys(triggerStatement).length ? (
         <div className="p-3 text-center border rounded">

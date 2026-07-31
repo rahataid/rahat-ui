@@ -1,6 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { GCT_STATUS_STYLE } from '../types/gct.types';
 
@@ -33,9 +34,20 @@ export function DetailRow({
 }
 
 export function GctStatusBadge({ status }: { status: string }) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+  const map: Record<string, string> = {
+    NOT_STARTED: t('NOT_STARTED'),
+    PENDING: tGlobal('PENDING'),
+    STARTED: t('STARTED'),
+    COMPLETED: tGlobal('COMPLETED'),
+    SUCCESS: tGlobal('SUCCESS'),
+    FAILED: tGlobal('FAILED'),
+    REJECTED: t('REJECTED'),
+  };
   return (
     <Badge className={`w-fit text-xs ${GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'}`}>
-      {status.replace(/_/g, ' ')}
+      {map[status] ?? status.replace(/_/g, ' ')}
     </Badge>
   );
 }

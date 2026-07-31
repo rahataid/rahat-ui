@@ -31,6 +31,7 @@ import {
 } from '../schemas/inkind.validation';
 import type { InkindFormData } from '../schemas/inkind.validation';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
@@ -53,6 +54,7 @@ export default function InkindDetailsForm({
   const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tglob = useTranslations('GLOBAL');
   const tAA = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const InkindDetailsSchema = useMemo(
     () => buildInkindDetailsSchema(tAA),
     [tAA],
@@ -105,7 +107,7 @@ export default function InkindDetailsForm({
                         : 'text-muted-foreground'
                     }`}
                   >
-                    {nameValue?.length ?? 0}/{NAME_MAX}
+                    {formatNum(nameValue?.length ?? 0)}/{formatNum(NAME_MAX)}
                   </span>
                 </div>
                 <FormControl>
@@ -134,7 +136,8 @@ export default function InkindDetailsForm({
                         : 'text-muted-foreground'
                     }`}
                   >
-                    {descriptionValue?.length ?? 0}/{DESCRIPTION_MAX}
+                    {formatNum(descriptionValue?.length ?? 0)}/
+                    {formatNum(DESCRIPTION_MAX)}
                   </span>
                 </div>
                 <FormControl>

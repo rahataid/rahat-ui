@@ -145,15 +145,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutStats = [
     {
       label: tv('ACTUAL_BUDGET'),
-      smallNumber: `Rs. ${
-        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
-      }`,
+      smallNumber: `Rs. ${formatNum(
+        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE,
+      )}`,
       infoIcon: true,
       infoToolTip: tv('ACTUAL_BUDGET_TOOLTIP'),
     },
     {
       label: tv('AMOUNT_DISBURSED'),
-      smallNumber: `Rs. ${payout?.totalSuccessAmount}`,
+      smallNumber: `Rs. ${formatNum(payout?.totalSuccessAmount ?? 0)}`,
       infoIcon: true,
       infoToolTip: tv('AMOUNT_DISBURSED_TOOLTIP'),
     },
@@ -201,10 +201,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description={tv('LIST_OF_ALL_THE_PAYOUT_TRANSACTION')}
-              status={payout?.status
-                .toLowerCase()
-                .replace(/_/g, ' ')
-                .replace(/^./, (char: string) => char.toUpperCase())}
+              status={
+                payout?.status && tg.has(payout.status as never)
+                  ? tg(payout.status as never)
+                  : payout?.status
+                      ?.toLowerCase()
+                      .replace(/_/g, ' ')
+                      .replace(/^./, (char: string) => char.toUpperCase())
+              }
               badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>

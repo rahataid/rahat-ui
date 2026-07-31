@@ -42,6 +42,7 @@ export default function ActivateTriggerDialog({
   notes,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -144,7 +145,7 @@ export default function ActivateTriggerDialog({
           className={`px-8 ${version && 'hidden'}`}
           onClick={() => setShowModal(true)}
         >
-          Trigger
+          {tg('TRIGGER')}
         </Button>
       </DialogTrigger>
       <DialogContent className="rounded-xl">
@@ -252,14 +253,14 @@ export default function ActivateTriggerDialog({
                   className="w-full"
                   onClick={() => setShowModal(!showModal)}
                 >
-                  Cancel
+                  {tg('CANCEL')}
                 </Button>
                 <Button
                   type="submit"
                   className="w-full"
                   disabled={uploadFile?.isPending || activateTrigger?.isPending}
                 >
-                  Confirm
+                  {tg('CONFIRM')}
                 </Button>
               </div>
             </div>

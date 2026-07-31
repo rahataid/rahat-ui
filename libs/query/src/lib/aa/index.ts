@@ -14,3 +14,4 @@ export * from './payout';
 export * from './inkinds';
 export * from './beneficiaries';
 export * from './groupCashTransfer';
+export * from './ivr';

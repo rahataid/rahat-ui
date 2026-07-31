@@ -303,70 +303,68 @@ export default function EditFieldDefinition({
               />
             </div>
 
-            {showLabelValue && form.getValues('fieldPopulate')?.length > 0 && (
+            {showLabelValue && fields.length > 0 && (
               <div>
                 <Label className="text-xs font-medium mt-2">
                   Field Populate
                 </Label>
                 <div className="grid gap-3">
-                  {form
-                    .watch('fieldPopulate')
-                    .map((item: any, index: number) => (
-                      <div key={index} className="flex items-center">
-                        <div className="flex-1">
-                          <FormField
-                            control={form.control}
-                            name={`fieldPopulate.${index}.label`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Label className="text-xs font-medium">
-                                  Label
-                                </Label>
-                                <FormControl>
-                                  <Input
-                                    type="text"
-                                    placeholder="Label"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="flex-1 ml-2">
-                          <FormField
-                            control={form.control}
-                            name={`fieldPopulate.${index}.value`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Label className="text-xs font-medium">
-                                  Value
-                                </Label>
-                                <FormControl>
-                                  <Input
-                                    type="text"
-                                    placeholder="Value"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div>
-                          <Button
-                            type="button"
-                            onClick={() => remove(index)}
-                            className="mt-8 ml-3 text-xs"
-                            // disabled={fields.length === 1}
-                          >
-                            <Minus size={10} strokeWidth={1.5} />
-                          </Button>
-                        </div>
+                  {fields.map((item, index) => (
+                    <div key={item.id} className="flex items-center">
+                      <div className="flex-1">
+                        <FormField
+                          control={form.control}
+                          name={`fieldPopulate.${index}.label`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label className="text-xs font-medium">
+                                Label
+                              </Label>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder="Label"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
-                    ))}
+                      <div className="flex-1 ml-2">
+                        <FormField
+                          control={form.control}
+                          name={`fieldPopulate.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label className="text-xs font-medium">
+                                Value
+                              </Label>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder="Value"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <Button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="mt-8 ml-3 text-xs"
+                          // disabled={fields.length === 1}
+                        >
+                          <Minus size={10} strokeWidth={1.5} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
                 <div className="flex justify-start mb-4">
                   <Button

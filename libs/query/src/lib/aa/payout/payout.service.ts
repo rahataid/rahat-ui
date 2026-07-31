@@ -26,6 +26,8 @@ interface Payout {
   payoutType?: string;
   groupName?: string;
   payoutProcessorId?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface CreatePayout {
@@ -85,7 +87,7 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['payouts', projectUUID, payload],
+    queryKey: ['payouts', projectUUID, payload.startDate, payload.endDate],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,

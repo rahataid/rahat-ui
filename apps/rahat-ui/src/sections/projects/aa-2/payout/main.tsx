@@ -26,18 +26,18 @@ export default function PayoutView() {
   const route = useRouter();
   const { activeTab, setActiveTab } = useActiveTab('payoutOverview');
 
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
+
   const { data: payouts } = usePayouts(projectID, {
     page: 1,
     perPage: 999,
+    ...(startDate && { startDate }),
+    ...(endDate && { endDate }),
   });
-  const [startDate, setStartDate] = useState<string | undefined>();
-  const [endDate, setEndDate] = useState<string | undefined>();
-  const [version, setVersion] = useState(0);
-
   const { data: statsPayout } = usePayoutStats(projectID, {
     startDate,
     endDate,
-    // _v: version,
   });
   useFetchTokenStatsStellar({
     projectUUID: projectID,
@@ -47,14 +47,12 @@ export default function PayoutView() {
     if (range?.from && range?.to) {
       setStartDate(range.from.toISOString());
       setEndDate(range.to.toISOString());
-      // setVersion((v) => v + 1);
     }
   };
 
   const handleClearDate = () => {
     setStartDate(undefined);
     setEndDate(undefined);
-    // setVersion((v) => v + 1);
   };
 
   const payoutStats = useMemo(() => {

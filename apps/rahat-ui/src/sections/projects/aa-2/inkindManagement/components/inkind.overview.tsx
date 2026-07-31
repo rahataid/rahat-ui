@@ -46,6 +46,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { InkindSummary, Movement } from '../types';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 function DetailRow({
   icon: Icon,
@@ -132,14 +133,19 @@ export default function InkindOverview() {
           description="Overview of all in-kind items and stock movements"
         />
         <div className="flex gap-2 items-center">
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            handleClick={handleDownloadReport}
-            name={'Export Report'}
-            variant="outline"
-            disabled={!hasData}
-            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-          />
+          <TooltipWrapper
+            tip={hasData ? '' : 'No inkind data available to export'}
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={handleDownloadReport}
+              name={'Export Report'}
+              variant="outline"
+              disabled={!hasData}
+              className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+            />
+          </TooltipWrapper>
+
           <DateRangePicker
             placeholder="Pick date range"
             handleDateChange={handleDateChange}

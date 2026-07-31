@@ -1,11 +1,8 @@
-import {
-  useCommuicationStatsforBeneficiaryandStakeHolders,
-  usePagination,
-} from '@rahat-ui/query';
+import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import CommunicationsChartsStats from './components/commsShartsStats';
 import CommunicationsStatsSkeleton from './components/commsSkeleton';
 import CommsActivitiesTable from './table/comms.activities.table';
@@ -19,32 +16,34 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { IndividualLogTab } from './components/IndividualLogs';
 import { CloudDownloadIcon } from 'lucide-react';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { exportCommsStats, hasCommsData } from './utils/comms.utils';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function CommunicationMainLogsView() {
   const { id: ProjectId } = useParams();
-  const { filters, setFilters } = usePagination();
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
 
   const { data, isLoading: isLoadingBenefStakeholdersStats } =
-    useCommuicationStatsforBeneficiaryandStakeHolders(
-      ProjectId as UUID,
-      filters,
-    );
+    useCommuicationStatsforBeneficiaryandStakeHolders(ProjectId as UUID, {
+      startDate,
+      endDate,
+    });
   const { activeTab, setActiveTab } = useActiveTab('overview');
 
   const handleDateChange = (range: any) => {
     if (range?.from && range?.to) {
-      setFilters({
-        ...filters,
-        startDate: range.from.toISOString(),
-        endDate: range.to.toISOString(),
-        _v: Date.now(),
-      });
+      setStartDate(range.from.toISOString());
+      setEndDate(range.to.toISOString());
     }
   };
 
   const handleClearDate = () => {
-    setFilters({ _v: Date.now() });
+    setStartDate(undefined);
+    setEndDate(undefined);
   };
+
+  const hasData = hasCommsData(data);
 
   return (
     <div className="flex flex-col p-4">
@@ -92,17 +91,24 @@ export default function CommunicationMainLogsView() {
           </TabsList>
           {activeTab === 'overview' && (
             <div className="flex gap-2 items-center">
-              <IconLabelBtn
-                Icon={CloudDownloadIcon}
-                name={'Export Report'}
-                variant="outline"
-                className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-              />
+              <TooltipWrapper
+                tip={hasData ? '' : 'No communication data available to export'}
+              >
+                <IconLabelBtn
+                  Icon={CloudDownloadIcon}
+                  handleClick={() => exportCommsStats(data)}
+                  name={'Export Report'}
+                  variant="outline"
+                  disabled={!hasData}
+                  className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+                />
+              </TooltipWrapper>
               <DateRangePicker
                 placeholder="Pick date range"
                 handleDateChange={handleDateChange}
                 handleClearDate={handleClearDate}
                 type="range"
+                className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] "
               />
             </div>
           )}

@@ -89,6 +89,7 @@ export default function EditFieldDefinition({
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
+      variations: formattedVariations,
     });
   }, [
     data?.variations,
@@ -114,32 +115,37 @@ export default function EditFieldDefinition({
   const handleEditFieldDefinition = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
-    let fieldPopulateBody: Array<{ label: string; value: string }> | [] = [];
-    if (!showLabelValue) {
-      fieldPopulateBody = [];
-    } else {
-      fieldPopulateBody = formData?.fieldPopulate;
+    const dirtyFields = form.formState.dirtyFields;
+    const payload: Record<string, unknown> = {};
+
+    if (dirtyFields.name) payload.name = formData.name;
+    if (dirtyFields.fieldType)
+      payload.fieldType = formData.fieldType as FieldType;
+    if (dirtyFields.isActive) payload.isActive = formData.isActive;
+    if (dirtyFields.isTargeting) payload.isTargeting = formData.isTargeting;
+
+    if (dirtyFields.variations) {
+      payload.variations = variationTags.map((d) => d.text);
     }
 
-    const variationNames = variationTags.length
-      ? variationTags.map((d) => d.text)
-      : [];
+    if (dirtyFields.fieldPopulate) {
+      if (!showLabelValue) {
+        payload.fieldPopulate = null;
+      } else {
+        const optionsWithValue = formData.fieldPopulate.filter(
+          (f) => f.value !== '',
+        );
+        payload.fieldPopulate = optionsWithValue.length
+          ? { data: optionsWithValue }
+          : null;
+      }
+    }
 
-    const optionsWithValue = fieldPopulateBody.filter((f) => f.value !== '');
-    const populate = optionsWithValue.length
-      ? { data: optionsWithValue }
-      : null;
+    if (Object.keys(payload).length === 0) return;
 
     await updateFieldDefinition.mutateAsync({
       id: data?.id?.toString(),
-      data: {
-        name: formData?.name,
-        fieldType: formData?.fieldType as FieldType,
-        isActive: formData?.isActive,
-        isTargeting: formData?.isTargeting,
-        fieldPopulate: populate,
-        variations: variationNames,
-      },
+      data: payload as FieldDefinition,
     });
   };
 
@@ -278,25 +284,23 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-              {showLabelValue && (
-                <FormField
-                  control={form.control}
-                  name="isTargeting"
-                  render={({ field }) => (
-                    <div className="flex flex-col items-right">
-                      <Label className="text-xs font-medium mb-1">
-                        Select as targeting criteria
-                      </Label>
-                      <Switch
-                        {...field}
-                        value={field.value ? 'false' : 'true'}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
-                  )}
-                />
-              )}
+              <FormField
+                control={form.control}
+                name="isTargeting"
+                render={({ field }) => (
+                  <div className="flex flex-col items-right">
+                    <Label className="text-xs font-medium mb-1">
+                      Select as targeting criteria
+                    </Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
             </div>
 
             {showLabelValue && form.getValues('fieldPopulate')?.length > 0 && (

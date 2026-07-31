@@ -56,16 +56,18 @@ export default function RedemptionRequestTable() {
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
           setPagination={setPagination}
-          meta={{
-            total: 0,
-            lastPage: 0,
-            currentPage: 0,
-            perPage: 0,
-            prev: null,
-            next: null,
-          }}
+          meta={
+            (data?.response?.meta as any) || {
+              total: 0,
+              lastPage: 0,
+              currentPage: 0,
+              perPage: 0,
+              prev: null,
+              next: null,
+            }
+          }
           perPage={pagination?.perPage}
-          total={0}
+          total={data?.response?.meta?.total || 0}
         />
       </>
     </div>

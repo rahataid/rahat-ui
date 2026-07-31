@@ -42,7 +42,11 @@ export default function VendorDetail() {
   const deleteVendor = async () => {
     if (isVendorAssigned)
       return toast.warning(t('ASSIGNED_VENDOR_CANNOT_BE_DELETED'));
-    await removeVendor.mutateAsync({ vendorId: id });
+    await removeVendor.mutateAsync({
+      vendorId: id,
+      successMessage: g('VENDOR_REMOVED_SUCCESSFULLY'),
+      errorMessage: g('ERROR_WHILE_REMOVING_VENDOR'),
+    });
     router.push('/vendors');
   };
 

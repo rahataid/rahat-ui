@@ -74,6 +74,8 @@ export default function SelectBeneficiaryView() {
     const payload = {
       uuid: Id,
       beneficiaries: members,
+      successMessage: t('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
+      errorMessage: t('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
     };
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);

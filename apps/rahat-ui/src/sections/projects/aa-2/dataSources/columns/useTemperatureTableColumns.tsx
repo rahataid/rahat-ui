@@ -7,11 +7,12 @@ import { useTranslations } from 'next-intl';
 
 export const useTemperatureTableColumns = (
   unit = '°C',
+  label?: string,
 ) => {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
-  const label = t('TEMPERATURE_LABEL');
+  const resolvedLabel = label ?? t('TEMPERATURE_LABEL');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
@@ -28,7 +29,7 @@ export const useTemperatureTableColumns = (
     },
     {
       accessorKey: 'value',
-      header: `${label} (${unit})`,
+      header: `${resolvedLabel} (${unit})`,
       cell: ({ row }) => {
         const val = row.getValue('value') as number;
         return (

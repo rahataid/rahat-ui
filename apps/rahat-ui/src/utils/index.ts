@@ -57,8 +57,10 @@ export function getDayOfWeek(dbDate: string) {
 }
 
 export const humanizeString = (inputString: string) => {
-  // Replace underscore with space
-  inputString = inputString?.replace(/_/g, ' ');
+  // Replace underscore with space, and split camelCase words apart
+  inputString = inputString
+    ?.replace(/_/g, ' ')
+    ?.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
 
   const words = inputString?.toLowerCase().split(' ');
   // Capitalize the first letter of each word

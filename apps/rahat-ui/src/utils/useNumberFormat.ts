@@ -41,9 +41,10 @@ const DEVANAGARI_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७
 export function useLabelDigits() {
   const locale = useLocale();
 
-  return (label: string | null | undefined): string => {
-    if (!label) return '';
-    if (locale !== 'ne') return label;
-    return label.replace(/[0-9]/g, (digit) => DEVANAGARI_DIGITS[Number(digit)]);
+  return (label: string | number | null | undefined): string => {
+    if (label === null || label === undefined || label === '') return '';
+    const text = String(label);
+    if (locale !== 'ne') return text;
+    return text.replace(/[0-9]/g, (digit) => DEVANAGARI_DIGITS[Number(digit)]);
   };
 }

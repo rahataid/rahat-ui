@@ -121,7 +121,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
   const handleApproveClick = async (row: Row<ITableColumnProps>) => {
     try {
       if (row?.original?.redemptionStatus === 'APPROVED') {
-        throw new Error('Status is already Approved');
+        throw new Error(t('REDEMPTION_STATUS_ALREADY_APPROVED'));
       }
 
       approveVendorTokenRedemption.mutateAsync({
@@ -176,7 +176,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
           : 0;
         return (
           <TruncatedCell
-            text={row.getValue('tokenAmount') ? `Rs. ${formatNum(totalAmount)}` : tg('N_A')}
+            text={row.getValue('tokenAmount') ? `${t('RS')} ${formatNum(totalAmount)}` : tg('N_A')}
             maxLength={15}
           />
         );

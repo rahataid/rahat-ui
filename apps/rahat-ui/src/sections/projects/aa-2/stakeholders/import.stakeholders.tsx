@@ -118,7 +118,7 @@ export default function ImportStakeholder() {
 
   // File State goes here
   const [data, setData] = useState<string[][]>([]);
-  const [fileName, setFileName] = useState('No File Choosen');
+  const [fileName, setFileName] = useState(tg('NO_FILE_CHOSEN'));
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Modal State goes here
@@ -359,7 +359,7 @@ export default function ImportStakeholder() {
       const file = e.target.files?.[0];
       resetValidationState();
       setData([]);
-      setFileName(file?.name ?? 'No File Choosen');
+      setFileName(file?.name ?? tg('NO_FILE_CHOSEN'));
       setSelectedFile(file ?? null);
 
       if (!file) return;
@@ -714,7 +714,7 @@ export default function ImportStakeholder() {
 
   const handleClear = useCallback(() => {
     setData([]);
-    setFileName('No File Choosen');
+    setFileName(tg('NO_FILE_CHOSEN'));
     setSelectedFile(null);
     resetValidationState();
     if (inputRef.current) {
@@ -749,9 +749,9 @@ export default function ImportStakeholder() {
   );
 
   const validateButtonText = useMemo(() => {
-    if (isValidating) return 'Validating...';
-    if (validationCooldown > 0) return `Validate (${validationCooldown}s)`;
-    return 'Validate';
+    if (isValidating) return t('VALIDATING');
+    if (validationCooldown > 0) return `${t('VALIDATE')} (${validationCooldown}s)`;
+    return t('VALIDATE');
   }, [isValidating, validationCooldown]);
 
   const isValidateDisabled =
@@ -787,8 +787,8 @@ export default function ImportStakeholder() {
                   variant="outline"
                   className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
                 >
-                    <CloudDownload className="mr-1" />
-                    {t('DOWNLOAD_SAMPLE')}
+                  <CloudDownload className="mr-1" />
+                  {t('DOWNLOAD_SAMPLE')}
                 </Button>
               </div>
               {(hasFrontendErrors || validationResponse !== null) &&
@@ -813,7 +813,7 @@ export default function ImportStakeholder() {
                     {hasValidationErrors && (
                       <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
-                            <span>
+                        <span>
                           {t('VALIDATION_ERROR_INVALID_OR_DUPLICATE_DATA')}
                         </span>
                       </div>
@@ -822,14 +822,14 @@ export default function ImportStakeholder() {
                       newStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-sm bg-green-200 border border-green-400" />
-                            <span>{t('NEW_STAKEHOLDER_WILL_BE_CREATED')}</span>
+                          <span>{t('NEW_STAKEHOLDER_WILL_BE_CREATED')}</span>
                         </div>
                       )}
                     {validationResponse !== null &&
                       updateStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
-                            <span>{t('EXISTING_STAKEHOLDER_WILL_BE_UPDATED')}</span>
+                          <span>{t('EXISTING_STAKEHOLDER_WILL_BE_UPDATED')}</span>
                         </div>
                       )}
                   </div>
@@ -855,12 +855,12 @@ export default function ImportStakeholder() {
                   <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-[clamp(8px,1vw,12px)] h-[clamp(28px,3vw,36px)] font-semibold text-[clamp(11px,1vw,14px)] hover:bg-gray-200 transition-colors whitespace-nowrap [&_svg]:size-[clamp(14px,1.4vw,18px)]">
                     {selectedFile ? (
                       <>
-                         <Repeat2 className="mr-1" /> {t('REPLACE')}
-                       </>
-                     ) : (
-                       <>
-                         <Share className="mr-1" />
-                         {t('CHOOSE_FILE')}
+                        <Repeat2 className="mr-1" /> {t('REPLACE')}
+                      </>
+                    ) : (
+                      <>
+                        <Share className="mr-1" />
+                        {tg('CHOOSE_FILE')}
                       </>
                     )}
                   </span>
@@ -931,7 +931,7 @@ export default function ImportStakeholder() {
           <div>
             {data?.length > 0 && (
               <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
-                {tg('TOTAL_COUNT')} {data.length - 1}
+                {tg('TOTAL_COUNT')}: {data.length - 1}
               </p>
             )}
           </div>
@@ -951,7 +951,7 @@ export default function ImportStakeholder() {
                 onClick={handleUpload}
                 disabled={isImportDisabled}
               >
-                {uploadStakeholders.isPending ? 'Importing...' : 'Import'}
+                {uploadStakeholders.isPending ? t('IMPORTING') : t('IMPORT')}
               </Button>
             ) : (
               <Button
@@ -1052,7 +1052,7 @@ export default function ImportStakeholder() {
                   disabled={uploadStakeholders.isPending}
                   onClick={() => handleActualUpload(false)}
                 >
-                  {uploadStakeholders.isPending ? 'Importing...' : 'Skip'}
+                  {uploadStakeholders.isPending ? t('IMPORTING') : t('SKIP')}
                 </Button>
                 <Button
                   className="flex-1"
@@ -1083,7 +1083,7 @@ export default function ImportStakeholder() {
                     setGroupName(e.target.value);
                     setGroupError('');
                   }}
-                   placeholder={t('ENTER_GROUP_NAME')}
+                  placeholder={t('ENTER_GROUP_NAME')}
                   className="w-full"
                   autoFocus
                   disabled={uploadStakeholders.isPending}
@@ -1098,7 +1098,7 @@ export default function ImportStakeholder() {
                   variant="outline"
                   className="flex-1 rounded-sm"
                   disabled={uploadStakeholders.isPending}
-                   onClick={() => {
+                  onClick={() => {
                     showGroupForm.onFalse();
                     setGroupName('');
                     setGroupError('');
@@ -1112,8 +1112,8 @@ export default function ImportStakeholder() {
                   disabled={uploadStakeholders.isPending}
                 >
                   {uploadStakeholders.isPending
-                    ? 'Importing...'
-                    : 'Import with Group'}
+                    ? t('IMPORTING')
+                    : t('IMPORT_WITH_GROUP')}
                 </Button>
               </div>
             </form>

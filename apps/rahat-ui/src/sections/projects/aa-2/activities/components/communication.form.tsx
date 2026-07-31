@@ -289,7 +289,7 @@ export default function AddCommunicationForm({
       updateTimer();
     } catch (error) {
       console.error(error);
-      alert('Microphone access is required.');
+      alert(t('MICROPHONE_ACCESS_IS_REQUIRED'));
     }
   };
 

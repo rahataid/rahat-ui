@@ -41,6 +41,7 @@ type Props = {
 
 const Transaction = ({ amount, date, hash, title, type }: Txn) => {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const { id } = useParams();
   const projectId = id as string;
 

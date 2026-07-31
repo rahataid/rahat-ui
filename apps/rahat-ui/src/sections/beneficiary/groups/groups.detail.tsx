@@ -49,6 +49,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type BenProjectType = {
   Project: {
@@ -61,6 +62,7 @@ type BenProjectType = {
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const t = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const validateModal = useBoolean();
   const removeModal = useBoolean();
   const groupProposeModal = useBoolean();
@@ -166,6 +168,21 @@ export default function GroupDetailView() {
       : '';
   }, [group?.data?.groupPurpose]);
 
+  const groupPurposeLabel = React.useMemo(() => {
+    switch (group?.data?.groupPurpose) {
+      case GroupPurpose.BANK_TRANSFER:
+        return t('BANK_TRANSFER');
+      case GroupPurpose.MOBILE_MONEY:
+        return t('MOBILE_MONEY');
+      case GroupPurpose.COMMUNICATION:
+        return t('COMMUNICATION');
+      case GroupPurpose.GENERAL:
+        return t('GENERAL');
+      default:
+        return capitalizeFirstLetter(groupPurposeName || '');
+    }
+  }, [group?.data?.groupPurpose, groupPurposeName, t]);
+
   const isAssignToAA = React.useMemo(() => {
     return group?.data?.beneficiaryGroupProject?.some(
       (benProject: BenProjectType) =>
@@ -240,7 +257,7 @@ export default function GroupDetailView() {
             <Heading
               title={group?.data?.name}
               description={t('HERE_IS_A_DETAILED_VIEW_OF')}
-              status={capitalizeFirstLetter(groupPurposeName || '')}
+              status={groupPurposeLabel}
             />
           </div>
           {/* {Number(isAssignedToProject) === 0 && (
@@ -354,7 +371,7 @@ export default function GroupDetailView() {
             iconStyle="bg-white text-secondary-muted"
             title={t('TOTAL_BENEFICIARIES')}
             Icon={UsersRound}
-            number={group?.data?.groupedBeneficiaries?.length}
+            number={formatDigits(group?.data?.groupedBeneficiaries?.length)}
           />
           {group?.data?.beneficiaryGroupProject?.length > 0 && (
             <DataCard
@@ -362,7 +379,13 @@ export default function GroupDetailView() {
               iconStyle="bg-white text-secondary-muted"
               title={t('PROJECT_INVOLVED')}
               Icon={FolderDot}
-              refresh={() => syncBeneficiaryGroup.mutate(Id)}
+              refresh={() =>
+                syncBeneficiaryGroup.mutate({
+                  uuid: Id,
+                  successMessage: t('BENEFICIARY_SYNC_STARTED_FOR_PROJECTS'),
+                  errorMessage: t('ERROR_WHILE_SYNCING_BENEFICIARY_GROUP'),
+                })
+              }
             >
               <div className="flex gap-2 flex-wrap">
                 {group?.data?.beneficiaryGroupProject?.map(

@@ -49,7 +49,7 @@ export const useRedemptionRequestColumn = () => {
 
         return (
           <TruncatedCell
-            text={row.original?.tokenAmount ? `Rs. ${formatNum(totalAmount)}` : tg('N_A')}
+            text={row.original?.tokenAmount ? `${t('RS')} ${formatNum(totalAmount)}` : tg('N_A')}
           />
         );
       },

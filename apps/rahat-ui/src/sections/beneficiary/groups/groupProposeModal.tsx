@@ -82,6 +82,8 @@ export default function UpdateGroupProposeModal({
     const payload = {
       uuid: beneficiaryGroupDetail.uuid as UUID,
       selectedPurpose,
+      successMessage: t('GROUP_PROPOSE_UPDATED_SUCCESSFULLY'),
+      errorMessage: t('ERROR_WHILE_UPDATING_GROUP_PROPOSE'),
     };
     try {
       await updateGroupPropose.mutateAsync(payload, {

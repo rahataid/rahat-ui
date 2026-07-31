@@ -40,6 +40,8 @@ export default function DeleteBeneficiaryModal({
     try {
       await deleteBeneficiary.mutateAsync({
         uuid: id as UUID,
+        successMessage: tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
+        errorMessage: tg('ERROR_WHILE_REMOVING_BENEFICIARY'),
       });
       closeSecondPanel()
     } catch (e) {

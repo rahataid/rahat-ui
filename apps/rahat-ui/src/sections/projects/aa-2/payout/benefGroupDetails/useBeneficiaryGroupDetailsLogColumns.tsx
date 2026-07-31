@@ -235,11 +235,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         return (
           <Badge className={`rounded-xl w-auto ${transactionBgStatus(status)}`}>
             <TruncatedCell
-              text={status
-                .toLowerCase()
-                .split('_')
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
+              text={status ? tg(status) : ''}
               className="text-[10px]"
             />
           </Badge>

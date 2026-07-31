@@ -83,18 +83,20 @@ export default function VerificationPayout() {
           header: () => header || `${tv('COLUMN')} ${index + 1}`,
           cell: ({ getValue }) => {
             const value = getValue();
+            const displayValue =
+              value === null || value === undefined || value === ''
+                ? '--'
+                : formatNum(value);
             return (
               <TableCell className={`truncate max-w-[150px] cursor-pointer`}>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="inline-block w-full min-h-[1.5rem]">
-                        {formatNum(value ?? 0)}
+                        {displayValue}
                       </span>
                     </TooltipTrigger>
-                    <TooltipContent side="top">
-                      {formatNum(value ?? 0)}
-                    </TooltipContent>
+                    <TooltipContent side="top">{displayValue}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </TableCell>
@@ -388,7 +390,11 @@ export default function VerificationPayout() {
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
         <div>
-          {data?.length ? <p>{tg('TOTAL_COUNT')} {data?.length - 1 ?? 0}</p> : null}
+          {data?.length ? (
+            <p>
+              {tg('TOTAL_COUNT')}: {formatNum(data?.length - 1 || 0)}
+            </p>
+          ) : null}
         </div>
         <div className="flex space-x-2">
           <Button

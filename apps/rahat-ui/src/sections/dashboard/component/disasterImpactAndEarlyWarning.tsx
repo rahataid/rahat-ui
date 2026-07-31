@@ -21,7 +21,7 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   const chartOpts = {
     xaxis: {
       labels: {
-        formatter: (val: number) => formatNum(val),
+        formatter: (val: string) => formatNum(val),
       },
     },
     yaxis: {

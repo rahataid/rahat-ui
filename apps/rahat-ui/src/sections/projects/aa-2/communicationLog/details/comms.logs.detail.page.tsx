@@ -335,21 +335,14 @@ export default function CommsLogsDetailPage() {
                       </Badge>
                     </TooltipWrapper>
                     <TooltipWrapper
-                      tip={`${t('ACTIVITY_STATUS')}: ${activityDetail?.status}`}
+                      tip={`${t('ACTIVITY_STATUS')}: ${activityDetail?.status ? tGlobal(activityDetail.status) : ''}`}
                     >
                       <Badge
                         className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
                           activityDetail?.status,
                         )}`}
                       >
-                        {activityDetail?.status
-                          .toLowerCase()
-                          .split('_')
-                          .map(
-                            (word: string) =>
-                              word.charAt(0).toUpperCase() + word.slice(1),
-                          )
-                          .join(' ')}
+                        {activityDetail?.status ? tGlobal(activityDetail.status) : ''}
                       </Badge>
                     </TooltipWrapper>
                   </CardTitle>

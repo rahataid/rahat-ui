@@ -39,7 +39,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   const chartAxOptions = {
     xaxis: {
       labels: {
-        formatter: (val: number) => formatNum(val),
+        formatter: (val: string) => formatNum(val),
       },
     },
     yaxis: {

@@ -454,7 +454,7 @@ export default function AddDailyMonitoring() {
             >
               {t('CLEAR')}
             </Button>
-            <Button type={t('SUBMIT')} className="w-32">
+            <Button type="submit" className="w-32">
               {t('ADD')}
             </Button>
           </div>

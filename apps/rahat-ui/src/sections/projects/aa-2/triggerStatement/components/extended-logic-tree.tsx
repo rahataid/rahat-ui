@@ -557,19 +557,19 @@ export function ExtendedLogicTree({
         })}
 
         {/* ── Trigger leaf nodes ── */}
-        {allTriggers.map((t, i) => {
+        {allTriggers.map((trigger, i) => {
           const tp = triggerPositions[i];
-          const color = GROUP_COLORS[t.groupIndex % GROUP_COLORS.length];
-          const label = getTriggerLabel(t.key);
+          const color = GROUP_COLORS[trigger.groupIndex % GROUP_COLORS.length];
+          const label = getTriggerLabel(trigger.key);
           const maxChars = 16;
           const displayLabel =
             label.length > maxChars ? label.slice(0, maxChars) + '…' : label;
           const tStatus =
-            triggerStatuses[t.key] !== undefined
-              ? triggerStatuses[t.key]
+            triggerStatuses[trigger.key] !== undefined
+              ? triggerStatuses[trigger.key]
               : undefined;
-          const isHovered = hoveredTrigger?.key === t.key;
-          const isTriggered = triggerDetails[t.key]?.isTriggered === true;
+          const isHovered = hoveredTrigger?.key === trigger.key;
+          const isTriggered = triggerDetails[trigger.key]?.isTriggered === true;
 
           // Node colors: green palette when triggered, group color otherwise
           const nodeFill   = isTriggered ? '#f0fdf4' : color.fill;
@@ -590,10 +590,10 @@ export function ExtendedLogicTree({
             <g
               key={`trigger-${i}`}
               style={{ cursor: onTriggerClick ? 'pointer' : 'default' }}
-              onMouseEnter={(e) => handleTriggerMouseEnter(e, t.key)}
+              onMouseEnter={(e) => handleTriggerMouseEnter(e, trigger.key)}
               onMouseMove={handleTriggerMouseMove}
               onMouseLeave={() => setHoveredTrigger(null)}
-              onClick={() => onTriggerClick?.(t.key)}
+              onClick={() => onTriggerClick?.(trigger.key)}
             >
               {/* Glow ring when triggered */}
               {isTriggered && (

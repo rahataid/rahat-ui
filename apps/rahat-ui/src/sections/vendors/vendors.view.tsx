@@ -25,6 +25,7 @@ import { useTranslations } from 'next-intl';
 
 function VendorsView() {
   const t = useTranslations('VENDORS_LIST');
+  const g = useTranslations('GLOBAL');
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
    
     usePagination();
@@ -73,10 +74,12 @@ function VendorsView() {
     projectModal.onTrue();
   };
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
+    if (!selectedProject) return alert(g('PLEASE_SELECT_A_PROJECT'));
     await addVendor.mutateAsync({
       vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
+      successMessage: g('VENDOR_ASSIGNED_SUCCESSFULLY'),
+      errorMessage: g('ERROR_WHILE_UPDATING_VENDOR'),
     });
     projectModal.onFalse();
     setRefetch(!refetch);

@@ -101,7 +101,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           <SelectFormField
             form={form}
             name={fieldName('status')}
-            label="Status"
+            label={t('STATUS')}
             placeholder={t('SELECT_STATUS')}
             selectItems={flashFloodRiskSelectItems}
           />
@@ -343,7 +343,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
         <SelectFormField
           form={form}
           name={fieldName('source')}
-          label="Source"
+          label={t('SOURCE')}
           placeholder={t('SELECT_DATA_SOURCE')}
           selectItems={newSourceSelectItemsArray}
         />

@@ -2,6 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import React from 'react';
 import { calculateRemainingTriggers } from '../utils';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface IProps {
   title: string;
@@ -21,14 +22,15 @@ const TriggerDetailsCard = ({
   totalRequiredTriggers,
 }: IProps) => {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   return (
     <div className={`${bgColor} rounded-xl p-4 space-y-1`}>
       <p className="text-sm/4">{title} {t('TRIGGERS')}</p>
       <div className="flex items-center gap-1">
         <p className={`text-2xl font-medium text-${color}-500`}>
-          {totalTriggered}
+          {formatNum(totalTriggered)}
         </p>
-        <p className="text-gray-500">triggered</p>
+        <p className="text-gray-500">{t('TRIGGERED')}</p>
       </div>
       <div>
         <div
@@ -39,26 +41,28 @@ const TriggerDetailsCard = ({
             <Badge
               className={`bg-${color}-500 text-white font-extralight tracking-wider px-1`}
             >
-              {totalTriggered}/{totalRequiredTriggers}
+              {formatNum(totalTriggered)}/{formatNum(totalRequiredTriggers)}
             </Badge>
           </div>
 
           <div className="flex items-center justify-between pt-2">
             <p>{t('TOTAL_TRIGGERS')}</p>
-            <p className="text-gray-700">{totalTriggers}</p>
+            <p className="text-gray-700">{formatNum(totalTriggers)}</p>
           </div>
 
           <div className="flex items-center justify-between">
             <p>{t('REQUIRED')}</p>
-            <p className="text-gray-700">{totalRequiredTriggers}</p>
+            <p className="text-gray-700">{formatNum(totalRequiredTriggers)}</p>
           </div>
 
           <div className="flex items-center justify-between">
             <p>{t('REMAINING')}</p>
             <p className="text-gray-700">
-              {calculateRemainingTriggers(
-                totalRequiredTriggers,
-                totalTriggered,
+              {formatNum(
+                calculateRemainingTriggers(
+                  totalRequiredTriggers,
+                  totalTriggered,
+                ),
               )}
             </p>
           </div>

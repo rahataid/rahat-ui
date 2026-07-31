@@ -119,18 +119,18 @@ export const useUpdateVendor = () => {
   return useMutation({
     mutationFn: ({ uuid, payload }: { uuid: UUID; payload: any }) =>
       updateVendor(uuid, payload),
-    onSuccess: () => {
+    onSuccess: (_data, variables: any) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: 'Vendor updated successfully.',
+        title: variables?.successMessage || 'Vendor updated successfully.',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while updating vendor.',
+        title: variables?.errorMessage || 'Error while updating vendor.',
         icon: 'error',
         text: errorMessage,
       });
@@ -169,18 +169,18 @@ export const useRemoveVendor = () => {
       vendorId: UUID;
       projectId?: UUID;
     }) => removeVendor({ vendorId, projectId }),
-    onSuccess: () => {
+    onSuccess: (_data, variables: any) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: 'Vendor removed successfully.',
+        title: variables?.successMessage || 'Vendor removed successfully.',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while removing vendor.',
+        title: variables?.errorMessage || 'Error while removing vendor.',
         icon: 'error',
         text: errorMessage,
       });

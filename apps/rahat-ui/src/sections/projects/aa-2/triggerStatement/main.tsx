@@ -11,7 +11,6 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
@@ -47,8 +46,6 @@ export default function TriggerStatementView() {
   const { data: phases = [] } = usePhases(projectId);
 
   const triggers = useAATriggerStatements(projectId, { perPage: 9999 });
-
-  const formatNum = useNumberFormat();
 
   const [pinnedPhaseIds, setPinnedPhaseIds] = React.useState<string[]>(() =>
     loadPinnedPhases(projectId),
@@ -133,18 +130,18 @@ export default function TriggerStatementView() {
                   handleAddTrigger={() => handleAddTrigger(d)}
                   chartLabels={['Mandatory', 'Optional']}
                   chartSeries={[
-                    formatNum(d?.phaseStats?.totalMandatoryTriggers || 0),
-                    formatNum(d?.phaseStats?.totalOptionalTriggers || 0),
+                    d?.phaseStats?.totalMandatoryTriggers || 0,
+                    d?.phaseStats?.totalOptionalTriggers || 0,
                   ]}
-                  requiredMandatoryTriggers={formatNum(d?.requiredMandatoryTriggers || 0)}
-                  requiredOptionalTriggers={formatNum(d?.requiredOptionalTriggers || 0)}
-                  mandatoryTriggers={formatNum(d?.phaseStats?.totalMandatoryTriggers || 0)}
-                  optionalTriggers={formatNum(d?.phaseStats?.totalOptionalTriggers || 0)}
+                  requiredMandatoryTriggers={d?.requiredMandatoryTriggers || 0}
+                  requiredOptionalTriggers={d?.requiredOptionalTriggers || 0}
+                  mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
+                  optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
                   triggeredMandatoryTriggers={
-                    formatNum(d?.phaseStats?.totalMandatoryTriggersTriggered || 0)
+                    d?.phaseStats?.totalMandatoryTriggersTriggered || 0
                   }
                   triggeredOptionalTriggers={
-                    formatNum(d?.phaseStats?.totalOptionalTriggersTriggered || 0)
+                    d?.phaseStats?.totalOptionalTriggersTriggered || 0
                   }
                   handleViewDetails={() => handleViewDetails(d)}
                   isActive={d?.isActive}

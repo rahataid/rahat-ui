@@ -65,7 +65,7 @@ export default function OverviewCard({
             <p className="text-2xl font-semibold">
               {data?.vendorAssignedBalance
                 ? formatNum(Number(data?.vendorAssignedBalance))
-                : 'N/A'}
+                : t('N_A')}
             </p>
           </div>
           <div className="border rounded-sm p-4 bg-blue-50">
@@ -73,29 +73,29 @@ export default function OverviewCard({
             <p className="text-2xl font-semibold">
               {redemptionStats?.totalTokensApproved
                 ? formatNum(Number(redemptionStats?.totalTokensApproved))
-                : 'N/A'}
+                : t('N_A')}
             </p>
           </div>
           <div className="border rounded-sm p-4 bg-green-50">
             <p className="text-xs">{t('AMOUNT_DISBURSED')}</p>
             <p className="text-2xl font-semibold">
               {data?.vendorAssignedBalance
-                ? `Rs. ${formatNum(
+                ? `${t('RS')} ${formatNum(
                     Number(data?.vendorAssignedBalance) *
                       TOKEN_TO_AMOUNT_MULTIPLIER,
                   )}`
-                : 'N/A'}
+                : t('N_A')}
             </p>
           </div>
           <div className="border rounded-sm p-4 bg-red-50">
             <p className="text-xs">{t('AMOUNT_REDEEMED')}</p>
             <p className="text-2xl font-semibold">
               {redemptionStats?.totalTokensApproved
-                ? `Rs. ${formatNum(
+                ? `${t('RS')} ${formatNum(
                     Number(redemptionStats?.totalTokensApproved) *
                       TOKEN_TO_AMOUNT_MULTIPLIER,
                   )}`
-                : 'N/A'}
+                : t('N_A')}
             </p>
           </div>
         </div>

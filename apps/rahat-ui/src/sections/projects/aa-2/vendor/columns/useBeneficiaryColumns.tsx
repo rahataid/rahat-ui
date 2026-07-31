@@ -138,12 +138,12 @@ export const useVendorsBeneficiaryTableColumns = (
         const status = row.original?.status;
         return status === 'COMPLETED' ? (
           row.getValue('benTokens') ? (
-            <TruncatedCell text={`Rs. ${formatNum(row.getValue('benTokens'))}`} />
+            <TruncatedCell text={`${t('RS')} ${formatNum(row.getValue('benTokens'))}`} />
           ) : (
             tg('N_A')
           )
         ) : (
-          `Rs. ${formatNum(0)}`
+          `${t('RS')} ${formatNum(0)}`
         );
       },
     },

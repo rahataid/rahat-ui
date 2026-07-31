@@ -95,7 +95,7 @@ const DigitalAccessOverview = ({ stats }: Props) => {
                 options={{
                   xaxis: {
                     labels: {
-                      formatter: (val: number) => formatNum(val),
+                      formatter: (val: string) => formatNum(val),
                     },
                   },
                   tooltip: {

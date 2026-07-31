@@ -48,7 +48,11 @@ export default function RemoveBenfGroupModal({
   const t = useTranslations('GLOBAL');
   const handleRemoveBenfGroup = async () => {
     try {
-      await removeBenfGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+      await removeBenfGroup.mutateAsync({
+        uuid: beneficiaryGroupDetail.uuid as UUID,
+        successMessage: t('BENEFICIARY_GROUP_REMOVED_SUCCESSFULLY'),
+        errorMessage: t('ERROR_WHILE_REMOVING_BENEFICIARY_GROUP'),
+      });
       router.push('/beneficiary?tab=beneficiaryGroups');
     } catch (err) {
       console.log(err);

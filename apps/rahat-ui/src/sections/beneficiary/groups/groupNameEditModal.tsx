@@ -69,6 +69,8 @@ export default function GroupNameEditModal({
     const payload = {
       uuid: beneficiaryGroupDetail.uuid,
       ...data,
+      successMessage: t('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
+      errorMessage: t('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
     };
     await updateBeneficiaryGroup.mutateAsync(payload, {
       onSuccess: () => {

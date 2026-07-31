@@ -130,9 +130,10 @@ export const useCreateBeneficiaryGroup = () => {
 };
 
 const updateBeneficiaryGroup = async (payload: any) => {
+  const { successMessage, errorMessage, ...body } = payload;
   const response = await api.patch(
     `/beneficiaries/groups/${payload.uuid}`,
-    payload,
+    body,
   );
   return response?.data;
 };
@@ -163,14 +164,16 @@ export const useUpdateBeneficiaryGroup = () => {
       });
 
       toast.fire({
-        title: 'Beneficiary Group updated successfully.',
+        title:
+          variables?.successMessage || 'Beneficiary Group updated successfully.',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while updating beneficiary group.',
+        title:
+          variables?.errorMessage || 'Error while updating beneficiary group.',
         icon: 'error',
         text: errorMessage,
       });
@@ -245,7 +248,8 @@ export const useGetProjectBeneficiaryStats = (id: any) => {
 };
 
 const updateBeneficiary = async (payload: any) => {
-  const response = await api.patch(`/beneficiaries/${payload.uuid}`, payload);
+  const { successMessage, errorMessage, ...body } = payload;
+  const response = await api.patch(`/beneficiaries/${payload.uuid}`, body);
   return response?.data;
 };
 
@@ -260,17 +264,17 @@ export const useUpdateBeneficiary = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiary(payload),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
       toast.fire({
-        title: 'Beneficiary updated successfully.',
+        title: variables?.successMessage || 'Beneficiary updated successfully.',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while updating beneficiary.',
+        title: variables?.errorMessage || 'Error while updating beneficiary.',
         icon: 'error',
         text: errorMessage,
       });
@@ -279,7 +283,8 @@ export const useUpdateBeneficiary = () => {
 };
 
 const removeBeneficiary = async (payload: any) => {
-  await api.patch(`/beneficiaries/remove/${payload.uuid}`, payload);
+  const { successMessage, errorMessage, ...body } = payload;
+  await api.patch(`/beneficiaries/remove/${payload.uuid}`, body);
 };
 
 export const useRemoveBeneficiaryFromProject = () => {
@@ -293,17 +298,17 @@ export const useRemoveBeneficiaryFromProject = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => removeBeneficiary(payload),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
       toast.fire({
-        title: 'Beneficiary removed successfully',
+        title: variables?.successMessage || 'Beneficiary removed successfully',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while removing beneficiary.',
+        title: variables?.errorMessage || 'Error while removing beneficiary.',
         icon: 'error',
         text: errorMessage,
       });
@@ -321,19 +326,23 @@ export const useValidateBeneficaryBankAccount = () => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: (payload: any) => validateBeneficiaryBankAccount(payload),
-    onSuccess: async (_data, uuid) => {
+    mutationFn: (payload: any) =>
+      validateBeneficiaryBankAccount(payload?.uuid ?? payload),
+    onSuccess: async (_data, variables: any) => {
+      const uuid = variables?.uuid ?? variables;
       await qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
       qc.removeQueries({ queryKey: ['BANK_CHECK_STATUS', uuid] });
       toast.fire({
-        title: 'Accounts check in progress. Data will be listed soon',
+        title:
+          variables?.successMessage ||
+          'Accounts check in progress. Data will be listed soon',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while validating beneficiary.',
+        title: variables?.errorMessage || 'Error while validating beneficiary.',
         icon: 'error',
         text: errorMessage,
       });
@@ -364,14 +373,14 @@ export const useUpdateGroupPropose = () => {
         exact: false,
       });
       toast.fire({
-        title: 'Group propose updated successfully',
+        title: variables?.successMessage || 'Group propose updated successfully',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while updating group propose',
+        title: variables?.errorMessage || 'Error while updating group propose',
         icon: 'error',
         text: errorMessage,
       });
@@ -390,17 +399,17 @@ export const useRemoveBeneficiary = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => removeBeneficiary(payload),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
       toast.fire({
-        title: 'Beneficiary removed successfully',
+        title: variables?.successMessage || 'Beneficiary removed successfully',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while removing beneficiary.',
+        title: variables?.errorMessage || 'Error while removing beneficiary.',
         icon: 'error',
         text: errorMessage,
       });
@@ -418,18 +427,23 @@ export const useRemoveBeneficiaryGroup = () => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: (uuid: UUID) => removeBeneficiaryGroup(uuid),
-    onSuccess: () => {
+    mutationFn: (payload: UUID | { uuid: UUID; [key: string]: any }) =>
+      removeBeneficiaryGroup(
+        (typeof payload === 'object' ? payload.uuid : payload) as UUID,
+      ),
+    onSuccess: (_data, variables: any) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
       toast.fire({
-        title: 'Beneficiary group removed successfully',
+        title:
+          variables?.successMessage || 'Beneficiary group removed successfully',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while removing beneficiary group.',
+        title:
+          variables?.errorMessage || 'Error while removing beneficiary group.',
         icon: 'error',
         text: errorMessage,
       });
@@ -821,17 +835,23 @@ export const useSyncBeneficiaryGroup = () => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: (uuid: UUID) => syncBeneficiaryGroup(uuid),
-    onSuccess: () => {
+    mutationFn: (payload: UUID | { uuid: UUID; [key: string]: any }) =>
+      syncBeneficiaryGroup(
+        (typeof payload === 'object' ? payload.uuid : payload) as UUID,
+      ),
+    onSuccess: (_data, variables: any) => {
       toast.fire({
-        title: 'Beneficiary sync started for following projects',
+        title:
+          variables?.successMessage ||
+          'Beneficiary sync started for following projects',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: 'Error while syncing beneficiary group.',
+        title:
+          variables?.errorMessage || 'Error while syncing beneficiary group.',
         icon: 'error',
         text: errorMessage,
       });

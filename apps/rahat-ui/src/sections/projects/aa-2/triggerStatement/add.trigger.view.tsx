@@ -339,15 +339,23 @@ export default function AddTriggerView() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="border bg-secondary rounded mb-2">
-                {availableTabs.map((tab: any) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="w-full data-[state=active]:bg-white"
-                  >
-                    {t(tab.value.toUpperCase())}
-                  </TabsTrigger>
-                ))}
+                {availableTabs.map((tab: any) => {
+                  // Tab labels come from the backend, so punctuation has to be
+                  // folded out before they can be used as keys.
+                  const labelKey = tab.label
+                    ?.toUpperCase()
+                    .replace(/[^A-Z0-9]+/g, '_')
+                    .replace(/^_+|_+$/g, '');
+                  return (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      className="w-full data-[state=active]:bg-white"
+                    >
+                      {labelKey && t.has(labelKey) ? t(labelKey) : tab.label}
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
               {availableTabs.map((tab: any) => {
                 const Component = tab.component;
@@ -404,57 +412,57 @@ export default function AddTriggerView() {
             </div>
           </div>
           <div className="grid grid-cols-1 gap-2">
-            {allTriggers.map((t, i) => {
+            {allTriggers.map((trigger, i) => {
               return (
                 <div key={i} className="p-4 rounded border shadow">
                   <div className="flex justify-between items-center space-x-4 mb-2">
                     <div className="flex items-center space-x-4">
                       <Badge className="font-medium">
-                        {t.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
+                        {trigger.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
                       </Badge>
                       <Badge className="font-medium">
-                        {t(t.type.toUpperCase())}
+                        {t(trigger.type.toUpperCase())}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
                       <EditButton
                         className="border-none bg-blue-50"
                         description={t('THIS_ACTION_WILL_REFILL_FORM_WITH_TRIGGER_DATA')}
-                        onFallback={() => handleEdit(t)}
+                        onFallback={() => handleEdit(trigger)}
                       />
                       <DeleteButton
                         className="border-none bg-red-50"
                         name={t('TRIGGER')}
-                        handleContinueClick={() => handleDelete(t)}
+                        handleContinueClick={() => handleDelete(trigger)}
                       />
                     </div>
                   </div>
-                  <p className="text-sm/6 font-medium mb-2">{t.title}</p>
+                  <p className="text-sm/6 font-medium mb-2">{trigger.title}</p>
                   <p className="text-muted-foreground text-sm/4">
-                    {t.riverBasin}
+                    {trigger.riverBasin}
 
-                    {t?.triggerStatement?.stationName && (
+                    {trigger?.triggerStatement?.stationName && (
                       <>
                         {SEP}
-                        {t.triggerStatement.stationName}
+                        {trigger.triggerStatement.stationName}
                       </>
                     )}
 
-                    {t?.triggerStatement?.source && (
+                    {trigger?.triggerStatement?.source && (
                       <>
                         {SEP}
-                        {sourceLabelMapper[t.triggerStatement.source] || ''} (
-                        {t.triggerStatement.expression})
+                        {sourceLabelMapper[trigger.triggerStatement.source] || ''} (
+                        {trigger.triggerStatement.expression})
                       </>
                     )}
 
-                    {t.time && (
+                    {trigger.time && (
                       <>
                         {SEP}
                         <span>
-                          {formatDate(t.time, 'hh:mm a')}
+                          {formatDate(trigger.time, 'hh:mm a')}
                           <br />
-                          {formatDate(t.time, 'MMMM dd, yyyy')}
+                          {formatDate(trigger.time, 'MMMM dd, yyyy')}
                         </span>
                       </>
                     )}

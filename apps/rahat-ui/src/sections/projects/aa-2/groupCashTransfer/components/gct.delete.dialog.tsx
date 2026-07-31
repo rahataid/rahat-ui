@@ -50,7 +50,7 @@ export default function GctDeleteDialog({
         <DialogHeader>
           <DialogTitle>{t('DELETE_GCT_GROUP')}</DialogTitle>
           <DialogDescription>
-            {t('ARE_YOU_SURE_YOU_WANT_TO_DELETE', { name: item?.name })}
+            {t('ARE_YOU_SURE_YOU_WANT_TO_DELETE', { name: item?.name ?? '' })}
           </DialogDescription>
         </DialogHeader>
 

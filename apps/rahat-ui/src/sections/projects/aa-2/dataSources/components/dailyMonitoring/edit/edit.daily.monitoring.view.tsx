@@ -622,7 +622,7 @@ export default function EditDailyMonitoring() {
             >
               {t('RESET')}
             </Button>
-            <Button type={t('SUBMIT')} className="w-32">
+            <Button type="submit" className="w-32">
               {t('UPDATE')}
             </Button>
           </div>

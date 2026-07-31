@@ -39,21 +39,25 @@ export default function EditBeneficiary({ beneficiary }: any) {
   const t = useTranslations('GLOBAL');
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: t('NAME_MIN_LENGTH') }),
-    walletAddress: z.string(),
+    name: z
+      .string({ required_error: t('REQUIRED') })
+      .min(2, { message: t('NAME_MIN_LENGTH') }),
+    walletAddress: z.string({ required_error: t('REQUIRED') }),
     phone: z
-      .string()
+      .string({ required_error: t('REQUIRED') })
       .refine(isValidPhoneNumber, { message: t('INVALID_PHONE') }),
     email: z.string().optional(),
     gender: z
-      .string()
+      .string({ required_error: t('GENDER_REQUIRED') })
       .toUpperCase()
       .min(4, { message: t('GENDER_REQUIRED') }),
-    bankedStatus: z.string().toUpperCase(),
-    internetStatus: z.string().toUpperCase(),
-    phoneStatus: z.string().toUpperCase(),
-    address: z.string(),
-    age: z.string(),
+    bankedStatus: z.string({ required_error: t('REQUIRED') }).toUpperCase(),
+    internetStatus: z
+      .string({ required_error: t('REQUIRED') })
+      .toUpperCase(),
+    phoneStatus: z.string({ required_error: t('REQUIRED') }).toUpperCase(),
+    address: z.string({ required_error: t('REQUIRED') }),
+    age: z.string({ required_error: t('REQUIRED') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -83,6 +87,8 @@ export default function EditBeneficiary({ beneficiary }: any) {
           phone: data.phone,
         },
         walletAddress: data.walletAddress,
+        successMessage: t('BENEFICIARY_UPDATED_SUCCESSFULLY'),
+        errorMessage: t('ERROR_WHILE_UPDATING_BENEFICIARY'),
       });
     } catch (e) {
       console.error('Error::', e);

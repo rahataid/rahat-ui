@@ -66,6 +66,7 @@ export const InkindRedemptionList = ({
   } = usePagination();
 
   const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
   const debounceSearch = useDebounce(filters, 500);
 
   const { data, isPending } = useGetInkindRedemptionLogs({
@@ -126,16 +127,16 @@ export const InkindRedemptionList = ({
     const rows = (exportQuery.data as any)?.data || [];
     if (rows.length > 0) {
       const flattened = rows.map((row: InkindRedemptionData) => ({
-        'Vendor Name': row.vendor?.name || '',
-        'Inkind Name': row.inkind?.name || '',
-        'Inkind Type': row.inkind?.type || '',
-        Quantity: row.quantity,
-        'Approved At': row.approvedAt
+        [tGlobal('VENDOR_NAME')]: row.vendor?.name || '',
+        [tGlobal('INKIND_NAME')]: row.inkind?.name || '',
+        [tGlobal('INKIND_TYPE')]: row.inkind?.type || '',
+        [tGlobal('QUANTITY')]: row.quantity,
+        [tGlobal('APPROVED_AT')]: row.approvedAt
           ? new Date(row.approvedAt).toISOString()
           : '',
-        'Approved By': row.approvedBy || '',
-        Status: row.redemptionStatus,
-        'Tx Hash': row.transactionHash || '',
+        [t('APPROVED_BY')]: row.approvedBy || '',
+        [tGlobal('STATUS')]: row.redemptionStatus,
+        [tGlobal('TX_HASH')]: row.transactionHash || '',
       }));
       const ws = XLSX.utils.json_to_sheet(flattened);
       const wb = XLSX.utils.book_new();

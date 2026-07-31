@@ -77,7 +77,7 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
     },
     onError: (error) => {
       toast.fire({
-        title: error?.message || 'Failed to generate QR PDF',
+        title: error?.message || t('FAILED_TO_GENERATE_QR_PDF'),
         icon: 'error',
       });
     },

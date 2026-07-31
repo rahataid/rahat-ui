@@ -36,6 +36,7 @@ export default function PhaseCard({
   className,
 }: PhaseCardProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id: ProjectId } = useParams();
 
@@ -46,20 +47,8 @@ export default function PhaseCard({
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <TooltipWrapper
-            tip={`${t('ACTIVITY_STATUS')}: ${status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}`}
-          >
-            <Badge className={getStatusBg(status)}>
-              {status
-                .toLowerCase()
-                .split('_')
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
-            </Badge>
+          <TooltipWrapper tip={`${t('ACTIVITY_STATUS')}: ${tg(status)}`}>
+            <Badge className={getStatusBg(status)}>{tg(status)}</Badge>
           </TooltipWrapper>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}

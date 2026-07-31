@@ -393,7 +393,7 @@ export default function AddAnotherDataSource({
           form={form}
           name={fieldName('source')}
           label={t('SOURCE')}
-          placeholder="Select Data Source"
+          placeholder={t('SELECT_DATA_SOURCE')}
           selectItems={newSourceSelectItemsArray}
         />
         <Fragment key={form.watch(fieldName('source'))}>

@@ -62,14 +62,14 @@ export default function AddBeneficiaryForm() {
 
   const FormSchema = z.object({
     name: z
-      .string()
+      .string({ required_error: g('REQUIRED') })
       .min(4, { message: g('NAME_MIN_LENGTH') })
       .regex(/^[a-zA-Z\s]+$/, {
         message: g('NAME_LETTERS_ONLY'),
       }),
-    walletAddress: z.string(),
+    walletAddress: z.string({ required_error: g('REQUIRED') }),
     phone: z
-      .string()
+      .string({ required_error: g('REQUIRED') })
       .refine(isValidPhoneNumber, { message: g('INVALID_PHONE') }),
     email: z
       .string()
@@ -78,9 +78,11 @@ export default function AddBeneficiaryForm() {
         message: g('INVALID_EMAIL'),
       }),
     gender: z.string().optional(),
-    bankedStatus: z.string().toUpperCase(),
-    internetStatus: z.string().toUpperCase(),
-    phoneStatus: z.string().toUpperCase(),
+    bankedStatus: z.string({ required_error: g('REQUIRED') }).toUpperCase(),
+    internetStatus: z
+      .string({ required_error: g('REQUIRED') })
+      .toUpperCase(),
+    phoneStatus: z.string({ required_error: g('REQUIRED') }).toUpperCase(),
     address: z.string().optional(),
     age: z
       .string()
@@ -123,6 +125,8 @@ export default function AddBeneficiaryForm() {
           email: data.email,
         },
         walletAddress: data.walletAddress,
+        successMessage: g('BENEFICIARY_UPDATED_SUCCESSFULLY'),
+        errorMessage: g('ERROR_WHILE_UPDATING_BENEFICIARY'),
       });
       router.push(
         fromTab === 'beneficiaryGroups'

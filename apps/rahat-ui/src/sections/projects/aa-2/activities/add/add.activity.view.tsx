@@ -669,23 +669,19 @@ export default function AddActivities() {
                       name="isTemplate"
                       render={({ field }) => {
                         return (
-                          <FormItem>
-                            <div className="flex items-center gap-2">
-                              <FormLabel className="whitespace-nowrap">
-                                {t('SAVE_AS_TEMPLATE')}
-                              </FormLabel>
+                          <FormItem className=" w-[200px]">
+                            <div className="flex items-center justify-between w-full">
+                              <FormLabel>{t('SAVE_AS_TEMPLATE')}</FormLabel>{' '}
                               <TooltipProvider>
                                 <Tooltip>
-                                  <TooltipTrigger asChild>
+                                  <TooltipTrigger asChild className="-ml-4">
                                     <Info
                                       size={18}
                                       className="text-muted-foreground cursor-help hover:text-primary transition-colors"
                                     />
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>
-                                      {t('TEMPLATE_SAVE_TOOLTIP')}
-                                    </p>
+                                    <p>{t('TEMPLATE_SAVE_TOOLTIP')}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -716,9 +712,9 @@ export default function AddActivities() {
                                 }
                               />
                             </FormControl>
-                              <FormLabel className="text-sm font-normal ml-2">
-                                {t('IS_AUTOMATED_ACTIVITY')}
-                              </FormLabel>
+                            <FormLabel className="text-sm font-normal ml-2">
+                              {t('IS_AUTOMATED_ACTIVITY')}
+                            </FormLabel>
                             <FormMessage />
                           </FormItem>
                         );
@@ -919,6 +915,7 @@ export default function AddActivities() {
                 communicationData={communicationData}
                 appTransports={appTransports}
                 onRemove={handleRemove}
+                onEdit={handleRemove}
                 setOpen={editCommunicationOpen.setValue}
                 open={editCommunicationOpen.value}
               />

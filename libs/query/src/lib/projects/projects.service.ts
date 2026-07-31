@@ -250,6 +250,8 @@ export const useAssignVendorToProject = () => {
     }: {
       projectUUID: UUID;
       vendorUUID: UUID;
+      successMessage?: string;
+      errorMessage?: string;
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
@@ -261,19 +263,19 @@ export const useAssignVendorToProject = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables: any) => {
       q.reset();
       toast.fire({
-        title: 'Vendor Assigned Successfully',
+        title: variables?.successMessage || 'Vendor Assigned Successfully',
         icon: 'success',
       });
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while updating Vendor',
+        title: variables?.errorMessage || 'Error while updating Vendor',
         icon: 'error',
         text: errorMessage,
       });

@@ -84,7 +84,7 @@ export const useVendorsTransactionTableColumns = () => {
           <TruncatedCell
             text={
               amountNum > 0
-                ? `Rs. ${formatNum(
+                ? `${t('RS')} ${formatNum(
                     Math.round(convertedAmount),
                   )}`
                 : tg('N_A')

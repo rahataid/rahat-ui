@@ -222,7 +222,7 @@ export default function BulkUploadActivities() {
                 className="rounded-sm"
               >
                 <FileWarning className="mr-1" size={16} />
-                Download Errors
+                {t('DOWNLOAD_ERRORS')}
               </Button>
             )}
             <Button
@@ -258,7 +258,7 @@ export default function BulkUploadActivities() {
                 ) : (
                   <>
                     <Share className="mr-1" size={16} />
-                    {t('CHOOSE_FILE')}
+                    {tg('CHOOSE_FILE')}
                   </>
                 )}
               </span>
@@ -320,7 +320,7 @@ export default function BulkUploadActivities() {
       <div className="flex justify-between items-center py-2 px-4 border-t mt-4 sticky bottom-0 bg-background z-10">
         <div>
           {rows.length > 0 && (
-            <p className="text-sm text-muted-foreground">Total Count: {formatNum(rows.length)}</p>
+            <p className="text-sm text-muted-foreground">{tg('TOTAL_COUNT')}: {formatNum(rows.length)}</p>
           )}
         </div>
         <div className="flex gap-2">
@@ -334,7 +334,7 @@ export default function BulkUploadActivities() {
               onClick={handleValidate}
               disabled={isValidating}
             >
-              {isValidating ? 'Validating...' : 'Validate'}
+              {isValidating ? t('VALIDATING') : t('VALIDATE')}
             </Button>
           )}
           {results && !isValid && results.some((r) => !r.error) && (
@@ -345,7 +345,7 @@ export default function BulkUploadActivities() {
               onClick={handleSubmitValid}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Valid Rows'}
+              {isSubmitting ? t('SUBMITTING') : t('SUBMIT_VALID_ROWS')}
             </Button>
           )}
           {isValid && (
@@ -355,7 +355,7 @@ export default function BulkUploadActivities() {
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : t('SUBMIT')}
+              {isSubmitting ? t('SUBMITTING') : t('SUBMIT')}
             </Button>
           )}
         </div>

@@ -87,6 +87,8 @@ export default function VendorsDetailSplitView({
     await addVendor.mutateAsync({
       vendorUUID: vendorsDetail.id,
       projectUUID: selectedProject,
+      successMessage: g('VENDOR_ASSIGNED_SUCCESSFULLY'),
+      errorMessage: g('ERROR_WHILE_UPDATING_VENDOR'),
     });
     projectModal.onFalse();
   };
@@ -99,7 +101,11 @@ export default function VendorsDetailSplitView({
     if (isVendorAssigned)
       return toast.warning(t('ASSIGNED_VENDOR_CANNOT_BE_DELETED'));
 
-    await removeVendor.mutateAsync({ vendorId: vendorsDetail.id });
+    await removeVendor.mutateAsync({
+      vendorId: vendorsDetail.id,
+      successMessage: g('VENDOR_REMOVED_SUCCESSFULLY'),
+      errorMessage: g('ERROR_WHILE_REMOVING_VENDOR'),
+    });
     closeSecondPanel();
   };
   const formattedDate =

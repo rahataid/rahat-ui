@@ -82,6 +82,8 @@ export default function EditVendors() {
     await updateVendor.mutateAsync({
       uuid: id,
       payload: { ...data },
+      successMessage: g('VENDOR_UPDATED_SUCCESSFULLY'),
+      errorMessage: g('ERROR_WHILE_UPDATING_VENDOR'),
     });
     router.push('/vendors');
   };

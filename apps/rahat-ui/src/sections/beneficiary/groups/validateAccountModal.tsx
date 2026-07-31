@@ -40,7 +40,11 @@ export default function ValidateBenefBankAccountByGroupUuid({
   const validateBenefGroup = useValidateBeneficaryBankAccount();
   const handleValidateBankAccount = async () => {
     onConfirm?.();
-    await validateBenefGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+    await validateBenefGroup.mutateAsync({
+      uuid: beneficiaryGroupDetail.uuid as UUID,
+      successMessage: tg('ACCOUNTS_CHECK_IN_PROGRESS'),
+      errorMessage: tg('ERROR_WHILE_VALIDATING_BENEFICIARY'),
+    });
   };
 
   React.useEffect(() => {

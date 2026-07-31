@@ -193,11 +193,7 @@ export default function BeneficiaryTransactionLogDetails() {
                   data?.data?.status,
                 )}`}
               >
-                {data?.data?.status
-                  .toLowerCase()
-                  .split('_')
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(' ')}
+                {data?.data?.status ? tg(data.data.status) : ''}
               </Badge>
             </InfoItem>
             <InfoItem label={tv('TRANSACTION_TYPE')}>

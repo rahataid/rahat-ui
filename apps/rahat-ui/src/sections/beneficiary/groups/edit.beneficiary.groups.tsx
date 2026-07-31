@@ -102,7 +102,13 @@ export default function EditBeneficiaryGroups({
     const members = table
       .getSelectedRowModel()
       .rows?.map((data) => ({ uuid: data?.original?.uuid }));
-    const payload = { uuid: groupUUID, ...data, beneficiaries: members };
+    const payload = {
+      uuid: groupUUID,
+      ...data,
+      beneficiaries: members,
+      successMessage: tg('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
+      errorMessage: tg('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
+    };
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);
     } catch (e) {

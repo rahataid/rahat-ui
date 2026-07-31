@@ -16,7 +16,22 @@ export default function ActivityDetailCards({
   loading,
 }: ActivityDetailCardsProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case 'NOT_STARTED':
+        return t('NOT_STARTED');
+      case 'WORK_IN_PROGRESS':
+        return t('IN_PROGRESS');
+      case 'COMPLETED':
+        return tg('COMPLETED');
+      case 'DELAYED':
+        return tg('DELAYED');
+      default:
+        return status;
+    }
+  };
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
       <SpinnerLoader />
@@ -54,26 +69,16 @@ export default function ActivityDetailCards({
             {/* getStatusBg(status) */}
             <div className="ml-auto">
               <TooltipWrapper
-                tip={`${t('ACTIVITY_STATUS')}: ${activityDetail?.status
-                  ?.toLowerCase()
-                  ?.split('_')
-                  ?.map(
-                    (word) => word?.charAt(0)?.toUpperCase() + word?.slice(1),
-                  )
-                  ?.join(' ')}`}
+                tip={`${t('ACTIVITY_STATUS')}: ${getStatusLabel(
+                  activityDetail?.status,
+                )}`}
               >
                 <span
                   className={`${getStatusBg(
                     activityDetail?.status,
                   )} text-xs font-normal px-2 py-1 rounded-sm cursor-pointer`}
                 >
-                  {activityDetail?.status
-                    ?.toLowerCase()
-                    ?.split('_')
-                    ?.map(
-                      (word) => word?.charAt(0)?.toUpperCase() + word?.slice(1),
-                    )
-                    ?.join(' ')}
+                  {getStatusLabel(activityDetail?.status)}
                 </span>
               </TooltipWrapper>
             </div>

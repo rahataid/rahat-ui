@@ -108,7 +108,7 @@ export function useDateFormat() {
   const locale = useLocale();
 
   const formatDate = (
-    date: Date | string | undefined | null,
+    date: Date | string | number | undefined | null,
     pattern: DateFormatPattern = 'MMMM d, yyyy, h:mm:ss a',
   ): string => {
     if (!date) return '';

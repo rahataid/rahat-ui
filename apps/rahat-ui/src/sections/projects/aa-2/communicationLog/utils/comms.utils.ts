@@ -1,31 +1,51 @@
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 
+const CHANNEL_LABELS: Record<string, string> = {
+  SMS: 'SMS',
+  VOICE: 'AVC',
+  EMAIL: 'Email',
+};
+
 export function exportCommsStats(stats: any) {
   if (!stats) return;
 
-  const rows = [
-    {
-      'Total SMS Sent': (stats?.beneficiary?.SMS?.TOTAL || 0) + (stats?.stakeholder?.SMS?.TOTAL || 0),
-      'SMS Success': (stats?.beneficiary?.SMS?.SUCCESS || 0) + (stats?.stakeholder?.SMS?.SUCCESS || 0),
-      'SMS Fail': (stats?.beneficiary?.SMS?.FAIL || 0) + (stats?.stakeholder?.SMS?.FAIL || 0),
-      'SMS to Beneficiaries': stats?.beneficiary?.SMS?.SUCCESS || 0,
-      'SMS to Stakeholders': stats?.stakeholder?.SMS?.SUCCESS || 0,
-      'Total AVC Sent': (stats?.beneficiary?.VOICE?.TOTAL || 0) + (stats?.stakeholder?.VOICE?.TOTAL || 0),
-      'AVC Success': (stats?.beneficiary?.VOICE?.SUCCESS || 0) + (stats?.stakeholder?.VOICE?.SUCCESS || 0),
-      'AVC Fail': (stats?.beneficiary?.VOICE?.FAIL || 0) + (stats?.stakeholder?.VOICE?.FAIL || 0),
-      'AVC to Beneficiaries': stats?.beneficiary?.VOICE?.SUCCESS || 0,
-      'AVC to Stakeholders': stats?.stakeholder?.VOICE?.SUCCESS || 0,
-    },
-  ];
+  const beneficiary = stats?.beneficiary ?? {};
+  const stakeholder = stats?.stakeholder ?? {};
+  const channels = new Set([
+    ...Object.keys(beneficiary),
+    ...Object.keys(stakeholder),
+  ]);
 
-  generateExcel(rows, 'Communication_Stats_Report', 10);
+  const row: Record<string, string | number> = {};
+  let colCount = 0;
+
+  channels.forEach((channel) => {
+    const label = CHANNEL_LABELS[channel] || channel;
+    const ben = beneficiary[channel] ?? {};
+    const stk = stakeholder[channel] ?? {};
+
+    row[`Total ${label} Sent`] = (ben.TOTAL || 0) + (stk.TOTAL || 0);
+    row[`${label} Success`] = (ben.SUCCESS || 0) + (stk.SUCCESS || 0);
+    row[`${label} Fail`] = (ben.FAIL || 0) + (stk.FAIL || 0);
+    row[`${label} Pending`] = (ben.PENDING || 0) + (stk.PENDING || 0);
+    row[`${label} Scheduled`] = (ben.SCHEDULED || 0) + (stk.SCHEDULED || 0);
+    row[`${label} to Beneficiaries`] = ben.SUCCESS || 0;
+    row[`${label} to Stakeholders`] = stk.SUCCESS || 0;
+
+    colCount += 7;
+  });
+
+  if (!channels.size) return;
+
+  generateExcel([row], 'Communication_Stats_Report', colCount);
 }
 
 export function hasCommsData(stats: any) {
-  return !!(
-    stats?.beneficiary?.SMS?.TOTAL ||
-    stats?.stakeholder?.SMS?.TOTAL ||
-    stats?.beneficiary?.VOICE?.TOTAL ||
-    stats?.stakeholder?.VOICE?.TOTAL
-  );
+  const beneficiary = stats?.beneficiary ?? {};
+  const stakeholder = stats?.stakeholder ?? {};
+
+  const anyTotal = (obj: any) =>
+    Object.values(obj).some((ch: any) => ch?.TOTAL > 0);
+
+  return anyTotal(beneficiary) || anyTotal(stakeholder);
 }

@@ -46,6 +46,7 @@ import {
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { Back, Heading, NoResult } from 'apps/rahat-ui/src/common';
+import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { DurationData } from '../add/add.activity.view';
@@ -97,6 +98,7 @@ export default function EditActivity() {
   const { data: users } = useUserList({
     page: 1,
     perPage: 9999,
+    roles: 'admin , manager',
   });
 
   useActivitiesCategories(projectID as UUID);
@@ -494,27 +496,25 @@ export default function EditActivity() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('RESPONSIBILITY')}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('SELECT_RESPONSIBILITY')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {users?.data.map((item) => (
-                              <SelectItem
-                                key={item.uuid}
-                                value={item.uuid as string}
-                              >
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            users?.data?.find((u) => u.uuid === field.value)
+                              ?.name
+                          }
+                          placeholder={t('SELECT_RESPONSIBILITY')}
+                          searchPlaceholder="Search users..."
+                          emptyMessage="No user found."
+                          options={
+                            users?.data?.map((u: any) => ({
+                              label: u.name,
+                              value: u.uuid,
+                              data: u,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
@@ -545,24 +545,25 @@ export default function EditActivity() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('PHASE')}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger disabled>
-                              <SelectValue placeholder={t('SELECT_PHASE')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {phases.map((item) => (
-                              <SelectItem key={item.id} value={item.uuid}>
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            phases?.find((p) => p.uuid === field.value)?.name
+                          }
+                          placeholder={t('SELECT_PHASE')}
+                          searchPlaceholder="Search phases..."
+                          emptyMessage="No phase found."
+                          disabled
+                          options={
+                            phases?.map((p) => ({
+                              label: p.name,
+                              value: p.uuid,
+                              data: p,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
@@ -573,24 +574,25 @@ export default function EditActivity() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('CATEGORY')}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('SELECT_CATEGORY')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {categories.map((item) => (
-                              <SelectItem key={item.id} value={item.uuid}>
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <DropdownSearch
+                          selectedLabel={
+                            categories?.find((c) => c.uuid === field.value)
+                              ?.name
+                          }
+                          placeholder={t('SELECT_CATEGORY')}
+                          searchPlaceholder="Search categories..."
+                          emptyMessage="No category found."
+                          options={
+                            categories?.map((c: any) => ({
+                              label: c.name,
+                              value: c.uuid,
+                              data: c,
+                            })) || []
+                          }
+                          onSelect={(selected) => {
+                            field.onChange(selected.uuid);
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}

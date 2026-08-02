@@ -1,6 +1,4 @@
-import { Heading } from 'apps/rahat-ui/src/common';
-import { File } from 'lucide-react';
-import Link from 'next/link';
+import { FilePreview, Heading } from 'apps/rahat-ui/src/common';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useTranslations } from 'next-intl';
 
@@ -21,21 +19,22 @@ export function DocumentsSection({ triggerDocuments, date }: IProps) {
       />
       <div className="grid grid-cols-2 gap-3">
         {triggerDocuments?.map((d: any) => (
-          <Link
-            href={d.mediaURL}
-            target="_blank"
+          <div
+            key={d.mediaURL}
             className="p-4 rounded-sm shadow border flex gap-2 items-center hover:shadow-md"
           >
-            <div className="rounded-sm bg-gray-100 p-2">
-              <File size={18} />
-            </div>
+            <FilePreview
+              url={d.mediaURL}
+              fileName={d.fileName}
+              className="shrink-0"
+            />
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm/6 truncate">{d.fileName}</p>
               <p className="text-sm/4 text-muted-foreground">
                 {formatDate(date)}
               </p>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

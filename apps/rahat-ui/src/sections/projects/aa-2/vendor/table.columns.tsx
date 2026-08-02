@@ -1,4 +1,5 @@
 import {
+  PROJECT_SETTINGS_KEYS,
   TOKEN_TO_AMOUNT_MULTIPLIER,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -12,6 +13,7 @@ import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.tabl
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { UUID } from 'crypto';
 import { Eye } from 'lucide-react';
@@ -190,13 +192,17 @@ export const useProjectVendorRedemptionTableColumns = () => {
         if (!row.original?.transactionHash) {
           return <div>{tg('N_A')}</div>;
         }
+        const txUrl = getExplorerUrl({
+          chainSettings:
+            settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: row.original?.transactionHash,
+        });
         return (
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={`https://sepolia.basescan.org/tx/${row.getValue(
-                  'transactionHash',
-                )}`}
+                href={txUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "

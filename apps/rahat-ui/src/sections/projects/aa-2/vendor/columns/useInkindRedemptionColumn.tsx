@@ -1,4 +1,8 @@
-import { useUpdateVendorRedemptionStatus } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useUpdateVendorRedemptionStatus,
+} from '@rahat-ui/query';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { InkindRedemptionData } from '../tabs/inkind.redemption.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
@@ -12,6 +16,7 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { formatLabel } from '../../inkindManagement/components/inkind.allocation.list';
 import { INKIND_TYPE_LABELS } from '../../inkindManagement/schemas/inkind.validation';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 
 export const useInkindRedemptionColumn = (
   id: UUID,
@@ -23,6 +28,9 @@ export const useInkindRedemptionColumn = (
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const approveRedemptionStatus = useUpdateVendorRedemptionStatus();
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const handleApproveClick = (row: Row<InkindRedemptionData>) => {
     approveRedemptionStatus.mutate({
       projectUUID: id,
@@ -51,13 +59,17 @@ export const useInkindRedemptionColumn = (
         if (!row.original?.transactionHash) {
           return <div>{t('N_A')}</div>;
         }
+        const txUrl = getExplorerUrl({
+          chainSettings:
+            settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: row.original?.transactionHash,
+        });
         return (
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={`https://sepolia.basescan.org/tx/${row.getValue(
-                  'transactionHash',
-                )}`}
+                href={txUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className=" text-blue-500 hover:underline cursor-pointer "

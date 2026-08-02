@@ -333,6 +333,55 @@ export const useTriggerForOnePayoutFailed = () => {
   });
 };
 
+export const useSendPayoutOtp = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        email: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.sendOtp',
+          payload: payload,
+        },
+      });
+    },
+    onSuccess: (_data, { payload }) => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['payouts'] });
+      qc.invalidateQueries({ queryKey: ['payout'] });
+      toast.fire({
+        title: `Rahat Pin sent successfully to ${payload.email}`,
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while sending OTP.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useTriggerPayout = () => {
   const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
@@ -352,6 +401,7 @@ export const useTriggerPayout = () => {
       projectUUID: UUID;
       payload: {
         uuid: string;
+        otp: string;
       };
     }) => {
       return q.mutateAsync({

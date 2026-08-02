@@ -9,16 +9,7 @@ import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import dynamic from 'next/dynamic';
-import { cn } from 'libs/shadcn/src';
 import { Button } from 'libs/shadcn/src/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from 'libs/shadcn/src/components/ui/command';
 import {
   Form,
   FormControl,
@@ -28,12 +19,7 @@ import {
   FormMessage,
 } from 'libs/shadcn/src/components/ui/form';
 import { Input } from 'libs/shadcn/src/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from 'libs/shadcn/src/components/ui/popover';
-import { Check, ChevronDown } from 'lucide-react';
+import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -81,7 +67,7 @@ export default function AssignFundsForm({
 
   const benGroups = useBeneficiaryGroups(
     projectId,
-    { page: 1, perPage: 100, tokenAssigned: false },
+    { tokenAssigned: false },
     { refetchOnMount: 'always' },
   );
 
@@ -169,7 +155,7 @@ export default function AssignFundsForm({
     );
     const count = selectedGroup?._count?.beneficiaries ?? 0;
     const total = tokenPerBenef * count;
-    
+
     if (!isNaN(total)) {
       setValue('totalTokenAmount', total);
     }
@@ -207,68 +193,28 @@ export default function AssignFundsForm({
               render={({ field }) => (
                 <FormItem className="flex flex-col space-y-3 w-full">
                   <FormLabel className="mt-1">{t('BENEFICIARY_GROUP')}</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            'justify-between font-normal',
-                            !field.value && 'text-muted-foreground',
-                          )}
-                        >
-                          {field.value
-                            ? benGroups.data.find(
-                                (group) => group.uuid === field.value,
-                              )?.name
-                            : t('SELECT_BENEFICIARY_GROUP')}
-                          <ChevronDown className="opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                      <Command>
-                        <CommandInput
-                          placeholder={t('SEARCH_PLACEHOLDER')}
-                          className="h-9"
-                        />
-                        <CommandList>
-                          <CommandEmpty>{t('NO_GROUP_FOUND')}</CommandEmpty>
-                          <CommandGroup>
-                            {benGroups.data.map(
-                              (group: BeneficiaryGroupListItem) => (
-                                <CommandItem
-                                  value={group?.uuid}
-                                  key={group?.uuid}
-                                  onSelect={() => {
-                                    setValue(
-                                      'beneficiaryGroupId',
-                                      group?.uuid,
-                                      {
-                                        shouldValidate: true,
-                                        shouldTouch: true,
-                                      },
-                                    );
-                                  }}
-                                >
-                                  {group?.name}
-                                  <Check
-                                    className={cn(
-                                      'ml-auto',
-                                      group?.uuid === field.value
-                                        ? 'opacity-100'
-                                        : 'opacity-0',
-                                    )}
-                                  />
-                                </CommandItem>
-                              ),
-                            )}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <DropdownSearch
+                    selectedLabel={
+                      benGroups.data.find((group) => group.uuid === field.value)
+                        ?.name
+                    }
+                    placeholder={t('SELECT_BENEFICIARY_GROUP')}
+                    searchPlaceholder="Search beneficiary group..."
+                    emptyMessage="No beneficiary group found."
+                    options={
+                      benGroups?.data?.map((g: BeneficiaryGroupListItem) => ({
+                        label: g.name,
+                        value: g.uuid,
+                        data: g,
+                      })) || []
+                    }
+                    onSelect={(selectedGroup) => {
+                      setValue('beneficiaryGroupId', selectedGroup.uuid, {
+                        shouldValidate: true,
+                        shouldTouch: true,
+                      });
+                    }}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

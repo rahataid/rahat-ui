@@ -186,18 +186,28 @@ export const useValidateBankAccount = (projectUUID: UUID) => {
   });
 };
 
-// ponytail: sendOtp/verifyOtp stubbed — swap mutationFn to runAction once endpoints exist
-export const useSendOtp = (_projectUUID: UUID) => {
-  return useMutation({
-    mutationFn: async (_payload: { recordUuid: string; email: string }) =>
-      ({ success: true }),
-  });
-};
+export const useSendGctOtp = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const toast = useToast();
 
-export const useVerifyOtp = (_projectUUID: UUID) => {
   return useMutation({
-    mutationFn: async (_payload: { recordUuid: string; otp: string }) =>
-      ({ success: true }),
+    mutationFn: ({ email }: { email: string }) =>
+      runAction(q, projectUUID, ACTION_NS + '.sendOtp', { email }),
+    onSuccess: (_data, { email }) => {
+      q.reset();
+      toast.fire({
+        title: `Rahat Pin sent successfully to ${email}`,
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      q.reset();
+      toast.fire({
+        title: 'Error sending OTP.',
+        icon: 'error',
+        text: error?.response?.data?.message || 'Error',
+      });
+    },
   });
 };
 
@@ -234,8 +244,8 @@ export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
 
   return useMutation({
     // uuid here is the fund record UUID returned by assignFund, not the group UUID
-    mutationFn: ({ uuid }: DisbursePayload) =>
-      runAction(q, projectUUID, ACTION_NS + '.disburse', { uuid }),
+    mutationFn: ({ uuid, otp }: DisbursePayload) =>
+      runAction(q, projectUUID, ACTION_NS + '.disburse', { uuid, otp }),
     onSuccess: () => {
       q.reset();
       queryClient.invalidateQueries({

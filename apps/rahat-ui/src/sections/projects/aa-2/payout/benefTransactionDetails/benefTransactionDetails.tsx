@@ -6,6 +6,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DataCard,
+  FilePreview,
   HeaderWithBack,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
@@ -89,6 +90,7 @@ export default function BeneficiaryTransactionLogDetails() {
       }&txnDetailsId=${uuid}`,
     );
   };
+
   return (
     <div className="p-4 md:p-6  space-y-6">
       <div className=" flex justify-between items-center">
@@ -201,6 +203,17 @@ export default function BeneficiaryTransactionLogDetails() {
                 {data?.data?.transactionType.split('_').join(' ')}
               </Badge>
             </InfoItem>
+
+            {data?.data?.info?.mediaUrl && (
+              <InfoItem label="Proof of Payment">
+                <FilePreview
+                  url={data.data.info.mediaUrl}
+                  fileName={
+                    data.data.info.fileName
+                  }
+                />
+              </InfoItem>
+            )}
 
             {data?.data?.payout?.type === 'FSP' && (
               <>

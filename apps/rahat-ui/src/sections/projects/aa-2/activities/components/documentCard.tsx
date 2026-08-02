@@ -1,7 +1,10 @@
 import { useTranslations } from 'next-intl';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { File } from 'lucide-react';
+import {
+  FilePreview,
+  NoResult,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 
 interface DocumentCardProps {
   fileName: string;
@@ -19,9 +22,7 @@ export default function DocumentCard({
       className="bg-white shadow-sm rounded-xl p-2 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
       onClick={() => window.open(mediaURL, '_blank')}
     >
-      <div className="bg-gray-100 p-2 rounded-sm">
-        <File />
-      </div>
+      <FilePreview url={mediaURL || ''} fileName={fileName} />
       <div>
         <h4 className="text-gray-900 font-medium truncate w-48  lg:w-24 text-sm">
           {fileName}

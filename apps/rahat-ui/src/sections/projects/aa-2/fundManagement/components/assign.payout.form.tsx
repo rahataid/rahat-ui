@@ -308,7 +308,9 @@ export default function PayoutFundManagementForm({
                     value={type.key}
                     id={`method-${type.key.toLowerCase()}`}
                   />
-                  <span>{type.label}</span>
+                  <span>
+                    {t.has(type.key) ? t(type.key) : type.label}
+                  </span>
                 </Label>
               ))}
             </RadioGroup>

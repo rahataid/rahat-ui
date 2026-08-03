@@ -583,7 +583,9 @@ export default function EditGrievance() {
                   disabled={updateGrievance.isPending}
                   className="w-36"
                 >
-                  {updateGrievance.isPending ? t('SAVING') : t('SAVE_CHANGES')}
+                  {updateGrievance.isPending
+                    ? t('SAVING')
+                    : t('UPDATE_GRIEVANCE_BUTTON')}
                 </Button>
               </div>
             </ScrollArea>

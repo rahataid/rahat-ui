@@ -1,5 +1,6 @@
 /* eslint-disable-next-line */
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useUserStore } from '@rumsan/react-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ShieldX } from 'lucide-react';
@@ -27,6 +28,7 @@ export function RoleAuth({
     user: state.user,
   }));
   const router = useRouter();
+  const t = useTranslations('GLOBAL');
   const hasRequiredRole =
     roles.length === 0 ||
     roles.some((role) => user?.data?.roles?.includes(role));
@@ -40,18 +42,17 @@ export function RoleAuth({
               <ShieldX className="w-10 h-10 text-red-600 dark:text-red-400" />
             </div>
 
-            <h3 className="text-2xl font-bold text-red-600 ">Access Denied</h3>
+            <h3 className="text-2xl font-bold text-red-600 ">{t('ACCESS_DENIED')}</h3>
 
             <p className="text-muted-foreground">
-              You don't have permission to access this page. Please contact your
-              administrator for access.
+              {t('ACCESS_DENIED_MESSAGE')}
             </p>
 
             <Button
               onClick={router.back}
               className="bg-gradient-to-r bg-blue-500 hover:bg-blue-600 text-white"
             >
-              Return Back
+              {t('RETURN_BACK')}
             </Button>
           </div>
         </div>

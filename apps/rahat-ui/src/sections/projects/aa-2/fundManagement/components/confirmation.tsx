@@ -189,7 +189,7 @@ export default function Confirmation({
                     <p>{i.label}</p>
                   </div>
                   <p className="text-sm font-semibold text-primary">
-                    + {i.value}
+                    + {formatNum(i.value)}
                   </p>
                 </div>
               ))

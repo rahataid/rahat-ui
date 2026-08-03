@@ -22,8 +22,7 @@ export default function WeatherDashboard({ data }: IProps) {
     return [
       {
         label: t('EXTREME_WEATHER_OUTLOOK'),
-        subLabel:
-          'Severe Weather Event -Extreme Rainfall >95 Percentile purple dots over Karnali Watershed',
+        subLabel: t('EXTREME_WEATHER_SUBLABEL'),
         value: data?.[0].data?.extremeWeatherOutlook,
       },
       {

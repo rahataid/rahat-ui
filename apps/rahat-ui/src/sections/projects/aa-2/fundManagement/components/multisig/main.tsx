@@ -39,6 +39,7 @@ import {
 import { formatUnits } from 'viem';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface CardProps {
   title: string;
@@ -53,6 +54,7 @@ export default function MultiSigWalletView() {
   const { clickToCopy, copyAction } = useCopy();
   const t = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
 
   const {
@@ -80,15 +82,19 @@ export default function MultiSigWalletView() {
     {
       title: t('TOTAL_BALANCE'),
       tip: t('TOTAL_BALANCE_TOOLTIP'),
-      content: `${safeOwners?.projectBalance} RHT` || tg('N_A'),
+      content: safeOwners?.projectBalance
+        ? `${formatNum(safeOwners.projectBalance)} RHT`
+        : tg('N_A'),
       color: 'green',
       icon: <Banknote strokeWidth={2.5} />,
     },
     {
       title: t('SIGNATURE_THRESHOLD'),
       tip: t('SIGNATURE_THRESHOLD_TOOLTIP'),
-      content: `${safeOwners?.threshold || '-'} of ${
-        safeOwners?.owners?.length || '-'
+      content: `${
+        safeOwners?.threshold ? formatNum(safeOwners.threshold) : '-'
+      } ${tg('OF')} ${
+        safeOwners?.owners?.length ? formatNum(safeOwners.owners.length) : '-'
       }`,
       color: 'purple',
       icon: <CircleCheckBig strokeWidth={2.5} />,
@@ -96,7 +102,9 @@ export default function MultiSigWalletView() {
     {
       title: t('ACTIVE_OWNERS'),
       tip: t('ACTIVE_OWNERS_TOOLTIP'),
-      content: safeOwners?.owners?.length || tg('N_A'),
+      content: safeOwners?.owners?.length
+        ? formatNum(safeOwners.owners.length)
+        : tg('N_A'),
       color: 'blue',
       icon: <Users strokeWidth={2.5} />,
     },
@@ -270,7 +278,9 @@ export default function MultiSigWalletView() {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-medium">
-                          {formatUnits(BigInt(tx?.value), safeOwners?.decimals)}{' '}
+                          {formatNum(
+                            formatUnits(BigInt(tx?.value), safeOwners?.decimals),
+                          )}{' '}
                           RHT
                         </p>
                         <Badge

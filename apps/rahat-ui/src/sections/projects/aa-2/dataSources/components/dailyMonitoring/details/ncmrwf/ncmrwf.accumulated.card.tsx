@@ -27,7 +27,7 @@ export default function AccumulatedCard({ data }: IProps) {
       { label: t('N72_HOURS'), subLabel: '', value: data?.[0].data?.hours72 },
       { label: t('N168_HOURS'), subLabel: '', value: data?.[0].data?.hours168 },
       {
-        label: 'Heavy Rainfall Forecast in Karnali Basin (upstream areas)',
+        label: t('HEAVY_RAINFALL_FORECAST_KARNALI_BASIN'),
         subLabel: t('HEAVY_RAINFALL_SUBLABEL'),
         value: data?.[0].data?.heavyRainfallForecastInKarnaliBasin,
       },

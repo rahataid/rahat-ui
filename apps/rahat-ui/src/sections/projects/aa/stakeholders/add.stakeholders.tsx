@@ -40,7 +40,7 @@ export default function AddStakeholders() {
   const FormSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_NAME') }),
     phone: z.preprocess(
       normalizeNumeralsPreprocessor,
@@ -51,19 +51,19 @@ export default function AddStakeholders() {
     email: z.string().optional(),
     designation: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_DESIGNATION') }),
     organization: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_ORGANIZATION') }),
     district: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_DISTRICT') }),
     municipality: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_MUNICIPALITY') }),
   });
 

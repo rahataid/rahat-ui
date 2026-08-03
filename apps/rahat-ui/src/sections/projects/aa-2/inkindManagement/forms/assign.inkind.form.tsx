@@ -43,6 +43,7 @@ import {
 } from './schema/inkinds.schema';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface Props {
   onNext: (
@@ -62,6 +63,7 @@ export default function AssignInkindForm({ onNext }: Props) {
   const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
   const tAA = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -214,7 +216,8 @@ export default function AssignInkindForm({ onNext }: Props) {
                             >
                               <span className="flex-1">{item.name}</span>
                               <span className="text-xs text-muted-foreground mr-2">
-                                {tv('STOCK_LABEL')} {item.availableStock ?? 0}
+                                {tv('STOCK_LABEL')}{' '}
+                                {formatDigits(item.availableStock ?? 0)}
                               </span>
                               <Check
                                 className={cn(
@@ -235,7 +238,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                   <p className="text-xs text-muted-foreground -mt-1">
                     {tv('AVAILABLE_STOCK_WITH_COLON')}{' '}
                     <span className="font-semibold text-primary">
-                      {selectedInkind.availableStock ?? 0}
+                      {formatDigits(selectedInkind.availableStock ?? 0)}
                     </span>
                   </p>
                 )}

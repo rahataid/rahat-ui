@@ -1072,12 +1072,11 @@ export default function ImportStakeholder() {
                 <DialogTitle>{t('CREATE_STAKEHOLDER_GROUP')}</DialogTitle>
                 <DialogDescription>
                   {t('ENTER_A_NAME_FOR_THE_GROUP')}
-                  stakeholders.
                 </DialogDescription>
               </DialogHeader>
               <div className="mt-4 mb-4">
                 <label className="block text-sm font-medium mb-2">
-                  Group Name <span className="text-red-500">*</span>
+                  {t('GROUP_NAME')} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"

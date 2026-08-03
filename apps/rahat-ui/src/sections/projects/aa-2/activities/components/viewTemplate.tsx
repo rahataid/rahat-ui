@@ -132,7 +132,9 @@ const ViewTemplate = ({
                               <SelectLabel>{t('PHASE')}</SelectLabel>
                               {PHASE.map((s) => (
                                 <SelectItem key={s.value} value={s.value}>
-                                  {s.label}
+                                  {tg.has(s.label.toUpperCase() as never)
+                                    ? tg(s.label.toUpperCase() as never)
+                                    : s.label}
                                 </SelectItem>
                               ))}
                             </SelectGroup>
@@ -220,7 +222,11 @@ const ViewTemplate = ({
                               <SelectLabel>{tg('TYPE')}</SelectLabel>
                               {AUTOMATION_TYPE.map((type) => (
                                 <SelectItem key={type.value} value={type.value}>
-                                  {type.label}
+                                  {type.value === 'all'
+                                    ? tg('ALL')
+                                    : type.value === 'true'
+                                      ? t('AUTOMATED')
+                                      : t('MANUAL')}
                                 </SelectItem>
                               ))}
                             </SelectGroup>

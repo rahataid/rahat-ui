@@ -48,7 +48,7 @@ export default function EditStakeholders() {
   const FormSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_NAME') }),
     phone: z.preprocess(
       normalizeNumeralsPreprocessor,
@@ -64,14 +64,20 @@ export default function EditStakeholders() {
       }),
     designation: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_DESIGNATION') }),
     organization: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_ORGANIZATION') }),
-    district: z.string().min(2, { message: t('PLEASE_ENTER_DISTRICT') }),
-    municipality: z.string().min(2, { message: t('PLEASE_ENTER_MUNICIPALITY') }),
+    district: z
+      .string()
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_DISTRICT') }),
+    municipality: z
+      .string()
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_MUNICIPALITY') }),
     supportArea: z
       .array(
         z.object({

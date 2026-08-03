@@ -1,4 +1,4 @@
-import { PHASE_QUERY_KEYS } from '@rahat-ui/query';
+import { ACTIVITY_QUERY_KEYS, PHASE_QUERY_KEYS } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 export type EVENT =
@@ -7,7 +7,9 @@ export type EVENT =
   | 'phase.deleted'
   | 'beneficiaries.updated'
   | 'trigger.updated'
-  | 'trigger.created';
+  | 'trigger.created'
+  | 'activity.created'
+  | 'activity.updated';
 
 export const EVENT_QUERY_MAP: Record<
   string,
@@ -29,4 +31,14 @@ export const EVENT_QUERY_MAP: Record<
   'trigger.updated': (projectUuid) => [[PHASE_QUERY_KEYS.PHASE, projectUuid]],
 
   'trigger.created': (projectUuid) => [[PHASE_QUERY_KEYS.PHASE, projectUuid]],
+
+  'activity.created': (projectUuid) => [
+    [ACTIVITY_QUERY_KEYS.ACTIVITIES, projectUuid],
+  ],
+
+  'activity.updated': (projectUuid) => [
+    [ACTIVITY_QUERY_KEYS.ACTIVITIES, projectUuid],
+    [ACTIVITY_QUERY_KEYS.ACTIVITY, projectUuid],
+    [ACTIVITY_QUERY_KEYS.ACTIVITIES_HAVING_COMMS, projectUuid],
+  ],
 };

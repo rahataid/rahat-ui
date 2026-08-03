@@ -58,4 +58,5 @@ export type AssignFundPayload = {
 
 export type DisbursePayload = {
   uuid: string; // fund record UUID from assignFund, not group UUID
+  otp: string;
 };

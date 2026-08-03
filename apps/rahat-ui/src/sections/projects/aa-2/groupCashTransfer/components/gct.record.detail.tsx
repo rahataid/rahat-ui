@@ -16,7 +16,6 @@ import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { SpinnerLoader, Back } from 'apps/rahat-ui/src/common';
 import {
   useGetOneGctRecord,
-  useDisburseGroupCashTransfer,
   useProjectSettingsStore,
   PROJECT_SETTINGS_KEYS,
 } from '@rahat-ui/query';
@@ -37,7 +36,6 @@ export default function GctRecordDetail() {
     projectUUID,
     recordUuid as string,
   );
-  const disburse = useDisburseGroupCashTransfer(projectUUID);
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -52,10 +50,8 @@ export default function GctRecordDetail() {
   const canDisburse =
     status === 'NOT_STARTED' || status === 'TOKEN_TRANSFERRED';
 
-  const handleDisburseClick = () => {
-    setDisburseOpen(true);
-    disburse.mutateAsync({ uuid: recordUuid as string });
-  };
+  // disburse now fires from the modal, after OTP verification
+  const handleDisburseClick = () => setDisburseOpen(true);
 
   const disabledReason =
     status === 'FAILED' || status === 'REJECTED'
@@ -120,7 +116,6 @@ export default function GctRecordDetail() {
           </TooltipProvider>
           <DisburseButton
             projectUUID={projectUUID}
-            loading={disburse.isPending}
             disabled={!canDisburse}
             disabledReason={disabledReason}
             onClick={handleDisburseClick}
@@ -200,7 +195,6 @@ export default function GctRecordDetail() {
         group={group}
         open={disburseOpen}
         onOpenChange={setDisburseOpen}
-        disburseLoading={disburse.isPending}
       />
     </div>
   );

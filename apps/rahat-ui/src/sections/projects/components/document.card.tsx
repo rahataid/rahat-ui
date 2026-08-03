@@ -1,4 +1,5 @@
-import { Folder, ViewIcon } from 'lucide-react';
+import { FilePreview } from 'apps/rahat-ui/src/common';
+import { ViewIcon } from 'lucide-react';
 import Link from 'next/link';
 
 type IProps = {
@@ -10,9 +11,7 @@ export default function DocumentCard({ name, path }: IProps) {
   return (
     <div className="p-4 rounded border flex justify-between items-center">
       <div className="flex items-center gap-3">
-        <div className="p-1.5 rounded-full bg-secondary text-primary">
-          <Folder size={20} />
-        </div>
+        <FilePreview url={path} fileName={name} />
         <h1 className="text-primary font-medium">{name}</h1>
       </div>
       <Link

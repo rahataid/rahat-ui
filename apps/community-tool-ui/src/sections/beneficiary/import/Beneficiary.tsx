@@ -342,16 +342,34 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleImportNowClick = async (groupName: string | null) => {
-    if (!validBenef.length)
-      return validateOrImport(IMPORT_ACTION.IMPORT, groupName);
-    const sourcePayload = {
-      action: IMPORT_ACTION.IMPORT,
-      name: importSource,
-      importId,
-      groupName,
-      fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
-    };
-    return createImportSource(sourcePayload);
+    // If we have processedData (came through validate screen), use it directly
+    // so any inline edits the user made are preserved in the payload.
+    if (processedData.length) {
+      const cleanedData = (processedData as any[]).map(
+        ({ isDuplicate, ...rest }) => rest,
+      );
+      const sourcePayload = {
+        action: IMPORT_ACTION.IMPORT,
+        name: importSource,
+        importId,
+        groupName,
+        fieldMapping: { data: cleanedData, sourceTargetMappings: mappings },
+      };
+      return createImportSource(sourcePayload);
+    }
+    // Fallback: no validated data yet — process from raw (shouldn't normally happen
+    // since Import button is only reachable after validation).
+    if (validBenef.length) {
+      const sourcePayload = {
+        action: IMPORT_ACTION.IMPORT,
+        name: importSource,
+        importId,
+        groupName,
+        fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
+      };
+      return createImportSource(sourcePayload);
+    }
+    return validateOrImport(IMPORT_ACTION.IMPORT, groupName);
   };
 
   const validateOrImport = (
@@ -520,6 +538,20 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
   };
 
+  const handleRevalidate = async () => {
+    const cleanedData = (processedData as any[]).map(
+      ({ isDuplicate, ...rest }) => rest,
+    );
+    const sourcePayload = {
+      action: IMPORT_ACTION.VALIDATE,
+      name: importSource,
+      importId,
+      groupName: null,
+      fieldMapping: { data: cleanedData, sourceTargetMappings: mappings },
+    };
+    return createImportSource(sourcePayload);
+  };
+
   const handleExportInvalidClick = async () => {
     const { invalidData, validData } = splitValidAndInvalid(
       processedData as [],
@@ -633,6 +665,9 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               handleImportWithGroup={handleImportNowClick}
               invalidFields={invalidFields}
               loading={loading}
+              mappings={mappings}
+              onDataChange={setProcessedData}
+              onRevalidate={handleRevalidate}
             />
           </div>
         )}

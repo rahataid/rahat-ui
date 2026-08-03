@@ -13,6 +13,7 @@ import {
   exportDataToExcel,
   formatNameString,
   includeOnlySelectedTarget,
+  normalizeInvalidFields,
   removeFieldsWithUnderscore,
   splitFullName,
   splitValidAndInvalid,
@@ -42,7 +43,6 @@ import {
   useUploadStandardJson,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
-// import beneficiaryStandard from '../../../../../../beneficiary.json';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
@@ -504,7 +504,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       setHasUUID(hasUUID);
 
       setProcessedData(result);
-      if (invalidFields.length) setInvalidFields(invalidFields);
+      setInvalidFields(normalizeInvalidFields(invalidFields));
       setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
     } catch (err) {
       console.log(err);

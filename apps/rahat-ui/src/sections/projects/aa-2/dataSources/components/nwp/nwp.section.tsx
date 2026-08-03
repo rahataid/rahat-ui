@@ -42,6 +42,16 @@ const WeatherMap = dynamic(
   },
 );
 
+const LAYER_NAME_KEY_MAP: Record<string, string> = {
+  'Air Temperature': 'AIR_TEMPERATURE',
+  'Hourly Precipitation': 'HOURLY_PRECIPITATION',
+  'Accumulated Precipitation': 'ACCUMULATED_PRECIPITATION',
+  'Wind Speed': 'WIND_SPEED',
+  'Wind Gust': 'WIND_GUST',
+  'Relative Humidity': 'RELATIVE_HUMIDITY',
+  'Total Cloud Cover': 'TOTAL_CLOUD_COVER',
+};
+
 export function NWPSection() {
   const t = useTranslations('AA_PROJECT');
   const [groupedLayers, setGroupedLayers] = useState<GroupedLayers>({});
@@ -65,7 +75,17 @@ export function NWPSection() {
       const { groupedLayers: fetchedLayers, availableTimes: times } =
         await fetchWeatherLayers();
 
-      setGroupedLayers(fetchedLayers);
+      const translatedLayers: GroupedLayers = Object.fromEntries(
+        Object.entries(fetchedLayers).map(([category, layers]) => [
+          category,
+          layers.map((layer) => {
+            const key = LAYER_NAME_KEY_MAP[layer.name];
+            return key ? { ...layer, name: t(key) } : layer;
+          }),
+        ]),
+      );
+
+      setGroupedLayers(translatedLayers);
       setAvailableTimes(times);
 
       // Set first layer as selected from first category

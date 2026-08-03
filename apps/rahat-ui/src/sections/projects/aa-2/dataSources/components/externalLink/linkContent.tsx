@@ -26,7 +26,11 @@ export default function ExternalLinks() {
             <Card className="h-full  border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer rounded-sm shadow-md">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-start justify-between gap-2">
-                  <span className="leading-tight">{service.title}</span>
+                  <span className="leading-tight">
+                    {t.has(service.titleKey as never)
+                      ? t(service.titleKey as never)
+                      : service.title}
+                  </span>
                   <TooltipComponent
                     Icon={ExternalLinkIcon}
                     tip={t('REDIRECT_TO', { name: service.subtitle })}

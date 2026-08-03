@@ -16,8 +16,8 @@ import {
 } from '@rahat-ui/query';
 
 const steps = [
-  { label: 'Add Trigger Statement' },
-  { label: 'Configure Phase' },
+  { key: 'ADD_TRIGGER_STATEMENT' },
+  { key: 'CONFIGURE_PHASE' },
 ];
 
 const MultiStepForm = () => {
@@ -222,7 +222,7 @@ const MultiStepForm = () => {
           }}
         >
           {steps.map((step, index) => (
-            <Step key={index} label={step.label} />
+            <Step key={index} label={t(step.key)} />
           ))}
         </Stepper>
         {activeStep === 0 && (

@@ -62,7 +62,7 @@ export default function HumidityWatchDetails() {
       {
         icon: RadioTower,
         label: t('STATION'),
-        value: humidityInfo?.name || 'Unknown',
+        value: humidityInfo?.name || t('UNKNOWN'),
       },
       { icon: Globe, label: t('LATITUDE'), value: humidityInfo?.latitude || '--' },
       {
@@ -93,7 +93,7 @@ export default function HumidityWatchDetails() {
       humidityInfo
         ? [
             {
-              name: humidityInfo.name || 'Unknown',
+              name: humidityInfo.name || t('UNKNOWN'),
               latitude: humidityInfo.latitude,
               longitude: humidityInfo.longitude,
               stationIndex: humidityInfo.stationIndex,
@@ -136,7 +136,7 @@ export default function HumidityWatchDetails() {
                 <div className="flex items-start justify-between">
                   <div>
                     <Heading
-                      title={humidityInfo?.name || 'Unknown Station'}
+                      title={humidityInfo?.name || t('UNKNOWN_STATION')}
                       titleStyle="text-xl/6 font-semibold"
                       description={
                         humidityInfo?.parameter_name || t('AIR_HUMIDITY_HOURLY')
@@ -148,7 +148,7 @@ export default function HumidityWatchDetails() {
                   {t('LAST_SYNCED_AT')}{' '}
                   {updatedAt
                     ? formatDate(updatedAt, 'MMMM dd, yyyy, hh:mm:ss a')
-                    : 'Not available'}
+                    : t('NOT_AVAILABLE')}
                 </p>
               </div>
 

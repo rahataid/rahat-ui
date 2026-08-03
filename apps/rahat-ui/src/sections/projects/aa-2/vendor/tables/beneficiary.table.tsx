@@ -20,6 +20,7 @@ import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagi
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {
@@ -35,6 +36,7 @@ export default function VendorsBeneficiaryList({
   loading,
 }: VendorsBeneficiaryListProps) {
   const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id, vendorId } = useParams();
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
     'subTab',
@@ -158,7 +160,7 @@ export default function VendorsBeneficiaryList({
               activeTab === PayoutMode.ONLINE ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {totalOnlineBeneficiary}
+            {formatNum(totalOnlineBeneficiary)}
           </Badge>
         </button>
         <button
@@ -175,7 +177,7 @@ export default function VendorsBeneficiaryList({
               activeTab === PayoutMode.OFFLINE ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {totalOfflineBeneficiary}
+            {formatNum(totalOfflineBeneficiary)}
           </Badge>
         </button>
       </div>

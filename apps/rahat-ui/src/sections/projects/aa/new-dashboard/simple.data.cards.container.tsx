@@ -16,6 +16,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { useQuery } from 'urql';
+import { useTranslations } from 'next-intl';
 import { useNumberFormat } from '../../../../utils/useNumberFormat';
 
 type IProps = {
@@ -52,6 +53,8 @@ export default function SimpleDataCardsContainer({
 
   console.log(commsStats)
   const formatNum = useNumberFormat();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -89,34 +92,34 @@ export default function SimpleDataCardsContainer({
 
   const data = [
     {
-      title: 'Total Beneficiaries',
+      title: t('TOTAL_BENEFICIARIES'),
       Icon: UsersRound,
-      number: totalBeneficiaries ?? 0,
+      number: formatNum(totalBeneficiaries ?? 0),
     },
     {
-      title: 'Household Receiving Cash Support',
+      title: t('HOUSEHOLD_RECEIVING_CASH_SUPPORT'),
       Icon: Home,
-      number: tempDashboardStats ? tempDashboardStats.HOUSEHOLD_RECEIVING_CASH : totalHouseholdReceivingCashSupport ?? 0,
+      number: formatNum(tempDashboardStats ? tempDashboardStats.HOUSEHOLD_RECEIVING_CASH : totalHouseholdReceivingCashSupport ?? 0),
     },
     {
-      title: 'Budget',
+      title: t('BUDGET'),
       Icon: Coins,
       number: `NRs. ${formatNum(parsedProjectBudget) ?? 0}`,
     },
     {
-      title: 'Balance',
+      title: t('BALANCE'),
       Icon: Coins,
       number: tempDashboardStats ? `NRs. ${formatNum(tempDashboardStats.BALANCE)}` : `NRs. ${formatNum(projectBalance) ?? 0}`,
     },
     {
-      title: 'Fund Distributed',
+      title: t('FUND_DISTRIBUTED'),
       Icon: HandCoins,
       number: tempDashboardStats ? `NRs. ${formatNum(tempDashboardStats.FUND_DISTRIBUTED)}` : `NRs. ${formatNum(totalDistributed) ?? 0}`,
     },
     {
-      title: 'Number of Communication Project',
+      title: t('NUMBER_OF_COMMUNICATION_PROJECT'),
       Icon: SmartphoneNfc,
-      number: commsStats?.totalCommsProject ?? 'N/A',
+      number: commsStats?.totalCommsProject != null ? formatNum(commsStats.totalCommsProject) : tg('N_A'),
     },
   ];
   return (

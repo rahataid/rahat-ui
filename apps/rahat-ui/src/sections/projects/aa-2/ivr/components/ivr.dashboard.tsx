@@ -19,9 +19,12 @@ import {
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import CreateIVRDialog from './ivr.create.dialog';
 import IvrCard from './ivr.card';
+import { useTranslations } from 'next-intl';
 
 export default function IvrDashboard() {
   const { id: projectUUID } = useParams();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { data: templates, isLoading } = useIvrTemplates(projectUUID as UUID);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<
@@ -81,10 +84,10 @@ export default function IvrDashboard() {
         <div className="flex items-center gap-3">
           <div>
             <h1 className="text-[clamp(20px,2.5vw,28px)] font-bold text-foreground">
-              IVR Manager
+              {t('IVR_MANAGER')}
             </h1>
             <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
-              Build and manage IVR flows
+              {t('BUILD_AND_MANAGE_IVR_FLOWS')}
             </p>
           </div>
         </div>
@@ -93,7 +96,7 @@ export default function IvrDashboard() {
 
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <Input
-          placeholder="Search IVRs..."
+          placeholder={t('SEARCH_IVRS')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-1 rounded-sm h-[clamp(32px,3vw,40px)]"
@@ -107,7 +110,9 @@ export default function IvrDashboard() {
               onClick={() => setStatusFilter(status)}
               className="capitalize rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             >
-              {status}
+              {tg.has(status.toUpperCase() as never)
+                ? tg(status.toUpperCase() as never)
+                : status}
             </Button>
           ))}
         </div>
@@ -117,18 +122,18 @@ export default function IvrDashboard() {
         {isLoading ? (
           <Card className="rounded-sm">
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <p className="text-muted-foreground">Loading IVR templates...</p>
+              <p className="text-muted-foreground">{t('LOADING_IVR_TEMPLATES')}</p>
             </CardContent>
           </Card>
         ) : filteredList.length === 0 ? (
           <Card className="border-2 border-dashed rounded-sm">
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Voicemail className="w-12 h-12 text-muted-foreground mb-4" />
-              <CardTitle className="mb-2">No IVRs found</CardTitle>
+              <CardTitle className="mb-2">{t('NO_IVRS_FOUND')}</CardTitle>
               <CardDescription>
                 {ivrList.length === 0
-                  ? 'Create your first IVR to get started'
-                  : 'No IVRs match your search or filter'}
+                  ? t('CREATE_YOUR_FIRST_IVR')
+                  : t('NO_IVRS_MATCH_SEARCH')}
               </CardDescription>
             </CardContent>
           </Card>
@@ -149,8 +154,8 @@ export default function IvrDashboard() {
         isConfirmationDialogOpen={!!deleteTarget}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleConfirmDelete}
-        dialogTitle="Archive IVR"
-        dialogMessage={`Are you sure you want to archive "${deleteTarget?.name}"? This action will archive the IVR template and cannot be undone.`}
+        dialogTitle={t('ARCHIVE_IVR')}
+        dialogMessage={t('ARCHIVE_IVR_CONFIRMATION', { name: deleteTarget?.name ?? '' })}
       />
     </div>
   );

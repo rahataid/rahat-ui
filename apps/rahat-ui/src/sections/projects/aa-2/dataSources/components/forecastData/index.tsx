@@ -109,8 +109,8 @@ const ForeCastData = () => {
               data={data?.data}
               yaxisTitle={`${
                 extractedParams.gaugeForecast === 'riverWatch'
-                  ? 'Water Level'
-                  : 'Rainfall'
+                  ? t('WATER_LEVEL')
+                  : t('RAINFALL')
               } (${unit})`}
               unit={unit}
             />

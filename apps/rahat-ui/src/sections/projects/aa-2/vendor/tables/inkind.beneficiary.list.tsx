@@ -16,6 +16,7 @@ import { useInkindLogsColumn } from '../columns/useInkindlogsColumn';
 import { BeneficiaryType, InKindLog } from '../types';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const INKIND_TYPE_MAP: Record<BeneficiaryType, string> = {
   predefined: 'PRE_DEFINED',
@@ -24,6 +25,7 @@ const INKIND_TYPE_MAP: Record<BeneficiaryType, string> = {
 
 export default function InKindBeneficiaryList() {
   const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
 
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
@@ -137,7 +139,7 @@ export default function InKindBeneficiaryList() {
               activeTab === 'predefined' ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {predefinedData?.meta?.total ?? 0}
+            {formatNum(predefinedData?.meta?.total ?? 0)}
           </Badge>
         </button>
         <button
@@ -154,7 +156,7 @@ export default function InKindBeneficiaryList() {
               activeTab === 'walkin' ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {walkinData?.meta?.total ?? 0}
+            {formatNum(walkinData?.meta?.total ?? 0)}
           </Badge>
         </button>
       </div>

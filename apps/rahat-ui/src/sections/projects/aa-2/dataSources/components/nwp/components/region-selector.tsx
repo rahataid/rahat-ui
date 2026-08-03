@@ -16,15 +16,15 @@ export function RegionSelector({
 }: RegionSelectorProps) {
   const t = useTranslations('AA_PROJECT');
   const regions: { value: RegionType; label: string }[] = [
-    { value: 'province', label: 'Province' },
-    { value: 'district', label: 'District' },
+    { value: 'province', label: t('PROVINCE') },
+    { value: 'district', label: t('DISTRICT') },
     { value: 'municipality', label: t('MUNICIPALITY') },
   ];
 
   return (
     <Card className="p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-50 rounded-sm">
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Region Type
+        {t('REGION_TYPE')}
       </label>
       <select
         value={selectedRegion}

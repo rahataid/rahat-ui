@@ -95,7 +95,7 @@ export const useTriggerStatementTableColumns = () => {
     },
     {
       accessorKey: 'triggeredAt',
-      header: 'Triggered At',
+      header: t('TRIGGERED_AT'),
       cell: ({ row }) => {
         const triggeredAt = row.getValue('triggeredAt') as string;
         if (triggeredAt) {
@@ -106,7 +106,7 @@ export const useTriggerStatementTableColumns = () => {
     },
     {
       accessorKey: 'triggeredBy',
-      header: 'Triggered By',
+      header: t('TRIGGERED_BY'),
       cell: ({ row }) => {
         const triggeredBy = row.getValue('triggeredBy') as string;
         if (triggeredBy) {
@@ -117,7 +117,7 @@ export const useTriggerStatementTableColumns = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (

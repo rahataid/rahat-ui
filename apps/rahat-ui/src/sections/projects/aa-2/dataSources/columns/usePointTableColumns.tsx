@@ -10,11 +10,12 @@ interface UsePointTableColumnsProps {
 
 export const usePointTableColumns = ({ unit }: UsePointTableColumnsProps) => {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
-      header: 'Date',
+      header: tg('DATE'),
       cell: ({ row }) => {
         const dateTime = row.getValue('datetime') as string;
         const { formatted } = convertToLocalTimeOrMillisecond(

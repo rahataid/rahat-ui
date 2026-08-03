@@ -21,6 +21,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useUploadFile, useIvrTemplateUpdate, useIvrTestCall } from '@rahat-ui/query';
 import { Link, Copy, Check, Globe, Phone, ExternalLink } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ExportModalProps {
   open: boolean;
@@ -38,6 +39,7 @@ export default function ExportModal({
   onExported,
 }: ExportModalProps) {
   const { id: projectUUID } = useParams();
+  const t = useTranslations('AA_PROJECT');
   const [ipfsLink, setIpfsLink] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -114,9 +116,9 @@ export default function ExportModal({
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Export IVR Flow</DialogTitle>
+          <DialogTitle>{t('EXPORT_IVR_FLOW')}</DialogTitle>
           <DialogDescription>
-            Download your IVR flow as JSON, copy a link, or send to a webhook.
+            {t('EXPORT_IVR_FLOW_DESCRIPTION')}
           </DialogDescription>
         </DialogHeader>
 
@@ -126,25 +128,25 @@ export default function ExportModal({
               className="w-full data-[state=active]:bg-white gap-2"
               value="link"
             >
-              <Link className="w-4 h-4" /> Copy Link
+              <Link className="w-4 h-4" /> {t('COPY_LINK')}
             </TabsTrigger>
             <TabsTrigger
               className="w-full data-[state=active]:bg-white gap-2"
               value="webhook"
             >
-              <Globe className="w-4 h-4" /> Webhook
+              <Globe className="w-4 h-4" /> {t('WEBHOOK')}
             </TabsTrigger>
             <TabsTrigger
               className="w-full data-[state=active]:bg-white gap-2"
               value="test"
             >
-              <Phone className="w-4 h-4" /> Test Call
+              <Phone className="w-4 h-4" /> {t('TEST_CALL')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="link" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              Generate a permanent IPFS link to your IVR flow JSON
+              {t('GENERATE_PERMANENT_IPFS_LINK')}
             </p>
             <Button
               variant="default"
@@ -157,12 +159,12 @@ export default function ExportModal({
               ) : (
                 <Link className="w-4 h-4" />
               )}
-              {isGenerating ? 'Generating...' : 'Generate Link'}
+              {isGenerating ? t('GENERATING') : t('GENERATE_LINK')}
             </Button>
 
             {ipfsLink && (
               <div className="border rounded-sm p-3 space-y-2">
-                <Label>IPFS Link</Label>
+                <Label>{t('IPFS_LINK')}</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     value={ipfsLink}
@@ -173,7 +175,7 @@ export default function ExportModal({
                     size="icon"
                     variant="outline"
                     onClick={handleCopyLink}
-                    title="Copy link"
+                    title={t('COPY_LINK')}
                     className="rounded-sm"
                   >
                     {copiedLink ? (
@@ -186,7 +188,7 @@ export default function ExportModal({
                     size="icon"
                     variant="outline"
                     asChild
-                    title="Open link"
+                    title={t('OPEN_LINK')}
                     className="rounded-sm"
                   >
                     <a
@@ -202,7 +204,7 @@ export default function ExportModal({
             )}
 
             <div className="space-y-2">
-              <Label>JSON Content</Label>
+              <Label>{t('JSON_CONTENT')}</Label>
               <div className="rounded-sm border overflow-hidden">
                 <textarea
                   className="w-full h-40 p-3 text-xs font-mono bg-card resize-none focus:outline-none"
@@ -215,31 +217,31 @@ export default function ExportModal({
 
           <TabsContent value="webhook" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              Send the IVR flow data to an external endpoint
+              {t('SEND_IVR_FLOW_TO_ENDPOINT')}
             </p>
             <div className="space-y-2">
-              <Label>Webhook URL</Label>
+              <Label>{t('WEBHOOK_URL')}</Label>
               <Input placeholder="https://example.com/webhook" />
             </div>
             <Button variant="default" className="w-full gap-2 rounded-sm">
               <Globe className="w-4 h-4" />
-              Send to Webhook
+              {t('SEND_TO_WEBHOOK')}
             </Button>
           </TabsContent>
 
           <TabsContent value="test" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              Send a test call to experience your IVR flow in real-time
+              {t('SEND_TEST_CALL_DESCRIPTION')}
             </p>
             <div className="space-y-2">
-              <Label>Phone Number</Label>
+              <Label>{t('PHONE_NUMBER')}</Label>
               <Input
-                placeholder="Enter phone number"
+                placeholder={t('ENTER_PHONE_NUMBER')}
                 value={testPhone}
                 onChange={(e) => setTestPhone(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Standard call rates may apply depending on your provider
+                {t('STANDARD_CALL_RATES_MAY_APPLY')}
               </p>
             </div>
             <Button
@@ -253,7 +255,7 @@ export default function ExportModal({
               ) : (
                 <Phone className="w-4 h-4" />
               )}
-              {isSending ? 'Sending...' : 'Send Test Call'}
+              {isSending ? t('SENDING') : t('SEND_TEST_CALL')}
             </Button>
           </TabsContent>
         </Tabs>

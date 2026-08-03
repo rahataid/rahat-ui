@@ -6,9 +6,12 @@ import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import Back from '../../components/back';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useTranslations } from 'next-intl';
 
 const FundManagementDetails = () => {
   const formatNum = useNumberFormat();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID, fundId } = useParams();
 
   const { data, isLoading } = useSingleGroupReservedFunds(
@@ -36,7 +39,7 @@ const FundManagementDetails = () => {
             <Blocks size={28} strokeWidth={1.5} />
           </div>
           <div>
-            <h1 className="font-medium">No. of Token</h1>
+            <h1 className="font-medium">{t('NO_OF_TOKEN')}</h1>
             <p className="text-xl text-primary font-semibold">
               {formatNum(data?.numberOfTokens)}
             </p>
@@ -46,12 +49,12 @@ const FundManagementDetails = () => {
       {/* PROJECT INFO */}
       <div className="col-span-4 rounded bg-card p-4 shadow mt-4 h-60">
         <div>
-          <p className="font-medium">Fund Management</p>
+          <p className="font-medium">{tg('FUND_MANAGEMENT')}</p>
         </div>
         <div className="flex items-center flex-wrap mt-2 gap-10 md:gap-32">
           <div>
             <p className="font-light text-muted-foreground">
-              Beneficiary Group
+              {tg('BENEFICIARY_GROUP')}
             </p>
             <div className="flex items-center gap-1">
               <p className="font-normal text-primary ">{data?.name}</p>

@@ -2,8 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useState, useMemo } from 'react';
-import { format } from 'date-fns';
 import { Activity, CalendarIcon, Trash2, CloudCheck } from 'lucide-react';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
@@ -70,6 +70,7 @@ function DatePicker({
   setDate: (val: Date | null) => void;
 }) {
   const t = useTranslations('AA_PROJECT');
+  const formatDate = useDateFormat();
   return (
     <div className="flex items-center">
       <Popover>
@@ -81,7 +82,7 @@ function DatePicker({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
+            {date ? formatDate(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>

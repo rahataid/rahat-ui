@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Loader2, Send } from 'lucide-react';
@@ -70,6 +71,7 @@ export function DisburseModal({
 }) {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const router = useRouter();
   const recordsListPath = `/projects/aa/${projectUUID}/group-cash-transfer?tab=gctManagementList`;
   const confirmDisburse = useConfirmDisburseGroupCashTransfer(projectUUID);
@@ -126,7 +128,7 @@ export function DisburseModal({
   const summaryRows: [string, string][] = [
     [t('GROUP_NAME_COL'), group?.name || '—'],
     [t('AMOUNT_COL'), amountFmt],
-    [t('PHONE_COL'), group?.phone || '—'],
+    [t('PHONE_COL'), formatPhone(group?.phone) || '—'],
     [t('ACCOUNT_HOLDER_NAME'), group?.bankDetails?.accountName || '—'],
     [t('BANK_ACCOUNT_NUMBER'), group?.bankDetails?.accountNumber || '—'],
   ];

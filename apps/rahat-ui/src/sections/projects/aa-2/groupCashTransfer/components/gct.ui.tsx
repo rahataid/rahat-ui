@@ -1,14 +1,28 @@
 'use client';
 
-import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { GCT_STATUS_STYLE } from '../types/gct.types';
 
-export function fmt(date?: string | null): string {
+export function fmt(date?: string | null, locale = 'en'): string {
   if (!date) return '—';
   try {
-    return format(new Date(date), 'MMM dd, yyyy  hh:mm a');
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return date;
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    };
+    const neOptions =
+      locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
+    return new Intl.DateTimeFormat(
+      locale === 'ne' ? 'ne-NP' : locale,
+      neOptions,
+    ).format(d);
   } catch {
     return date;
   }

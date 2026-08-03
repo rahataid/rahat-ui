@@ -72,6 +72,12 @@ export default function CommunicationsChartsStats({
                     },
                   ]}
                   colors={['#43A047', '#E53935']}
+                  options={{
+                    tooltip: {
+                      fillSeriesColor: true,
+                      y: { formatter: (val: number) => formatNum(val) },
+                    },
+                  }}
                 />
               </div>
             </div>
@@ -145,6 +151,12 @@ export default function CommunicationsChartsStats({
                     },
                   ]}
                   colors={['#43A047', '#E53935']}
+                  options={{
+                    tooltip: {
+                      fillSeriesColor: true,
+                      y: { formatter: (val: number) => formatNum(val) },
+                    },
+                  }}
                 />
               </div>
             </div>

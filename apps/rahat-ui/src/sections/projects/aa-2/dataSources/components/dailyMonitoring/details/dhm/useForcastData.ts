@@ -1,17 +1,19 @@
 import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
 export function useForecastData(data: any[]) {
+  const t = useTranslations('AA_PROJECT');
   const floodForecast = useMemo(() => {
     const item = data?.find(
       (d) => d.forecast === '3 Days Flood Forecast Bulletin',
     );
     if (!item) return [];
     return [
-      { label: 'Today', value: item.today },
-      { label: 'Tomorrow', value: item.tomorrow },
-      { label: 'The Day After Tomorrow', value: item.dayAfterTomorrow },
+      { label: t('TODAY'), value: item.today },
+      { label: t('TOMORROW'), value: item.tomorrow },
+      { label: t('DAY_AFTER_TOMORROW'), value: item.dayAfterTomorrow },
     ];
-  }, [data]);
+  }, [data, t]);
 
   const rainfallForecast = useMemo(() => {
     const item = data?.find(
@@ -19,24 +21,24 @@ export function useForecastData(data: any[]) {
     );
     if (!item) return [];
     return [
-      { label: 'Today Afternoon', value: item.todayAfternoon },
-      { label: 'Today Night', value: item.todayNight },
-      { label: 'Tomorrow Afternoon', value: item.tomorrowAfternoon },
-      { label: 'Tomorrow Night', value: item.tomorrowNight },
+      { label: t('TODAY_AFTERNOON'), value: item.todayAfternoon },
+      { label: t('TODAY_NIGHT'), value: item.todayNight },
+      { label: t('TOMORROW_AFTERNOON'), value: item.tomorrowAfternoon },
+      { label: t('TOMORROW_NIGHT'), value: item.tomorrowNight },
       {
-        label: 'Day After Tomorrow Afternoon',
+        label: t('DAY_AFTER_TOMORROW_AFTERNOON'),
         value: item.dayAfterTomorrowAfternoon,
       },
-      { label: 'Day After Tomorrow Night', value: item.dayAfterTomorrowNight },
+      { label: t('DAY_AFTER_TOMORROW_NIGHT'), value: item.dayAfterTomorrowNight },
     ];
-  }, [data]);
+  }, [data, t]);
 
   const realtimeMonitoring = useMemo(() => {
     const item = data?.find(
       (d) => d.forecast === 'Realtime Monitoring (River Watch)',
     );
-    return item ? [{ label: 'Water Level', value: item.waterLevel }] : [];
-  }, [data]);
+    return item ? [{ label: t('WATER_LEVEL'), value: item.waterLevel }] : [];
+  }, [data, t]);
 
   const realtimeRainfall = useMemo(() => {
     const item = data?.find((d) => d.forecast === 'Realtime Rainfall');
@@ -73,11 +75,11 @@ export function useForecastData(data: any[]) {
     const item = data?.find((d) => d.forecast === 'NWP');
     if (!item) return [];
     return [
-      { label: '24 hours', value: item.hours24NWP },
-      { label: '42 hours', value: item.hours48 },
-      { label: '72 hours', value: item.hours72NWP },
+      { label: `24 ${t('HOURS')}`, value: item.hours24NWP },
+      { label: `42 ${t('HOURS')}`, value: item.hours48 },
+      { label: `72 ${t('HOURS')}`, value: item.hours72NWP },
     ];
-  }, [data]);
+  }, [data, t]);
 
   return {
     floodForecast,

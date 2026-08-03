@@ -29,12 +29,12 @@ import {
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Eye, Package, ArrowUpDown, CloudDownloadIcon } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { format } from 'date-fns';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
@@ -95,6 +95,7 @@ function formatLogs(raw: any[]): LogRow[] {
 export default function InkindAllocationDetail() {
   const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const formatNum = useNumberFormat();
   const { id, allocationId } = useParams();
   const projectUUID = id as UUID;
@@ -315,7 +316,7 @@ export default function InkindAllocationDetail() {
       cell: ({ row }) => (
         <span className="text-sm">
           {row.original.redeemedAt
-            ? format(new Date(row.original.redeemedAt), 'MMM dd, yyyy, hh:mm a')
+            ? formatDate(row.original.redeemedAt, 'MMM dd, yyyy, hh:mm a')
             : '—'}
         </span>
       ),

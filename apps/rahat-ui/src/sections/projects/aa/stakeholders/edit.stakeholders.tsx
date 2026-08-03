@@ -219,7 +219,7 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
               />
             </div>
             <div className="flex justify-end">
-              <Button>Update Stakeholders</Button>
+              <Button>{t('UPDATE_STAKEHOLDERS')}</Button>
             </div>
           </div>
         </div>

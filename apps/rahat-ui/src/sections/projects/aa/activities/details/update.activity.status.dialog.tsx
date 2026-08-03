@@ -176,7 +176,7 @@ export default function UpdateActivityStatusDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleDialogSubmit)}>
             <DialogHeader>
-              <DialogTitle>Update Status</DialogTitle>
+              <DialogTitle>{t('UPDATE_STATUS')}</DialogTitle>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
               <FormField

@@ -15,6 +15,8 @@ import {
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import { UUID } from 'crypto';
 import { Expand, Pencil, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -53,6 +55,8 @@ export default function GrievanceDetailSplitView({
   grievance: initialGrievance,
 }: IProps) {
   const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
+  const formatPhone = usePhoneFormat();
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const labelMap: Record<string, string> = {
@@ -215,8 +219,8 @@ export default function GrievanceDetailSplitView({
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 <TooltipText
                   side="bottom"
-                  title={grievance?.reporterContact || tg('N_A')}
-                  content={grievance?.reporterContact || tg('N_A')}
+                  title={formatPhone(grievance?.reporterContact) || tg('N_A')}
+                  content={formatPhone(grievance?.reporterContact) || tg('N_A')}
                   contentClassName="w-68"
                 />
               </span>
@@ -230,8 +234,8 @@ export default function GrievanceDetailSplitView({
                 <TooltipText
                   side="bottom"
                   contentClassName="w-68"
-                  title={grievance?.id || tg('N_A')}
-                  content={grievance?.id || tg('N_A')}
+                  title={formatDigits(grievance?.id) || tg('N_A')}
+                  content={formatDigits(grievance?.id) || tg('N_A')}
                 />
               </span>
             </div>

@@ -28,7 +28,7 @@ import {
   Hash,
   Layers,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
@@ -166,6 +166,7 @@ export default function InkindOverview() {
 
   const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const formatNum = useNumberFormat();
 
   const sortedMovements = [...movements].sort(
@@ -387,7 +388,7 @@ export default function InkindOverview() {
                           )}
                           <p className="text-xs text-muted-foreground mt-0.5">
                             {movement.createdAt
-                              ? format(
+                              ? formatDate(
                                   new Date(movement.createdAt),
                                   'dd MMM yyyy, HH:mm',
                                 )
@@ -494,7 +495,7 @@ export default function InkindOverview() {
                         label={tv('DATE_TIME')}
                         value={
                           selectedMovement.createdAt
-                            ? format(
+                            ? formatDate(
                                 new Date(selectedMovement.createdAt),
                                 'dd MMM yyyy, HH:mm:ss',
                               )

@@ -187,6 +187,12 @@ export default function GrievanceOverview({
               chart={{
                 series: typeChartData,
                 colors: typeColors,
+                options: {
+                  tooltip: {
+                    fillSeriesColor: true,
+                    y: { formatter: (val: number) => formatNum(val) },
+                  },
+                },
               }}
               custom={true}
               projectAA={true}
@@ -208,6 +214,12 @@ export default function GrievanceOverview({
               chart={{
                 series: statusChartData,
                 colors: statusColors,
+                options: {
+                  tooltip: {
+                    fillSeriesColor: true,
+                    y: { formatter: (val: number) => formatNum(val) },
+                  },
+                },
               }}
               custom={true}
               projectAA={true}

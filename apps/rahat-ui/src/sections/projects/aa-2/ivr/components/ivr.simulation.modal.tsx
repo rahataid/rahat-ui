@@ -6,6 +6,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { X, Play, Pause, PhoneOff } from 'lucide-react';
 import { IvrFlow } from '../types/ivr.flow.types';
 import { findNodeById, flattenOptions, DIAL_PAD } from '../utils/utils';
+import { useTranslations } from 'next-intl';
 
 interface SimulationModalProps {
   flow: IvrFlow;
@@ -16,6 +17,8 @@ export default function SimulationModal({
   flow,
   onClose,
 }: SimulationModalProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const [currentNodeId, setCurrentNodeId] = useState<string>(flow.rootMenu.id);
   const [callLog, setCallLog] = useState<string[]>([
     `[START] ${flow.rootMenu.label}`,
@@ -142,9 +145,9 @@ export default function SimulationModal({
       <div className="bg-background rounded-sm shadow-lg w-full max-w-[clamp(320px,90vw,500px)]">
         <div className="flex justify-between items-start border-b p-4">
           <div>
-            <h2 className="text-lg font-bold">IVR Flow Simulator</h2>
+            <h2 className="text-lg font-bold">{t('IVR_FLOW_SIMULATOR')}</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Test your IVR flow by navigating through it.
+              {t('TEST_YOUR_IVR_FLOW')}
             </p>
           </div>
           <Button
@@ -165,7 +168,7 @@ export default function SimulationModal({
               className="rounded-sm"
               onClick={handleReset}
             >
-              Reset
+              {tg('RESET')}
             </Button>
             {!callEnded && (
               <div className="flex gap-2">
@@ -190,33 +193,33 @@ export default function SimulationModal({
                   onClick={handleHangup}
                 >
                   <PhoneOff className="w-4 h-4 mr-1" />
-                  End Call
+                  {t('END_CALL')}
                 </Button>
               </div>
             )}
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="font-medium">Status</span>
+            <span className="font-medium">{tg('STATUS')}</span>
             <Badge
               className={
                 callEnded ? 'bg-red-500 text-white' : 'bg-black text-white'
               }
             >
-              {callEnded ? 'Ended' : 'Active'}
+              {callEnded ? t('ENDED') : tg('ACTIVE')}
             </Badge>
           </div>
 
           <div className="rounded-sm border bg-muted/30 p-3 space-y-3">
             <div>
               <div className="text-xs text-muted-foreground mb-1">
-                Current Prompt
+                {t('CURRENT_PROMPT')}
               </div>
-              <div className="text-sm truncate">{audioUrl || 'No prompt'}</div>
+              <div className="text-sm truncate">{audioUrl || t('NO_PROMPT')}</div>
             </div>
             <div className="flex justify-between items-center">
               <Badge variant="outline">
-                {audioError ? 'Failed' : isPlaying ? 'Playing' : 'Ready'}
+                {audioError ? t('FAILED') : isPlaying ? t('PLAYING') : t('READY')}
               </Badge>
               {lastDigit && <Badge variant="secondary">{lastDigit}</Badge>}
             </div>
@@ -245,7 +248,7 @@ export default function SimulationModal({
           )}
 
           <div>
-            <div className="font-medium mb-2">Call History</div>
+            <div className="font-medium mb-2">{t('CALL_HISTORY')}</div>
             <div className="rounded-sm border bg-muted/30 p-3 max-h-40 overflow-y-auto space-y-2">
               {callLog.map((log, index) => (
                 <div
@@ -257,11 +260,11 @@ export default function SimulationModal({
                   }`}
                 >
                   {log
-                    .replace('[START]', 'Started call')
-                    .replace('[INPUT]', 'Pressed')
-                    .replace('[BACK]', 'Back')
-                    .replace('[INVALID]', 'Invalid')
-                    .replace('[END]', 'Call ended')}
+                    .replace('[START]', t('STARTED_CALL'))
+                    .replace('[INPUT]', t('PRESSED'))
+                    .replace('[BACK]', tg('BACK'))
+                    .replace('[INVALID]', t('INVALID'))
+                    .replace('[END]', t('CALL_ENDED'))}
                 </div>
               ))}
             </div>
@@ -274,7 +277,7 @@ export default function SimulationModal({
               className="rounded-sm"
               onClick={onClose}
             >
-              Close
+              {tg('CLOSE')}
             </Button>
           </div>
         </div>

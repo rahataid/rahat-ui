@@ -57,7 +57,7 @@ export default function PhaseDetailView() {
         <h1 className="font-semibold text-lg mb-2">{phaseDetail?.name}</h1>
         <div className="flex gap-2">
           <div className="grid gap-2 px-4 py-2 bg-card rounded w-1/4">
-            <h1 className="text-muted-foreground">Mandatory Triggers</h1>
+            <h1 className="text-muted-foreground">{t('MANDATORY_TRIGGERS')}</h1>
             <p>
               Total:{' '}
               {
@@ -81,7 +81,7 @@ export default function PhaseDetailView() {
             </p>
           </div>
           <div className="grid gap-2 px-4 py-2 bg-card rounded w-1/4">
-            <h1 className="text-muted-foreground">Optional Triggers</h1>
+            <h1 className="text-muted-foreground">{t('OPTIONAL_TRIGGERS')}</h1>
             <p>
               Total:{' '}
               {
@@ -112,7 +112,7 @@ export default function PhaseDetailView() {
             value="triggers"
             className="w-52 bg-card border data-[state=active]:border-primary"
           >
-            Triggers List
+            {t('TRIGGERS_LIST')}
           </TabsTrigger>
           <TabsTrigger
             value="activities"
@@ -124,7 +124,7 @@ export default function PhaseDetailView() {
         <TabsContent value="triggers">
           <div className="bg-card p-4 rounded">
             <div className="flex justify-between items-center mb-2">
-              <h1 className="font-semibold text-lg">Triggers List</h1>
+              <h1 className="font-semibold text-lg">{t('TRIGGERS_LIST')}</h1>
               <div className="flex gap-2 items-center">
                 {/* Add Trigger Statements Btn */}
                 <AddButton

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -40,6 +41,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 export default function GctList() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const formatNum = useNumberFormat();
   const router = useRouter();
   const { id } = useParams();
@@ -125,7 +127,7 @@ export default function GctList() {
         accessorKey: 'phone',
         header: tGlobal('PHONE'),
         cell: ({ row }) => (
-          <TruncatedCell text={row.getValue('phone') || '—'} maxLength={18} />
+          <TruncatedCell text={formatPhone(row.getValue('phone')) || '—'} maxLength={18} />
         ),
       },
       {

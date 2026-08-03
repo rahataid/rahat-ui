@@ -27,6 +27,7 @@ import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
 import SimulationModal from './ivr.simulation.modal';
 import ExportModal from './ivr.export.modal';
+import { useTranslations } from 'next-intl';
 
 function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
   function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
@@ -58,6 +59,8 @@ interface FlowBuilderProps {
 export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   const router = useRouter();
   const { id } = useParams();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
 
   const flows = useIvrFlowStore((s) => s.flows);
   const loadFlow = useIvrFlowStore((s) => s.loadFlow);
@@ -207,10 +210,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     return (
       <div className="h-[calc(100vh-80px)] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground">IVR flow not found</p>
+          <p className="text-muted-foreground">{t('IVR_FLOW_NOT_FOUND')}</p>
           <Button variant="outline" className="mt-4" onClick={handleBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to IVR list
+            {t('BACK_TO_IVR_LIST')}
           </Button>
         </div>
       </div>
@@ -219,7 +222,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
 
   const displayName = templateDetail?.name || flow.name;
   const displayDescription =
-    templateDetail?.description || flow.description || 'IVR Flow Builder';
+    templateDetail?.description || flow.description || t('IVR_FLOW_BUILDER');
 
   return (
     <div className="h-[calc(100vh-80px)] flex flex-col">
@@ -251,7 +254,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? tg('SAVING') : tg('SAVE')}
             </Button>
             <Button
               variant="outline"
@@ -260,7 +263,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               onClick={handleExport}
             >
               <Download className="w-4 h-4" />
-              Export
+              {tg('EXPORT')}
             </Button>
           </div>
         </div>
@@ -273,7 +276,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               <div className="flex flex-col items-center gap-3">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
-                  Loading flow data...
+                  {t('LOADING_FLOW_DATA')}
                 </span>
               </div>
             </div>
@@ -296,14 +299,14 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
                 className="w-full gap-2 data-[state=active]:bg-white"
               >
                 <Settings className="w-4 h-4" />
-                Node Editor
+                {t('NODE_EDITOR')}
               </TabsTrigger>
               <TabsTrigger
                 value="json"
                 className="w-full gap-2 data-[state=active]:bg-white"
               >
                 <Code className="w-4 h-4" />
-                JSON Preview
+                {t('JSON_PREVIEW')}
               </TabsTrigger>
             </TabsList>
 
@@ -324,10 +327,9 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
                         <Settings className="w-6 h-6 text-muted-foreground/60" />
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-medium">No Node Selected</p>
+                        <p className="text-sm font-medium">{t('NO_NODE_SELECTED')}</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Select a menu item from the tree to edit its
-                          properties
+                          {t('SELECT_MENU_ITEM_TO_EDIT')}
                         </p>
                       </div>
                     </div>
@@ -368,8 +370,8 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         isConfirmationDialogOpen={!!pendingNodeId}
         onCancel={handleDismissDialog}
         onConfirm={handleDismissDialog}
-        dialogTitle="Unsaved Changes"
-        dialogMessage="Please save or cancel your changes in the editor before switching to another node."
+        dialogTitle={t('UNSAVED_CHANGES')}
+        dialogMessage={t('UNSAVED_CHANGES_MESSAGE')}
       />
     </div>
   );

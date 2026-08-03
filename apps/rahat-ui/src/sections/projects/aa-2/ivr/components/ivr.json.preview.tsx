@@ -5,12 +5,15 @@ import { IvrFlow } from '../types/ivr.flow.types';
 import { buildApiPayload } from '../utils/utils';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Copy, Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface JSONPreviewPanelProps {
   flow: IvrFlow;
 }
 
 export default function JSONPreviewPanel({ flow }: JSONPreviewPanelProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const [copied, setCopied] = useState(false);
 
   const jsonData = useMemo(() => buildApiPayload(flow), [flow]);
@@ -28,7 +31,7 @@ export default function JSONPreviewPanel({ flow }: JSONPreviewPanelProps) {
   return (
     <div className="flex flex-col h-full gap-3 p-3 md:p-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-[clamp(13px,1.2vw,16px)]">IVR Flow JSON</h3>
+        <h3 className="font-semibold text-[clamp(13px,1.2vw,16px)]">{t('IVR_FLOW_JSON')}</h3>
         <Button
           size="sm"
           variant="outline"
@@ -40,7 +43,7 @@ export default function JSONPreviewPanel({ flow }: JSONPreviewPanelProps) {
           ) : (
             <Copy className="w-4 h-4" />
           )}
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? tg('COPIED_CAP') : tg('COPY')}
         </Button>
       </div>
       <div className="flex-1 overflow-hidden rounded-sm border">

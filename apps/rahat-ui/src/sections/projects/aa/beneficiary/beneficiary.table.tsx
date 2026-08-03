@@ -54,6 +54,7 @@ export type Transaction = {
 
 function BeneficiaryDetailTableView() {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const route = useRouter();
   const id = useParams();
   // TODO: Refactor it
@@ -128,11 +129,11 @@ function BeneficiaryDetailTableView() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 <Settings2 className="mr-2 h-4 w-5" />
-                View
+                {tg('VIEW')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+              <DropdownMenuLabel>{tg('TOGGLE_COLUMNS')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {table
                 .getAllColumns()

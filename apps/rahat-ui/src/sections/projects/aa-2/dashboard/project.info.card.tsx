@@ -40,7 +40,7 @@ export default function ProjectInfoCard({ project }: IProps) {
           <p className="text-sm">{project?.extras?.location || '-'}</p>
         </div>
         {/* <div className="text-right">
-          <h1 className="text-muted-foreground text-sm">Hazard Typsssse</h1>
+          <h1 className="text-muted-foreground text-sm">Hazard Type</h1>
           <p className="text-sm">{hazardType || '-'}</p>
         </div> */}
         <div className="">

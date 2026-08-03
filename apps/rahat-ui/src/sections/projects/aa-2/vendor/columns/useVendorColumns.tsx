@@ -6,12 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { IProjectVendor } from '../types';
 import { useAAVendorsStore } from '@rahat-ui/query';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 export const useProjectVendorTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const { vendors, setVendorDetails } = useAAVendorsStore((state) => ({
     vendors: state.vendors,
     setVendorDetails: state.setVendorDetails,
@@ -33,7 +35,7 @@ export const useProjectVendorTableColumns = () => {
     {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
-      cell: ({ row }) => <div>{row.getValue('phone') || tg('N_A')}</div>,
+      cell: ({ row }) => <div>{formatPhone(row.getValue('phone')) || tg('N_A')}</div>,
     },
     {
       accessorKey: 'location',

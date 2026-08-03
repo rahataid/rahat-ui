@@ -16,7 +16,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { cn } from '@rahat-ui/shadcn/src';
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { CalendarIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -70,6 +70,7 @@ export default function DailyMonitoringTableFilters({
 }: IProps) {
   const tGlobal = useTranslations('GLOBAL');
   const t = useTranslations('AA_PROJECT');
+  const formatDate = useDateFormat();
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">
@@ -96,7 +97,7 @@ export default function DailyMonitoringTableFilters({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
+            {date ? formatDate(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>

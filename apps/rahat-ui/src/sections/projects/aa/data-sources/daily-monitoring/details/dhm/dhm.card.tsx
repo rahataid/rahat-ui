@@ -19,10 +19,10 @@ export default function DHMCard({ data }: IProps) {
         );
         if (result?.length) {
           return [
-            { label: 'Today', value: result[0]?.today },
-            { label: 'Tomorrow', value: result[0]?.tomorrow },
+            { label: t('TODAY'), value: result[0]?.today },
+            { label: t('TOMORROW'), value: result[0]?.tomorrow },
             {
-              label: 'The Day After Tomorrow',
+              label: t('DAY_AFTER_TOMORROW'),
               value: result[0]?.dayAfterTomorrow,
             },
           ];
@@ -38,24 +38,24 @@ export default function DHMCard({ data }: IProps) {
         if (result?.length) {
           return [
             {
-              label: 'Today Afternoon',
+              label: t('TODAY_AFTERNOON'),
               value: result[0]?.todayAfternoon,
             },
-            { label: 'Today Night', value: result[0]?.todayNight },
+            { label: t('TODAY_NIGHT'), value: result[0]?.todayNight },
             {
-              label: 'Tomorrow Afternoon',
+              label: t('TOMORROW_AFTERNOON'),
               value: result[0]?.tomorrowAfternoon,
             },
             {
-              label: 'Tomorrow Night',
+              label: t('TOMORROW_NIGHT'),
               value: result[0]?.tomorrowNight,
             },
             {
-              label: 'Day After Tomorrow Afternoon',
+              label: t('DAY_AFTER_TOMORROW_AFTERNOON'),
               value: result[0]?.dayAfterTomorrowAfternoon,
             },
             {
-              label: 'Day After Tomorrow Night',
+              label: t('DAY_AFTER_TOMORROW_NIGHT'),
               value: result[0]?.dayAfterTomorrowNight,
             },
           ];
@@ -69,7 +69,7 @@ export default function DHMCard({ data }: IProps) {
           (d: any) => d.forecast === 'Realtime Monitoring (River Watch)',
         );
         if (result?.length) {
-          return [{ label: 'Water Level', value: result[0]?.waterLevel }];
+          return [{ label: t('WATER_LEVEL'), value: result[0]?.waterLevel }];
         } else return [];
       } else return [];
     }, [data]);
@@ -95,9 +95,9 @@ export default function DHMCard({ data }: IProps) {
         const result = data.filter((d: any) => d.forecast === 'NWP');
         if (result?.length) {
           return [
-            { label: '24 hours', value: result[0]?.hours24NWP },
-            { label: '42 hours', value: result[0]?.hours48 },
-            { label: '72 hours', value: result[0]?.hours72NWP },
+            { label: `24 ${t('HOURS')}`, value: result[0]?.hours24NWP },
+            { label: `42 ${t('HOURS')}`, value: result[0]?.hours48 },
+            { label: `72 ${t('HOURS')}`, value: result[0]?.hours72NWP },
           ];
         } else return [];
       } else return [];

@@ -206,7 +206,9 @@ export const downloadBlob = (blob: Blob, filename: string) => {
  */
 export const parseUploadedSheet = (
   binaryString: string | ArrayBuffer,
-): { headers: string[]; rows: string[][] } | { error: string } => {
+):
+  | { headers: string[]; rows: string[][] }
+  | { errorKey: string; errorParams?: Record<string, string> } => {
   const wb = XLSX.read(binaryString, { type: 'binary' });
   const ws = wb.Sheets[wb.SheetNames[0]];
   const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as string[][];
@@ -216,7 +218,7 @@ export const parseUploadedSheet = (
   );
 
   if (filteredData.length === 0) {
-    return { error: 'No data found in the file' };
+    return { errorKey: 'NO_DATA_FOUND_IN_FILE' };
   }
 
   const fileHeaders = filteredData[0].map((h) => h?.toString() ?? '');
@@ -230,12 +232,13 @@ export const parseUploadedSheet = (
   );
   if (missing) {
     return {
-      error: `File is missing the required column: "${missing}". Download the sample file for reference.`,
+      errorKey: 'FILE_IS_MISSING_REQUIRED_FIELD',
+      errorParams: { fieldName: missing },
     };
   }
 
   if (filteredData.length === 1) {
-    return { error: 'No activities found in the file' };
+    return { errorKey: 'NO_ACTIVITIES_FOUND_IN_FILE' };
   }
 
   return { headers: fileHeaders, rows: filteredData.slice(1) };

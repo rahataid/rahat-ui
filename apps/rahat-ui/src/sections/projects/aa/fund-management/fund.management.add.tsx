@@ -136,7 +136,7 @@ export default function AddFundManagementView() {
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
       <div className="w-full rounded bg-card p-4 shadow mb-4">
-        <h1 className="text-lg font-semibold mb-6">Reservation Stats</h1>
+        <h1 className="text-lg font-semibold mb-6">{t('RESERVATION_STATS')}</h1>
         {isLoadingReservationStats ? (
           <Loader />
         ) : (
@@ -155,7 +155,7 @@ export default function AddFundManagementView() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleReserveTokenToGroup)}>
           <div className="shadow-md p-4 rounded-sm bg-card grid gap-2">
-            <h1 className="text-lg font-semibold mb-4">Reserve Funds</h1>
+            <h1 className="text-lg font-semibold mb-4">{t('RESERVE_FUNDS')}</h1>
             <FormField
               control={form.control}
               name="title"
@@ -209,7 +209,7 @@ export default function AddFundManagementView() {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>No. of Tokens</FormLabel>
+                    <FormLabel>{t('NO_OF_TOKENS')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -260,7 +260,7 @@ export default function AddFundManagementView() {
               >
                 Cancel
               </Button>
-              <Button type="submit">Add Fund Management</Button>
+              <Button type="submit">{t('ADD_FUND_MANAGEMENT')}</Button>
             </div>
           </div>
         </form>

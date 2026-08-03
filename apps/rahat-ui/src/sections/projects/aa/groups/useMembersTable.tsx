@@ -3,10 +3,12 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 export default function useMembersTableColumn() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const columns: ColumnDef<IStakeholdersItem>[] = [
     {
       id: 'select',
@@ -38,7 +40,7 @@ export default function useMembersTableColumn() {
     {
       accessorKey: 'phone',
       header: tg('PHONE'),
-      cell: ({ row }) => <div>{row.getValue('phone') || tg('N_A')}</div>,
+      cell: ({ row }) => <div>{formatPhone(row.getValue('phone')) || tg('N_A')}</div>,
     },
     {
       accessorKey: 'email',

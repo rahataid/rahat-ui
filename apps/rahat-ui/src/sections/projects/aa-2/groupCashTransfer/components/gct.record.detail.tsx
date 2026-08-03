@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -31,6 +31,7 @@ import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
 export default function GctRecordDetail() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
+  const locale = useLocale();
   const statusLabel = (s: string) => {
     const map: Record<string, string> = {
       NOT_STARTED: t('NOT_STARTED'),
@@ -164,9 +165,18 @@ export default function GctRecordDetail() {
               </Badge>
             </div>
             <DetailRow label={t('CREATED_BY_COL')} value={record?.createdBy} />
-            <DetailRow label={tGlobal('CREATED_AT')} value={fmt(record?.createdAt)} />
-            <DetailRow label={t('UPDATED_AT')} value={fmt(record?.updatedAt)} />
-            <DetailRow label={t('DISBURSED_AT')} value={fmt(record?.disbursedAt)} />
+            <DetailRow
+              label={tGlobal('CREATED_AT')}
+              value={fmt(record?.createdAt, locale)}
+            />
+            <DetailRow
+              label={t('UPDATED_AT')}
+              value={fmt(record?.updatedAt, locale)}
+            />
+            <DetailRow
+              label={t('DISBURSED_AT')}
+              value={fmt(record?.disbursedAt, locale)}
+            />
           </CardContent>
         </Card>
 

@@ -6,11 +6,12 @@ import { useTranslations } from 'next-intl';
 
 export const useHourlyAndDailyTableColumns = () => {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
-      header: 'Date',
+      header: tg('DATE'),
       cell: ({ row }) => {
         const getDateAndTime = row.getValue('datetime') as string;
         const { formatted } = convertToLocalTimeOrMillisecond(
@@ -24,12 +25,12 @@ export const useHourlyAndDailyTableColumns = () => {
     {
       accessorKey: 'min',
       header: t('MIN'),
-      cell: ({ row }) => <div>{formatNum(row.getValue('min')) || 'N/A'}</div>,
+      cell: ({ row }) => <div>{formatNum(row.getValue('min')) || tg('N_A')}</div>,
     },
     {
       accessorKey: 'max',
       header: t('MAX'),
-      cell: ({ row }) => <div>{formatNum(row.getValue('max')) || 'N/A'}</div>,
+      cell: ({ row }) => <div>{formatNum(row.getValue('max')) || tg('N_A')}</div>,
     },
     {
       accessorKey: 'value',

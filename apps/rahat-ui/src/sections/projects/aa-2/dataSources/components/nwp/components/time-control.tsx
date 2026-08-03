@@ -6,8 +6,8 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
-import { format } from 'date-fns';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 interface TimeControlProps {
   currentTime: Date;
@@ -26,6 +26,7 @@ export function TimeControl({
 }: TimeControlProps) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -137,7 +138,7 @@ export function TimeControl({
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium">
               {availableTimes.length > 0
-                ? format(currentTime, 'MMMM dd, yyyy HH:mm')
+                ? formatDate(currentTime, 'MMMM dd, yyyy HH:mm')
                 : 'Loading...'}
             </div>
             <div className="text-xs text-muted-foreground">

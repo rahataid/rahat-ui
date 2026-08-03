@@ -117,8 +117,8 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
               subLabel={t('HEAVY_RAINFALL_SUBLABEL')}
               placeholder={t('SELECT_STATUS')}
               selectItems={[
-                { value: 'Yes', label: 'Yes' },
-                { value: 'No', label: 'No' },
+                { value: 'Yes', label: t('YES') },
+                { value: 'No', label: t('NO') },
               ]}
             />
             <SelectFormField
@@ -195,7 +195,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             <SelectFormField
               form={form}
               name={fieldName('tomorrow')}
-              label="Tomorrow"
+              label={t('TOMORROW')}
               placeholder={t('SELECT_STATUS')}
               selectItems={floodForecastSelectItems}
             />
@@ -334,7 +334,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
   return (
     <div className="border border-dashed rounded-sm p-4 my-8">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-md font-semibold">Data Source Reporting</h1>
+        <h1 className="text-md font-semibold">{t('DATA_SOURCE_REPORTING')}</h1>
         <div className="p-0.5 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
           <X size={16} strokeWidth={2.5} onClick={onClose} />
         </div>

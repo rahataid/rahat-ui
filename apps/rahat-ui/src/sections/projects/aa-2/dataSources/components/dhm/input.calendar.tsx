@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 type IProps = {
   selectedDate: Date | undefined;
@@ -21,6 +21,7 @@ export default function InputCalendar({
   setSelectedDate,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const formatDate = useDateFormat();
   const today = new Date();
   const fourteenDaysAgo = new Date();
   fourteenDaysAgo.setHours(0, 0, 0, 0);
@@ -30,7 +31,7 @@ export default function InputCalendar({
       <PopoverTrigger asChild>
         <Button variant={'outline'} className="w-52 pl-3 text-left font-normal">
           <span className="text-muted-foreground">
-            {selectedDate ? format(selectedDate, 'PPP') : t('PICK_A_DATE')}
+            {selectedDate ? formatDate(selectedDate, 'PPP') : t('PICK_A_DATE')}
           </span>
           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
         </Button>

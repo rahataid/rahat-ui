@@ -216,7 +216,7 @@ export default function DHMContent({ data, dhmDangerLevel }: any) {
 
         {/* <div className="bg-card p-4 rounded col-span-2">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="font-semibold text-lg">Bulletin Today</h1>
+          <h1 className="font-semibold text-lg">{t('BULLETIN_TODAY')}</h1>
           <DHMBulletinDialog />
         </div>
         <div className="grid grid-cols-2 gap-4">

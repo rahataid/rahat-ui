@@ -14,6 +14,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   const [showAll, setShowAll] = React.useState(false);
@@ -53,6 +54,7 @@ export const useProjectStakeholdersTableColumns = (
   const { id } = useParams();
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const removeStakeholder = useDeleteStakeholders();
 
   const handleDelete = async (uuid: string, stakeholderName: string) => {
@@ -89,7 +91,7 @@ export const useProjectStakeholdersTableColumns = (
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
@@ -194,6 +196,7 @@ export const useProjectStakeholdersTableColumns = (
 export const useProjectStakeholdersGroupTableColumns = () => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const router = useRouter();
   const { id, groupId } = useParams();
 
@@ -209,7 +212,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
@@ -285,6 +288,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
 export const useProjectSelectStakeholdersTableColumns = () => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
@@ -323,7 +327,7 @@ export const useProjectSelectStakeholdersTableColumns = () => {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {

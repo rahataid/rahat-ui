@@ -26,6 +26,7 @@ import { AudioPreviewPlayer } from './ivr.audio.preview';
 import AudioUrlTab from './editor/ivr.audio.url.tab';
 import AudioRecordTab from './editor/ivr.audio.record.tab';
 import AudioUploadTab from './editor/ivr.audio.upload.tab';
+import { useTranslations } from 'next-intl';
 
 interface NodeEditorPanelProps {
   flow: IvrFlow;
@@ -40,6 +41,8 @@ export default function NodeEditorPanel({
   onUpdateNode,
   onEditingChange,
 }: NodeEditorPanelProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const selectedItem = useMemo(
     () => findNodeById(flow.rootMenu, selectedNodeId),
     [flow.rootMenu, selectedNodeId],
@@ -95,7 +98,7 @@ export default function NodeEditorPanel({
       <div className="h-full flex items-center justify-center text-muted-foreground p-6">
         <div className="text-center">
           <Pencil className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-          Select a menu item to edit
+          {t('SELECT_MENU_ITEM_TO_EDIT_SHORT')}
         </div>
       </div>
     );
@@ -135,7 +138,7 @@ export default function NodeEditorPanel({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-base md:text-lg font-semibold">
-              Node Properties
+              {t('NODE_PROPERTIES')}
             </h3>
           </div>
           <Button
@@ -145,22 +148,22 @@ export default function NodeEditorPanel({
             className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
           >
             <Pencil className="w-4 h-4" />
-            Edit
+            {tg('EDIT')}
           </Button>
         </div>
 
         <Separator />
 
         <div className="border rounded-sm p-4 space-y-3">
-          <h4 className="font-semibold">Audio Prompt</h4>
+          <h4 className="font-semibold">{t('AUDIO_PROMPT')}</h4>
           {selectedItem.prompt ? (
             <AudioPreviewPlayer
               src={selectedItem.prompt}
               fileName={
                 selectedItem.prompt.startsWith('blob:')
-                  ? 'Recorded file'
+                  ? t('RECORDED_FILE')
                   : selectedItem.prompt.startsWith('data:')
-                  ? 'Uploaded file'
+                  ? t('UPLOADED_FILE')
                   : selectedItem.prompt
               }
               hideActions
@@ -168,23 +171,23 @@ export default function NodeEditorPanel({
             />
           ) : (
             <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-sm text-sm text-yellow-900">
-              No prompt set — click Edit to add one
+              {t('NO_PROMPT_SET_CLICK_EDIT')}
             </div>
           )}
         </div>
 
         <div className="border rounded-sm p-4 space-y-4">
-          <h4 className="font-semibold">Options</h4>
+          <h4 className="font-semibold">{t('OPTIONS')}</h4>
           <Separator />
           {isDigitItem && (
             <div className="flex items-center justify-between">
-              <span className="text-sm">Digit Key</span>
+              <span className="text-sm">{t('DIGIT_KEY')}</span>
               <span className="font-mono">{selectedItem.digit || '—'}</span>
             </div>
           )}
           <div className="flex items-center justify-between">
-            <span className="text-sm">Hangup After Action</span>
-            <span>{selectedItem.hangup ? 'Yes' : 'No'}</span>
+            <span className="text-sm">{t('HANGUP_AFTER_ACTION')}</span>
+            <span>{selectedItem.hangup ? tg('YES') : tg('NO')}</span>
           </div>
         </div>
       </div>
@@ -196,7 +199,7 @@ export default function NodeEditorPanel({
       {breadcrumb}
 
       <div className="flex items-center justify-between">
-        <h3 className="text-base md:text-lg font-semibold">Edit Node</h3>
+        <h3 className="text-base md:text-lg font-semibold">{t('EDIT_NODE')}</h3>
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -204,7 +207,7 @@ export default function NodeEditorPanel({
             className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             onClick={handleCancel}
           >
-            Cancel
+            {tg('CANCEL')}
           </Button>
           <Button
             variant="default"
@@ -212,7 +215,7 @@ export default function NodeEditorPanel({
             className="rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             onClick={handleSave}
           >
-            Save
+            {tg('SAVE')}
           </Button>
         </div>
       </div>
@@ -225,7 +228,7 @@ export default function NodeEditorPanel({
             <div className="flex items-center gap-3">
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                Uploading audio...
+                {t('UPLOADING_AUDIO')}
               </span>
             </div>
           </div>
@@ -236,7 +239,7 @@ export default function NodeEditorPanel({
             isUploadPending && 'blur-sm pointer-events-none',
           )}
         >
-          <h4 className="font-semibold">Audio Prompt</h4>
+          <h4 className="font-semibold">{t('AUDIO_PROMPT')}</h4>
           <Tabs
             value={promptMode}
             onValueChange={(value) =>
@@ -248,19 +251,19 @@ export default function NodeEditorPanel({
                 className="w-full data-[state=active]:bg-white gap-2"
                 value="url"
               >
-                <Link2 className="w-4 h-4" /> URL
+                <Link2 className="w-4 h-4" /> {t('URL')}
               </TabsTrigger>
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white gap-2"
                 value="record"
               >
-                <Mic className="w-4 h-4" /> Record
+                <Mic className="w-4 h-4" /> {t('RECORD')}
               </TabsTrigger>
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white gap-2"
                 value="upload"
               >
-                <Upload className="w-4 h-4" /> Upload
+                <Upload className="w-4 h-4" /> {t('UPLOAD')}
               </TabsTrigger>
             </TabsList>
             <TabsContent value="url">
@@ -287,11 +290,11 @@ export default function NodeEditorPanel({
       </div>
 
       <div className="border rounded-sm p-6 space-y-4">
-        <h4 className="font-semibold">Options</h4>
+        <h4 className="font-semibold">{t('OPTIONS')}</h4>
         <Separator />
         {isDigitItem ? (
           <div className="flex items-center justify-between">
-            <span className="text-sm">Digit</span>
+            <span className="text-sm">{t('DIGIT')}</span>
             <Select
               value={digitNumber || '1'}
               onValueChange={(value) => {
@@ -314,17 +317,17 @@ export default function NodeEditorPanel({
           </div>
         ) : (
           <div className="flex items-center justify-between">
-            <span className="text-sm">Label</span>
+            <span className="text-sm">{tg('LABEL')}</span>
             <Input
               value={selectedItem.label}
               onChange={(e) => handleUpdate({ label: e.target.value })}
-              placeholder="Menu item label"
+              placeholder={t('MENU_ITEM_LABEL')}
               className="w-48"
             />
           </div>
         )}
         <div className="flex items-center justify-between">
-          <span className="text-sm">End call after this action</span>
+          <span className="text-sm">{t('END_CALL_AFTER_THIS_ACTION')}</span>
           <Switch
             checked={selectedItem.hangup}
             onCheckedChange={(checked) => handleUpdate({ hangup: checked })}

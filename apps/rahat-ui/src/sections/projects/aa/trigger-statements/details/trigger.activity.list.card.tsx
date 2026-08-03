@@ -1,10 +1,12 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function TriggerActivityListCard({ triggerDetail }: any) {
   const router = useRouter();
   const { id: projectID } = useParams();
+  const t = useTranslations('AA_PROJECT');
 
   const navigateToDetails = (activityId: string) => {
     router.push(`/projects/aa/${projectID}/activities/${activityId}`);
@@ -12,7 +14,7 @@ export default function TriggerActivityListCard({ triggerDetail }: any) {
 
   return (
     <div className="bg-card p-4 rounded">
-      <h1 className="font-semibold text-lg">Activity List</h1>
+      <h1 className="font-semibold text-lg">{t('ACTIVITY_LIST')}</h1>
       <div>
         {triggerDetail?.activities?.map((item: any) => {
           return (

@@ -1,25 +1,29 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 export default function useDetailsBeneficiaryTableColumn() {
+  const t = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => row.getValue('name') || '-',
     },
     {
       accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => row.getValue('phone') || '-',
+      header: t('PHONE_NUMBER'),
+      cell: ({ row }) => formatPhone(row.getValue('phone')) || '-',
     },
     {
       accessorKey: 'email',
-      header: 'Email Address',
+      header: t('EMAIL_ADDRESS'),
       cell: ({ row }) => row.getValue('email') || '-',
     },
     {
       accessorKey: 'location',
-      header: 'Location',
+      header: t('LOCATION'),
       cell: ({ row }) => row.getValue('location') || '-',
     },
   ];

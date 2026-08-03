@@ -31,10 +31,12 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import StakeholdersTableFilters from '../../../stakeholders/stakeholders.table.filters';
 import Back from '../../../../components/back';
 import { toast } from 'react-toastify';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function StakeholdersGroupEdit() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
@@ -151,7 +153,7 @@ export default function StakeholdersGroupEdit() {
         <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
           <div className="flex gap-4 mb-6 items-center">
             <Back path={groupDetailPath} />
-            <h1 className="text-lg font-semibold">Edit : Stakeholders Group</h1>
+            <h1 className="text-lg font-semibold">{t('EDIT_STAKEHOLDERS_GROUP')}</h1>
           </div>
           <div className="shadow-md p-4 rounded-sm bg-card">
             <div className="grid gap-4">
@@ -178,16 +180,16 @@ export default function StakeholdersGroupEdit() {
                 <div className="flex gap-4 items-end">
                   {selected ? (
                     <Badge className="rounded h-10 px-4 py-2 w-max">
-                      {selected} - member selected
+                      {t('MEMBER_SELECTED', { selected: formatDigits(selected) })}
                     </Badge>
                   ) : null}
                   <Button
                     type="button"
                     onClick={() => setShowMembers(!showMembers)}
                   >
-                    {showMembers ? 'Hide Members' : 'Show Members'}
+                    {showMembers ? t('HIDE_MEMBERS') : t('SHOW_MEMBERS')}
                   </Button>
-                  <Button type="submit">Update Stakeholders Groups</Button>
+                  <Button type="submit">{t('UPDATE_STAKEHOLDERS_GROUPS')}</Button>
                 </div>
               </div>
             </div>

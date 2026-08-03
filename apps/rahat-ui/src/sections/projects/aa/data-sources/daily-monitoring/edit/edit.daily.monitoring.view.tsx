@@ -240,7 +240,7 @@ export default function EditDailyMonitoring() {
         <div className="h-add p-4 bg-secondary">
           <Card className="rounded-sm">
             <CardHeader>
-              <CardTitle className="text-lg">Edit Daily Monitoring</CardTitle>
+              <CardTitle className="text-lg">{t('EDIT_DAILY_MONITORING')}</CardTitle>
             </CardHeader>
             <ScrollArea className="h-[calc(100vh-238px)]">
               <CardContent>

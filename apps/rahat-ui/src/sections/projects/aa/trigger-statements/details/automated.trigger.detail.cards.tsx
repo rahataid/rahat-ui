@@ -6,7 +6,7 @@ export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
   const t = useTranslations('AA_PROJECT');
   const detailCardData = [
     {
-      title: 'Status',
+      title: t('STATUS'),
       content: (
         <Badge
           className={
@@ -21,7 +21,7 @@ export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
       icon: <Info size={25} />,
     },
     {
-      title: 'Source',
+      title: t('SOURCE'),
       content: (
         <p className="text-xl text-primary font-semibold">
           {triggerDetail?.dataSource}
@@ -30,7 +30,7 @@ export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
       icon: <Text size={25} />,
     },
     {
-      title: 'Phase',
+      title: t('PHASE'),
       content: (
         <p className="text-xl text-primary font-semibold">
           {triggerDetail?.phase?.name}
@@ -39,7 +39,7 @@ export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
       icon: <SignalHigh size={25} />,
     },
     {
-      title: 'Probability',
+      title: t('PROBABILITY'),
       content: (
         <p className="text-xl text-primary font-semibold">
           {`${triggerDetail?.triggerStatement?.probability}%`}

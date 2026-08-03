@@ -252,7 +252,11 @@ export default function VerificationPayout() {
         link.click();
       })
       .catch((error) => {
-        toast.error(tg('ERROR_DOWNLOADING_FILE') + error);
+        toast.error(
+          tg('ERROR_DOWNLOADING_FILE') +
+            ': ' +
+            (error instanceof Error ? error.message : String(error)),
+        );
       });
   };
 

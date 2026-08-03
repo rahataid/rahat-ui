@@ -62,7 +62,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
         <form>
           <div className="mt-4 grid gap-4">
             <FormItem className="w-full">
-              <FormLabel>Selected Phase</FormLabel>
+              <FormLabel>{t('SELECTED_PHASE')}</FormLabel>
               <FormControl>
                 <Input type="text" value={selectedPhase.name} disabled />
               </FormControl>
@@ -75,7 +75,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
-                      <FormLabel>Trigger Title</FormLabel>
+                      <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
@@ -127,7 +127,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormLabel>River Basin</FormLabel>
+                        <FormLabel>{t('RIVER_BASIN')}</FormLabel>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder={t('SELECT_RIVER_BASIN')} />
@@ -155,7 +155,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Threshold Level</FormLabel>
+                    <FormLabel>{t('THRESHOLD_LEVEL')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"

@@ -226,7 +226,7 @@ export default function AddStakeholders() {
               >
                 Cancel
               </Button>
-              <Button>Create Stakeholders</Button>
+              <Button>{t('CREATE_STAKEHOLDERS')}</Button>
             </div>
           </div>
         </div>

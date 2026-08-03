@@ -97,19 +97,19 @@ export function ForecastDataSection({
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.minLeadTimeDays}
             </p>
-            <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
+            <p className="font-medium text-sm/6">{t('MINIMUM_LEAD_TIME_DAYS')}</p>
           </div>
           <div className="p-3 text-center border rounded">
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.maxLeadTimeDays}
             </p>
-            <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
+            <p className="font-medium text-sm/6">{t('MAXIMUM_LEAD_TIME_DAYS')}</p>
           </div>
           <div className="p-3 text-center border rounded">
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.probability}
             </p>
-            <p className="font-medium text-sm/6">Forecast Probability</p>
+            <p className="font-medium text-sm/6">{t('FORECAST_PROBABILITY')}</p>
           </div>
         </div>
       )}
@@ -121,7 +121,7 @@ export function ForecastDataSection({
           </p>
           <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
             <TriangleAlert size={16} strokeWidth={2.5} color="red" />
-            Danger Level
+            {t('DANGER_LEVEL')}
           </p>
         </div>
       )}
@@ -133,7 +133,7 @@ export function ForecastDataSection({
           </p>
           <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
             <TriangleAlert size={16} strokeWidth={2.5} color="orange" />
-            Warning Level
+            {t('WARNING_LEVEL')}
           </p>
         </div>
       )}
@@ -158,7 +158,7 @@ export function ForecastDataSection({
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.forecastStatus}
             </p>
-            <p className="font-medium text-sm/6">Forecast Status</p>
+            <p className="font-medium text-sm/6">{t('FORECAST_STATUS')}</p>
           </div>
         </div>
       )} */}

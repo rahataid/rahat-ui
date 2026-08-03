@@ -25,11 +25,7 @@ import {
 import { useIvrTemplateCreate } from '@rahat-ui/query';
 import { Plus } from 'lucide-react';
 import { UUID } from 'crypto';
-
-const CreateIVRFormSchema = z.object({
-  name: z.string().min(1, 'IVR name is required'),
-  description: z.string().optional(),
-});
+import { useTranslations } from 'next-intl';
 
 interface CreateIVRDialogProps {
   projectUUID: UUID;
@@ -42,6 +38,13 @@ export default function CreateIVRDialog({
 }: CreateIVRDialogProps) {
   const [open, setOpen] = useState(false);
   const createIvr = useIvrTemplateCreate();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+
+  const CreateIVRFormSchema = z.object({
+    name: z.string().min(1, t('IVR_NAME_IS_REQUIRED')),
+    description: z.string().optional(),
+  });
 
   const form = useForm<z.infer<typeof CreateIVRFormSchema>>({
     resolver: zodResolver(CreateIVRFormSchema),
@@ -70,14 +73,14 @@ export default function CreateIVRDialog({
       <DialogTrigger asChild>
         <Button size="sm" className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]">
           <Plus className="w-4 h-4" />
-          New IVR
+          {t('NEW_IVR')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[clamp(320px,90vw,500px)] rounded-sm">
         <DialogHeader>
-          <DialogTitle>Create New IVR</DialogTitle>
+          <DialogTitle>{t('CREATE_NEW_IVR')}</DialogTitle>
           <DialogDescription>
-            Create a new IVR flow to start building your call menu
+            {t('CREATE_NEW_IVR_FLOW_DESCRIPTION')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -87,9 +90,9 @@ export default function CreateIVRDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>IVR Name</FormLabel>
+                  <FormLabel>{t('IVR_NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Customer Support" {...field} />
+                    <Input placeholder={t('IVR_NAME_PLACEHOLDER')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -100,10 +103,10 @@ export default function CreateIVRDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (optional)</FormLabel>
+                  <FormLabel>{t('DESCRIPTION_OPTIONAL')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Brief description of this IVR"
+                      placeholder={t('BRIEF_DESCRIPTION_OF_THIS_IVR')}
                       {...field}
                     />
                   </FormControl>
@@ -120,7 +123,7 @@ export default function CreateIVRDialog({
                 disabled={createIvr.isPending}
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                {tg('CANCEL')}
               </Button>
               <Button
                 type="submit"
@@ -128,7 +131,7 @@ export default function CreateIVRDialog({
                 className="rounded-sm"
                 disabled={createIvr.isPending}
               >
-                {createIvr.isPending ? 'Creating...' : 'Create'}
+                {createIvr.isPending ? tg('CREATING') : tg('CREATE')}
               </Button>
             </div>
           </form>

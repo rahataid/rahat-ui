@@ -100,14 +100,14 @@ export default function ConfigurePhase({
 
   return (
     <>
-      <h1 className="text-lg font-semibold mb-6">Configure Phase</h1>
+      <h1 className="text-lg font-semibold mb-6">{t('CONFIGURE_PHASE')}</h1>
       <div className="bg-secondary p-2 pr-0 rounded">
         <ScrollArea className="h-[calc(100vh-385px)] pr-2">
           <div className="grid gap-4">
             <Card>
               <CardHeader className="pb-1">
                 <CardTitle className="text-md font-medium">
-                  Mandatory Triggers
+                  {t('MANDATORY_TRIGGERS')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -136,7 +136,7 @@ export default function ConfigurePhase({
             <Card>
               <CardHeader className="pb-1">
                 <CardTitle className="text-md font-medium">
-                  Optional Triggers
+                  {t('OPTIONAL_TRIGGERS')}
                 </CardTitle>
               </CardHeader>
               <CardContent>

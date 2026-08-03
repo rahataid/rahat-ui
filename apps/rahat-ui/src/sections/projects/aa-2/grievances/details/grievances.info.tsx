@@ -7,6 +7,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import { useTranslations } from 'next-intl';
 import {
   Calendar,
@@ -29,6 +30,7 @@ type IProps = {
 const GrievanceInfo = ({ grievance }: IProps) => {
   const formatDate = useDateFormat();
   const formatDigits = useLabelDigits();
+  const formatPhone = usePhoneFormat();
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   return (
@@ -211,8 +213,8 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
                 <TooltipText
-                  title={grievance?.reporterContact || tg('N_A')}
-                  content={grievance?.reporterContact || tg('N_A')}
+                  title={formatPhone(grievance?.reporterContact) || tg('N_A')}
+                  content={formatPhone(grievance?.reporterContact) || tg('N_A')}
                   contentClassName="w-68"
                 />
               </div>

@@ -155,6 +155,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                 title={chart.title}
                 series={chart.series}
                 colors={chart.colors}
+                options={chartAxOptions}
               />
             ),
         )}

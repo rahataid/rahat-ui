@@ -1,46 +1,55 @@
 export const weatherServices = [
   {
     title: 'Three-Day Weather Bulletin',
+    titleKey: 'THREE_DAY_WEATHER_BULLETIN',
     subtitle: 'DHM',
     href: 'https://dhm.gov.np/mfd/#/weather/three-days-bulletin',
   },
   {
     title: 'Special Weather Updates',
+    titleKey: 'SPECIAL_WEATHER_UPDATES',
     subtitle: 'DHM',
     href: 'https://dhm.gov.np/mfd/#/weather/pages/special-weather',
   },
   {
     title: 'Observation Map View',
+    titleKey: 'OBSERVATION_MAP_VIEW',
     subtitle: 'DHM',
     href: 'https://dhm.gov.np/mfd/#/weather/observation/map-view',
   },
   {
     title: 'Numerical Weather Prediction',
+    titleKey: 'NUMERICAL_WEATHER_PREDICTION',
     subtitle: 'DHM',
     href: 'https://dhm.gov.np/mfd/#/nwp',
   },
   {
     title: 'River Watch',
+    titleKey: 'RIVER_WATCH',
     subtitle: 'DHM',
     href: 'https://hydrology.gov.np/#/river_watch?_k=rjpw8o',
   },
   {
     title: 'Basin-Wise Monitoring',
+    titleKey: 'BASIN_WISE_MONITORING',
     subtitle: 'DHM',
     href: 'https://hydrology.gov.np/#/basin?_k=vsxic3',
   },
   {
     title: 'NCMRWF BIMSTEC Forecasts',
+    titleKey: 'NCMRWF_BIMSTEC_FORECASTS',
     subtitle: 'NCMRWF',
     href: 'https://nwp.ncmrwf.gov.in/bimstec-charts/nepal',
   },
   {
     title: 'NCMRWF Forecast Dashboard',
+    titleKey: 'NCMRWF_FORECAST_DASHBOARD',
     subtitle: 'NCMRWF',
     href: 'https://nwp.ncmrwf.gov.in/dashboard/',
   },
   {
     title: 'Zoom Earth',
+    titleKey: 'ZOOM_EARTH',
     subtitle: 'Satellite View',
     href: 'https://zoom.earth/maps/satellite/#view=28.794406,80.416358,9.18z',
   },

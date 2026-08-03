@@ -67,7 +67,7 @@ export default function AddCommunicationForm({
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
-    let groups = <SelectLabel>Please select group type</SelectLabel>;
+    let groups = <SelectLabel>{t('PLEASE_SELECT_GROUP_TYPE')}</SelectLabel>;
     switch (selectedGroupType) {
       case 'STAKEHOLDERS':
         groups = stakeholdersGroups.map((group: any) => (

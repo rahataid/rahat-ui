@@ -226,7 +226,7 @@ export default function AddDailyMonitoring() {
         <div className="h-add p-4 bg-secondary">
           <Card className="rounded-sm">
             <CardHeader>
-              <CardTitle className="text-lg">Add Daily Monitoring</CardTitle>
+              <CardTitle className="text-lg">{t('ADD_DAILY_MONITORING')}</CardTitle>
             </CardHeader>
             <ScrollArea className="h-[calc(100vh-238px)]">
               <CardContent>

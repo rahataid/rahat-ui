@@ -127,7 +127,7 @@ export default function DailyMonitoringDetailView() {
       <div className="mb-4 flex justify-between items-center">
         <div className="flex gap-4 items-center">
           <Back path={dailyMonitoringListPath.concat('?backFromDetail=true')} />
-          <h1 className="font-semibold text-xl">Bulletin Details</h1>
+          <h1 className="font-semibold text-xl">{t('BULLETIN_DETAILS')}</h1>
         </div>
         <div className="flex gap-4 items-center">
           <EditButton path={dailyMonitoringEditPath} />

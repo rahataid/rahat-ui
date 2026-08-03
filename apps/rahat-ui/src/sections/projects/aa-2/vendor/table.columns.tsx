@@ -25,6 +25,7 @@ import { toast } from 'react-toastify';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
 interface ITableColumnProps {
@@ -42,6 +43,7 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const router = useRouter();
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
 
   const handleViewClick = (vendorId: string) => {
     setPaginationToLocalStorage(`${PaginationTableName.VENDOR_LIST}`);
@@ -63,7 +65,7 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
     {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
-      cell: ({ row }) => <div>{row.getValue('phone') || tg('N_A')}</div>,
+      cell: ({ row }) => <div>{formatPhone(row.getValue('phone')) || tg('N_A')}</div>,
     },
     {
       accessorKey: 'registeredApps',

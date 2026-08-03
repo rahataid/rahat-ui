@@ -29,7 +29,7 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
@@ -43,6 +43,7 @@ import { useTranslations } from 'next-intl';
 export default function DailyMonitoringListView() {
   const t = useTranslations('AA_PROJECT');
   const tGlobal = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -117,7 +118,7 @@ export default function DailyMonitoringListView() {
                 !date && 'text-muted-foreground',
               )}
             >
-              {date ? format(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
+              {date ? formatDate(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
               <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>

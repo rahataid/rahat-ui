@@ -113,8 +113,10 @@ export default function BulkUploadActivities() {
         const bstr = evt.target?.result;
         if (!bstr) return;
         const parsed = parseUploadedSheet(bstr);
-        if ('error' in parsed) {
-          toast.error(parsed.error, { autoClose: 5000 });
+        if ('errorKey' in parsed) {
+          toast.error(t(parsed.errorKey as any, parsed.errorParams), {
+            autoClose: 5000,
+          });
           return;
         }
         setHeaders(parsed.headers);

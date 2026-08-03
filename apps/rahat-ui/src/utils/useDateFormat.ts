@@ -13,7 +13,12 @@ type DateFormatPattern =
   | 'MMMM d, yyyy, h:mm:ss'
   | 'hh:mm a'
   | 'MMMM dd, yyyy'
-  | 'MMMM d, yyyy, h:mm:ss a'
+  | 'MMM d, yyyy, h:mm a'
+  | 'MMM dd, yyyy, hh:mm a'
+  | 'MMMM dd, yyyy HH:mm'
+  | 'PPP'
+  | 'dd MMM yyyy, HH:mm'
+  | 'dd MMM yyyy, HH:mm:ss'
   | string;
 
 const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
@@ -85,15 +90,6 @@ const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
     month: 'long',
     day: '2-digit',
   },
-  'MMMM d, yyyy, h:mm:ss a': {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true,
-  },
   'MMM d, yyyy, h:mm a': {
     year: 'numeric',
     month: 'short',
@@ -101,6 +97,44 @@ const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
+  },
+  'MMM dd, yyyy, hh:mm a': {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  },
+  'MMMM dd, yyyy HH:mm': {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  },
+  PPP: {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  },
+  'dd MMM yyyy, HH:mm': {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  },
+  'dd MMM yyyy, HH:mm:ss': {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
   },
 };
 

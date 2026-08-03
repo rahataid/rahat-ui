@@ -618,7 +618,7 @@ export default function AddActivities() {
                               (p) => p.uuid === (phaseId || field.value),
                             )?.name
                           }
-                          placeholder="Select phase"
+                          placeholder={t('SELECT_PHASE')}
                           searchPlaceholder="Search phases..."
                           emptyMessage="No phase found."
                           disabled={!!phaseId}

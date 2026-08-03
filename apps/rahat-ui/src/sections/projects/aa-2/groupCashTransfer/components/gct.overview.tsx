@@ -139,6 +139,12 @@ export default function GctOverview() {
               pieData={treasuryData}
               colors={TREASURY_COLORS}
               isLoading={false}
+              options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  y: { formatter: (val: number) => formatNum(val) },
+                },
+              }}
             />
           </div>
         </div>
@@ -171,13 +177,19 @@ export default function GctOverview() {
           </div>
           <p className="text-xs text-muted-foreground mb-3">
             {t('TOTAL_RECORDS')}{' '}
-            <span className="font-medium text-foreground">{totalRecords}</span>
+            <span className="font-medium text-foreground">{formatNum(totalRecords)}</span>
           </p>
           <div className="w-full aspect-square max-h-[260px]">
             <DynamicPieChart
               pieData={statusData}
               colors={STATUS_COLORS}
               isLoading={false}
+              options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  y: { formatter: (val: number) => formatNum(val) },
+                },
+              }}
             />
           </div>
         </div>

@@ -49,12 +49,12 @@ export default function BeneficiaryDetailTableView({
     () => [
       {
         accessorKey: 'topic',
-        header: 'Topic',
+        header: t('TOPIC'),
         cell: ({ row }) => <div>{row?.original?.__typename}</div>,
       },
       {
         accessorKey: 'timeStamp',
-        header: 'Time Stamp',
+        header: t('TIME_STAMP'),
         cell: ({ row }) => (
           <div>
             {' '}
@@ -64,7 +64,7 @@ export default function BeneficiaryDetailTableView({
       },
       {
         accessorKey: 'transactionHash',
-        header: 'Transaction Hash',
+        header: t('TRANSACTION_HASH'),
         cell: ({ row }) => (
           <div>
             {' '}
@@ -80,7 +80,7 @@ export default function BeneficiaryDetailTableView({
       },
       {
         accessorKey: 'amount',
-        header: 'Amount',
+        header: t('AMOUNT'),
         cell: ({ row }) => {
           return <div> {formatNum(row.getValue('amount'))}</div>;
         },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,6 +13,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 export default function InkindTransactionDetail() {
   const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
+  const locale = useLocale();
   const formatNum = useNumberFormat();
   const { id, allocationId } = useParams();
   const router = useRouter();
@@ -103,7 +104,10 @@ export default function InkindTransactionDetail() {
               copyable
               link={true}
             />
-            <InfoItem label={tv('REDEEMED_AT')} value={formatDate(redeemedAt)} />
+            <InfoItem
+              label={tv('REDEEMED_AT')}
+              value={formatDate(redeemedAt, locale)}
+            />
             <InfoItem label={tv('VENDOR_NAME')} value={vendorName || undefined} />
             <InfoItem
               label={tv('VENDOR_WALLET_ADDRESS')}

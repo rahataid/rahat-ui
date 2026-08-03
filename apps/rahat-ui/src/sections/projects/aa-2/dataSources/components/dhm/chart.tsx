@@ -1,13 +1,34 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import dynamic from 'next/dynamic';
-import { format } from 'date-fns';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { roundValue } from '../aws/utils/color.utils';
+
+const CHART_DATE_PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
+  'h:mm a': { hour: 'numeric', minute: '2-digit', hour12: true },
+  'MMMM d': { month: 'long', day: 'numeric' },
+  'MMM d': { month: 'short', day: 'numeric' },
+  PPp: {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  },
+};
+
+const formatChartDate = (value: string | number, pattern: string, locale: string) => {
+  const options = CHART_DATE_PATTERN_MAP[pattern] ?? CHART_DATE_PATTERN_MAP['h:mm a'];
+  const neOptions = locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
+  return new Intl.DateTimeFormat(locale === 'ne' ? 'ne-NP' : locale, neOptions).format(
+    new Date(value),
+  );
+};
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -33,6 +54,7 @@ const TimeSeriesChart = ({
   yAxisFormatter,
 }: ChartProps) => {
   const t = useTranslations('AA_PROJECT');
+  const locale = useLocale();
   const formatNum = useNumberFormat();
   const resolvedYaxisTitle = yaxisTitleProp ?? t('WATER_LEVEL_METERS');
   if (!data || data.length === 0) return null;
@@ -46,7 +68,7 @@ const TimeSeriesChart = ({
   );
 
   const series = keys.map((key) => ({
-    name: key === 'value' ? 'average' : key,
+    name: key === 'value' ? t('AVERAGE') : key,
           data: sortedData.map((d) => {
       const result = convertToLocalTimeOrMillisecond(d.datetime);
       if (typeof result === 'string' || !result) {
@@ -115,7 +137,7 @@ const TimeSeriesChart = ({
         },
       labels: {
         formatter: function (value) {
-          return format(new Date(value), xDateFormat);
+          return formatChartDate(value, xDateFormat, locale);
         },
         rotate: 0,
       },
@@ -146,7 +168,7 @@ const TimeSeriesChart = ({
       shared: false,
       x: {
         formatter: function (value) {
-          return format(new Date(value), 'PPp');
+          return formatChartDate(value, 'PPp', locale);
         },
       },
       y: {

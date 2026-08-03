@@ -56,7 +56,7 @@ export default function TemperatureWatchDetails() {
       {
         icon: RadioTower,
         label: t('STATION'),
-        value: tempInfo?.name || 'Unknown',
+        value: tempInfo?.name || t('UNKNOWN'),
       },
       { icon: Globe, label: t('LATITUDE'), value: tempInfo?.latitude || '--' },
       { icon: Globe, label: t('LONGITUDE'), value: tempInfo?.longitude || '--' },
@@ -83,7 +83,7 @@ export default function TemperatureWatchDetails() {
       tempInfo
         ? [
             {
-              name: tempInfo.name,
+              name: tempInfo.name || t('UNKNOWN'),
               latitude: tempInfo.latitude,
               longitude: tempInfo.longitude,
               stationIndex: tempInfo.stationIndex,

@@ -28,6 +28,7 @@ export default function useIndividualCommonLogsTableColumns(
   type: 'sms' | 'email' | 'voice',
 ) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();
   const formatDate = useDateFormat();
@@ -98,7 +99,12 @@ export default function useIndividualCommonLogsTableColumns(
         const status = row.getValue('sessionStatus') as string;
         const className = getSessionColor(status as string);
 
-        return <Badge className={className}>{t(status.replace(/\s+/g, '_').toUpperCase())}</Badge>;
+        const statusKey = status?.replace(/\s+/g, '_').toUpperCase();
+        return (
+          <Badge className={className}>
+            {statusKey && tg.has(statusKey as never) ? tg(statusKey as never) : status}
+          </Badge>
+        );
       },
     },
     {

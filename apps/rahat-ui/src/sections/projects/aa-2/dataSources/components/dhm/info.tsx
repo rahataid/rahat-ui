@@ -29,6 +29,20 @@ interface InfoProp {
   updatedAt: string;
 }
 
+const STEADY_LABEL_KEYS: Record<string, string> = {
+  STEADY: 'STEADY',
+  RISING: 'RISING',
+  FALLING: 'FALLING',
+};
+
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  'BELOW WARNING LEVEL': 'BELOW_WARNING_LEVEL',
+  WARNING_LEVEL: 'WARNING_LEVEL',
+  WARNING: 'WARNING',
+  DANGER: 'DANGER',
+  DANGER_LEVEL: 'DANGER_LEVEL',
+};
+
 export function Info({ riverWatch, updatedAt }: InfoProp) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
@@ -42,12 +56,12 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
       },
       {
         icon: Globe,
-        label: 'Latitude',
+        label: t('LATITUDE'),
         value: riverWatch?.latitude,
       },
       {
         icon: Globe,
-        label: 'Longitude',
+        label: t('LONGITUDE'),
         value: riverWatch?.longitude,
       },
       {
@@ -57,12 +71,15 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
       },
       {
         icon: MapPin,
-        label: 'District',
+        label: t('DISTRICT'),
         value: riverWatch?.district,
       },
     ],
     [riverWatch],
   );
+
+  const steadyKey = riverWatch?.steady && STEADY_LABEL_KEYS[riverWatch.steady];
+  const statusKey = riverWatch?.status && STATUS_LABEL_KEYS[riverWatch.status];
 
   return (
     <div className="flex justify-between space-x-4">
@@ -75,7 +92,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
             updatedAt={updatedAt}
           />
           <div>
-            <Badge>{riverWatch?.steady}</Badge>
+            <Badge>{steadyKey ? t(steadyKey as any) : riverWatch?.steady}</Badge>
           </div>
         </div>
         <div className="grid grid-cols-5 gap-2">
@@ -112,7 +129,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
           )}
         </p>
         <Badge className={`${renderStatusColor(riverWatch?.status)}`}>
-          {riverWatch?.status}
+          {statusKey ? t(statusKey as any) : riverWatch?.status}
         </Badge>
       </div>
     </div>

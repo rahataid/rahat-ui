@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export const SOURCE_CONFIG = {
   water_level_m: {
@@ -64,7 +65,10 @@ const operatorSchema = z
   .optional();
 
 const valueSchema = z
-  .union([z.coerce.number().finite(), z.literal('')])
+  .preprocess(
+    normalizeNumeralsToNumberPreprocessor,
+    z.union([z.coerce.number().finite(), z.literal('')]),
+  )
   .optional();
 
 type Translator = (key: string, values?: Record<string, any>) => string;

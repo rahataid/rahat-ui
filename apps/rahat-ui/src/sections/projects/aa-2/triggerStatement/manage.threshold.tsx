@@ -30,6 +30,7 @@ import { useEffect, useState } from 'react';
 import { useConfigureThreshold, usePhasesStore } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function ManageThreshold() {
   const t = useTranslations('AA_PROJECT');
@@ -44,14 +45,14 @@ export default function ManageThreshold() {
 
   const FormSchema = z.object({
     requiredMandatoryTriggers: z.preprocess(
-      (val) => Number(val),
+      (val) => Number(normalizeNumeralsToNumberPreprocessor(val)),
       z
         .number({ invalid_type_error: t('PLEASE_ENTER_VALID_NUMBER') })
         .int(t('PLEASE_ENTER_INTEGER'))
         .nonnegative(t('VALUE_CANNOT_BE_NEGATIVE')),
     ),
     requiredOptionalTriggers: z.preprocess(
-      (val) => Number(val),
+      (val) => Number(normalizeNumeralsToNumberPreprocessor(val)),
       z
         .number({ invalid_type_error: t('PLEASE_ENTER_VALID_NUMBER') })
         .int(t('PLEASE_ENTER_INTEGER'))

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 import {
   Form,
   FormControl,
@@ -86,7 +87,10 @@ export default function AddActivities() {
     source: z.string().min(2, { message: t('PLEASE_ENTER_RESPONSIBLE_STATION') }),
     phaseId: z.string().min(1, { message: t('PLEASE_SELECT_PHASE') }),
     categoryId: z.string().min(1, { message: t('PLEASE_SELECT_CATEGORY') }),
-    leadTime: z.string().min(2, { message: t('PLEASE_ENTER_LEAD_TIME') }),
+    leadTime: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(2, { message: t('PLEASE_ENTER_LEAD_TIME') }),
+    ),
     description: z
       .string()
       .optional()

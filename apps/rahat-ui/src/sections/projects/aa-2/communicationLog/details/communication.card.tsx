@@ -25,7 +25,6 @@ import {
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import MessageWithToggle from '../../activities/components/messageWithToggle';
 
@@ -66,6 +65,7 @@ export function CommunicationDetailCard({
   projectId,
 }: CommunicationCardProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { pagination, filters } = usePagination();
   const { data: sessionLogs } = useListSessionLogs(
     activityCommunication?.sessionId,
@@ -152,7 +152,7 @@ export function CommunicationDetailCard({
               <TooltipWrapper
                 tip={`${t('COMMUNICATION_STATUS')}: ${
                   activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
+                    ? tg(activityCommunication.sessionStatus as any)
                     : t('UNKNOWN')
                 }`}
               >
@@ -162,7 +162,7 @@ export function CommunicationDetailCard({
                   )}`}
                 >
                   {activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
+                    ? tg(activityCommunication.sessionStatus as any)
                     : t('UNKNOWN')}
                 </Badge>
               </TooltipWrapper>
@@ -172,13 +172,21 @@ export function CommunicationDetailCard({
               <TooltipWrapper
                 tip={`${t('COMMUNICATION_CHANNEL')}: ${activityCommunication?.transportName}`}
               >
-                <span>{activityCommunication?.transportName}</span>
+                <span>
+                  {activityCommunication?.transportName
+                    ? tg(activityCommunication.transportName as any)
+                    : t('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
                 tip={`${t('GROUP_TYPE')}: ${activityCommunication?.groupType}`}
               >
-                <span>{activityCommunication?.groupType}</span>
+                <span>
+                  {activityCommunication?.groupType
+                    ? tg(activityCommunication.groupType as any)
+                    : t('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper

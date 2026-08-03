@@ -37,7 +37,7 @@ function RiverWatchMap({ coordinates }: any) {
   return (
     <div className="p-4 rounded-sm shadow border">
       <Heading
-        title="Map"
+        title={t('MAP')}
         titleStyle="text-lg/7 font-semibold"
         description={t('RIVER_WATCH_MAP')}
       />

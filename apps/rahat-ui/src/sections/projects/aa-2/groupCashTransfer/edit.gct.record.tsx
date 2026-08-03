@@ -31,6 +31,7 @@ import {
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useGetOneGctRecord, useUpdateGctRecord } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 import { SectionCard } from './components/gct.form-sections';
 
 type EditGctRecordValues = z.infer<ReturnType<typeof buildEditGctRecordSchema>>;
@@ -38,12 +39,15 @@ type EditGctRecordValues = z.infer<ReturnType<typeof buildEditGctRecordSchema>>;
 function buildEditGctRecordSchema(t: (key: string) => string) {
   return z.object({
     title: z.string().min(1, t('TITLE_IS_REQUIRED')),
-    amount: z
-      .string()
-      .min(1, t('AMOUNT_IS_REQUIRED'))
-      .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
-        message: t('AMOUNT_MUST_BE_POSITIVE_NUMBER'),
-      }),
+    amount: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z
+        .string()
+        .min(1, t('AMOUNT_IS_REQUIRED'))
+        .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
+          message: t('AMOUNT_MUST_BE_POSITIVE_NUMBER'),
+        }),
+    ),
   });
 }
 

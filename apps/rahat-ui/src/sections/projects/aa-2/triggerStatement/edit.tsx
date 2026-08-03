@@ -25,6 +25,10 @@ import {
 import { buildTriggerStatementSchema } from './trigger.statement.schema';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { useTranslations } from 'next-intl';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+
+const numeralString = () =>
+  z.preprocess(normalizeNumeralsPreprocessor, z.string().optional());
 
 export default function EditTrigger() {
   const t = useTranslations('AA_PROJECT');
@@ -79,13 +83,13 @@ export default function EditTrigger() {
       source: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
       isMandatory: z.boolean().optional(),
       triggerStatement: buildTriggerStatementSchema(t),
-      minLeadTimeDays: z.string().optional(),
-      maxLeadTimeDays: z.string().optional(),
-      probability: z.string().optional(),
-      warningLevel: z.string().optional(),
-      dangerLevel: z.string().optional(),
+      minLeadTimeDays: numeralString(),
+      maxLeadTimeDays: numeralString(),
+      probability: numeralString(),
+      warningLevel: numeralString(),
+      dangerLevel: numeralString(),
       forecast: z.string().optional(),
-      daysToConsiderPrior: z.string().optional(),
+      daysToConsiderPrior: numeralString(),
       forecastStatus: z.string().optional(),
     })
     .superRefine((data, ctx) => {

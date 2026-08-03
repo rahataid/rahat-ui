@@ -82,6 +82,7 @@ import {
   UpdateDialogState,
 } from '../types';
 import { useTranslations } from 'next-intl';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
@@ -581,7 +582,7 @@ export default function InkindList() {
                 onChange={(e) =>
                   setStockDialog((prev) => ({
                     ...prev,
-                    quantity: e.target.value,
+                    quantity: toAsciiDigits(e.target.value),
                     error: '',
                   }))
                 }

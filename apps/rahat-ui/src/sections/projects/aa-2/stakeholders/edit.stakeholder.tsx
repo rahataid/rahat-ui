@@ -22,6 +22,7 @@ import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Tag, TagInput } from 'emblor';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function EditStakeholders() {
   const router = useRouter();
@@ -49,9 +50,12 @@ export default function EditStakeholders() {
       .string()
       .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_NAME') }),
-    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
-      message: t('INVALID_PHONE_NUMBER'),
-    }),
+    phone: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().optional().refine(isValidPhoneNumberRefinement, {
+        message: t('INVALID_PHONE_NUMBER'),
+      }),
+    ),
     email: z
       .string()
       .optional()

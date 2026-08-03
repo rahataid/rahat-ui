@@ -14,6 +14,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 import { useSendPayoutOtp } from '@rahat-ui/query/lib/aa/payout/payout.service';
 import { useEffect, useState } from 'react';
 import { useUserCurrentUser } from '@rumsan/react-query';
@@ -188,7 +189,7 @@ export default function PayoutConfirmationDialog({
               className="h-11 text-lg"
               value={otp}
               onChange={(e) => {
-                setOtp(e.target.value.replace(/\D/g, ''));
+                setOtp(toAsciiDigits(e.target.value).replace(/\D/g, ''));
                 setOtpError('');
               }}
             />

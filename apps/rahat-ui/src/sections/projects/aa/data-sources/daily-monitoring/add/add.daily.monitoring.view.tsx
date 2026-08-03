@@ -21,6 +21,10 @@ import AddAnotherDataSource from './add.another.data.source';
 import SelectFormField from '../../../../../../components/select.form.field';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useSelectItems } from '../useSelectItems';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+
+const numeralString = () =>
+  z.preprocess(normalizeNumeralsPreprocessor, z.string().optional());
 
 export default function AddDailyMonitoring() {
   const t = useTranslations('AA_PROJECT');
@@ -46,43 +50,41 @@ export default function AddDailyMonitoring() {
         //DHM
         forecast: z.string().optional(),
         //DHM - 3 Days Flood Forecast Bulletin
-        today: z.string().optional(),
-        tomorrow: z.string().optional(),
-        dayAfterTomorrow: z.string().optional(),
+        today: numeralString(),
+        tomorrow: numeralString(),
+        dayAfterTomorrow: numeralString(),
         //DHM - 3 Days Rainfall Forecast Bulletin
-        todayAfternoon: z.string().optional(),
-        todayNight: z.string().optional(),
-        tomorrowAfternoon: z.string().optional(),
-        tomorrowNight: z.string().optional(),
-        dayAfterTomorrowAfternoon: z.string().optional(),
-        dayAfterTomorrowNight: z.string().optional(),
+        todayAfternoon: numeralString(),
+        todayNight: numeralString(),
+        tomorrowAfternoon: numeralString(),
+        tomorrowNight: numeralString(),
+        dayAfterTomorrowAfternoon: numeralString(),
+        dayAfterTomorrowNight: numeralString(),
         //DHM - Realtime Monitoring (River Watch)
-        waterLevel: z.string().optional(),
+        waterLevel: numeralString(),
         //DHM - Realtime Rainfall
-        chisapaniKarnali: z.string().optional(),
-        daulatpurStation: z.string().optional(),
-        bachilaStation: z.string().optional(),
-        gurbaDurbar: z.string().optional(),
+        chisapaniKarnali: numeralString(),
+        daulatpurStation: numeralString(),
+        bachilaStation: numeralString(),
+        gurbaDurbar: numeralString(),
         //DHM - NWP
-        hours24NWP: z.string().optional(),
-        hours48: z.string().optional(),
-        hours72NWP: z.string().optional(),
+        hours24NWP: numeralString(),
+        hours48: numeralString(),
+        hours72NWP: numeralString(),
         // NCMRWF Accumulated
-        heavyRainfallForecastInKarnaliBasin: z.string().optional(),
-        hours24: z.string().optional(),
-        hours72: z.string().optional(),
-        hours168: z.string().optional(),
+        heavyRainfallForecastInKarnaliBasin: numeralString(),
+        hours24: numeralString(),
+        hours72: numeralString(),
+        hours168: numeralString(),
         // NCMRWF Deterministic & Probabilistic
-        extremeWeatherOutlook: z.string().optional(),
-        deterministicsPredictionSystem: z.string().optional(),
-        probabilisticPredictionSystem: z.string().optional(),
+        extremeWeatherOutlook: numeralString(),
+        deterministicsPredictionSystem: numeralString(),
+        probabilisticPredictionSystem: numeralString(),
         // GLOFAS
-        todayGLOFAS: z.string().optional(),
-        days3: z.string().optional(),
-        days5: z.string().optional(),
-        inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: z
-          .string()
-          .optional(),
+        todayGLOFAS: numeralString(),
+        days3: numeralString(),
+        days5: numeralString(),
+        inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: numeralString(),
         //Flash Flood Risk Monitoring
         status: z.string().optional(),
       }),

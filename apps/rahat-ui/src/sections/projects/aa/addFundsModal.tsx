@@ -16,6 +16,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useMintTokens } from 'apps/rahat-ui/src/hooks/aa/contracts/aa-contract';
 import { UUID } from 'crypto';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -64,7 +65,7 @@ export default function AddFundsModal({ fundsModal }: IProps) {
             type="number"
             inputMode="decimal"
             value={tokens}
-            onChange={(e) => setTokens(e.target.value)}
+            onChange={(e) => setTokens(toAsciiDigits(e.target.value))}
             placeholder={t('TOKENS')}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {

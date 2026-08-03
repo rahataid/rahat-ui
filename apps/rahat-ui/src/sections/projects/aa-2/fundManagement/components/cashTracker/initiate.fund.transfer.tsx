@@ -32,6 +32,7 @@ import { Info } from 'lucide-react';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function InitiateFundTransfer({}: {}) {
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
@@ -309,9 +310,10 @@ export default function InitiateFundTransfer({}: {}) {
                 placeholder={tv('ENTER_AMOUNT')}
                 value={formData.amount}
                 onChange={(e) => {
-                  const value = Number(e.target.value);
+                  const asciiValue = toAsciiDigits(e.target.value);
+                  const value = Number(asciiValue);
 
-                  if (e.target.value === '') {
+                  if (asciiValue === '') {
                     setFormData({ ...formData, amount: '' });
                     setError('');
                     return;

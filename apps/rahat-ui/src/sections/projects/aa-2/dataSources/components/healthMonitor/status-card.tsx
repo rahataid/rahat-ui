@@ -86,7 +86,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               variant="outline"
               className={cn('text-xs font-medium', getDynamicColors(severity))}
             >
-              {t(severity)}
+              {t.has(severity) ? t(severity) : severity}
             </Badge>
             <Badge
               variant="outline"
@@ -100,7 +100,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               ) : (
                 <X className="w-3 h-3 mr-1" />
               )}
-              {t(data.currentStatus)}
+              {t.has(data.currentStatus) ? t(data.currentStatus) : data.currentStatus}
             </Badge>
           </div>
         </div>
@@ -150,7 +150,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                 getDynamicColors(data.validity),
               )}
             >
-              {data.validity ? t(data.validity) : '-'}
+              {data.validity ? (t.has(data.validity) ? t(data.validity) : data.validity) : '-'}
             </Badge>
           </div>
         </div>

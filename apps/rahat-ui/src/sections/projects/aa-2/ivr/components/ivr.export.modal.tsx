@@ -22,6 +22,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useUploadFile, useIvrTemplateUpdate, useIvrTestCall } from '@rahat-ui/query';
 import { Link, Copy, Check, Globe, Phone, ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 interface ExportModalProps {
   open: boolean;
@@ -238,7 +239,7 @@ export default function ExportModal({
               <Input
                 placeholder={t('ENTER_PHONE_NUMBER')}
                 value={testPhone}
-                onChange={(e) => setTestPhone(e.target.value)}
+                onChange={(e) => setTestPhone(toAsciiDigits(e.target.value))}
               />
               <p className="text-xs text-muted-foreground">
                 {t('STANDARD_CALL_RATES_MAY_APPLY')}

@@ -11,6 +11,7 @@ import WaterLevelTable from '../../dhm/table';
 import { roundValue } from '../utils/color.utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface TemperatureHistorySectionProps {
   activeTab: 'hourly' | 'daily';
@@ -40,6 +41,7 @@ export function TemperatureHistorySection({
   noDataLabel,
 }: TemperatureHistorySectionProps) {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const resolvedTitle = title ?? t('TEMPERATURE_HISTORY');
   const resolvedYaxisLabel = yaxisLabel ?? t('TEMPERATURE_LABEL');
   const resolvedNoDataLabel = noDataLabel ?? t('TEMPERATURE_LABEL');
@@ -56,7 +58,7 @@ export function TemperatureHistorySection({
             yaxisTitle={`${resolvedYaxisLabel} (${unit})`}
             unit={unit}
             xDateFormat={timeFormat}
-            yAxisFormatter={(value) => roundValue(value)}
+            yAxisFormatter={(value) => formatNum(roundValue(value))}
           />
           <div className='h-[200px] overflow-auto '>
             <WaterLevelTable tableData={history} columns={columns} />

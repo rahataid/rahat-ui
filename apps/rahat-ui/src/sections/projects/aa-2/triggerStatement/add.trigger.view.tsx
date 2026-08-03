@@ -421,7 +421,9 @@ export default function AddTriggerView() {
                         {trigger.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
                       </Badge>
                       <Badge className="font-medium">
-                        {t(trigger.type.toUpperCase())}
+                        {t.has(trigger.type.toUpperCase())
+                          ? t(trigger.type.toUpperCase())
+                          : trigger.type}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">

@@ -6,7 +6,7 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
-function getStatusBg(status: string) {
+function getStatusBg(status: string | undefined) {
   if (status === 'Not Started') {
     return 'bg-gray-200 text-black';
   }
@@ -78,8 +78,24 @@ export default function useCommsActivitiesTableColumns() {
       accessorKey: 'status',
       header: t('STATUS'),
       cell: ({ row }) => {
-        const className = getStatusBg(row.original?.commStatus);
-        return <Badge className={className}>{t(row.original?.commStatus?.replace(/\s+/g, '_').toUpperCase())}</Badge>;
+        const commStatus = row.original?.commStatus as string | undefined;
+        const className = getStatusBg(commStatus);
+        // commStatus values are fixed ("Not Started" / "Work in Progress" /
+        // "Completed" / "Delayed"), but the matching translation keys live
+        // split across AA_PROJECT and GLOBAL, so map explicitly instead of
+        // deriving a key that may not exist (would render as e.g.
+        // "AA_PROJECT.WORK_IN_PROGRESS").
+        const statusLabel =
+          commStatus === 'Not Started'
+            ? t('NOT_STARTED')
+            : commStatus === 'Work in Progress'
+              ? t('IN_PROGRESS')
+              : commStatus === 'Completed'
+                ? tg('COMPLETED')
+                : commStatus === 'Delayed'
+                  ? tg('DELAYED')
+                  : commStatus;
+        return <Badge className={className}>{statusLabel}</Badge>;
       },
     },
     {

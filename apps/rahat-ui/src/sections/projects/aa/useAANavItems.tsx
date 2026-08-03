@@ -53,8 +53,11 @@ export const useNavItems = () => {
       }));
   // Map default nav items
   const mappedNavItems: NavItem[] = backendNavs.map((item: NavItem) => {
+    const navKey = NAV_TITLE_KEYS[item.title] || item.title.toUpperCase();
     const navItem: NavItem = {
-      title: t(NAV_TITLE_KEYS[item.title] || item.title.toUpperCase()),
+      // Nav titles can come from backend-configurable navsettings, so an
+      // unmapped title must render as-is rather than throwing MISSING_MESSAGE.
+      title: t.has(navKey) ? t(navKey) : item.title,
       path: `/projects/aa/${projectId}/${item.path}`,
       icon: item.icon,
     };

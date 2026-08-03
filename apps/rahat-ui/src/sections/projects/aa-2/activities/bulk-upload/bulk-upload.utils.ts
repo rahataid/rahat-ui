@@ -8,6 +8,7 @@
  */
 import ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 /** Columns every uploaded sheet must have, regardless of phase flags. */
 export const BASE_HEADERS = [
@@ -87,7 +88,7 @@ export const buildActivityPayload = (
   // Lead Time is stored server-side as one "<value> <unit>" string (e.g.
   // "3 days"), but the sheet splits it into two columns so Excel can
   // dropdown-validate the unit independently of the free-typed number.
-  const leadTimeValue = get('Lead Time');
+  const leadTimeValue = toAsciiDigits(get('Lead Time'));
   const timeFrame = get('Time Frame');
 
   return {

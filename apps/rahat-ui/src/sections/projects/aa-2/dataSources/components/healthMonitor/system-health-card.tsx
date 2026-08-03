@@ -51,7 +51,7 @@ export function SystemHealthCard({
             <span className="text-sm font-medium">{t('OVERALL_SYSTEM_HEALTH')}</span>
 
             <Badge variant="outline" className={statusColors[overall_status]}>
-              {t(overall_status)}
+              {t.has(overall_status) ? t(overall_status) : overall_status}
             </Badge>
 
             <HoverCard>

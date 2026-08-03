@@ -1,15 +1,19 @@
 import { z } from 'zod';
 import { isValidPhoneNumber } from 'react-phone-number-input';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 type TFunction = (key: string) => string;
 
 export function buildGctGroupSchema(t: TFunction) {
-  const phoneRequired = z
-    .string()
-    .min(1, t('PHONE_NUMBER_IS_REQUIRED'))
-    .refine((v) => v !== '+977' && isValidPhoneNumber(v), {
-      message: t('INVALID_PHONE_NUMBER'),
-    });
+  const phoneRequired = z.preprocess(
+    normalizeNumeralsPreprocessor,
+    z
+      .string()
+      .min(1, t('PHONE_NUMBER_IS_REQUIRED'))
+      .refine((v) => v !== '+977' && isValidPhoneNumber(v), {
+        message: t('INVALID_PHONE_NUMBER'),
+      }),
+  );
 
   const emailOptional = z
     .string()
@@ -27,12 +31,18 @@ export function buildGctGroupSchema(t: TFunction) {
     phone: phoneRequired,
     district: z.string().min(1, t('DISTRICT_IS_REQUIRED')),
     municipality: z.string().min(1, t('MUNICIPALITY_IS_REQUIRED')),
-    ward: z.string().min(1, t('WARD_IS_REQUIRED')),
+    ward: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, t('WARD_IS_REQUIRED')),
+    ),
     bankName: z.string().min(1, t('BANK_NAME_IS_REQUIRED')),
     bankCode: z.string().min(1, t('BANK_IS_REQUIRED')),
     bankBranchName: z.string().min(1, t('BRANCH_NAME_IS_REQUIRED')),
     accountName: z.string().min(1, t('ACCOUNT_HOLDER_NAME_IS_REQUIRED')),
-    accountNumber: z.string().min(1, t('ACCOUNT_NUMBER_IS_REQUIRED')),
+    accountNumber: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, t('ACCOUNT_NUMBER_IS_REQUIRED')),
+    ),
     email: emailOptional,
     supportArea: supportAreaField,
   });
@@ -44,12 +54,15 @@ export function buildAssignCashSchema(t: TFunction) {
   return z.object({
     title: z.string().min(1, t('FUND_TITLE_IS_REQUIRED')),
     groupCashTransferId: z.string().min(1, t('PLEASE_SELECT_A_GCT_GROUP')),
-    amount: z
-      .string()
-      .min(1, t('AMOUNT_IS_REQUIRED'))
-      .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
-        message: t('AMOUNT_MUST_BE_POSITIVE_NUMBER'),
-      }),
+    amount: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z
+        .string()
+        .min(1, t('AMOUNT_IS_REQUIRED'))
+        .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
+          message: t('AMOUNT_MUST_BE_POSITIVE_NUMBER'),
+        }),
+    ),
   });
 }
 

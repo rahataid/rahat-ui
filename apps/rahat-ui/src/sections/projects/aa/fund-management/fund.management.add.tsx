@@ -35,6 +35,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function AddFundManagementView() {
   const t = useTranslations('AA_PROJECT');
@@ -64,9 +65,10 @@ export default function AddFundManagementView() {
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: t('TITLE_MUST_BE_AT_LEAST_4_CHARACTER') }),
-    numberOfTokens: z.coerce
-      .number()
-      .gte(1, { message: t('TOKEN_MUST_BE_GREATER_THAN_0') }),
+    numberOfTokens: z.preprocess(
+      normalizeNumeralsToNumberPreprocessor,
+      z.coerce.number().gte(1, { message: t('TOKEN_MUST_BE_GREATER_THAN_0') }),
+    ),
     beneficiaryGroup: z.string(),
     totalTokensReserved: z.number(),
   });

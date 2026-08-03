@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 type TFunction = (key: string) => string;
 
@@ -9,7 +10,7 @@ export function buildAddPhaseSchema(t: TFunction) {
         return undefined;
       }
       if (typeof val === 'string') {
-        return Number(val);
+        return Number(toAsciiDigits(val));
       }
       return val;
     },
@@ -28,7 +29,7 @@ export function buildAddPhaseSchema(t: TFunction) {
         return undefined;
       }
       if (typeof val === 'string') {
-        return Number(val);
+        return Number(toAsciiDigits(val));
       }
       return val;
     },

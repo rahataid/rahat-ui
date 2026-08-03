@@ -41,21 +41,21 @@ export function WaterLevelView({
             <TabsList className="border bg-secondary rounded mb-2">
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white"
-                value={t('POINT')}
+                value="Point"
               >
-                Point
+                {t('POINT')}
               </TabsTrigger>
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white"
-                value={t('HOURLY')}
+                value="Hourly"
               >
-                Hourly
+                {t('HOURLY')}
               </TabsTrigger>
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white"
-                value={t('DAILY')}
+                value="Daily"
               >
-                Daily
+                {t('DAILY')}
               </TabsTrigger>
             </TabsList>
             <InputCalendar
@@ -64,21 +64,21 @@ export function WaterLevelView({
             />
           </div>
         </div>
-        <TabsContent value={t('POINT')}>
+        <TabsContent value="Point">
           <PointWaterLevel
             waterLevels={data?.history}
             dangerLevel={data?.danger_level}
             warningLevel={data?.warning_level}
           />
         </TabsContent>
-        <TabsContent value={t('HOURLY')}>
+        <TabsContent value="Hourly">
           <HourlyAndDailyWaterLevel
             waterLevels={data?.history}
             dangerLevel={data?.danger_level}
             warningLevel={data?.warning_level}
           />
         </TabsContent>
-        <TabsContent value={t('DAILY')}>
+        <TabsContent value="Daily">
           <HourlyAndDailyWaterLevel
             waterLevels={data?.history}
             dangerLevel={data?.danger_level}

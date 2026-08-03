@@ -14,6 +14,7 @@ import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
 import React from 'react';
 import { toast } from 'react-toastify';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 type Props = {
   projectUUID: UUID;
@@ -77,7 +78,7 @@ export default function MultisigProposeBtn({
             placeholder={t('ENTER_AMOUNT')}
             value={amount}
             onChange={(e) => {
-              const val = e.target.value;
+              const val = toAsciiDigits(e.target.value);
               setAmount(val === '' ? '' : Number(val));
             }}
           />

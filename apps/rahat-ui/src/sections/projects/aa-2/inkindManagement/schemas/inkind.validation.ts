@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export const INKIND_TYPES = ['PRE_DEFINED', 'WALK_IN'] as const;
 export type InkindType = (typeof INKIND_TYPES)[number];
@@ -29,12 +30,15 @@ export const buildInkindDetailsSchema = (t: Translator) =>
     type: z.string().refine((val) => INKIND_TYPES.includes(val as any), {
       message: t('TYPE_IS_REQUIRED'),
     }),
-    quantity: z
-      .string()
-      .optional()
-      .refine((val) => !val || (Number(val) > 0 && /^\d+$/.test(val)), {
-        message: t('QUANTITY_MUST_BE_A_POSITIVE_NUMBER'),
-      }),
+    quantity: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z
+        .string()
+        .optional()
+        .refine((val) => !val || (Number(val) > 0 && /^\d+$/.test(val)), {
+          message: t('QUANTITY_MUST_BE_A_POSITIVE_NUMBER'),
+        }),
+    ),
   });
 
 export type InkindDetailsValues = z.infer<

@@ -23,6 +23,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function Budget({}: {}) {
   const t = useTranslations('AA_PROJECT');
@@ -107,7 +108,7 @@ export default function Budget({}: {}) {
                 placeholder={t('ENTER_AMOUNT')}
                 value={formData.amount}
                 onChange={(e) => {
-                  const value = parseFloat(e.target.value);
+                  const value = parseFloat(toAsciiDigits(e.target.value));
                   if (value <= 0) {
                     setError(t('AMOUNT_MUST_BE_GREATER_THAN_0'));
                     return;

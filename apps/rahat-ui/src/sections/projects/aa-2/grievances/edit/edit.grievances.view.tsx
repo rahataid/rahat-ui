@@ -44,19 +44,35 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function EditGrievance() {
   const t = useTranslations('AA_PROJECT');
 
-  const emailOrPhone = z.string().refine(
-    (value) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const phoneRegex = /^[0-9]{10,15}$/;
-      return emailRegex.test(value) || phoneRegex.test(value);
+  // Normalizes Devanagari numerals (०-९) to ASCII before the email/phone
+  // check runs, so a phone number typed in Nepali digits validates and
+  // submits correctly instead of failing the ASCII-only phoneRegex below.
+  const emailOrPhone = z.preprocess(
+    (raw) => {
+      if (typeof raw !== 'string') return raw;
+      const asciiValue = toAsciiDigits(raw);
+      // Strip spaces/hyphens used as visual separators in a typed phone
+      // number (e.g. "974 6473456" -> "9746473456"), but leave email
+      // addresses untouched since hyphens are valid there.
+      return asciiValue.includes('@')
+        ? asciiValue
+        : asciiValue.replace(/[\s-]/g, '');
     },
-    {
-      message: t('PLEASE_ENTER_VALID_EMAIL_OR_PHONE'),
-    },
+    z.string().refine(
+      (value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^[0-9]{10,15}$/;
+        return emailRegex.test(value) || phoneRegex.test(value);
+      },
+      {
+        message: t('PLEASE_ENTER_VALID_EMAIL_OR_PHONE'),
+      },
+    ),
   );
 
   const grievanceFormSchema = z.object({

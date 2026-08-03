@@ -118,6 +118,8 @@ export default function AddCommunicationForm({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const isResettingRef = useRef(false);
+  const audioFileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedAudioFileName, setSelectedAudioFileName] = useState('');
 
   const pad = (num: number) => String(num).padStart(2, '0');
   const hh = pad(Math.floor(timer / 3600));
@@ -623,11 +625,29 @@ export default function AddCommunicationForm({
                   render={() => (
                     <FormItem className="col-span-2">
                       <FormControl>
-                        <Input
-                          type="file"
-                          accept="audio/*"
-                          onChange={handleAudioFileChange}
-                        />
+                        <div
+                          className="flex items-center border rounded-sm cursor-pointer w-full"
+                          onClick={() => audioFileInputRef.current?.click()}
+                        >
+                          <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 h-9 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
+                            {tg('CHOOSE_FILE')}
+                          </span>
+                          <span className="px-3 text-sm truncate w-full">
+                            {selectedAudioFileName || tg('NO_FILE_CHOSEN')}
+                          </span>
+                          <Input
+                            type="file"
+                            accept="audio/*"
+                            ref={audioFileInputRef}
+                            className="sr-only"
+                            onChange={(e) => {
+                              setSelectedAudioFileName(
+                                e.target.files?.[0]?.name ?? '',
+                              );
+                              handleAudioFileChange(e);
+                            }}
+                          />
+                        </div>
                       </FormControl>
                       <div className="flex justify-end">
                         {fileUpload.isPending && (

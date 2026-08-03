@@ -7,6 +7,7 @@ type DateFormatPattern =
   | 'dd MMMM, yyyy'
   | 'hh:mm:ss a'
   | 'MMMM dd, yyyy, hh:mm:ss a'
+  | 'eee, MMMM d, yyyy, h:mm:ss'
   | 'eee, MMM d yyyy, hh:mm:ss a'
   | 'eee, MMMM d, yyyy'
   | 'MMM dd'
@@ -50,6 +51,16 @@ const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
     minute: '2-digit',
     second: '2-digit',
     hour12: true,
+  },
+  'eee, MMMM d, yyyy, h:mm:ss': {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
   },
   'eee, MMM d yyyy, hh:mm:ss a': {
     weekday: 'short',
@@ -138,6 +149,51 @@ const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
   },
 };
 
+export const NEPALI_WEEKDAYS_SHORT = [
+  'आइत', 'सोम', 'मङ्गल', 'बुध', 'बिहि', 'शुक्र', 'शनि',
+];
+export const NEPALI_WEEKDAYS_LONG = [
+  'आइतबार', 'सोमबार', 'मङ्गलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार',
+];
+export const NEPALI_MONTHS_SHORT = [
+  'जन', 'फेब्रु', 'मार्च', 'अप्रि', 'मे', 'जुन',
+  'जुला', 'अग', 'सेप्ट', 'अक्टो', 'नोभे', 'डिसे',
+];
+export const NEPALI_MONTHS_LONG = [
+  'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मे', 'जुन',
+  'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर', 'नोभेम्बर', 'डिसेम्बर',
+];
+
+// Some browsers ship incomplete CLDR data for 'ne' weekday/month names and
+// silently fall back to English even though numberingSystem: 'deva' still
+// localizes the digits. Substitute those two parts ourselves so the output
+// is consistently Nepali regardless of the runtime's ICU data completeness.
+export function localizeNepaliParts(
+  d: Date,
+  options: Intl.DateTimeFormatOptions,
+  parts: Intl.DateTimeFormatPart[],
+): string {
+  return parts
+    .map((part) => {
+      if (part.type === 'weekday') {
+        return options.weekday === 'long'
+          ? NEPALI_WEEKDAYS_LONG[d.getDay()]
+          : NEPALI_WEEKDAYS_SHORT[d.getDay()];
+      }
+      if (
+        part.type === 'month' &&
+        options.month !== 'numeric' &&
+        options.month !== '2-digit'
+      ) {
+        return options.month === 'long'
+          ? NEPALI_MONTHS_LONG[d.getMonth()]
+          : NEPALI_MONTHS_SHORT[d.getMonth()];
+      }
+      return part.value;
+    })
+    .join('');
+}
+
 export function useDateFormat() {
   const locale = useLocale();
 
@@ -151,10 +207,14 @@ export function useDateFormat() {
       if (isNaN(d.getTime())) return '';
       const options = PATTERN_MAP[pattern] || PATTERN_MAP['MMMM d, yyyy, h:mm:ss a'];
       const neOptions = locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
-      return new Intl.DateTimeFormat(
+      const formatter = new Intl.DateTimeFormat(
         locale === 'ne' ? 'ne-NP' : locale,
         neOptions,
-      ).format(d);
+      );
+      if (locale === 'ne' && (options.weekday || options.month)) {
+        return localizeNepaliParts(d, options, formatter.formatToParts(d));
+      }
+      return formatter.format(d);
     } catch {
       return '';
     }

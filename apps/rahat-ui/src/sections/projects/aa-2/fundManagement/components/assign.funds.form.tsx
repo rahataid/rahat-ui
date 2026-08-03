@@ -29,6 +29,7 @@ import {
   buildFundAssignmentFormSchema,
   FundAssignmentFormValues,
 } from './schemas/funds.validation';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
@@ -232,7 +233,13 @@ export default function AssignFundsForm({
                       {...field}
                       value={field.value === 0 ? '' : field.value}
                       onChange={(e) => {
-                        field.onChange(e.target.valueAsNumber);
+                        // Normalize Devanagari digits before reading the
+                        // value as a number — e.target.valueAsNumber alone
+                        // can't recover from non-ASCII digits that slip
+                        // past the browser's number-input filtering (e.g.
+                        // via paste or a mobile Devanagari keyboard).
+                        const ascii = toAsciiDigits(e.target.value);
+                        field.onChange(ascii === '' ? NaN : Number(ascii));
                         trigger('tokenAmountPerBenef');
                       }}
                     />

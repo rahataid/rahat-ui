@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { useCreateStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function AddStakeholders() {
   const t = useTranslations('AA_PROJECT');
@@ -41,9 +42,12 @@ export default function AddStakeholders() {
       .string()
       .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_NAME') }),
-    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
-      message: t('INVALID_PHONE_NUMBER'),
-    }),
+    phone: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().optional().refine(isValidPhoneNumberRefinement, {
+        message: t('INVALID_PHONE_NUMBER'),
+      }),
+    ),
     email: z.string().optional(),
     designation: z
       .string()

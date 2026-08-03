@@ -214,7 +214,7 @@ export default function HumidityWatchDetails() {
                 yaxisTitle={`${t('RELATIVE_HUMIDITY')} (${humidityInfo?.unit ?? '%'})`}
                 unit={humidityInfo?.unit ?? '%'}
                 xDateFormat={'h:mm a'}
-                yAxisFormatter={(value) => roundValue(value)}
+                yAxisFormatter={(value) => formatNum(roundValue(value))}
               />
               <div className="h-[200px] overflow-auto ">
                 <WaterLevelTable tableData={history} columns={columns} />

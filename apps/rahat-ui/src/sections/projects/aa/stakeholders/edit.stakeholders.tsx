@@ -21,6 +21,7 @@ import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import { useUpdateStakeholders } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 type IProps = {
   stakeholdersDetail: IStakeholdersItem;
@@ -44,9 +45,12 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
       .string()
       .regex(/^[A-Za-z\s]*$/, t('ONLY_ALPHABETIC_CHARACTERS'))
       .min(2, { message: t('PLEASE_ENTER_NAME') }),
-    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
-      message: t('INVALID_PHONE_NUMBER'),
-    }),
+    phone: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().optional().refine(isValidPhoneNumberRefinement, {
+        message: t('INVALID_PHONE_NUMBER'),
+      }),
+    ),
     email: z.string().optional(),
     designation: z
       .string()

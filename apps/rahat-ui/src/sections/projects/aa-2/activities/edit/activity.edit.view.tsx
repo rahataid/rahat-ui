@@ -3,6 +3,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -644,7 +645,9 @@ export default function EditActivity() {
                                 className="col-span-3 rounded-r-none "
                                 value={lead}
                                 onChange={(e) => {
-                                  const newLead = e.target.value;
+                                  const newLead = toAsciiDigits(
+                                    e.target.value,
+                                  );
                                   field.onChange(
                                     newLead ? `${newLead} ${unit}` : '',
                                   );

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { roundValue } from '../aws/utils/color.utils';
 
 const CHART_DATE_PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
@@ -25,9 +26,15 @@ const CHART_DATE_PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
 const formatChartDate = (value: string | number, pattern: string, locale: string) => {
   const options = CHART_DATE_PATTERN_MAP[pattern] ?? CHART_DATE_PATTERN_MAP['h:mm a'];
   const neOptions = locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
-  return new Intl.DateTimeFormat(locale === 'ne' ? 'ne-NP' : locale, neOptions).format(
-    new Date(value),
+  const d = new Date(value);
+  const formatter = new Intl.DateTimeFormat(
+    locale === 'ne' ? 'ne-NP' : locale,
+    neOptions,
   );
+  if (locale === 'ne' && (options.weekday || options.month)) {
+    return localizeNepaliParts(d, options, formatter.formatToParts(d));
+  }
+  return formatter.format(d);
 };
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });

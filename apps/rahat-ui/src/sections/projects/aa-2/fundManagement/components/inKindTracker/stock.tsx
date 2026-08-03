@@ -28,6 +28,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function Stock({}: {}) {
   const t = useTranslations('AA_PROJECT');
@@ -106,7 +107,10 @@ export default function Stock({}: {}) {
               placeholder={tg('ENTER_NUMBER')}
               value={formData.amount}
               onChange={(e) =>
-                setFormData({ ...formData, amount: e.target.value })
+                setFormData({
+                  ...formData,
+                  amount: toAsciiDigits(e.target.value),
+                })
               }
               className="flex-1"
             />

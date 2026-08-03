@@ -11,6 +11,7 @@ import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizon
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DISBURSEMENT_COLORS, formatMethod } from '../utils';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type IProps = {
   title: string;
@@ -60,7 +61,16 @@ export default function TriggersPhaseCard({
   disbursementMethods,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
+  // Disbursement method values come straight from the backend enum
+  // (GROUP_TOKEN, TOKEN, INKIND, ...) — translate the known ones, fall
+  // back to the raw formatted string for anything not yet mapped.
+  const disbursementMethodLabels: Record<string, string> = {
+    GROUP_TOKEN: t('GROUP_CASH_TOKEN'),
+    TOKEN: t('TOKEN'),
+    INKIND: t('INKIND'),
+  };
   return (
     <div className="p-4 rounded-xl border shadow-md flex flex-col justify-between">
       <div>
@@ -117,7 +127,7 @@ export default function TriggersPhaseCard({
                   DISBURSEMENT_COLORS[i % DISBURSEMENT_COLORS.length]
                 } text-[10px] font-medium px-2 py-0.5 rounded-sm`}
               >
-                {formatMethod(method)}
+                {disbursementMethodLabels[method] || formatMethod(method)}
               </Badge>
             ))}
           </div>
@@ -155,6 +165,27 @@ export default function TriggersPhaseCard({
                 showLegend={chartType === 'donut'}
                 colors={['#297AD6', '#E8C468']}
                 showDonutLabel={true}
+                options={{
+                  plotOptions: {
+                    pie: {
+                      donut: {
+                        labels: {
+                          value: {
+                            formatter: (val: string) => formatDigits(val),
+                          },
+                          total: {
+                            formatter: () => formatDigits(totalCharSeries),
+                          },
+                        },
+                      },
+                    },
+                  },
+                  tooltip: {
+                    y: {
+                      formatter: (val: number) => formatDigits(val),
+                    },
+                  },
+                }}
               />
             )}
           </div>

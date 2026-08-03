@@ -14,6 +14,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 const steps = [
   { key: 'ADD_TRIGGER_STATEMENT' },
@@ -74,15 +75,18 @@ const MultiStepForm = () => {
     title: z.string().min(2, { message: t('PLEASE_ENTER_VALID_NAME') }),
     dataSource: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
     isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z
-      .string()
-      .min(1, { message: t('PLEASE_ENTER_MINIMUM_LEAD_TIME_DAYS') }),
-    maxLeadTimeDays: z
-      .string()
-      .min(1, { message: t('PLEASE_ENTER_MAXIMUM_LEAD_TIME_DAYS') }),
-    probability: z
-      .string()
-      .min(1, { message: t('PLEASE_ENTER_FORECAST_PROBABILITY') }),
+    minLeadTimeDays: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, { message: t('PLEASE_ENTER_MINIMUM_LEAD_TIME_DAYS') }),
+    ),
+    maxLeadTimeDays: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, { message: t('PLEASE_ENTER_MAXIMUM_LEAD_TIME_DAYS') }),
+    ),
+    probability: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, { message: t('PLEASE_ENTER_FORECAST_PROBABILITY') }),
+    ),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({

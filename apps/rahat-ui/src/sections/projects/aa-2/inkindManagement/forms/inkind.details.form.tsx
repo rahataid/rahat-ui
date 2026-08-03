@@ -32,6 +32,7 @@ import {
 import type { InkindFormData } from '../schemas/inkind.validation';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
@@ -192,7 +193,10 @@ export default function InkindDetailsForm({
                     {...field}
                     value={field.value ?? ''}
                     onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
+                      const val = toAsciiDigits(e.target.value).replace(
+                        /\D/g,
+                        '',
+                      );
                       field.onChange(val);
                     }}
                   />

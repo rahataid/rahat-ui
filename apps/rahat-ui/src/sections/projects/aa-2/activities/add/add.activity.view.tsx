@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 import {
   useActivitiesCategories,
   useActivitiesStore,
@@ -745,7 +746,9 @@ export default function AddActivities() {
                                 className="col-span-3 rounded-r-none"
                                 value={lead}
                                 onChange={(e) => {
-                                  const newLead = e.target.value;
+                                  const newLead = toAsciiDigits(
+                                    e.target.value,
+                                  );
                                   field.onChange(
                                     newLead ? `${newLead} ${unit}` : ` ${unit}`,
                                   );

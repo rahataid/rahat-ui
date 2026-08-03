@@ -162,6 +162,13 @@ function GrievancesTable() {
   // Define filter display order
   const filterOrder = ['title', 'status', 'priority', 'type'];
 
+  const filterKeyLabels: Record<string, string> = {
+    title: t('TITLE'),
+    status: t('STATUS'),
+    priority: t('PRIORITY'),
+    type: t('TYPE'),
+  };
+
   // Sort filters according to the defined order
   const getOrderedFilters = () => {
     return Object.entries(filters).sort(([a], [b]) => {
@@ -186,7 +193,9 @@ function GrievancesTable() {
                 key={key}
                 className="inline-flex items-center px-3 py-1 text-sm rounded-full bg-accent/80 hover:bg-accent text-accent-foreground transition-colors"
               >
-                <span className="font-medium capitalize">{key}:</span>
+                <span className="font-medium capitalize">
+                  {filterKeyLabels[key] ?? key}:
+                </span>
                 <span className="ml-1">{getFilterDisplayName(key, value)}</span>
                 <button
                   onClick={() => clearFilter(key)}

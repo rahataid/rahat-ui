@@ -209,6 +209,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: tv('TRANSACTION_TYPE'),
       cell: ({ row }) => {
         const type = row?.original?.transactionType ?? 'unknown';
+        const prettified = type
+          .toLowerCase()
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
         return (
           <Badge
             className={`rounded-xl capitalize ${getTransactionStatusColor(
@@ -216,11 +221,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
             )}`}
           >
             <TruncatedCell
-              text={type
-                .toLowerCase()
-                .split('_')
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
+              text={tg.has(type as any) ? tg(type as any) : prettified}
               maxLength={15}
             />
           </Badge>

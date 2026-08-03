@@ -39,6 +39,7 @@ const CommunicationDataCard = ({
   open = false,
 }: CommunicationDataCardProps) => {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -102,16 +103,17 @@ const CommunicationDataCard = ({
                     </h3>
                     <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
                       <span>
-                        {
-                          appTransports?.find((g) => g.cuid === comm.transportId)
-                            ?.name
-                        }
+                        {(() => {
+                          const transportName = appTransports?.find(
+                            (g) => g.cuid === comm.transportId,
+                          )?.name;
+                          return transportName
+                            ? tg(transportName as any)
+                            : '';
+                        })()}
                       </span>
                       <span>•</span>
-                      <span>
-                        {comm?.groupType.charAt(0).toUpperCase() +
-                          comm?.groupType.slice(1).toLowerCase()}
-                      </span>
+                      <span>{tg(comm?.groupType as any)}</span>
 
                       {/* Group names container */}
                       <div className="flex flex-wrap gap-2 w-auto">

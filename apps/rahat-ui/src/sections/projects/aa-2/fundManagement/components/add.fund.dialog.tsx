@@ -23,21 +23,25 @@ import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 const makeAddFundSchema = (t: (key: string) => string) =>
   z.object({
-    amount: z
-      .string()
-      .min(1, t('AMOUNT_IS_REQUIRED'))
-      .refine((val) => !isNaN(Number(val)), {
-        message: t('AMOUNT_MUST_BE_NUMBER'),
-      })
-      .refine((val) => Number(val) > 0, {
-        message: t('AMOUNT_MUST_BE_GREATER_THAN_0'),
-      })
-      .refine((val) => Number.isFinite(Number(val)), {
-        message: t('AMOUNT_MUST_BE_FINITE_NUMBER'),
-      }),
+    amount: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z
+        .string()
+        .min(1, t('AMOUNT_IS_REQUIRED'))
+        .refine((val) => !isNaN(Number(val)), {
+          message: t('AMOUNT_MUST_BE_NUMBER'),
+        })
+        .refine((val) => Number(val) > 0, {
+          message: t('AMOUNT_MUST_BE_GREATER_THAN_0'),
+        })
+        .refine((val) => Number.isFinite(Number(val)), {
+          message: t('AMOUNT_MUST_BE_FINITE_NUMBER'),
+        }),
+    ),
   });
 
 type AddFundFormValues = z.infer<ReturnType<typeof makeAddFundSchema>>;

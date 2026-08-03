@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Loader2, Send } from 'lucide-react';
@@ -185,7 +186,7 @@ export function DisburseModal({
                       className="h-11 text-lg"
                       value={otp}
                       onChange={(e) => {
-                        setOtp(e.target.value.replace(/\D/g, ''));
+                        setOtp(toAsciiDigits(e.target.value).replace(/\D/g, ''));
                         setOtpError('');
                       }}
                     />

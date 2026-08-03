@@ -30,8 +30,12 @@ export default function SideNav() {
   const { data, subData } = useNavData();
   const [more, setMore] = React.useState(false);
 
-  const getTitle = (title: string) =>
-    t(NAV_TITLE_KEYS[title] || title.toUpperCase());
+  const getTitle = (title: string) => {
+    const key = NAV_TITLE_KEYS[title] || title.toUpperCase();
+    // Nav titles can come from backend-configurable app settings, so an
+    // unmapped title must render as-is rather than throwing MISSING_MESSAGE.
+    return t.has(key) ? t(key) : title;
+  };
 
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[1];

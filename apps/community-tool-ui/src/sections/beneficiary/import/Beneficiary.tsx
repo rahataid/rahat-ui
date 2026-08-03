@@ -71,6 +71,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   );
 
   const aiBaseurl = aiSetting?.value?.URL;
+  const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
 
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
@@ -116,6 +117,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const uploadResult = await uploadCsvForMapping.mutateAsync({
         payload: formData,
         baseURL: aiBaseurl,
+        standardName: aiStandardName,
       });
 
       if (uploadResult && uploadResult.classified_headers.length) {

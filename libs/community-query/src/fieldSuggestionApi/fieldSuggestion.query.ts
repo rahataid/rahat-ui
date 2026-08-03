@@ -5,14 +5,21 @@ import { getAiApi } from '@rahat-ui/query';
 const uploadExcel = async ({
   payload,
   baseURL,
+  standardName,
 }: {
   payload: any;
   baseURL: string;
+  standardName: string;
 }) => {
   const aiApi = getAiApi(baseURL);
   const res = await aiApi.post('/api/csv/upload/', payload, {
     headers: {
       'Content-Type': 'multipart/form-data',
+    },
+    params: {
+      page: 1,
+      page_size: 300,
+      standard_name: standardName,
     },
   });
   return res.data;
@@ -87,8 +94,15 @@ const deleteStandardLabels = async ({
 
 export const useUploadCsvForMapping = () => {
   return useMutation({
-    mutationFn: ({ payload, baseURL }: { payload: any; baseURL: string }) =>
-      uploadExcel({ payload, baseURL }),
+    mutationFn: ({
+      payload,
+      baseURL,
+      standardName,
+    }: {
+      payload: any;
+      baseURL: string;
+      standardName: string;
+    }) => uploadExcel({ payload, baseURL, standardName }),
     onSuccess: () => {
       //qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
     },

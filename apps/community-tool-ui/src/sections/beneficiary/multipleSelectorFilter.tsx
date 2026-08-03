@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { PinIcon, X } from 'lucide-react';
+
 import {
   Tooltip,
   TooltipContent,

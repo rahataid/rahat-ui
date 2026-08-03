@@ -1,8 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
-import { useTransition } from 'react';
+import { useState } from 'react';
 import { cn } from '@rahat-ui/shadcn/src';
 import { routing } from '../i18n/routing';
 
@@ -19,19 +18,22 @@ const LOCALE_FLAGS: Record<string, string> = {
 export function LanguageToggle() {
   const t = useTranslations('AA_PROJECT');
   const locale = useLocale();
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   const [first, second] = routing.locales;
   const isSecondActive = locale === second;
 
   const toggleLocale = () => {
     if (isPending) return;
+    setIsPending(true);
     const nextLocale = isSecondActive ? first : second;
     document.cookie = `locale=${nextLocale};path=/;max-age=31536000`;
-    startTransition(() => {
-      router.refresh();
-    });
+    // router.refresh() only re-fetches Server Component data; it doesn't
+    // reliably re-propagate the new locale into client subtrees that were
+    // already mounted before the switch, leaving some translated text
+    // stuck on the old locale until a full reload. Force one here so the
+    // whole tree re-renders with the new locale/messages consistently.
+    window.location.reload();
   };
 
   return (

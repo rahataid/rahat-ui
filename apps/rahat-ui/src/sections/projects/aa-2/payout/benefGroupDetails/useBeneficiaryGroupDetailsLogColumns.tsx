@@ -185,7 +185,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         if (payoutType === 'FSP')
           return (
             <div>
-              <TruncatedCell text={`Rs. ${formatNum(amount)}`} maxLength={15} />
+              <TruncatedCell text={`${t('RS')} ${formatNum(amount)}`} maxLength={15} />
             </div>
           );
         else {
@@ -194,12 +194,12 @@ export default function useBeneficiaryGroupDetailsLogColumns(
 
           return status === 'COMPLETED' ? (
             row.original?.amount ? (
-              <TruncatedCell text={`Rs. ${formatNum(amount)}`} maxLength={15} />
+              <TruncatedCell text={`${t('RS')} ${formatNum(amount)}`} maxLength={15} />
             ) : (
-              `Rs. ${formatNum(0)}`
+              `${t('RS')} ${formatNum(0)}`
             )
           ) : (
-            `Rs. ${formatNum(0)}`
+            `${t('RS')} ${formatNum(0)}`
           );
         }
       },

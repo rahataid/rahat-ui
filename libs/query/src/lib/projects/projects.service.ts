@@ -15,6 +15,7 @@ import {
 } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
@@ -79,6 +80,7 @@ export const useGeneralAction = <T = any>() => {
 export const useAssignBenToProject = () => {
   const q = useProjectAction();
   const { queryClient, rumsanService } = useRSQuery();
+  const tg = useTranslations('GLOBAL');
 
   const alert = useSwal();
   const toast = alert.mixin({
@@ -108,16 +110,16 @@ export const useAssignBenToProject = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Beneficiary Assigned Successfully',
+        title: tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARY] });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while updating Beneficiary',
+        title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -128,6 +130,7 @@ export const useAssignBenToProject = () => {
 export const useAssignBenGroupToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -168,15 +171,15 @@ export const useAssignBenGroupToProject = () => {
       ]);
 
       toast.fire({
-        title: 'Beneficiary group assigned Successfully',
+        title: tg('BENEFICIARY_GROUP_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while assigning beneficiary group',
+        title: tg('ERROR_WHILE_ASSIGNING_BENEFICIARY_GROUP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -186,6 +189,7 @@ export const useAssignBenGroupToProject = () => {
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -217,15 +221,15 @@ export const useBulkAssignBenToProject = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Beneficiary Assigned Successfully',
+        title: tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while updating Beneficiary',
+        title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -236,6 +240,7 @@ export const useBulkAssignBenToProject = () => {
 export const useAssignVendorToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -266,16 +271,16 @@ export const useAssignVendorToProject = () => {
     onSuccess: (_data, variables: any) => {
       q.reset();
       toast.fire({
-        title: variables?.successMessage || 'Vendor Assigned Successfully',
+        title: variables?.successMessage || tg('VENDOR_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
     onError: (error: any, variables: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
       toast.fire({
-        title: variables?.errorMessage || 'Error while updating Vendor',
+        title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_VENDOR'),
         icon: 'error',
         text: errorMessage,
       });

@@ -10,6 +10,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { TAGS } from '../../config';
@@ -145,6 +146,7 @@ const beneficiariesGroupByUuids = async (uuids: string[]) => {
 
 export const useUpdateBeneficiaryGroup = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -165,15 +167,16 @@ export const useUpdateBeneficiaryGroup = () => {
 
       toast.fire({
         title:
-          variables?.successMessage || 'Beneficiary Group updated successfully.',
+          variables?.successMessage ||
+          tg('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any, variables) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
         title:
-          variables?.errorMessage || 'Error while updating beneficiary group.',
+          variables?.errorMessage || tg('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -255,6 +258,7 @@ const updateBeneficiary = async (payload: any) => {
 
 export const useUpdateBeneficiary = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -267,14 +271,14 @@ export const useUpdateBeneficiary = () => {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
       toast.fire({
-        title: variables?.successMessage || 'Beneficiary updated successfully.',
+        title: variables?.successMessage || tg('BENEFICIARY_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any, variables) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
-        title: variables?.errorMessage || 'Error while updating beneficiary.',
+        title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -289,6 +293,7 @@ const removeBeneficiary = async (payload: any) => {
 
 export const useRemoveBeneficiaryFromProject = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -301,14 +306,14 @@ export const useRemoveBeneficiaryFromProject = () => {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
       toast.fire({
-        title: variables?.successMessage || 'Beneficiary removed successfully',
+        title: variables?.successMessage || tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any, variables) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
-        title: variables?.errorMessage || 'Error while removing beneficiary.',
+        title: variables?.errorMessage || tg('ERROR_WHILE_REMOVING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -318,6 +323,7 @@ export const useRemoveBeneficiaryFromProject = () => {
 
 export const useValidateBeneficaryBankAccount = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -334,15 +340,14 @@ export const useValidateBeneficaryBankAccount = () => {
       qc.removeQueries({ queryKey: ['BANK_CHECK_STATUS', uuid] });
       toast.fire({
         title:
-          variables?.successMessage ||
-          'Accounts check in progress. Data will be listed soon',
+          variables?.successMessage || tg('ACCOUNTS_CHECK_IN_PROGRESS'),
         icon: 'success',
       });
     },
     onError: (error: any, variables: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
-        title: variables?.errorMessage || 'Error while validating beneficiary.',
+        title: variables?.errorMessage || tg('ERROR_WHILE_VALIDATING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -352,6 +357,7 @@ export const useValidateBeneficaryBankAccount = () => {
 
 export const useUpdateGroupPropose = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -373,14 +379,14 @@ export const useUpdateGroupPropose = () => {
         exact: false,
       });
       toast.fire({
-        title: variables?.successMessage || 'Group propose updated successfully',
+        title: variables?.successMessage || tg('GROUP_PROPOSE_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any, variables) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
-        title: variables?.errorMessage || 'Error while updating group propose',
+        title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_GROUP_PROPOSE'),
         icon: 'error',
         text: errorMessage,
       });
@@ -390,6 +396,7 @@ export const useUpdateGroupPropose = () => {
 
 export const useRemoveBeneficiary = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -402,14 +409,14 @@ export const useRemoveBeneficiary = () => {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
       toast.fire({
-        title: variables?.successMessage || 'Beneficiary removed successfully',
+        title: variables?.successMessage || tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any, variables) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
-        title: variables?.errorMessage || 'Error while removing beneficiary.',
+        title: variables?.errorMessage || tg('ERROR_WHILE_REMOVING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -419,6 +426,7 @@ export const useRemoveBeneficiary = () => {
 
 export const useRemoveBeneficiaryGroup = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -435,15 +443,15 @@ export const useRemoveBeneficiaryGroup = () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
       toast.fire({
         title:
-          variables?.successMessage || 'Beneficiary group removed successfully',
+          variables?.successMessage || tg('BENEFICIARY_GROUP_REMOVED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any, variables: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
         title:
-          variables?.errorMessage || 'Error while removing beneficiary group.',
+          variables?.errorMessage || tg('ERROR_WHILE_REMOVING_BENEFICIARY_GROUP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -482,6 +490,7 @@ const uploadBeneficiary = async (
 
 export const useUploadBeneficiary = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const { rumsanService, queryClient } = useRSQuery();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -511,7 +520,7 @@ export const useUploadBeneficiary = () => {
         if (data?.data?.success === false) {
           toast.fire({
             icon: 'error',
-            title: 'Something went wrong',
+            title: tg('SOMETHING_WENT_WRONG'),
             text: data?.data?.message || '',
           });
           return;
@@ -524,7 +533,9 @@ export const useUploadBeneficiary = () => {
           );
           toast.fire({
             icon: 'success',
-            title: `Some beneficiaries were discarded due to error in Xcapit Wallet Creation.${phoneNumber}`,
+            title: tg('SOME_BENEFICIARIES_DISCARDED_XCAPIT_WALLET_ERROR', {
+              phoneNumber: phoneNumber?.join(', ') ?? '',
+            }),
             timer: 5000,
           });
           return;
@@ -533,7 +544,7 @@ export const useUploadBeneficiary = () => {
 
         toast.fire({
           icon: 'success',
-          title: 'Beneficiary uploaded successfully',
+          title: tg('BENEFICIARY_UPLOADED_SUCCESSFULLY'),
         });
       },
       onError: (error: any) => {
@@ -541,7 +552,7 @@ export const useUploadBeneficiary = () => {
         const message = error.response?.data?.message || error.message;
         toast.fire({
           icon: 'error',
-          title: 'Something went wrong',
+          title: tg('SOMETHING_WENT_WRONG'),
           text: message,
         });
       },
@@ -579,6 +590,7 @@ const uploadBeneficiaryBulkQueue = async (
 };
 export const useUploadBeneficiaryBulkQueue = () => {
   const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const { rumsanService, queryClient } = useRSQuery();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -622,7 +634,7 @@ export const useUploadBeneficiaryBulkQueue = () => {
         const message = error.response?.data?.message || error.message;
         toast.fire({
           icon: 'error',
-          title: 'Something went wrong',
+          title: tg('SOMETHING_WENT_WRONG'),
           text: message,
         });
       },
@@ -827,6 +839,7 @@ const syncBeneficiaryGroup = async (uuid: UUID) => {
 };
 
 export const useSyncBeneficiaryGroup = () => {
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -843,15 +856,15 @@ export const useSyncBeneficiaryGroup = () => {
       toast.fire({
         title:
           variables?.successMessage ||
-          'Beneficiary sync started for following projects',
+          tg('BENEFICIARY_SYNC_STARTED_FOR_PROJECTS'),
         icon: 'success',
       });
     },
     onError: (error: any, variables: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
         title:
-          variables?.errorMessage || 'Error while syncing beneficiary group.',
+          variables?.errorMessage || tg('ERROR_WHILE_SYNCING_BENEFICIARY_GROUP'),
         icon: 'error',
         text: errorMessage,
       });

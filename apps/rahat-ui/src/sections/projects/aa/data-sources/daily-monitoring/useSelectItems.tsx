@@ -10,7 +10,7 @@ export const useSelectItems = () => {
 
   const dataSourceSelectItems = [
     { value: 'DHM', label: t('DHM') },
-    { value: 'GLOFAS', label: 'GLOFAS' },
+    { value: 'GLOFAS', label: t('GLOFAS') },
     {
       value: 'Flash Flood Risk Monitoring',
       label: t('FLASH_FLOOD_RISK_MONITORING'),

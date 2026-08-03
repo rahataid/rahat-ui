@@ -53,7 +53,7 @@ export default function FundManagementDetail() {
     },
     {
       name: t('N1_TOKEN_VALUE'),
-      amount: `Rs. ${formatNum(ONE_TOKEN_VALUE)}`,
+      amount: `${t('RS')} ${formatNum(ONE_TOKEN_VALUE)}`,
     },
   ];
 

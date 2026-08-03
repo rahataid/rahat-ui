@@ -61,7 +61,7 @@ export default function usePayoutTransactionLogTableColumn() {
       header: tv('AMOUNT_DISBURSED'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={`Rs. ${formatNum(row.original.totalSuccessAmount)}`}
+          text={`${t('RS')} ${formatNum(row.original.totalSuccessAmount)}`}
           maxLength={10}
         />
       ),
@@ -74,7 +74,7 @@ export default function usePayoutTransactionLogTableColumn() {
           (row.original.totalTokenAssigned * 1) /
           row.original.totalBeneficiaries;
         return (
-          <TruncatedCell text={`Rs. ${formatNum(amountPerBeneficiary)}`} maxLength={10} />
+          <TruncatedCell text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`} maxLength={10} />
         );
       },
     },
@@ -83,11 +83,13 @@ export default function usePayoutTransactionLogTableColumn() {
       header: tv('PAYOUT_TYPE'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={
-            row.getValue('payoutType') === 'VENDOR'
-              ? 'CVA'
-              : row.getValue('payoutType')
-          }
+          text={(() => {
+            const key =
+              row.getValue('payoutType') === 'VENDOR'
+                ? 'CVA'
+                : (row.getValue('payoutType') as string);
+            return key && tg.has(key as never) ? tg(key as never) : key;
+          })()}
           maxLength={10}
         />
       ),

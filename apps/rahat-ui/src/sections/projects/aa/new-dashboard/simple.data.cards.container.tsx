@@ -104,17 +104,17 @@ export default function SimpleDataCardsContainer({
     {
       title: t('BUDGET'),
       Icon: Coins,
-      number: `NRs. ${formatNum(parsedProjectBudget) ?? 0}`,
+      number: `${t('RS')} ${formatNum(parsedProjectBudget) ?? 0}`,
     },
     {
       title: t('BALANCE'),
       Icon: Coins,
-      number: tempDashboardStats ? `NRs. ${formatNum(tempDashboardStats.BALANCE)}` : `NRs. ${formatNum(projectBalance) ?? 0}`,
+      number: tempDashboardStats ? `${t('RS')} ${formatNum(tempDashboardStats.BALANCE)}` : `${t('RS')} ${formatNum(projectBalance) ?? 0}`,
     },
     {
       title: t('FUND_DISTRIBUTED'),
       Icon: HandCoins,
-      number: tempDashboardStats ? `NRs. ${formatNum(tempDashboardStats.FUND_DISTRIBUTED)}` : `NRs. ${formatNum(totalDistributed) ?? 0}`,
+      number: tempDashboardStats ? `${t('RS')} ${formatNum(tempDashboardStats.FUND_DISTRIBUTED)}` : `${t('RS')} ${formatNum(totalDistributed) ?? 0}`,
     },
     {
       title: t('NUMBER_OF_COMMUNICATION_PROJECT'),

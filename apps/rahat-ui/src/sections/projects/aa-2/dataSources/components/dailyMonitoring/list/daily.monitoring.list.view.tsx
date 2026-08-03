@@ -159,7 +159,7 @@ export default function DailyMonitoringListView() {
                 `/projects/aa/${projectId}/data-sources/daily-monitoring/add`,
               )
             }
-            name="Add"
+            name={tGlobal('ADD')}
             Icon={Plus}
           />
         </RoleAuth>

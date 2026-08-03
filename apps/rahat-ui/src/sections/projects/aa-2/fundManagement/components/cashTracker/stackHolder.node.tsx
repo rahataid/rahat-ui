@@ -59,12 +59,12 @@ function StakeholderNode({
               <p>
                 {t('PROJECT_BUDGET_LABEL')}{' '}
                 <span className="font-medium text-gray-900">
-                  Rs. {formatNum(Number(balance + sent))}
+                  {t('RS')} {formatNum(Number(balance + sent))}
                 </span>
               </p>
               <p>
 {t('REMAINING_BALANCE_LABEL')}{' '}
-                  <span className="font-medium text-gray-900">Rs. {formatNum(balance)}</span>
+                  <span className="font-medium text-gray-900">{t('RS')} {formatNum(balance)}</span>
               </p>
             </div>
           ) : name === 'Beneficiary' ? (
@@ -73,7 +73,7 @@ function StakeholderNode({
                 <p>
                   {t('CLAIMED')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {formatNum(received ?? 0)}
+                    {t('RS')} {formatNum(received ?? 0)}
                   </span>
                 </p>
               </div>
@@ -84,13 +84,13 @@ function StakeholderNode({
                 <p>
                   {t('RECEIVED_BALANCE')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {formatNum(received ?? 0)}
+                    {t('RS')} {formatNum(received ?? 0)}
                   </span>
                 </p>
                 <p>
 {t('REMAINING_BALANCE_LABEL')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {formatNum(balance ?? 0)}
+                    {t('RS')} {formatNum(balance ?? 0)}
                   </span>
                 </p>
               </div>

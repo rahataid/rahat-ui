@@ -64,7 +64,7 @@ export default function Budget({}: {}) {
 
     const formatted = formatNum(numAmount);
 
-    return currency === 'NPR' ? `Rs.${formatted}` : `$${formatted}`;
+    return currency === 'NPR' ? `${t('RS')}${formatted}` : `$${formatted}`;
   };
 
   return (

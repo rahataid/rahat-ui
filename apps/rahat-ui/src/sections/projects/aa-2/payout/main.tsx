@@ -51,7 +51,7 @@ export default function PayoutView() {
       {
         label: tv('TOTAL_CASH_DISTRIBUTION'),
         value:
-          `Rs. ${formatNum(statsPayout?.payoutStats?.totalCashDistribution)}` || 'N/A',
+          `${t('RS')} ${formatNum(statsPayout?.payoutStats?.totalCashDistribution)}` || 'N/A',
         infoIcon: true,
         infoTooltip: tv('TOTAL_CASH_DISTRIBUTION_TOOLTIP'),
       },

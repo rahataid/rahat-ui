@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { api } from '../../utils/api';
 import { useSwal } from 'libs/query/src/swal';
 
@@ -8,6 +9,7 @@ const uploadFile = async (file: any) => {
 };
 
 export const useUploadFile = () => {
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -17,16 +19,10 @@ export const useUploadFile = () => {
   });
   return useMutation({
     mutationFn: (file: any) => uploadFile(file),
-    // onSuccess: () => {
-    //     toast.fire({
-    //         title: 'File upload success',
-    //         icon: 'success',
-    //     })
-    // },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       toast.fire({
-        title: 'File upload failed.',
+        title: tg('FILE_UPLOAD_FAILED'),
         icon: 'error',
         text: errorMessage,
       });

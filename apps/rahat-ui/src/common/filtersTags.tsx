@@ -10,8 +10,12 @@ import {
 import { IconLabelBtn } from './icon.label.btn';
 import { Trash2, X } from 'lucide-react';
 
+const camelToUpperSnake = (key: string) =>
+  key.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
+
 const FiltersTags = ({ filters, setFilters, total }: any) => {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
   });
@@ -19,6 +23,23 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
   const handleFilterArrayChange = (key: string, value: string) => {
     const { [key]: _, ...rest } = filters;
     setFilters(rest);
+  };
+
+  const formatFilterKey = (key: string) => {
+    const translationKey = camelToUpperSnake(key) as any;
+    if (t.has(translationKey)) return t(translationKey);
+    if (tg.has(translationKey)) return tg(translationKey);
+    return key.charAt(0).toUpperCase() + key.slice(1);
+  };
+
+  const formatFilterValue = (value: unknown) => {
+    const str = String(value);
+    if (str === 'true') return tg('YES');
+    if (str === 'false') return tg('NO');
+    const translationKey = str.toUpperCase() as any;
+    if (t.has(translationKey)) return t(translationKey);
+    if (tg.has(translationKey)) return tg(translationKey);
+    return str;
   };
 
   return (
@@ -29,14 +50,14 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
           <div className="flex gap-4 items-center">
             {filterArray.map((filter, index) => (
               <div className="flex items-center gap-2" key={index}>
-                {filter?.key.charAt(0).toUpperCase() + filter?.key.slice(1)}:{' '}
+                {formatFilterKey(filter.key)}:{' '}
                 <span
                   onClick={() =>
                     handleFilterArrayChange(filter.key, filter.value as string)
                   }
                   className="cursor-pointer bg-gray-200 py-2 px-2 text-slate-700 rounded-xl text-xs flex items-center gap-2"
                 >
-                  {filter.value}
+                  {formatFilterValue(filter.value)}
                   <X className="w-4 h-4 text-red-600" />
                 </span>
               </div>

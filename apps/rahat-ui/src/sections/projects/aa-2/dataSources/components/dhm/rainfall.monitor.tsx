@@ -5,6 +5,14 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { MapPin, Radio } from 'lucide-react';
 
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  'BELOW WARNING LEVEL': 'BELOW_WARNING_LEVEL',
+  WARNING_LEVEL: 'WARNING_LEVEL',
+  WARNING: 'WARNING',
+  DANGER: 'DANGER',
+  DANGER_LEVEL: 'DANGER_LEVEL',
+};
+
 interface RainFallMonitorProps {
   name: string;
   description: string;
@@ -29,6 +37,7 @@ export function RainFallMonitor({
 }: RainFallMonitorProps) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
+  const statusKey = warningStatus && STATUS_LABEL_KEYS[warningStatus];
   return (
     <div className="p-4 rounded-sm border shadow flex justify-between space-x-4 ">
       <div className="flex-[1]">
@@ -47,8 +56,12 @@ export function RainFallMonitor({
                   : 'bg-red-100 text-red-500'
               }`}
             >
-              {warningStatus?.charAt(0).toUpperCase() +
-                warningStatus?.slice(1).toLowerCase() || 'N/A'}
+              {statusKey
+                ? t(statusKey as any)
+                : warningStatus
+                  ? warningStatus.charAt(0).toUpperCase() +
+                    warningStatus.slice(1).toLowerCase()
+                  : 'N/A'}
             </Badge>
           </div>
         </div>
@@ -80,7 +93,8 @@ export function RainFallMonitor({
                   : 'N/A'}
               </div>
               <div className="text-sm mt-1">
-                {formatNum(interval.hours)} {interval.hours === 1 ? 'hour' : 'hours'}
+                {formatNum(interval.hours)}{' '}
+                {interval.hours === 1 ? t('HOUR_LABEL') : t('HOURS_LABEL')}
               </div>
               <div className="text-xs text-gray-600 mt-2">
                 {t('WARNING_LEVEL')}:{' '}

@@ -8,11 +8,16 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useTranslations } from 'next-intl';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
   const t = useTranslations('BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
+  const formatPhone = usePhoneFormat();
+
+  const formatStatus = (value?: string) =>
+    value && tg.has(value as any) ? tg(value as any) : value ?? '-';
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -38,7 +43,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div> */}
             <div>
-              <p>{beneficiaryDetail?.gender ?? '-'}</p>
+              <p>{formatStatus(beneficiaryDetail?.gender)}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('GENDER')}
               </p>
@@ -50,25 +55,25 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.piiData?.phone ?? '-'}</p>
+              <p>{formatPhone(beneficiaryDetail?.piiData?.phone) || '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('PHONE_NUMBER')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.phoneStatus ?? '-'}</p>
+              <p>{formatStatus(beneficiaryDetail?.phoneStatus)}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('PHONE_STATUS')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.bankedStatus ?? '-'}</p>
+              <p>{formatStatus(beneficiaryDetail?.bankedStatus)}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {t('BANK_STATUS')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.internetStatus ?? '-'}</p>
+              <p>{formatStatus(beneficiaryDetail?.internetStatus)}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('INTERNET_STATUS')}
               </p>

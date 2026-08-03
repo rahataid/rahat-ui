@@ -13,6 +13,7 @@ export default function PayoutOverview({
   statsPayout,
 }: PayoutOverviewProps) {
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
 
   const pieOptions = React.useMemo(
@@ -28,11 +29,11 @@ export default function PayoutOverview({
 
   const pieDataLabel = [
     {
-      label: 'FSP',
+      label: tg('FSP'),
       value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
     },
     {
-      label: 'CVA',
+      label: tg('CVA'),
       value: statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
     },
   ];

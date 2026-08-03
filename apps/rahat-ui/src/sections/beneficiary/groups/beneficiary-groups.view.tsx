@@ -16,11 +16,13 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [selectedGroup, setSelectedGroup] =
     React.useState<ListBeneficiaryGroup>([]);
   const {
@@ -132,13 +134,15 @@ function BeneficiaryGroupsView() {
                         <div className="flex items-center gap-2">
                           <div className="flex gap-2 items-center text-[#667085]">
                             <Users size={18} strokeWidth={2} />
-                            {i?._count?.groupedBeneficiaries || 0} {t('BENEFICIARIES').toLowerCase()}
+                            {formatNum(i?._count?.groupedBeneficiaries || 0)} {t('BENEFICIARIES').toLowerCase()}
                           </div>
                           {i?.groupPurpose && (
                             <Badge className="text-gray-700 font-normal text-xs">
-                              {capitalizeFirstLetter(
-                                i?.groupPurpose?.split('_')[0] || '',
-                              )}
+                              {t.has(i.groupPurpose as any)
+                                ? t(i.groupPurpose as any)
+                                : capitalizeFirstLetter(
+                                    i?.groupPurpose?.split('_')[0] || '',
+                                  )}
                             </Badge>
                           )}
                         </div>

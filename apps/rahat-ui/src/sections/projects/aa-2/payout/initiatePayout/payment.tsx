@@ -164,7 +164,7 @@ export default function PaymentInitiation() {
       }`}
     >
       <RadioGroupItem value={value} id={`method-${value.toLowerCase()}`} />
-      <span>{value}</span>
+      <span>{t.has(value) ? t(value) : value}</span>
     </Label>
   );
 

@@ -2,6 +2,7 @@
 
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import {
   Tooltip,
   TooltipContent,
@@ -77,7 +78,11 @@ export default function BeneficiaryDetail({
   const walletAddress = beneficiaryDetail.walletAddress || '';
   const t = useTranslations('BENEFICIARY_DETAIL');
   const g = useTranslations('GLOBAL');
+
+  const formatStatus = (value?: string) =>
+    value && g.has(value as any) ? g(value as any) : value || '-';
   const formatNum = useNumberFormat();
+  const formatPhone = usePhoneFormat();
 
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
@@ -330,9 +335,9 @@ export default function BeneficiaryDetail({
               <p>{g('PHONE_NUMBER')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {beneficiaryDetail?.piiData?.phone ||
-                beneficiaryDetail?.phone ||
-                '-'}
+              {formatPhone(
+                beneficiaryDetail?.piiData?.phone || beneficiaryDetail?.phone,
+              ) || '-'}
             </p>
           </div>
 
@@ -354,7 +359,7 @@ export default function BeneficiaryDetail({
               <p>{g('PHONE_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {beneficiaryDetail?.phoneStatus || '-'}
+              {formatStatus(beneficiaryDetail?.phoneStatus)}
             </p>
           </div>
 
@@ -364,7 +369,7 @@ export default function BeneficiaryDetail({
               <p>{t('BANK_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {beneficiaryDetail?.bankedStatus || '-'}
+              {formatStatus(beneficiaryDetail?.bankedStatus)}
             </p>
           </div>
 
@@ -374,7 +379,7 @@ export default function BeneficiaryDetail({
               <p>{g('INTERNET_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {beneficiaryDetail?.internetStatus || '-'}
+              {formatStatus(beneficiaryDetail?.internetStatus)}
             </p>
           </div>
 
@@ -460,6 +465,8 @@ export default function BeneficiaryDetail({
                             >
                               {t('VIEW_LINK')}
                             </a>
+                          ) : typeof value === 'boolean' ? (
+                            value ? g('YES') : g('NO')
                           ) : (
                             String(value) || '-'
                           )}

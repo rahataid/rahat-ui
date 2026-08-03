@@ -82,7 +82,7 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
           <div className="flex flex-wrap gap-1">
             {apps.map((app, index) => (
               <Badge key={index} className="bg-gray-200 text-gray-600">
-                {app}
+                {t.has(app as any) ? t(app as any) : app}
               </Badge>
             ))}
           </div>

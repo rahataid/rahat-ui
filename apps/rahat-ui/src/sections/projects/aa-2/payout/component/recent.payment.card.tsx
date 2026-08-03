@@ -78,7 +78,7 @@ export default function RecentPaymentCard({
           </div>
 
           <div className=" flex text-sm text-muted-foreground mt-2">
-            {actions}
+            {tg.has(actions as never) ? tg(actions as never) : actions}
             {actions === 'CVA' && merchentName === 'OFFLINE' && (
               <>
                 <Dot />

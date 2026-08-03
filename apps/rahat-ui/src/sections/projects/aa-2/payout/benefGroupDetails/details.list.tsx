@@ -149,7 +149,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutStats = [
     {
       label: tv('ACTUAL_BUDGET'),
-      smallNumber: `Rs. ${formatNum(
+      smallNumber: `${t('RS')} ${formatNum(
         payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE,
       )}`,
       infoIcon: true,
@@ -157,7 +157,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     {
       label: tv('AMOUNT_DISBURSED'),
-      smallNumber: `Rs. ${formatNum(payout?.totalSuccessAmount ?? 0)}`,
+      smallNumber: `${t('RS')} ${formatNum(payout?.totalSuccessAmount ?? 0)}`,
       infoIcon: true,
       infoToolTip: tv('AMOUNT_DISBURSED_TOOLTIP'),
     },
@@ -165,7 +165,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       label: tv('PAYOUT_TYPE'),
       infoIcon: true,
       infoToolTip: tv('PAYOUT_TYPE_TOOLTIP'),
-      smallNumber: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+      smallNumber: (() => {
+        const key = payout?.type === 'VENDOR' ? 'CVA' : payout?.type;
+        return key && tg.has(key as never) ? tg(key as never) : key;
+      })(),
       badge: true,
     },
     {

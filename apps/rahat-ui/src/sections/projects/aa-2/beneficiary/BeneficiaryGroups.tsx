@@ -63,7 +63,11 @@ const BeneficiaryGroups = () => {
           ) : beneficiariesGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {beneficiariesGroups.map((i: any, index: number) => {
-                const groupPurposeName = i?.groupPurpose?.split('_')[0];
+                const groupPurposeName = i?.groupPurpose
+                  ? tg.has(i.groupPurpose as any)
+                    ? tg(i.groupPurpose as any)
+                    : i.groupPurpose.split('_')[0]
+                  : undefined;
                 return (
                   <div
                     key={index}

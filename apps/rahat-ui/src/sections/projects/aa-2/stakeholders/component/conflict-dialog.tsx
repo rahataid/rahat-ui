@@ -38,10 +38,11 @@ export function ConflictDialog({
   stakeholderName,
   entityName,
   title,
-  closeButtonText = 'Understood',
+  closeButtonText,
   conflictType,
 }: ConflictDialogProps) {
   const t = useTranslations('AA_PROJECT');
+  const resolvedCloseButtonText = closeButtonText || t('UNDERSTOOD');
   // Determine the conflict type and data to use
   const isStakeholderConflict =
     conflictType === 'stakeholder' || groupNames || stakeholderName;
@@ -50,7 +51,7 @@ export function ConflictDialog({
     entityName ||
     groupName ||
     stakeholderName ||
-    (isStakeholderConflict ? 'Stakeholder' : 'Stakeholder Group');
+    (isStakeholderConflict ? t('STAKEHOLDER') : t('STAKEHOLDER_GROUP'));
 
   // Auto-detect conflict type if not provided
   const detectedType = isStakeholderConflict ? 'stakeholder' : 'group';
@@ -73,20 +74,16 @@ export function ConflictDialog({
   // Configure messaging based on conflict type
   const config = {
     stakeholder: {
-      conflictDescription: `This stakeholder is currently linked to ${
-        itemsList.length
-      } stakeholder group${
-        itemsList.length !== 1 ? 's' : ''
-      } which are assigned to activities. Remove it from all of them to delete the stakeholder.`,
+      conflictDescription: t('STAKEHOLDER_CONFLICT_DESCRIPTION', {
+        count: itemsList.length,
+      }),
       listTitle: t('STAKEHOLDER_GROUPS'),
       // nextStep: 'Navigate to each stakeholder group listed above and remove this stakeholder from them. Once removed from all groups, you\'ll be able to delete the stakeholder.',
     },
     group: {
-      conflictDescription: `This stakeholder group is currently linked to ${
-        itemsList.length
-      } active communication${
-        itemsList.length !== 1 ? 's' : ''
-      }. Remove it from all of them to delete the group.`,
+      conflictDescription: t('GROUP_CONFLICT_DESCRIPTION', {
+        count: itemsList.length,
+      }),
       listTitle: t('COMMUNICATIONS'),
       // nextStep: 'Navigate to each communication listed above and unlink this group. Once removed from all communications, you\'ll be able to delete it.',
     },
@@ -154,7 +151,7 @@ export function ConflictDialog({
         {/* Footer */}
         <div className="flex gap-2 pt-2">
           <Button onClick={() => onOpenChange(false)} className="w-full ">
-            {closeButtonText}
+            {resolvedCloseButtonText}
           </Button>
         </div>
       </DialogContent>

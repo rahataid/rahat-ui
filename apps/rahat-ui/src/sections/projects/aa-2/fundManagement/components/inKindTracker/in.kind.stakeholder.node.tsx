@@ -19,6 +19,7 @@ function InKindStakeholderNode({
   isFirst?: boolean;
 }) {
   const t = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tAA = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
 
@@ -56,7 +57,7 @@ function InKindStakeholderNode({
                 <p>
                   {t('RECEIVED_STOCKS')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {formatNum(received)}
+                    {tAA('RS')} {formatNum(received)}
                   </span>
                 </p>
               </div>

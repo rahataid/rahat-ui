@@ -38,6 +38,7 @@ function TransferList({
   currentEntity?: any;
   onConfirmReceipt?: (payload: any) => void;
 }) {
+  const t = useTranslations('AA_PROJECT');
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const id = useParams().id as UUID;
@@ -84,7 +85,7 @@ function TransferList({
   };
 
   const formatAmount = (amount: number) => {
-    return `Rs.${formatNum(amount)}`;
+    return `${t('RS')}${formatNum(amount)}`;
   };
 
   return (
@@ -170,7 +171,7 @@ function TransferList({
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900 mt-1">
-                          Rs. {formatNum(transfer.amount)}
+                          {t('RS')} {formatNum(transfer.amount)}
                         </p>
 
                         {canConfirm &&

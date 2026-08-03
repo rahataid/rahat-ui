@@ -32,6 +32,7 @@ import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function BeneficiaryTransactionLogDetails() {
+  const t = useTranslations('AA_PROJECT');
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
@@ -122,14 +123,14 @@ export default function BeneficiaryTransactionLogDetails() {
         <DataCard
           title={tv('ACTUAL_BUDGET')}
           Icon={Coins}
-          smallNumber={`Rs. ${formatNum(data?.data?.amount * ONE_TOKEN_VALUE)}`}
+          smallNumber={`${t('RS')} ${formatNum(data?.data?.amount * ONE_TOKEN_VALUE)}`}
           className="h-24 w-full rounded-sm pt-1"
         />
 
         <DataCard
           title={tv('AMOUNT_DISBURSED')}
           Icon={Coins}
-          smallNumber={`Rs. ${formatNum(totalSuccessAmount || totalFailedAmount || 0)}`}
+          smallNumber={`${t('RS')} ${formatNum(totalSuccessAmount || totalFailedAmount || 0)}`}
           className="h-24 w-full rounded-sm pt-1"
         />
         {data?.data?.status.endsWith('COMPLETED') && (

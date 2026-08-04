@@ -84,20 +84,18 @@ export interface CustomersByMonthEntry {
   NEWLY_INACTIVE: number;
 }
 
-export interface ConversionByMonthEntry {
-  month: string;
+/** SMS-attributed conversion: of customers messaged, how many purchased in-window. */
+export interface SmsConversion {
+  messaged: number;
   converted: number;
-  fromNewlyInactive: number;
-  fromInactive: number;
-  base: number;
-  newlyInactiveBase: number;
-  inactiveBase: number;
   rate: number;
+  windowDays: number;
 }
 
-export interface ConversionRate {
-  month: string | null;
-  rate: number;
+/** One month of SMS-attributed conversion, bucketed by month messaged. */
+export interface SmsConversionByMonthEntry {
+  month: string;
+  messaged: number;
   converted: number;
-  base: number;
+  rate: number;
 }

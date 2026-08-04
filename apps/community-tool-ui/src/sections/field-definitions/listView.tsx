@@ -27,7 +27,6 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import {
   useCommunitySettingList,
-  useCommunitySettingUpdate,
   useFieldDefinitionsList,
   useUploadStandardJson,
   useGetStandardFields,
@@ -42,7 +41,6 @@ type IProps = {
   setFilters: (fiters: Record<string, string>) => void;
   filters: Record<string, string>;
   loading: boolean;
-
 };
 
 export default function ListView({
@@ -66,7 +64,6 @@ export default function ListView({
     [rows],
   );
 
-  const updateCommunitySettings = useCommunitySettingUpdate();
   const { data } = useCommunitySettingList({ page: 1, perPage: 20 });
   const schema = generateJsonSchemaFromFields(rows);
 
@@ -112,30 +109,6 @@ export default function ListView({
       },
       baseURL: aiBaseurl,
     });
-  };
-
-  const updateStandardSetting = async (totalfieldNumber: number) => {
-    if (!aiSetting) return;
-
-    const existingRequiredFields = Array.isArray(aiSetting.requiredFields)
-      ? aiSetting.requiredFields
-      : [];
-    const requiredFields = existingRequiredFields.includes('TOTAL')
-      ? existingRequiredFields
-      : [...existingRequiredFields, 'TOTAL'];
-
-    const finalSettingData = {
-      name: aiSetting.name,
-      requiredFields,
-      value: {
-        ...(aiSetting.value ?? {}),
-        TOTAL: totalfieldNumber,
-      },
-      isReadOnly: aiSetting.isReadOnly,
-      isPrivate: aiSetting.isPrivate,
-    };
-
-    await updateCommunitySettings.mutateAsync(finalSettingData);
   };
 
   React.useEffect(() => {
@@ -192,12 +165,8 @@ export default function ListView({
     setSyncing(true);
 
     try {
-      await updateStandardSetting(rows.length);
-
       if (!aiBaseurl) {
-        toast.warn(
-          'AI API settings are missing. The TOTAL setting was updated.',
-        );
+        toast.warn('AI API settings are missing.');
         return;
       }
 

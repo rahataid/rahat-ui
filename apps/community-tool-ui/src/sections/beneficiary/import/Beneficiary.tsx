@@ -38,6 +38,7 @@ import {
   useCreateImportSource,
   useExistingFieldMappings,
   useFetchKoboSettings,
+  useFieldDefinitionsList,
   useGetStandardFields,
   useUploadCsvForMapping,
   useUploadStandardJson,
@@ -70,9 +71,15 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     (setting: any) => setting.name === 'AI_API_URL',
   );
 
+  const { data: fieldData } = useFieldDefinitionsList({
+    page: 1,
+    perPage: 20,
+  });
+  const totalPage = fieldData?.response?.meta?.total;
+
   const aiBaseurl = aiSetting?.value?.URL;
+
   const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
-  const totalPage = aiSetting?.value?.TOTAL;
 
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
@@ -171,7 +178,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
             similarity: header.similarity,
           };
         });
-        console.log('AI Mapping Suggestions:', aiData);
 
         setFieldSuggestions(aiData); // Store AI suggestions separately
       }

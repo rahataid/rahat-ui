@@ -77,11 +77,11 @@ export function DateRangePicker({
                           <Button
                             type="button"
                             onClick={(e) => handleClose(e)}
-                            className="w-6 h-6 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
+                            className="w-4 h-4 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
                             variant="outline"
                             size="icon"
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-2.5 w-2.5" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -100,12 +100,12 @@ export function DateRangePicker({
                       <TooltipTrigger asChild>
                         <Button
                           type="button"
-                          onClick={handleClose}
-                          className="w-6 h-6 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
+                          onClick={(e) => handleClose(e)}
+                          className="w-4 h-4 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
                           variant="outline"
                           size="icon"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-2.5 w-2.5" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>

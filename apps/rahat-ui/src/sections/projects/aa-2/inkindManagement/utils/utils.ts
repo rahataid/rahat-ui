@@ -18,12 +18,13 @@ export function exportInkindSummary(summaryData: any) {
       'Total Available Stock': s?.totalAvailableStock ?? 0,
       'Total Assigned Stock': s?.totalAssignedStock ?? 0,
       'Total Redeemed Stock': s?.totalRedeemedStock ?? 0,
+      'Total Unredeemed Stock': Math.max(0, (s?.totalAssignedStock ?? 0) - (s?.totalRedeemedStock ?? 0)),
       'Predefined Redemptions': s?.chartData?.redemptionType?.predefined ?? 0,
       'Walk-in Redemptions': s?.chartData?.redemptionType?.walkIn ?? 0,
     },
   ];
 
-  generateExcel(rows, 'Inkind_Overview_Report', 7);
+  generateExcel(rows, 'Inkind_Overview_Report', 8);
 }
 
 export function hasInkindData(summaryData: any) {

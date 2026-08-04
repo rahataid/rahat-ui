@@ -9,21 +9,35 @@ import {
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
-import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
+import {
+  DataCard,
+  Heading,
+  IconLabelBtn,
+  TransactionCard,
+} from 'apps/rahat-ui/src/common';
 import { INFO_TOOL_TIPS } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useChains } from 'connectkit';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import TokenOverviewSkeleton from './token.overview.skeleton';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
+import { CloudDownloadIcon } from 'lucide-react';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { exportTokenStats, hasTokenData } from '../utils/token.utils';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
   const projectId = uuid as UUID;
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
+
   const { data, isLoading } = useFetchTokenStatsStellar({
     projectUUID: uuid,
+    startDate,
+    endDate,
   });
 
   const { data: getTokenStat } = useProjectDashboardReporting(projectId);
@@ -67,11 +81,39 @@ export default function TokensOverview() {
 
   return (
     <>
-      <Heading
-        title="Tokens Overview"
-        titleStyle="text-lg"
-        description="Overview of your tokens"
-      />
+      <div className="flex items-center justify-between">
+        <Heading
+          title="Tokens Overview"
+          titleStyle="text-lg"
+          description="Overview of your tokens"
+        />
+        <div className="flex gap-2 items-center">
+          <IconLabelBtn
+            Icon={CloudDownloadIcon}
+            handleClick={() => exportTokenStats(data)}
+            name={'Export Report'}
+            variant="outline"
+            disabled={!hasTokenData(data)}
+            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+          />
+          <DateRangePicker
+            placeholder="Pick date range"
+            handleDateChange={(range) => {
+              if (range?.from && range?.to) {
+                setStartDate(range.from.toISOString());
+                setEndDate(range.to.toISOString());
+              }
+            }}
+            handleClearDate={() => {
+              setStartDate(undefined);
+              setEndDate(undefined);
+            }}
+            type="range"
+            className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] w-[200px]"
+          />
+        </div>
+      </div>
+
       {!isLoading ? (
         <div className="space-y-4 mb-4">
           {/* First Row - 4 Columns */}

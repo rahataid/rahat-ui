@@ -51,6 +51,7 @@ import {
   Bot,
   FileUp,
   XCircle,
+  MessageSquare,
 } from 'lucide-react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -68,8 +69,8 @@ import {
   type RecentCampaign,
   type RecentImport,
   type CustomersByMonthEntry,
-  type ConversionByMonthEntry,
-  type ConversionRate,
+  type SmsConversion,
+  type SmsConversionByMonthEntry,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { formatRate } from '../communications/const';
@@ -123,14 +124,18 @@ function formatDate(dateStr: string): string {
   });
 }
 
-function ConversionTooltip({
+/**
+ * SMS trend tooltip. Shows the rate alongside converted/messaged so the
+ * percentage is never read without the counts behind it.
+ */
+function SmsTrendTooltip({
   active,
   label,
   data,
 }: {
   active?: boolean;
   label?: string;
-  data: ConversionByMonthEntry[];
+  data: { month: string; messaged: number; converted: number; rate: number }[];
 }) {
   if (!active || !label) return null;
   const entry = data.find((d) => d.month === label);
@@ -143,29 +148,10 @@ function ConversionTooltip({
         {formatRate(entry.rate)}
         <span className="text-muted-foreground font-normal">
           {' '}
-          — {formatNumber(entry.converted)} of {formatNumber(entry.base)} lapsed
+          — {formatNumber(entry.converted)} of {formatNumber(entry.messaged)}{' '}
+          messaged
         </span>
       </p>
-      <div className="flex items-center gap-1.5 text-muted-foreground">
-        <span
-          className="h-2 w-2 rounded-full"
-          style={{ backgroundColor: COLORS.newlyInactive }}
-        />
-        From newly inactive
-        <span className="text-foreground font-medium tabular-nums ml-auto pl-3">
-          {formatNumber(entry.fromNewlyInactive)}
-        </span>
-      </div>
-      <div className="flex items-center gap-1.5 text-muted-foreground">
-        <span
-          className="h-2 w-2 rounded-full"
-          style={{ backgroundColor: COLORS.inactive }}
-        />
-        From inactive
-        <span className="text-foreground font-medium tabular-nums ml-auto pl-3">
-          {formatNumber(entry.fromInactive)}
-        </span>
-      </div>
     </div>
   );
 }
@@ -181,7 +167,9 @@ const COLORS = {
   skipped: '#f59e0b', // amber-500
   gauge: '#6366f1',
   gaugeTrack: '#e2e8f0', // slate-200
-  conversionRate: '#10b981', // emerald-500
+  smsConverted: '#22c55e', // green-500
+  smsMessaged: '#c7d2fe', // indigo-200 (the not-converted remainder)
+  smsRate: '#6366f1', // indigo-500
 };
 
 // =============================================================================
@@ -192,8 +180,10 @@ export default function DashboardView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
   const today = new Date();
-  const thisMonth = `${today.getFullYear()}-${String(
-    today.getMonth() + 1,
+  // UTC to match the backend's month keys (which are UTC-anchored), so the
+  // default range bound lines up with the data regardless of browser timezone.
+  const thisMonth = `${today.getUTCFullYear()}-${String(
+    today.getUTCMonth() + 1,
   ).padStart(2, '0')}`;
   const [fromMonth, setFromMonth] = useState<string>('');
   const [toMonth, setToMonth] = useState<string>(thisMonth);
@@ -209,14 +199,26 @@ export default function DashboardView() {
     getStat(stats, 'NEWLY_INACTIVE_CUSTOMER') || 0;
   const customersByMonth: CustomersByMonthEntry[] =
     getStat(stats, 'CUSTOMERS_BY_MONTH') || [];
-  const conversionByMonth: ConversionByMonthEntry[] =
-    getStat(stats, 'CONVERSION_BY_MONTH') || [];
-  const conversionRate: ConversionRate = getStat(stats, 'CONVERSION_RATE') || {
-    month: null,
-    rate: 0,
+  const smsConversion: SmsConversion = getStat(stats, 'SMS_CONVERSION') || {
+    messaged: 0,
     converted: 0,
-    base: 0,
+    rate: 0,
+    windowDays: 60,
   };
+  const smsConversionByMonth: SmsConversionByMonthEntry[] =
+    getStat(stats, 'SMS_CONVERSION_BY_MONTH') || [];
+  // Stacked-bar shape: converted (green) + the not-converted remainder = messaged.
+  const smsTrendData = useMemo(
+    () =>
+      smsConversionByMonth.map((e: SmsConversionByMonthEntry) => ({
+        month: e.month,
+        messaged: e.messaged,
+        converted: e.converted,
+        notConverted: Math.max(e.messaged - e.converted, 0),
+        rate: e.rate,
+      })),
+    [smsConversionByMonth],
+  );
 
   // Communication stats are now provided as individual stats, not a combined object
   const totalMessagesSent: number = getStat(stats, 'TOTAL_MESSAGES_SENT') || 0;
@@ -329,17 +331,6 @@ export default function DashboardView() {
     });
   }, [customersByMonth, fromMonth, toMonth]);
 
-  // Conversion trend shares the same From/To pickers as the category trend, so
-  // both charts stay in step.
-  const filteredConversionData = useMemo(() => {
-    if (!conversionByMonth.length) return [];
-    return conversionByMonth.filter((entry: ConversionByMonthEntry) => {
-      if (fromMonth && entry.month < fromMonth) return false;
-      if (toMonth && entry.month > toMonth) return false;
-      return true;
-    });
-  }, [conversionByMonth, fromMonth, toMonth]);
-
   // Delivery gauge data for radial bar
   // value is always 100; the arc length is controlled by endAngle
   const deliveryGaugeData = useMemo(
@@ -421,18 +412,6 @@ export default function DashboardView() {
           ? 'Needs improvement'
           : 'Critical',
     },
-    {
-      title: 'Conversion Rate',
-      value: formatRate(conversionRate.rate),
-      icon: TrendingUp,
-      bgColor: 'bg-teal-500/10',
-      iconColor: 'text-teal-500',
-      subtitle: conversionRate.month
-        ? `${formatNumber(conversionRate.converted)} of ${formatNumber(
-            conversionRate.base,
-          )} reactivated`
-        : 'No data yet',
-    },
   ];
 
   // ==========================================================================
@@ -470,7 +449,7 @@ export default function DashboardView() {
         <ScrollArea className="h-[calc(100vh-155px)]">
           <div className="flex-1 p-6 space-y-6">
             {/* ── SECTION 1: KPI Summary Strip ──────────────────── */}
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
               {kpiCards.map((card) => (
                 <Card
                   key={card.title}
@@ -1019,47 +998,99 @@ export default function DashboardView() {
               </CardContent>
             </Card>
 
-            {/* ── SECTION 3b: Reactivation Conversion Trend ────── */}
+            {/* ── SECTION 3c: SMS Conversion Funnel ─────────────── */}
             <Card className="transition-all duration-200 hover:shadow-md">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="rounded-lg p-2 bg-teal-500/10 shrink-0">
-                    <TrendingUp className="h-4 w-4 text-teal-500" />
+                  <div className="rounded-lg p-2 bg-violet-500/10 shrink-0">
+                    <MessageSquare className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
                     <CardTitle className="text-base font-semibold">
-                      Reactivation Conversion
+                      SMS Conversion
                     </CardTitle>
                     <CardDescription className="text-xs">
-                      Inactive customers returning to active, per month — shares
-                      the date range above
+                      Customers who purchased within {smsConversion.windowDays}{' '}
+                      days of a successful message
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                {filteredConversionData.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
+                  {/* Messaged */}
+                  <div className="rounded-lg border bg-muted/30 p-4 text-center">
+                    <p className="text-3xl font-bold text-foreground tabular-nums">
+                      {formatNumber(smsConversion.messaged)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Total customers messaged
+                    </p>
+                  </div>
+                  {/* Converted */}
+                  <div className="rounded-lg border bg-emerald-500/5 border-emerald-500/20 p-4 text-center">
+                    <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-500 tabular-nums">
+                      {formatNumber(smsConversion.converted)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Total converted
+                    </p>
+                  </div>
+                  {/* Rate */}
+                  <div className="rounded-lg border bg-primary/5 border-primary/20 p-4 text-center flex flex-col justify-center">
+                    <p className="text-3xl font-bold text-primary tabular-nums">
+                      {formatRate(smsConversion.rate)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Conversion rate
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ── SECTION 3d: SMS Conversion Trend ──────────────── */}
+            <Card className="transition-all duration-200 hover:shadow-md">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="rounded-lg p-2 bg-violet-500/10 shrink-0">
+                    <MessageSquare className="h-4 w-4 text-violet-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <CardTitle className="text-base font-semibold">
+                      SMS Conversion Trend
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      By month messaged — bar height is customers messaged,
+                      green is those who converted within{' '}
+                      {smsConversion.windowDays} days
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {smsTrendData.some((d) => d.messaged > 0) ? (
                   <>
                     <ChartContainer
                       config={{
-                        fromNewlyInactive: {
-                          label: 'From Newly Inactive',
-                          color: COLORS.newlyInactive,
+                        converted: {
+                          label: 'Converted',
+                          color: COLORS.smsConverted,
                         },
-                        fromInactive: {
-                          label: 'From Inactive',
-                          color: COLORS.inactive,
+                        notConverted: {
+                          label: 'Messaged',
+                          color: COLORS.smsMessaged,
                         },
                         rate: {
                           label: 'Conversion Rate',
-                          color: COLORS.conversionRate,
+                          color: COLORS.smsRate,
                         },
                       }}
                       className="h-[280px] w-full"
                     >
                       <ResponsiveContainer width="100%" height="100%">
                         <ComposedChart
-                          data={filteredConversionData}
+                          data={smsTrendData}
                           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                         >
                           <CartesianGrid
@@ -1084,6 +1115,7 @@ export default function DashboardView() {
                             tick={{ fontSize: 11 }}
                             dx={-4}
                             width={40}
+                            allowDecimals={false}
                           />
                           <YAxis
                             yAxisId="rate"
@@ -1095,31 +1127,27 @@ export default function DashboardView() {
                             tickFormatter={(v) => `${Number(v).toFixed(0)}%`}
                           />
                           <ChartTooltip
-                            content={
-                              <ConversionTooltip
-                                data={filteredConversionData}
-                              />
-                            }
+                            content={<SmsTrendTooltip data={smsTrendData} />}
                           />
                           <Bar
                             yAxisId="count"
-                            dataKey="fromNewlyInactive"
-                            stackId="conv"
-                            fill={COLORS.newlyInactive}
+                            dataKey="converted"
+                            stackId="sms"
+                            fill={COLORS.smsConverted}
                             radius={[0, 0, 0, 0]}
                           />
                           <Bar
                             yAxisId="count"
-                            dataKey="fromInactive"
-                            stackId="conv"
-                            fill={COLORS.inactive}
+                            dataKey="notConverted"
+                            stackId="sms"
+                            fill={COLORS.smsMessaged}
                             radius={[3, 3, 0, 0]}
                           />
                           <Line
                             yAxisId="rate"
                             type="monotone"
                             dataKey="rate"
-                            stroke={COLORS.conversionRate}
+                            stroke={COLORS.smsRate}
                             strokeWidth={2}
                             dot={false}
                           />
@@ -1128,15 +1156,9 @@ export default function DashboardView() {
                     </ChartContainer>
                     <div className="flex justify-center gap-6 mt-3 text-sm">
                       {[
-                        {
-                          label: 'From Newly Inactive',
-                          color: COLORS.newlyInactive,
-                        },
-                        { label: 'From Inactive', color: COLORS.inactive },
-                        {
-                          label: 'Conversion Rate',
-                          color: COLORS.conversionRate,
-                        },
+                        { label: 'Converted', color: COLORS.smsConverted },
+                        { label: 'Messaged', color: COLORS.smsMessaged },
+                        { label: 'Conversion Rate', color: COLORS.smsRate },
                       ].map((item) => (
                         <div
                           key={item.label}
@@ -1155,10 +1177,8 @@ export default function DashboardView() {
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                    <TrendingUp className="h-8 w-8 mb-2 opacity-30" />
-                    <p className="text-sm">
-                      No reactivation data for this period
-                    </p>
+                    <MessageSquare className="h-8 w-8 mb-2 opacity-30" />
+                    <p className="text-sm">No SMS delivery data yet</p>
                   </div>
                 )}
               </CardContent>

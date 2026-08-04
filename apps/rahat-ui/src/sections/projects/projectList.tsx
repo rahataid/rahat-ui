@@ -28,7 +28,7 @@ import { useState } from 'react';
 import SelectComponent from './comms/select.component';
 import CustomPagination from '../../components/customPagination';
 import TooltipWrapper from '../../components/tooltip.wrapper';
-import { dateFormat } from '../../utils/dateFormate';
+import { useDateFormat } from '../../utils/useDateFormat';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
 
@@ -50,6 +50,7 @@ export function StatusBadge({ status }: { status?: string }) {
 export default function ListProject() {
   const t = useTranslations('PROJECTS_LIST');
   const g = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const { data, isLoading } = useProjectList();
   const closeProject = useProjectClose();
 
@@ -106,7 +107,7 @@ export default function ListProject() {
       accessorKey: 'createdAt',
       cell: ({ row }) =>
         row.original.createdAt
-          ? dateFormat(row.original.createdAt)
+          ? formatDate(row.original.createdAt, 'MMMM d, yyyy, h:mm:ss a')
           : '—',
     },
     {

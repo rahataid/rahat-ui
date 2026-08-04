@@ -877,6 +877,7 @@ export const useUpdateElRedemption = () => {
 export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
+  const tp = useTranslations('PROJECTS_LIST');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -888,7 +889,7 @@ export const useProjectEdit = () => {
     {
       onSuccess: () => {
         toast.fire({
-          title: 'Project edited successfully',
+          title: tp('PROJECT_EDITED_SUCCESSFULLY'),
           icon: 'success',
         });
         queryClient.invalidateQueries({
@@ -897,7 +898,7 @@ export const useProjectEdit = () => {
       },
       onError: () => {
         toast.fire({
-          title: 'Error while editing project.',
+          title: tp('ERROR_WHILE_EDITING_PROJECT'),
           icon: 'error',
         });
       },
@@ -912,6 +913,7 @@ export const useProjectEdit = () => {
 };
 export const useProjectClose = () => {
   const { queryClient, rumsanService } = useRSQuery();
+  const tp = useTranslations('PROJECTS_LIST');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -923,14 +925,14 @@ export const useProjectClose = () => {
     {
       onSuccess: () => {
         toast.fire({
-          title: 'Project closed successfully',
+          title: tp('PROJECT_CLOSED_SUCCESSFULLY'),
           icon: 'success',
         });
         queryClient.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
       },
       onError: () => {
         toast.fire({
-          title: 'Error while closing project.',
+          title: tp('ERROR_WHILE_CLOSING_PROJECT'),
           icon: 'error',
         });
       },

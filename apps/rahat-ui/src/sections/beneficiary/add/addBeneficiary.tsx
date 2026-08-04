@@ -35,6 +35,7 @@ import {
 import Back from '../../projects/components/back';
 import HeaderWithBack from '../../projects/components/header.with.back';
 import { useTranslations } from 'next-intl';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
 
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
@@ -46,13 +47,16 @@ export default function AddBeneficiaryForm() {
     name: z
       .string({ required_error: g('REQUIRED') })
       .min(4, { message: g('NAME_MIN_LENGTH') })
-      .regex(/^[a-zA-Z\s]+$/, {
+      .regex(/^[\p{L}\p{M}\s]+$/u, {
         message: g('NAME_LETTERS_ONLY'),
       }),
     walletAddress: z.string({ required_error: g('REQUIRED') }),
-    phone: z
-      .string({ required_error: g('REQUIRED') })
-      .refine(isValidPhoneNumber, { message: g('INVALID_PHONE') }),
+    phone: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z
+        .string({ required_error: g('REQUIRED') })
+        .refine(isValidPhoneNumber, { message: g('INVALID_PHONE') }),
+    ),
     email: z
       .string()
       .optional()
@@ -66,12 +70,15 @@ export default function AddBeneficiaryForm() {
       .toUpperCase(),
     phoneStatus: z.string({ required_error: g('REQUIRED') }).toUpperCase(),
     address: z.string().optional(),
-    age: z
-      .string()
-      .optional()
-      .refine((age) => !age || /^[1-9]\d*$/.test(age), {
-        message: g('AGE_POSITIVE_INTEGER'),
-      }),
+    age: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z
+        .string()
+        .optional()
+        .refine((age) => !age || /^[1-9]\d*$/.test(age), {
+          message: g('AGE_POSITIVE_INTEGER'),
+        }),
+    ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

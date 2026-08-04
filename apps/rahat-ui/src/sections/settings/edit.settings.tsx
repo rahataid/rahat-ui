@@ -80,11 +80,11 @@ export default function EditSettings({
         (data?.data?.isPrivate
           ? [{ value: { key: '', value: '' } }]
           : Object.keys(data?.data?.value).map((key) => ({
-              value: {
-                key: key,
-                value: data?.data?.value[key],
-              },
-            }))),
+            value: {
+              key: key,
+              value: data?.data?.value?.[key],
+            },
+          }))),
       isPrivate: (data?.data?.isPrivate && data?.data?.isPrivate) || false,
       isReadOnly: data?.data?.isReadOnly || false,
     },
@@ -133,11 +133,11 @@ export default function EditSettings({
         (data?.data?.isPrivate
           ? [{ value: { key: '', value: '' } }]
           : Object.keys(data?.data?.value).map((key) => ({
-              value: {
-                key: key,
-                value: data?.data?.value[key],
-              },
-            }))),
+            value: {
+              key: key,
+              value: data?.data?.value[key],
+            },
+          }))),
       isPrivate: (data?.data?.isPrivate && data?.data?.isPrivate) || false,
       isReadOnly: data?.data?.isReadOnly || false,
     });

@@ -621,7 +621,7 @@ export default function ImportStakeholder() {
             ? t('GROUP_CREATED_WITH_NAME', { name: groupNameValue })
             : '';
         toast.success(
-          t('STAKEHOLDERS_IMPORTED_SUCCESSFULLY', { count: successCount }) + groupMsg,
+          t('STAKEHOLDERS_IMPORTED_SUCCESSFULLY', { count: formatNum(successCount) }) + groupMsg,
         );
 
         resetValidationState();

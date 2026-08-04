@@ -9,6 +9,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { IconLabelBtn } from './icon.label.btn';
 import { Trash2, X } from 'lucide-react';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const camelToUpperSnake = (key: string) =>
   key.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
@@ -16,6 +17,7 @@ const camelToUpperSnake = (key: string) =>
 const FiltersTags = ({ filters, setFilters, total }: any) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
   });
@@ -45,7 +47,9 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
   return (
     <div className="rounded bg-card  px-4 text-sm mb-2">
       <div className="flex items-center gap-6 w-full">
-        <p className="text-primary min-w-max">{t('RESULTS_FOUND', { total })}</p>
+        <p className="text-primary min-w-max">
+          {t('RESULTS_FOUND', { total: formatNum(total) })}
+        </p>
         <ScrollArea className="w-full py-2">
           <div className="flex gap-4 items-center">
             {filterArray.map((filter, index) => (

@@ -46,7 +46,9 @@ import { useRouter } from 'next/navigation';
 import DeleteButton from '../../components/delete.btn';
 import { toast } from 'react-toastify';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 type IProps = {
   vendorsDetail: any;
@@ -59,6 +61,8 @@ export default function VendorsDetailSplitView({
 }: IProps) {
   const t = useTranslations('VENDORS_DETAIL_SPLIT_VIEW');
   const g = useTranslations('GLOBAL');
+  const locale = useLocale();
+  const formatPhone = usePhoneFormat();
   const router = useRouter();
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
@@ -108,20 +112,34 @@ export default function VendorsDetailSplitView({
     });
     closeSecondPanel();
   };
-  const formattedDate =
-    vendorsDetail?.createdAt &&
-    !isNaN(new Date(vendorsDetail.createdAt).getTime())
-      ? new Intl.DateTimeFormat('en-NP', {
-          timeZone: 'Asia/Kathmandu',
-          weekday: 'short',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true,
-        }).format(new Date(vendorsDetail.createdAt))
-      : 'N/A';
+  const formattedDate = React.useMemo(() => {
+    if (
+      !vendorsDetail?.createdAt ||
+      isNaN(new Date(vendorsDetail.createdAt).getTime())
+    ) {
+      return g('N_A');
+    }
+    const d = new Date(vendorsDetail.createdAt);
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'Asia/Kathmandu',
+      weekday: 'short',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    };
+    const neOptions =
+      locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
+    const formatter = new Intl.DateTimeFormat(
+      locale === 'ne' ? 'ne-NP' : locale,
+      neOptions,
+    );
+    return locale === 'ne'
+      ? localizeNepaliParts(d, options, formatter.formatToParts(d))
+      : formatter.format(d);
+  }, [vendorsDetail?.createdAt, locale, g]);
 
   return (
     <div className="h-full border-l">
@@ -168,9 +186,15 @@ export default function VendorsDetailSplitView({
               {vendorsDetail?.name}
             </h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{vendorsDetail?.status ?? 'N/A'}</Badge>
+              <Badge>
+                {vendorsDetail?.status && g.has(vendorsDetail.status as any)
+                  ? g(vendorsDetail.status as any)
+                  : vendorsDetail?.status ?? g('N_A')}
+              </Badge>
               <p className="text-base text-muted-foreground">
-                {vendorsDetail?.gender ?? 'N/A'}
+                {vendorsDetail?.gender && g.has(vendorsDetail.gender as any)
+                  ? g(vendorsDetail.gender as any)
+                  : vendorsDetail?.gender ?? g('N_A')}
               </p>
             </div>
           </div>
@@ -246,7 +270,7 @@ export default function VendorsDetailSplitView({
               <p>{g('PHONE_NUMBER')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {vendorsDetail?.phone || '-'}
+              {formatPhone(vendorsDetail?.phone) || '-'}
             </p>
           </div>
 

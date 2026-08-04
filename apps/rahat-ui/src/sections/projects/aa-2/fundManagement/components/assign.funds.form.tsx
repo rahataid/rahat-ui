@@ -30,6 +30,7 @@ import {
   FundAssignmentFormValues,
 } from './schemas/funds.validation';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
@@ -48,6 +49,7 @@ export default function AssignFundsForm({
   handleStepChange: (step: number) => void;
 }) {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
 
@@ -257,9 +259,10 @@ export default function AssignFundsForm({
                   <FormLabel>{t('TOTAL_TOKEN_AMOUNT_LABEL')}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
                       className="bg-gray-500 text-white"
-                      {...field}
+                      name={field.name}
+                      value={formatNum(field.value)}
                       readOnly
                       disabled
                     />

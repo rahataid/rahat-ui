@@ -10,6 +10,7 @@ type DateFormatPattern =
   | 'eee, MMMM d, yyyy, h:mm:ss'
   | 'eee, MMM d yyyy, hh:mm:ss a'
   | 'eee, MMMM d, yyyy'
+  | 'eee, MMMM d, yyyy, h:mm a'
   | 'MMM dd'
   | 'MMMM d, yyyy, h:mm:ss'
   | 'hh:mm a'
@@ -77,6 +78,15 @@ const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+  },
+  'eee, MMMM d, yyyy, h:mm a': {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
   },
   'MMM dd': {
     month: 'short',
@@ -168,26 +178,59 @@ export const NEPALI_MONTHS_LONG = [
 // silently fall back to English even though numberingSystem: 'deva' still
 // localizes the digits. Substitute those two parts ourselves so the output
 // is consistently Nepali regardless of the runtime's ICU data completeness.
+const EN_WEEKDAY_INDEX: Record<string, number> = {
+  Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+};
+
+// Deriving weekday/month from the Date object directly (d.getDay()/
+// d.getMonth()) uses the *browser's* local timezone. When the caller has
+// pinned the format to a specific timeZone (e.g. displaying a UTC
+// timestamp as Asia/Kathmandu time regardless of viewer location), that
+// would silently disagree with the timezone-correct digits Intl already
+// produced. These helpers re-derive the index through Intl with the same
+// timeZone instead, so it always matches.
+function getWeekdayIndex(d: Date, timeZone?: string): number {
+  if (!timeZone) return d.getDay();
+  const enWeekday = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    timeZone,
+  }).format(d);
+  return EN_WEEKDAY_INDEX[enWeekday] ?? d.getDay();
+}
+
+function getMonthIndex(d: Date, timeZone?: string): number {
+  if (!timeZone) return d.getMonth();
+  const enMonth = new Intl.DateTimeFormat('en-US', {
+    month: 'numeric',
+    timeZone,
+  }).format(d);
+  const n = parseInt(enMonth, 10);
+  return isNaN(n) ? d.getMonth() : n - 1;
+}
+
 export function localizeNepaliParts(
   d: Date,
   options: Intl.DateTimeFormatOptions,
   parts: Intl.DateTimeFormatPart[],
 ): string {
+  const timeZone = options.timeZone;
   return parts
     .map((part) => {
       if (part.type === 'weekday') {
+        const idx = getWeekdayIndex(d, timeZone);
         return options.weekday === 'long'
-          ? NEPALI_WEEKDAYS_LONG[d.getDay()]
-          : NEPALI_WEEKDAYS_SHORT[d.getDay()];
+          ? NEPALI_WEEKDAYS_LONG[idx]
+          : NEPALI_WEEKDAYS_SHORT[idx];
       }
       if (
         part.type === 'month' &&
         options.month !== 'numeric' &&
         options.month !== '2-digit'
       ) {
+        const idx = getMonthIndex(d, timeZone);
         return options.month === 'long'
-          ? NEPALI_MONTHS_LONG[d.getMonth()]
-          : NEPALI_MONTHS_SHORT[d.getMonth()];
+          ? NEPALI_MONTHS_LONG[idx]
+          : NEPALI_MONTHS_SHORT[idx];
       }
       return part.value;
     })

@@ -559,7 +559,7 @@ export default function InkindList() {
               <div>
                 <p className="text-sm text-muted-foreground">{tv('AVAILABLE_STOCK')}</p>
                 <p className="text-base font-semibold text-primary">
-                  {stockDialog.item?.availableStock ?? 0}
+                  {formatNum(stockDialog.item?.availableStock ?? 0)}
                 </p>
               </div>
             )}

@@ -313,7 +313,7 @@ export default function AddTriggerView() {
           <AlertDescription>
             <p>{t('PLEASE_VERIFY_IF_DATA_SOURCE_TYPES')}</p>
             <ul className="list-inside list-disc text-sm">
-              <li>Check triggers settings &apos;DATASOURCETYPES&apos;</li>
+              <li>{t('CHECK_TRIGGER_SETTINGS_DATASOURCETYPES')}</li>
             </ul>
           </AlertDescription>
         </Alert>

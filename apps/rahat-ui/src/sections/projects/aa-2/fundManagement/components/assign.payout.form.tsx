@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, CheckCircle2, ChevronDown, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -77,6 +78,7 @@ export default function PayoutFundManagementForm({
   onWantsPayoutChange,
 }: PayoutFundManagementFormProps) {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const payoutFundSchema = useMemo(() => buildPayoutFundSchema(t), [t]);
   // Router goes here
   const params = useParams();
@@ -438,7 +440,7 @@ export default function PayoutFundManagementForm({
                 <div>
                   <p className="text-sm font-semibold">{groupName}</p>
                   <p className="text-xs text-muted-foreground">
-                    {t('BENEFICIARIES_COUNT', { count: tableData.length })}
+                    {t('BENEFICIARIES_COUNT', { count: formatNum(tableData.length) })}
                   </p>
                 </div>
                 <SearchInput

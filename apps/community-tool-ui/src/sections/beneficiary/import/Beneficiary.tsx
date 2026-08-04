@@ -72,6 +72,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
   const aiBaseurl = aiSetting?.value?.URL;
   const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
+  const totalPage = aiSetting?.value?.TOTAL;
 
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
@@ -118,6 +119,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         payload: formData,
         baseURL: aiBaseurl,
         standardName: aiStandardName,
+        totalPage: totalPage,
       });
 
       if (uploadResult && uploadResult.classified_headers.length) {

@@ -6,10 +6,12 @@ const uploadExcel = async ({
   payload,
   baseURL,
   standardName,
+  totalPage,
 }: {
   payload: any;
   baseURL: string;
   standardName: string;
+  totalPage: number;
 }) => {
   const aiApi = getAiApi(baseURL);
   const res = await aiApi.post('/api/csv/upload/', payload, {
@@ -18,7 +20,7 @@ const uploadExcel = async ({
     },
     params: {
       page: 1,
-      page_size: 300,
+      page_size: totalPage,
       standard_name: standardName,
     },
   });
@@ -98,11 +100,13 @@ export const useUploadCsvForMapping = () => {
       payload,
       baseURL,
       standardName,
+      totalPage,
     }: {
       payload: any;
       baseURL: string;
       standardName: string;
-    }) => uploadExcel({ payload, baseURL, standardName }),
+      totalPage: number;
+    }) => uploadExcel({ payload, baseURL, standardName, totalPage }),
     onSuccess: () => {
       //qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
     },

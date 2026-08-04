@@ -6,6 +6,7 @@ import { useSwal } from 'libs/query/src/swal';
 import { usePhasesStore } from './phases.store';
 import React, { useEffect } from 'react';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { PHASE_QUERY_KEYS } from '../trigger-statements/trigger-statements.constants';
 
 export const useSinglePhase = (
   uuid: UUID,
@@ -25,7 +26,7 @@ export const useSinglePhase = (
   });
 
   const query = useQuery({
-    queryKey: ['phase', uuid, phaseId],
+    queryKey: [PHASE_QUERY_KEYS.PHASE, uuid, phaseId],
     enabled: options?.enabled !== false,
     queryFn: async () => {
       try {
@@ -89,10 +90,10 @@ export const useRevertPhase = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['phase'] });
-      qc.invalidateQueries({ queryKey: ['phases'] });
-      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
-      qc.invalidateQueries({ queryKey: ['phaseHistory'] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE_HISTORY] });
       toast.fire({
         title: 'Phase reverted successfully.',
         icon: 'success',
@@ -117,7 +118,7 @@ export const usePhaseHistory = (
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['phaseHistory', uuid, payload],
+    queryKey: [PHASE_QUERY_KEYS.PHASE_HISTORY, uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -148,7 +149,7 @@ export const usePhases = (uuid: UUID) => {
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
 
   const query = useQuery({
-    queryKey: ['phases', uuid],
+    queryKey: [PHASE_QUERY_KEYS.PHASES, uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

@@ -1,6 +1,9 @@
-import { useProjectSettingsStore, useProjectStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { Copy, CopyCheckIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
@@ -27,7 +30,12 @@ export default function InfoItem({
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
-  const project = useProjectStore((p) => p.singleProject);
+  const txUrl = getExplorerUrl({
+    chainSettings:
+      settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+    target: 'tx',
+    value,
+  });
 
   return (
     <div className="space-y-1 break-words">
@@ -37,7 +45,7 @@ export default function InfoItem({
           <>
             {link ? (
               <a
-                href={`https://sepolia.basescan.org/tx/${value}`}
+                href={txUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer truncate w-24"

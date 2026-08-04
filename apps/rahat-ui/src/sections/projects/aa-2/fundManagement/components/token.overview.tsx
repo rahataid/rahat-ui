@@ -27,6 +27,7 @@ import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { CloudDownloadIcon } from 'lucide-react';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportTokenStats, hasTokenData } from '../utils/token.utils';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
@@ -78,7 +79,18 @@ export default function TokensOverview() {
       { label: 'Not Disbursed', value: notDisbursedValue },
     ];
   };
+  const handleDateChange = (range: any) => {
+    if (range?.from && range?.to) {
+      setStartDate(range.from.toISOString());
+      setEndDate(range.to.toISOString());
+    }
+  };
 
+  const handleClearDate = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
+  const hasData = hasTokenData(data);
   return (
     <>
       <div className="flex items-center justify-between">
@@ -88,28 +100,24 @@ export default function TokensOverview() {
           description="Overview of your tokens"
         />
         <div className="flex gap-2 items-center">
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            handleClick={() => exportTokenStats(data)}
-            name={'Export Report'}
-            variant="outline"
-            disabled={!hasTokenData(data)}
-            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-          />
+          <TooltipWrapper
+            tip={hasData ? '' : 'No token data available to export'}
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={() => exportTokenStats(data)}
+              name={'Export Report'}
+              variant="outline"
+              disabled={!hasData}
+              className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+            />
+          </TooltipWrapper>
           <DateRangePicker
             placeholder="Pick date range"
-            handleDateChange={(range) => {
-              if (range?.from && range?.to) {
-                setStartDate(range.from.toISOString());
-                setEndDate(range.to.toISOString());
-              }
-            }}
-            handleClearDate={() => {
-              setStartDate(undefined);
-              setEndDate(undefined);
-            }}
+            handleDateChange={handleDateChange}
+            handleClearDate={handleClearDate}
             type="range"
-            className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] w-[200px]"
+            className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
           />
         </div>
       </div>

@@ -23,12 +23,14 @@ type MultiSelectProps = {
   options: ISelectOption[];
   placeholder: string;
   fieldName: string;
+  fieldType?: string;
 };
 
 export function MultiSelect({
   fieldName,
   options,
   placeholder = '--Select Options--',
+  fieldType,
 }: MultiSelectProps) {
   const { targetingQueries, setTargetingQueries }: any =
     useTargetingFormStore();
@@ -36,13 +38,22 @@ export function MultiSelect({
   const [open, setOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<ISelectOption[]>([]);
 
+  const sanitizeAndSetTargetingQuery = React.useCallback(
+    (data: ISelectOption[]) => {
+      const itemValues = data.map((item) => item.value);
+      const fieldKeyValue = { [fieldName]: itemValues.join(',') };
+      const formData = { ...targetingQueries, ...fieldKeyValue };
+      setTargetingQueries(formData);
+    },
+    [fieldName, targetingQueries, setTargetingQueries],
+  );
+
   const handleUnselect = (item: ISelectOption) => {
     const filtered = selected.filter((s) => s.value !== item.value);
     setSelected(filtered);
     sanitizeAndSetTargetingQuery(filtered);
   };
 
-  // Handle keyboard events
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current;
@@ -57,26 +68,27 @@ export function MultiSelect({
             });
           }
         }
-        // This is not a default behaviour of the <input /> field
         if (e.key === 'Escape') {
           input.blur();
         }
+        if (e.key === 'Enter' && fieldType === 'TEXT' && input.value.trim()) {
+          e.preventDefault();
+          const value = input.value.trim();
+          const newItem: ISelectOption = { value, label: value };
+          const merged = [...selected, newItem];
+          setSelected(merged);
+          sanitizeAndSetTargetingQuery(merged);
+          input.value = '';
+        }
       }
     },
-    [],
+    [fieldType, selected, sanitizeAndSetTargetingQuery],
   );
 
   const handleSelectChange = (item: ISelectOption) => {
     const merged = [...selected, item];
     setSelected(merged);
     sanitizeAndSetTargetingQuery(merged);
-  };
-
-  const sanitizeAndSetTargetingQuery = (data: ISelectOption[]) => {
-    const itemValues = data.map((item) => item.value);
-    const fieldKeyValue = { [fieldName]: itemValues.join(',') };
-    const formData = { ...targetingQueries, ...fieldKeyValue };
-    setTargetingQueries(formData);
   };
 
   const selectables = options.filter((item) => !selected.includes(item));

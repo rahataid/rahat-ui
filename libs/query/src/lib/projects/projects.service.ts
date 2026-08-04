@@ -636,7 +636,11 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, projectUUID, restPayloadString],
+    queryKey: [
+      MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
+      projectUUID,
+      restPayloadString,
+    ],
     refetchOnMount: true,
     staleTime: 20 * 60 * 1000, // 20 minutes
     queryFn: async () => {
@@ -1557,7 +1561,6 @@ export const useProjectInfo = (uuid: UUID) => {
       return mutate.data;
     },
   });
-  console.log(query.data, 'inside project info,ggsdgdsgs');
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {

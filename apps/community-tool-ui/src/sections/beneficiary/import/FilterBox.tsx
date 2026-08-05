@@ -1,6 +1,8 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigRight, DownloadCloud, Info, Settings } from 'lucide-react';
+import Link from 'next/link';
 import { IMPORT_OPTIONS, IMPORT_SOURCE } from '../../../constants/app.const';
+import { paths } from '../../../routes/paths';
 
 import ExcelUploader from './ExcelUploader';
 import InfoBox from './InfoBox';
@@ -59,14 +61,14 @@ export default function FilterBox({
                 <p className="text-blue-600">
                   Rows with duplicate values in these fields will be flagged
                   during validation.{' '}
-                  <span className="inline-flex items-center gap-1">
-                    To change these, go to{' '}
-                    <Settings size={12} className="inline" />
-                    <span className="font-medium">
-                      Settings → Unique Fields
-                    </span>
-                    .
-                  </span>
+                  <Link
+                    href={paths.settings.root}
+                    className="inline-flex items-center gap-1 font-medium underline underline-offset-2 hover:text-blue-800"
+                  >
+                    <Settings size={12} />
+                    Settings → Unique Fields
+                  </Link>
+                  {' '}to change these.
                 </p>
               </div>
             </div>
@@ -79,14 +81,15 @@ export default function FilterBox({
                 </p>
                 <p className="text-amber-700">
                   No unique fields are set, so duplicate rows won&apos;t be
-                  detected during import.{' '}
-                  <span className="inline-flex items-center gap-1">
-                    Go to <Settings size={12} className="inline" />
-                    <span className="font-medium">
-                      Settings → Unique Fields
-                    </span>{' '}
-                    to configure which fields should be unique.
-                  </span>
+                  detected during import. Go to{' '}
+                  <Link
+                    href={paths.settings.root}
+                    className="inline-flex items-center gap-1 font-medium underline underline-offset-2 hover:text-amber-900"
+                  >
+                    <Settings size={12} />
+                    Settings → Unique Fields
+                  </Link>
+                  {' '}to configure which fields should be unique.
                 </p>
               </div>
             </div>

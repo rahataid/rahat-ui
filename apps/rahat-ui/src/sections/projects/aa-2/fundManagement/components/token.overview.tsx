@@ -5,7 +5,6 @@ import {
   useFundAssignmentStore,
   useGroupsReservedFunds,
   usePagination,
-  useProjectDashboardReporting,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
@@ -41,7 +40,7 @@ export default function TokensOverview() {
     endDate,
   });
 
-  const { data: getTokenStat } = useProjectDashboardReporting(projectId);
+  // const { data: getTokenStat } = useProjectDashboardReporting(projectId);
 
   const chains = useChains();
   const { pagination } = usePagination();
@@ -126,14 +125,6 @@ export default function TokensOverview() {
         <div className="space-y-4 mb-4">
           {/* First Row - 4 Columns */}
           <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
-            {/* <DataCard
-              className="rounded-sm h-[116px]"
-              title="Project Balance"
-              smallNumber={`Rs ${projectBalance}`}
-              infoIcon={true}
-              infoTooltip={'Project Balance'}
-              subtitle=" "
-            /> */}
             {data?.data?.slice(0, 4).map((item, index) => {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
@@ -220,58 +211,7 @@ export default function TokensOverview() {
           {/* Second Row - 3 Columns */}
           <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
             {data?.data?.slice(4).map((item, index) => {
-              const isToken = item.name === 'Token';
-              const isTokenPrice = item.name === 'Token Price';
-              const isBudget = item.name === 'Budget Assigned';
               const infoTooltip = INFO_TOOL_TIPS[item.name];
-
-              // if (isToken) {
-              //   return (
-              //     <a
-              //       key={index}
-              //       target="_blank"
-              //       href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
-              //       className="cursor-pointer"
-              //     >
-              //       <DataCard
-              //         className="rounded-sm h-[116px]"
-              //         title={item.name}
-              //         number={item.value}
-              //         infoIcon={!!infoTooltip}
-              //         infoTooltip={infoTooltip}
-              //         subtitle=" "
-              //       />
-              //     </a>
-              //   );
-              // }
-
-              // if (isTokenPrice) {
-              //   return (
-              //     <DataCard
-              //       key={index}
-              //       className="rounded-sm h-[116px]"
-              //       title="1 Token Value"
-              //       number={`Rs ${item.value}`}
-              //       infoIcon={!!infoTooltip}
-              //       infoTooltip={infoTooltip}
-              //       subtitle=" "
-              //     />
-              //   );
-              // }
-
-              // if (isBudget) {
-              //   return (
-              //     <DataCard
-              //       key={index}
-              //       className="rounded-sm h-[116px]"
-              //       title="Budget Assigned"
-              //       number={`Rs ${item.value}`}
-              //       infoIcon={!!infoTooltip}
-              //       infoTooltip={infoTooltip}
-              //       subtitle=" "
-              //     />
-              //   );
-              // }
 
               return (
                 <DataCard
@@ -289,26 +229,6 @@ export default function TokensOverview() {
                 />
               );
             })}
-            {/* <DataCard
-              className="rounded-sm h-[116px] p-0"
-              title="Pending Disbursement"
-              smallNumber={String(
-                getTokenStat?.tokenStats?.pendingDisbursement ?? '-',
-              )}
-              infoIcon={!!INFO_TOOL_TIPS['Pending Disbursement']}
-              infoTooltip={INFO_TOOL_TIPS['Pending Disbursement']}
-              subtitle=" "
-            />
-            <DataCard
-              className="rounded-sm h-[116px] p-0"
-              title="Redeemed Tokens"
-              smallNumber={String(
-                getTokenStat?.tokenStats?.redeemedTokens ?? '-',
-              )}
-              infoIcon={!!INFO_TOOL_TIPS['Redeemed Tokens']}
-              infoTooltip={INFO_TOOL_TIPS['Redeemed Tokens']}
-              subtitle=" "
-            /> */}
           </div>
         </div>
       ) : (

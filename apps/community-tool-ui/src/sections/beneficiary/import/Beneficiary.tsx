@@ -683,6 +683,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               mappings={mappings}
               onDataChange={setProcessedData}
               onRevalidate={handleRevalidate}
+              uniqueFields={getUniqueField}
             />
           </div>
         )}

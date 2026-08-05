@@ -54,6 +54,7 @@ interface IProps {
   mappings: { sourceField: string; targetField: string }[];
   onDataChange: (updatedData: any[]) => void;
   onRevalidate: () => void;
+  uniqueFields?: string;
 }
 
 export default function AddToQueue({
@@ -67,7 +68,11 @@ export default function AddToQueue({
   mappings,
   onDataChange,
   onRevalidate,
+  uniqueFields,
 }: IProps) {
+  const uniqueFieldSet = new Set(
+    (uniqueFields ?? '').split(',').map((f) => f.trim()).filter(Boolean),
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [useExistingGroup, setUseExistingGroup] = useState(false);
   const [selectGroupName, setSelectedGroupName] = useState<string | null>(null);
@@ -414,19 +419,29 @@ export default function AddToQueue({
                     );
                   }
 
-                  // DUPLICATE ROW — all cells editable
+                  // DUPLICATE ROW — only unique fields are editable
                   if (item.isDuplicate) {
+                    const isDuplicateField = uniqueFieldSet.has(key);
                     return (
-                      <td className="px-4 py-1.5" key={key}>
+                      <td
+                        className={`px-4 py-1.5 ${isDuplicateField ? 'bg-orange-50' : ''}`}
+                        key={key}
+                      >
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="w-full h-full">
-                                {isEditableKey ? duplicateEditableInput : cellContent}
+                                {isDuplicateField
+                                  ? duplicateEditableInput
+                                  : cellContent}
                               </div>
                             </TooltipTrigger>
                             <TooltipContent align="start">
-                              <p>This row is duplicate!</p>
+                              <p>
+                                {isDuplicateField
+                                  ? 'Duplicate value — edit to make it unique'
+                                  : 'This row has a duplicate unique field'}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

@@ -11,16 +11,6 @@ type Props = {
   };
 };
 
-const SSA_LABEL_KEYS: Record<string, string> = {
-  senior_citizen__70: 'SSA_SENIOR_CITIZEN_70',
-  senior_citizen__60__dalit: 'SSA_SENIOR_CITIZEN_60_DALIT',
-  child_nutrition: 'SSA_CHILD_NUTRITION',
-  single_woman: 'SSA_SINGLE_WOMAN',
-  widow: 'SSA_WIDOW',
-  red_class: 'SSA_RED_CLASS',
-  blue_card: 'SSA_BLUE_CARD',
-  indigenous_community: 'SSA_INDIGENOUS_COMMUNITY',
-};
 const SocialProtectionBenefits = ({
   benefStats,
   triggeersStats,
@@ -30,7 +20,7 @@ const SocialProtectionBenefits = ({
   const formatNum = useNumberFormat();
   const ssaRaw = benefStats.find((s) => s.name === 'TYPE_OF_SSA')?.data || [];
   const ssaBarData = ssaRaw.map((item: any) => ({
-    label: t(SSA_LABEL_KEYS[item.id]) || item.id,
+    label: item.id,
     value: item.count,
   }));
 

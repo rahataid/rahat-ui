@@ -62,7 +62,7 @@ export default function RiverWatchView() {
       },
       {
         icon: MapPin,
-        label: 'District',
+        label: t('DISTRICT'),
         value: primaryRiverWatchInfo?.district,
       },
       {

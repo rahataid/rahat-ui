@@ -126,7 +126,7 @@ export default function ManualTriggerDialog() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleTriggerSubmit)}>
             <DialogHeader>
-              <DialogTitle>Trigger</DialogTitle>
+              <DialogTitle>{t('TRIGGER')}</DialogTitle>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
               <FormField

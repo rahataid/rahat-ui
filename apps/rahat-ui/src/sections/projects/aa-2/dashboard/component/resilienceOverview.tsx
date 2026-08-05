@@ -17,6 +17,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const project = useProjectStore((p) => p.singleProject);
 
@@ -92,7 +93,7 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
                     <span className="text-xs sm:text-sm text-gray-600">
-                      {formatNum(metric.percentage)}% completed
+                      {formatNum(metric.percentage)}% {tg('COMPLETED').toLowerCase()}
                     </span>
                       </div>
 

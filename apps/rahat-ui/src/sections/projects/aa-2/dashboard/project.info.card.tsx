@@ -28,7 +28,13 @@ export default function ProjectInfoCard({ project }: IProps) {
         <div>
           <h1 className="text-muted-foreground text-sm">{t('PROJECT_STATUS')}</h1>
           <Badge className="bg-green-100 text-green-500">
-            {project?.status}
+            {project?.status
+              ? t.has(project.status as any)
+                ? t(project.status as any)
+                : tg.has(project.status as any)
+                  ? tg(project.status as any)
+                  : project.status
+              : tg('N_A')}
           </Badge>
         </div>
         <div className="text-right">

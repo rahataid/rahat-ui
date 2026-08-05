@@ -11,7 +11,6 @@ interface MapLegendProps {
 }
 
 export function MapLegend({ selectedLayerId, layers }: MapLegendProps) {
-  const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const selectedLayer = layers.find((layer) => layer.id === selectedLayerId);
 
@@ -23,14 +22,10 @@ export function MapLegend({ selectedLayerId, layers }: MapLegendProps) {
         <Info className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
         <div>
           <h3 className="font-semibold mb-1 text-balance">
-            {selectedLayer.nameKey
-              ? t(selectedLayer.nameKey as any)
-              : selectedLayer.name}
+            {selectedLayer.name}
           </h3>
           <p className="text-sm text-muted-foreground text-balance">
-            {selectedLayer.descriptionKey
-              ? t(selectedLayer.descriptionKey as any)
-              : selectedLayer.description}
+            {selectedLayer.description}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
             {tg('DATA_SOURCE')}: DHM Nepal GeoServer WMS

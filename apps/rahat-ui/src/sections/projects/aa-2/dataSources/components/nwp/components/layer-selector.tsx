@@ -118,12 +118,12 @@ export function LayerSelector({
                 >
                   <span className="flex items-center gap-2">
                     {/* <Icon className="h-5 w-5" /> */}
-                    {layer.nameKey ? t(layer.nameKey as any) : layer.name}
+                    {layer.name}
                   </span>
                   <span className="-mr-2 w-[36px] h-[36px] rounded-full overflow-hidden border-2 border-white shadow-md inline-flex flex-shrink-0">
                     <img
                       src={getLayerImageSrc(layer.icon)}
-                      alt={layer.nameKey ? t(layer.nameKey as any) : layer.name}
+                      alt={layer.name}
                       className="w-full h-full object-cover"
                     />
                   </span>

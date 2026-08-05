@@ -221,7 +221,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
             )}`}
           >
             <TruncatedCell
-              text={tg.has(type as any) ? tg(type as any) : prettified}
+              text={prettified}
               maxLength={15}
             />
           </Badge>

@@ -79,8 +79,6 @@ export default function BeneficiaryDetail({
   const t = useTranslations('BENEFICIARY_DETAIL');
   const g = useTranslations('GLOBAL');
 
-  const formatStatus = (value?: string) =>
-    value && g.has(value as any) ? g(value as any) : value || '-';
   const formatNum = useNumberFormat();
   const formatPhone = usePhoneFormat();
 
@@ -293,20 +291,14 @@ export default function BeneficiaryDetail({
                 'John Doe'}
             </h1>
             <div className="flex space-x-4 items-center">
-              <Badge>
-                {g(
-                  (beneficiaryDetail?.extras?.status ?? 'active').toUpperCase(),
-                )}
-              </Badge>
+              <Badge>{beneficiaryDetail?.extras?.status ?? 'active'}</Badge>
               <p className="text-base text-muted-foreground">
                 {beneficiaryDetail?.extras?.age
                   ? formatNum(beneficiaryDetail.extras.age)
                   : g('N_A')}
               </p>
               <p className="text-base text-muted-foreground">
-                {beneficiaryDetail?.gender
-                  ? g(beneficiaryDetail.gender.toUpperCase())
-                  : g('UNKNOWN')}
+                {beneficiaryDetail?.gender ?? g('UNKNOWN')}
               </p>
             </div>
           </div>
@@ -359,7 +351,7 @@ export default function BeneficiaryDetail({
               <p>{g('PHONE_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {formatStatus(beneficiaryDetail?.phoneStatus)}
+              {beneficiaryDetail?.phoneStatus || '-'}
             </p>
           </div>
 
@@ -369,7 +361,7 @@ export default function BeneficiaryDetail({
               <p>{t('BANK_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {formatStatus(beneficiaryDetail?.bankedStatus)}
+              {beneficiaryDetail?.bankedStatus || '-'}
             </p>
           </div>
 
@@ -379,7 +371,7 @@ export default function BeneficiaryDetail({
               <p>{g('INTERNET_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {formatStatus(beneficiaryDetail?.internetStatus)}
+              {beneficiaryDetail?.internetStatus || '-'}
             </p>
           </div>
 

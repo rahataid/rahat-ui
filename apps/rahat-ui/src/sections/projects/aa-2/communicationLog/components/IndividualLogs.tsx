@@ -17,12 +17,7 @@ import { normalizeTransportName } from 'apps/rahat-ui/src/utils/string';
 import { DEFAULT_TRANSPORTS } from 'apps/rahat-ui/src/constants/communication.const';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-
-const TRANSPORT_LABEL_KEYS: Record<string, string> = {
-  VOICE: 'VOICE',
-  SMS: 'SMS',
-  EMAIL: 'EMAIL',
-};
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 type SubTabType = 'voice' | 'sms' | 'email';
 
@@ -113,11 +108,7 @@ export function IndividualLogTab() {
                       : ''
                   }
                 >
-                  {(() => {
-                    const key =
-                      TRANSPORT_LABEL_KEYS[stat.transportName?.toUpperCase()];
-                    return key && g.has(key) ? g(key) : stat.transportName;
-                  })()}
+                  {capitalizeFirstLetter(stat.transportName)}
                 </span>
                 <Badge
                   className={`h-6 w-6 justify-center text-white px-2 py-0 ${

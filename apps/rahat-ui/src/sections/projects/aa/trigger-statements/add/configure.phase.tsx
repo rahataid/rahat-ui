@@ -49,6 +49,7 @@ export default function ConfigurePhase({
   handleAddTrigger,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams();
   const mandatoryTriggers = phaseDetail?.triggers?.filter(
     (d: any) => d?.isMandatory,
@@ -213,10 +214,10 @@ export default function ConfigurePhase({
               variant="secondary"
               className="bg-red-100 text-red-600 w-36 hover:bg-red-200"
             >
-              Cancel
+              {t('CANCEL')}
             </Button>
           </Link>
-          <Button onClick={prevStep}>Previous</Button>
+          <Button onClick={prevStep}>{tg('PREVIOUS')}</Button>
           <Button
             onClick={() =>
               handleAddTrigger({
@@ -228,7 +229,7 @@ export default function ConfigurePhase({
             }
             type="submit"
           >
-            Add Trigger Statement
+            {t('ADD_TRIGGER_STATEMENT')}
           </Button>
         </div>
       </div>

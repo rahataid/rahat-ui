@@ -77,7 +77,14 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
 
       <div className="grid grid-cols-3 gap-6 py-4">
-        <DataItem label={tg('ESTIMATED_AGE')} value={beneficiary?.projectData?.age || tg('N_A')} />
+        <DataItem
+          label={tg('ESTIMATED_AGE')}
+          value={
+            beneficiary?.projectData?.age
+              ? formatNum(beneficiary.projectData.age)
+              : tg('N_A')
+          }
+        />
         <DataItem
           label={tg('GENDER')}
           value={beneficiary?.projectData?.gender || tg('N_A')}

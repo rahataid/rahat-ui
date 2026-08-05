@@ -29,9 +29,6 @@ export default function BeneficiaryDetail() {
   const g = useTranslations('GLOBAL');
   const formatPhone = usePhoneFormat();
 
-  const formatEnumValue = (value?: string) =>
-    value && g.has(value as any) ? g(value as any) : value ?? g('N_A');
-
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(walletAddress);
@@ -79,7 +76,7 @@ export default function BeneficiaryDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('GENDER')}</h1>
-          <p className="font-medium">{formatEnumValue(beneficiary?.gender)}</p>
+          <p className="font-medium">{beneficiary?.gender ?? g('N_A')}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('ESTIMATED_AGE')}</h1>
@@ -102,15 +99,15 @@ export default function BeneficiaryDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('PHONE_STATUS')}</h1>
-          <Badge>{formatEnumValue(beneficiary?.phoneStatus)}</Badge>
+          <Badge>{beneficiary?.phoneStatus ?? g('N_A')}</Badge>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{t('BANK_STATUS')}</h1>
-          <Badge>{formatEnumValue(beneficiary?.bankedStatus)}</Badge>
+          <Badge>{beneficiary?.bankedStatus ?? g('N_A')}</Badge>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('INTERNET_STATUS')}</h1>
-          <Badge>{formatEnumValue(beneficiary?.internetStatus)}</Badge>
+          <Badge>{beneficiary?.internetStatus ?? g('N_A')}</Badge>
         </div>
 
         {/* <div>

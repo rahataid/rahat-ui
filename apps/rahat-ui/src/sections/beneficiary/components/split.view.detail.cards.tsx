@@ -16,9 +16,6 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
   const router = useRouter();
   const formatPhone = usePhoneFormat();
 
-  const formatStatus = (value?: string) =>
-    value && tg.has(value as any) ? tg(value as any) : value ?? '-';
-
   return (
     <div className="flex flex-col gap-2 p-2">
       <Card className="shadow rounded">
@@ -43,7 +40,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div> */}
             <div>
-              <p>{formatStatus(beneficiaryDetail?.gender)}</p>
+              <p>{beneficiaryDetail?.gender ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('GENDER')}
               </p>
@@ -61,19 +58,19 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div>
             <div>
-              <p>{formatStatus(beneficiaryDetail?.phoneStatus)}</p>
+              <p>{beneficiaryDetail?.phoneStatus ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('PHONE_STATUS')}
               </p>
             </div>
             <div>
-              <p>{formatStatus(beneficiaryDetail?.bankedStatus)}</p>
+              <p>{beneficiaryDetail?.bankedStatus ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {t('BANK_STATUS')}
               </p>
             </div>
             <div>
-              <p>{formatStatus(beneficiaryDetail?.internetStatus)}</p>
+              <p>{beneficiaryDetail?.internetStatus ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('INTERNET_STATUS')}
               </p>

@@ -289,7 +289,7 @@ export default function TokensOverview() {
                 />
               );
             })}
-            <DataCard
+            {/* <DataCard
               className="rounded-sm h-[116px] p-0"
               title="Pending Disbursement"
               smallNumber={String(
@@ -308,7 +308,7 @@ export default function TokensOverview() {
               infoIcon={!!INFO_TOOL_TIPS['Redeemed Tokens']}
               infoTooltip={INFO_TOOL_TIPS['Redeemed Tokens']}
               subtitle=" "
-            />
+            /> */}
           </div>
         </div>
       ) : (

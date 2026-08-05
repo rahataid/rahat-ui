@@ -16,6 +16,11 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
   const router = useRouter();
   const formatPhone = usePhoneFormat();
 
+  const formatEnumValue = (value?: string) =>
+    value && tg.has(value.toUpperCase() as any)
+      ? tg(value.toUpperCase() as any)
+      : value;
+
   return (
     <div className="flex flex-col gap-2 p-2">
       <Card className="shadow rounded">
@@ -40,7 +45,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div> */}
             <div>
-              <p>{beneficiaryDetail?.gender ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.gender) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('GENDER')}
               </p>
@@ -58,19 +63,19 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.phoneStatus ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.phoneStatus) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('PHONE_STATUS')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.bankedStatus ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.bankedStatus) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {t('BANK_STATUS')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.internetStatus ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.internetStatus) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 {tg('INTERNET_STATUS')}
               </p>

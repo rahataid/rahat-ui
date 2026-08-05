@@ -54,6 +54,11 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const hasTokenData = !!(tokenData?.assignedToken || tokenData?.redemmedToken);
   const showBorder = filteredInkinds.length > 0;
 
+  const formatEnumValue = (value?: string) =>
+    (value && tg.has(value.toUpperCase() as any)
+      ? tg(value.toUpperCase() as any)
+      : value) ?? '';
+
   return (
     <>
       <div className="flex items-center">
@@ -87,7 +92,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         />
         <DataItem
           label={tg('GENDER')}
-          value={beneficiary?.projectData?.gender || tg('N_A')}
+          value={formatEnumValue(beneficiary?.projectData?.gender) || tg('N_A')}
         />
         <DataItem
           label={tg('PHONE_NUMBER')}
@@ -110,17 +115,17 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         </div>
         <DataItem
           label={tg('BANKING_STATUS')}
-          value={beneficiary?.projectData?.bankedStatus?.split('_').join(' ')}
+          value={formatEnumValue(beneficiary?.projectData?.bankedStatus)}
           isBadge
         />
         <DataItem
           label={t('PHONE_TYPE')}
-          value={beneficiary?.projectData?.phoneStatus?.split('_').join(' ')}
+          value={formatEnumValue(beneficiary?.projectData?.phoneStatus)}
           isBadge
         />
         <DataItem
           label={t('INTERNET_TYPE')}
-          value={beneficiary?.projectData?.internetStatus?.split('_').join(' ')}
+          value={formatEnumValue(beneficiary?.projectData?.internetStatus)}
           isBadge
         />
       </div>

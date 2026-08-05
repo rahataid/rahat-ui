@@ -45,6 +45,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function EditGrievance() {
   const t = useTranslations('AA_PROJECT');
@@ -143,6 +144,8 @@ export default function EditGrievance() {
     projectUUID: projectID,
     grievanceUUID: grievanceID,
   });
+
+  const formatLabel = useLabelDigits();
 
   // Initialize form
   const form = useForm<GrievanceFormValues>({
@@ -494,6 +497,9 @@ export default function EditGrievance() {
                       control={form.control}
                       name="reporterContact"
                       render={({ field }) => {
+                        const isEmail =
+                          typeof field.value === 'string' &&
+                          field.value.includes('@');
                         return (
                           <FormItem>
                           <FormLabel>{t('CONTACT_INFORMATION')} *</FormLabel>
@@ -502,6 +508,14 @@ export default function EditGrievance() {
                               type="text"
                               placeholder={t('WRITE_REPORTER_CONTACT')}
                               {...field}
+                              value={
+                                isEmail
+                                  ? field.value
+                                  : formatLabel(field.value)
+                              }
+                              onChange={(e) =>
+                                field.onChange(toAsciiDigits(e.target.value))
+                              }
                             />
                           </FormControl>
                           <FormMessage />

@@ -45,6 +45,7 @@ import { z } from 'zod';
 import { Tag, TagInput } from 'emblor';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function AddGrievances() {
   const t = useTranslations('AA_PROJECT');
@@ -129,6 +130,8 @@ export default function AddGrievances() {
   });
 
   type FormValues = z.infer<typeof FormSchema>;
+
+  const formatLabel = useLabelDigits();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -419,6 +422,9 @@ export default function AddGrievances() {
                     control={form.control}
                     name="reporterContact"
                     render={({ field }) => {
+                      const isEmail =
+                        typeof field.value === 'string' &&
+                        field.value.includes('@');
                       return (
                         <FormItem>
                         <FormLabel>{t('CONTACT_INFORMATION')} *</FormLabel>
@@ -427,6 +433,12 @@ export default function AddGrievances() {
                             type="text"
                             placeholder={t('WRITE_REPORTER_CONTACT')}
                             {...field}
+                            value={
+                              isEmail ? field.value : formatLabel(field.value)
+                            }
+                            onChange={(e) =>
+                              field.onChange(toAsciiDigits(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />

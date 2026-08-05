@@ -11,7 +11,14 @@ type IProps = {
 
 export default function ChartsContainer({ allStats = [] }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
+
+  const formatEnumLabel = (value?: string) =>
+    value && tg.has(value.toUpperCase() as any)
+      ? tg(value.toUpperCase() as any)
+      : value;
+
   const genderStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_GENDER',
   )[0]?.data;
@@ -22,15 +29,24 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
 
   const bankStatusStats = allStats
     ?.filter((data: any) => data.name === 'BENEFICIARY_BANKSTATUS')[0]
-    ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
+    ?.data?.map((item: any) => ({
+      label: formatEnumLabel(item.id),
+      value: item.count,
+    }));
 
   const phoneTypeStats = allStats
     ?.filter((data: any) => data.name === 'BENEFICIARY_PHONETYPE')[0]
-    ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
+    ?.data?.map((item: any) => ({
+      label: formatEnumLabel(item.id),
+      value: item.count,
+    }));
 
   const phoneStatusStats = allStats
     ?.filter((data: any) => data.name === 'BENEFICIARY_PHONESTATUS')[0]
-    ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
+    ?.data?.map((item: any) => ({
+      label: formatEnumLabel(item.id),
+      value: item.count,
+    }));
 
   const countByBankStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_COUNTBYBANK',
@@ -82,7 +98,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
             </h1>
             <div className="flex justify-center">
               <ChartDonut
-                labels={genderStats?.map((gender: any) => gender.id)}
+                labels={genderStats?.map((gender: any) => formatEnumLabel(gender.id))}
                 series={genderStats?.map((gender: any) => gender.count)}
                 donutSize="70%"
                 width={360}

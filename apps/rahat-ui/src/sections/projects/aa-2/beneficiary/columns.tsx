@@ -34,9 +34,14 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => {
         const gender =
           row.original?.projectData?.gender?.trim() ||
-          row.original?.gender?.trim() ||
-          tg('N_A');
-        return <div>{gender}</div>;
+          row.original?.gender?.trim();
+        return (
+          <div>
+            {gender && tg.has(gender.toUpperCase() as any)
+              ? tg(gender.toUpperCase() as any)
+              : gender || tg('N_A')}
+          </div>
+        );
       }
     },
     {

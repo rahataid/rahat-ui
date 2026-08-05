@@ -82,6 +82,11 @@ export default function BeneficiaryDetail({
   const formatNum = useNumberFormat();
   const formatPhone = usePhoneFormat();
 
+  const formatEnumValue = (value?: string) =>
+    value && g.has(value.toUpperCase() as any)
+      ? g(value.toUpperCase() as any)
+      : value;
+
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
@@ -298,7 +303,7 @@ export default function BeneficiaryDetail({
                   : g('N_A')}
               </p>
               <p className="text-base text-muted-foreground">
-                {beneficiaryDetail?.gender ?? g('UNKNOWN')}
+                {formatEnumValue(beneficiaryDetail?.gender) ?? g('UNKNOWN')}
               </p>
             </div>
           </div>
@@ -351,7 +356,7 @@ export default function BeneficiaryDetail({
               <p>{g('PHONE_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {beneficiaryDetail?.phoneStatus || '-'}
+              {formatEnumValue(beneficiaryDetail?.phoneStatus) || '-'}
             </p>
           </div>
 
@@ -361,7 +366,7 @@ export default function BeneficiaryDetail({
               <p>{t('BANK_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {beneficiaryDetail?.bankedStatus || '-'}
+              {formatEnumValue(beneficiaryDetail?.bankedStatus) || '-'}
             </p>
           </div>
 
@@ -371,7 +376,7 @@ export default function BeneficiaryDetail({
               <p>{g('INTERNET_STATUS')}</p>
             </div>
             <p className="text-muted-foreground text-base">
-              {beneficiaryDetail?.internetStatus || '-'}
+              {formatEnumValue(beneficiaryDetail?.internetStatus) || '-'}
             </p>
           </div>
 

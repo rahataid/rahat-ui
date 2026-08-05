@@ -67,6 +67,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const existingMapQuery = useExistingFieldMappings();
   const importSourceQuery = useCreateImportSource();
   const { isLoading, data } = useCommunitySettingList({ page: 1, perPage: 20 });
+  const uniqueFieldSetting = data?.data.find(
+    (setting: any) => setting.name === 'UNIQUE_FIELDS',
+  );
+  const getUniqueField = uniqueFieldSetting?.value?.DATA;
   const aiSetting = data?.data.find(
     (setting: any) => setting.name === 'AI_API_URL',
   );
@@ -604,6 +608,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               handleGoClick={handleGoClick}
               handleSampleDownload={handleSampleDownload}
               loading={loading}
+              uniqueField={getUniqueField}
             />
             <div className="pt-10">{loading && <Loader />}</div>
           </>

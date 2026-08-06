@@ -36,13 +36,14 @@ import GctDeleteDialog from './gct.delete.dialog';
 import GctActionBtn from './gct.action-btn';
 import { GctItem } from '../types/gct.types';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function GctList() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const formatPhone = usePhoneFormat();
   const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -145,7 +146,7 @@ export default function GctList() {
         header: tGlobal('WARD_COMMUNITY'),
         cell: ({ row }) => (
           <TruncatedCell
-            text={row.original.extras?.ward || '—'}
+            text={row.original.extras?.ward ? formatDigits(row.original.extras.ward) : '—'}
             maxLength={15}
           />
         ),

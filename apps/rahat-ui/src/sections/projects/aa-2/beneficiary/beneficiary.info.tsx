@@ -4,7 +4,7 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -28,6 +28,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
   const formatPhone = usePhoneFormat();
   const { clickToCopy, copyAction } = useCopy();
 
@@ -103,7 +104,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           <div className=" text-sm text-muted-foreground font-medium flex gap-1 capitalize">
             <p>{beneficiary?.projectData?.location || ''}</p>
             {beneficiary?.extras?.ward_no && (
-              <p>{t('WARD')} {t('NO')} - {beneficiary?.extras?.ward_no}</p>
+              <p>{t('WARD')} {t('NO')} - {formatDigits(beneficiary.extras.ward_no)}</p>
             )}
             <p>
               {!beneficiary?.extras?.location &&

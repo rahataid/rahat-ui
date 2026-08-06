@@ -339,9 +339,9 @@ export default function ExtendedLogicConfigView() {
         <div>
           <p className="text-sm text-muted-foreground">{t('MANDATORY')}</p>
           <p className="text-base font-semibold">
-            {phase?.totalMandatoryTriggers ?? 0}
+            {formatNum(phase?.totalMandatoryTriggers ?? 0)}
             <span className="text-xs text-muted-foreground font-normal ml-1">
-              ({phase?.requiredMandatoryTriggers ?? 0} {t('REQUIRED')})
+              ({formatNum(phase?.requiredMandatoryTriggers ?? 0)} {t('REQUIRED')})
             </span>
           </p>
         </div>
@@ -349,9 +349,9 @@ export default function ExtendedLogicConfigView() {
         <div>
           <p className="text-sm text-muted-foreground">{t('OPTIONAL')}</p>
           <p className="text-base font-semibold">
-            {phase?.totalOptionalTriggers ?? 0}
+            {formatNum(phase?.totalOptionalTriggers ?? 0)}
             <span className="text-xs text-muted-foreground font-normal ml-1">
-              ({phase?.requiredOptionalTriggers ?? 0} {t('REQUIRED')})
+              ({formatNum(phase?.requiredOptionalTriggers ?? 0)} {t('REQUIRED')})
             </span>
           </p>
         </div>
@@ -396,7 +396,7 @@ export default function ExtendedLogicConfigView() {
               <div className={`rounded-lg border p-4 space-y-3 ${colorClass}`}>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold">
-                    {t('GROUP')} {groupIndex + 1}
+                    {t('GROUP')} {formatNum(groupIndex + 1)}
                   </p>
                   <div className="flex items-center gap-2">
                     <Select
@@ -485,7 +485,7 @@ export default function ExtendedLogicConfigView() {
                 {group.triggers.length > 0 && (
                   <div className="space-y-0 pt-2">
                     {group.triggers.map((logicKey, triggerIndex) => {
-                      const t = phaseTriggers.find(
+                      const triggerData = phaseTriggers.find(
                         (tr) => (tr.logicKey || tr.uuid) === logicKey,
                       );
                       return (
@@ -493,14 +493,14 @@ export default function ExtendedLogicConfigView() {
                           <div className="flex items-center justify-between rounded-md border bg-white px-3 py-2">
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-medium">
-                                {t?.title || logicKey}
+                                {triggerData?.title || logicKey}
                               </span>
-                              {t?.logicKey && (
+                              {triggerData?.logicKey && (
                                 <Badge
                                   variant="outline"
                                   className="text-[10px]"
                                 >
-                                  {t.logicKey}
+                                  {triggerData.logicKey}
                                 </Badge>
                               )}
                             </div>
@@ -527,7 +527,7 @@ export default function ExtendedLogicConfigView() {
                                     : 'bg-orange-500 text-white border-orange-600'
                                 }`}
                               >
-                                {group.operator}
+                                {t(group.operator)}
                               </Badge>
                               <div className="flex-1 border-t border-dashed border-gray-300" />
                             </div>
@@ -549,7 +549,7 @@ export default function ExtendedLogicConfigView() {
                         : 'bg-orange-500 text-white border-orange-600'
                     }`}
                   >
-                    {joinOperator}
+                    {t(joinOperator)}
                   </Badge>
                   <div className="flex-1 border-t border-dashed border-gray-300" />
                 </div>
@@ -608,7 +608,7 @@ export default function ExtendedLogicConfigView() {
                         : 'bg-orange-500 text-white border-orange-600'
                     }
                   >
-                    {t('GROUP_JOIN')}: {joinOperator}
+                    {t('GROUP_JOIN')}: {t(joinOperator)}
                   </Badge>
                 )}
                 {/* Graph / List toggle */}
@@ -698,7 +698,7 @@ export default function ExtendedLogicConfigView() {
                                 : 'bg-orange-500 text-white border-orange-600'
                             }
                           >
-                            {t('INTERNAL')}: {group.operator}
+                            {t('INTERNAL')}: {t(group.operator)}
                           </Badge>
                         </div>
                         {group.triggers.length === 0 ? (
@@ -719,7 +719,7 @@ export default function ExtendedLogicConfigView() {
                                           : 'bg-orange-100 text-orange-700 border border-orange-300'
                                       }
                                     >
-                                      {group.operator}
+                                      {t(group.operator)}
                                     </Badge>
                                     <div className="flex-1 border-t border-dashed border-gray-300" />
                                   </div>
@@ -825,7 +825,7 @@ export default function ExtendedLogicConfigView() {
                                 : 'bg-orange-500 text-white border-orange-600'
                             }
                           >
-                            {joinOperator}
+                            {t(joinOperator)}
                           </Badge>
                           <div className="flex-1 border-t border-dashed border-gray-300" />
                         </div>

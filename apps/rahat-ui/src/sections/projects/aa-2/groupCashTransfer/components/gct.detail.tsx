@@ -39,7 +39,7 @@ import {
 import GctDeleteDialog from './gct.delete.dialog';
 import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
-import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/useNumberFormat';
 import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -97,6 +97,7 @@ export default function GctDetail() {
   const hasFund = records.length > 0;
   const totalAssigned: number = item?.totalAssignedAmount ?? 0;
   const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
   const formatPhone = usePhoneFormat();
 
   const handleValidateBankAccount = async () => {
@@ -252,7 +253,7 @@ export default function GctDetail() {
             <Separator />
             <DetailRow label={tGlobal('MUNICIPALITY')} value={extras?.municipality} />
             <Separator />
-            <DetailRow label={tGlobal('WARD_COMMUNITY')} value={extras?.ward} />
+            <DetailRow label={tGlobal('WARD_COMMUNITY')} value={formatDigits(extras?.ward)} />
             <Separator />
             <div className="flex flex-col gap-1 py-2">
               <span className="text-xs text-muted-foreground">{tGlobal('SUPPORT_AREA')}</span>
@@ -326,7 +327,7 @@ export default function GctDetail() {
             <Separator />
             <DetailRow label={t('ACCOUNT_HOLDER_NAME')} value={bankDetails?.accountName} />
             <Separator />
-            <DetailRow label={t('ACCOUNT_NUMBER')} value={bankDetails?.accountNumber} />
+            <DetailRow label={t('ACCOUNT_NUMBER')} value={formatDigits(bankDetails?.accountNumber)} />
             <Separator />
             <DetailRow
               label={t('TOTAL_RESERVED_AMOUNT')}

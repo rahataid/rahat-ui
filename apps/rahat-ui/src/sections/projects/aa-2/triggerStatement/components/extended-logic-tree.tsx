@@ -73,7 +73,7 @@ function computeRootStatus(
     : (vals as boolean[]).some(Boolean);
 }
 
-function operatorBadge(x: number, y: number, op: 'AND' | 'OR') {
+function operatorBadge(x: number, y: number, op: 'AND' | 'OR', label: string) {
   const color = op === 'AND' ? '#3b82f6' : '#f97316';
   const w = 36;
   const h = 18;
@@ -89,7 +89,7 @@ function operatorBadge(x: number, y: number, op: 'AND' | 'OR') {
         fontWeight="600"
         fill="#fff"
       >
-        {op}
+        {label}
       </text>
     </g>
   );
@@ -333,6 +333,7 @@ export function ExtendedLogicTree({
   onTriggerClick,
 }: ExtendedLogicTreeProps) {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const hasMultipleGroups = groups.length > 1;
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -421,7 +422,7 @@ export function ExtendedLogicTree({
                   strokeWidth={1.5}
                   strokeDasharray="4 3"
                 />
-                {operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, joinOperator)}
+                {operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, joinOperator, t(joinOperator))}
               </g>
             );
           })}
@@ -450,7 +451,7 @@ export function ExtendedLogicTree({
                   strokeDasharray="4 3"
                 />
                 {localIdx > 0 &&
-                  operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, group.operator)}
+                  operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, group.operator, t(group.operator))}
               </g>
             );
           });
@@ -526,7 +527,7 @@ export function ExtendedLogicTree({
                 fontWeight="600"
                 fill={color.text}
               >
-                {t('GROUP') + ' ' + (gi + 1)}
+                {t('GROUP') + ' ' + formatNum(gi + 1)}
               </text>
               <rect
                 x={gp.x + 8}
@@ -545,7 +546,7 @@ export function ExtendedLogicTree({
                 fontWeight="700"
                 fill="#fff"
               >
-                {group.operator}
+                {t(group.operator)}
               </text>
               <StatusDot
                 cx={gp.x + NODE_W / 2 - 8}

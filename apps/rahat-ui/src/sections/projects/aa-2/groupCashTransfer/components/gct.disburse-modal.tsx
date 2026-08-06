@@ -44,7 +44,7 @@ import {
   usePhasePayoutStatus,
   useSendGctOtp,
 } from '@rahat-ui/query';
-import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/useNumberFormat';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
@@ -88,6 +88,7 @@ export function DisburseModal({
   const [otpVerified, setOtpVerified] = useState(false);
   const swal = useSwal();
   const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
 
   const email = currentUser?.data?.email;
   const isVerifyDisabled = otp.length !== OTP_LENGTH || disburse.isPending;
@@ -131,7 +132,7 @@ export function DisburseModal({
     [t('AMOUNT_COL'), amountFmt],
     [t('PHONE_COL'), formatPhone(group?.phone) || '—'],
     [t('ACCOUNT_HOLDER_NAME'), group?.bankDetails?.accountName || '—'],
-    [t('BANK_ACCOUNT_NUMBER'), group?.bankDetails?.accountNumber || '—'],
+    [t('BANK_ACCOUNT_NUMBER'), group?.bankDetails?.accountNumber ? formatDigits(group.bankDetails.accountNumber) : '—'],
   ];
 
   const handleConfirm = () => {

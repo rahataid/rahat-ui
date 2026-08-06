@@ -25,7 +25,7 @@ import { fmt, DetailRow } from './gct.ui';
 import { DisburseButton, DisburseModal } from './gct.disburse-modal';
 import { DisbursementInfoCard } from './gct.disbursement-info';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/useNumberFormat';
 import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
 
 export default function GctRecordDetail() {
@@ -60,6 +60,7 @@ export default function GctRecordDetail() {
 
   const [disburseOpen, setDisburseOpen] = useState(false);
   const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
   const formatPhone = usePhoneFormat();
 
   const record = data?.data ?? data ?? null;
@@ -203,7 +204,7 @@ export default function GctRecordDetail() {
                 />
                 <DetailRow
                   label={t('ACCOUNT_NUMBER')}
-                  value={group.bankDetails?.accountNumber}
+                  value={formatDigits(group.bankDetails?.accountNumber)}
                   mono
                 />
               </>

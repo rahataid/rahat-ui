@@ -140,7 +140,7 @@ export default function TriggersPhaseCard({
                   className="max-w-[200px] max-h-[200px] w-[250px] h-[250px]"
                   viewBox="0 0 120 120"
                   role="img"
-                  aria-label="No data"
+                  aria-label={t('NO_DATA')}
                 >
                   <circle
                     cx="60"
@@ -174,6 +174,7 @@ export default function TriggersPhaseCard({
                             formatter: (val: string) => formatDigits(val),
                           },
                           total: {
+                            label: t('TOTAL'),
                             formatter: () => formatDigits(totalCharSeries),
                           },
                         },
@@ -223,7 +224,7 @@ export default function TriggersPhaseCard({
           <div className="mt-2 flex items-center gap-1.5">
             <Badge className="bg-purple-100 text-purple-700 text-[10px] gap-1 font-normal">
               <Settings2 className="h-3 w-3" />
-              Extended Logic
+              {t('EXTENDED_LOGIC')}
             </Badge>
           </div>
         )}

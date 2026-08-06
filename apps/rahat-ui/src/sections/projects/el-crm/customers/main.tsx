@@ -121,7 +121,7 @@ export default function CustomersPage() {
     setPagination,
     setFilters,
     filters,
-  } = usePagination();
+  } = usePagination('crm-customers');
 
   const debouncedFilters = useDebounce(filters, 1000);
 

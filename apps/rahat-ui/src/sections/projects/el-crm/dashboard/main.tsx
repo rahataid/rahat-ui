@@ -26,6 +26,9 @@ import {
   CartesianGrid,
   AreaChart,
   Area,
+  ComposedChart,
+  Bar,
+  Line,
   ResponsiveContainer,
   Label,
   RadialBarChart,
@@ -48,6 +51,7 @@ import {
   Bot,
   FileUp,
   XCircle,
+  MessageSquare,
 } from 'lucide-react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -65,6 +69,8 @@ import {
   type RecentCampaign,
   type RecentImport,
   type CustomersByMonthEntry,
+  type SmsConversion,
+  type SmsConversionByMonthEntry,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { formatRate } from '../communications/const';
@@ -118,6 +124,38 @@ function formatDate(dateStr: string): string {
   });
 }
 
+/**
+ * SMS trend tooltip. Shows the rate alongside converted/messaged so the
+ * percentage is never read without the counts behind it.
+ */
+function SmsTrendTooltip({
+  active,
+  label,
+  data,
+}: {
+  active?: boolean;
+  label?: string;
+  data: { month: string; messaged: number; converted: number; rate: number }[];
+}) {
+  if (!active || !label) return null;
+  const entry = data.find((d) => d.month === label);
+  if (!entry) return null;
+
+  return (
+    <div className="rounded-lg border bg-background px-3 py-2 shadow-md text-xs">
+      <p className="font-medium text-foreground mb-1.5">{formatMonth(label)}</p>
+      <p className="text-foreground font-semibold mb-1">
+        {formatRate(entry.rate)}
+        <span className="text-muted-foreground font-normal">
+          {' '}
+          — {formatNumber(entry.converted)} of {formatNumber(entry.messaged)}{' '}
+          messaged
+        </span>
+      </p>
+    </div>
+  );
+}
+
 // -- Color Palette ------------------------------------------------------------
 
 const COLORS = {
@@ -129,6 +167,9 @@ const COLORS = {
   skipped: '#f59e0b', // amber-500
   gauge: '#6366f1',
   gaugeTrack: '#e2e8f0', // slate-200
+  smsConverted: '#22c55e', // green-500
+  smsMessaged: '#c7d2fe', // indigo-200 (the not-converted remainder)
+  smsRate: '#6366f1', // indigo-500
 };
 
 // =============================================================================
@@ -139,8 +180,10 @@ export default function DashboardView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
   const today = new Date();
-  const thisMonth = `${today.getFullYear()}-${String(
-    today.getMonth() + 1,
+  // UTC to match the backend's month keys (which are UTC-anchored), so the
+  // default range bound lines up with the data regardless of browser timezone.
+  const thisMonth = `${today.getUTCFullYear()}-${String(
+    today.getUTCMonth() + 1,
   ).padStart(2, '0')}`;
   const [fromMonth, setFromMonth] = useState<string>('');
   const [toMonth, setToMonth] = useState<string>(thisMonth);
@@ -156,6 +199,26 @@ export default function DashboardView() {
     getStat(stats, 'NEWLY_INACTIVE_CUSTOMER') || 0;
   const customersByMonth: CustomersByMonthEntry[] =
     getStat(stats, 'CUSTOMERS_BY_MONTH') || [];
+  const smsConversion: SmsConversion = getStat(stats, 'SMS_CONVERSION') || {
+    messaged: 0,
+    converted: 0,
+    rate: 0,
+    windowDays: 60,
+  };
+  const smsConversionByMonth: SmsConversionByMonthEntry[] =
+    getStat(stats, 'SMS_CONVERSION_BY_MONTH') || [];
+  // Stacked-bar shape: converted (green) + the not-converted remainder = messaged.
+  const smsTrendData = useMemo(
+    () =>
+      smsConversionByMonth.map((e: SmsConversionByMonthEntry) => ({
+        month: e.month,
+        messaged: e.messaged,
+        converted: e.converted,
+        notConverted: Math.max(e.messaged - e.converted, 0),
+        rate: e.rate,
+      })),
+    [smsConversionByMonth],
+  );
 
   // Communication stats are now provided as individual stats, not a combined object
   const totalMessagesSent: number = getStat(stats, 'TOTAL_MESSAGES_SENT') || 0;
@@ -932,6 +995,192 @@ export default function DashboardView() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* ── SECTION 3c: SMS Conversion Funnel ─────────────── */}
+            <Card className="transition-all duration-200 hover:shadow-md">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="rounded-lg p-2 bg-violet-500/10 shrink-0">
+                    <MessageSquare className="h-4 w-4 text-violet-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <CardTitle className="text-base font-semibold">
+                      SMS Conversion
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Customers who purchased within {smsConversion.windowDays}{' '}
+                      days of a successful message
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
+                  {/* Messaged */}
+                  <div className="rounded-lg border bg-muted/30 p-4 text-center">
+                    <p className="text-3xl font-bold text-foreground tabular-nums">
+                      {formatNumber(smsConversion.messaged)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Total customers messaged
+                    </p>
+                  </div>
+                  {/* Converted */}
+                  <div className="rounded-lg border bg-emerald-500/5 border-emerald-500/20 p-4 text-center">
+                    <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-500 tabular-nums">
+                      {formatNumber(smsConversion.converted)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Total converted
+                    </p>
+                  </div>
+                  {/* Rate */}
+                  <div className="rounded-lg border bg-primary/5 border-primary/20 p-4 text-center flex flex-col justify-center">
+                    <p className="text-3xl font-bold text-primary tabular-nums">
+                      {formatRate(smsConversion.rate)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Conversion rate
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ── SECTION 3d: SMS Conversion Trend ──────────────── */}
+            <Card className="transition-all duration-200 hover:shadow-md">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="rounded-lg p-2 bg-violet-500/10 shrink-0">
+                    <MessageSquare className="h-4 w-4 text-violet-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <CardTitle className="text-base font-semibold">
+                      SMS Conversion Trend
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      By month messaged — bar height is customers messaged,
+                      green is those who converted within{' '}
+                      {smsConversion.windowDays} days
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {smsTrendData.some((d) => d.messaged > 0) ? (
+                  <>
+                    <ChartContainer
+                      config={{
+                        converted: {
+                          label: 'Converted',
+                          color: COLORS.smsConverted,
+                        },
+                        notConverted: {
+                          label: 'Messaged',
+                          color: COLORS.smsMessaged,
+                        },
+                        rate: {
+                          label: 'Conversion Rate',
+                          color: COLORS.smsRate,
+                        },
+                      }}
+                      className="h-[280px] w-full"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <ComposedChart
+                          data={smsTrendData}
+                          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                        >
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            vertical={false}
+                            stroke="hsl(var(--border))"
+                            strokeOpacity={0.5}
+                          />
+                          <XAxis
+                            dataKey="month"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 11 }}
+                            dy={8}
+                            tickFormatter={formatMonth}
+                            interval="preserveStartEnd"
+                          />
+                          <YAxis
+                            yAxisId="count"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 11 }}
+                            dx={-4}
+                            width={40}
+                            allowDecimals={false}
+                          />
+                          <YAxis
+                            yAxisId="rate"
+                            orientation="right"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 11 }}
+                            width={44}
+                            tickFormatter={(v) => `${Number(v).toFixed(0)}%`}
+                          />
+                          <ChartTooltip
+                            content={<SmsTrendTooltip data={smsTrendData} />}
+                          />
+                          <Bar
+                            yAxisId="count"
+                            dataKey="converted"
+                            stackId="sms"
+                            fill={COLORS.smsConverted}
+                            radius={[0, 0, 0, 0]}
+                          />
+                          <Bar
+                            yAxisId="count"
+                            dataKey="notConverted"
+                            stackId="sms"
+                            fill={COLORS.smsMessaged}
+                            radius={[3, 3, 0, 0]}
+                          />
+                          <Line
+                            yAxisId="rate"
+                            type="monotone"
+                            dataKey="rate"
+                            stroke={COLORS.smsRate}
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        </ComposedChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                    <div className="flex justify-center gap-6 mt-3 text-sm">
+                      {[
+                        { label: 'Converted', color: COLORS.smsConverted },
+                        { label: 'Messaged', color: COLORS.smsMessaged },
+                        { label: 'Conversion Rate', color: COLORS.smsRate },
+                      ].map((item) => (
+                        <div
+                          key={item.label}
+                          className="flex items-center gap-2"
+                        >
+                          <span
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="text-muted-foreground text-xs font-medium">
+                            {item.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                    <MessageSquare className="h-8 w-8 mb-2 opacity-30" />
+                    <p className="text-sm">No SMS delivery data yet</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

@@ -218,7 +218,7 @@ export default function AuthPage() {
                 >
                   {t('PRIVACY_POLICY')}
                 </Link>
-                .
+                {t('AGREE_TO_TERMS_SUFFIX')}
               </p>
             )}
           </div>

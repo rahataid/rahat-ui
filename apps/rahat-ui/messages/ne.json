@@ -3275,7 +3275,8 @@
   },
   "LOGIN": {
     "AND": "र",
-    "BY_CLICKING_CONTINUE_YOU_AGREE_TO": "जारी राख्नुहोस् (Continue) क्लिक गरेर, तपाईं हाम्रो सर्तहरुमा सहमत हुनुहुन्छ",
+    "AGREE_TO_TERMS_SUFFIX": "लाई स्वीकार गर्नुहुन्छ।",
+    "BY_CLICKING_CONTINUE_YOU_AGREE_TO": "अगाडि बढेर, तपाईं हाम्रो",
     "DIDNT_GET_ONE": "अझै प्राप्त गर्नुभएको छैन?",
     "ENTER_OTP": "ओटिपी राख्नुहोस्",
     "ENTER_YOUR_EMAIL_ADDRESS_TO_RECEIVE": "ओटिपी कोड प्राप्त गर्न आफ्नो इमेल ठेगाना प्रविष्ट गर्नुहोस्।",

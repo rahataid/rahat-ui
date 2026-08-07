@@ -57,6 +57,7 @@ export default function MultiSigWalletView() {
     transfers,
   } = useGetAASafeOwners(projectUUID);
 
+  console.log('safeOwners:', safeOwners);
   const chainSettings = useProjectSettingsStore(
     (state) =>
       state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS] ||

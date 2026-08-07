@@ -16,41 +16,14 @@ const getStatusVariant = (status: string) => {
   return 'secondary';
 };
 
-const toText = (value: unknown, depth = 0): string => {
-  if (value === null || value === undefined) return '';
-  if (typeof value === 'string') return value.trim();
-  if (typeof value === 'number' || typeof value === 'boolean')
-    return String(value);
-  if (depth > 3) return '';
-  if (Array.isArray(value))
-    return value
-      .map((item) => toText(item, depth + 1))
-      .filter(Boolean)
-      .join(', ');
-  if (typeof value === 'object') {
-    const nested =
-      (value as any).message ?? (value as any).error ?? (value as any).reason;
-    const fromNested = toText(nested, depth + 1);
-    if (fromNested) return fromNested;
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return '';
-    }
+const toMessage = (value: any): string => {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return '';
   }
-  return '';
-};
-
-const getStatusMessage = (disposition: unknown): string => {
-  if (typeof disposition === 'string') return disposition.trim();
-  if (!disposition || typeof disposition !== 'object') return '';
-  const d = disposition as any;
-  return (
-    toText(d.message) ||
-    toText(d.data?.message) ||
-    toText(d.error) ||
-    toText(d.reason)
-  );
 };
 
 export default function useCommsLogsTableColumns() {
@@ -64,7 +37,7 @@ export default function useCommsLogsTableColumns() {
       ),
       cell: ({ row }) => (
         <span className="text-sm font-medium">
-          {toText(row?.original?.address) || '\u2014'}
+          {row?.original?.address || '\u2014'}
         </span>
       ),
     },
@@ -76,10 +49,15 @@ export default function useCommsLogsTableColumns() {
         </span>
       ),
       cell: ({ row }) => {
-        const status = toText(row?.original?.status);
-        const statusMessage = getStatusMessage(row?.original?.disposition);
+        const status = row?.original?.status;
+        const disposition = row?.original?.disposition;
 
-        if (!status) return <span className="text-sm">{'—'}</span>;
+        const statusMessage = toMessage(
+          disposition?.message ||
+            disposition?.data?.message ||
+            disposition?.error ||
+            disposition?.reason,
+        );
 
         if (status === 'FAIL') {
           return (
@@ -125,7 +103,7 @@ export default function useCommsLogsTableColumns() {
       ),
       cell: ({ row }) => (
         <span className="text-sm tabular-nums">
-          {toText(row?.original?.attempts) || '\u2014'}
+          {row?.original?.attempts ?? '\u2014'}
         </span>
       ),
     },
@@ -137,15 +115,16 @@ export default function useCommsLogsTableColumns() {
         </span>
       ),
       cell: ({ row }) => {
-        const disposition = row?.original?.disposition;
-        let price = toText(
-          disposition && typeof disposition === 'object'
-            ? (disposition as any).price
-            : undefined,
-        );
-        if (price.startsWith('-')) price = price.substring(1);
+        let price = row?.original?.disposition?.price;
+        if (typeof price === 'string' && price.startsWith('-')) {
+          price = price.substring(1);
+        }
         return (
-          <span className="text-sm tabular-nums">{price || '\u2014'}</span>
+          <span className="text-sm tabular-nums">
+            {price !== undefined && price !== null && price !== ''
+              ? price
+              : '\u2014'}
+          </span>
         );
       },
     },
@@ -157,11 +136,9 @@ export default function useCommsLogsTableColumns() {
         </span>
       ),
       cell: ({ row }) => {
-        const date =
-          toText(row?.original?.lastAttempt) ||
-          toText(row?.original?.createdAt);
-        if (!date || Number.isNaN(new Date(date).getTime()))
-          return <span className="text-sm">{'\u2014'}</span>;
+        const date = (row?.original?.lastAttempt ||
+          row?.original?.createdAt) as string | undefined;
+        if (!date) return <span className="text-sm">\u2014</span>;
         const { dateStr, timeStr } = formatDateTime(date);
         const isFallback = !row?.original?.lastAttempt;
         return (

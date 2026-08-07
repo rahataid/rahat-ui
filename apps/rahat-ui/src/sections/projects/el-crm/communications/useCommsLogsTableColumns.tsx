@@ -16,6 +16,16 @@ const getStatusVariant = (status: string) => {
   return 'secondary';
 };
 
+const toMessage = (value: any): string => {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return '';
+  }
+};
+
 export default function useCommsLogsTableColumns() {
   const columns: ColumnDef<any>[] = [
     {
@@ -42,11 +52,12 @@ export default function useCommsLogsTableColumns() {
         const status = row?.original?.status;
         const disposition = row?.original?.disposition;
 
-        const statusMessage =
+        const statusMessage = toMessage(
           disposition?.message ||
-          disposition?.data?.message ||
-          disposition?.error ||
-          disposition?.reason;
+            disposition?.data?.message ||
+            disposition?.error ||
+            disposition?.reason,
+        );
 
         if (status === 'FAIL') {
           return (

@@ -9,6 +9,27 @@ import {
 import { CircleAlert, TriangleAlert } from 'lucide-react';
 import { formatDateTime } from '../../../../utils';
 
+const toMessageText = (value: unknown): string => {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean')
+    return String(value);
+  if (Array.isArray(value))
+    return value.map(toMessageText).filter(Boolean).join(', ');
+  if (typeof value === 'object') {
+    const nested =
+      (value as any).message ?? (value as any).error ?? (value as any).reason;
+    if (nested !== undefined && nested !== null && nested !== value)
+      return toMessageText(nested);
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '';
+    }
+  }
+  return '';
+};
+
 const getStatusVariant = (status: string) => {
   if (status === BroadcastStatus.FAIL) return 'destructive';
   if (status === BroadcastStatus.SUCCESS) return 'success';
@@ -42,11 +63,12 @@ export default function useCommsLogsTableColumns() {
         const status = row?.original?.status;
         const disposition = row?.original?.disposition;
 
-        const statusMessage =
-          disposition?.message ||
-          disposition?.data?.message ||
-          disposition?.error ||
-          disposition?.reason;
+        const statusMessage = toMessageText(
+          disposition?.message ??
+            disposition?.data?.message ??
+            disposition?.error ??
+            disposition?.reason,
+        );
 
         if (status === 'FAIL') {
           return (
@@ -127,7 +149,7 @@ export default function useCommsLogsTableColumns() {
       cell: ({ row }) => {
         const date = (row?.original?.lastAttempt ||
           row?.original?.createdAt) as string | undefined;
-        if (!date) return <span className="text-sm">\u2014</span>;
+        if (!date) return <span className="text-sm">{'\u2014'}</span>;
         const { dateStr, timeStr } = formatDateTime(date);
         const isFallback = !row?.original?.lastAttempt;
         return (

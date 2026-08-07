@@ -65,14 +65,12 @@ export default function ListView({
     [rows],
   );
 
-  const updateCommunitySettings = useCommunitySettingUpdate();
   const { data } = useCommunitySettingList({ page: 1, perPage: 20 });
   const schema = generateJsonSchemaFromFields(rows);
 
   const aiSetting = data?.data.find(
     (setting: { name: string }) => setting.name === 'AI_API_URL',
   );
-  console.log(aiSetting, 'aiSetting');
 
   const aiBaseurl = aiSetting?.value?.URL;
   const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
@@ -114,25 +112,25 @@ export default function ListView({
     });
   };
 
-  const updateStandardSetting = async (standardName: string) => {
-    if (!aiSetting) return;
+  // const updateStandardSetting = async (standardName: string) => {
+  //   if (!aiSetting) return;
 
-    const finalSettingData = {
-      name: aiSetting.name,
-      requiredFields: [
-        ...(aiSetting.requiredFields ?? []),
-        'COMMUNITY_DATA_STANDARD',
-      ],
-      value: {
-        ...(aiSetting.value ?? {}),
-        COMMUNITY_DATA_STANDARD: standardName,
-      },
-      isReadOnly: aiSetting.isReadOnly,
-      isPrivate: aiSetting.isPrivate,
-    };
+  //   const finalSettingData = {
+  //     name: aiSetting.name,
+  //     requiredFields: [
+  //       ...(aiSetting.requiredFields ?? []),
+  //       'COMMUNITY_DATA_STANDARD',
+  //     ],
+  //     value: {
+  //       ...(aiSetting.value ?? {}),
+  //       COMMUNITY_DATA_STANDARD: standardName,
+  //     },
+  //     isReadOnly: aiSetting.isReadOnly,
+  //     isPrivate: aiSetting.isPrivate,
+  //   };
 
-    await updateCommunitySettings.mutateAsync(finalSettingData);
-  };
+  //   await updateCommunitySettings.mutateAsync(finalSettingData);
+  // };
 
   React.useEffect(() => {
     let isMounted = true;

@@ -107,12 +107,19 @@ export const usePhasePayoutStatus = (projectUUID: UUID) => {
   });
 };
 
-export const useGetGctData = (projectUUID: UUID) => {
+export const useGetGctData = (
+  projectUUID: UUID,
+  params?: { startDate?: string; endDate?: string },
+) => {
   const q = useProjectAction();
 
   return useQuery({
-    queryKey: [ACTION_NS + '.getGCTData', projectUUID],
+    queryKey: [ACTION_NS + '.getGCTData', projectUUID, params],
     refetchOnMount: true,
-    queryFn: () => runAction(q, projectUUID, ACTION_NS + '.getGCTData', {}),
+    queryFn: () =>
+      runAction(q, projectUUID, ACTION_NS + '.getGCTData', {
+        ...(params?.startDate && { startDate: params.startDate }),
+        ...(params?.endDate && { endDate: params.endDate }),
+      }),
   });
 };

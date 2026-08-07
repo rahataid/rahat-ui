@@ -1,0 +1,376 @@
+'use client';
+
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useIvrFlowStore } from '../store/ivr.flow.store';
+import { useIvrTemplateDetail, useUploadFile, useIvrTemplateUpdate } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { ArrowLeft, Settings, Code, Download, Save, Loader2 } from 'lucide-react';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+
+import {
+  IvrFlowNode,
+  IvrFlowApiPayload,
+  IvrFlowOption,
+} from '../types/ivr.flow.types';
+import { buildApiPayload } from '../utils/utils';
+import TreePanel from './ivr.tree.panel';
+import NodeEditorPanel from './ivr.node.editor';
+import JSONPreviewPanel from './ivr.json.preview';
+import SimulationModal from './ivr.simulation.modal';
+import ExportModal from './ivr.export.modal';
+
+function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
+  function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
+    return (options || []).map((opt) => ({
+      id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      digit: String(opt.digit),
+      label: opt.digit ? `Digit ${opt.digit}` : 'Menu',
+      prompt: opt.prompt || '',
+      hangup: opt.hangup || false,
+      destination: opt.destination || '',
+      children: mapOptions(opt.options || []),
+    }));
+  }
+
+  return {
+    id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    label: 'Main Menu',
+    prompt: payload.main?.prompt || '',
+    hangup: false,
+    destination: '',
+    children: mapOptions(payload.main?.options || []),
+  };
+}
+
+interface FlowBuilderProps {
+  ivrId: string;
+}
+
+export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
+  const router = useRouter();
+  const { id } = useParams();
+
+  const flows = useIvrFlowStore((s) => s.flows);
+  const loadFlow = useIvrFlowStore((s) => s.loadFlow);
+  const addNode = useIvrFlowStore((s) => s.addNode);
+  const updateNode = useIvrFlowStore((s) => s.updateNode);
+  const deleteNode = useIvrFlowStore((s) => s.deleteNode);
+  const setFlowRootMenu = useIvrFlowStore((s) => s.setFlowRootMenu);
+
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [isSimulationOpen, setIsSimulationOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isEditorDirty, setIsEditorDirty] = useState(false);
+  const [pendingNodeId, setPendingNodeId] = useState<string | null>(null);
+  const populatedRef = useRef(false);
+
+  const flow = flows.find((f) => f.id === ivrId);
+
+  const { data: templateDetail } = useIvrTemplateDetail(
+    id as UUID,
+    Number(ivrId),
+  );
+  const [isFetchingFlow, setIsFetchingFlow] = useState(
+    !!templateDetail?.flowUrl,
+  );
+  const [isSaving, setIsSaving] = useState(false);
+  const uploadFile = useUploadFile();
+  const updateTemplate = useIvrTemplateUpdate();
+
+  const flowJsonString = useMemo(() => {
+    if (!flow) return '';
+    return JSON.stringify(buildApiPayload(flow), null, 2);
+  }, [flow]);
+
+  useEffect(() => {
+    populatedRef.current = false;
+    loadFlow(ivrId);
+    setSelectedNodeId(null);
+  }, [ivrId, loadFlow]);
+
+  useEffect(() => {
+    if (!templateDetail?.flowUrl || populatedRef.current) return;
+
+    const fetchAndPopulate = async () => {
+      setIsFetchingFlow(true);
+      try {
+        if (!templateDetail.flowUrl) throw new Error('No flow URL provided');
+        const response = await fetch(templateDetail.flowUrl);
+        if (!response.ok) throw new Error('Failed to fetch flow data');
+        const data: IvrFlowApiPayload = await response.json();
+        const rootMenu = convertApiPayloadToNode(data);
+        setFlowRootMenu(ivrId, rootMenu);
+      } catch (err) {
+        console.error('Failed to load IVR flow from URL:', err);
+      }
+      populatedRef.current = true;
+      setIsFetchingFlow(false);
+    };
+
+    fetchAndPopulate();
+  }, [templateDetail, ivrId, setFlowRootMenu, setIsFetchingFlow]);
+
+  const handleBack = useCallback(() => {
+    router.push(`/projects/aa/${id}/ivr`);
+  }, [router, id]);
+
+  const handleAddNode = useCallback(
+    (parentId: string) => {
+      addNode(parentId, {});
+    },
+    [addNode],
+  );
+
+  const handleUpdateNode = useCallback(
+    (nodeId: string, updates: Partial<IvrFlowNode>) => {
+      updateNode(nodeId, updates);
+    },
+    [updateNode],
+  );
+
+  const handleDeleteNode = useCallback(
+    (nodeId: string) => {
+      deleteNode(nodeId);
+      setSelectedNodeId((prev) => (prev === nodeId ? null : prev));
+    },
+    [deleteNode],
+  );
+
+  const handleSelectNode = useCallback(
+    (nodeId: string) => {
+      if (isEditorDirty) {
+        setPendingNodeId(nodeId);
+      } else {
+        setSelectedNodeId(nodeId);
+      }
+    },
+    [isEditorDirty],
+  );
+
+  const handleDismissDialog = useCallback(() => {
+    setPendingNodeId(null);
+  }, []);
+
+  const handleSimulate = useCallback(
+    () => setIsSimulationOpen(true),
+    [],
+  );
+
+  const handleCloseSimulation = useCallback(
+    () => setIsSimulationOpen(false),
+    [],
+  );
+
+  const handleSaveFlow = useCallback(async () => {
+    if (!flow || isSaving) return;
+    setIsSaving(true);
+    try {
+      const blob = new Blob([flowJsonString], { type: 'application/json' });
+      const file = new File([blob], 'ivr-flow.json', {
+        type: 'application/json',
+      });
+      const formData = new FormData();
+      formData.append('file', file);
+      const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+      await updateTemplate.mutateAsync({
+        projectUUID: id as UUID,
+        id: Number(ivrId),
+        payload: { flowUrl: afterUpload.mediaURL },
+      });
+    } catch {
+      // error handled by mutation toast
+    } finally {
+      setIsSaving(false);
+    }
+  }, [flow, flowJsonString, id, ivrId, uploadFile, updateTemplate, isSaving]);
+
+  const handleExport = useCallback(
+    () => setIsExportOpen(true),
+    [],
+  );
+
+  const handleCloseExport = useCallback(
+    () => setIsExportOpen(false),
+    [],
+  );
+
+  if (!flow) {
+    return (
+      <div className="h-[calc(100vh-80px)] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">IVR flow not found</p>
+          <Button variant="outline" className="mt-4" onClick={handleBack}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to IVR list
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const displayName = templateDetail?.name || flow.name;
+  const displayDescription =
+    templateDetail?.description || flow.description || 'IVR Flow Builder';
+
+  return (
+    <div className="h-[calc(100vh-80px)] flex flex-col">
+      <div className="bg-white border-b px-4 md:px-6 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={handleBack}>
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-[clamp(16px,2vw,24px)] font-bold truncate">
+                {displayName}
+              </h1>
+              <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground truncate">
+                {displayDescription}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
+              onClick={handleSaveFlow}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
+              onClick={handleExport}
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden gap-4 p-4 bg-muted/50">
+        <div className="w-full lg:w-[70%] lg:h-full bg-white rounded-sm border overflow-hidden flex flex-col relative">
+          {isFetchingFlow && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Loading flow data...
+                </span>
+              </div>
+            </div>
+          )}
+          <TreePanel
+            flow={flow}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={handleSelectNode}
+            onAddNode={handleAddNode}
+            onDeleteNode={handleDeleteNode}
+            onSimulate={handleSimulate}
+          />
+        </div>
+
+        <div className="w-full lg:w-[30%] lg:h-full min-w-0 overflow-hidden flex flex-col">
+          <Tabs defaultValue="editor" className="flex flex-col h-full">
+            <TabsList className="border bg-secondary rounded w-full">
+              <TabsTrigger
+                value="editor"
+                className="w-full gap-2 data-[state=active]:bg-white"
+              >
+                <Settings className="w-4 h-4" />
+                Node Editor
+              </TabsTrigger>
+              <TabsTrigger
+                value="json"
+                className="w-full gap-2 data-[state=active]:bg-white"
+              >
+                <Code className="w-4 h-4" />
+                JSON Preview
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="editor" className="flex-1 pt-3 overflow-hidden">
+              <Card className="h-full rounded-sm overflow-hidden">
+                <CardContent className="p-0 h-full">
+                  {selectedNodeId ? (
+                    <NodeEditorPanel
+                      key={selectedNodeId}
+                      flow={flow}
+                      selectedNodeId={selectedNodeId}
+                      onUpdateNode={handleUpdateNode}
+                      onEditingChange={setIsEditorDirty}
+                    />
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-3">
+                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                        <Settings className="w-6 h-6 text-muted-foreground/60" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-medium">No Node Selected</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Select a menu item from the tree to edit its
+                          properties
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="json" className="flex-1 pt-3 overflow-hidden">
+              <Card className="h-full rounded-sm overflow-hidden">
+                <CardContent className="p-0 h-full">
+                  <JSONPreviewPanel flow={flow} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {isSimulationOpen && (
+        <SimulationModal
+          flow={flow}
+          onClose={handleCloseSimulation}
+        />
+      )}
+
+      <ExportModal
+        open={isExportOpen}
+        onClose={handleCloseExport}
+        ivrId={Number(ivrId)}
+        jsonContent={flowJsonString}
+        onExported={() => {
+          populatedRef.current = false;
+        }}
+      />
+
+      <ConfirmationDialog
+        isConfirmationDialogOpen={!!pendingNodeId}
+        onCancel={handleDismissDialog}
+        onConfirm={handleDismissDialog}
+        dialogTitle="Unsaved Changes"
+        dialogMessage="Please save or cancel your changes in the editor before switching to another node."
+      />
+    </div>
+  );
+}

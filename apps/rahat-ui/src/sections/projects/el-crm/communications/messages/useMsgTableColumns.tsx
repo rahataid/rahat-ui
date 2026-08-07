@@ -18,6 +18,9 @@ export const useMsgTableColumn = (
   const { id } = useParams();
   const { hideRecipientCount = false, isAutomatic = false } = options;
 
+  const isRetryRow = (row: any) =>
+    (row.original?.options as Record<string, any>)?.isRetry === true;
+
   const getChannelVariant = (channel: string) => {
     switch (channel) {
       case 'SMS':
@@ -88,7 +91,7 @@ export const useMsgTableColumn = (
         </span>
       ),
       cell: ({ row }) => {
-        if (row.original?.isAutomatic) {
+        if (row.original?.isAutomatic && !isRetryRow(row)) {
           return <span className="text-sm text-muted-foreground">\u2014</span>;
         }
         return (
@@ -125,7 +128,7 @@ export const useMsgTableColumn = (
         </span>
       ),
       cell: ({ row }) => {
-        if (isAutomatic) {
+        if (isAutomatic && !isRetryRow(row)) {
           const rules = (row.original?.automationRules ?? []) as Array<{
             isEnabled?: boolean;
           }>;

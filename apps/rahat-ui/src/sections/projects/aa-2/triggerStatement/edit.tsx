@@ -78,6 +78,7 @@ export default function EditTrigger() {
       description: z.string().optional(),
       source: z.string().min(1, { message: 'Please select data source' }),
       isMandatory: z.boolean().optional(),
+      leadTime: z.string().optional(),
       triggerStatement: triggerStatementSchema,
       minLeadTimeDays: z.string().optional(),
       maxLeadTimeDays: z.string().optional(),
@@ -242,6 +243,7 @@ export default function EditTrigger() {
       description: '',
       source: '',
       isMandatory: false,
+      leadTime: '',
       triggerStatement: {
         source: undefined,
         sourceSubType: '',
@@ -272,13 +274,13 @@ export default function EditTrigger() {
     'source' in data && 'triggerStatement' in data;
 
   const buildUpdatePayload = (data: TriggerFormValues) => {
-    const basePayload = {
+const basePayload = {
       title: data.title,
       description: data.description,
       phaseId: trigger?.phaseId,
       uuid: trigger?.uuid,
       isMandatory: !data?.isMandatory,
-      leadTime: data?.leadTime,
+      leadTime: data.leadTime,
     };
 
     if (!isAutomatedFormData(data)) {
@@ -339,6 +341,7 @@ export default function EditTrigger() {
         source: formSource,
         isMandatory: !trigger?.isMandatory,
         description: trigger?.description || '',
+        leadTime: trigger?.leadTime,
         triggerStatement: {
           source: trigger?.triggerStatement?.source || '',
           sourceSubType: correctedSourceSubType,
@@ -397,6 +400,7 @@ export default function EditTrigger() {
               phase={{
                 name: trigger?.phase?.name,
                 riverBasin: trigger?.phase?.source?.riverBasin,
+                isRequiredLeadTime: trigger?.phase?.isRequiredLeadTime,
               }}
               isEditing={true}
               sourceOptions={sourceOptions}

@@ -168,7 +168,6 @@ export default function AddAutomatedTriggerForm({
       ? value.split(':')
       : [value, null];
 
-
     const mappedType = dataSource === 'gfh' ? 'water_level' : type;
 
     setSelectedSource({ dataSource, type: mappedType });
@@ -232,98 +231,25 @@ export default function AddAutomatedTriggerForm({
             </FormControl>
             <FormMessage />
           </FormItem>
-          {phase?.isRequiredLeadTime ? (
-            <div className="col-span-2 grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Trigger Title</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Enter Trigger Title"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="leadTime"
-                render={({ field }) => {
-                  const [lead, unitValue] = field.value?.split(' ') ?? ['', ''];
-                  const unit = !unitValue ? 'days' : unitValue;
-                  return (
-                    <FormItem>
-                      <FormLabel>Lead Time</FormLabel>
-                      <div className="grid grid-cols-4">
-                        <Input
-                          type="text"
-                          placeholder="Enter lead time"
-                          className="col-span-3 rounded-r-none"
-                          value={lead}
-                          onChange={(e) => {
-                            const newLead = e.target.value;
-                            field.onChange(
-                              newLead.trim() ? `${newLead.trim()} ${unit}` : '',
-                            );
-                          }}
-                        />
-                        <Select
-                          value={unit}
-                          onValueChange={(val) => {
-                            field.onChange(
-                              lead.trim() ? `${lead.trim()} ${val}` : '',
-                            );
-                          }}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="rounded-l-none">
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {DurationData.map((item) => (
-                              <SelectItem key={item.value} value={item.value}>
-                                {item.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </div>
-          ) : (
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Trigger Title</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Enter Trigger Title"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-          )}
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Trigger Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter Trigger Title"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
           <FormField
             control={form.control}
             name="source"
@@ -395,8 +321,8 @@ export default function AddAutomatedTriggerForm({
                           {/* for heatwave */}
                           {(triggerSource === 'prob_humidity' ||
                             triggerSource === 'temperature_c') && (
-                              <SourceSubTypeField label="Measurement Period" />
-                            )}
+                            <SourceSubTypeField label="Measurement Period" />
+                          )}
                         </Select>
                         <FormMessage />
                       </FormItem>
@@ -423,7 +349,7 @@ export default function AddAutomatedTriggerForm({
                             }}
                             value={field.value}
                             key={field.value}
-                          // disabled={false}
+                            // disabled={false}
                           >
                             <FormLabel>Station</FormLabel>
                             <FormControl>
@@ -508,8 +434,8 @@ export default function AddAutomatedTriggerForm({
                           const meta =
                             triggerSource && triggerSource in SOURCE_META
                               ? SOURCE_META[
-                              triggerSource as keyof typeof SOURCE_META
-                              ]
+                                  triggerSource as keyof typeof SOURCE_META
+                                ]
                               : undefined;
                           return (
                             <FormItem>
@@ -537,30 +463,93 @@ export default function AddAutomatedTriggerForm({
                   </div>
                 </div>
               )}
-              {triggerValue && (
-                <div className="col-span-2">
-                  <div className="flex space-x-2 items-center ">
-                    <p className="text-sm/6 text-primary">
-                      Generated Expression
-                    </p>
-                    <Info color="gray" size={18} />
-                  </div>
-                  <p className="text-sm">
-                    {triggerSource} {triggerOperator} {triggerSourceSubType} (
-                    {triggerValue}{' '}
-                    {triggerSource === 'water_level_m'
-                      ? 'm'
-                      : triggerSource === 'discharge_m3s'
+
+              {/* <div className="grid grid-cols-2 gap-4 mb-4"></div> */}
+              <div className="col-span-2 grid grid-cols-2 gap-4">
+                {triggerValue && (
+                  <div>
+                    <div className="flex space-x-2 items-center ">
+                      <p className="text-sm/6 text-primary">
+                        Generated Expression
+                      </p>
+                      <Info color="gray" size={18} />
+                    </div>
+                    <p className="text-sm">
+                      {triggerSource} {triggerOperator} {triggerSourceSubType} (
+                      {triggerValue}{' '}
+                      {triggerSource === 'water_level_m'
+                        ? 'm'
+                        : triggerSource === 'discharge_m3s'
                         ? 'm³/s'
                         : triggerSource === 'rainfall_mm'
-                          ? 'mm'
-                          : triggerSource === 'prob_flood'
-                            ? '%'
-                            : ''}
-                    )
-                  </p>
-                </div>
-              )}
+                        ? 'mm'
+                        : triggerSource === 'prob_flood'
+                        ? '%'
+                        : ''}
+                      )
+                    </p>
+                  </div>
+                )}
+                {phase?.isRequiredLeadTime && (
+                  <FormField
+                    control={form.control}
+                    name="leadTime"
+                    render={({ field }) => {
+                      const [lead, unitValue] = field.value?.split(' ') ?? [
+                        '',
+                        '',
+                      ];
+                      const unit = !unitValue ? 'days' : unitValue;
+                      return (
+                        <FormItem>
+                          <FormLabel>Lead Time</FormLabel>
+                          <div className="grid grid-cols-4">
+                            <Input
+                              type="text"
+                              placeholder="Enter lead time"
+                              className="col-span-3 rounded-r-none"
+                              value={lead}
+                              onChange={(e) => {
+                                const newLead = e.target.value;
+                                field.onChange(
+                                  newLead.trim()
+                                    ? `${newLead.trim()} ${unit}`
+                                    : '',
+                                );
+                              }}
+                            />
+                            <Select
+                              value={unit}
+                              onValueChange={(val) => {
+                                field.onChange(
+                                  lead.trim() ? `${lead.trim()} ${val}` : '',
+                                );
+                              }}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="rounded-l-none">
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {DurationData.map((item) => (
+                                  <SelectItem
+                                    key={item.value}
+                                    value={item.value}
+                                  >
+                                    {item.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                )}
+              </div>
             </div>
           )}
 

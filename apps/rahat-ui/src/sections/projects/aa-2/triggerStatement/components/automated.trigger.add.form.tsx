@@ -30,6 +30,7 @@ import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { DurationData } from '../../activities/add/add.activity.view';
 
 const operatorOptions = [
   { label: 'Greater than (>)', value: '>' },
@@ -231,25 +232,98 @@ export default function AddAutomatedTriggerForm({
             </FormControl>
             <FormMessage />
           </FormItem>
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>Trigger Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Enter Trigger Title"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+          {phase?.isRequiredLeadTime ? (
+            <div className="col-span-2 grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Trigger Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter Trigger Title"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="leadTime"
+                render={({ field }) => {
+                  const [lead, unitValue] = field.value?.split(' ') ?? ['', ''];
+                  const unit = !unitValue ? 'days' : unitValue;
+                  return (
+                    <FormItem>
+                      <FormLabel>Lead Time</FormLabel>
+                      <div className="grid grid-cols-4">
+                        <Input
+                          type="text"
+                          placeholder="Enter lead time"
+                          className="col-span-3 rounded-r-none"
+                          value={lead}
+                          onChange={(e) => {
+                            const newLead = e.target.value;
+                            field.onChange(
+                              newLead.trim() ? `${newLead.trim()} ${unit}` : '',
+                            );
+                          }}
+                        />
+                        <Select
+                          value={unit}
+                          onValueChange={(val) => {
+                            field.onChange(
+                              lead.trim() ? `${lead.trim()} ${val}` : '',
+                            );
+                          }}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="rounded-l-none">
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {DurationData.map((item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
+          ) : (
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Trigger Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter Trigger Title"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          )}
           <FormField
             control={form.control}
             name="source"

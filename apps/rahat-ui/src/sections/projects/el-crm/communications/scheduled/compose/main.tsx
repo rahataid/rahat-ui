@@ -6,12 +6,15 @@ import {
   Calendar,
   Check,
   Clock,
+  FileSpreadsheet,
   MessageSquare,
   Plus,
+  Upload,
   Users,
   X,
   Zap,
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -81,8 +84,25 @@ import {
   useListElCrmTransport,
   useToggleElCrmAutomation,
   useTriggerElCrmCampaign,
+  useSendElCrmCampaignExcel,
 } from '@rahat-ui/query';
 import { getPlasgateSmsInfo, isPlasgateChannel } from '../../const';
+
+// Convert an ArrayBuffer to base64 in fixed-size chunks to avoid blowing the
+// call stack on large files.
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(
+      ...(bytes.subarray(i, i + chunkSize) as unknown as number[]),
+    );
+  }
+  return btoa(binary);
+}
+
+const EXCEL_MAX_ROWS = 5000;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -97,6 +117,33 @@ const AUDIENCE_GROUPS = [
     name: 'Consumers',
     description: 'Program beneficiaries',
   },
+  {
+    id: 'UPLOAD',
+    name: 'Upload List',
+    description: 'Schedule to an Excel / CSV of recipients',
+  },
+];
+
+type ParsedSheet = {
+  fileName: string;
+  fileBase64: string;
+  headers: string[];
+  rows: Record<string, any>[];
+  totalRows: number;
+};
+
+// Transports in this project are phone-based, so an uploaded list only ever
+// needs a phone number.
+const isValidPhone = (value: string) => /^\+?\d{6,}$/.test(value);
+
+const PHONE_HEADER_HINTS = [
+  'phone',
+  'phonenumber',
+  'phone number',
+  'mobile',
+  'msisdn',
+  'contact',
+  'number',
 ];
 
 // ─── Filter builder definitions ───────────────────────────────────────────────
@@ -522,6 +569,15 @@ export default function ComposeScheduleView() {
   const [scheduleTimeZone, setScheduleTimeZone] = useState(detectedTimeZone);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
+  // Upload-list mode state
+  const [parsedSheet, setParsedSheet] = useState<ParsedSheet | null>(null);
+  const [excelColumn, setExcelColumn] = useState('');
+  const [excelError, setExcelError] = useState('');
+  // Which audience bucket the uploaded list counts toward ('BENEFICIARY' | 'VENDOR').
+  const [excelTargetType, setExcelTargetType] = useState('');
+
+  const isUpload = selectedGroup === 'UPLOAD';
+
   // Automation rule creation state
   const [showRuleBuilder, setShowRuleBuilder] = useState(false);
   const [ruleTargetType, setRuleTargetType] =
@@ -559,6 +615,7 @@ export default function ComposeScheduleView() {
   });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
   const trigger = useTriggerElCrmCampaign(projectUUID);
+  const sendExcel = useSendElCrmCampaignExcel(projectUUID);
   const automations = useListElCrmAutomation(projectUUID);
   const toggleAutomation = useToggleElCrmAutomation(projectUUID);
   const createAutomationRule = useCreateElCrmAutomationRule(projectUUID);
@@ -688,6 +745,62 @@ export default function ComposeScheduleView() {
     selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
   const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
+  // Count unique, valid phone numbers in the chosen column.
+  const excelValidCount = useMemo(() => {
+    if (!parsedSheet || !excelColumn) return 0;
+    const seen = new Set<string>();
+    for (const row of parsedSheet.rows) {
+      const value = String(row[excelColumn] ?? '').trim();
+      if (value && isValidPhone(value) && !seen.has(value)) {
+        seen.add(value);
+      }
+    }
+    return seen.size;
+  }, [parsedSheet, excelColumn]);
+
+  const handleFileSelect = async (file: File | undefined) => {
+    setExcelError('');
+    setParsedSheet(null);
+    setExcelColumn('');
+    if (!file) return;
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      if (!sheet) throw new Error('The file has no readable sheet');
+      const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet, {
+        defval: '',
+      });
+      if (!rows.length) throw new Error('The sheet is empty');
+      if (rows.length > EXCEL_MAX_ROWS) {
+        throw new Error(
+          `The sheet has ${rows.length} rows; the limit is ${EXCEL_MAX_ROWS}`,
+        );
+      }
+      const headers = Object.keys(rows[0] ?? {});
+
+      // Auto-pick the phone column so the common case is zero-click.
+      const autoColumn =
+        headers.find((h) =>
+          PHONE_HEADER_HINTS.includes(h.trim().toLowerCase()),
+        ) ??
+        headers[0] ??
+        '';
+
+      setParsedSheet({
+        fileName: file.name,
+        fileBase64: arrayBufferToBase64(buffer),
+        headers,
+        rows,
+        totalRows: rows.length,
+      });
+      setExcelColumn(autoColumn);
+    } catch (err: any) {
+      setExcelError(err?.message ?? 'Could not read the file');
+    }
+  };
+
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
   const isPlasgate = isPlasgateChannel(selectedTransportName);
   const plasgateSmsInfo = useMemo(
@@ -722,7 +835,15 @@ export default function ComposeScheduleView() {
     isScheduleDateTimeValid &&
     !!selectedGroup &&
     !!messageContent &&
-    !!selectedTransportId;
+    !!selectedTransportId &&
+    (!isUpload ||
+      (!!parsedSheet &&
+        !!excelColumn &&
+        !!excelTargetType &&
+        excelValidCount > 0));
+
+  const isScheduling =
+    createCampaign.isPending || trigger.isPending || sendExcel.isPending;
 
   const selectedTemplateName = useMemo(() => {
     if (!messageContent) return 'Not selected';
@@ -761,8 +882,43 @@ export default function ComposeScheduleView() {
     [filterRows],
   );
 
+  const buildScheduleOptions = () => {
+    const scheduledDate = zonedDateTimeToDate(
+      scheduleDate,
+      scheduleTime,
+      scheduleTimeZone,
+    );
+    if (!scheduledDate) return null;
+    return {
+      scheduledTimestamp: scheduledDate.toISOString(),
+      scheduleTimezone: scheduleTimeZone,
+      attemptIntervalMinutes: '5',
+    };
+  };
+
   const handleSubmit = async () => {
     if (!isScheduleDateTimeValid) return;
+
+    if (isUpload) {
+      if (!parsedSheet) return;
+      const scheduleOptions = buildScheduleOptions();
+      if (!scheduleOptions) return;
+
+      await sendExcel.mutateAsync({
+        name: campaignName,
+        message: messageContent,
+        transportId: selectedTransportId,
+        targetType: excelTargetType,
+        fileBase64: parsedSheet.fileBase64,
+        column: excelColumn || undefined,
+        options: scheduleOptions,
+        isScheduled: true,
+      });
+
+      setIsConfirmDialogOpen(false);
+      router.push(`/projects/el-crm/${projectUUID}/communications/scheduled`);
+      return;
+    }
 
     const options: Record<
       string,
@@ -792,16 +948,9 @@ export default function ComposeScheduleView() {
     }
 
     if (scheduleDate && scheduleTime) {
-      const scheduledDate = zonedDateTimeToDate(
-        scheduleDate,
-        scheduleTime,
-        scheduleTimeZone,
-      );
-      if (!scheduledDate) return;
-
-      options.scheduledTimestamp = scheduledDate.toISOString();
-      options.scheduleTimezone = scheduleTimeZone;
-      options.attemptIntervalMinutes = '5';
+      const scheduleOptions = buildScheduleOptions();
+      if (!scheduleOptions) return;
+      Object.assign(options, scheduleOptions);
     }
 
     const campaign = await createCampaign.mutateAsync({
@@ -855,6 +1004,10 @@ export default function ComposeScheduleView() {
     setScheduleDate('');
     setScheduleTime('');
     setScheduleTimeZone(detectedTimeZone);
+    setParsedSheet(null);
+    setExcelColumn('');
+    setExcelError('');
+    setExcelTargetType('');
   };
 
   const addFilterRow = () =>
@@ -1066,7 +1219,7 @@ export default function ComposeScheduleView() {
                           ?.name
                       }
                     >
-                      <div className="grid grid-cols-2 gap-3 ml-10">
+                      <div className="grid grid-cols-3 gap-3 ml-10">
                         {AUDIENCE_GROUPS.map((group) => (
                           <button
                             key={group.id}
@@ -1074,6 +1227,10 @@ export default function ComposeScheduleView() {
                             onClick={() => {
                               setSelectedGroup(group.id);
                               setFilterRows([]);
+                              setParsedSheet(null);
+                              setExcelColumn('');
+                              setExcelError('');
+                              setExcelTargetType('');
                             }}
                             className={cn(
                               'flex flex-col items-start gap-1 rounded-lg border-2 p-4 transition-all hover:border-primary/50',
@@ -1100,8 +1257,157 @@ export default function ComposeScheduleView() {
                   {/* Step 4+: Filters & Schedule */}
                   {selectedGroup && (
                     <div className="space-y-4">
+                      {/* Upload recipient list */}
+                      {isUpload && (
+                        <div className="rounded-lg border p-4">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
+                              4
+                            </div>
+                            <div>
+                              <span className="font-medium">
+                                Upload Recipient List
+                              </span>
+                              <p className="text-xs text-muted-foreground">
+                                Excel (.xlsx) or CSV with a phone column
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="ml-10 space-y-3">
+                            {/* Which audience bucket this list counts toward */}
+                            <div className="space-y-2">
+                              <Label>Recipient Type</Label>
+                              <div className="grid grid-cols-2 gap-3">
+                                {[
+                                  { id: 'VENDOR', name: 'Customers' },
+                                  { id: 'BENEFICIARY', name: 'Consumers' },
+                                ].map((opt) => (
+                                  <button
+                                    key={opt.id}
+                                    type="button"
+                                    onClick={() => setExcelTargetType(opt.id)}
+                                    className={cn(
+                                      'flex items-center justify-center gap-2 rounded-lg border-2 p-3 text-sm font-medium transition-all hover:border-primary/50',
+                                      excelTargetType === opt.id
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-border',
+                                    )}
+                                  >
+                                    <Users className="h-4 w-4" />
+                                    {opt.name}
+                                  </button>
+                                ))}
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                Counts this campaign toward the selected
+                                audience in your communication stats.
+                              </p>
+                            </div>
+
+                            <label
+                              htmlFor="schedule-excel-upload"
+                              className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border p-6 cursor-pointer hover:border-primary/50 transition-colors"
+                            >
+                              {parsedSheet ? (
+                                <>
+                                  <FileSpreadsheet className="h-6 w-6 text-primary" />
+                                  <span className="text-sm font-medium">
+                                    {parsedSheet.fileName}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {parsedSheet.totalRows} rows · click to
+                                    replace
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="h-6 w-6 text-muted-foreground" />
+                                  <span className="text-sm font-medium">
+                                    Drop a file or click to browse
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    Up to {EXCEL_MAX_ROWS} rows
+                                  </span>
+                                </>
+                              )}
+                              <input
+                                id="schedule-excel-upload"
+                                type="file"
+                                accept=".xlsx,.xls,.csv"
+                                className="hidden"
+                                onChange={(e) =>
+                                  handleFileSelect(e.target.files?.[0])
+                                }
+                              />
+                            </label>
+
+                            <p className="text-xs text-muted-foreground">
+                              Need a starting point?{' '}
+                              <a
+                                href="/files/campaign_recipients_sample.xlsx"
+                                download
+                                className="text-primary underline underline-offset-2 hover:text-primary/80"
+                              >
+                                Download the sample template
+                              </a>{' '}
+                              (columns: name, phone, email).
+                            </p>
+
+                            {excelError && (
+                              <p className="text-xs text-destructive">
+                                {excelError}
+                              </p>
+                            )}
+
+                            {parsedSheet && (
+                              <>
+                                <div className="space-y-2">
+                                  <Label>Address Column</Label>
+                                  <Select
+                                    value={excelColumn}
+                                    onValueChange={setExcelColumn}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select the column" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {parsedSheet.headers.map((h) => (
+                                        <SelectItem key={h} value={h}>
+                                          {h}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <Users className="h-4 w-4" />
+                                  <span>
+                                    <strong
+                                      className={
+                                        excelValidCount === 0
+                                          ? 'text-destructive'
+                                          : 'text-foreground'
+                                      }
+                                    >
+                                      {excelValidCount}
+                                    </strong>{' '}
+                                    valid phone numbers,{' '}
+                                    <strong className="text-foreground">
+                                      {parsedSheet.totalRows - excelValidCount}
+                                    </strong>{' '}
+                                    skipped
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Audience filters (optional) */}
-                      {selectedGroup &&
+                      {!isUpload &&
                         (() => {
                           const activeFieldOptions =
                             selectedGroup === 'VENDOR'
@@ -1402,16 +1708,12 @@ export default function ComposeScheduleView() {
                           <TooltipTrigger asChild>
                             <Button
                               size="sm"
-                              disabled={
-                                !canSubmit ||
-                                createCampaign.isPending ||
-                                trigger.isPending
-                              }
+                              disabled={!canSubmit || isScheduling}
                               onClick={() => setIsConfirmDialogOpen(true)}
                               className="gap-2"
                             >
                               <Calendar className="h-4 w-4" />
-                              {createCampaign.isPending || trigger.isPending
+                              {isScheduling
                                 ? 'Scheduling…'
                                 : 'Schedule Message'}
                             </Button>
@@ -1865,7 +2167,7 @@ export default function ComposeScheduleView() {
         <Dialog
           open={isConfirmDialogOpen}
           onOpenChange={(open) => {
-            if (createCampaign.isPending || trigger.isPending) return;
+            if (isScheduling) return;
             setIsConfirmDialogOpen(open);
           }}
         >
@@ -1910,14 +2212,51 @@ export default function ComposeScheduleView() {
                   <p className="text-muted-foreground">Template</p>
                   <p className="font-medium">{selectedTemplateName}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Estimated recipients</p>
-                  <p className="font-medium">
-                    {audienceEstimate.isLoading
-                      ? 'Calculating...'
-                      : audienceEstimate.meta?.total ?? 0}
-                  </p>
-                </div>
+                {isUpload ? (
+                  <>
+                    <div>
+                      <p className="text-muted-foreground">Recipient Type</p>
+                      <p className="font-medium">
+                        {excelTargetType === 'VENDOR'
+                          ? 'Customers'
+                          : excelTargetType === 'BENEFICIARY'
+                          ? 'Consumers'
+                          : 'Not selected'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Uploaded File</p>
+                      <p className="font-medium break-words">
+                        {parsedSheet?.fileName ?? 'Not uploaded'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Address Column</p>
+                      <p className="font-medium">
+                        {excelColumn || 'Not selected'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Recipients</p>
+                      <p className="font-medium">
+                        {excelValidCount} valid,{' '}
+                        {(parsedSheet?.totalRows ?? 0) - excelValidCount}{' '}
+                        skipped
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <p className="text-muted-foreground">
+                      Estimated recipients
+                    </p>
+                    <p className="font-medium">
+                      {audienceEstimate.isLoading
+                        ? 'Calculating...'
+                        : audienceEstimate.meta?.total ?? 0}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1 rounded-md border p-3">
@@ -1927,7 +2266,7 @@ export default function ComposeScheduleView() {
                 </p>
               </div>
 
-              {activeFilters.length > 0 && (
+              {!isUpload && activeFilters.length > 0 && (
                 <div className="space-y-1 rounded-md border p-3">
                   <p className="text-muted-foreground">Applied filters</p>
                   {activeFilters.map((row) => (
@@ -1943,19 +2282,17 @@ export default function ComposeScheduleView() {
               <Button
                 variant="outline"
                 onClick={() => setIsConfirmDialogOpen(false)}
-                disabled={createCampaign.isPending || trigger.isPending}
+                disabled={isScheduling}
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={createCampaign.isPending || trigger.isPending}
+                disabled={isScheduling}
                 className="gap-2"
               >
                 <Zap className="h-4 w-4" />
-                {createCampaign.isPending || trigger.isPending
-                  ? 'Scheduling…'
-                  : 'Confirm and trigger'}
+                {isScheduling ? 'Scheduling…' : 'Confirm and trigger'}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -35,6 +35,7 @@ export default function AddManualTriggerForm({
   phase,
   stationHeading,
 }: IProps) {
+  console.log('phase', phase);
   return (
     <>
       <Form {...form}>
@@ -92,8 +93,10 @@ export default function AddManualTriggerForm({
                 control={form.control}
                 name="leadTime"
                 render={({ field }) => {
+                  console.log('field.value', field.value);
                   const [lead, unitValue] = field.value?.split(' ') ?? ['', ''];
                   const unit = !unitValue ? 'days' : unitValue;
+                  console.log('lead', lead, 'unit', unit);
                   return (
                     <FormItem className="w-full">
                       <FormLabel>Lead Time</FormLabel>

@@ -10,12 +10,21 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { DurationData } from '../../activities/add/add.activity.view';
 
 type IProps = {
   form: UseFormReturn<{
     title: string;
     isMandatory?: boolean;
     description?: string;
+    leadTime?: string;
   }>;
   phase: any;
   stationHeading?: string;
@@ -60,7 +69,11 @@ export default function AddManualTriggerForm({
               name="title"
               render={({ field }) => {
                 return (
-                  <FormItem className="col-span-2">
+                  <FormItem
+                    className={
+                      phase?.isRequiredLeadTime ? 'w-full' : 'col-span-2 w-full'
+                    }
+                  >
                     <FormLabel>Trigger Title</FormLabel>
                     <FormControl>
                       <Input
@@ -74,6 +87,55 @@ export default function AddManualTriggerForm({
                 );
               }}
             />
+            {phase?.isRequiredLeadTime && (
+              <FormField
+                control={form.control}
+                name="leadTime"
+                render={({ field }) => {
+                  const [lead, unitValue] = field.value?.split(' ') ?? ['', ''];
+                  const unit = !unitValue ? 'days' : unitValue;
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>Lead Time</FormLabel>
+                      <div className="grid grid-cols-4">
+                        <Input
+                          type="text"
+                          placeholder="Enter lead time"
+                          className="col-span-3 rounded-r-none"
+                          value={lead}
+                          onChange={(e) => {
+                            const newLead = e.target.value;
+                            field.onChange(
+                              newLead ? `${newLead} ${unit}` : ` ${unit}`,
+                            );
+                          }}
+                        />
+                        <Select
+                          value={unit}
+                          onValueChange={(val) => {
+                            field.onChange(lead ? `${lead} ${val}` : ` ${val}`);
+                          }}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="rounded-l-none">
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {DurationData.map((item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            )}
             <FormField
               control={form.control}
               name="description"

@@ -193,7 +193,7 @@ export default function CommsLogsDetailPage() {
     exportFailedLogs(sessionLogs?.httpReponse?.data?.data ?? []);
   };
 
-  const onExportAll = () => {
+  const onExportAll = async () => {
     try {
       if (!downloadUrl) {
         return toast.error(
@@ -203,7 +203,10 @@ export default function CommsLogsDetailPage() {
       if (hasNoLogsForExport) {
         return toast.error('No communication logs available to export.');
       }
-      downloadLogsCsv(downloadUrl);
+      const fileName = `${logs?.group?.name || 'group'}_${
+        activityDetail?.title || 'activity'
+      }_${new Date().toISOString().slice(0, 10)}.csv`;
+      await downloadLogsCsv(downloadUrl, fileName);
       toast.success('Communication logs exported successfully!');
     } catch (error) {
       console.error('Error exporting all logs:', error);

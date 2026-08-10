@@ -38,12 +38,19 @@ export function exportFailedLogs(logsData: SessionLog[]): void {
   XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
 }
 
-export function downloadLogsCsv(url: string): void {
+export async function downloadLogsCsv(
+  url: string,
+  fileName: string,
+): Promise<void> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.href = url;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
+  link.href = objectUrl;
+  link.download = fileName;
   document.body.appendChild(link);
   link.click();
   link.remove();
+  URL.revokeObjectURL(objectUrl);
 }

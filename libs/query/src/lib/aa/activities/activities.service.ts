@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useActivitiesStore } from './activities.store';
+import { ACTIVITY_QUERY_KEYS } from './activities.constants';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
@@ -25,7 +26,7 @@ export const useActivitiesCategories = (uuid: UUID) => {
   }));
 
   const query = useQuery({
-    queryKey: ['categories', uuid],
+    queryKey: [ACTIVITY_QUERY_KEYS.CATEGORIES, uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -58,7 +59,9 @@ export const useAddActivityCategory = () => {
       return result.data;
     },
     onSuccess: (_, { uuid }) => {
-      queryClient.invalidateQueries({ queryKey: ['categories', uuid] });
+      queryClient.invalidateQueries({
+        queryKey: [ACTIVITY_QUERY_KEYS.CATEGORIES, uuid],
+      });
     },
   });
 };
@@ -74,7 +77,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
   }));
 
   const query = useQuery({
-    queryKey: ['activities', uuid, payload],
+    queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES, uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -140,7 +143,7 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
     settings: state.settings,
   }));
   const query = useQuery({
-    queryKey: ['activitiesHavingComms', uuid, payload],
+    queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES_HAVING_COMMS, uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -195,7 +198,7 @@ export const useSingleActivity = (
   });
 
   const query = useQuery({
-    queryKey: ['activity', uuid, activityId],
+    queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY, uuid, activityId],
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({
@@ -253,7 +256,7 @@ export const useCreateActivities = () => {
     },
     onSuccess: (data) => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activities'] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
       toast.fire({
         title: data?.data?.isTemplate
           ? t('ACTIVITY_AND_TEMPLATE_ADDED_SUCCESSFULLY')
@@ -343,7 +346,7 @@ export const useBulkAddActivities = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activities'] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || t('ERROR');
@@ -386,9 +389,11 @@ export const useUpdateActivities = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activities'] });
-      qc.invalidateQueries({ queryKey: ['activity'] });
-      qc.invalidateQueries({ queryKey: ['activitiesHavingComms'] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY] });
+      qc.invalidateQueries({
+        queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES_HAVING_COMMS],
+      });
       toast.fire({
         title: t('ACTIVITY_UPDATED_SUCCESSFULLY'),
         icon: 'success',
@@ -437,8 +442,10 @@ export const useDeleteActivities = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activities'] });
-      qc.invalidateQueries({ queryKey: ['activitiesHavingComms'] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
+      qc.invalidateQueries({
+        queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES_HAVING_COMMS],
+      });
       toast.fire({
         title: t('ACTIVITY_REMOVED_SUCCESSFULLY'),
         icon: 'success',
@@ -486,7 +493,7 @@ export const useTriggerCommunication = () => {
 
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activity'] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY] });
       toast.fire({
         title: t('COMMUNICATION_TRIGGER_SUCCESSFULLY'),
         icon: 'success',
@@ -539,8 +546,8 @@ export const useUpdateActivityStatus = () => {
 
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activities'] });
-      qc.invalidateQueries({ queryKey: ['activity'] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY] });
       toast.fire({
         title: t('STATUS_UPDATED'),
         icon: 'success',
@@ -565,7 +572,7 @@ export const useActivityTemplates = (
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['activityTemplates', uuid, filters],
+    queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY_TEMPLATES, uuid, filters],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

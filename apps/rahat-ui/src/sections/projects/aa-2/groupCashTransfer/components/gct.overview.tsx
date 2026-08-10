@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { DataCard, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { useGetGctData } from '@rahat-ui/query';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 import { useNumberFormat } from '../../../../../utils/useNumberFormat';
 
@@ -18,15 +17,13 @@ const STATUS_COLORS = [
   '#F43F5E',
 ];
 
-export default function GctOverview() {
-  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
-  const tGlobal = useTranslations('GLOBAL');
-  const { id } = useParams();
-  const { data, isPending } = useGetGctData(id as UUID);
-
-  const stats = data?.data ?? data ?? null;
-  const formatNum = useNumberFormat();
-
+export default function GctOverview({
+  stats,
+  isPending,
+}: {
+  stats: any;
+  isPending: boolean;
+}) {
   const totalAllocated = stats?.totalAllocatedAmount ?? 0;
   const totalDisbursed = stats?.totalDisbursedAmount ?? 0;
   const treasuryBalance = stats?.treasuryBalance ?? 0;

@@ -169,32 +169,57 @@ export const useDeleteInkind = (projectUUID: UUID) => {
   });
 };
 
-export const useInkindsSummary = (projectUUID: UUID) => {
+export const useInkindsSummary = (
+  projectUUID: UUID,
+  filters?: { startDate?: string; endDate?: string },
+) => {
   const q = useProjectAction();
-
   return useQuery({
-    queryKey: ['aa.inkinds.getSummary', projectUUID],
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    queryFn: () => runAction(q, projectUUID, 'aa.inkinds.getSummary', {}),
+    queryKey: [
+      'aa.inkinds.getSummary',
+      projectUUID,
+      filters?.startDate,
+      filters?.endDate,
+    ],
+    staleTime: 5 * 60 * 1000,
+    queryFn: () =>
+      runAction(q, projectUUID, 'aa.inkinds.getSummary', {
+        ...(filters?.startDate && { startDate: filters.startDate }),
+        ...(filters?.endDate && { endDate: filters.endDate }),
+      }),
   });
 };
 
 export const useInkindTransactions = (
   projectUUID: UUID,
-  params?: { page?: number; perPage?: number },
+  params?: {
+    page?: number;
+    perPage?: number;
+    startDate?: string;
+    endDate?: string;
+  },
 ) => {
   const q = useProjectAction();
   const page = params?.page ?? 1;
   const perPage = params?.perPage ?? 10;
 
   return useQuery({
-    queryKey: ['aa.inkindStock.getAllMovements', projectUUID, page, perPage],
+    queryKey: [
+      'aa.inkindStock.getAllMovements',
+      projectUUID,
+      page,
+      perPage,
+      params?.startDate,
+      params?.endDate,
+    ],
     staleTime: 5 * 60 * 1000,
     placeholderData: (prev) => prev,
     queryFn: () =>
       runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {
         page,
         perPage,
+        ...(params?.startDate && { startDate: params.startDate }),
+        ...(params?.endDate && { endDate: params.endDate }),
       }),
   });
 };

@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import {
@@ -21,9 +19,7 @@ const INKIND_TAB_VALUES = [
   'inkindAllocation',
 ] as const;
 
-type InkindTabValue = (typeof INKIND_TAB_VALUES)[number];
-
-const componentMap: Record<InkindTabValue, ComponentType> = {
+const componentMap: Record<string, React.ComponentType> = {
   inkindList: InkindList,
   inkindOverview: InkindOverview,
   inkindAllocation: InkindAllocationList,
@@ -40,9 +36,7 @@ export default function InkindTabs() {
   ] as const, [tv]);
 
   useEffect(() => {
-    if (!activeTab) {
-      setActiveTab('inkindOverview');
-    }
+    if (!activeTab) setActiveTab('inkindOverview');
   }, [activeTab, setActiveTab]);
 
   return (

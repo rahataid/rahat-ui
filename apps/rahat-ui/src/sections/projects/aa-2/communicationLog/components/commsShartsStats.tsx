@@ -28,11 +28,9 @@ type CommunicationBeneficiaryStakeholdersReport = {
 };
 
 type CommunicationsChartsStatsProps = {
-  commsStatsData: any;
   statsBenefStakeholders?: CommunicationBeneficiaryStakeholdersReport;
 };
 export default function CommunicationsChartsStats({
-  commsStatsData,
   statsBenefStakeholders,
 }: CommunicationsChartsStatsProps) {
   const t = useTranslations('AA_PROJECT');
@@ -162,13 +160,13 @@ export default function CommunicationsChartsStats({
             </div>
             <div className="grid grid-cols-2 xl:grid-cols-1 gap-2 ">
               {[
-                {
-                  label: t('UNIQUE_AVC_RECIPIENTS'),
-                  value: formatNum(
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'VOICE',
-                    )?.totalRecipients || 0),
-                },
+                // {
+                //   label: 'Unique AVC Recipients',
+                //   value:
+                //     commsStatsData?.stats?.transportStats.find(
+                //       (r) => r.name === 'VOICE',
+                //     )?.totalRecipients || 0,
+                // },
                 {
                   label: t('SUCCESSFULLY_DELIVERED'),
                   value: formatNum(

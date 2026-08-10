@@ -5,18 +5,28 @@ import {
   useFundAssignmentStore,
   useGroupsReservedFunds,
   usePagination,
-  useProjectDashboardReporting,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
-import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
+import {
+  DataCard,
+  Heading,
+  IconLabelBtn,
+  TransactionCard,
+} from 'apps/rahat-ui/src/common';
+import { INFO_TOOL_TIPS } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useChains } from 'connectkit';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import TokenOverviewSkeleton from './token.overview.skeleton';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
+import { CloudDownloadIcon } from 'lucide-react';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { exportTokenStats, hasTokenData } from '../utils/token.utils';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
@@ -26,11 +36,16 @@ export default function TokensOverview() {
   const tc = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const uuid = useParams().id;
   const projectId = uuid as UUID;
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
+
   const { data, isLoading } = useFetchTokenStatsStellar({
     projectUUID: uuid,
+    startDate,
+    endDate,
   });
 
-  const { data: getTokenStat } = useProjectDashboardReporting(projectId);
+  // const { data: getTokenStat } = useProjectDashboardReporting(projectId);
 
   const chains = useChains();
   const { pagination } = usePagination();
@@ -76,14 +91,49 @@ export default function TokensOverview() {
       { label: t('NOT_DISBURSED'), value: notDisbursedValue },
     ];
   };
+  const handleDateChange = (range: any) => {
+    if (range?.from && range?.to) {
+      setStartDate(range.from.toISOString());
+      setEndDate(range.to.toISOString());
+    }
+  };
 
+  const handleClearDate = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
+  const hasData = hasTokenData(data);
   return (
     <>
-      <Heading
-        title={t('TOKENS_OVERVIEW')}
-        titleStyle="text-lg"
-        description={t('OVERVIEW_OF_YOUR_TOKENS')}
-      />
+      <div className="flex items-center justify-between">
+        <Heading
+          title={t('TOKENS_OVERVIEW')}
+          titleStyle="text-lg"
+          description={t('OVERVIEW_OF_YOUR_TOKENS')}
+        />
+        <div className="flex gap-2 items-center">
+          <TooltipWrapper
+            tip={hasData ? '' : 'No token data available to export'}
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={() => exportTokenStats(data)}
+              name={'Export Report'}
+              variant="outline"
+              disabled={!hasData}
+              className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+            />
+          </TooltipWrapper>
+          <DateRangePicker
+            placeholder="Pick date range"
+            handleDateChange={handleDateChange}
+            handleClearDate={handleClearDate}
+            type="range"
+            className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
+          />
+        </div>
+      </div>
+
       {!isLoading ? (
         <div className="space-y-4 mb-4">
           {/* First Row - 4 Columns */}
@@ -182,58 +232,7 @@ export default function TokensOverview() {
           {/* Second Row - 3 Columns */}
           <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
             {data?.data?.slice(4).map((item, index) => {
-              const isToken = item.name === 'Token';
-              const isTokenPrice = item.name === 'Token Price';
-              const isBudget = item.name === 'Budget Assigned';
               const infoTooltip = t(getNameKey(item.name) + '_TOOLTIP');
-
-              // if (isToken) {
-              //   return (
-              //     <a
-              //       key={index}
-              //       target="_blank"
-              //       href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
-              //       className="cursor-pointer"
-              //     >
-              //       <DataCard
-              //         className="rounded-sm h-[116px]"
-              //         title={item.name}
-              //         number={item.value}
-              //         infoIcon={!!infoTooltip}
-              //         infoTooltip={infoTooltip}
-              //         subtitle=" "
-              //       />
-              //     </a>
-              //   );
-              // }
-
-              // if (isTokenPrice) {
-              //   return (
-              //     <DataCard
-              //       key={index}
-              //       className="rounded-sm h-[116px]"
-              //       title="1 Token Value"
-              //       number={`Rs ${item.value}`}
-              //       infoIcon={!!infoTooltip}
-              //       infoTooltip={infoTooltip}
-              //       subtitle=" "
-              //     />
-              //   );
-              // }
-
-              // if (isBudget) {
-              //   return (
-              //     <DataCard
-              //       key={index}
-              //       className="rounded-sm h-[116px]"
-              //       title="Budget Assigned"
-              //       number={`Rs ${item.value}`}
-              //       infoIcon={!!infoTooltip}
-              //       infoTooltip={infoTooltip}
-              //       subtitle=" "
-              //     />
-              //   );
-              // }
 
               return (
                 <DataCard

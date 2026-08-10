@@ -5,17 +5,10 @@ import React, { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 
 import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   ScrollArea,
   ScrollBar,
@@ -32,7 +25,6 @@ import {
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { CloudDownload, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
 import {
   ColumnDef,
   flexRender,
@@ -61,15 +53,17 @@ export default function VerificationPayout() {
   const id = params.id as UUID;
   const payoutId = params.detailID as UUID;
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [data, setData] = useState<any[][]>([]);
   const [fileName, setFileName] = useState<string>(tg('NO_FILE_CHOSEN'));
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const verifyManualPayout = useVerifyManualPayout();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [matchBy, setMatchBy] = useState<'bankAccount' | 'phoneNumber'>(
-    'bankAccount',
-  );
+  const matchBy =
+    searchParams.get('matchBy') === 'phoneNumber'
+      ? 'phoneNumber'
+      : 'bankAccount';
   const columns = React.useMemo<ColumnDef<any>[]>(
     () =>
       data[0]?.map((header: any, index: number) => {

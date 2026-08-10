@@ -16,6 +16,7 @@ import { useParams } from 'next/navigation';
 import * as React from 'react';
 import GrievancesLayout from '../../../../sections/projects/aa-2/grievances/grievances.layout';
 import { ProjectLayout } from '../../../../sections/projects/components';
+import { ProjectAbilityProvider } from '../../../../providers/project-ability-provider';
 
 export default function ProjectLayoutRoot({
   children,
@@ -62,11 +63,13 @@ export default function ProjectLayoutRoot({
 
   return (
     // <GarphQlProvider>
-    <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-      <GrievancesLayout>
-        {secondPanel ? [children, secondPanel] : children}
-      </GrievancesLayout>
-    </ProjectLayout>
+    <ProjectAbilityProvider>
+      <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
+        <GrievancesLayout>
+          {secondPanel ? [children, secondPanel] : children}
+        </GrievancesLayout>
+      </ProjectLayout>
+    </ProjectAbilityProvider>
     // </GarphQlProvider>
   );
 }

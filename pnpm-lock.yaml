@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@casl/ability':
+        specifier: ^6.7.3
+        version: 6.7.3
       '@emotion/react':
         specifier: ^11.11.4
         version: 11.14.0(@types/react@18.3.23)(react@18.2.0)
@@ -114,8 +117,8 @@ importers:
         specifier: 0.0.45
         version: 0.0.45(@types/react@18.3.23)(bufferutil@4.0.9)(immer@10.1.1)(typescript@5.4.5)(zod@3.25.67)
       '@rumsan/sdk':
-        specifier: 0.0.47
-        version: 0.0.47
+        specifier: 0.0.47-rc.3
+        version: 0.0.47-rc.3
       '@rumsan/user':
         specifier: 3.0.169
         version: 3.0.169(amqplib@0.10.8)(bufferutil@4.0.9)(passport@0.7.0)(reflect-metadata@0.2.2)(typescript@5.4.5)(zod@3.25.67)
@@ -3335,6 +3338,9 @@ packages:
 
   '@rumsan/sdk@0.0.47':
     resolution: {integrity: sha512-EHbRkUwkbbCfRIzjjnLaMSVi/GPqt827gNvU1qf5G2RL0Jo3bFDgXuzxUJB1ACXiQRa8GrLFOGLvYLbE1Ldmpw==}
+
+  '@rumsan/sdk@0.0.47-rc.3':
+    resolution: {integrity: sha512-j4Ux0/a+jKw6Ur/pvj0QoSqm+mEno4XTNj36xEFpjqxmNwTX92ZZnJorZx/rePMBOjJcVwxLf1AS5TnOMYwyEg==}
 
   '@rumsan/user@3.0.169':
     resolution: {integrity: sha512-hUPsJCynuqFewmWFyu1n4ayXvtYVZxt2ERIBtPPcGq/4R9hqfE3/y5dreRfc4Rpn26NHECHOPUSforB+gZW/Zw==}
@@ -16080,6 +16086,13 @@ snapshots:
       - debug
 
   '@rumsan/sdk@0.0.47':
+    dependencies:
+      axios: 1.10.0
+      http-status-codes: 2.3.0
+    transitivePeerDependencies:
+      - debug
+
+  '@rumsan/sdk@0.0.47-rc.3':
     dependencies:
       axios: 1.10.0
       http-status-codes: 2.3.0

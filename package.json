@@ -22,6 +22,7 @@
   },
   "private": true,
   "dependencies": {
+    "@casl/ability": "^6.7.3",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.4",
@@ -57,7 +58,7 @@
     "@rumsan/extensions": "0.0.38",
     "@rumsan/prisma": "^1.0.125",
     "@rumsan/react-query": "0.0.45",
-    "@rumsan/sdk": "0.0.47",
+    "@rumsan/sdk": "0.0.47-rc.3",
     "@rumsan/user": "3.0.169",
     "@tanstack/match-sorter-utils": "^8.11.8",
     "@tanstack/react-query": "5.22.2",

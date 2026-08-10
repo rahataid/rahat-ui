@@ -33,6 +33,11 @@ import { AlertCircleIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -136,10 +141,7 @@ export default function TriggerStatementDetail() {
           } text-xs`}
         />
         <div className="flex space-x-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.DELETE} subject={SUBJECTS.TRIGGER}>
             <TooltipWrapper
               tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
               disable={!isEditDeleteDisabled}
@@ -154,7 +156,7 @@ export default function TriggerStatementDetail() {
                 disabled={isEditDeleteDisabled}
               />
             </TooltipWrapper>
-          </RoleAuth>
+          </Can>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}

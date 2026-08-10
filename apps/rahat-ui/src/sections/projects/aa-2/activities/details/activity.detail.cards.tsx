@@ -5,6 +5,7 @@ import { CheckCircle, Clock, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
@@ -18,6 +19,20 @@ export default function ActivityDetailCards({
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
+
+  // leadTime is stored as "<value> <unit>" (e.g. "1 Days"); translate the
+  // unit word and transliterate the digit for display only.
+  const formatLeadTime = (value?: string) => {
+    if (!value) return undefined;
+    const match = value.match(/^(\d+)\s*(hours?|days?)$/i);
+    if (!match) return value;
+    const [, num, unit] = match;
+    const unitKey = unit.toLowerCase().startsWith('hour') ? 'HOURS' : 'DAYS';
+    return `${formatDigits(num)} ${t(unitKey)}`;
+  };
+  const formattedLeadTime = formatLeadTime(activityDetail?.leadTime);
+
   const getStatusLabel = (status?: string) => {
     switch (status) {
       case 'NOT_STARTED':
@@ -111,11 +126,11 @@ export default function ActivityDetailCards({
             </TooltipWrapper>
 
             <TooltipWrapper
-              tip={`${t('LEAD_TIME')}: ${activityDetail?.leadTime ?? 'N/A'}`}
+              tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? 'N/A'}`}
             >
               <span className="cursor-pointer">
                 {activityDetail?.leadTime && <span>&bull;</span>}
-                {activityDetail?.leadTime ?? 'N/A'}
+                {formattedLeadTime ?? 'N/A'}
               </span>
             </TooltipWrapper>
           </div>

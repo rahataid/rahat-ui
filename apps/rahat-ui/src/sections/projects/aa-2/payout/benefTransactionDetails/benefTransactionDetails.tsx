@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useGetPayoutLog, useTriggerForOnePayoutFailed } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -35,6 +35,7 @@ export default function BeneficiaryTransactionLogDetails() {
   const t = useTranslations('AA_PROJECT');
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
+  const locale = useLocale();
   const formatNum = useNumberFormat();
   const { id, uuid } = useParams();
   const router = useRouter();
@@ -235,12 +236,12 @@ export default function BeneficiaryTransactionLogDetails() {
 
             <InfoItem
               label={tg('CREATED_AT')}
-              value={intlFormatDate(data?.data?.createdAt)}
+              value={intlFormatDate(data?.data?.createdAt, locale)}
             />
 
             <InfoItem
               label={tv('UPDATED_AT')}
-              value={intlFormatDate(data?.data?.updatedAt)}
+              value={intlFormatDate(data?.data?.updatedAt, locale)}
             />
 
             {data?.data?.payout?.type === 'FSP' && (

@@ -65,6 +65,7 @@ export default function TriggerStatementDetail() {
 
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
 
   const phase = trigger?.phase?.name;

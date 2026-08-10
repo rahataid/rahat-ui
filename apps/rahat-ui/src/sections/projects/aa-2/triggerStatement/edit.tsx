@@ -48,13 +48,14 @@ export default function EditTrigger() {
   const { data: projectInfo } = useProjectInfo(projectId as UUID);
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
 
   const { data: dataSourceTypes, isLoading: isLoadingDataSourceTypes } =
     useGetDataSourceTypes(projectId);
   const SOURCES =
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
-  const sourceOptions = buildSourceOptions(SOURCES);
+  const sourceOptions = buildSourceOptions(SOURCES, t);
   const subTypeOptions = buildSubtypeOptions(SOURCES);
 
   const triggerType = trigger?.source === 'MANUAL' ? 'manual' : 'automated';

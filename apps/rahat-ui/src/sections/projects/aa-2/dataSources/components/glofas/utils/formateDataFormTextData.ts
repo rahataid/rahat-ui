@@ -1,15 +1,28 @@
-export const formateDateFromText = (text: string) => {
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
+
+export const formateDateFromText = (text: string, locale = 'en') => {
   if (!text) return 'N/A';
 
   const match = text.match(/\d{4}-\d{2}-\d{2}/);
 
   if (!match) return 'N/A';
   const rawDate = match[0];
-  const newFormattedDate = new Intl.DateTimeFormat('ne-NP', {
+  const d = new Date(rawDate);
+  const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(new Date(rawDate));
+  };
+  const neOptions =
+    locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
+  const formatter = new Intl.DateTimeFormat(
+    locale === 'ne' ? 'ne-NP' : locale,
+    neOptions,
+  );
+  const newFormattedDate =
+    locale === 'ne'
+      ? localizeNepaliParts(d, neOptions, formatter.formatToParts(d))
+      : formatter.format(d);
   const newData = text.replace(rawDate, newFormattedDate);
   return newData;
 };

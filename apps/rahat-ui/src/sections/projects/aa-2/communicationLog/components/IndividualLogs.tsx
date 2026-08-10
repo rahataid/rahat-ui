@@ -108,7 +108,9 @@ export function IndividualLogTab() {
                       : ''
                   }
                 >
-                  {capitalizeFirstLetter(stat.transportName)}
+                  {g.has(stat.transportName.toUpperCase() as any)
+                    ? g(stat.transportName.toUpperCase() as any)
+                    : capitalizeFirstLetter(stat.transportName)}
                 </span>
                 <Badge
                   className={`h-6 w-6 justify-center text-white px-2 py-0 ${

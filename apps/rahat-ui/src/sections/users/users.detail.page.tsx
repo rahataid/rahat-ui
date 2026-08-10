@@ -31,11 +31,13 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import Swal from 'sweetalert2';
 import { User } from '@rumsan/sdk/types';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 export default function UsersDetailPage() {
   const t = useTranslations('USERS_DETAIL');
   const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
 
@@ -146,11 +148,15 @@ export default function UsersDetailPage() {
           </div>
           <div>
             <h1 className="text-md text-muted-foreground">{tg('GENDER')}</h1>
-            <p className="font-medium">{User?.gender || tg('N_A')}</p>
+            <p className="font-medium">
+              {User?.gender && tg.has(User.gender.toUpperCase() as any)
+                ? tg(User.gender.toUpperCase() as any)
+                : User?.gender || tg('N_A')}
+            </p>
           </div>
           <div>
             <h1 className="text-md text-muted-foreground">{tg('PHONE_NUMBER')}</h1>
-            <p className="font-medium">{User?.phone || tg('N_A')}</p>
+            <p className="font-medium">{formatPhone(User?.phone) || tg('N_A')}</p>
           </div>
           <div>
             <h1 className="text-md text-muted-foreground">{tg('EMAIL_ADDRESS')}</h1>

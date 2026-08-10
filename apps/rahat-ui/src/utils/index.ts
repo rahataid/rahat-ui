@@ -3,6 +3,7 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { format, isValid, parse } from 'date-fns';
+import { localizeNepaliParts } from './useDateFormat';
 
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {
@@ -137,38 +138,58 @@ export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-export const intlFormatDate = (dateStr?: string) => {
+export const intlFormatDate = (dateStr?: string, locale: string = 'en') => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return '-';
-  return new Intl.DateTimeFormat('en-US', {
+  const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour12: true,
     hour: 'numeric',
     minute: 'numeric',
-  }).format(date);
+  };
+  const neOptions =
+    locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
+  const formatter = new Intl.DateTimeFormat(
+    locale === 'ne' ? 'ne-NP' : locale,
+    neOptions,
+  );
+  if (locale === 'ne') {
+    return localizeNepaliParts(date, neOptions, formatter.formatToParts(date));
+  }
+  return formatter.format(date);
 };
 
-export const intlDateFormat = (dateStr?: string) => {
+export const intlDateFormat = (dateStr?: string, locale: string = 'en') => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return '-';
 
-  const day = new Intl.DateTimeFormat('en-US', { day: '2-digit' }).format(date);
-  const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
-    date,
-  );
-  const year = new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(
-    date,
-  );
-  const time = new Intl.DateTimeFormat('en-US', {
+  const localeTag = locale === 'ne' ? 'ne-NP' : locale;
+  const numberingSystem =
+    locale === 'ne' ? ({ numberingSystem: 'deva' } as const) : {};
+
+  const dayOptions: Intl.DateTimeFormatOptions = { day: '2-digit', ...numberingSystem };
+  const monthOptions: Intl.DateTimeFormatOptions = { month: 'long', ...numberingSystem };
+  const yearOptions: Intl.DateTimeFormatOptions = { year: 'numeric', ...numberingSystem };
+  const timeOptions: Intl.DateTimeFormatOptions = {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
     hour12: true,
-  }).format(date);
+    ...numberingSystem,
+  };
+
+  const day = new Intl.DateTimeFormat(localeTag, dayOptions).format(date);
+  const monthFormatter = new Intl.DateTimeFormat(localeTag, monthOptions);
+  const month =
+    locale === 'ne'
+      ? localizeNepaliParts(date, monthOptions, monthFormatter.formatToParts(date))
+      : monthFormatter.format(date);
+  const year = new Intl.DateTimeFormat(localeTag, yearOptions).format(date);
+  const time = new Intl.DateTimeFormat(localeTag, timeOptions).format(date);
 
   return `${day} ${month}, ${year}, ${time}`;
 };

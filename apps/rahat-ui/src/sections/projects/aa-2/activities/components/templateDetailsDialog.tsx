@@ -28,6 +28,7 @@ import Link from 'next/link';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export function TemplateDetailsDialog({
   open,
@@ -39,6 +40,18 @@ export function TemplateDetailsDialog({
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
+
+  // leadTime is stored as "<value> <unit>" (e.g. "1 Days"); translate the
+  // unit word and transliterate the digit for display only.
+  const formatLeadTime = (value?: string) => {
+    if (!value) return undefined;
+    const match = value.match(/^(\d+)\s*(hours?|days?)$/i);
+    if (!match) return value;
+    const [, num, unit] = match;
+    const unitKey = unit.toLowerCase().startsWith('hour') ? 'HOURS' : 'DAYS';
+    return `${formatDigits(num)} ${t(unitKey)}`;
+  };
   if (!template) return null;
   const appTransports = useListAllTransports();
 
@@ -90,7 +103,7 @@ export function TemplateDetailsDialog({
           {/* Basic Info */}
           <div className="grid grid-cols-2 gap-4 mt-4">
             <InfoItem icon={<Clock size={16} />} label={t('LEAD_TIME')}>
-              {template.leadTime || '—'}
+              {formatLeadTime(template.leadTime) || '—'}
             </InfoItem>
 
             <InfoItem icon={<User size={16} />} label={t('RESPONSIBILITY')}>

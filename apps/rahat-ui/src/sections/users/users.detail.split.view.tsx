@@ -22,6 +22,7 @@ import Swal from 'sweetalert2';
 import DeleteButton from '../../components/delete.btn';
 import EditButton from '../../components/edit.btn';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 type IProps = {
   userDetail: User;
@@ -34,6 +35,7 @@ export default function UsersDetailSplitView({
 }: IProps) {
   const t = useTranslations('USERS_DETAIL');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const router = useRouter();
   const removeUser = useUserRemove();
   const currentUser = useUserCurrentUser();
@@ -93,7 +95,9 @@ export default function UsersDetailSplitView({
             <div className="flex space-x-4 items-center">
               <Badge>{userDetail?.extras?.status ?? tg('N_A')}</Badge>
               <p className="text-base text-muted-foreground">
-                {userDetail?.gender ?? tg('N_A')}
+                {userDetail?.gender && tg.has(userDetail.gender.toUpperCase() as any)
+                  ? tg(userDetail.gender.toUpperCase() as any)
+                  : userDetail?.gender ?? tg('N_A')}
               </p>
             </div>
           </div>
@@ -153,7 +157,7 @@ export default function UsersDetailSplitView({
                   <p>{tg('PHONE_NUMBER')}</p>
                 </div>
                 <p className="text-muted-foreground text-base">
-                  {userDetail?.phone || '-'}
+                  {formatPhone(userDetail?.phone) || '-'}
                 </p>
               </div>
 

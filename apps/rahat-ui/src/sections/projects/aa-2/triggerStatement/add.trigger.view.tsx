@@ -105,6 +105,7 @@ export default function AddTriggerView() {
   );
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
   const { data, isLoading: isTabLoading } = useTabConfiguration(
     projectId as UUID,
@@ -112,7 +113,7 @@ export default function AddTriggerView() {
   );
   const SOURCES =
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
-  const sourceOptions = buildSourceOptions(SOURCES);
+  const sourceOptions = buildSourceOptions(SOURCES, t);
   const subtypeOptionsBySource = buildSubtypeOptions(SOURCES);
 
   const availableTabs = React.useMemo(() => {

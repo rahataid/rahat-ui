@@ -18,10 +18,12 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 
 export default function VendorDetail() {
   const t = useTranslations('VENDORS_DETAIL');
   const g = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const { data: vendorDetail, isLoading } = useGetVendor(id);
@@ -141,7 +143,7 @@ export default function VendorDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('PHONE_NUMBER')}</h1>
-          <p className="font-medium">{vendor?.phone || g('N_A')}</p>
+          <p className="font-medium">{formatPhone(vendor?.phone) || g('N_A')}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('EMAIL_ADDRESS')}</h1>

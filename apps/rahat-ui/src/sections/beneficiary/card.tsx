@@ -15,6 +15,7 @@ import { FilePenLine, Trash2 } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { useTranslations } from 'next-intl';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 interface IAdditionalBeneficiaryItem extends IBeneficiaryItem {
   handleClick: VoidFunction;
@@ -27,12 +28,8 @@ export default function Card({
   handleClick,
 }: IAdditionalBeneficiaryItem) {
   const t = useTranslations('GLOBAL');
-  const changedDate = new Date(updatedAt);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const formatDate = useDateFormat();
+  const formattedDate = formatDate(updatedAt, 'MMMM dd, yyyy');
 
   return (
     <div className="p-5 border rounded-md cursor-pointer" onClick={handleClick}>

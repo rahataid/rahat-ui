@@ -13,6 +13,7 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface PhaseCardProps {
   id: string;
@@ -37,8 +38,21 @@ export default function PhaseCard({
 }: PhaseCardProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const router = useRouter();
   const { id: ProjectId } = useParams();
+
+  // leadTime is stored as "<value> <unit>" (e.g. "1 Days"); translate the
+  // unit word and transliterate the digit for display only.
+  const formatLeadTime = (value?: string) => {
+    if (!value) return undefined;
+    const match = value.match(/^(\d+)\s*(hours?|days?)$/i);
+    if (!match) return value;
+    const [, num, unit] = match;
+    const unitKey = unit.toLowerCase().startsWith('hour') ? 'HOURS' : 'DAYS';
+    return `${formatDigits(num)} ${t(unitKey)}`;
+  };
+  const formattedLeadTime = formatLeadTime(leadTime);
 
   return (
     <Card
@@ -82,9 +96,9 @@ export default function PhaseCard({
               ? `${responsibleStation.substring(0, 20)}...`
               : responsibleStation ?? 'N/A'}
           </TooltipWrapper>
-          <TooltipWrapper tip={`${t('LEAD_TIME')}: ${leadTime ?? 'N/A'}`}>
+          <TooltipWrapper tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? 'N/A'}`}>
             {leadTime && <span className="text-gray-400">&bull;</span>}
-            <span>{leadTime ?? 'N/A'}</span>
+            <span>{formattedLeadTime ?? 'N/A'}</span>
           </TooltipWrapper>
         </div>
       </CardContent>

@@ -28,6 +28,8 @@ import {
 import { cn } from 'libs/shadcn/src';
 import { Check, ChevronDown } from 'lucide-react';
 import { Tag } from 'emblor';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
 import GctSupportAreaInput from './gct.support-area-input';
 import { GctGroupValues } from '../types/gct.schemas';
 import { CIPS_BANKS } from '../types/cips-banks';
@@ -83,6 +85,7 @@ export function BasicInfoSection({
 }: BasicInfoSectionProps) {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   return (
     <SectionCard titleKey="BASIC_INFO">
       <div className="grid grid-cols-3 gap-4">
@@ -148,7 +151,12 @@ export function BasicInfoSection({
             <FormItem>
               <Label>{tGlobal('WARD_COMMUNITY')} <Req /></Label>
               <FormControl>
-                <Input placeholder={t('ENTER_WARD_AND_COMMUNITY')} {...field} />
+                <Input
+                  placeholder={t('ENTER_WARD_AND_COMMUNITY')}
+                  {...field}
+                  value={formatDigits(field.value)}
+                  onChange={(e) => field.onChange(toAsciiDigits(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -187,6 +195,7 @@ interface BankDetailsSectionProps {
 
 export function BankDetailsSection({ form }: BankDetailsSectionProps) {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const formatDigits = useLabelDigits();
   return (
     <SectionCard titleKey="BANK_DETAILS">
       <div className="grid grid-cols-2 gap-4">
@@ -272,7 +281,12 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
             <FormItem>
               <Label>{t('ACCOUNT_NUMBER')} <Req /></Label>
               <FormControl>
-                <Input placeholder={t('ENTER_BANK_ACCOUNT_NUMBER')} {...field} />
+                <Input
+                  placeholder={t('ENTER_BANK_ACCOUNT_NUMBER')}
+                  {...field}
+                  value={formatDigits(field.value)}
+                  onChange={(e) => field.onChange(toAsciiDigits(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

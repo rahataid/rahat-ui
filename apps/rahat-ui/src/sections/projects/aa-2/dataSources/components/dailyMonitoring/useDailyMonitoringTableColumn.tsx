@@ -26,6 +26,7 @@ export default function useDailyMonitoringTableColumn() {
 
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
   const handleEyeClick = (id: string) => {
     setPaginationToLocalStorage();

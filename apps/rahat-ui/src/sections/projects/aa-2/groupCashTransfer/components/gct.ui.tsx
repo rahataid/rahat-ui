@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { GCT_STATUS_STYLE } from '../types/gct.types';
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export function fmt(date?: string | null, locale = 'en'): string {
   if (!date) return '—';
@@ -19,10 +20,14 @@ export function fmt(date?: string | null, locale = 'en'): string {
     };
     const neOptions =
       locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
-    return new Intl.DateTimeFormat(
+    const formatter = new Intl.DateTimeFormat(
       locale === 'ne' ? 'ne-NP' : locale,
       neOptions,
-    ).format(d);
+    );
+    if (locale === 'ne') {
+      return localizeNepaliParts(d, neOptions, formatter.formatToParts(d));
+    }
+    return formatter.format(d);
   } catch {
     return date;
   }

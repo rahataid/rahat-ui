@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -73,6 +73,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const t = useTranslations('AA_PROJECT');
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
+  const locale = useLocale();
   const formatNum = useNumberFormat();
   const { id, detailID } = useParams();
   const router = useRouter();
@@ -254,14 +255,14 @@ export default function useBeneficiaryGroupDetailsLogColumns(
             <div className="flex flex-col text-[10px]">
               <span>
                 <TruncatedCell
-                  text={intlFormatDate(createdAt)}
+                  text={intlFormatDate(createdAt, locale)}
                   maxLength={25}
                 />
               </span>
               {status?.includes('COMPLETED') && (
                 <span>
                   <TruncatedCell
-                    text={intlFormatDate(updatedAt)}
+                    text={intlFormatDate(updatedAt, locale)}
                     maxLength={25}
                   />
                 </span>
@@ -274,14 +275,14 @@ export default function useBeneficiaryGroupDetailsLogColumns(
               {status === 'COMPLETED' ? (
                 <span>
                   <TruncatedCell
-                    text={intlFormatDate(updatedAt)}
+                    text={intlFormatDate(updatedAt, locale)}
                     maxLength={25}
                   />
                 </span>
               ) : (
                 <span>
                   <TruncatedCell
-                    text={intlFormatDate(createdAt)}
+                    text={intlFormatDate(createdAt, locale)}
                     maxLength={25}
                   />
                 </span>

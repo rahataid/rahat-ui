@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Tabs,
@@ -67,6 +68,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const t = useTranslations('USERS_DETAIL');
   const ts = useTranslations('USERS_SPLIT_VIEW');
   const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const { data } = useUserCurrentUser();
   const removeUser = useUserRemove();
   const { data: roleData } = useRoleList(); //TODO:fetch from store
@@ -299,7 +301,9 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                   </div>
                   <div className="text-right">
                     <p className="font-light text-base">
-                      {userDetail.gender || '-'}
+                      {userDetail.gender && tg.has(userDetail.gender.toUpperCase() as any)
+                        ? tg(userDetail.gender.toUpperCase() as any)
+                        : userDetail.gender || '-'}
                     </p>
                     <p className="text-sm font-normal text-muted-foreground ">
                       {tg('GENDER')}
@@ -315,7 +319,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                   </div>
                   <div className="text-right">
                     <p className="font-light text-base">
-                      {userDetail.phone || '-'}
+                      {formatPhone(userDetail.phone) || '-'}
                     </p>
                     <p className="text-sm font-normal text-muted-foreground ">
                       {tg('PHONE')}

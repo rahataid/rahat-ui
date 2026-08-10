@@ -187,8 +187,9 @@ export default function VendorsDetailSplitView({
             </h1>
             <div className="flex space-x-4 items-center">
               <Badge>
-                {vendorsDetail?.status && g.has(vendorsDetail.status as any)
-                  ? g(vendorsDetail.status as any)
+                {vendorsDetail?.status &&
+                g.has(vendorsDetail.status.toUpperCase() as any)
+                  ? g(vendorsDetail.status.toUpperCase() as any)
                   : vendorsDetail?.status ?? g('N_A')}
               </Badge>
               <p className="text-base text-muted-foreground">

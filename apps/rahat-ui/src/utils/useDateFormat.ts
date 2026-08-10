@@ -21,6 +21,7 @@ type DateFormatPattern =
   | 'PPP'
   | 'dd MMM yyyy, HH:mm'
   | 'dd MMM yyyy, HH:mm:ss'
+  | 'MMM d, yyyy, h:mm:ss a'
   | string;
 
 const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
@@ -156,6 +157,15 @@ const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
     minute: '2-digit',
     second: '2-digit',
     hour12: false,
+  },
+  'MMM d, yyyy, h:mm:ss a': {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true,
   },
 };
 

@@ -57,6 +57,7 @@ export default function DailyMonitoringListView() {
   const { data: projectInfo } = useProjectInfo(projectId as UUID);
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
   const [paginationState, setPaginationState] = React.useState({
     pageIndex: 0,

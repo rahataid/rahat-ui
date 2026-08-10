@@ -1,3 +1,5 @@
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
+
 export function formatDate(dateStr?: string, locale = 'en') {
   if (!dateStr) return '—';
   try {
@@ -13,10 +15,14 @@ export function formatDate(dateStr?: string, locale = 'en') {
     };
     const neOptions =
       locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
-    return new Intl.DateTimeFormat(
+    const formatter = new Intl.DateTimeFormat(
       locale === 'ne' ? 'ne-NP' : locale,
       neOptions,
-    ).format(d);
+    );
+    if (locale === 'ne') {
+      return localizeNepaliParts(d, neOptions, formatter.formatToParts(d));
+    }
+    return formatter.format(d);
   } catch {
     return dateStr;
   }

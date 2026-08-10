@@ -62,6 +62,7 @@ export default function EditPhaseView() {
   );
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
   const { data: disbursementMethodsSetting } = useProjectSettingsGet(
     projectId,

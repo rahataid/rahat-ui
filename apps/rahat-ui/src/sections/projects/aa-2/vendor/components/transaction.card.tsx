@@ -10,6 +10,7 @@ import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { UUID } from 'crypto';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
@@ -42,6 +43,7 @@ type Props = {
 const Transaction = ({ amount, date, hash, title, type }: Txn) => {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id } = useParams();
   const projectId = id as string;
 
@@ -84,15 +86,7 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
           </div>
           <p className="text-[14px] font-normal text-[#64748B] leading-[16px]">
             {date
-              ? Intl.DateTimeFormat('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour12: true,
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  second: 'numeric',
-                }).format(new Date(date))
+              ? formatDate(date, 'MMM d, yyyy, h:mm:ss a')
               : t('N_A')}
           </p>
         </div>

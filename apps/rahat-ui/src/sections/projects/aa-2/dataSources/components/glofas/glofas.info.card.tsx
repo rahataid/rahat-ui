@@ -1,5 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 import { Heading } from 'apps/rahat-ui/src/common';
 import {
@@ -19,6 +19,7 @@ type IProps = {
 
 export default function GlofasInfoCard({ glofas }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const locale = useLocale();
   const formatNum = useNumberFormat();
   const formatDigits = useLabelDigits();
   const formatDate = useDateFormat();
@@ -58,6 +59,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
         label: t('PEAK_FORECASTED'),
         value: formateDateFromText(
           glofas?.info?.pointForecastData?.peakForecasted?.data,
+          locale,
         ),
       },
       {

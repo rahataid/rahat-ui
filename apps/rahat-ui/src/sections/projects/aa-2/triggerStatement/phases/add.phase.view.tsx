@@ -50,6 +50,7 @@ export default function AddPhaseView() {
   );
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
 
   const phaseSource = useMemo(() => {

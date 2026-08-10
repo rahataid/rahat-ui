@@ -297,6 +297,7 @@ export default function TokensOverview() {
                           formatter: (val: number | string) => formatNum(val),
                         },
                         total: {
+                          label: t('TOTAL'),
                           formatter: (w: any) =>
                             formatNum(
                               w.globals.seriesTotals.reduce(

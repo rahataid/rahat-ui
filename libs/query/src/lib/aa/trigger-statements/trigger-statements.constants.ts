@@ -10,3 +10,11 @@ export const FORECAST_QUERY_KEYS = {
   GLOFAS_PROB_FLOOD_DETAILS: 'glofas_prob_flood_details',
   GFH_WATER_LEVELS: 'gfhwaterlevels',
 } as const;
+
+export const PHASE_QUERY_KEYS = {
+  PHASES: 'phases',
+  PHASE: 'phase',
+  TRIGGER_STATEMENTS: 'triggerStatements',
+  TRIGGER_STATEMENT: 'triggerStatement',
+  PHASE_HISTORY: 'phaseHistory',
+};

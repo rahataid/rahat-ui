@@ -26,6 +26,8 @@ interface Payout {
   payoutType?: string;
   groupName?: string;
   payoutProcessorId?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface CreatePayout {
@@ -85,7 +87,7 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['payouts', projectUUID, payload],
+    queryKey: ['payouts', projectUUID, payload.startDate, payload.endDate],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -101,17 +103,23 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
   return query;
 };
 
-export const usePayoutStats = (projectUUID: UUID) => {
+export const usePayoutStats = (
+  projectUUID: UUID,
+  params?: { startDate?: string; endDate?: string; _v?: number },
+) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['payout-stats', projectUUID],
+    queryKey: ['payout-stats', projectUUID, params],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aa.jobs.payout.getPayoutStats',
-          payload: {},
+          payload: {
+            ...(params?.startDate && { startDate: params.startDate }),
+            ...(params?.endDate && { endDate: params.endDate }),
+          },
         },
       });
       return mutate.data;
@@ -328,6 +336,55 @@ export const useTriggerForOnePayoutFailed = () => {
   });
 };
 
+export const useSendPayoutOtp = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        email: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.sendOtp',
+          payload: payload,
+        },
+      });
+    },
+    onSuccess: (_data, { payload }) => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['payouts'] });
+      qc.invalidateQueries({ queryKey: ['payout'] });
+      toast.fire({
+        title: `Rahat Pin sent successfully to ${payload.email}`,
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while sending OTP.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useTriggerPayout = () => {
   const qc = useQueryClient();
   const q = useProjectAction();
@@ -346,6 +403,7 @@ export const useTriggerPayout = () => {
       projectUUID: UUID;
       payload: {
         uuid: string;
+        otp: string;
       };
     }) => {
       return q.mutateAsync({

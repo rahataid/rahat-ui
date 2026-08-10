@@ -40,21 +40,25 @@ export function DateRangePicker({
     from: undefined,
     to: undefined,
   });
-  const handleClose = () => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     handleClearDate();
     setDate({
       from: undefined,
       to: undefined,
     });
   };
+
   return (
     <div className={cn('grid gap-2', className)}>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              'w-[280px] justify-start text-left font-normal',
+              'w-full justify-start text-left font-normal',
               !date?.from && 'text-muted-foreground',
               className,
             )}
@@ -72,12 +76,12 @@ export function DateRangePicker({
                         <TooltipTrigger asChild>
                           <Button
                             type="button"
-                            onClick={handleClose}
-                            className="w-6 h-6 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
+                            onClick={(e) => handleClose(e)}
+                            className="w-4 h-4 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
                             variant="outline"
                             size="icon"
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-2.5 w-2.5" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -96,12 +100,12 @@ export function DateRangePicker({
                       <TooltipTrigger asChild>
                         <Button
                           type="button"
-                          onClick={handleClose}
-                          className="w-6 h-6 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
+                          onClick={(e) => handleClose(e)}
+                          className="w-4 h-4 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
                           variant="outline"
                           size="icon"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-2.5 w-2.5" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -121,8 +125,11 @@ export function DateRangePicker({
             mode="range"
             selected={date}
             onSelect={(selectedRange) => {
-              handleDateChange(selectedRange);
               setDate(selectedRange);
+              if (selectedRange?.from && selectedRange?.to) {
+                handleDateChange(selectedRange);
+                setOpen(false);
+              }
             }}
             defaultMonth={date?.from}
             numberOfMonths={2}

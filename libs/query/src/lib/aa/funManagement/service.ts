@@ -47,7 +47,7 @@ export const useFetchTokenStatsStellar = (payload: any) => {
           // TODO:naming
           action: 'aa.chain.getDisbursementStats',
           // action: 'aa.stellar.getStellarStats',
-          payload: {},
+          payload: restPayload,
         },
       });
       return mutate;

@@ -39,7 +39,7 @@ import {
 } from '@rahataid/community-tool-sdk/enums/';
 import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 import { format } from 'date-fns';
-import { CalendarIcon, Wallet } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { z } from 'zod';
 import FormBuilder from '../../../formBuilder';
@@ -142,7 +142,6 @@ export default function AddBeneficiary() {
 
     const nonEmptyFields = selectNonEmptyFields(formData);
 
-    console.log(extras);
     await addCommunityBeneficiary.mutateAsync({
       ...nonEmptyFields,
       extras,
@@ -193,31 +192,6 @@ export default function AddBeneficiary() {
               style={{ maxHeight: '70vh' }}
               className="grid grid-cols-2 gap-4 p-2 overflow-y-auto"
             >
-              <FormField
-                control={form.control}
-                name="walletAddress"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="col-span-2">
-                      <FormControl>
-                        <div className="relative w-full">
-                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            type="text"
-                            placeholder="Wallet Address"
-                            {...field}
-                          />
-                          <p className="text-xs text-amber-500 mt-2">
-                            * Wallet address is required. If not entered, it
-                            will be automatically filled.
-                          </p>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
               <FormField
                 control={form.control}
                 name="firstName"

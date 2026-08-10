@@ -35,7 +35,6 @@ export default function AddManualTriggerForm({
   phase,
   stationHeading,
 }: IProps) {
-  console.log('phase', phase);
   return (
     <>
       <Form {...form}>

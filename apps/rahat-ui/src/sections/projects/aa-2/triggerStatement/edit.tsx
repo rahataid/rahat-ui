@@ -274,7 +274,7 @@ export default function EditTrigger() {
     'source' in data && 'triggerStatement' in data;
 
   const buildUpdatePayload = (data: TriggerFormValues) => {
-const basePayload = {
+    const basePayload = {
       title: data.title,
       description: data.description,
       phaseId: trigger?.phaseId,
@@ -384,7 +384,6 @@ const basePayload = {
   if (isLoading || isLoadingDataSourceTypes) {
     return <LoaderRahat />;
   }
-  console.log('trigger', trigger);
   return (
     <>
       <div className={'p-4'}>

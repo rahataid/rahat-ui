@@ -73,8 +73,8 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:release-v5.0.0-mcn
-            esatya/rahat-ui:release-v5.0.0-mcn-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/rahat-ui:release-v5.0.0-mcn-replica
+            esatya/rahat-ui:release-v5.0.0-mcn-replica-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
       
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}

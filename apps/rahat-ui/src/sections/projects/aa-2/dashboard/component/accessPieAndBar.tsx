@@ -77,7 +77,9 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
               ) : (
                 <BarChart
                   series={channelUsageStats.map((item) => item.count)}
-                  categories={channelUsageStats.map((item) => item.id)}
+                  categories={channelUsageStats.map((item) =>
+                    item.id.replace(/([A-Z])/g, ' $1').trim(),
+                  )}
                   colors={['#4A90E2']}
                   xaxisLabels={true}
                   yaxisLabels={true}

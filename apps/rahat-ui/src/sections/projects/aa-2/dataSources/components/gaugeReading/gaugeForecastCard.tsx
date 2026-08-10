@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useTranslations } from 'next-intl';
 
 export interface IGaugeForecastCardProps {
@@ -31,6 +32,7 @@ const GaugeForecastCard = ({
 }: IGaugeForecastCardProps) => {
   const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
   return (
     <Card className="px-4 py-3 rounded-xl mb-4">
       <div className="grid grid-cols-4 gap-4 items-center">
@@ -98,7 +100,9 @@ const GaugeForecastCard = ({
               <div>
                 <p className="text-sm font-medium text-gray-700">{t('GAUGE_READING')}</p>
                 <p className="text-sm text-gray-600">
-                  {latestGaugeReading ? `${latestGaugeReading} ${unit}` : 'N/A'}
+                  {latestGaugeReading
+                    ? `${formatDigits(latestGaugeReading)} ${unit}`
+                    : 'N/A'}
                 </p>
               </div>
           </div>

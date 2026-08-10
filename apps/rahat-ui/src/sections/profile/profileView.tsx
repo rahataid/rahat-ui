@@ -17,10 +17,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/avatar';
 import { Copy, CopyCheck, Mail, Phone, Wallet } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 export default function ProfileView() {
   const t = useTranslations('PROFILE');
   const g = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const user = useUserStore((state) => state.user);
   const userInfo = React.useMemo(() => user.data, [user]);
 
@@ -90,7 +92,9 @@ export default function ProfileView() {
                 <Phone size={18} />
                 <p className="text-sm font-medium">{g('PHONE_NUMBER')}</p>
               </div>
-              <p className="text-sub-label">{userInfo?.phone || g('N_A')}</p>
+              <p className="text-sub-label">
+                {formatDigits(userInfo?.phone) || g('N_A')}
+              </p>
             </div>
             <div className="flex justify-between">
               <div className="flex items-center gap-2 text-label">

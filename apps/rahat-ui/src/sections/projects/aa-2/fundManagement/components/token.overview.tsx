@@ -91,7 +91,7 @@ export default function TokensOverview() {
             {/* <DataCard
               className="rounded-sm h-[116px]"
               title="Project Balance"
-              smallNumber={`Rs ${formatNum(projectBalance)}`}
+              smallNumber={`${t('RS')} ${formatNum(projectBalance)}`}
               infoIcon={true}
               infoTooltip={'Project Balance'}
               subtitle=" "
@@ -139,7 +139,7 @@ export default function TokensOverview() {
                     key={index}
                     className="rounded-sm h-[116px]"
                     title={t('N1_TOKEN_VALUE')}
-                    smallNumber={`Rs ${formatNum(item.value)}`}
+                    smallNumber={`${t('RS')} ${formatNum(item.value)}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
                     subtitle=" "
@@ -153,7 +153,7 @@ export default function TokensOverview() {
                     key={index}
                     className="rounded-sm h-[116px]"
                     title={t('BUDGET_ASSIGNED')}
-                    smallNumber={`Rs ${formatNum(item.value)}`}
+                    smallNumber={`${t('RS')} ${formatNum(item.value)}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
                     subtitle=" "

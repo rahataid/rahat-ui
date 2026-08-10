@@ -28,6 +28,7 @@ const numeralString = () =>
 
 export default function AddDailyMonitoring() {
   const t = useTranslations('AA_PROJECT');
+  const g = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -263,7 +264,11 @@ export default function AddDailyMonitoring() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       riverBasin: '',
-      dataSource: [],
+      // Pre-seed one row so `dataSource.0.source` defaults to '' instead of
+      // undefined — otherwise Zod's base type check fails before the custom
+      // PLEASE_SELECT_A_SOURCE message runs, surfacing its untranslated
+      // built-in "Required" fallback on first submit.
+      dataSource: [anotherDataSourceSchema],
     },
   });
 
@@ -405,10 +410,10 @@ export default function AddDailyMonitoring() {
               <SelectFormField
                 form={form}
                 name="riverBasin"
-                label={getStationTitle(projectInfo?.value?.project_type) || ''}
-                placeholder={`Select ${getStationTitle(
-                  projectInfo?.value?.project_type,
-                ).toLowerCase()}`}
+                label={getStationTitle(projectInfo?.value?.project_type, g) || ''}
+                placeholder={g('SELECT_PLACEHOLDER', {
+                  field: getStationTitle(projectInfo?.value?.project_type, g),
+                })}
                 selectItems={riverBasins}
                 className="mx-2"
               />

@@ -21,6 +21,7 @@ import { ROLE_TYPE } from '../role/const';
 import DeleteButton from 'apps/rahat-ui/src/components/delete.btn';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import Swal from 'sweetalert2';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 type IProps = {
   roleData: Role;
@@ -42,12 +43,8 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
     setActiveTab(tab);
   };
 
-  const changedDate = new Date(roleDetail?.data?.role?.createdAt as Date);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const formatDate = useDateFormat();
+  const formattedDate = formatDate(roleDetail?.data?.role?.createdAt, 'PPP');
 
   const handleDeleteRole = async () => {
     if (roleDetail?.data?.role?.isSystem)

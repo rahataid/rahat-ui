@@ -30,9 +30,12 @@ import GaugereadingMonitoringCard from './gaugeReading/gaugeReading';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { useTranslations } from 'next-intl';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export default function DailyMonitoringDetailView() {
   const t = useTranslations('AA_PROJECT');
+  const g = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -41,6 +44,7 @@ export default function DailyMonitoringDetailView() {
   const { data: projectInfo } = useProjectInfo(projectId as UUID);
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    g,
   );
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
 
@@ -195,14 +199,7 @@ export default function DailyMonitoringDetailView() {
             <div>
               <p className="text-md text-gray-700">{t('TIMESTAMP')}</p>
               <p className="text-muted-foreground text-sm">
-                {Intl.DateTimeFormat('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour12: true,
-                  hour: 'numeric',
-                  minute: 'numeric',
-                }).format(new Date(data?.data?.[0]?.createdAt))}
+                {formatDate(data?.data?.[0]?.createdAt, 'MMM d, yyyy, h:mm a')}
               </p>
             </div>
           </div>

@@ -25,7 +25,7 @@ import type {
   ExtendedTriggerLogicGroup,
 } from '../types/extended-trigger-logic.types';
 import { ExtendedLogicTree, type TriggerDetail } from '../components/extended-logic-tree';
-import { SOURCE_CONFIG } from '../trigger.statement.schema';
+import { getSourceLabel } from '../trigger.statement.schema';
 
 type TriggerItem = {
   uuid?: string;
@@ -65,6 +65,7 @@ const getTriggerKey = (trigger: ExistingTriggerRef): string => {
 
 export default function ExtendedLogicConfigView() {
   const t = useTranslations('AA_PROJECT');
+  const translate = t;
   const formatNum = useNumberFormat();
   const router = useRouter();
   const params = useParams();
@@ -141,10 +142,7 @@ export default function ExtendedLogicConfigView() {
     for (const t of phaseTriggers) {
       const key = t.logicKey || t.uuid;
       if (!key) continue;
-      const sourceLabel =
-        t.source && t.source in SOURCE_CONFIG
-          ? SOURCE_CONFIG[t.source as keyof typeof SOURCE_CONFIG].label
-          : undefined;
+      const sourceLabel = getSourceLabel(t.source, translate);
       map[key] = {
         title: t.title,
         description: t.description,

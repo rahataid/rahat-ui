@@ -10,7 +10,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 import { SEP, toLabel, TriggerStatement } from '../utils';
-import { SOURCE_CONFIG } from '../trigger.statement.schema';
+import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 type IProps = {
   projectId: string;
@@ -70,8 +70,7 @@ export default function TriggerCard({
     }
   };
 
-  const sourceSubTypeLabel =
-    SOURCE_CONFIG[tgSt?.source as keyof typeof SOURCE_CONFIG]?.sourceSubType;
+  const sourceSubTypeLabel = getSourceSubTypeLabel(tgSt?.source, t);
   const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
   const formattedSourceSubType = toLabel(tgSt?.sourceSubType);
 

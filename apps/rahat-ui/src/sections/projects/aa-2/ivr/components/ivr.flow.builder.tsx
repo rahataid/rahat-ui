@@ -29,12 +29,15 @@ import SimulationModal from './ivr.simulation.modal';
 import ExportModal from './ivr.export.modal';
 import { useTranslations } from 'next-intl';
 
-function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
+function convertApiPayloadToNode(
+  payload: IvrFlowApiPayload,
+  t: ReturnType<typeof useTranslations>,
+): IvrFlowNode {
   function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
     return (options || []).map((opt) => ({
       id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       digit: String(opt.digit),
-      label: opt.digit ? `Digit ${opt.digit}` : 'Menu',
+      label: opt.digit ? t('DIGIT_N', { digit: opt.digit }) : t('MENU'),
       prompt: opt.prompt || '',
       hangup: opt.hangup || false,
       destination: opt.destination || '',
@@ -44,7 +47,7 @@ function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
 
   return {
     id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    label: 'Main Menu',
+    label: t('MAIN_MENU'),
     prompt: payload.main?.prompt || '',
     hangup: false,
     destination: '',
@@ -110,7 +113,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         const response = await fetch(templateDetail.flowUrl);
         if (!response.ok) throw new Error('Failed to fetch flow data');
         const data: IvrFlowApiPayload = await response.json();
-        const rootMenu = convertApiPayloadToNode(data);
+        const rootMenu = convertApiPayloadToNode(data, t);
         setFlowRootMenu(ivrId, rootMenu);
       } catch (err) {
         console.error('Failed to load IVR flow from URL:', err);

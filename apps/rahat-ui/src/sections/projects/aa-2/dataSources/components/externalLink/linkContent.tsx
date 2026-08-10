@@ -41,7 +41,9 @@ export default function ExternalLinks() {
               </CardHeader>
               <CardContent className="pt-0">
                 <Badge className="text-gray-600 text-xs font-medium w-auto">
-                  {service.subtitle}
+                  {service.subtitleKey && t.has(service.subtitleKey as never)
+                    ? t(service.subtitleKey as never)
+                    : service.subtitle}
                 </Badge>
               </CardContent>
             </Card>

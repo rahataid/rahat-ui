@@ -13,6 +13,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 const InfoModal = dynamic(
   () => import('apps/rahat-ui/src/components/infoModal'),
 );
@@ -41,6 +42,7 @@ const GFHCard = ({
 }: IGFHCardProps) => {
   const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
   const googleFloodHubInfoModal = useBoolean();
 
   const handleAssignModalClick = () => {
@@ -69,7 +71,7 @@ const GFHCard = ({
         {updatedAt && (
           <div className="flex items-center gap-1 text-xs text-green-500 mt-0.5 whitespace-nowrap">
             <RefreshCw size={12} />
-            <span>Last Synced at: {formatDate(updatedAt)}</span>
+            <span>{t('LAST_SYNCED_AT')} {formatDate(updatedAt)}</span>
           </div>
         )}
 
@@ -97,7 +99,9 @@ const GFHCard = ({
             <Globe className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium">{t('LATITUDE')}</p>
-              <p className="text-sm text-gray-600">{latitude || 'N/A'}</p>
+              <p className="text-sm text-gray-600">
+                {formatDigits(latitude) || 'N/A'}
+              </p>
             </div>
           </div>
 
@@ -106,7 +110,9 @@ const GFHCard = ({
             <Globe className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium">{t('LONGITUDE')}</p>
-              <p className="text-sm text-gray-600">{longitude || 'N/A'}</p>
+              <p className="text-sm text-gray-600">
+                {formatDigits(longitude) || 'N/A'}
+              </p>
             </div>
           </div>
 

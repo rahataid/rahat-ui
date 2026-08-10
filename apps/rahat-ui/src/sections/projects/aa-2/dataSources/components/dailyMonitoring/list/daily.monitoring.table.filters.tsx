@@ -32,6 +32,7 @@ type IProps = {
 
 type ISelectComponent = {
   name: string;
+  label: string;
   options: Array<any>;
   value: string;
   handleFilterChange: (payload: { key: string; value: any }) => void;
@@ -39,6 +40,7 @@ type ISelectComponent = {
 
 const SelectComponent = ({
   name,
+  label,
   options,
   value,
   handleFilterChange,
@@ -50,7 +52,7 @@ const SelectComponent = ({
       onValueChange={(val) => handleFilterChange({ key: name, value: val })}
     >
       <SelectTrigger>
-        <SelectValue placeholder={`Select a ${name}`} />
+        <SelectValue placeholder={t('SELECT_PLACEHOLDER', { name: label })} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
@@ -88,6 +90,7 @@ export default function DailyMonitoringTableFilters({
       {/* Filter River Basin  */}
       <SelectComponent
         name="riverBasin"
+        label={tGlobal('RIVER_BASIN')}
         value={location}
         options={riverBasins}
         handleFilterChange={handleFilterChange}

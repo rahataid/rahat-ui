@@ -7,11 +7,13 @@ import { Role } from '@rumsan/sdk/types';
 import RoleDetail from './roleDetail';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 export const useRoleTableColumns = () => {
   const tg = useTranslations('GLOBAL');
   const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+  const formatDate = useDateFormat();
 
   const columns: ColumnDef<Role>[] = [
     {
@@ -27,15 +29,9 @@ export const useRoleTableColumns = () => {
     {
       accessorKey: 'createdAt',
       header: tg('CREATED_AT'),
-      cell: ({ row }) => {
-        const changedDate = new Date(row.getValue('createdAt') as Date);
-        const formattedDate = changedDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        return <div>{formattedDate}</div>;
-      },
+      cell: ({ row }) => (
+        <div>{formatDate(row.getValue('createdAt'), 'PPP')}</div>
+      ),
     },
     {
       id: 'actions',

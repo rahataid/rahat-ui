@@ -91,8 +91,9 @@ export default function UserAddRoleView() {
       await createRole.mutateAsync(k);
       router.push('/users/roles');
       Swal.fire(t('ROLE_CREATED_SUCCESSFULLY'), '', 'success');
-    } catch (e) {
-      const errorMsg = e instanceof Error ? e.message : t('SOMETHING_WENT_WRONG');
+    } catch (e: any) {
+      const errorMsg =
+        e?.response?.data?.message || t('SOMETHING_WENT_WRONG');
       Swal.fire(t('ERROR'), errorMsg, 'error');
     } finally {
       form.reset();

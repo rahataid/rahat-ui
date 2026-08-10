@@ -4,13 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Mic, Square } from 'lucide-react';
 import { useUploadFile } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { AudioPreviewPlayer } from '../ivr.audio.preview';
-
-function formatTime(secs: number) {
-  const m = Math.floor(secs / 60);
-  const s = secs % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
 
 type AudioRecordTabProps = {
   prompt: string;
@@ -19,11 +15,18 @@ type AudioRecordTabProps = {
 };
 
 export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: AudioRecordTabProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatLabel = useLabelDigits();
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return formatLabel(`${m}:${s.toString().padStart(2, '0')}`);
+  };
   const [phase, setPhase] = useState<'idle' | 'recording' | 'done'>('idle');
   const [timer, setTimer] = useState(0);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState('');
-  const [uploadLabel, setUploadLabel] = useState('Upload');
+  const [uploadLabel, setUploadLabel] = useState(t('UPLOAD'));
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -104,8 +107,8 @@ export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: 
       setTimer(0);
       setRecordedBlob(null);
       setPreviewUrl('');
-      setUploadLabel('Uploaded');
-      setTimeout(() => setUploadLabel('Upload'), 2000);
+      setUploadLabel(t('UPLOADED'));
+      setTimeout(() => setUploadLabel(t('UPLOAD')), 2000);
     } catch {
       onUploadingChange?.(false);
       cancelRecording();
@@ -121,10 +124,10 @@ export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: 
         >
           <Mic className="w-6 h-6 md:w-8 md:h-8 mx-auto text-muted-foreground mb-2" />
           <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
-            Click to start recording
+            {t('CLICK_TO_START_RECORDING')}
           </p>
           <p className="text-[clamp(10px,0.9vw,12px)] text-muted-foreground mt-1">
-            Your browser will ask for microphone access
+            {t('BROWSER_WILL_ASK_MIC_ACCESS')}
           </p>
         </div>
       )}
@@ -141,14 +144,14 @@ export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: 
             onClick={stopRecording}
           >
             <Square className="w-4 h-4" />
-            Stop
+            {t('STOP')}
           </Button>
         </div>
       )}
       {phase === 'done' && previewUrl && (
         <AudioPreviewPlayer
           src={previewUrl}
-          fileName={`Recorded ${formatTime(timer)}`}
+          fileName={`${t('RECORDED')} ${formatTime(timer)}`}
           onUpload={uploadRecorded}
           onCancel={cancelRecording}
           uploadLabel={uploadLabel}
@@ -156,7 +159,7 @@ export default function AudioRecordTab({ prompt, onUpdate, onUploadingChange }: 
       )}
       {prompt.startsWith('blob:') && phase === 'idle' && (
         <p className="text-xs text-green-600 text-center">
-          Currently using recorded audio
+          {t('CURRENTLY_USING_RECORDED_AUDIO')}
         </p>
       )}
     </div>

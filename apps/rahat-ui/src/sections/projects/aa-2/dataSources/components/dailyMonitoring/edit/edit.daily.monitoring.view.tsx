@@ -34,6 +34,7 @@ const numeralString = () =>
 
 export default function EditDailyMonitoring() {
   const t = useTranslations('AA_PROJECT');
+  const g = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
@@ -45,6 +46,7 @@ export default function EditDailyMonitoring() {
   const { data: projectInfo } = useProjectInfo(projectId as UUID);
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
   const riverBasins = React.useMemo(
     () =>
@@ -564,7 +566,7 @@ export default function EditDailyMonitoring() {
                 form={form}
                 name="riverBasin"
                 label={stationHeading}
-                placeholder={`Select ${stationHeading.toLowerCase()}`}
+                placeholder={g('SELECT_PLACEHOLDER', { name: stationHeading })}
                 selectItems={riverBasins}
                 className="mx-2"
               />

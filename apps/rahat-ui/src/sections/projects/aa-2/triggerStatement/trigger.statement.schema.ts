@@ -56,6 +56,46 @@ const fieldLabels: Record<keyof typeof SOURCE_CONFIG, string> = {
   temperature_c: 'TEMPERATURE_PERIOD',
 };
 
+// Translation keys for SOURCE_CONFIG's `label`. Reuses the existing GFH/GLOFAS
+// acronym keys where the label is just that acronym.
+const sourceLabelKeys: Record<keyof typeof SOURCE_CONFIG, string> = {
+  water_level_m: 'WATER_LEVEL_M_LABEL',
+  discharge_m3s: 'GFH',
+  rainfall_mm: 'RAINFALL_MM_LABEL',
+  prob_flood: 'GLOFAS',
+  prob_humidity: 'PROB_HUMIDITY_LABEL',
+  temperature_c: 'TEMPERATURE_C_LABEL',
+};
+
+// Translation keys for SOURCE_CONFIG's `sourceSubType`. Each translated value
+// must keep the "Name (unit)" shape (unit as the trailing, space-separated,
+// parenthesised token) since consumers extract the unit via `/\((.*?)\)/`
+// and split off the trailing word to get the name alone.
+const sourceSubTypeKeys: Record<keyof typeof SOURCE_CONFIG, string> = {
+  water_level_m: 'WATER_LEVEL_M_SUBTYPE',
+  discharge_m3s: 'DISCHARGE_M3S_SUBTYPE',
+  rainfall_mm: 'RAINFALL_MM_SUBTYPE',
+  prob_flood: 'PROB_FLOOD_SUBTYPE',
+  prob_humidity: 'PROB_HUMIDITY_SUBTYPE',
+  temperature_c: 'TEMPERATURE_C_SUBTYPE',
+};
+
+export function getSourceLabel(
+  key: string | undefined,
+  t: (k: string) => string,
+): string | undefined {
+  if (!key || !(key in SOURCE_CONFIG)) return undefined;
+  return t(sourceLabelKeys[key as keyof typeof SOURCE_CONFIG]);
+}
+
+export function getSourceSubTypeLabel(
+  key: string | undefined,
+  t: (k: string) => string,
+): string | undefined {
+  if (!key || !(key in SOURCE_CONFIG)) return undefined;
+  return t(sourceSubTypeKeys[key as keyof typeof SOURCE_CONFIG]);
+}
+
 const emptyStringToUndefined = (val: unknown) => (val === '' ? undefined : val);
 
 const sourceSchema = z.union([z.enum(sourceValues), z.literal('')]).optional();

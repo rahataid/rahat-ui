@@ -2,7 +2,8 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { SOURCE_CONFIG } from '../trigger.statement.schema';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { toLabel, TriggerStatement } from '../utils';
 
 type IProps = {
@@ -17,6 +18,7 @@ export function ForecastDataSection({
   triggerStatement,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const {
     value,
     source: triggerSource,
@@ -24,8 +26,7 @@ export function ForecastDataSection({
     expression,
     sourceSubType,
   } = triggerStatement;
-  const sourceSubTypeLabel =
-    SOURCE_CONFIG[triggerSource as keyof typeof SOURCE_CONFIG]?.sourceSubType;
+  const sourceSubTypeLabel = getSourceSubTypeLabel(triggerSource, t);
   const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
   const formattedSourceSubType = toLabel(sourceSubType);
 
@@ -75,19 +76,19 @@ export function ForecastDataSection({
       <Heading
         title={t('FORECAST_DATA')}
         titleStyle="text-lg/7"
-        description={t('SOURCE_WITH_SUBTYPE', { source, subType: sourceSubTypeLabel })}
+        description={t('SOURCE_WITH_SUBTYPE', { source, subType: sourceSubTypeLabel ?? '' })}
       />
       {Object.keys(triggerStatement).length ? (
         <div className="p-3 text-center border rounded">
           <p className="font-semibold text-3xl/10 text-primary">
-            {value} {unit || '%'}
+            {formatNum(value)} {unit || '%'}
           </p>
           <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
             <TriangleAlert size={16} strokeWidth={2.5} color="red" />
             {setIconLabel(source, sourceSubType)}
           </p>
           <Badge className="font-normal">
-            ({formattedSourceSubType} {operator} {value} {unit || '%'})
+            ({formattedSourceSubType} {operator} {formatNum(value)} {unit || '%'})
           </Badge>
         </div>
       ) : null}

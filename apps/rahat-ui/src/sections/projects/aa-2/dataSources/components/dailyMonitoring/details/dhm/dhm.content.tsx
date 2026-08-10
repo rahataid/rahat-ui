@@ -14,7 +14,17 @@ interface ForecastData {
 }
 
 const ForecastCard = ({ title, data }: ForecastData) => {
+  const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
+
+  // Flood trend fields (today/tomorrow/day-after) arrive as enum-like
+  // words (Steady/Increase/Decrease), not numbers, so they need a
+  // translation lookup instead of the numeric formatter.
+  const formatValue = (value: string | number) => {
+    const key = String(value).toUpperCase();
+    return t.has(key as never) ? t(key as never) : formatNum(value);
+  };
+
   return (
   <MonitoringCard title={title} className="">
     <div className="space-y-2">
@@ -23,7 +33,7 @@ const ForecastCard = ({ title, data }: ForecastData) => {
           <BarChart2 />
           <div>
             <p className="font-medium">{item.label}</p>
-            <p className="text-sm text-slate-500">{formatNum(item.value)}</p>
+            <p className="text-sm text-slate-500">{formatValue(item.value)}</p>
           </div>
         </div>
       ))}

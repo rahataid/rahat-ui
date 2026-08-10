@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { formateDateFromText } from './utils/formateDataFormTextData';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 type IProps = {
@@ -20,10 +20,21 @@ type IProps = {
 export default function GlofasInfoCard({ glofas }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
   const formatDate = useDateFormat();
   const maxProbability = glofas?.info?.pointForecastData?.maxProbability?.data;
   const maxProbabilityDisplay =
     maxProbability == null ? 'N/A' : maxProbability === '' ? '0' : maxProbability;
+
+  // Backend sends this as an opaque "<number> years" string (e.g. "20 years")
+  // rather than a numeric field, so the unit word is localized by pattern-matching
+  // rather than via a structured value.
+  const formatReturnPeriod = (value: string | undefined | null) => {
+    if (!value) return 'N/A';
+    const match = String(value).match(/^(\d+)\s*years?$/i);
+    if (!match) return value;
+    return `${formatDigits(match[1])} ${t('YEARS')}`;
+  };
 
   const cardData = React.useMemo(
     () => [
@@ -35,7 +46,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
       {
         icon: Calendar,
         label: t('RETURN_PERIOD'),
-        value: glofas?.info?.returnPeriod || 'N/A',
+        value: formatReturnPeriod(glofas?.info?.returnPeriod),
       },
       {
         icon: ChartNoAxesColumn,
@@ -101,17 +112,21 @@ export default function GlofasInfoCard({ glofas }: IProps) {
           <div className="text-center">
             <p className="font-semibold text-xl/10">{t('MAXIMUM_PROBABILITY')}</p>
             <p className="text-xs/4">
-              Max Probability Step:{' '}
-              {glofas?.info?.pointForecastData?.maxProbabilityStep?.data ||
-                'N/A'}
+              {t('MAX_PROBABILITY_STEP')}{' '}
+              {formatDate(
+                glofas?.info?.pointForecastData?.maxProbabilityStep?.data,
+                'MMMM d, yyyy',
+              ) || 'N/A'}
             </p>
           </div>
 
           <div className="pt-2 text-center">
             <div className="text-primary font-semibold">
-              {maxProbabilityDisplay} %
+              {formatDigits(maxProbabilityDisplay)} %
             </div>
-            <div className="text-sm">{glofas?.info?.returnPeriod}</div>
+            <div className="text-sm">
+              {formatReturnPeriod(glofas?.info?.returnPeriod)}
+            </div>
           </div>
         </div>
       </div>

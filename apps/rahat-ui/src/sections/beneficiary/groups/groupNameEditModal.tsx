@@ -25,14 +25,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useTranslations } from 'next-intl';
 
-const FormSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Group name is required')
-    .max(50, 'Group name must be 50 characters or less')
-    .trim(),
-});
-
 type EditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -46,6 +38,14 @@ export default function GroupNameEditModal({
 }: EditDialogProps) {
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
   const t = useTranslations('GLOBAL');
+
+  const FormSchema = z.object({
+    name: z
+      .string()
+      .min(1, t('GROUP_NAME_REQUIRED'))
+      .max(50, t('GROUP_NAME_MAX_LENGTH'))
+      .trim(),
+  });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

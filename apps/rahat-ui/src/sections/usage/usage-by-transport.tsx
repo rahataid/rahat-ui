@@ -47,6 +47,7 @@ export default function UsageByTransport({
   byTransport,
 }: UsageByTransportProps) {
   const t = useTranslations('USAGE');
+  const g = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   if (!byTransport || byTransport.length === 0) return null;
 
@@ -80,6 +81,7 @@ export default function UsageByTransport({
               value: { formatter: (val: number | string) => formatNum(val) },
               total: {
                 show: true,
+                label: g('TOTAL'),
                 formatter: (w: { globals: { seriesTotals: number[] } }) =>
                   formatNum(
                     w.globals.seriesTotals.reduce((a, b) => a + b, 0),

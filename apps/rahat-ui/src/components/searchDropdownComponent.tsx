@@ -18,6 +18,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/command';
 import { cn } from '@rahat-ui/shadcn/src';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   transformedData:
@@ -33,6 +34,7 @@ export default function SearchDropdownComponent({
   title,
   handleSelect,
 }: IProps) {
+  const g = useTranslations('GLOBAL');
   const [open, setOpen] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string>('');
 
@@ -52,15 +54,15 @@ export default function SearchDropdownComponent({
         >
           {value
             ? transformedData.find((d) => d.value === value)?.label
-            : `Select ${title}..`}
+            : g('SELECT_PLACEHOLDER', { field: title })}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0">
         <Command>
-          <CommandInput placeholder="--Select Field--" />
+          <CommandInput placeholder={g('SELECT_FIELD_PLACEHOLDER')} />
           <ScrollArea className="h-[200px]">
-            <CommandEmpty>No field found.</CommandEmpty>
+            <CommandEmpty>{g('NO_FIELD_FOUND')}</CommandEmpty>
             <CommandList>
               <CommandGroup>
                 {transformedData.map((d) => (

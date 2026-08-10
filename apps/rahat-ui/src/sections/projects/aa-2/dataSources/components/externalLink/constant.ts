@@ -51,6 +51,7 @@ export const weatherServices = [
     title: 'Zoom Earth',
     titleKey: 'ZOOM_EARTH',
     subtitle: 'Satellite View',
+    subtitleKey: 'SATELLITE_VIEW',
     href: 'https://zoom.earth/maps/satellite/#view=28.794406,80.416358,9.18z',
   },
 ];

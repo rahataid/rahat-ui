@@ -46,11 +46,13 @@ import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
 
 function ImportDetailView() {
   const t = useTranslations('IMPORT_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const formatDigits = useLabelDigits();
+  const formatDate = useDateFormat();
   const { uuid } = useParams();
   const searchParams = useSearchParams();
   const groupName = searchParams.get('name');
@@ -120,17 +122,7 @@ function ImportDetailView() {
     URL.revokeObjectURL(url);
   }, [csvText, groupName]);
 
-  const formatDate = date
-    ? new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: 'Asia/Kathmandu',
-      }).format(new Date(date))
-    : '-';
+  const formattedDate = date ? formatDate(date, 'MMM d, yyyy, h:mm a') : '-';
 
   const progressPercent =
     progress && progress.total > 0
@@ -215,15 +207,15 @@ function ImportDetailView() {
               </span>
               {progress && (
                 <span className="text-muted-foreground">
-                  {progress.processed} / {progress.total} {t('PROCESSED')}
+                  {formatDigits(progress.processed)} / {formatDigits(progress.total)} {t('PROCESSED')}
                   {progress.failed > 0 && (
                     <span className="text-red-500 ml-2">
-                      ({progress.failed} {t('FAILED')})
+                      ({formatDigits(progress.failed)} {t('FAILED')})
                     </span>
                   )}
                   {progress.duplicates > 0 && (
                     <span className="text-yellow-600 ml-2">
-                      ({progress.duplicates} {t('DUPLICATES')})
+                      ({formatDigits(progress.duplicates)} {t('DUPLICATES')})
                     </span>
                   )}
                 </span>
@@ -259,12 +251,12 @@ function ImportDetailView() {
           <DataCard
             title={t('CREATED_AT')}
             Icon={Calendar}
-            smallNumber={formatDate}
+            smallNumber={formattedDate}
           />
           <DataCard
             title={tg('STATUS')}
             Icon={FileSpreadsheet}
-            smallNumber={currentStatus}
+            smallNumber={tg.has(currentStatus as never) ? tg(currentStatus as never) : currentStatus}
           />
         </div>
       </div>
@@ -285,7 +277,10 @@ function ImportDetailView() {
           <>
             <div className="flex items-center justify-between p-4 pb-2 shrink-0">
               <p className="text-sm text-muted-foreground">
-                {csvData.length} rows, {csvHeaders.length} columns
+                {t('ROWS_COLUMNS_SUMMARY', {
+                  rows: formatDigits(csvData.length),
+                  columns: formatDigits(csvHeaders.length),
+                })}
               </p>
               <Button variant="outline" size="sm" onClick={handleDownload}>
                 <Download className="h-4 w-4 mr-2" />

@@ -7,11 +7,17 @@ import { X, Play, Pause, PhoneOff } from 'lucide-react';
 import { IvrFlow } from '../types/ivr.flow.types';
 import { findNodeById, flattenOptions, DIAL_PAD } from '../utils/utils';
 import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 interface SimulationModalProps {
   flow: IvrFlow;
   onClose: () => void;
 }
+
+type CallLogEntry = {
+  type: 'start' | 'input' | 'invalid' | 'end';
+  text: string;
+};
 
 export default function SimulationModal({
   flow,
@@ -19,9 +25,10 @@ export default function SimulationModal({
 }: SimulationModalProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatLabel = useLabelDigits();
   const [currentNodeId, setCurrentNodeId] = useState<string>(flow.rootMenu.id);
-  const [callLog, setCallLog] = useState<string[]>([
-    `[START] ${flow.rootMenu.label}`,
+  const [callLog, setCallLog] = useState<CallLogEntry[]>([
+    { type: 'start', text: `${t('STARTED_CALL')} ${flow.rootMenu.label}` },
   ]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioError, setAudioError] = useState(false);
@@ -49,10 +56,13 @@ export default function SimulationModal({
       stopAudio();
       setCallLog((prev) => [
         ...prev,
-        `[END] Call ended. Total inputs: ${finalCount}`,
+        {
+          type: 'end',
+          text: `${t('CALL_ENDED')} ${t('CALL_ENDED_TOTAL_INPUTS', { count: formatLabel(finalCount) })}`,
+        },
       ]);
     },
-    [stopAudio],
+    [stopAudio, t, formatLabel],
   );
 
   const playAudio = useCallback(
@@ -114,9 +124,21 @@ export default function SimulationModal({
       const target = currentNode.children.find((child) => child.digit === key);
       if (target) {
         setCurrentNodeId(target.id);
-        setCallLog((prev) => [...prev, `[INPUT] ${key} → ${target.label}`]);
+        setCallLog((prev) => [
+          ...prev,
+          {
+            type: 'input',
+            text: `${t('PRESSED')} ${formatLabel(key)} → ${target.label}`,
+          },
+        ]);
       } else {
-        setCallLog((prev) => [...prev, `[INVALID] Key ${key} not recognized`]);
+        setCallLog((prev) => [
+          ...prev,
+          {
+            type: 'invalid',
+            text: `${t('INVALID')} ${t('KEY_NOT_RECOGNIZED', { key: formatLabel(key) })}`,
+          },
+        ]);
       }
       inputsRef.current += 1;
     }
@@ -127,7 +149,10 @@ export default function SimulationModal({
     stopAudio();
     setCallLog((prev) => [
       ...prev,
-      `[END] Call ended. Total inputs: ${inputsRef.current}`,
+      {
+        type: 'end',
+        text: `${t('CALL_ENDED')} ${t('CALL_ENDED_TOTAL_INPUTS', { count: formatLabel(inputsRef.current) })}`,
+      },
     ]);
   };
 
@@ -137,7 +162,9 @@ export default function SimulationModal({
     setLastDigit('');
     setCurrentNodeId(flow.rootMenu.id);
     inputsRef.current = 0;
-    setCallLog([`[START] ${flow.rootMenu.label}`]);
+    setCallLog([
+      { type: 'start', text: `${t('STARTED_CALL')} ${flow.rootMenu.label}` },
+    ]);
   };
 
   return (
@@ -221,7 +248,9 @@ export default function SimulationModal({
               <Badge variant="outline">
                 {audioError ? t('FAILED') : isPlaying ? t('PLAYING') : t('READY')}
               </Badge>
-              {lastDigit && <Badge variant="secondary">{lastDigit}</Badge>}
+              {lastDigit && (
+                <Badge variant="secondary">{formatLabel(lastDigit)}</Badge>
+              )}
             </div>
           </div>
 
@@ -254,17 +283,12 @@ export default function SimulationModal({
                 <div
                   key={index}
                   className={`text-xs ${
-                    log.includes('[END]')
+                    log.type === 'end'
                       ? 'text-red-500'
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {log
-                    .replace('[START]', t('STARTED_CALL'))
-                    .replace('[INPUT]', t('PRESSED'))
-                    .replace('[BACK]', tg('BACK'))
-                    .replace('[INVALID]', t('INVALID'))
-                    .replace('[END]', t('CALL_ENDED'))}
+                  {log.text}
                 </div>
               ))}
             </div>

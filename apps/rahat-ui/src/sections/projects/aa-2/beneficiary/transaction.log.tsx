@@ -119,7 +119,7 @@ const TransactionLogs = () => {
           subtitle={subtitleParts.join(' • ')}
           txHash={txn?.txHash}
           txUrl={txnUrl ?? ''}
-          amount={`${t('RS')} ${txn?.tokenAmount}`}
+          amount={`${t('RS')} ${formatNum(txn?.tokenAmount)}`}
           date={formatDate(txn?.updatedAt, 'dd MMMM, yyyy')}
           time={formatDate(txn?.updatedAt, 'hh:mm:ss a')}
           onCopy={() => clickToCopy(txn?.txHash, txn?.uuid)}
@@ -151,7 +151,7 @@ const TransactionLogs = () => {
           subtitle={[inkindType, item?.Vendor?.name].join(' • ')}
           txHash={item?.txHash}
           txUrl={txnUrl || '#'}
-          amount={item?.quantity}
+          amount={formatNum(item?.quantity)}
           date={formatDate(item?.redeemedAt, 'dd MMMM, yyyy')}
           time={formatDate(item?.redeemedAt, 'hh:mm:ss a')}
           onCopy={() => clickToCopy(item?.txHash, item?.uuid)}

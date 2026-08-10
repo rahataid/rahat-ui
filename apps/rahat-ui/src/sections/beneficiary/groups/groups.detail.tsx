@@ -412,10 +412,10 @@ export default function GroupDetailView() {
                       {t('BANK_VALIDATION_IN_PROGRESS')}
                     </p>
                     <p>
-                      Current status:
+                      {t('CURRENT_STATUS')}:
                       <span className="font-medium">
-                        {bankCheckStatus.total - bankCheckStatus.pending}/
-                        {bankCheckStatus.total}
+                        {formatDigits(bankCheckStatus.total - bankCheckStatus.pending)}/
+                        {formatDigits(bankCheckStatus.total)}
                       </span>
                     </p>
                   </>
@@ -425,9 +425,9 @@ export default function GroupDetailView() {
                   </p>
                 )}
                 <p className="text-green-600">
-                  Success: {bankCheckStatus.success}
+                  {t('SUCCESS')}: {formatDigits(bankCheckStatus.success)}
                 </p>
-                <p className="text-red-500">Failed: {bankCheckStatus.failed}</p>
+                <p className="text-red-500">{t('FAILED')}: {formatDigits(bankCheckStatus.failed)}</p>
               </div>
             )}
         </div>

@@ -307,7 +307,7 @@ export default function InkindAllocationDetail() {
       accessorKey: 'quantity',
       header: tv('QTY'),
       cell: ({ row }) => (
-        <span className="font-semibold">{row.original.quantity}</span>
+        <span className="font-semibold">{formatNum(row.original.quantity)}</span>
       ),
     },
     {

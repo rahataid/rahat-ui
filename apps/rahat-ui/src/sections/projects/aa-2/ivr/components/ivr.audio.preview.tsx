@@ -3,6 +3,8 @@
 import { useRef, useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Play, Pause, Upload } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
 
 type AudioPreviewPlayerProps = {
   src: string;
@@ -22,6 +24,8 @@ export function AudioPreviewPlayer({
   hideActions,
   noCard,
 }: AudioPreviewPlayerProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatLabel = useLabelDigits();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -30,7 +34,7 @@ export function AudioPreviewPlayer({
   const fmt = (s: number) => {
     const m = Math.floor(s / 60);
     const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, '0')}`;
+    return formatLabel(`${m}:${sec.toString().padStart(2, '0')}`);
   };
 
   const toggle = () => {
@@ -93,7 +97,7 @@ export function AudioPreviewPlayer({
             className="rounded-sm flex-1"
             onClick={onCancel}
           >
-            Discard
+            {t('DISCARD')}
           </Button>
           <Button
             size="sm"
@@ -102,7 +106,7 @@ export function AudioPreviewPlayer({
             onClick={onUpload}
           >
             <Upload className="w-4 h-4" />
-            Upload
+            {t('UPLOAD')}
           </Button>
         </div>
       )}

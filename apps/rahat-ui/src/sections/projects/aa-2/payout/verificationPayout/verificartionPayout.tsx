@@ -10,6 +10,13 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -64,6 +71,14 @@ export default function VerificationPayout() {
     searchParams.get('matchBy') === 'phoneNumber'
       ? 'phoneNumber'
       : 'bankAccount';
+
+  // matchBy is derived from the URL, so changing it writes the search param
+  // back rather than holding separate state.
+  const setMatchBy = (value: 'bankAccount' | 'phoneNumber') => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('matchBy', value);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
   const columns = React.useMemo<ColumnDef<any>[]>(
     () =>
       data[0]?.map((header: any, index: number) => {

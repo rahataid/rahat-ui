@@ -54,7 +54,7 @@ export default function SearchDropdownComponent({
         >
           {value
             ? transformedData.find((d) => d.value === value)?.label
-            : g('SELECT_PLACEHOLDER', { field: title })}
+            : g('SELECT_PLACEHOLDER', { name: title })}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

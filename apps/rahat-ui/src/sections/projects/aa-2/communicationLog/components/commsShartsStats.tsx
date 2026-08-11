@@ -1,7 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
 import {
   Card,
   CardContent,

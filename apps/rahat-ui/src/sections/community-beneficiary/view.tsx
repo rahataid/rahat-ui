@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
@@ -52,6 +53,7 @@ function ViewCommunityBeneficiaryByGroupName() {
   const t = useTranslations('COMMUNITY_BENEFICIARY_DETAIL');
   const tg = useTranslations('GLOBAL');
   const {
+    pagination,
     selectedListItems,
     setSelectedListItems,
     setNextPage,

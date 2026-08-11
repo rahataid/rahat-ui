@@ -1891,7 +1891,15 @@
     "warning": "चेतावनी",
     "steady": "स्थिर",
     "rising": "बढ्दो",
-    "falling": "घट्दो"
+    "falling": "घट्दो",
+    "ASSIGNED_TOKENS": "तोकिएका टोकनहरू",
+    "ASSIGNED_TOKENS_TOOLTIP": "लाभग्राहीहरूलाई तोकिएका कुल टोकन संख्या।",
+    "DISBURSED_TOKENS": "वितरित टोकनहरू",
+    "DISBURSED_TOKENS_TOOLTIP": "लाभग्राहीहरूलाई वितरण गरिएका कुल टोकन संख्या।",
+    "CANNOT_ADD_TRIGGERS_ACTIVE_PHASE": "सक्रिय चरणमा ट्रिगर थप्न मिल्दैन",
+    "CANNOT_DELETE_PHASE_WITH_TRIGGERS": "क्रियाकलाप वा ट्रिगर भएको चरण मेट्न मिल्दैन",
+    "SOMETHING_WENT_WRONG": "केही त्रुटि भयो!!",
+    "VALIDATION_FAILED": "प्रमाणीकरण असफल भयो"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खातावालाको नाम",
@@ -3281,7 +3289,9 @@
     "SELECT_FIELD_PLACEHOLDER": "--फिल्ड चयन गर्नुहोस्--",
     "NO_FIELD_FOUND": "कुनै फिल्ड फेला परेन।",
     "TOTAL": "कुल",
-    "STATION": "स्टेशन"
+    "STATION": "स्टेशन",
+    "BANK_ACCOUNT_VALIDATION_FAILED": "बैंक खाता प्रमाणीकरण असफल भयो",
+    "SOMETHING_WENT_WRONG": "केही त्रुटि भयो!!"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",

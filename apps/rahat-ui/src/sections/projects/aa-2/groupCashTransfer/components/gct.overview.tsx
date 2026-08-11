@@ -24,6 +24,10 @@ export default function GctOverview({
   stats: any;
   isPending: boolean;
 }) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+
   const totalAllocated = stats?.totalAllocatedAmount ?? 0;
   const totalDisbursed = stats?.totalDisbursedAmount ?? 0;
   const treasuryBalance = stats?.treasuryBalance ?? 0;

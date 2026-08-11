@@ -460,7 +460,9 @@
     "SELECT_FIELD_PLACEHOLDER": "--Select Field--",
     "NO_FIELD_FOUND": "No field found.",
     "TOTAL": "Total",
-    "STATION": "Station"
+    "STATION": "Station",
+    "BANK_ACCOUNT_VALIDATION_FAILED": "Bank Account Validation Failed",
+    "SOMETHING_WENT_WRONG": "Something went wrong!!"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -3258,7 +3260,15 @@
     "warning": "Warning",
     "steady": "Steady",
     "rising": "Rising",
-    "falling": "Falling"
+    "falling": "Falling",
+    "ASSIGNED_TOKENS": "Assigned Tokens",
+    "ASSIGNED_TOKENS_TOOLTIP": "Total number of tokens assigned to beneficiaries.",
+    "DISBURSED_TOKENS": "Disbursed Tokens",
+    "DISBURSED_TOKENS_TOOLTIP": "Total number of tokens disbursed to beneficiaries.",
+    "CANNOT_ADD_TRIGGERS_ACTIVE_PHASE": "Cannot add triggers for an active phase",
+    "CANNOT_DELETE_PHASE_WITH_TRIGGERS": "Cannot delete a phase with activities or triggers",
+    "SOMETHING_WENT_WRONG": "Something went wrong!!",
+    "VALIDATION_FAILED": "Validation failed"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",

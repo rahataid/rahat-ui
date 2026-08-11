@@ -6,18 +6,10 @@ import {
   TabsList,
   TabsTrigger,
 } from 'libs/shadcn/src/components/ui/tabs';
-import { ComponentType, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import InkindList from './inkind.list';
 import InkindOverview from './inkind.overview';
 import InkindAllocationList from './inkind.allocation.list';
-
-// The labelled tab list lives inside the component so it can call `tv()`, so the
-// values it keys off are declared here at module scope for componentMap to use.
-const INKIND_TAB_VALUES = [
-  'inkindOverview',
-  'inkindList',
-  'inkindAllocation',
-] as const;
 
 const componentMap: Record<string, React.ComponentType> = {
   inkindList: InkindList,

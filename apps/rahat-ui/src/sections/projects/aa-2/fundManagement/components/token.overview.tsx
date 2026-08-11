@@ -68,6 +68,19 @@ export default function TokensOverview() {
     name === 'Average Duration' ? 'AVERAGE_DURATION' :
     name.toUpperCase().replace(/\s+/g, '_');
 
+  // Stat names come from the backend, so a newly added stat may not have a
+  // translation key yet. t() throws on a missing key and would crash the page,
+  // so fall back to the raw backend label / no tooltip instead.
+  const statTitle = (name: string) => {
+    const key = getNameKey(name);
+    return t.has(key) ? t(key) : name;
+  };
+
+  const statTooltip = (name: string) => {
+    const key = `${getNameKey(name)}_TOOLTIP`;
+    return t.has(key) ? t(key) : INFO_TOOL_TIPS[name] ?? '';
+  };
+
   // const projectBalance = useFundAssignmentStore(
   //   (state) => state.projectBalance,
   // );
@@ -150,7 +163,7 @@ export default function TokensOverview() {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
               const isBudget = item.name === 'Budget Assigned';
-              const infoTooltip = t(getNameKey(item.name) + '_TOOLTIP');
+              const infoTooltip = statTooltip(item.name);
 
               if (isToken) {
                 const assetUrl = getExplorerUrl({
@@ -215,7 +228,7 @@ export default function TokensOverview() {
                 <DataCard
                   key={index}
                   className="rounded-sm h-[116px] p-0"
-                  title={t(getNameKey(item.name))}
+                  title={statTitle(item.name)}
                   smallNumber={formatNum(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
@@ -232,13 +245,13 @@ export default function TokensOverview() {
           {/* Second Row - 3 Columns */}
           <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
             {data?.data?.slice(4).map((item, index) => {
-              const infoTooltip = t(getNameKey(item.name) + '_TOOLTIP');
+              const infoTooltip = statTooltip(item.name);
 
               return (
                 <DataCard
                   key={index}
                   className="rounded-sm h-[116px] p-0"
-                  title={t(getNameKey(item.name))}
+                  title={statTitle(item.name)}
                   smallNumber={formatNum(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
@@ -250,26 +263,6 @@ export default function TokensOverview() {
                 />
               );
             })}
-            <DataCard
-              className="rounded-sm h-[116px] p-0"
-              title={t('PENDING_DISBURSEMENT')}
-              smallNumber={formatNum(
-                getTokenStat?.tokenStats?.pendingDisbursement,
-              ) || '-'}
-              infoIcon={true}
-              infoTooltip={t('PENDING_DISBURSEMENT_TOOLTIP')}
-              subtitle=" "
-            />
-            <DataCard
-              className="rounded-sm h-[116px] p-0"
-              title={t('REDEEMED_TOKENS')}
-              smallNumber={formatNum(
-                getTokenStat?.tokenStats?.redeemedTokens,
-              ) || '-'}
-              infoIcon={true}
-              infoTooltip={t('REDEEMED_TOKENS_TOOLTIP')}
-              subtitle=" "
-            />
           </div>
         </div>
       ) : (

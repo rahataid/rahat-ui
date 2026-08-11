@@ -256,32 +256,32 @@ export default function AddAutomatedTriggerForm({
               control={form.control}
               name="leadTime"
               render={({ field }) => {
-                const [lead, unitValue] = field.value?.split(' ') ?? ['', ''];
-                const unit = !unitValue ? 'days' : unitValue;
+                const value = field.value?.trim() ?? '';
+                const parts = value ? value.split(/\s+/) : [];
+                const lead = parts[0] ?? '';
+                const unit = parts[1] || 'days';
                 return (
                   <FormItem>
                     <FormLabel>Lead Time</FormLabel>
-                    <div className="grid grid-cols-4">
-                      <Input
-                        type="text"
-                        placeholder="Enter lead time"
-                        className="col-span-3 rounded-r-none"
-                        value={lead}
-                        onChange={(e) => {
-                          const newLead = e.target.value;
-                          field.onChange(
-                            newLead.trim() ? `${newLead.trim()} ${unit}` : '',
-                          );
-                        }}
-                      />
-                      <Select
-                        value={unit}
-                        onValueChange={(val) => {
-                          field.onChange(
-                            lead.trim() ? `${lead.trim()} ${val}` : '',
-                          );
-                        }}
-                      >
+                      <div className="grid grid-cols-4">
+                        <Input
+                          type="text"
+                          placeholder="Enter lead time"
+                          className="col-span-3 rounded-r-none"
+                          value={lead}
+                          onChange={(e) => {
+                            const newLead = e.target.value.trim();
+                            field.onChange(newLead ? `${newLead} ${unit}` : '');
+                          }}
+                        />
+                        <Select
+                          value={unit}
+                          onValueChange={(val) => {
+                            field.onChange(
+                              lead ? `${lead} ${val || 'days'}` : '',
+                            );
+                          }}
+                        >
                         <FormControl>
                           <SelectTrigger className="rounded-l-none">
                             <SelectValue />

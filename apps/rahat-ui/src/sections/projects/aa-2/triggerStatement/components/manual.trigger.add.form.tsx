@@ -92,10 +92,12 @@ export default function AddManualTriggerForm({
                 control={form.control}
                 name="leadTime"
                 render={({ field }) => {
-                  const value = field.value?.trim() ?? '';
-                  const parts = value ? value.split(/\s+/) : [];
-                  const lead = parts[0] ?? '';
-                  const unit = parts[1] || 'days';
+                  const raw = field.value?.trim() ?? '';
+                  const unitMatch = raw.match(/(hours|days)/i);
+                  const unit = unitMatch
+                    ? unitMatch[0].toLowerCase()
+                    : 'days';
+                  const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
                   return (
                     <FormItem className="w-full">
                       <FormLabel>Lead Time</FormLabel>
@@ -106,15 +108,17 @@ export default function AddManualTriggerForm({
                           className="col-span-3 rounded-r-none"
                           value={lead}
                           onChange={(e) => {
-                            const newLead = e.target.value.trim();
-                            field.onChange(newLead ? `${newLead} ${unit}` : '');
+                            const newLead = e.target.value;
+                            field.onChange(
+                              newLead ? `${newLead} ${unit}` : '',
+                            );
                           }}
                         />
                         <Select
                           value={unit}
                           onValueChange={(val) => {
                             field.onChange(
-                              lead ? `${lead} ${val || 'days'}` : '',
+                              lead ? `${lead} ${val}` : '',
                             );
                           }}
                         >

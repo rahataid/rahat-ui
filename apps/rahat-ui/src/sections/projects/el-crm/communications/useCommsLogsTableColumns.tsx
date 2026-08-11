@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { CircleAlert, TriangleAlert } from 'lucide-react';
+import { CircleAlert, ExternalLink, TriangleAlert } from 'lucide-react';
 import { formatDateTime } from '../../../../utils';
 
 const getStatusVariant = (status: string) => {
@@ -15,6 +15,44 @@ const getStatusVariant = (status: string) => {
   if (status === BroadcastStatus.PENDING) return 'warning';
   return 'secondary';
 };
+
+// Only Twilio failures get a docs link.
+const isTwilioDisposition = (disposition: any, message?: string) => {
+  if (/twilio/i.test(message ?? '')) return true;
+
+  const sid = String(
+    disposition?.sid ?? disposition?.messageSid ?? disposition?.data?.sid ?? '',
+  );
+  if (/^(SM|MM)[0-9a-f]{32}$/i.test(sid)) return true;
+
+  const accountSid = String(
+    disposition?.accountSid ?? disposition?.account_sid ?? '',
+  );
+  if (/^AC[0-9a-f]{32}$/i.test(accountSid)) return true;
+
+  const reference = String(disposition?.uri ?? disposition?.url ?? '');
+  return /twilio\.com/i.test(reference);
+};
+
+const getTwilioErrorCode = (disposition: any, message?: string) => {
+  if (!isTwilioDisposition(disposition, message)) return undefined;
+
+  const raw =
+    disposition?.errorCode ??
+    disposition?.error_code ??
+    disposition?.data?.errorCode ??
+    disposition?.data?.error_code;
+
+  if (raw !== undefined && raw !== null && /^\d{4,5}$/.test(String(raw))) {
+    return String(raw);
+  }
+
+  const match = message?.match(/\b(\d{5})\b/);
+  return match?.[1];
+};
+
+const twilioErrorDocsUrl = (code: string) =>
+  `https://www.twilio.com/docs/api/errors/${code}`;
 
 export default function useCommsLogsTableColumns() {
   const columns: ColumnDef<any>[] = [
@@ -49,16 +87,36 @@ export default function useCommsLogsTableColumns() {
           disposition?.reason;
 
         if (status === 'FAIL') {
+          const errorCode = getTwilioErrorCode(disposition, statusMessage);
+
           return (
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-2 cursor-pointer">
                   <Badge variant={getStatusVariant(status)}>{status}</Badge>
-                  <TriangleAlert className="h-4 w-4 text-destructive" />
+                  {errorCode ? (
+                    <a
+                      href={twilioErrorDocsUrl(errorCode)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`View Twilio documentation for error ${errorCode}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <TriangleAlert className="h-4 w-4 text-destructive" />
+                    </a>
+                  ) : (
+                    <TriangleAlert className="h-4 w-4 text-destructive" />
+                  )}
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs break-words">
                 <p className="text-sm">{statusMessage || 'Unknown error'}</p>
+                {errorCode && (
+                  <p className="mt-1 flex items-center gap-1 text-xs opacity-80">
+                    <ExternalLink className="h-3 w-3" />
+                    Click the icon for Twilio error {errorCode} docs
+                  </p>
+                )}
               </TooltipContent>
             </Tooltip>
           );

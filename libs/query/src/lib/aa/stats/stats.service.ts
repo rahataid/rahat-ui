@@ -124,6 +124,7 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
                   ? payload.endDate
                   : payload.endDate.toISOString(),
             }),
+            ...(payload?.phase && { filters: { phase: payload.phase } }),
           },
         },
       });

@@ -1,4 +1,9 @@
-import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
+import {
+  useCommuicationStatsforBeneficiaryandStakeHolders,
+  usePhases,
+  usePhasesStore,
+  useProjectInfo,
+} from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -18,16 +23,23 @@ import { CloudDownloadIcon } from 'lucide-react';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportCommsStats, hasCommsData } from './utils/comms.utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 export default function CommunicationMainLogsView() {
   const { id: ProjectId } = useParams();
   const [startDate, setStartDate] = useState<string | undefined>();
   const [endDate, setEndDate] = useState<string | undefined>();
+  const [phase, setPhase] = useState<string | undefined>();
+
+  useProjectInfo(ProjectId as UUID);
+  usePhases(ProjectId as UUID);
+  const { phases } = usePhasesStore((state) => ({ phases: state.phases }));
 
   const { data, isLoading: isLoadingBenefStakeholdersStats } =
     useCommuicationStatsforBeneficiaryandStakeHolders(ProjectId as UUID, {
       startDate,
       endDate,
+      phase,
     });
   const { activeTab, setActiveTab } = useActiveTab('overview');
 
@@ -103,6 +115,12 @@ export default function CommunicationMainLogsView() {
                   className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
                 />
               </TooltipWrapper>
+              <SelectComponent
+                name="Phase"
+                options={['ALL', ...phases.map((p) => p.name)]}
+                onChange={(value) => setPhase(value === 'ALL' ? undefined : value)}
+                value={phase || ''}
+              />
               <DateRangePicker
                 placeholder="Pick date range"
                 handleDateChange={handleDateChange}

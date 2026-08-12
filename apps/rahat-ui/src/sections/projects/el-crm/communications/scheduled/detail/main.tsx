@@ -18,12 +18,14 @@ import {
   FilterX,
   Hash,
   MessageSquareText,
+  RefreshCcw,
   Signal,
   Users,
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 import { UUID } from 'crypto';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import {
@@ -31,6 +33,7 @@ import {
   useListElCrmBroadCastCount,
   useListElCrmSessionBroadcast,
   usePagination,
+  useRetryFailedSession,
 } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import SearchInput from '../../../../components/search.input';
@@ -47,7 +50,8 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
-import { CHANNELS, computeRate, formatRate, targetTypeMap } from '../../const';
+import { DateRangePicker } from '../../../customers/dateRangePicker';
+import { computeRate, formatRate, targetTypeMap } from '../../const';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {
@@ -60,16 +64,15 @@ export default function MessageDetailPage() {
     messageId,
   );
 
-  const { data: count } = useListElCrmBroadCastCount(
-    projectUUID,
-    {
-      sessionId: campaign?.sessionId || '',
-    },
-    {
-      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
-      enabled: !!campaign?.sessionId,
-    },
-  );
+  const mutateRetry = useRetryFailedSession(projectUUID);
+
+  const retryFailed = async () => {
+    try {
+      await mutateRetry.mutateAsync(campaign?.sessionId || '');
+    } catch (error) {
+      console.error('Retry failed:', error);
+    }
+  };
 
   const columns = useCommsLogsTableColumns();
   const {
@@ -81,6 +84,42 @@ export default function MessageDetailPage() {
     filters,
     setFilters,
   } = usePagination();
+
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
+
+  const handleDateRangeChange = React.useCallback(
+    (range: DateRange | undefined) => {
+      setDateRange(range);
+      setFilters((prev: any) => {
+        const updated = { ...prev };
+        // Both ends are required for a range query; send full-day bounds so a
+        // single-day selection still includes that whole day.
+        if (range?.from && range?.to) {
+          updated.startDate = startOfDay(range.from).toISOString();
+          updated.endDate = endOfDay(range.to).toISOString();
+        } else {
+          delete updated.startDate;
+          delete updated.endDate;
+        }
+        return updated;
+      });
+      setPagination((prev) => ({ ...prev, page: 1 }));
+    },
+    [setFilters, setPagination],
+  );
+
+  const { data: count } = useListElCrmBroadCastCount(
+    projectUUID,
+    {
+      sessionId: campaign?.sessionId || '',
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
+    },
+    {
+      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
+      enabled: !!campaign?.sessionId,
+    },
+  );
 
   const { data: logs, isLoading: isLogsLoading } = useListElCrmSessionBroadcast(
     projectUUID,
@@ -189,6 +228,7 @@ export default function MessageDetailPage() {
 
   const clearAllFilters = () => {
     setFilters({});
+    setDateRange(undefined);
     setPagination({ ...pagination, page: 1 });
   };
 
@@ -218,9 +258,16 @@ export default function MessageDetailPage() {
   const isSent = !!campaign.sessionId;
   const deliveredCount = count?.SUCCESS ?? 0;
   const failedCount = count?.FAIL ?? 0;
-  const totalRecipients = campaign?.recipientCount || 0;
+  // When a date filter is active the denominator must also be range-scoped
+  // (connect's TOTAL for the range) so the rate stays meaningful; otherwise
+  // keep the campaign's configured recipient count.
+  const hasDateFilter = !!(filters?.startDate && filters?.endDate);
+  const totalRecipients = hasDateFilter
+    ? count?.TOTAL ?? 0
+    : campaign?.recipientCount || 0;
   const deliveryRate = computeRate(deliveredCount, totalRecipients);
   const failureRate = computeRate(failedCount, totalRecipients);
+  const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;
 
   const statCards = [
     {
@@ -321,22 +368,38 @@ export default function MessageDetailPage() {
               </div>
             </div>
 
-            {isSent && (
-              <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
+              {isSent && (
                 <CampaignBroadcastActions
                   projectUUID={projectUUID}
                   sessionIds={[campaign.sessionId]}
                   campaignName={campaign.name}
-                  isWhatsApp={campaign.transportName === CHANNELS.WHATSAPP}
-                  targetType={campaign.targetType}
-                  messageBody={campaign.body}
                   filters={{
                     status: filters?.status,
                     address: filters?.address,
+                    startDate: filters?.startDate,
+                    endDate: filters?.endDate,
                   }}
                 />
-              </div>
-            )}
+              )}
+              {showRetryButton && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={retryFailed}
+                      className="gap-2"
+                    >
+                      <RefreshCcw className="h-3.5 w-3.5" />
+                      Retry Failed
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Retry all failed deliveries</TooltipContent>
+                </Tooltip>
+              )}
+            </div>
           </div>
         </div>
 
@@ -502,8 +565,8 @@ export default function MessageDetailPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
-                    <div className="md:col-span-3">
+                  <div className="flex flex-col gap-2.5 md:flex-row md:items-center">
+                    <div className="flex-1">
                       <SearchInput
                         value={filters.address}
                         name="Audience"
@@ -511,7 +574,7 @@ export default function MessageDetailPage() {
                       />
                     </div>
 
-                    <div className="md:col-span-1 !mt-0">
+                    <div className="md:w-44 !mt-0">
                       <SelectComponent
                         name="Status"
                         options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
@@ -521,6 +584,11 @@ export default function MessageDetailPage() {
                         value={filters?.status ?? 'ALL'}
                       />
                     </div>
+
+                    <DateRangePicker
+                      value={dateRange}
+                      onChange={handleDateRangeChange}
+                    />
                   </div>
                 </CardHeader>
 

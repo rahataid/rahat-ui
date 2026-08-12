@@ -63,7 +63,7 @@ import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import CampaignBroadcastActions from '../../campaign-broadcast-actions';
 import { DateRangePicker } from '../../../customers/dateRangePicker';
-import { CHANNELS, computeRate, formatRate, getCampaignGroupLabel } from '../../const';
+import { computeRate, formatRate, getCampaignGroupLabel } from '../../const';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -104,7 +104,11 @@ export default function MessageDetailPage() {
     setFilters,
   } = usePagination();
 
-  const isAutomatic = !!campaign?.isAutomatic;
+  // An auto-retry is filed under the Automatic tab alongside the campaign it
+  // retried, but it has no automation rule of its own — its deliveries live on
+  // its own session, so it reads like a regular campaign here.
+  const isRetry = (campaign?.options as Record<string, any>)?.isRetry === true;
+  const isAutomatic = !!campaign?.isAutomatic && !isRetry;
 
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
 
@@ -205,8 +209,10 @@ export default function MessageDetailPage() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // Back to the tab the row was listed under, which for a retry is the source
+  // campaign's tab rather than the view mode used above.
   const listHref = `/projects/el-crm/${projectUUID}/communications/messages${
-    isAutomatic ? '?tab=automatic' : ''
+    campaign?.isAutomatic ? '?tab=automatic' : ''
   }`;
 
   const handleSearch = React.useCallback(
@@ -443,9 +449,6 @@ export default function MessageDetailPage() {
                       : [campaign.sessionId]
                   }
                   campaignName={campaign.name}
-                  isWhatsApp={campaign.transportName === CHANNELS.WHATSAPP}
-                  targetType={campaign.targetType}
-                  messageBody={campaign.body}
                   filters={{
                     status: filters?.status,
                     address: filters?.address,

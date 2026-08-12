@@ -1,4 +1,9 @@
-import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
+import {
+  useCommuicationStatsforBeneficiaryandStakeHolders,
+  usePhases,
+  usePhasesStore,
+  useProjectInfo,
+} from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -25,6 +30,10 @@ export default function CommunicationMainLogsView() {
   const [startDate, setStartDate] = useState<string | undefined>();
   const [endDate, setEndDate] = useState<string | undefined>();
   const [phase, setPhase] = useState<string | undefined>();
+
+  useProjectInfo(ProjectId as UUID);
+  usePhases(ProjectId as UUID);
+  const { phases } = usePhasesStore((state) => ({ phases: state.phases }));
 
   const { data, isLoading: isLoadingBenefStakeholdersStats } =
     useCommuicationStatsforBeneficiaryandStakeHolders(ProjectId as UUID, {
@@ -108,7 +117,7 @@ export default function CommunicationMainLogsView() {
               </TooltipWrapper>
               <SelectComponent
                 name="Phase"
-                options={['ALL', 'ACTIVATION', 'READINESS', 'PREPAREDNESS']}
+                options={['ALL', ...phases.map((p) => p.name)]}
                 onChange={(value) => setPhase(value === 'ALL' ? undefined : value)}
                 value={phase || ''}
               />

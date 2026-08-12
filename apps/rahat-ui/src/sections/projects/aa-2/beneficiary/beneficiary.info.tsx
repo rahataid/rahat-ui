@@ -113,25 +113,39 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           isBadge
         />
       </div>
+      {bankAccount && (
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Bank Account Details</h2>
+
+          <button
+            type="button"
+            onClick={() => setViewMore((prev) => !prev)}
+            className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
+          >
+            {viewMore ? 'View less' : 'View more'}
+            {viewMore ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+        </div>
+      )}
+
+      {viewMore && bankAccount && (
+        <div className="grid grid-cols-3 gap-6 mb-6">
+          <DataItem label="Bank Name" value={bankAccount?.bankName || 'N/A'} />
+          <DataItem
+            label="Account Name"
+            value={bankAccount?.accountName || 'N/A'}
+          />
+          <DataItem
+            label="Account Number"
+            value={bankAccount?.accountNumber || 'N/A'}
+          />
+        </div>
+      )}
       <div
-        className={`w-full max-w-2xl bg-white ${
+        className={`p-4 w-full max-w-2xl bg-white ${
           showBorder ? 'border rounded-xl shadow-sm' : ''
         }`}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Bank Account Details</h2>
-          {bankAccount && (
-            <button
-              type="button"
-              onClick={() => setViewMore((prev) => !prev)}
-              className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
-            >
-              {viewMore ? 'View less' : 'View more'}
-              {viewMore ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-          )}
-        </div>
-
         {isPending ? (
           <>
             <div className="animate-pulse flex gap-4 mb-6">
@@ -168,23 +182,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
             </div>
           </div>
         ) : null}
-
-        {viewMore && bankAccount && (
-          <div className="grid grid-cols-3 gap-6 mb-6">
-            <DataItem
-              label="Bank Name"
-              value={bankAccount?.bankName || 'N/A'}
-            />
-            <DataItem
-              label="Account Name"
-              value={bankAccount?.accountName || 'N/A'}
-            />
-            <DataItem
-              label="Account Number"
-              value={bankAccount?.accountNumber || 'N/A'}
-            />
-          </div>
-        )}
 
         {filteredInkinds.length > 0 && (
           <InkindDetails filteredInkinds={filteredInkinds} />

@@ -35,6 +35,12 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
                   Select as targeting criteria
                 </p>
               </div>
+              <div>
+                <p>{data?.isUnique ? 'Yes' : 'No'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  isUnique
+                </p>
+              </div>
             </div>
 
             <div className="col-span-2 flex flex-col gap-4">

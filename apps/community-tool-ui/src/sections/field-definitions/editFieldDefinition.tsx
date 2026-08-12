@@ -45,6 +45,7 @@ export default function EditFieldDefinition({
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
+    isUnique: z.boolean(),
     variations: z.array(
       z.object({
         id: z.string(),
@@ -75,6 +76,7 @@ export default function EditFieldDefinition({
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
+      isUnique: data?.isUnique || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
       variations: variationTags,
     },
@@ -88,6 +90,7 @@ export default function EditFieldDefinition({
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
+      isUnique: data?.isUnique || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
       variations: formattedVariations,
     });
@@ -97,6 +100,7 @@ export default function EditFieldDefinition({
     data?.fieldType,
     data?.isActive,
     data?.isTargeting,
+    data?.isUnique,
     data?.name,
     form,
   ]);
@@ -123,6 +127,7 @@ export default function EditFieldDefinition({
       payload.fieldType = formData.fieldType as FieldType;
     if (dirtyFields.isActive) payload.isActive = formData.isActive;
     if (dirtyFields.isTargeting) payload.isTargeting = formData.isTargeting;
+    if (dirtyFields.isUnique) payload.isUnique = formData.isUnique;
 
     if (dirtyFields.variations) {
       payload.variations = variationTags.map((d) => d.text);
@@ -292,6 +297,21 @@ export default function EditFieldDefinition({
                     <Label className="text-xs font-medium mb-1">
                       Select as targeting criteria
                     </Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isUnique"
+                render={({ field }) => (
+                  <div className="flex flex-col items-right">
+                    <Label className="text-xs font-medium mb-1">isUnique</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}

@@ -20,10 +20,8 @@ const AddTriggerStatementPage = dynamic(
 
 export default function Page() {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
-      <ProjectPermissionGuard action={ACTIONS.CREATE} subject={SUBJECTS.TRIGGER}>
+    <ProjectPermissionGuard action={ACTIONS.CREATE} subject={SUBJECTS.TRIGGER}>
       <AddTriggerStatementPage />
-      </ProjectPermissionGuard>
-    </RoleAuth>
+    </ProjectPermissionGuard>
   );
 }

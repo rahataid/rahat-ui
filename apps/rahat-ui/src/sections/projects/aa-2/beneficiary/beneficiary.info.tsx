@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Copy, CopyCheck, User } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ChevronDown, ChevronUp, Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
@@ -23,6 +23,9 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
   const { clickToCopy, copyAction } = useCopy();
+  const [viewMore, setViewMore] = useState(false);
+
+  const bankAccount = beneficiary?.projectData?.bankAccount;
 
   const { data: tokenData, isPending } = useTokenDetails({
     projectUUID: projectId,
@@ -111,11 +114,24 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         />
       </div>
       <div
-        className={`p-4 w-full max-w-2xl bg-white ${
+        className={`w-full max-w-2xl bg-white ${
           showBorder ? 'border rounded-xl shadow-sm' : ''
         }`}
       >
-        {/* Title */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Bank Account Details</h2>
+          {bankAccount && (
+            <button
+              type="button"
+              onClick={() => setViewMore((prev) => !prev)}
+              className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
+            >
+              {viewMore ? 'View less' : 'View more'}
+              {viewMore ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          )}
+        </div>
+
         {isPending ? (
           <>
             <div className="animate-pulse flex gap-4 mb-6">
@@ -152,6 +168,23 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
             </div>
           </div>
         ) : null}
+
+        {viewMore && bankAccount && (
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <DataItem
+              label="Bank Name"
+              value={bankAccount?.bankName || 'N/A'}
+            />
+            <DataItem
+              label="Account Name"
+              value={bankAccount?.accountName || 'N/A'}
+            />
+            <DataItem
+              label="Account Number"
+              value={bankAccount?.accountNumber || 'N/A'}
+            />
+          </div>
+        )}
 
         {filteredInkinds.length > 0 && (
           <InkindDetails filteredInkinds={filteredInkinds} />

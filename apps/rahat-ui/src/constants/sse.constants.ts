@@ -1,4 +1,8 @@
-import { ACTIVITY_QUERY_KEYS, FUND_MANAGEMENT_QUERY_KEYS, PHASE_QUERY_KEYS } from '@rahat-ui/query';
+import {
+  ACTIVITY_QUERY_KEYS,
+  FUND_MANAGEMENT_QUERY_KEYS,
+  PHASE_QUERY_KEYS,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 export type EVENT =
@@ -46,5 +50,6 @@ export const EVENT_QUERY_MAP: Record<
     [FUND_MANAGEMENT_QUERY_KEYS.TOKEN_DETAILS, projectUuid],
     [FUND_MANAGEMENT_QUERY_KEYS.TRANSFER_LIST, projectUuid],
     [FUND_MANAGEMENT_QUERY_KEYS.SAFE_OWNERS, projectUuid],
+    [FUND_MANAGEMENT_QUERY_KEYS.GROUPS_RESERVED_FUNDS, projectUuid],
   ],
 };

@@ -31,8 +31,14 @@ export function exportCommsStats(stats: any) {
     row[`${label} Scheduled`] = (ben.SCHEDULED || 0) + (stk.SCHEDULED || 0);
     row[`${label} to Beneficiaries`] = ben.SUCCESS || 0;
     row[`${label} to Stakeholders`] = stk.SUCCESS || 0;
+    row[`${label} Failed to Beneficiaries`] = ben.FAIL || 0;
+    row[`${label} Failed to Stakeholders`] = stk.FAIL || 0;
+    row[`${label} Scheduled to Beneficiaries`] = ben.SCHEDULED || 0;
+    row[`${label} Scheduled to Stakeholders`] = stk.SCHEDULED || 0;
+    row[`${label} Pending to Beneficiaries`] = ben.PENDING || 0;
+    row[`${label} Pending to Stakeholders`] = stk.PENDING || 0;
 
-    colCount += 7;
+    colCount += 13;
   });
 
   if (!channels.size) return;

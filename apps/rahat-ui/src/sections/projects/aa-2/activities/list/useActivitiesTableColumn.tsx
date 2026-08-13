@@ -9,26 +9,6 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
-// function getStatusBg(status: string) {
-//   if (status === 'NOT_STARTED') {
-//     return 'bg-gray-200';
-//   }
-
-//   if (status === 'WORK_IN_PROGRESS') {
-//     return 'bg-orange-200';
-//   }
-
-//   if (status === 'COMPLETED') {
-//     return 'bg-green-200';
-//   }
-
-//   if (status === 'DELAYED') {
-//     return 'bg-red-200';
-//   }
-
-//   return '';
-// }
-
 export default function useActivitiesTableColumn() {
   const { id: projectID, title } = useParams();
   const router = useRouter();
@@ -95,12 +75,14 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        const bgColor = getStatusBg(status);
+        const rawStatus = row.getValue('status') as string;
+        const status = rawStatus
+          .toLowerCase()
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
         return (
-          <Badge
-            className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
-          >
+          <Badge className={getStatusBg(status)}>
             <TruncatedCell text={status} maxLength={10} />
           </Badge>
         );
@@ -111,21 +93,20 @@ export default function useActivitiesTableColumn() {
       header: 'Completed By',
       cell: ({ row }) => {
         const completedBy = row.getValue('completedBy') as string;
-        return <TruncatedCell text={completedBy || 'N/A'} />;
-      },
-    },
-    {
-      accessorKey: 'completedAt',
-      header: 'Timestamp',
-      cell: ({ row }) => {
         const completedAt = row.getValue('completedAt') as string;
+        let timestamp = 'N/A';
         if (completedAt) {
           const d = new Date(completedAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return <TruncatedCell text={`${localeDate} ${localeTime}`} />;
+          timestamp = `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
         }
-        return 'N/A';
+        return (
+          <div className="flex flex-col text-xs">
+            <span className="text-muted-foreground">
+              {completedBy || 'N/A'}
+            </span>
+            <span>{timestamp}</span>
+          </div>
+        );
       },
     },
     {

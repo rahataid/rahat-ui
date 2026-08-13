@@ -40,13 +40,17 @@ export default function UniqueFieldSelector({
         </p>
       </div>
 
-      {availableFields.length === 0 ? (
-        <p className="text-sm text-blue-600">
-          No unique fields configured. Contact your administrator.
-        </p>
-      ) : (
-        <div className="flex flex-wrap gap-x-5 gap-y-2 mt-1">
-          {availableFields.map((field) => (
+      <div className="flex flex-wrap gap-x-5 gap-y-2 mt-1">
+        {availableFields.length === 0 ? (
+          <p className="text-sm text-blue-600">
+            No unique fields configured. Go to the{' '}
+            <a href="/field-definitions" className="underline font-medium">
+              Field Definitions
+            </a>{' '}
+            page to mark fields as unique.
+          </p>
+        ) : (
+          availableFields.map((field) => (
             <label
               key={field}
               className={`flex items-center gap-2 ${
@@ -61,33 +65,31 @@ export default function UniqueFieldSelector({
               />
               <span className="text-sm text-blue-800 font-mono">{field}</span>
             </label>
-          ))}
+          ))
+        )}
 
-          <label
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <Checkbox
-              checked={forceInsert}
-              onCheckedChange={(checked) =>
-                handleSkipValidationChange(!!checked)
-              }
-              id="unique-field-skip-validation"
-            />
-            <span className="text-sm text-blue-800 font-mono">
-              Skip Validation
-            </span>
-          </label>
-        </div>
-      )}
+        <label className="flex items-center gap-2 cursor-pointer">
+          <Checkbox
+            checked={forceInsert}
+            onCheckedChange={(checked) => handleSkipValidationChange(!!checked)}
+            id="unique-field-skip-validation"
+          />
+          <span className="text-sm text-blue-800 font-mono">
+            Skip Validation
+          </span>
+        </label>
+      </div>
 
-      {!forceInsert && selectedFields.length === 0 && availableFields.length > 0 && (
-        <div className="flex items-center gap-2 mt-2 text-amber-700">
-          <AlertTriangle size={13} className="shrink-0" />
-          <p className="text-xs">
-            No unique fields selected — duplicates won&apos;t be detected.
-          </p>
-        </div>
-      )}
+      {!forceInsert &&
+        selectedFields.length === 0 &&
+        availableFields.length > 0 && (
+          <div className="flex items-center gap-2 mt-2 text-amber-700">
+            <AlertTriangle size={13} className="shrink-0" />
+            <p className="text-xs">
+              No unique fields selected — duplicates won&apos;t be detected.
+            </p>
+          </div>
+        )}
 
       {globalDefault && (
         <p className="text-xs text-blue-500 mt-2">

@@ -306,21 +306,25 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="isUnique"
-                render={({ field }) => (
-                  <div className="flex flex-col items-right">
-                    <Label className="text-xs font-medium mb-1">isUnique</Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
+              {form.watch('fieldType') !== FieldType.DROPDOWN && (
+                <FormField
+                  control={form.control}
+                  name="isUnique"
+                  render={({ field }) => (
+                    <div className="flex flex-col items-right">
+                      <Label className="text-xs font-medium mb-1">
+                        isUnique
+                      </Label>
+                      <Switch
+                        {...field}
+                        value={field.value ? 'false' : 'true'}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              )}
             </div>
 
             {showLabelValue && fields.length > 0 && (

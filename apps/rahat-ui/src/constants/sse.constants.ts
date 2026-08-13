@@ -52,4 +52,7 @@ export const EVENT_QUERY_MAP: Record<
     [FUND_MANAGEMENT_QUERY_KEYS.SAFE_OWNERS, projectUuid],
     [FUND_MANAGEMENT_QUERY_KEYS.GROUPS_RESERVED_FUNDS, projectUuid],
   ],
+  'token.disbursed': (projectUuid) => [
+    [FUND_MANAGEMENT_QUERY_KEYS.GROUPS_RESERVED_FUNDS, projectUuid],
+  ],
 };

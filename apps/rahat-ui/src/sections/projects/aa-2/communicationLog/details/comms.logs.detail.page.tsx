@@ -382,7 +382,7 @@ export default function CommsLogsDetailPage() {
               </div>
 
               {/* Right Section (Data Cards) — 2/3 on large screens */}
-              <div className=" flex-1 flex flex-wrap gap-4">
+              <div className="flex-1 grid grid-cols-2 gap-4">
                 <DataCard
                   title="Successfully Delivered"
                   smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}

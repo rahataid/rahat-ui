@@ -71,7 +71,7 @@ export default function CommunicationsChartsStats({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 xl:grid-cols-1">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 content-start">
               {[
                 {
                   label: 'Successfully Delivered',
@@ -122,9 +122,12 @@ export default function CommunicationsChartsStats({
                   value: statsBenefStakeholders?.stakeholder?.SMS?.PENDING || 0,
                 },
               ].map(({ label, value }) => (
-                <div key={label} className="flex flex-col flex-wrap bg-white">
-                  <p className="text-sm text-gray-600 text-wrap">{label}</p>
-                  <p className="text-lg font-semibold text-gray-800">{value}</p>
+                <div
+                  key={label}
+                  className="flex flex-col gap-0.5 rounded border bg-white px-2 py-1.5"
+                >
+                  <p className="text-xs text-gray-500 leading-tight">{label}</p>
+                  <p className="text-base font-semibold text-gray-800">{value}</p>
                 </div>
               ))}
             </div>
@@ -169,7 +172,7 @@ export default function CommunicationsChartsStats({
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 xl:grid-cols-1 gap-2 ">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 content-start">
               {[
                 // {
                 //   label: 'Unique AVC Recipients',
@@ -231,9 +234,12 @@ export default function CommunicationsChartsStats({
                     statsBenefStakeholders?.stakeholder?.VOICE?.PENDING || 0,
                 },
               ].map(({ label, value }) => (
-                <div key={label} className="flex flex-col flex-wrap bg-white">
-                  <p className="text-sm text-gray-600 text-wrap">{label}</p>
-                  <p className="text-lg font-semibold text-gray-800">{value}</p>
+                <div
+                  key={label}
+                  className="flex flex-col gap-0.5 rounded border bg-white px-2 py-1.5"
+                >
+                  <p className="text-xs text-gray-500 leading-tight">{label}</p>
+                  <p className="text-base font-semibold text-gray-800">{value}</p>
                 </div>
               ))}
             </div>

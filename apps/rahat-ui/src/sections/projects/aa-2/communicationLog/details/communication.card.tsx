@@ -246,7 +246,19 @@ export function CommunicationDetailCard({
           </TooltipWrapper>
         )}
 
-        <CardFooter className="pt-4 px-0 pb-0 flex justify-end">
+        <CardFooter className="pt-4 px-0 pb-0 flex justify-between items-center">
+          <p className="text-sm text-gray-500">
+            Updated At:{' '}
+            {dateFormat(
+              sessionLogs?.httpReponse?.data?.data?.reduce(
+                (latest: string | null, row: any) =>
+                  !latest || new Date(row?.updatedAt) > new Date(latest)
+                    ? row?.updatedAt
+                    : latest,
+                null,
+              ),
+            )}
+          </p>
           <div className="flex gap-3">
             <TooltipWrapper
               tip="No failed deliveries to export"

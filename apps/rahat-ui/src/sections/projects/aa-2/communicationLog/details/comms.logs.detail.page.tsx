@@ -122,6 +122,13 @@ export default function CommsLogsDetailPage() {
   } = useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
+  const latestBroadcastUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
+    (latest: string | null, row: any) =>
+      !latest || new Date(row?.updatedAt) > new Date(latest)
+        ? row?.updatedAt
+        : latest,
+    null,
+  );
 
   const count = useSessionBroadCastCount([sessionId]);
   const mutateRetry = useSessionRetryFailed();
@@ -249,7 +256,7 @@ export default function CommsLogsDetailPage() {
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              Updated At: {dateFormat(logs?.sessionDetails?.updatedAt)}
+              Updated At: {dateFormat(latestBroadcastUpdatedAt)}
             </p>
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper

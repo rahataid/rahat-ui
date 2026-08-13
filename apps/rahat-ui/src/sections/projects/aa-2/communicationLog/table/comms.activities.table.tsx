@@ -3,7 +3,13 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
+import {
+  useActivitiesHavingComms,
+  usePagination,
+  usePhases,
+  usePhasesStore,
+  useProjectInfo,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 import {
@@ -32,6 +38,10 @@ export default function CommsActivitiesTable() {
 
   const { activitiesData, activitiesMeta, isLoading } =
     useActivitiesHavingComms(projectId as UUID, { ...pagination, filters });
+
+  useProjectInfo(projectId as UUID);
+  usePhases(projectId as UUID);
+  const { phases } = usePhasesStore((state) => ({ phases: state.phases }));
 
   const columns = useCommsActivitiesTableColumns();
 
@@ -72,7 +82,7 @@ export default function CommsActivitiesTable() {
         />
         <SelectComponent
           name="Phase"
-          options={['ALL', 'ACTIVATION', 'READINESS', 'PREPAREDNESS']}
+          options={['ALL', ...phases.map((p) => p.name)]}
           onChange={(value) =>
             handleFilterChange({
               target: { name: 'phase', value },

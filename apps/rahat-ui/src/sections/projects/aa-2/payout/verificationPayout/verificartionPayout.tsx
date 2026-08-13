@@ -4,17 +4,10 @@ import React, { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 
 import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   ScrollArea,
   ScrollBar,
@@ -31,7 +24,6 @@ import {
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { CloudDownload, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
 import {
   ColumnDef,
   flexRender,
@@ -56,15 +48,17 @@ export default function VerificationPayout() {
   const id = params.id as UUID;
   const payoutId = params.detailID as UUID;
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [data, setData] = useState<any[][]>([]);
   const [fileName, setFileName] = useState<string>('No File Choosen');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const verifyManualPayout = useVerifyManualPayout();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [matchBy, setMatchBy] = useState<'bankAccount' | 'phoneNumber'>(
-    'bankAccount',
-  );
+  const matchBy =
+    searchParams.get('matchBy') === 'phoneNumber'
+      ? 'phoneNumber'
+      : 'bankAccount';
   const columns = React.useMemo<ColumnDef<any>[]>(
     () =>
       data[0]?.map((header: any, index: number) => {
@@ -304,25 +298,6 @@ export default function VerificationPayout() {
                 </span>
                 <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
               </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-sm text-muted-foreground whitespace-nowrap">
-                Match records by:
-              </span>
-              <Select
-                value={matchBy}
-                onValueChange={(v) =>
-                  setMatchBy(v as 'bankAccount' | 'phoneNumber')
-                }
-              >
-                <SelectTrigger className="w-44">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="bankAccount">Bank Account</SelectItem>
-                  <SelectItem value="phoneNumber">Phone Number</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </div>

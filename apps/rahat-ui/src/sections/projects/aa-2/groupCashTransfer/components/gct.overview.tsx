@@ -1,9 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
 import { DataCard, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { useGetGctData } from '@rahat-ui/query';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 
 const TREASURY_COLORS = ['#009688', '#FBCA14', '#B0BEC5'];
@@ -16,12 +13,13 @@ const STATUS_COLORS = [
   '#F43F5E',
 ];
 
-export default function GctOverview() {
-  const { id } = useParams();
-  const { data, isPending } = useGetGctData(id as UUID);
-
-  const stats = data?.data ?? data ?? null;
-
+export default function GctOverview({
+  stats,
+  isPending,
+}: {
+  stats: any;
+  isPending: boolean;
+}) {
   const totalAllocated = stats?.totalAllocatedAmount ?? 0;
   const totalDisbursed = stats?.totalDisbursedAmount ?? 0;
   const treasuryBalance = stats?.treasuryBalance ?? 0;

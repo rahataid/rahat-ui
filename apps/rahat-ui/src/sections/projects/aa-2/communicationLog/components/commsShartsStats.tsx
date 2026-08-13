@@ -1,5 +1,4 @@
 'use client';
-import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
 import {
   Card,
   CardContent,
@@ -26,11 +25,9 @@ type CommunicationBeneficiaryStakeholdersReport = {
 };
 
 type CommunicationsChartsStatsProps = {
-  commsStatsData: any;
   statsBenefStakeholders?: CommunicationBeneficiaryStakeholdersReport;
 };
 export default function CommunicationsChartsStats({
-  commsStatsData,
   statsBenefStakeholders,
 }: CommunicationsChartsStatsProps) {
   return (
@@ -146,13 +143,13 @@ export default function CommunicationsChartsStats({
             </div>
             <div className="grid grid-cols-2 xl:grid-cols-1 gap-2 ">
               {[
-                {
-                  label: 'Unique AVC Recipients',
-                  value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'VOICE',
-                    )?.totalRecipients || 0,
-                },
+                // {
+                //   label: 'Unique AVC Recipients',
+                //   value:
+                //     commsStatsData?.stats?.transportStats.find(
+                //       (r) => r.name === 'VOICE',
+                //     )?.totalRecipients || 0,
+                // },
                 {
                   label: 'Successfully Delivered',
                   value:

@@ -14,6 +14,8 @@ type CommunicationStats = {
   SUCCESS?: number;
   TOTAL?: number;
   FAIL?: number; // Optional, only present if there are failures
+  SCHEDULED?: number;
+  PENDING?: number;
 };
 
 type RoleType = 'beneficiary' | 'stakeholder';
@@ -92,6 +94,32 @@ export default function CommunicationsChartsStats({
                 {
                   label: 'SMS Successfully sent to Stakeholders',
                   value: statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS || 0,
+                },
+                {
+                  label: 'SMS Failed to send to Beneficiaries',
+                  value: statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0,
+                },
+                {
+                  label: 'SMS Failed to send to Stakeholders',
+                  value: statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0,
+                },
+                {
+                  label: 'SMS Scheduled to Beneficiaries',
+                  value:
+                    statsBenefStakeholders?.beneficiary?.SMS?.SCHEDULED || 0,
+                },
+                {
+                  label: 'SMS Scheduled to Stakeholders',
+                  value:
+                    statsBenefStakeholders?.stakeholder?.SMS?.SCHEDULED || 0,
+                },
+                {
+                  label: 'SMS Pending to Beneficiaries',
+                  value: statsBenefStakeholders?.beneficiary?.SMS?.PENDING || 0,
+                },
+                {
+                  label: 'SMS Pending to Stakeholders',
+                  value: statsBenefStakeholders?.stakeholder?.SMS?.PENDING || 0,
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col flex-wrap bg-white">
@@ -172,7 +200,35 @@ export default function CommunicationsChartsStats({
                 },
                 {
                   label: 'AVC Successfully sent to Stakeholders',
-                  value: statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS,
+                  value: statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS || 0,
+                },
+                {
+                  label: 'AVC Failed to send to Beneficiaries',
+                  value: statsBenefStakeholders?.beneficiary?.VOICE?.FAIL || 0,
+                },
+                {
+                  label: 'AVC Failed to send to Stakeholders',
+                  value: statsBenefStakeholders?.stakeholder?.VOICE?.FAIL || 0,
+                },
+                {
+                  label: 'AVC Scheduled to Beneficiaries',
+                  value:
+                    statsBenefStakeholders?.beneficiary?.VOICE?.SCHEDULED || 0,
+                },
+                {
+                  label: 'AVC Scheduled to Stakeholders',
+                  value:
+                    statsBenefStakeholders?.stakeholder?.VOICE?.SCHEDULED || 0,
+                },
+                {
+                  label: 'AVC Pending to Beneficiaries',
+                  value:
+                    statsBenefStakeholders?.beneficiary?.VOICE?.PENDING || 0,
+                },
+                {
+                  label: 'AVC Pending to Stakeholders',
+                  value:
+                    statsBenefStakeholders?.stakeholder?.VOICE?.PENDING || 0,
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col flex-wrap bg-white">

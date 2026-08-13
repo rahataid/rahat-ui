@@ -246,6 +246,11 @@ export default function CommsLogsDetailPage() {
               title={`Communication Details`}
               description="Here is the detailed view of selected communication"
             />
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              Updated At: {dateFormat(logs?.sessionDetails?.updatedAt)}
+            </p>
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper
                 tip="No communication logs available to export"
@@ -379,6 +384,16 @@ export default function CommsLogsDetailPage() {
                 <DataCard
                   title="Failed Delivered"
                   smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Scheduled"
+                  smallNumber={(count?.data?.data?.SCHEDULED ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Pending"
+                  smallNumber={(count?.data?.data?.PENDING ?? 0).toString()}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
               </div>

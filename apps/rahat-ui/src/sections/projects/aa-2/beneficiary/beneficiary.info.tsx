@@ -49,7 +49,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
 
   const hasTokenData = !!(tokenData?.assignedToken || tokenData?.redemmedToken);
   const showBorder = filteredInkinds.length > 0;
-
   return (
     <>
       <div className="flex items-center">
@@ -142,7 +141,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         </div>
       )}
       <div
-        className={`p-4 w-full max-w-2xl bg-white ${
+        className={`p-4 h-full w-full max-w-2xl bg-white ${
           showBorder ? 'border rounded-xl shadow-sm' : ''
         }`}
       >
@@ -166,14 +165,14 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           </>
         ) : hasTokenData ? (
           <div className="flex gap-4 mb-6">
-            <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+            <div className="flex-1 bg-gray-100 rounded-xl p-2 text-center">
               <p className="text-sm text-gray-500">Assigned</p>
               <h3 className="text-xl font-bold">
                 {tokenData?.assignedToken} Tokens
               </h3>
               <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
             </div>
-            <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+            <div className="flex-1 bg-gray-100 rounded-xl p-2 text-center">
               <p className="text-sm text-gray-500">Redeemed</p>
               <h3 className="text-xl font-bold">
                 {tokenData?.redemmedToken} Tokens

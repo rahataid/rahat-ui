@@ -255,9 +255,13 @@ export default function CommsLogsDetailPage() {
             />
           </div>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">
-              Updated At: {dateFormat(latestBroadcastUpdatedAt)}
-            </p>
+            {latestBroadcastUpdatedAt ? (
+              <p className="text-sm text-muted-foreground">
+                Updated At: {dateFormat(latestBroadcastUpdatedAt)}
+              </p>
+            ) : (
+              <div />
+            )}
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper
                 tip="No communication logs available to export"

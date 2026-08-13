@@ -17,6 +17,7 @@ import { useUserList, useUserStore } from '@rumsan/react-query';
 import CoreBtnComponent from '../../components/core.btn';
 import { UserCog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import ClientSidePagination from '../projects/components/client.side.pagination';
 
 export default function UserView() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function UserView() {
   }, [isSuccess, users?.data]);
 
   const table = useReactTable({
-    manualPagination: true,
+    // manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -73,7 +74,7 @@ export default function UserView() {
         </div>
         <UsersTable loading={isLoading} table={table} />
       </div>
-      <CustomPagination
+      {/* <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
@@ -81,7 +82,8 @@ export default function UserView() {
         meta={users?.response?.meta || { total: 0, currentPage: 0 }}
         perPage={pagination.perPage}
         total={users?.response?.meta?.lastPage || 0}
-      />
+      /> */}
+      <ClientSidePagination table={table} />
     </>
   );
 }

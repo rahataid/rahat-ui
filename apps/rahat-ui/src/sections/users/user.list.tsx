@@ -45,7 +45,7 @@ export default function UsersTable({ table, loading }: IProps) {
           />
         </div>
         <div>
-          <ScrollArea className="h-[calc(100vh-303px)]">
+          <ScrollArea className="h-[calc(100vh-310px)]">
             {loading ? (
               <TableLoader />
             ) : (

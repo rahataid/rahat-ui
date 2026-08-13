@@ -46,7 +46,7 @@ const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
   };
 
   return (
-    <ResizablePanelGroup direction="horizontal">
+    <ResizablePanelGroup direction="horizontal" className="!h-auto">
       {/* <ResizablePanel
             defaultSize={20}
             minSize={20}

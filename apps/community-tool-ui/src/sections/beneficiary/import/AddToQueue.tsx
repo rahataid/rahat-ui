@@ -71,7 +71,10 @@ export default function AddToQueue({
   uniqueFields,
 }: IProps) {
   const uniqueFieldSet = new Set(
-    (uniqueFields ?? '').split(',').map((f) => f.trim()).filter(Boolean),
+    (uniqueFields ?? '')
+      .split(',')
+      .map((f) => f.trim())
+      .filter(Boolean),
   );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [useExistingGroup, setUseExistingGroup] = useState(false);
@@ -88,7 +91,9 @@ export default function AddToQueue({
       if (i !== rowIndex) return row;
       const mapping = mappings.find((m) => m.targetField === key);
       const sourceKey = mapping?.sourceField ?? key;
-      const updatedRawData = row.rawData ? { ...row.rawData, [sourceKey]: value } : row.rawData;
+      const updatedRawData = row.rawData
+        ? { ...row.rawData, [sourceKey]: value }
+        : row.rawData;
       return { ...row, [key]: value, rawData: updatedRawData };
     });
     setLocalData(updated);
@@ -364,7 +369,9 @@ export default function AddToQueue({
                     <input
                       className="w-full bg-transparent border-b border-red-400 outline-none text-sm text-gray-800 focus:border-red-600"
                       value={item[key] ?? ''}
-                      onChange={(e) => handleCellEdit(index, key, e.target.value)}
+                      onChange={(e) =>
+                        handleCellEdit(index, key, e.target.value)
+                      }
                     />
                   );
 
@@ -372,7 +379,9 @@ export default function AddToQueue({
                     <input
                       className="w-full bg-transparent border-b border-orange-400 outline-none text-sm text-gray-800 focus:border-orange-600"
                       value={item[key] ?? ''}
-                      onChange={(e) => handleCellEdit(index, key, e.target.value)}
+                      onChange={(e) =>
+                        handleCellEdit(index, key, e.target.value)
+                      }
                     />
                   );
 
@@ -424,7 +433,9 @@ export default function AddToQueue({
                     const isDuplicateField = uniqueFieldSet.has(key);
                     return (
                       <td
-                        className={`px-4 py-1.5 ${isDuplicateField ? 'bg-orange-50' : ''}`}
+                        className={`px-4 py-1.5 ${
+                          isDuplicateField ? 'bg-orange-50' : ''
+                        }`}
                         key={key}
                       >
                         <TooltipProvider>

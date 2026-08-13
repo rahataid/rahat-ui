@@ -1,6 +1,8 @@
 'use client';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useCommunityGroupList } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import {
   BENEF_IMPORT_SCREENS,
@@ -40,13 +42,16 @@ import {
   useFetchKoboSettings,
   useFieldDefinitionsList,
   useGetStandardFields,
+  useUniqueFieldDefinitionsList,
   useUploadCsvForMapping,
   useUploadStandardJson,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
+import ImportDestinationDialog from './ImportDestinationDialog';
 import MyAlert from './MyAlert';
+import UniqueFieldSelector from './UniqueFieldSelector';
 
 interface IProps {
   fieldDefinitions: [];
@@ -80,6 +85,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     perPage: 20,
   });
   const totalPage = fieldData?.response?.meta?.total;
+  const { data: uniqueFieldDefs } = useUniqueFieldDefinitionsList();
+  const uniqueFieldNames: string[] = (uniqueFieldDefs?.data ?? []).map(
+    (f: { name: string }) => f.name,
+  );
 
   const aiBaseurl = aiSetting?.value?.URL;
 
@@ -118,6 +127,35 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setFieldSuggestions,
   } = useBeneficiaryImportStore();
   // ==========States=============
+
+  const [selectedUniqueFields, setSelectedUniqueFields] = React.useState<
+    string[]
+  >([]);
+  const [forceInsert, setForceInsert] = React.useState(false);
+
+  const [forceInsertDialogOpen, setForceInsertDialogOpen] =
+    React.useState(false);
+
+  const { pagination: fiPagination, filters: fiFilters } = usePagination();
+  fiPagination.perPage = 50;
+  fiPagination.page = 1;
+  const { data: fiGroupData } = useCommunityGroupList({
+    ...fiPagination,
+    ...fiFilters,
+  });
+
+  const isForceInsert = forceInsert;
+
+  React.useEffect(() => {
+    if (getUniqueField) {
+      setSelectedUniqueFields(
+        getUniqueField
+          .split(',')
+          .map((f: string) => f.trim())
+          .filter(Boolean),
+      );
+    }
+  }, [getUniqueField]);
 
   const fetchAiMappingSuggestions = async (file: File) => {
     try {
@@ -490,6 +528,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       name: importSource,
       importId,
       groupName,
+      forceInsert,
+      uniqueFields: forceInsert ? [] : selectedUniqueFields,
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
@@ -608,7 +648,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               handleGoClick={handleGoClick}
               handleSampleDownload={handleSampleDownload}
               loading={loading}
-              uniqueField={getUniqueField}
             />
             <div className="pt-10">{loading && <Loader />}</div>
           </>
@@ -620,8 +659,20 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               title="Field Mapping"
               message="Select matching field for your data"
             />
+
             {rawData.length > 0 && (
-              <div className="flex mb-5 mt-5 justify-between">
+              <UniqueFieldSelector
+                availableFields={uniqueFieldNames}
+                selectedFields={selectedUniqueFields}
+                forceInsert={forceInsert}
+                onChange={setSelectedUniqueFields}
+                onForceInsertChange={setForceInsert}
+                globalDefault={getUniqueField}
+              />
+            )}
+
+            {rawData.length > 0 && (
+              <div className="flex mb-5 mt-2 justify-between">
                 <Button
                   onClick={handleBackClick}
                   className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
@@ -629,16 +680,36 @@ export default function BenImp({ fieldDefinitions }: IProps) {
                   <ArrowBigLeft size={18} strokeWidth={2} /> Back
                 </Button>
                 &nbsp;
-                <Button
-                  disabled={loading}
-                  onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
-                  className="w-40 bg-primary hover:ring-2 ring-primary"
-                >
-                  <ArrowBigRight size={18} strokeWidth={2} />
-                  {loading ? 'Validating...' : 'Validate Data'}
-                </Button>
+                {isForceInsert ? (
+                  <Button
+                    disabled={loading}
+                    onClick={() => setForceInsertDialogOpen(true)}
+                    className="w-40 bg-primary hover:ring-2 ring-primary"
+                  >
+                    <ArrowBigRight size={18} strokeWidth={2} />
+                    {loading ? 'Importing...' : 'Import Invalid'}
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={loading}
+                    onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
+                    className="w-40 bg-primary hover:ring-2 ring-primary"
+                  >
+                    <ArrowBigRight size={18} strokeWidth={2} />
+                    {loading ? 'Validating...' : 'Validate Data'}
+                  </Button>
+                )}
               </div>
             )}
+
+            <ImportDestinationDialog
+              open={forceInsertDialogOpen}
+              onOpenChange={setForceInsertDialogOpen}
+              groups={fiGroupData?.data?.rows ?? []}
+              onConfirm={(groupName) =>
+                validateOrImport(IMPORT_ACTION.IMPORT, groupName)
+              }
+            />
 
             {hasExistingMapping && (
               <MyAlert
@@ -683,7 +754,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               mappings={mappings}
               onDataChange={setProcessedData}
               onRevalidate={handleRevalidate}
-              uniqueFields={getUniqueField}
+              uniqueFields={selectedUniqueFields.join(',')}
             />
           </div>
         )}

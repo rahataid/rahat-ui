@@ -32,7 +32,7 @@ jobs:
 
       - name: Build apps
         run: |
-          pnpm build rahat-ui
+          pnpm nx build rahat-ui
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

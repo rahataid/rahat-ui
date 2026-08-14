@@ -31,7 +31,9 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'title',
       header: 'Title',
       meta: { className: 'w-[250px]' },
-      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('title')} truncateByWidth />
+      ),
     },
     {
       accessorKey: 'category',

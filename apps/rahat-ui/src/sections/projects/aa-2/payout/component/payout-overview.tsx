@@ -1,13 +1,19 @@
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { DataCard, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import RecentPayout from './recent.payout';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 
 import { PayoutOverviewProps } from 'apps/rahat-ui/src/types/payout';
+import { CloudDownloadIcon } from 'lucide-react';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { exportPayoutStats, hasPayoutData } from '../utils/payout.utils';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function PayoutOverview({
   payoutStats,
   payouts,
   statsPayout,
+  handleDateChange,
+  handleClearDate,
 }: PayoutOverviewProps) {
   const pieDataLabel = [
     {
@@ -29,13 +35,38 @@ export default function PayoutOverview({
       value: statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
     },
   ];
+  const hasData = hasPayoutData(statsPayout);
   return (
     <div className="mt-4">
-      <Heading
-        title={`Payout Overview`}
-        description="Overview of your payouts"
-        titleStyle="font-medium text-lg"
-      />
+      <div className="flex items-center justify-between">
+        <Heading
+          title={`Payout Overview`}
+          description="Overview of your payouts"
+          titleStyle="font-medium text-lg"
+        />
+        <div className="flex gap-2 items-center">
+          <TooltipWrapper
+            tip={hasData ? '' : 'No payout data available to export'}
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={() => exportPayoutStats(statsPayout)}
+              name={'Export Report'}
+              variant="outline"
+              disabled={!hasData}
+              className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+            />
+          </TooltipWrapper>
+
+          <DateRangePicker
+            placeholder="Pick date range"
+            handleDateChange={handleDateChange}
+            handleClearDate={handleClearDate}
+            type="range"
+            className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
+          />
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
         {payoutStats.map((stat) => {
           return (

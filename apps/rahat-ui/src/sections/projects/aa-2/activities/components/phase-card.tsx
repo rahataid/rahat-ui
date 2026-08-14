@@ -81,7 +81,6 @@ export default function PhaseCard({
             {title.length > 25
               ? `${title.substring(0, 20)}...`
               : title ?? 'N/A'}
-            {/* {title} */}
           </h3>
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">

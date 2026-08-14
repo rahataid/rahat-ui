@@ -34,12 +34,14 @@ on:
           - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
           - "[DRY] github/data/rahat/rahat-ui/demo/EL"
+          - "[SAND] github/data/rahat/rahat-ui/main/cam-sandbox"
 
           # Main folder
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
           - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
           - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
+          
 
       vault_secret_key:
         description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"

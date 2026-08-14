@@ -19,7 +19,7 @@ jobs:
           env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_INDONESIA_EXTENSION_2026 }}
         run: |
           touch ./.env && echo "$env_release" >> ./.env
-          grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV  
+          grep -v '^#' ./.env | grep '=' >> $GITHUB_ENV
 
       - uses: actions/setup-node@v3
         with:
@@ -27,10 +27,10 @@ jobs:
 
       - name: Install pnpm
         run: |
-          npm install -g pnpm@8.14.1
+          npm install -g pnpm@9.1.3
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build apps
         run: |

@@ -14,6 +14,12 @@ export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
   });
 };
 
+export const normalizeInvalidFields = (
+  invalidFields: any[] | null | undefined,
+) => {
+  return Array.isArray(invalidFields) ? invalidFields : [];
+};
+
 export const attachedRawData = (payload: any, rawDataSource: []) => {
   const result = [] as any[];
   for (let i = 0; i < payload.length; i++) {

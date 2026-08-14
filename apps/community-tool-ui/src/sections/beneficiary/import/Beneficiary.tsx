@@ -132,6 +132,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     string[]
   >([]);
   const [forceInsert, setForceInsert] = React.useState(false);
+  const [hasPendingEdits, setHasPendingEdits] = React.useState(false);
 
   const [forceInsertDialogOpen, setForceInsertDialogOpen] =
     React.useState(false);
@@ -555,8 +556,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const { result, invalidFields, hasUUID } = res?.data;
       setHasUUID(hasUUID);
 
+      const normalized = normalizeInvalidFields(invalidFields);
       setProcessedData(result);
-      setInvalidFields(normalizeInvalidFields(invalidFields));
+      setInvalidFields(normalized);
+      if (normalized.length === 0) setHasPendingEdits(false);
       setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
     } catch (err) {
       console.log(err);
@@ -752,9 +755,13 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               invalidFields={invalidFields}
               loading={loading}
               mappings={mappings}
-              onDataChange={setProcessedData}
+              onDataChange={(updated) => {
+                setProcessedData(updated);
+                setHasPendingEdits(true);
+              }}
               onRevalidate={handleRevalidate}
               uniqueFields={selectedUniqueFields.join(',')}
+              hasPendingEdits={hasPendingEdits}
             />
           </div>
         )}

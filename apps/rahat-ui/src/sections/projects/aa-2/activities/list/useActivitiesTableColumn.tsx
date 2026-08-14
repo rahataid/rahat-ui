@@ -30,11 +30,13 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: 'Title',
+      meta: { className: 'w-[250px]' },
       cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'category',
       header: 'Category',
+      meta: { className: 'w-[130px]' },
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
           <TruncatedCell text={row.getValue('category')} maxLength={15} />
@@ -45,6 +47,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'isAutomated',
       header: 'Type',
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize  text-xs font-normal text-muted-foreground">
           {row.getValue('isAutomated') ? 'Automated' : 'Manual'}
@@ -54,6 +57,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'responsibility',
       header: 'Responsibility',
+      meta: { className: 'w-[150px]' },
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('responsibility') || 'N/A'}
@@ -64,6 +68,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'responsibleStation',
       header: 'Responsible Station ',
+      meta: { className: 'w-[120px]' },
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('responsibleStation') || 'N/A'}
@@ -74,6 +79,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'status',
       header: 'Status',
+      meta: { className: 'w-[120px]' },
       cell: ({ row }) => {
         const rawStatus = row.getValue('status') as string;
         const status = rawStatus
@@ -91,6 +97,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'completedBy',
       header: 'Completed By',
+      meta: { className: 'w-[140px]' },
       cell: ({ row }) => {
         const completedBy = row.getValue('completedBy') as string;
         const completedAt = row.getValue('completedAt') as string;
@@ -113,6 +120,7 @@ export default function useActivitiesTableColumn() {
       id: 'actions',
       enableHiding: false,
       header: 'Action',
+      meta: { className: 'w-[70px]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { PinIcon, X } from 'lucide-react';
+
 import {
   Tooltip,
   TooltipContent,
@@ -40,6 +40,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/command';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
 export default function Filter() {
   const { pagination, filters } = usePagination();
   const [open, setOpen] = useState<boolean>(false);

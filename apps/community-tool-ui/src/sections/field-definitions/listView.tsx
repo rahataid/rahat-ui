@@ -27,7 +27,6 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import {
   useCommunitySettingList,
-  useCommunitySettingUpdate,
   useFieldDefinitionsList,
   useUploadStandardJson,
   useGetStandardFields,
@@ -53,7 +52,7 @@ export default function ListView({
 }: IProps) {
   const { data: fieldData } = useFieldDefinitionsList({
     page: 1,
-    perPage: 100,
+    perPage: 300,
   });
   const rows = React.useMemo(() => fieldData?.data?.rows || [], [fieldData]);
   const rowNamesKey = React.useMemo(
@@ -112,26 +111,6 @@ export default function ListView({
     });
   };
 
-  // const updateStandardSetting = async (standardName: string) => {
-  //   if (!aiSetting) return;
-
-  //   const finalSettingData = {
-  //     name: aiSetting.name,
-  //     requiredFields: [
-  //       ...(aiSetting.requiredFields ?? []),
-  //       'COMMUNITY_DATA_STANDARD',
-  //     ],
-  //     value: {
-  //       ...(aiSetting.value ?? {}),
-  //       COMMUNITY_DATA_STANDARD: standardName,
-  //     },
-  //     isReadOnly: aiSetting.isReadOnly,
-  //     isPrivate: aiSetting.isPrivate,
-  //   };
-
-  //   await updateCommunitySettings.mutateAsync(finalSettingData);
-  // };
-
   React.useEffect(() => {
     let isMounted = true;
 
@@ -181,11 +160,16 @@ export default function ListView({
   }, [aiBaseurl, aiStandardName, rowNamesKey]);
 
   const handleSyncClick = async () => {
-    if (!aiBaseurl || !aiSetting) return;
+    if (!aiSetting) return;
 
     setSyncing(true);
 
     try {
+      if (!aiBaseurl) {
+        toast.warn('AI API settings are missing.');
+        return;
+      }
+
       if (aiStandardName) {
         const existingJson = await getStandardFields.mutateAsync({
           standardName: aiStandardName,

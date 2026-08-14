@@ -122,6 +122,13 @@ export default function CommsLogsDetailPage() {
   } = useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
+  const latestBroadcastUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
+    (latest: string | null, row: any) =>
+      !latest || new Date(row?.updatedAt) > new Date(latest)
+        ? row?.updatedAt
+        : latest,
+    null,
+  );
 
   const count = useSessionBroadCastCount([sessionId]);
   const mutateRetry = useSessionRetryFailed();
@@ -246,6 +253,15 @@ export default function CommsLogsDetailPage() {
               title={`Communication Details`}
               description="Here is the detailed view of selected communication"
             />
+          </div>
+          <div className="flex justify-between items-center">
+            {latestBroadcastUpdatedAt ? (
+              <p className="text-sm text-muted-foreground">
+                Updated At: {dateFormat(latestBroadcastUpdatedAt)}
+              </p>
+            ) : (
+              <div />
+            )}
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper
                 tip="No communication logs available to export"
@@ -370,7 +386,7 @@ export default function CommsLogsDetailPage() {
               </div>
 
               {/* Right Section (Data Cards) — 2/3 on large screens */}
-              <div className=" flex-1 flex flex-wrap gap-4">
+              <div className="flex-1 grid grid-cols-2 gap-4">
                 <DataCard
                   title="Successfully Delivered"
                   smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
@@ -379,6 +395,16 @@ export default function CommsLogsDetailPage() {
                 <DataCard
                   title="Failed Delivered"
                   smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Scheduled"
+                  smallNumber={(count?.data?.data?.SCHEDULED ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Pending"
+                  smallNumber={(count?.data?.data?.PENDING ?? 0).toString()}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
               </div>

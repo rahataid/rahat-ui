@@ -11,7 +11,7 @@ import WaterLevelTable from '../../dhm/table';
 import { roundValue } from '../utils/color.utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface TemperatureHistorySectionProps {
   activeTab: 'hourly' | 'daily';

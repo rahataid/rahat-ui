@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { formateDateFromText } from './utils/formateDataFormTextData';
-import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 type IProps = {
   glofas: Record<string, any>;

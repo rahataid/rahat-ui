@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { IProjectVendor } from '../types';
 import { useAAVendorsStore } from '@rahat-ui/query';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export const useProjectVendorTableColumns = () => {
   const { id } = useParams();

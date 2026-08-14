@@ -10,7 +10,7 @@ import type { InkindDetailsValues } from './schemas/inkind.validation';
 import { useInkinds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AddInkindView() {
   const { id } = useParams();

@@ -31,7 +31,7 @@ import {
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const BeneficiaryGroupsDetails = () => {
   const tGlobal = useTranslations('GLOBAL');

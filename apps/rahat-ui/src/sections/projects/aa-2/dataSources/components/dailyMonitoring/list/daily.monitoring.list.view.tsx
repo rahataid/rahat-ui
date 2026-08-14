@@ -29,7 +29,7 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';

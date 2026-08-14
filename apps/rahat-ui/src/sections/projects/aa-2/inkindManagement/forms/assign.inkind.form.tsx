@@ -43,7 +43,7 @@ import {
 } from './schema/inkinds.schema';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface Props {
   onNext: (

@@ -5,9 +5,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { useTranslations } from 'next-intl';
 import {
   Calendar,

@@ -7,7 +7,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { BarChart2, Cloud } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 import React from 'react';
 

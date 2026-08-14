@@ -1,6 +1,7 @@
 import { HealthCacheData } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -10,7 +11,7 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { CheckCircle, Info, X } from 'lucide-react';
 import { getDynamicColors } from './utils/getDynamicColor';
 
@@ -51,7 +52,7 @@ export function SystemHealthCard({
             <span className="text-sm font-medium">{t('OVERALL_SYSTEM_HEALTH')}</span>
 
             <Badge variant="outline" className={statusColors[overall_status]}>
-              {t.has(overall_status) ? t(overall_status) : overall_status}
+              {translateValue(t, overall_status, { fallbackStyle: 'raw' })}
             </Badge>
 
             <HoverCard>

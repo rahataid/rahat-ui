@@ -18,7 +18,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function VendorDetail() {
   const t = useTranslations('VENDORS_DETAIL');

@@ -63,17 +63,21 @@ import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
-const labelMap: Record<string, string> = {
-  senior_citizen__70: 'Senior Citizen >70',
-  senior_citizen__60__dalit: 'Senior Citizen Dalit >60',
-  child_nutrition: 'Child Nutrition',
-  single_woman: 'Single Women',
-  widow: 'Widow',
-  red_class: 'Red Card',
-  blue_card: 'Blue Card',
-  indigenous_community: 'Indigenous Community',
+// Backend SSA type ids don't derive cleanly to a key (double underscores,
+// no SSA_ prefix), so map each one explicitly rather than relying on the
+// generic derivation.
+const SSA_TYPE_KEYS: Record<string, string> = {
+  senior_citizen__70: 'SSA_SENIOR_CITIZEN_70',
+  senior_citizen__60__dalit: 'SSA_SENIOR_CITIZEN_DALIT_60',
+  child_nutrition: 'SSA_CHILD_NUTRITION',
+  single_woman: 'SSA_SINGLE_WOMEN',
+  widow: 'SSA_WIDOW',
+  red_class: 'SSA_RED_CARD',
+  blue_card: 'SSA_BLUE_CARD',
+  indigenous_community: 'SSA_INDIGENOUS_COMMUNITY',
 };
 
 const VulnerableAndSocialProtectionOverview = ({
@@ -82,7 +86,7 @@ const VulnerableAndSocialProtectionOverview = ({
   statsData: any[];
 }) => {
   const t = useTranslations('DASHBOARD_VULNERABLE_SOCIAL_PROTECTION');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   // Extract stats from data array
   const socialProtection =
     statsData?.find(
@@ -94,27 +98,13 @@ const VulnerableAndSocialProtectionOverview = ({
 
   // Map social protection benefits for chart
   const socialProtectionBenefits = socialProtection.map((item: any) => ({
-    type: labelMap[item.id] || item.id,
+    type: translateValue(t, item.id, {
+      keyMap: SSA_TYPE_KEYS,
+      fallbackStyle: 'raw',
+    }),
     households: item.count,
   }));
 
-  const chartOpts = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
 
   return (
     <div className="flex flex-col gap-4 mt-4">

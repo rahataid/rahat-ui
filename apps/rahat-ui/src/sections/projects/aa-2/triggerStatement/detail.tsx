@@ -26,7 +26,7 @@ import {
   DocumentsSection,
   ForecastDataSection,
 } from './components';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';

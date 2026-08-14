@@ -5,6 +5,7 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { UUID } from 'crypto';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useParams } from 'next/navigation';
 
 type IProps = {
@@ -31,9 +32,7 @@ export default function ProjectInfoCard({ project }: IProps) {
             {project?.status
               ? t.has(project.status as any)
                 ? t(project.status as any)
-                : tg.has(project.status as any)
-                  ? tg(project.status as any)
-                  : project.status
+                : translateValue(tg, project.status, { fallbackStyle: 'raw' })
               : tg('N_A')}
           </Badge>
         </div>

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { BarChart2, RadioTower } from 'lucide-react';
 
 import * as React from 'react';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type IProps = {
   data: any;

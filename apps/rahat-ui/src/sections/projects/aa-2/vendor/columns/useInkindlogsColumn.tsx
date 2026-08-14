@@ -2,7 +2,7 @@ import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { InKindLog } from '../types';
 import { ColumnDef } from '@tanstack/react-table';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -10,7 +10,7 @@ import {
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { UUID } from 'crypto';
 
 export const useInkindLogsColumn = () => {

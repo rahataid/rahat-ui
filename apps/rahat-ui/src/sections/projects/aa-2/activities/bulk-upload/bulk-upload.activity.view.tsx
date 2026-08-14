@@ -34,7 +34,7 @@ import {
   generateSampleWorkbook,
   parseUploadedSheet,
 } from './bulk-upload.utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function BulkUploadActivities() {
   const t = useTranslations('AA_PROJECT');

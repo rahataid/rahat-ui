@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type InfoItemProps = {
   label: string;

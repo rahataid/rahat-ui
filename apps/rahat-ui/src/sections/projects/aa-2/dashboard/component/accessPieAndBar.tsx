@@ -3,7 +3,8 @@
 import React from 'react';
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useTranslations } from 'next-intl';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 
@@ -15,7 +16,7 @@ const chartTitleKeys: Record<string, string> = {
 const AccessAndResilienceOverview = ({ data }: { data: any }) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions } = useChartNumberOptions();
   const stats = data || [];
 
   const getStat = (name) => stats.find((item) => item.name === name);
@@ -50,7 +51,7 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
           if (!stat || !Array.isArray(stat.data)) return null;
 
           const pieData = stat.data.map((item) => ({
-            label: item.id,
+            label: translateValue(tg, item.id, { fallbackStyle: 'raw' }),
             value: item.count,
           }));
 
@@ -78,7 +79,15 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
                 <BarChart
                   series={channelUsageStats.map((item) => item.count)}
                   categories={channelUsageStats.map((item) =>
-                    item.id.replace(/([A-Z])/g, ' $1').trim(),
+                    translateValue(tg, item.id, {
+                      keyMap: {
+                        FmRadio: 'FM_RADIO',
+                        MobilePhoneSms: 'MOBILE_PHONE_SMS',
+                        PeopleRepresentatives: 'PEOPLE_REPRESENTATIVES',
+                        SocialMedia: 'SOCIAL_MEDIA',
+                      },
+                      fallbackStyle: 'humanized',
+                    }),
                   )}
                   colors={['#4A90E2']}
                   xaxisLabels={true}
@@ -89,23 +98,7 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
                   xaxisTitle={t('INFORMATION_CHANNEL')}
                   yaxisTitle={tg('NO_OF_BENEFICIARIES')}
                   columnWidth="23%"
-                  options={{
-                    xaxis: {
-                      labels: {
-                        formatter: (val: string) => formatNum(val),
-                      },
-                    },
-                    yaxis: {
-                      labels: {
-                        formatter: (val: number) => formatNum(val),
-                      },
-                    },
-                    tooltip: {
-                      y: {
-                        formatter: (val: number) => formatNum(val),
-                      },
-                    },
-                  }}
+                  options={chartOptions}
                 />
               )}
             </div>

@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Play, Pause, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type AudioPreviewPlayerProps = {
   src: string;

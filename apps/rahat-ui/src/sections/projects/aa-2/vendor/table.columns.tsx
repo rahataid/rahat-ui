@@ -10,11 +10,11 @@ import { Pagination } from '@rumsan/sdk/types';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { UUID } from 'crypto';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -25,7 +25,7 @@ import { toast } from 'react-toastify';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
 interface ITableColumnProps {

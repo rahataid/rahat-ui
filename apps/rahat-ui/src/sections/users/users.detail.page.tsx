@@ -31,7 +31,8 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import Swal from 'sweetalert2';
 import { User } from '@rumsan/sdk/types';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function UsersDetailPage() {
   const t = useTranslations('USERS_DETAIL');
@@ -149,9 +150,8 @@ export default function UsersDetailPage() {
           <div>
             <h1 className="text-md text-muted-foreground">{tg('GENDER')}</h1>
             <p className="font-medium">
-              {User?.gender && tg.has(User.gender.toUpperCase() as any)
-                ? tg(User.gender.toUpperCase() as any)
-                : User?.gender || tg('N_A')}
+              {translateValue(tg, User?.gender, { fallbackStyle: 'raw' }) ||
+                tg('N_A')}
             </p>
           </div>
           <div>

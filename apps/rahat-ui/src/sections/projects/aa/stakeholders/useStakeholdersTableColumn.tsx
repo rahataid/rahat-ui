@@ -26,7 +26,7 @@ import { useDeleteStakeholders } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { setPaginationToLocalStorage } from '../prev.pagination.storage';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function useStakeholdersTableColumn() {
   const t = useTranslations('GLOBAL');

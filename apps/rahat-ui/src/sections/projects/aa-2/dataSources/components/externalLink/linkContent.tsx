@@ -9,6 +9,7 @@ import { weatherServices } from './constant';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function ExternalLinks() {
   const t = useTranslations('AA_PROJECT');
@@ -27,9 +28,7 @@ export default function ExternalLinks() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-start justify-between gap-2">
                   <span className="leading-tight">
-                    {t.has(service.titleKey as never)
-                      ? t(service.titleKey as never)
-                      : service.title}
+                    {translateValue(t, service.titleKey, { fallback: service.title })}
                   </span>
                   <TooltipComponent
                     Icon={ExternalLinkIcon}
@@ -41,9 +40,7 @@ export default function ExternalLinks() {
               </CardHeader>
               <CardContent className="pt-0">
                 <Badge className="text-gray-600 text-xs font-medium w-auto">
-                  {service.subtitleKey && t.has(service.subtitleKey as never)
-                    ? t(service.subtitleKey as never)
-                    : service.subtitle}
+                  {translateValue(t, service.subtitleKey, { fallback: service.subtitle })}
                 </Badge>
               </CardContent>
             </Card>

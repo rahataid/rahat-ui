@@ -44,8 +44,8 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { Tag, TagInput } from 'emblor';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AddGrievances() {
   const t = useTranslations('AA_PROJECT');

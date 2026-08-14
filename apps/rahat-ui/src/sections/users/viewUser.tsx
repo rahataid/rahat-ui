@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Tabs,
@@ -301,9 +302,8 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                   </div>
                   <div className="text-right">
                     <p className="font-light text-base">
-                      {userDetail.gender && tg.has(userDetail.gender.toUpperCase() as any)
-                        ? tg(userDetail.gender.toUpperCase() as any)
-                        : userDetail.gender || '-'}
+                      {translateValue(tg, userDetail.gender, { fallbackStyle: 'raw' }) ||
+                        '-'}
                     </p>
                     <p className="text-sm font-normal text-muted-foreground ">
                       {tg('GENDER')}

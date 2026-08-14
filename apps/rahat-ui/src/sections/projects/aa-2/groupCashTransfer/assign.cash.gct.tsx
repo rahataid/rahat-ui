@@ -38,7 +38,7 @@ import {
   useGetAllValidGroupCashTransfers,
 } from '@rahat-ui/query';
 import { buildAssignCashSchema, AssignCashValues } from './types/gct.schemas';
-import { useNumberFormat } from '../../../../utils/useNumberFormat';
+import { useNumberFormat } from '../../../../utils/i18n/number';
 import { SectionCard } from './components/gct.form-sections';
 
 export default function AssignCashGct() {

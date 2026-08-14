@@ -13,8 +13,8 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   const [showAll, setShowAll] = React.useState(false);

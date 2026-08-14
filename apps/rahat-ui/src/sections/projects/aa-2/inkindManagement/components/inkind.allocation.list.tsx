@@ -1,7 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -175,9 +176,7 @@ export default function InkindAllocationList() {
         header: tv('INKIND_TYPE'),
         cell: ({ row }) => (
           <Badge className="bg-gray-200 text-gray-600">
-            {tg.has(row.original.inkindType as never)
-              ? tg(row.original.inkindType as never)
-              : formatLabel(row.original.inkindType)}
+            {translateValue(tg, row.original.inkindType)}
           </Badge>
         ),
       },

@@ -31,7 +31,7 @@ import {
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useGetOneGctRecord, useUpdateGctRecord } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { SectionCard } from './components/gct.form-sections';
 
 type EditGctRecordValues = z.infer<ReturnType<typeof buildEditGctRecordSchema>>;

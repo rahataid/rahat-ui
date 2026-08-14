@@ -27,8 +27,8 @@ import {
 import Link from 'next/link';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export function TemplateDetailsDialog({
   open,

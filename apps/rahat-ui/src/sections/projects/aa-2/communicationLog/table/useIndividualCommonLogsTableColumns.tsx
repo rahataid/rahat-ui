@@ -7,7 +7,8 @@ import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { getSessionColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 interface IndividualCommonLogRow {
   title?: string;
@@ -99,10 +100,9 @@ export default function useIndividualCommonLogsTableColumns(
         const status = row.getValue('sessionStatus') as string;
         const className = getSessionColor(status as string);
 
-        const statusKey = status?.replace(/\s+/g, '_').toUpperCase();
         return (
           <Badge className={className}>
-            {statusKey && tg.has(statusKey as never) ? tg(statusKey as never) : status}
+            {translateValue(tg, status, { fallbackStyle: 'raw' })}
           </Badge>
         );
       },

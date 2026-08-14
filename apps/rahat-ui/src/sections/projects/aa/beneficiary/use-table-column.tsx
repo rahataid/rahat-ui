@@ -11,7 +11,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useTranslations } from 'next-intl';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 import BeneficiaryDetail from './beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';

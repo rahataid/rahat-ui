@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, CheckCircle2, ChevronDown, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -311,7 +312,7 @@ export default function PayoutFundManagementForm({
                     id={`method-${type.key.toLowerCase()}`}
                   />
                   <span>
-                    {t.has(type.key) ? t(type.key) : type.label}
+                    {translateValue(t, type.key, { fallback: type.label })}
                   </span>
                 </Label>
               ))}

@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Loader2, Send } from 'lucide-react';
@@ -44,7 +44,7 @@ import {
   usePhasePayoutStatus,
   useSendGctOtp,
 } from '@rahat-ui/query';
-import { useNumberFormat, useLabelDigits } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 

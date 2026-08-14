@@ -2,7 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 type IProps = {
   stakeholder: any;

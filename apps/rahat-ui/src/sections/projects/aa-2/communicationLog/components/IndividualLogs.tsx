@@ -5,6 +5,7 @@ import {
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
@@ -16,7 +17,7 @@ import { useTransportSessionStats } from '@rahat-ui/query';
 import { normalizeTransportName } from 'apps/rahat-ui/src/utils/string';
 import { DEFAULT_TRANSPORTS } from 'apps/rahat-ui/src/constants/communication.const';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 type SubTabType = 'voice' | 'sms' | 'email';
@@ -108,9 +109,9 @@ export function IndividualLogTab() {
                       : ''
                   }
                 >
-                  {g.has(stat.transportName.toUpperCase() as any)
-                    ? g(stat.transportName.toUpperCase() as any)
-                    : capitalizeFirstLetter(stat.transportName)}
+                  {translateValue(g, stat.transportName, {
+                    fallback: capitalizeFirstLetter(stat.transportName),
+                  })}
                 </span>
                 <Badge
                   className={`h-6 w-6 justify-center text-white px-2 py-0 ${

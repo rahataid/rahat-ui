@@ -3,13 +3,13 @@ import { useUserStore } from '@rumsan/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { IProjectRedemption } from '../types';
 import { useTranslations } from 'next-intl';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
@@ -197,9 +198,7 @@ export default function AddAutomatedTriggerForm({
               <SelectItem key={option.value} value={option.value}>
                 {/* Subtype slugs ("daily") map to AA_PROJECT keys; fall back to
                     the derived English label for any slug not yet translated. */}
-                {t.has(String(option.value).toUpperCase() as never)
-                  ? t(String(option.value).toUpperCase() as never)
-                  : option.label}
+                {translateValue(t, String(option.value), { fallback: option.label })}
               </SelectItem>
             ))
           ) : (

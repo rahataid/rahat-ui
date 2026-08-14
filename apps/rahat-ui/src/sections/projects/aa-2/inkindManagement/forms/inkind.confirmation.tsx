@@ -9,7 +9,7 @@ import type { InkindDetailsValues } from '../schemas/inkind.validation';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface Props {
   formData: InkindDetailsValues;

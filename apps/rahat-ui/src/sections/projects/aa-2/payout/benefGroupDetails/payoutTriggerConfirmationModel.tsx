@@ -13,8 +13,8 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useSendPayoutOtp } from '@rahat-ui/query/lib/aa/payout/payout.service';
 import { useEffect, useState } from 'react';
 import { useUserCurrentUser } from '@rumsan/react-query';

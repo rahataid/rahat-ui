@@ -1,5 +1,6 @@
 'use client';
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
@@ -9,7 +10,7 @@ import HeaderWithBack from '../projects/components/header.with.back';
 import { humanizeString } from '../../utils';
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function BeneficiaryDetail() {
   const { id } = useParams() as { id: UUID };
@@ -30,9 +31,7 @@ export default function BeneficiaryDetail() {
   const formatPhone = usePhoneFormat();
 
   const formatEnumValue = (value?: string) =>
-    value && g.has(value.toUpperCase() as any)
-      ? g(value.toUpperCase() as any)
-      : value;
+    translateValue(g, value, { fallbackStyle: 'raw' });
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);

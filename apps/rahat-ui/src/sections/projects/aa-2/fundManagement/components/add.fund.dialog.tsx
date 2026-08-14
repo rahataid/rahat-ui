@@ -23,7 +23,7 @@ import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 const makeAddFundSchema = (t: (key: string) => string) =>
   z.object({

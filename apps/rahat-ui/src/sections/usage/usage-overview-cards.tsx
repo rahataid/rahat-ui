@@ -3,7 +3,7 @@
 import { DataCard } from '../../common/data.card';
 import { Radio, CheckCircle, XCircle, Coins } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type UsageTotals = {
   sessions: number;

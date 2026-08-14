@@ -45,7 +45,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export type VoiceDetail = {

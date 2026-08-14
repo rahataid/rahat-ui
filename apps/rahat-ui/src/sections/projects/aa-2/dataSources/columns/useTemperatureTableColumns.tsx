@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { roundValue } from '../components/aws/utils/color.utils';
 import { useTranslations } from 'next-intl';
 

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import {
@@ -13,7 +14,7 @@ import {
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import {
   Tabs,
@@ -23,7 +24,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { TransactionLogItem } from './TransactionLogItem';
 import { InKindLog } from '../vendor/types';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type TransactionProps = {
   uuid: string;
@@ -141,9 +142,9 @@ const TransactionLogs = () => {
         value: item?.txHash,
       });
       const rawInkindType = item.groupInkind.inkind.type;
-      const inkindType = tg.has(rawInkindType as never)
-        ? tg(rawInkindType as never)
-        : rawInkindType.replace('_', ' ');
+      const inkindType = translateValue(tg, rawInkindType, {
+        fallback: rawInkindType.replace('_', ' '),
+      });
       return (
         <TransactionLogItem
           key={item?.uuid}

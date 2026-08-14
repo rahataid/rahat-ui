@@ -32,7 +32,7 @@ import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { Wallet } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function EditBeneficiary({ beneficiary }: any) {
   const { closeSecondPanel } = useSecondPanel();

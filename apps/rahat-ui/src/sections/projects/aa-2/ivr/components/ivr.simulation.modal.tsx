@@ -7,7 +7,7 @@ import { X, Play, Pause, PhoneOff } from 'lucide-react';
 import { IvrFlow } from '../types/ivr.flow.types';
 import { findNodeById, flattenOptions, DIAL_PAD } from '../utils/utils';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface SimulationModalProps {
   flow: IvrFlow;

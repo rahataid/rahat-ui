@@ -1,6 +1,6 @@
 import { BarChart, ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import PieChartCard from '../../components/pie.chart.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useTranslations } from 'next-intl';
@@ -11,20 +11,7 @@ type IProps = {
 
 export default function ChartsContainer({ allStats = [] }: IProps) {
   const t = useTranslations('AA_PROJECT');
-  const formatNum = useNumberFormat();
-
-  const chartAxOptions = {
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
+  const { formatNum, chartOptions: chartAxOptions } = useChartNumberOptions();
 
   const genderStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_GENDER',

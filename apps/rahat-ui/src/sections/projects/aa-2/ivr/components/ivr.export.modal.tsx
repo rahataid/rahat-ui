@@ -22,7 +22,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useUploadFile, useIvrTemplateUpdate, useIvrTestCall } from '@rahat-ui/query';
 import { Link, Copy, Check, Globe, Phone, ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 interface ExportModalProps {
   open: boolean;

@@ -7,7 +7,7 @@ import { Role } from '@rumsan/sdk/types';
 import RoleDetail from './roleDetail';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export const useRoleTableColumns = () => {
   const tg = useTranslations('GLOBAL');

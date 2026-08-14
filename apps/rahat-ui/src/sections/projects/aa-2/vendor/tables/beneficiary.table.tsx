@@ -20,7 +20,7 @@ import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagi
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {

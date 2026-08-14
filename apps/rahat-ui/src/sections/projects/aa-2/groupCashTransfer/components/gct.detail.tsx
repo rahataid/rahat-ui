@@ -39,8 +39,9 @@ import {
 import GctDeleteDialog from './gct.delete.dialog';
 import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
-import { useNumberFormat, useLabelDigits } from '../../../../../utils/useNumberFormat';
-import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
+import { usePhoneFormat } from '../../../../../utils/i18n/phone';
+import { translateValue } from '../../../../../utils/i18n/translateValue';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -65,12 +66,14 @@ export default function GctDetail() {
   // directly. Derive one from the message text and use it when a translation
   // exists, otherwise show the server's wording unchanged.
   const localiseValidationMessage = (message: string) => {
+    // Sentences can contain punctuation toKey() doesn't strip, so derive
+    // the key here rather than relying on translateValue's own derivation.
     const key = String(message)
       .trim()
       .toUpperCase()
       .replace(/[^A-Z0-9]+/g, '_')
       .replace(/^_+|_+$/g, '');
-    return t.has(key as never) ? t(key as never) : message;
+    return translateValue(t, key, { fallback: message });
   };
   const { id, uuid } = useParams();
   const projectUUID = id as UUID;

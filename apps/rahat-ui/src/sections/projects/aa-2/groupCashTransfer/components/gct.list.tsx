@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -36,7 +36,7 @@ import GctDeleteDialog from './gct.delete.dialog';
 import GctActionBtn from './gct.action-btn';
 import { GctItem } from '../types/gct.types';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function GctList() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');

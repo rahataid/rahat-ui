@@ -3,7 +3,7 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { format, isValid, parse } from 'date-fns';
-import { localizeNepaliParts } from './useDateFormat';
+import { localizeNepaliParts } from './i18n/date';
 
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {

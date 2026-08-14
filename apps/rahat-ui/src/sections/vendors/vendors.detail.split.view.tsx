@@ -47,8 +47,9 @@ import DeleteButton from '../../components/delete.btn';
 import { toast } from 'react-toastify';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useLocale, useTranslations } from 'next-intl';
-import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/i18n/date';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type IProps = {
   vendorsDetail: any;
@@ -187,15 +188,12 @@ export default function VendorsDetailSplitView({
             </h1>
             <div className="flex space-x-4 items-center">
               <Badge>
-                {vendorsDetail?.status &&
-                g.has(vendorsDetail.status.toUpperCase() as any)
-                  ? g(vendorsDetail.status.toUpperCase() as any)
-                  : vendorsDetail?.status ?? g('N_A')}
+                {translateValue(g, vendorsDetail?.status, { fallbackStyle: 'raw' }) ||
+                  g('N_A')}
               </Badge>
               <p className="text-base text-muted-foreground">
-                {vendorsDetail?.gender && g.has(vendorsDetail.gender as any)
-                  ? g(vendorsDetail.gender as any)
-                  : vendorsDetail?.gender ?? g('N_A')}
+                {translateValue(g, vendorsDetail?.gender, { fallbackStyle: 'raw' }) ||
+                  g('N_A')}
               </p>
             </div>
           </div>

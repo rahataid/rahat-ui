@@ -7,6 +7,7 @@ import {
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { UUID } from 'crypto';
 import {
   Tabs,
@@ -126,7 +127,7 @@ export default function FundManagementTabs() {
                 value={tab.value}
                 className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
               >
-                {t.has(labelKey) ? t(labelKey) : tab.label}
+                {translateValue(t, labelKey, { fallback: tab.label })}
               </TabsTrigger>
             );
           })}

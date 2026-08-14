@@ -26,7 +26,7 @@ import {
   Layers,
   CloudDownloadIcon,
 } from 'lucide-react';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
@@ -37,7 +37,7 @@ import {
   MOVEMENT_CONFIG,
 } from '../utils/utils';
 import { formatLabel } from './inkind.allocation.list';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 import {
@@ -141,12 +141,12 @@ export default function InkindOverview() {
         />
         <div className="flex gap-2 items-center">
           <TooltipWrapper
-            tip={hasData ? '' : 'No inkind data available to export'}
+            tip={hasData ? '' : tg('NO_INKIND_DATA_TO_EXPORT')}
           >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={handleDownloadReport}
-              name={'Export Report'}
+              name={tg('EXPORT_REPORT')}
               variant="outline"
               disabled={!hasData}
               className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
@@ -154,7 +154,7 @@ export default function InkindOverview() {
           </TooltipWrapper>
 
           <DateRangePicker
-            placeholder="Pick date range"
+            placeholder={tg('PICK_DATE_RANGE')}
             handleDateChange={handleDateChange}
             handleClearDate={handleClearDate}
             type="range"

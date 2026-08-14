@@ -1,7 +1,7 @@
 'use client';
 
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 interface ColorLegendProps {
   selectedLayerId: string;
 }

@@ -26,7 +26,7 @@ import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistor
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function Treasury() {
   const t = useTranslations('AA_PROJECT');

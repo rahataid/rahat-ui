@@ -1,4 +1,4 @@
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { ALLOWED_EXTENSIONS, FileExtension } from './stakeholders.consts';
 
 export const normalizePhone = (phone: string): string => {

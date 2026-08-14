@@ -5,8 +5,8 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import dynamic from 'next/dynamic';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/i18n/date';
 import { roundValue } from '../aws/utils/color.utils';
 
 const CHART_DATE_PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {

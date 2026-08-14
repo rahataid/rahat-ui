@@ -32,7 +32,7 @@ import {
 } from '@tanstack/react-table';
 import useCommsLogsTableColumns from './useCommsLogsTableColumns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 type IHeadCardProps = {
   title: string;

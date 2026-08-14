@@ -7,8 +7,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useTranslations } from 'next-intl';
 
 export interface IGaugeForecastCardProps {

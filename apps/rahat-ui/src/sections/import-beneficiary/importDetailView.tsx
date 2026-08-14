@@ -45,8 +45,9 @@ import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 function ImportDetailView() {
   const t = useTranslations('IMPORT_BENEFICIARY_DETAIL');
@@ -256,7 +257,7 @@ function ImportDetailView() {
           <DataCard
             title={tg('STATUS')}
             Icon={FileSpreadsheet}
-            smallNumber={tg.has(currentStatus as never) ? tg(currentStatus as never) : currentStatus}
+            smallNumber={translateValue(tg, currentStatus, { fallbackStyle: 'raw' })}
           />
         </div>
       </div>

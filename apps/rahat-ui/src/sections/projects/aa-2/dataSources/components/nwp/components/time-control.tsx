@@ -6,8 +6,8 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 interface TimeControlProps {
   currentTime: Date;

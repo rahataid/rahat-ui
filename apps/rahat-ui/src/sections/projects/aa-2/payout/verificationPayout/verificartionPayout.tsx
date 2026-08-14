@@ -48,7 +48,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useVerifyManualPayout } from '@rahat-ui/query';
 import { normalizeCell } from 'apps/rahat-ui/src/utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const DOWNLOAD_FILE_URL = '/files/verify-payout-sample.xlsx';
 

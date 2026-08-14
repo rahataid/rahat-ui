@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   useReactTable,
   getCoreRowModel,

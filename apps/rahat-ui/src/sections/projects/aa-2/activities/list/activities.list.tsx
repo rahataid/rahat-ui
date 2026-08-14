@@ -11,7 +11,7 @@ import {
   usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';

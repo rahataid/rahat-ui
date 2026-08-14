@@ -30,7 +30,7 @@ import GaugereadingMonitoringCard from './gaugeReading/gaugeReading';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { useTranslations } from 'next-intl';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export default function DailyMonitoringDetailView() {
   const t = useTranslations('AA_PROJECT');

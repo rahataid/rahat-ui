@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import * as React from 'react';
 import {
   Select,
@@ -66,14 +67,11 @@ export default function ActivitiesTableFilters({
         <SelectContent>
           <SelectGroup>
             <SelectItem value="all">{t('ALL_CATEGORIES')}</SelectItem>
-            {categories.map((item) => {
-              const catKey = item.name.toUpperCase().replace(/\s+/g, '_');
-              return (
-                <SelectItem key={item.id} value={item.uuid}>
-                  {t.has(catKey) ? t(catKey) : item.name}
-                </SelectItem>
-              );
-            })}
+            {categories.map((item) => (
+              <SelectItem key={item.id} value={item.uuid}>
+                {translateValue(t, item.name, { fallbackStyle: 'raw' })}
+              </SelectItem>
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>

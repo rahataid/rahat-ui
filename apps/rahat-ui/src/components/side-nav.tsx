@@ -15,27 +15,17 @@ import { useNavData } from '../app/config-nav';
 import getIcon from '../utils/getIcon';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-
-const NAV_TITLE_KEYS: Record<string, string> = {
-  'DASHBOARD': 'DASHBOARD',
-  'Dashboard': 'DASHBOARD',
-  'Project': 'PROJECT',
-  'Beneficiaries': 'BENEFICIARIES',
-  'Vendors': 'VENDORS',
-  'Users': 'USERS',
-};
+import { translateValue } from '../utils/i18n/translateValue';
 
 export default function SideNav() {
   const t = useTranslations('GLOBAL');
   const { data, subData } = useNavData();
   const [more, setMore] = React.useState(false);
 
-  const getTitle = (title: string) => {
-    const key = NAV_TITLE_KEYS[title] || title.toUpperCase();
-    // Nav titles can come from backend-configurable app settings, so an
-    // unmapped title must render as-is rather than throwing MISSING_MESSAGE.
-    return t.has(key) ? t(key) : title;
-  };
+  // Nav titles can come from backend-configurable app settings, so an
+  // unmapped title must render as-is rather than throwing MISSING_MESSAGE.
+  const getTitle = (title: string) =>
+    translateValue(t, title, { fallbackStyle: 'raw', silent: true });
 
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[1];

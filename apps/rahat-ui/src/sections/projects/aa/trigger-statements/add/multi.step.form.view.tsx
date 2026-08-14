@@ -14,7 +14,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 const steps = [
   { key: 'ADD_TRIGGER_STATEMENT' },

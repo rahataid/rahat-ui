@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Eye, ArrowLeftRight, Dot } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
@@ -68,17 +69,14 @@ export default function RecentPaymentCard({
                 status as string,
               )}`}
             >
-              {(() => {
-                const key = status?.toUpperCase();
-                return key && tg.has(key as never)
-                  ? tg(key as never)
-                  : key?.replace(/_/g, ' ');
-              })()}
+              {translateValue(tg, status, {
+                fallback: status?.toUpperCase()?.replace(/_/g, ' '),
+              })}
             </Badge>
           </div>
 
           <div className=" flex text-sm text-muted-foreground mt-2">
-            {tg.has(actions as never) ? tg(actions as never) : actions}
+            {translateValue(tg, actions, { fallbackStyle: 'raw' })}
             {actions === 'CVA' && merchentName === 'OFFLINE' && (
               <>
                 <Dot />
@@ -86,13 +84,12 @@ export default function RecentPaymentCard({
               </>
             )}
             <Dot />
-            {(() => {
-              const key = merchentName.toUpperCase();
-              if (tg.has(key as never)) return tg(key as never);
-              return key
+            {translateValue(tg, merchentName, {
+              fallback: merchentName
+                .toUpperCase()
                 .replace(/_/g, ' ')
-                .replace(/^./, (char) => char.toUpperCase());
-            })()}
+                .replace(/^./, (char) => char.toUpperCase()),
+            })}
           </div>
           <div className="text-sm text-muted-foreground">
             {formatNum(beneficiariesCount)} {t('BENEFICIARIES')}

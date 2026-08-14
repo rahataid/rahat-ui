@@ -18,7 +18,7 @@ import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 

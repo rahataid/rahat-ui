@@ -2,7 +2,7 @@
 import { useTranslations } from 'next-intl';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck, Phone, User } from 'lucide-react';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 type ProfileCardProps = {
   data: any;

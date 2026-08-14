@@ -82,8 +82,8 @@ import {
   UpdateDialogState,
 } from '../types';
 import { useTranslations } from 'next-intl';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 function ActionButton({

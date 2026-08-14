@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useQuery } from 'urql';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from '../../../../utils/useNumberFormat';
+import { useNumberFormat } from '../../../../utils/i18n/number';
 
 type IProps = {
   allStats: any;

@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { useCreateStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function AddStakeholders() {
   const t = useTranslations('AA_PROJECT');

@@ -22,7 +22,8 @@ import Swal from 'sweetalert2';
 import DeleteButton from '../../components/delete.btn';
 import EditButton from '../../components/edit.btn';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type IProps = {
   userDetail: User;
@@ -95,9 +96,8 @@ export default function UsersDetailSplitView({
             <div className="flex space-x-4 items-center">
               <Badge>{userDetail?.extras?.status ?? tg('N_A')}</Badge>
               <p className="text-base text-muted-foreground">
-                {userDetail?.gender && tg.has(userDetail.gender.toUpperCase() as any)
-                  ? tg(userDetail.gender.toUpperCase() as any)
-                  : userDetail?.gender ?? tg('N_A')}
+                {translateValue(tg, userDetail?.gender, { fallbackStyle: 'raw' }) ||
+                  tg('N_A')}
               </p>
             </div>
           </div>

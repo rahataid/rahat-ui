@@ -11,7 +11,7 @@ import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizon
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DISBURSEMENT_COLORS, formatMethod } from '../utils';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type IProps = {
   title: string;

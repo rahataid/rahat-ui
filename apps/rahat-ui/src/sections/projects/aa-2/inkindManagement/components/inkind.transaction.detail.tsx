@@ -8,8 +8,8 @@ import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { formatDate } from '../inkind.helpers';
 import InfoItem from 'apps/rahat-ui/src/sections/projects/aa-2/payout/benefTransactionDetails/infoItem';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function InkindTransactionDetail() {
   const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');

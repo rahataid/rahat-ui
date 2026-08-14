@@ -26,7 +26,7 @@ import { useSelectItems } from '../useSelectItems';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { useTranslations } from 'next-intl';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 const numeralString = () =>

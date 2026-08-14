@@ -35,7 +35,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
-import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function AddFundManagementView() {
   const t = useTranslations('AA_PROJECT');

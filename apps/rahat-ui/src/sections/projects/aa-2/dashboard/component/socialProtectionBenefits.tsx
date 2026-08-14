@@ -2,7 +2,21 @@ import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+
+// Backend SSA type ids don't derive cleanly to their AA_PROJECT.SSA_* keys
+// (double underscores, no SSA_ prefix), so map each one explicitly.
+const SSA_TYPE_KEYS: Record<string, string> = {
+  senior_citizen__70: 'SSA_SENIOR_CITIZEN_70',
+  senior_citizen__60__dalit: 'SSA_SENIOR_CITIZEN_60_DALIT',
+  child_nutrition: 'SSA_CHILD_NUTRITION',
+  single_woman: 'SSA_SINGLE_WOMAN',
+  widow: 'SSA_WIDOW',
+  red_class: 'SSA_RED_CLASS',
+  blue_card: 'SSA_BLUE_CARD',
+  indigenous_community: 'SSA_INDIGENOUS_COMMUNITY',
+};
 
 type Props = {
   data: {
@@ -17,10 +31,13 @@ const SocialProtectionBenefits = ({
   projectId,
 }: any) => {
   const t = useTranslations('AA_PROJECT');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   const ssaRaw = benefStats.find((s) => s.name === 'TYPE_OF_SSA')?.data || [];
   const ssaBarData = ssaRaw.map((item: any) => ({
-    label: item.id,
+    label: translateValue(t, item.id, {
+      keyMap: SSA_TYPE_KEYS,
+      fallbackStyle: 'raw',
+    }),
     value: item.count,
   }));
 
@@ -29,24 +46,6 @@ const SocialProtectionBenefits = ({
   const pregnantCount = fieldMapData.no_of_pregnant_women || 0;
   const lactatingCount = fieldMapData.no_of_lactating_women || 0;
   const disabilityCount = fieldMapData.no_of_persons_with_disability || 0;
-
-  const chartOpts = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
 
   return (
     <div className="flex flex-col gap-4 mt-4">

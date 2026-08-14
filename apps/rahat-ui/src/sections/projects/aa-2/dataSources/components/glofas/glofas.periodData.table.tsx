@@ -1,6 +1,6 @@
 import React from 'react';
 import { getCellColor } from './utils/getPeriodDataCellColor';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 interface IGlofasPeriodDataTableProps {
   headerData: string[];
   bodyData: string[][];

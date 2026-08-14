@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import CommsActivitiesTable from './comms.activities.table';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function CommunicationLogsView() {
   const t = useTranslations('AA_PROJECT');

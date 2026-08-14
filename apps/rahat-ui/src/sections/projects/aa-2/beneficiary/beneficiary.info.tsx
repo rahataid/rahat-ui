@@ -4,8 +4,9 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import InkindDetails from './beneficiary.inkind.details';
@@ -56,9 +57,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const showBorder = filteredInkinds.length > 0;
 
   const formatEnumValue = (value?: string) =>
-    (value && tg.has(value.toUpperCase() as any)
-      ? tg(value.toUpperCase() as any)
-      : value) ?? '';
+    translateValue(tg, value, { fallbackStyle: 'raw' });
 
   return (
     <>

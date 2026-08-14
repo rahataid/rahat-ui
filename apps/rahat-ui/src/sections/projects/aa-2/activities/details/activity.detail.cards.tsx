@@ -4,8 +4,8 @@ import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Clock, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type ActivityDetailCardsProps = {
   activityDetail?: any;

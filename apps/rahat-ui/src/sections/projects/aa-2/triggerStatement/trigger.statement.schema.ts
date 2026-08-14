@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export const SOURCE_CONFIG = {
   water_level_m: {

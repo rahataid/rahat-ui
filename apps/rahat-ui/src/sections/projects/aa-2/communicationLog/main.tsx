@@ -22,6 +22,7 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function CommunicationMainLogsView() {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: ProjectId } = useParams();
   const [startDate, setStartDate] = useState<string | undefined>();
   const [endDate, setEndDate] = useState<string | undefined>();
@@ -94,19 +95,19 @@ export default function CommunicationMainLogsView() {
           {activeTab === 'overview' && (
             <div className="flex gap-2 items-center">
               <TooltipWrapper
-                tip={hasData ? '' : 'No communication data available to export'}
+                tip={hasData ? '' : tg('NO_COMMUNICATION_DATA_TO_EXPORT')}
               >
                 <IconLabelBtn
                   Icon={CloudDownloadIcon}
                   handleClick={() => exportCommsStats(data)}
-                  name={'Export Report'}
+                  name={tg('EXPORT_REPORT')}
                   variant="outline"
                   disabled={!hasData}
                   className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
                 />
               </TooltipWrapper>
               <DateRangePicker
-                placeholder="Pick date range"
+                placeholder={tg('PICK_DATE_RANGE')}
                 handleDateChange={handleDateChange}
                 handleClearDate={handleClearDate}
                 type="range"

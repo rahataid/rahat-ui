@@ -2,7 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { toLabel, TriggerStatement } from '../utils';
 

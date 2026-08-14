@@ -15,7 +15,7 @@ import { FilePenLine, Trash2 } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { useTranslations } from 'next-intl';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 interface IAdditionalBeneficiaryItem extends IBeneficiaryItem {
   handleClick: VoidFunction;

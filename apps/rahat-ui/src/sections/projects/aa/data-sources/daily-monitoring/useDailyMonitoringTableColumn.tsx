@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();

@@ -4,7 +4,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 function getStatusBg(status: string | undefined) {
   if (status === 'Not Started') {
@@ -69,7 +70,7 @@ export default function useCommsActivitiesTableColumns() {
         // unmapped phase must render as-is rather than throwing MISSING_MESSAGE.
         return (
           <Badge className={className}>
-            {tg.has(phase as never) ? tg(phase as never) : phase}
+            {translateValue(tg, phase, { fallbackStyle: 'raw' })}
           </Badge>
         );
       },

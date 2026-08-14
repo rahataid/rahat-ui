@@ -5,7 +5,7 @@ import { useSingleGroupReservedFunds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import Back from '../../components/back';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useTranslations } from 'next-intl';
 
 const FundManagementDetails = () => {

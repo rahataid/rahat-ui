@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function useMembersTableColumn() {
   const t = useTranslations('AA_PROJECT');

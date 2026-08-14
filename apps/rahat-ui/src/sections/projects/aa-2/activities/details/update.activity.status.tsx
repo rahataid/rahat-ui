@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React, { useEffect, useMemo } from 'react';
 
 import { Back, Heading } from 'apps/rahat-ui/src/common';
@@ -178,14 +179,9 @@ export default function UpdateStatus() {
       setDocuments([]);
     }
   };
-  const formatStatus = (status: string) => {
-    // Status slugs (NOT_STARTED) have GLOBAL keys; fall back to the prettified
-    // slug for any status the constants add later.
-    if (tg.has(status as never)) return tg(status as never);
-    return status
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  };
+  // Status slugs (NOT_STARTED) have GLOBAL keys; fall back to the prettified
+  // slug for any status the constants add later.
+  const formatStatus = (status: string) => translateValue(tg, status);
 
   React.useEffect(() => {
     if (activityDetail) {

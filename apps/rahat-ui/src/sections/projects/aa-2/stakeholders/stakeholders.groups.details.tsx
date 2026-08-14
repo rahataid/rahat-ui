@@ -29,7 +29,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const StakeholdersGroupsDetails = () => {
   const formatNum = useNumberFormat();

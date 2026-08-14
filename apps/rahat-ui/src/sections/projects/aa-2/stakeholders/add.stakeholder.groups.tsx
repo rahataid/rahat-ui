@@ -44,7 +44,7 @@ import {
 } from '@rahat-ui/query';
 import StakeholdersTableFilters from './component/stakeholders.table.filters';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const UpdateOrAddStakeholdersGroup = () => {
   const formatNum = useNumberFormat();

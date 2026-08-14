@@ -11,25 +11,13 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { NavItem as BaseNavItem } from '../components/nav-items.types';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type NavItem = BaseNavItem;
 
-const NAV_TITLE_KEYS: Record<string, string> = {
-  'DASHBOARD': 'DASHBOARD',
-  'Dashboard': 'DASHBOARD',
-  'Project Beneficiaries': 'PROJECT_BENEFICIARIES',
-  'Stakeholders': 'STAKEHOLDERS',
-  'Forecast Data': 'FORECAST_DATA',
-  'Activities': 'ACTIVITIES',
-  'Trigger Statements': 'TRIGGER_STATEMENTS',
-  'Fund Management': 'FUND_MANAGEMENT',
-  'Payout': 'PAYOUT2',
-  'Communication Logs': 'COMMUNICATION_LOGS',
-  'Grievances': 'GRIEVANCES',
-  'Group Cash Transfer': 'GROUP_CASH_TRANSFER',
-  'Inkind Management': 'INKIND_MANAGEMENT',
-  'Vendors': 'VENDORS',
-};
+// "Payout" derives to PAYOUT, which already means something else in
+// AA_PROJECT — the real translation lives at PAYOUT2.
+const NAV_TITLE_OVERRIDES: Record<string, string> = { Payout: 'PAYOUT2' };
 
 export const useNavItems = () => {
   const t = useTranslations('AA_PROJECT');
@@ -53,11 +41,14 @@ export const useNavItems = () => {
       }));
   // Map default nav items
   const mappedNavItems: NavItem[] = backendNavs.map((item: NavItem) => {
-    const navKey = NAV_TITLE_KEYS[item.title] || item.title.toUpperCase();
     const navItem: NavItem = {
       // Nav titles can come from backend-configurable navsettings, so an
       // unmapped title must render as-is rather than throwing MISSING_MESSAGE.
-      title: t.has(navKey) ? t(navKey) : item.title,
+      title: translateValue(t, item.title, {
+        keyMap: NAV_TITLE_OVERRIDES,
+        fallbackStyle: 'raw',
+        silent: true,
+      }),
       path: `/projects/aa/${projectId}/${item.path}`,
       icon: item.icon,
     };

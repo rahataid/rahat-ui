@@ -31,8 +31,8 @@ import {
 import { Info } from 'lucide-react';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function InitiateFundTransfer({}: {}) {
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');

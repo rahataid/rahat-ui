@@ -31,7 +31,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import StakeholdersTableFilters from '../../../stakeholders/stakeholders.table.filters';
 import Back from '../../../../components/back';
 import { toast } from 'react-toastify';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function StakeholdersGroupEdit() {
   const t = useTranslations('AA_PROJECT');

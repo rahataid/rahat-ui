@@ -16,7 +16,7 @@ import { FundWithPayoutSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/p
 import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/utils/utils';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function Confirmation({
   payoutData,

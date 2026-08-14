@@ -3,7 +3,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {

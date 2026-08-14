@@ -12,7 +12,7 @@ import {
   grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { formatDuration } from 'apps/rahat-ui/src/utils/dateFormate';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
 import { AlertTriangle, Clock } from 'lucide-react';
@@ -40,7 +40,7 @@ export default function GrievanceOverview({
   className,
 }: GrievanceOverviewProps) {
   const t = useTranslations('AA_PROJECT');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions } = useChartNumberOptions();
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -190,7 +190,7 @@ export default function GrievanceOverview({
                 options: {
                   tooltip: {
                     fillSeriesColor: true,
-                    y: { formatter: (val: number) => formatNum(val) },
+                    ...chartOptions.tooltip,
                   },
                 },
               }}
@@ -217,7 +217,7 @@ export default function GrievanceOverview({
                 options: {
                   tooltip: {
                     fillSeriesColor: true,
-                    y: { formatter: (val: number) => formatNum(val) },
+                    ...chartOptions.tooltip,
                   },
                 },
               }}

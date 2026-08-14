@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { isValidPhoneNumber } from 'react-phone-number-input';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 type TFunction = (key: string) => string;
 

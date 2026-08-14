@@ -17,7 +17,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/avatar';
 import { Copy, CopyCheck, Mail, Phone, Wallet } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function ProfileView() {
   const t = useTranslations('PROFILE');

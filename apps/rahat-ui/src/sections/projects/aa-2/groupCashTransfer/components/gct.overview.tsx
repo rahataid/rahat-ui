@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { DataCard, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
-import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { useChartNumberOptions } from '../../../../../utils/i18n/number';
 
 const TREASURY_COLORS = ['#009688', '#FBCA14', '#B0BEC5'];
 const STATUS_COLORS = [
@@ -26,7 +26,7 @@ export default function GctOverview({
 }) {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions } = useChartNumberOptions();
 
   const totalAllocated = stats?.totalAllocatedAmount ?? 0;
   const totalDisbursed = stats?.totalDisbursedAmount ?? 0;
@@ -143,7 +143,7 @@ export default function GctOverview({
               options={{
                 tooltip: {
                   fillSeriesColor: true,
-                  y: { formatter: (val: number) => formatNum(val) },
+                  ...chartOptions.tooltip,
                 },
               }}
             />
@@ -188,7 +188,7 @@ export default function GctOverview({
               options={{
                 tooltip: {
                   fillSeriesColor: true,
-                  y: { formatter: (val: number) => formatNum(val) },
+                  ...chartOptions.tooltip,
                 },
               }}
             />

@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   Card,
   CardContent,
@@ -33,7 +33,7 @@ export default function CommunicationsChartsStats({
   statsBenefStakeholders,
 }: CommunicationsChartsStatsProps) {
   const t = useTranslations('AA_PROJECT');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions } = useChartNumberOptions();
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
@@ -72,7 +72,7 @@ export default function CommunicationsChartsStats({
                   options={{
                     tooltip: {
                       fillSeriesColor: true,
-                      y: { formatter: (val: number) => formatNum(val) },
+                      ...chartOptions.tooltip,
                     },
                   }}
                 />
@@ -151,7 +151,7 @@ export default function CommunicationsChartsStats({
                   options={{
                     tooltip: {
                       fillSeriesColor: true,
-                      y: { formatter: (val: number) => formatNum(val) },
+                      ...chartOptions.tooltip,
                     },
                   }}
                 />

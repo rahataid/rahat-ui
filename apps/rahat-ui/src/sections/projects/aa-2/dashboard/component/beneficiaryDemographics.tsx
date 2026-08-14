@@ -4,7 +4,8 @@ import { useTranslations } from 'next-intl';
 import { Home, Users } from 'lucide-react';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
-import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type Props = {
   data: {
@@ -20,13 +21,13 @@ const BeneficiaryDemographics = ({
 }: any) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   const formatLabel = useLabelDigits();
   // Get gender stats from BENEFICIARY_GENDER
   const genderStats =
     benefStats.find((s) => s.name === 'BENEFICIARY_GENDER')?.data ?? [];
   const genderPieData = genderStats.map((item: any) => ({
-    label: tg.has(item.id) ? tg(item.id) : item.id,
+    label: translateValue(tg, item.id, { fallbackStyle: 'raw' }),
     value: item.count,
   }));
 
@@ -65,24 +66,6 @@ const BeneficiaryDemographics = ({
       value: getStat('TOTAL_NUMBER_FAMILY_MEMBERS'),
     },
   ];
-
-  const chartOpts = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
 
   return (
     <div className="flex flex-col">

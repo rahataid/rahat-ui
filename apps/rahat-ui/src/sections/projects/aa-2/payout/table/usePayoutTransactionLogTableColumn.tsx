@@ -6,8 +6,9 @@ import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 interface PayoutTransactionLogRow {
@@ -83,13 +84,13 @@ export default function usePayoutTransactionLogTableColumn() {
       header: tv('PAYOUT_TYPE'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={(() => {
-            const key =
-              row.getValue('payoutType') === 'VENDOR'
-                ? 'CVA'
-                : (row.getValue('payoutType') as string);
-            return key && tg.has(key as never) ? tg(key as never) : key;
-          })()}
+          text={translateValue(
+            tg,
+            row.getValue('payoutType') === 'VENDOR'
+              ? 'CVA'
+              : (row.getValue('payoutType') as string),
+            { fallbackStyle: 'raw' },
+          )}
           maxLength={10}
         />
       ),
@@ -116,12 +117,12 @@ export default function usePayoutTransactionLogTableColumn() {
               status,
             )}`}
           >
-            {tg.has(status as never)
-              ? tg(status as never)
-              : status
-                  .toLowerCase()
-                  .replace(/_/g, ' ')
-                  .replace(/^./, (char) => char.toUpperCase())}
+            {translateValue(tg, status, {
+              fallback: status
+                ?.toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char: string) => char.toUpperCase()),
+            })}
           </Badge>
         );
       },

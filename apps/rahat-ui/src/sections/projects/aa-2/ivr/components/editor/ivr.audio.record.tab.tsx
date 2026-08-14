@@ -5,7 +5,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Mic, Square } from 'lucide-react';
 import { useUploadFile } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { AudioPreviewPlayer } from '../ivr.audio.preview';
 
 type AudioRecordTabProps = {

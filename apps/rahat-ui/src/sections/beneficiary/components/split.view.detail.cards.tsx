@@ -8,7 +8,8 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useTranslations } from 'next-intl';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
   const t = useTranslations('BENEFICIARY_DETAIL');
@@ -17,9 +18,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
   const formatPhone = usePhoneFormat();
 
   const formatEnumValue = (value?: string) =>
-    value && tg.has(value.toUpperCase() as any)
-      ? tg(value.toUpperCase() as any)
-      : value;
+    translateValue(tg, value, { fallbackStyle: 'raw' });
 
   return (
     <div className="flex flex-col gap-2 p-2">

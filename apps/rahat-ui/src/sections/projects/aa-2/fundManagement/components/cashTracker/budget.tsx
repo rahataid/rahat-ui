@@ -22,8 +22,8 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function Budget({}: {}) {
   const t = useTranslations('AA_PROJECT');

@@ -46,7 +46,7 @@ import {
   BankedStatus,
 } from '@rahataid/sdk/enums';
 import { useTranslations } from 'next-intl';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function AddBeneficiaryForm() {
   const updateBeneficiary = useUpdateBeneficiary();

@@ -5,7 +5,7 @@ import { UUID } from 'crypto';
 import { useDhmSingleSeriesTemperatureLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { getTemperatureColor, getLatestValue } from './utils/color.utils';
 import React, { useState, useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
@@ -16,7 +16,7 @@ import {
   TemperatureHistorySection,
 } from './components';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function TemperatureWatchDetails() {
   const t = useTranslations('AA_PROJECT');

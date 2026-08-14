@@ -9,7 +9,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { IconLabelBtn } from './icon.label.btn';
 import { Trash2, X } from 'lucide-react';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const FiltersTags = ({ filters, setFilters, total }: any) => {
   const t = useTranslations('AA_PROJECT');

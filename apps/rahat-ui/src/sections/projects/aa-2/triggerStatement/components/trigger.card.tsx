@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { SEP, toLabel, TriggerStatement } from '../utils';
 import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';

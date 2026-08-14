@@ -7,7 +7,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useTranslations } from 'next-intl';
 
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   renderCardColor,
   renderStatusColor,
@@ -18,7 +18,7 @@ import { Info, MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function RiverWatchView() {
   const t = useTranslations('AA_PROJECT');

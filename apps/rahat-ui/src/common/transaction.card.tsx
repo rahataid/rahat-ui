@@ -6,7 +6,7 @@ import { ITransactions } from '../types/transactions';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { format } from 'date-fns';
 import { dateFormat } from '../utils/dateFormate';
-import { useNumberFormat } from '../utils/useNumberFormat';
+import { useNumberFormat } from '../utils/i18n/number';
 import { getExplorerUrl, intlDateFormat, intlFormatDate } from '../utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {

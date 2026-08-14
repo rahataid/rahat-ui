@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 type TFunction = (key: string) => string;
 

@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 export const useProjectBeneficiaryTableColumns = () => {
@@ -37,9 +38,7 @@ export const useProjectBeneficiaryTableColumns = () => {
           row.original?.gender?.trim();
         return (
           <div>
-            {gender && tg.has(gender.toUpperCase() as any)
-              ? tg(gender.toUpperCase() as any)
-              : gender || tg('N_A')}
+            {translateValue(tg, gender, { fallbackStyle: 'raw' }) || tg('N_A')}
           </div>
         );
       }

@@ -48,7 +48,8 @@ import {
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export function buildAutomatedFormSchema(t?: any) {
@@ -353,7 +354,7 @@ export default function AddTriggerView() {
                       value={tab.value}
                       className="w-full data-[state=active]:bg-white"
                     >
-                      {labelKey && t.has(labelKey) ? t(labelKey) : tab.label}
+                      {translateValue(t, labelKey, { fallback: tab.label })}
                     </TabsTrigger>
                   );
                 })}
@@ -422,9 +423,7 @@ export default function AddTriggerView() {
                         {trigger.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
                       </Badge>
                       <Badge className="font-medium">
-                        {t.has(trigger.type.toUpperCase())
-                          ? t(trigger.type.toUpperCase())
-                          : trigger.type}
+                        {translateValue(t, trigger.type, { fallbackStyle: 'raw' })}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">

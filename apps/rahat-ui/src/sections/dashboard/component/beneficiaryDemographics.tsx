@@ -4,7 +4,8 @@ import MapView from '../mapComponent/mapView';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 const STATS_CONSTANT = [
   'AGE_GROUPS',
@@ -17,7 +18,7 @@ const STATS_CONSTANT = [
 const BeneficiaryDemographics = ({ benefStats }: any) => {
   const t = useTranslations('DASHBOARD_BENEFICIARY_DEMOGRAPHICS');
   const g = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   const formatLabel = useLabelDigits();
   // Helper to get stat by name
   const getStat = (name: string) =>
@@ -34,24 +35,6 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
   const totalFamilyMembers =
     mappedStats['TOTAL_NUMBER_FAMILY_MEMBERS']?.count ?? 0;
 
-  const chartOpts = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
-
   // Age chart
   const ageGroups = (mappedStats['AGE_GROUPS'] || []).map((item: any) => ({
     label: item.id,
@@ -67,7 +50,7 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
   };
   const genderData = (mappedStats['BENEFICIARY_GENDER'] || []).map(
     (item: any) => ({
-      label: g.has(item.id) ? g(item.id) : item.id,
+      label: translateValue(g, item.id, { fallbackStyle: 'raw' }),
       value: item.count,
     }),
   );

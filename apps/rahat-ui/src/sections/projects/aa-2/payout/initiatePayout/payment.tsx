@@ -41,7 +41,8 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import { PaymentDialog } from './payment.dialog';
@@ -164,7 +165,7 @@ export default function PaymentInitiation() {
       }`}
     >
       <RadioGroupItem value={value} id={`method-${value.toLowerCase()}`} />
-      <span>{t.has(value) ? t(value) : value}</span>
+      <span>{translateValue(t, value, { fallbackStyle: 'raw' })}</span>
     </Label>
   );
 

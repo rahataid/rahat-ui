@@ -1,8 +1,9 @@
 'use client';
 
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import {
   Tooltip,
   TooltipContent,
@@ -83,9 +84,7 @@ export default function BeneficiaryDetail({
   const formatPhone = usePhoneFormat();
 
   const formatEnumValue = (value?: string) =>
-    value && g.has(value.toUpperCase() as any)
-      ? g(value.toUpperCase() as any)
-      : value;
+    translateValue(g, value, { fallbackStyle: 'raw' });
 
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);

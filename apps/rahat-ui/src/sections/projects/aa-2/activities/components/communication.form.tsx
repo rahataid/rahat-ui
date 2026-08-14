@@ -42,7 +42,7 @@ import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { AudioRecorder } from './recorder';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   Tabs,
   TabsContent,

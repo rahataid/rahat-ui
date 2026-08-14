@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronDown, Eye, TriangleAlert } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';

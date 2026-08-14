@@ -9,7 +9,7 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export const useTriggerStatementTableColumns = () => {
   const t = useTranslations('AA_PROJECT');

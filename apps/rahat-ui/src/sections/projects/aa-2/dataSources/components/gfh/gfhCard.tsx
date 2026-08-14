@@ -12,8 +12,8 @@ import {
   RadioTower,
   RefreshCw,
 } from 'lucide-react';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 const InfoModal = dynamic(
   () => import('apps/rahat-ui/src/components/infoModal'),
 );

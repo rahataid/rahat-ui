@@ -2,6 +2,7 @@
 import React, { memo, useEffect } from 'react';
 
 import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { LandmarkIcon, Phone, Plus, Users } from 'lucide-react';
 import SearchInput from '../../projects/components/search.input';
@@ -16,7 +17,7 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
@@ -138,11 +139,11 @@ function BeneficiaryGroupsView() {
                           </div>
                           {i?.groupPurpose && (
                             <Badge className="text-gray-700 font-normal text-xs">
-                              {t.has(i.groupPurpose as any)
-                                ? t(i.groupPurpose as any)
-                                : capitalizeFirstLetter(
-                                    i?.groupPurpose?.split('_')[0] || '',
-                                  )}
+                              {translateValue(t, i.groupPurpose, {
+                                fallback: capitalizeFirstLetter(
+                                  i?.groupPurpose?.split('_')[0] || '',
+                                ),
+                              })}
                             </Badge>
                           )}
                         </div>

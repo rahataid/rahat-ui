@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import {
   useNumberFormat,
   useLabelDigits,
-} from 'apps/rahat-ui/src/utils/useNumberFormat';
+} from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   MessageSquare,
   Mail,

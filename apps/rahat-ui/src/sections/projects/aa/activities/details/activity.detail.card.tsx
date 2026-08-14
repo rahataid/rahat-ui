@@ -1,6 +1,6 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DocumentCard from '../../../components/document.card';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useTranslations } from 'next-intl';
 
 export default function ActivityDetailCard({ activityDetail }: any) {

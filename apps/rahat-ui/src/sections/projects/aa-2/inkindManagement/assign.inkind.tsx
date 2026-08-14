@@ -8,7 +8,7 @@ import AssignInkindConfirmation from './forms/assign.inkind.confirmation';
 import { AssignInkindValues } from './forms/schema/inkinds.schema';
 import { PayoutMode } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type AssignInkindSummary = AssignInkindValues & {
   inkindName: string;

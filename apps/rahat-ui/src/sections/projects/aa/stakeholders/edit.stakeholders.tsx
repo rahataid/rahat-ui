@@ -21,7 +21,7 @@ import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import { useUpdateStakeholders } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 type IProps = {
   stakeholdersDetail: IStakeholdersItem;

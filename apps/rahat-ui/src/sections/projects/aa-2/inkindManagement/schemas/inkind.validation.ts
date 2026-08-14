@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export const INKIND_TYPES = ['PRE_DEFINED', 'WALK_IN'] as const;
 export type InkindType = (typeof INKIND_TYPES)[number];

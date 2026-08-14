@@ -3,12 +3,13 @@ import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   const t = useTranslations('DASHBOARD_DISASTER_IMPACT_EARLY_WARNING');
   const g = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { chartOptions: chartOpts } = useChartNumberOptions();
   // Helper to find stat data by name
   const getStat = (name: string) =>
     statsData?.find((s) => s.name === name)?.data ?? [];
@@ -17,24 +18,6 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   const earlyWarningAccess = getStat('ACCES_TO_EARLY_WARNING_INFORMATION');
 
   const channelUsageStats = getStat('CHANNEL_USAGE_STATS');
-
-  const chartOpts = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
 
   return (
     <div className="flex flex-col mt-4">
@@ -59,7 +42,7 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
             <div className="w-full flex-1 p-4 pt-0">
               <DynamicPieChart
                 pieData={data.map((item: any) => ({
-                  label: item.id,
+                  label: translateValue(g, item.id, { fallbackStyle: 'raw' }),
                   value: item.count,
                 }))}
                 colors={['#00796B', '#CFD8DC']}

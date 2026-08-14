@@ -8,12 +8,13 @@ import { InkindRedemptionData } from '../tabs/inkind.redemption.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { formatLabel } from '../../inkindManagement/components/inkind.allocation.list';
 import { INKIND_TYPE_LABELS } from '../../inkindManagement/schemas/inkind.validation';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
@@ -104,9 +105,9 @@ export const useInkindRedemptionColumn = (
         const type = row.original?.inkind?.type;
         return (
           <Badge className="bg-gray-200 text-gray-600">
-            {tg.has(type as never)
-              ? tg(type as never)
-              : formatLabel(INKIND_TYPE_LABELS[type])}
+            {translateValue(tg, type, {
+              fallback: formatLabel(INKIND_TYPE_LABELS[type]),
+            })}
           </Badge>
         );
       },

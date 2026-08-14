@@ -11,8 +11,9 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { formatDurationFromMinutes } from 'apps/rahat-ui/src/utils/formatDurationFromMinutes';
 import {
   Clock,
@@ -86,7 +87,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               variant="outline"
               className={cn('text-xs font-medium', getDynamicColors(severity))}
             >
-              {t.has(severity) ? t(severity) : severity}
+              {translateValue(t, severity, { fallbackStyle: 'raw' })}
             </Badge>
             <Badge
               variant="outline"
@@ -100,7 +101,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               ) : (
                 <X className="w-3 h-3 mr-1" />
               )}
-              {t.has(data.currentStatus) ? t(data.currentStatus) : data.currentStatus}
+              {translateValue(t, data.currentStatus, { fallbackStyle: 'raw' })}
             </Badge>
           </div>
         </div>
@@ -150,7 +151,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                 getDynamicColors(data.validity),
               )}
             >
-              {data.validity ? (t.has(data.validity) ? t(data.validity) : data.validity) : '-'}
+              {translateValue(t, data.validity, { fallbackStyle: 'raw' }) || '-'}
             </Badge>
           </div>
         </div>

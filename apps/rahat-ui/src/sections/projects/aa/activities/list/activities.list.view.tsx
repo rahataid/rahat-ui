@@ -16,7 +16,7 @@ import ActivitiesTableFilters from './activities.table.filters';
 import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
 import { generateExcel } from '../../generate.excel';
 import { toast } from 'react-toastify';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useTranslations } from 'next-intl';
 
 export default function ActivitiesList() {

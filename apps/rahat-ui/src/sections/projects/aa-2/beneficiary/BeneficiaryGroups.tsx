@@ -6,7 +6,8 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { UUID } from 'crypto';
 import { LandmarkIcon, Phone, Users, Banknote } from 'lucide-react';
@@ -64,9 +65,9 @@ const BeneficiaryGroups = () => {
             <div className="grid grid-cols-4 gap-4">
               {beneficiariesGroups.map((i: any, index: number) => {
                 const groupPurposeName = i?.groupPurpose
-                  ? tg.has(i.groupPurpose as any)
-                    ? tg(i.groupPurpose as any)
-                    : i.groupPurpose.split('_')[0]
+                  ? translateValue(tg, i.groupPurpose, {
+                      fallback: i.groupPurpose.split('_')[0],
+                    })
                   : undefined;
                 return (
                   <div

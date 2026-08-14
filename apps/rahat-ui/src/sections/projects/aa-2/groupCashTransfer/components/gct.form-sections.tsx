@@ -28,8 +28,8 @@ import {
 import { cn } from 'libs/shadcn/src';
 import { Check, ChevronDown } from 'lucide-react';
 import { Tag } from 'emblor';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import GctSupportAreaInput from './gct.support-area-input';
 import { GctGroupValues } from '../types/gct.schemas';
 import { CIPS_BANKS } from '../types/cips-banks';

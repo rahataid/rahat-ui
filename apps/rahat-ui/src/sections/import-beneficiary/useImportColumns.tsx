@@ -26,8 +26,9 @@ import {
 import { toast } from 'react-toastify';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { useTranslations } from 'next-intl';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 function ImportActionCell({ row }: { row: any }) {
   const t = useTranslations('IMPORT_BENEFICIARY_LIST');
@@ -167,7 +168,7 @@ function StatusCell({ row }: { row: any }) {
               : 'bg-blue-100 text-blue-800'
       }`}
     >
-      {tg.has(status as never) ? tg(status as never) : status}
+      {translateValue(tg, status, { fallbackStyle: 'raw' })}
       </div>
   );
 }

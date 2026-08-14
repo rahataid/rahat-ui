@@ -25,8 +25,8 @@ import { fmt, DetailRow } from './gct.ui';
 import { DisburseButton, DisburseModal } from './gct.disburse-modal';
 import { DisbursementInfoCard } from './gct.disbursement-info';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { useNumberFormat, useLabelDigits } from '../../../../../utils/useNumberFormat';
-import { usePhoneFormat } from '../../../../../utils/usePhoneFormat';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
+import { usePhoneFormat } from '../../../../../utils/i18n/phone';
 
 export default function GctRecordDetail() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');

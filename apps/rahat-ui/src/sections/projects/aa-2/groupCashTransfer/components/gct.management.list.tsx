@@ -63,7 +63,7 @@ import {
 } from '../types/gct.types';
 import { CIPS_BANKS } from '../types/cips-banks';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat } from '../../../../../utils/i18n/number';
 
 export default function GctManagementList() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');

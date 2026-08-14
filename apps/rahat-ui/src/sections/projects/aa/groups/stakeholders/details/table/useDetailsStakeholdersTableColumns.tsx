@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function useDetailsStakeholdersTableColumn() {
     const tg = useTranslations('GLOBAL');

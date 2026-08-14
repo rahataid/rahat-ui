@@ -30,6 +30,17 @@ export function useNumberFormat() {
   return format;
 }
 
+/** ApexCharts axis/tooltip formatters wired to the locale-aware number formatter — the repeated `chartOpts` block. */
+export function useChartNumberOptions() {
+  const formatNum = useNumberFormat();
+  const chartOptions = {
+    xaxis: { labels: { formatter: (val: string) => formatNum(val) } },
+    yaxis: { labels: { formatter: (val: number) => formatNum(val) } },
+    tooltip: { y: { formatter: (val: number) => formatNum(val) } },
+  };
+  return { formatNum, chartOptions };
+}
+
 const DEVANAGARI_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
 
 /**

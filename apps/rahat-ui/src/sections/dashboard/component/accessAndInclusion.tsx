@@ -3,7 +3,14 @@ import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+
+// "Keypad/Brick" contains a slash, which the generic key derivation doesn't
+// normalize, so it needs an explicit override to reach KEYPAD_BRICK.
+const LABEL_KEY_OVERRIDES: Record<string, string> = {
+  'Keypad/Brick': 'KEYPAD_BRICK',
+};
 
 const findStat = (data: any[], name: string) => {
   return data?.find((s) => s.name === name)?.data ?? [];
@@ -21,7 +28,7 @@ const colorMap: Record<string, string> = {
 const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
   const t = useTranslations('DASHBOARD_ACCESS_INCLUSION');
   const g = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { chartOptions: chartOpts } = useChartNumberOptions();
   // Extract relevant stats
   const mobileAccess = findStat(statsData, 'MOBILE_ACCESS');
   const internetAccess = findStat(statsData, 'INTERNET_ACCESS');
@@ -38,7 +45,10 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
   const buildChartData = (data: any[]) => {
     return {
       series: data.map((item) => ({
-        label: item.id,
+        label: translateValue(g, item.id, {
+          keyMap: LABEL_KEY_OVERRIDES,
+          fallbackStyle: 'raw',
+        }),
         value: item.count,
       })),
       colors: data.map((item) => colorMap[item.id] || '#888888'),
@@ -58,23 +68,6 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
     },
   ];
 
-  const chartOpts = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
 
   return (
     <div className="mt-4">

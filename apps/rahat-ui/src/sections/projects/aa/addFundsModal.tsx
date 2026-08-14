@@ -16,7 +16,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useMintTokens } from 'apps/rahat-ui/src/hooks/aa/contracts/aa-contract';
 import { UUID } from 'crypto';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';

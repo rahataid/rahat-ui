@@ -9,7 +9,7 @@ import { CloudDownloadIcon } from 'lucide-react';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportPayoutStats, hasPayoutData } from '../utils/payout.utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function PayoutOverview({
   payoutStats,
@@ -64,12 +64,12 @@ export default function PayoutOverview({
         />
         <div className="flex gap-2 items-center">
           <TooltipWrapper
-            tip={hasData ? '' : 'No payout data available to export'}
+            tip={hasData ? '' : tg('NO_PAYOUT_DATA_TO_EXPORT')}
           >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={() => exportPayoutStats(statsPayout)}
-              name={'Export Report'}
+              name={tg('EXPORT_REPORT')}
               variant="outline"
               disabled={!hasData}
               className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
@@ -77,7 +77,7 @@ export default function PayoutOverview({
           </TooltipWrapper>
 
           <DateRangePicker
-            placeholder="Pick date range"
+            placeholder={tg('PICK_DATE_RANGE')}
             handleDateChange={handleDateChange}
             handleClearDate={handleClearDate}
             type="range"

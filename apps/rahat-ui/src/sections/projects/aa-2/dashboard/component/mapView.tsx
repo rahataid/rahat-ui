@@ -8,7 +8,7 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';
 import SearchDropdownComponent from 'apps/rahat-ui/src/common/searchDropdownComponent';
 import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
-import { useNumberFormat } from '../../../../../utils/useNumberFormat';
+import { useNumberFormat } from '../../../../../utils/i18n/number';
 import { UUID } from 'crypto';
 import { Dot } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';

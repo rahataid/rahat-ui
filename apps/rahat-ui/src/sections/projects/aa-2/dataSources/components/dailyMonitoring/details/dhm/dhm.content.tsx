@@ -5,7 +5,8 @@ import MonitoringCard from './monitorig.card';
 import { useForecastData } from './useForcastData';
 import { BarChart2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 interface ForecastData {
   title: string;
@@ -20,10 +21,8 @@ const ForecastCard = ({ title, data }: ForecastData) => {
   // Flood trend fields (today/tomorrow/day-after) arrive as enum-like
   // words (Steady/Increase/Decrease), not numbers, so they need a
   // translation lookup instead of the numeric formatter.
-  const formatValue = (value: string | number) => {
-    const key = String(value).toUpperCase();
-    return t.has(key as never) ? t(key as never) : formatNum(value);
-  };
+  const formatValue = (value: string | number) =>
+    translateValue(t, value, { fallback: formatNum(value) });
 
   return (
   <MonitoringCard title={title} className="">
@@ -74,7 +73,7 @@ export const DhmContent = ({ data }: { data: any }) => {
       data: realtimeRainfall,
     },
     nwp.length > 0 && {
-      title: 'NWP',
+      title: t('NWP'),
       data: nwp,
     },
   ].filter(isForecastCard);

@@ -25,7 +25,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import useBeneficiaryTableColumn from './useBeneficiaryTableColumns';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type IProps = {
   groupUUID: UUID;

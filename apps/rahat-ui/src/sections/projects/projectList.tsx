@@ -28,7 +28,7 @@ import { useState } from 'react';
 import SelectComponent from './comms/select.component';
 import CustomPagination from '../../components/customPagination';
 import TooltipWrapper from '../../components/tooltip.wrapper';
-import { useDateFormat } from '../../utils/useDateFormat';
+import { useDateFormat } from '../../utils/i18n/date';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
 

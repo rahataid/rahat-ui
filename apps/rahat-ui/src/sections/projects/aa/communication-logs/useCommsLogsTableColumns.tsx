@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export default function useCommsLogsTableColumns() {
   const t = useTranslations('AA_PROJECT');

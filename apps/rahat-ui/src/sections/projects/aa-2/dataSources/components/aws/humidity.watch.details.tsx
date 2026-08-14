@@ -5,7 +5,7 @@ import { UUID } from 'crypto';
 import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   getHumidityColor,
   getLatestValue,
@@ -18,7 +18,7 @@ import { TemperatureValueCard, HumidityScaleBar } from './components';
 import TimeSeriesChart from '../dhm/chart';
 import WaterLevelTable from '../dhm/table';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function HumidityWatchDetails() {
   const t = useTranslations('AA_PROJECT');

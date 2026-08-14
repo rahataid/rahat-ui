@@ -20,7 +20,7 @@ import {
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import {
@@ -39,7 +39,7 @@ import {
 import { formatUnits } from 'viem';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface CardProps {
   title: string;

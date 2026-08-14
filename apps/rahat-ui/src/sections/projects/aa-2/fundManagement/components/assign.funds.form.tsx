@@ -29,8 +29,8 @@ import {
   buildFundAssignmentFormSchema,
   FundAssignmentFormValues,
 } from './schemas/funds.validation';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 

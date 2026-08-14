@@ -39,7 +39,8 @@ import {
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
@@ -236,7 +237,7 @@ export default function PaymentInitiation() {
                         value={type.key}
                         id={`method-${type.key.toLowerCase()}`}
                       />
-                      <span>{t.has(type.key) ? t(type.key) : type.label}</span>
+                      <span>{translateValue(t, type.key, { fallback: type.label })}</span>
                     </Label>
                   ))}
                 </RadioGroup>

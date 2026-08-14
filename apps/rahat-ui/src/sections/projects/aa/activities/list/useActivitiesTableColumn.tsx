@@ -6,7 +6,7 @@ import { Eye } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import UpdateActivityStatusDialog from '../details/update.activity.status.dialog';
 import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {

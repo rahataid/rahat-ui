@@ -1,4 +1,4 @@
-import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export function formatDate(dateStr?: string, locale = 'en') {
   if (!dateStr) return '—';

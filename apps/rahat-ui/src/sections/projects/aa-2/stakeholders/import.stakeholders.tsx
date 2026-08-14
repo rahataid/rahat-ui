@@ -76,7 +76,7 @@ import {
   FileExtension,
   REQUIRED_HEADERS,
 } from './stakeholders.consts';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 interface ValidationError {
   phone?: string;
   email?: string;

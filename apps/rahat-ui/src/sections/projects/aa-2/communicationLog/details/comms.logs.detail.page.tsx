@@ -28,7 +28,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
@@ -51,7 +51,7 @@ import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function CommsLogsDetailPage() {
   const tGlobal = useTranslations('GLOBAL');

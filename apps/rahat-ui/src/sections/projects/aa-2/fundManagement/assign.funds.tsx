@@ -8,7 +8,7 @@ import { FUND_MANAGEMENT_TABS } from './consts/conts';
 import type { PayoutFormData } from './components/assign.payout.form';
 import { useFundAssignmentStore } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AssignFundsView() {
   // Router goes here

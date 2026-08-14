@@ -13,6 +13,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useIvrTemplates, useIvrTemplateDelete } from '@rahat-ui/query';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   Voicemail,
 } from 'lucide-react';
@@ -110,9 +111,7 @@ export default function IvrDashboard() {
               onClick={() => setStatusFilter(status)}
               className="capitalize rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             >
-              {tg.has(status.toUpperCase() as never)
-                ? tg(status.toUpperCase() as never)
-                : status}
+              {translateValue(tg, status, { fallbackStyle: 'raw' })}
             </Button>
           ))}
         </div>

@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Settings2 } from 'lucide-react';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type IProps = {
   table: any;
@@ -43,7 +44,7 @@ export default function ViewColumns({ table }: IProps) {
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {t.has(key) ? t(key) : column.id}
+                {translateValue(t, key, { fallback: column.id })}
               </DropdownMenuCheckboxItem>
             );
           })}

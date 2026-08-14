@@ -5,8 +5,8 @@ import DHMBulletinDialog from './dhm.bulletin.edit.dialog';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { StyledMapWrapper } from '@rahat-ui/shadcn/src/components/maps';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   let status;

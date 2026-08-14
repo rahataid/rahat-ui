@@ -29,7 +29,7 @@ import Image from 'next/image';
 import TransactionTable from './beneficiary.transaction.table';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useQuery } from 'urql';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 type IProps = {
   beneficiaryDetails: any;

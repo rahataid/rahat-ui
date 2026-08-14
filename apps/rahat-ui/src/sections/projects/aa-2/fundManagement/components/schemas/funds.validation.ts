@@ -1,5 +1,5 @@
 import z from 'zod';
-import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export function buildFundAssignmentFormSchema(t: (key: string) => string) {
   return z.object({

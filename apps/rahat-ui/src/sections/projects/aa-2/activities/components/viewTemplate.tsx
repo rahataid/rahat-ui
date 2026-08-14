@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -132,9 +133,7 @@ const ViewTemplate = ({
                               <SelectLabel>{t('PHASE')}</SelectLabel>
                               {PHASE.map((s) => (
                                 <SelectItem key={s.value} value={s.value}>
-                                  {tg.has(s.label.toUpperCase() as never)
-                                    ? tg(s.label.toUpperCase() as never)
-                                    : s.label}
+                                  {translateValue(tg, s.label, { fallbackStyle: 'raw' })}
                                 </SelectItem>
                               ))}
                             </SelectGroup>

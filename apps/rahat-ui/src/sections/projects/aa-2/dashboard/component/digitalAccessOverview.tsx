@@ -3,7 +3,7 @@
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 
@@ -28,7 +28,7 @@ const findStat = (data: any[], name: string) => {
 const DigitalAccessOverview = ({ stats }: Props) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions } = useChartNumberOptions();
 
   const getStat = (name: string) => stats.find((item) => item.name === name);
   const beneficiaryCountByBank = getStat('BENEFICIARY_COUNTBYBANK')?.data || [];
@@ -92,18 +92,7 @@ const DigitalAccessOverview = ({ stats }: Props) => {
                 height={Math.max(beneficiaryCountByBank.length * 30, 200)}
                 width="100%"
                 xaxisTitle={tg('NO_OF_BENEFICIARIES')}
-                options={{
-                  xaxis: {
-                    labels: {
-                      formatter: (val: string) => formatNum(val),
-                    },
-                  },
-                  tooltip: {
-                    y: {
-                      formatter: (val: number) => formatNum(val),
-                    },
-                  },
-                }}
+                options={chartOptions}
               />
             )}
           </div>

@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { Home, LucideIcon, UsersRound } from 'lucide-react';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type IProps = {
   allStats: any;

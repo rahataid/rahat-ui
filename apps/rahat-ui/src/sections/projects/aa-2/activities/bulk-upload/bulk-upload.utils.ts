@@ -8,7 +8,7 @@
  */
 import ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 /** Columns every uploaded sheet must have, regardless of phase flags. */
 export const BASE_HEADERS = [

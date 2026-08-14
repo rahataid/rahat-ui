@@ -49,7 +49,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type BenProjectType = {
   Project: {

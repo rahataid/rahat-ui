@@ -1,5 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Settings2 } from 'lucide-react';

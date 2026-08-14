@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useDateFormat } from '../utils/useDateFormat';
+import { useDateFormat } from '../utils/i18n/date';
 
 interface IProps {
   title: string;

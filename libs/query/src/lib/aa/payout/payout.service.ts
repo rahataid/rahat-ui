@@ -342,6 +342,7 @@ export const useTriggerForOnePayoutFailed = () => {
 };
 
 export const useSendPayoutOtp = () => {
+  const t = useTranslations('AA_PROJECT');
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -374,7 +375,7 @@ export const useSendPayoutOtp = () => {
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
       toast.fire({
-        title: `Rahat Pin sent successfully to ${payload.email}`,
+        title: t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email: payload.email }),
         icon: 'success',
       });
     },
@@ -382,7 +383,7 @@ export const useSendPayoutOtp = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while sending OTP.',
+        title: t('ERROR_WHILE_SENDING_OTP'),
         icon: 'error',
         text: errorMessage,
       });

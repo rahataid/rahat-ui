@@ -2,7 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useTranslations } from 'next-intl';
 
 import { Heading } from 'apps/rahat-ui/src/common';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   renderCardColor,
   renderStatusColor,
@@ -10,7 +10,7 @@ import {
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 interface InfoProp {
   riverWatch: {
     stationIndex: number;

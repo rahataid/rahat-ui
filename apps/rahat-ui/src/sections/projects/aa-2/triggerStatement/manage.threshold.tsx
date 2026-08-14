@@ -30,7 +30,7 @@ import { useEffect, useState } from 'react';
 import { useConfigureThreshold, usePhasesStore } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function ManageThreshold() {
   const t = useTranslations('AA_PROJECT');

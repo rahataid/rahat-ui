@@ -31,8 +31,8 @@ import {
 } from '../schemas/inkind.validation';
 import type { InkindFormData } from '../schemas/inkind.validation';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',

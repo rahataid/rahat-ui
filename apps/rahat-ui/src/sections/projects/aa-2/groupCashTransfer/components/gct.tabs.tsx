@@ -33,6 +33,7 @@ const GCT_TABS = [
 
 export default function GctTabs() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
   const { activeTab, setActiveTab } = useActiveTab('overview');
   const { id } = useParams();
   const [startDate, setStartDate] = useState<string | undefined>();
@@ -85,19 +86,19 @@ export default function GctTabs() {
             {activeTab === 'overview' && (
               <div className="flex gap-2 items-center mb-2">
                 <TooltipWrapper
-                  tip={hasData ? '' : 'No GCT data available to export'}
+                  tip={hasData ? '' : tg('NO_GCT_DATA_TO_EXPORT')}
                 >
                   <IconLabelBtn
                     Icon={CloudDownloadIcon}
                     handleClick={() => exportGctData(stats)}
-                    name={'Export Report'}
+                    name={tg('EXPORT_REPORT')}
                     variant="outline"
                     disabled={!hasData}
                     className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
                   />
                 </TooltipWrapper>
                 <DateRangePicker
-                  placeholder="Pick date range"
+                  placeholder={tg('PICK_DATE_RANGE')}
                   handleDateChange={handleDateChange}
                   handleClearDate={handleClearDate}
                   type="range"

@@ -14,7 +14,7 @@ import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 type Props = {
   projectUUID: UUID;

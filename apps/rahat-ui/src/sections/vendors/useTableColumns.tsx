@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, FolderPlus } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
@@ -92,8 +93,7 @@ export const useTableColumns = (handleAssignClick: any) => {
             // Status arrives from the API as "Assigned" / "Pending"; resolve it
             // through GLOBAL and fall back to the raw value for unknown states.
             const s = row.getValue('status') as string;
-            const key = String(s ?? '').toUpperCase();
-            return g.has(key as never) ? g(key as never) : s;
+            return translateValue(g, s, { fallbackStyle: 'raw' });
           })()}
         </Badge>
       ),

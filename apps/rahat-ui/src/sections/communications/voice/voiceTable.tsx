@@ -51,7 +51,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 const data: Voice[] = VoiceTableData;

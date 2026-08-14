@@ -21,7 +21,7 @@ import { ROLE_TYPE } from '../role/const';
 import DeleteButton from 'apps/rahat-ui/src/components/delete.btn';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import Swal from 'sweetalert2';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 type IProps = {
   roleData: Role;

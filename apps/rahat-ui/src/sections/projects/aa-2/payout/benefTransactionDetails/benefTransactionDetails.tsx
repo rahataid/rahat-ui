@@ -29,7 +29,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function BeneficiaryTransactionLogDetails() {
   const t = useTranslations('AA_PROJECT');

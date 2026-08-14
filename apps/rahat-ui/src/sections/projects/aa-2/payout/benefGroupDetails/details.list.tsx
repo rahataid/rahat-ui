@@ -48,8 +48,9 @@ import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLo
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -178,10 +179,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       label: tv('PAYOUT_TYPE'),
       infoIcon: true,
       infoToolTip: tv('PAYOUT_TYPE_TOOLTIP'),
-      smallNumber: (() => {
-        const key = payout?.type === 'VENDOR' ? 'CVA' : payout?.type;
-        return key && tg.has(key as never) ? tg(key as never) : key;
-      })(),
+      smallNumber: translateValue(
+        tg,
+        payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+        { fallbackStyle: 'raw' },
+      ),
       badge: true,
     },
     {
@@ -222,9 +224,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description={tv('LIST_OF_ALL_THE_PAYOUT_TRANSACTION')}
               status={
-                payout?.status && tg.has(payout.status as never)
-                  ? tg(payout.status as never)
-                  : payout?.status
+                translateValue(tg, payout?.status, { fallbackStyle: 'raw' })
                       ?.toLowerCase()
                       .replace(/_/g, ' ')
                       .replace(/^./, (char: string) => char.toUpperCase())

@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { ChartDonut } from 'libs/shadcn/src/components/charts';
 import React from 'react';
 

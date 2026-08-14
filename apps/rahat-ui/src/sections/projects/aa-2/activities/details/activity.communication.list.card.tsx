@@ -24,7 +24,7 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useMemo } from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { RoleAuth } from 'libs/auth/src/lib/roleAuth';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { AARoles } from 'libs/auth/src/enums/aaRoles';
 import { PlusIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';

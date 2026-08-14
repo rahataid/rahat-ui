@@ -21,7 +21,7 @@ import AddAnotherDataSource from './add.another.data.source';
 import SelectFormField from '../../../../../../components/select.form.field';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useSelectItems } from '../useSelectItems';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/numeral.utils';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 const numeralString = () =>
   z.preprocess(normalizeNumeralsPreprocessor, z.string().optional());

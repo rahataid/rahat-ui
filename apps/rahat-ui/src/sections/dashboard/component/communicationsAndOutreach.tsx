@@ -4,7 +4,8 @@ import { BroadcastStats } from 'apps/rahat-ui/src/types/dashboard';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 const CommunicationsAndOutreach = ({
   commsStats,
@@ -12,25 +13,8 @@ const CommunicationsAndOutreach = ({
   commsStats: BroadcastStats;
 }) => {
   const t = useTranslations('DASHBOARD_COMMUNICATIONS_OUTREACH');
-  const formatNum = useNumberFormat();
-
-  const chartOpts = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
+  const tg = useTranslations('GLOBAL');
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
 
   return (
     <div className="flex flex-col mt-4">
@@ -63,10 +47,8 @@ const CommunicationsAndOutreach = ({
                   ) || []
                 }
                 categories={
-                  commsStats?.transportStats?.map(
-                    (item) =>
-                      item.name.charAt(0).toUpperCase() +
-                      item.name.slice(1).toLowerCase(),
+                  commsStats?.transportStats?.map((item) =>
+                    translateValue(tg, item.name, { fallbackStyle: 'raw' }),
                   ) || []
                 }
                 colors={['#4A90E2']}

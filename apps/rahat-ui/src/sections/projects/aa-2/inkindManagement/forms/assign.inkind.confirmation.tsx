@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Loader2, UserRound } from 'lucide-react';
 import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';

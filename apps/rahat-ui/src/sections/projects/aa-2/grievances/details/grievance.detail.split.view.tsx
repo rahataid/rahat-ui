@@ -14,9 +14,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
-import { usePhoneFormat } from 'apps/rahat-ui/src/utils/usePhoneFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { UUID } from 'crypto';
 import { Expand, Pencil, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';

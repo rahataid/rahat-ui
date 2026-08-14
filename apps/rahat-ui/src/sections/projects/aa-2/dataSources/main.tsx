@@ -3,7 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState, useMemo } from 'react';
 import { Activity, CalendarIcon, Trash2, CloudCheck } from 'lucide-react';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
@@ -236,9 +237,7 @@ export default function DataSources() {
                   disabled={tab.disabled}
                   className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
                 >
-                  {t.has(tab.label.toUpperCase().replace(/\s+/g, '_'))
-                  ? t(tab.label.toUpperCase().replace(/\s+/g, '_'))
-                  : tab.label}
+                  {translateValue(t, tab.label, { fallbackStyle: 'raw' })}
                 </TabsTrigger>
               ))}
             </TabsList>

@@ -12,7 +12,7 @@ import { useStakeholdersGroups } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const StakeGoldersGroups = () => {
   const formatNum = useNumberFormat();

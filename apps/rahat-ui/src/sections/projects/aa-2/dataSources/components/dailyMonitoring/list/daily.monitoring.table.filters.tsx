@@ -15,7 +15,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { cn } from '@rahat-ui/shadcn/src';
-import { useDateFormat } from 'apps/rahat-ui/src/utils/useDateFormat';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { CalendarIcon } from 'lucide-react';
 import { SearchInput } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';

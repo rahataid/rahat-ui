@@ -44,8 +44,8 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/numeral.utils';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function EditGrievance() {
   const t = useTranslations('AA_PROJECT');

@@ -3,7 +3,8 @@ import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useTranslations } from 'next-intl';
 import PieChartCard from '../../components/pie.chart.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type IProps = {
   allStats: any;
@@ -12,12 +13,10 @@ type IProps = {
 export default function ChartsContainer({ allStats = [] }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions: chartAxOptions } = useChartNumberOptions();
 
   const formatEnumLabel = (value?: string) =>
-    value && tg.has(value.toUpperCase() as any)
-      ? tg(value.toUpperCase() as any)
-      : value;
+    translateValue(tg, value, { fallbackStyle: 'raw' });
 
   const genderStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_GENDER',
@@ -25,7 +24,10 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
 
   const vulnerableStatusStats = allStats
     ?.filter((data: any) => data.name === 'BENEFICIARY_VULNERABILITYSTATUS')[0]
-    ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
+    ?.data?.map((item: any) => ({
+      label: formatEnumLabel(item.id),
+      value: item.count,
+    }));
 
   const bankStatusStats = allStats
     ?.filter((data: any) => data.name === 'BENEFICIARY_BANKSTATUS')[0]
@@ -51,24 +53,6 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   const countByBankStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_COUNTBYBANK',
   )[0]?.data;
-
-  const chartAxOptions = {
-    xaxis: {
-      labels: {
-        formatter: (val: string) => formatNum(val),
-      },
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
 
   const pieChartData = [
     {

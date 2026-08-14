@@ -28,7 +28,8 @@ import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportTokenStats, hasTokenData } from '../utils/token.utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/useNumberFormat';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function TokensOverview() {
   const t = useTranslations('AA_PROJECT');
@@ -60,26 +61,24 @@ export default function TokensOverview() {
   }));
   const project = useProjectStore((p) => p.singleProject);
   const projectBalance = useProjectBalance(projectId);
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions } = useChartNumberOptions();
 
   const getNameKey = (name: string) =>
     name === 'Token Price' ? 'TOKEN_PRICE' :
     name === 'Average Disbursement time' ? 'AVERAGE_DISBURSEMENT_TIME' :
     name === 'Average Duration' ? 'AVERAGE_DURATION' :
-    name.toUpperCase().replace(/\s+/g, '_');
+    name.toUpperCase().replace(/[\s-]+/g, '_');
 
   // Stat names come from the backend, so a newly added stat may not have a
   // translation key yet. t() throws on a missing key and would crash the page,
   // so fall back to the raw backend label / no tooltip instead.
-  const statTitle = (name: string) => {
-    const key = getNameKey(name);
-    return t.has(key) ? t(key) : name;
-  };
+  const statTitle = (name: string) =>
+    translateValue(t, getNameKey(name), { fallback: name });
 
-  const statTooltip = (name: string) => {
-    const key = `${getNameKey(name)}_TOOLTIP`;
-    return t.has(key) ? t(key) : INFO_TOOL_TIPS[name] ?? '';
-  };
+  const statTooltip = (name: string) =>
+    translateValue(t, `${getNameKey(name)}_TOOLTIP`, {
+      fallback: INFO_TOOL_TIPS[name] ?? '',
+    });
 
   // const projectBalance = useFundAssignmentStore(
   //   (state) => state.projectBalance,
@@ -126,19 +125,19 @@ export default function TokensOverview() {
         />
         <div className="flex gap-2 items-center">
           <TooltipWrapper
-            tip={hasData ? '' : 'No token data available to export'}
+            tip={hasData ? '' : tg('NO_TOKEN_DATA_TO_EXPORT')}
           >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={() => exportTokenStats(data)}
-              name={'Export Report'}
+              name={tg('EXPORT_REPORT')}
               variant="outline"
               disabled={!hasData}
               className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
             />
           </TooltipWrapper>
           <DateRangePicker
-            placeholder="Pick date range"
+            placeholder={tg('PICK_DATE_RANGE')}
             handleDateChange={handleDateChange}
             handleClearDate={handleClearDate}
             type="range"
@@ -276,11 +275,7 @@ export default function TokensOverview() {
               pieData={tokenStatus()}
               colors={['#2A9D90', '#E53935', '#BDBDBD']}
               options={{
-                tooltip: {
-                  y: {
-                    formatter: (val: number) => formatNum(val),
-                  },
-                },
+                tooltip: chartOptions.tooltip,
                 plotOptions: {
                   pie: {
                     donut: {

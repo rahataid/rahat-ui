@@ -77,10 +77,8 @@ export default function PhaseCard({
           </RoleAuth>
         </div>
         <TooltipWrapper tip={`Activity Title: ${title}`}>
-          <h3 className="text-sm font-medium text-gray-900 truncate w-[320px]">
-            {title.length > 25
-              ? `${title.substring(0, 20)}...`
-              : title ?? 'N/A'}
+          <h3 className="text-sm font-medium text-gray-900 truncate max-w-full">
+            {title ?? 'N/A'}
           </h3>
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">

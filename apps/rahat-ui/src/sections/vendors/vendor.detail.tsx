@@ -24,7 +24,34 @@ export default function VendorDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const { data: vendorDetail } = useGetVendor(id);
-  const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
+  // const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
+
+  const vendor = React.useMemo(() => {
+    const data = vendorDetail?.data;
+    if (!data) return null;
+
+    const isProjectVendorList = Array.isArray(data);
+    const ref = isProjectVendorList ? data[0]?.User : data;
+    const projects = isProjectVendorList
+      ? data.map((v: any) => ({
+          id: v.Project.uuid,
+          name: v.Project.name,
+          canSyncWalkin: v.canSyncWalkin,
+        }))
+      : undefined;
+
+    return {
+      name: ref?.name,
+      gender: ref?.gender,
+      email: ref?.email,
+      phone: ref?.phone,
+      wallet: ref?.wallet,
+      projects,
+    };
+  }, [vendorDetail]);
+
+  console.log({ vendor });
+
   const isVendorAssigned = vendor?.projects?.length;
   const removeVendor = useRemoveVendor();
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -139,6 +166,6 @@ const DetailItem = ({
 }) => (
   <div>
     <h1 className="text-md text-muted-foreground">{title}</h1>
-    <p className="font-medium">{content ?? 'N/A'}</p>
+    <p className="font-medium">{content || 'N/A'}</p>
   </div>
 );

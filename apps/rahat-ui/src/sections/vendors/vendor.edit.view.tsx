@@ -34,10 +34,22 @@ export default function EditVendors() {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
 
-  const { data: vendorDetails, isLoading } = useGetVendor(id);
-  const vendor = React.useMemo(() => {
-    return vendorDetails?.data;
-  }, [vendorDetails]);
+  const { data: vendorDetail, isLoading } = useGetVendor(id);
+  // const vendor = React.useMemo(() => {
+  //   return vendorDetails?.data;
+  // }, [vendorDetails]);
+
+   const vendor = React.useMemo(() => {
+    const data = vendorDetail?.data;
+    const ref = Array.isArray(data) ? data[0]?.User : data;
+    return {
+      name: ref?.name,
+      gender: ref?.gender,
+      email: ref?.email,
+      phone: ref?.phone,
+      wallet: ref?.wallet,
+    };
+  }, [vendorDetail]);
 
   const updateVendor = useUpdateVendor();
 

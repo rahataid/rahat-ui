@@ -29,6 +29,7 @@ type IProps = {
   currentPage: number;
   setPagination?: (pagination: any) => void;
   showChevrons?: boolean;
+  isShowTotalCount: boolean;
 };
 
 const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
@@ -45,6 +46,7 @@ export function CustomPagination({
   total,
   setPagination,
   showChevrons,
+  isShowTotalCount = true,
 }: IProps) {
   const lastPage = meta?.lastPage || 1;
   if (showChevrons === undefined) {
@@ -72,6 +74,11 @@ export function CustomPagination({
       {/* <div className="flex-1 text-sm text-muted-foreground">
         {currentPage} of {total} row(s) selected.
       </div> */}
+      {isShowTotalCount && (
+        <div className="flex-1 text-sm text-muted-foreground">
+          Total Count : {meta?.total || total}
+        </div>
+      )}
       {handlePageSizeChange && (
         <div className="flex items-center gap-[clamp(4px,0.6vw,8px)]">
           <div className="font-medium">Rows per page</div>

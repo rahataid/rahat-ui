@@ -6,6 +6,7 @@ import {
   useSessionBroadCastCount,
   useSessionRetryFailed,
   useSingleActivity,
+  useSettingsStore,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -44,7 +45,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { toast } from 'react-toastify';
 
-import { exportAllLogs, exportFailedLogs } from './comms.logs.export.utils';
+import { downloadLogsCsv, exportFailedLogs } from './comms.logs.export.utils';
 import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
@@ -57,6 +58,18 @@ export default function CommsLogsDetailPage() {
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');
+
+  const commsSettings = useSettingsStore((state) => state.commsSettings);
+
+  const downloadUrl = useMemo(
+    () =>
+      commsSettings?.URL
+        ? `${commsSettings.URL}/broadcasts/download?sessionId=${encodeURIComponent(
+            sessionId,
+          )}`
+        : null,
+    [commsSettings, sessionId],
+  );
 
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
@@ -122,6 +135,13 @@ export default function CommsLogsDetailPage() {
   } = useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
+  const latestBroadcastUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
+    (latest: string | null, row: any) =>
+      !latest || new Date(row?.updatedAt) > new Date(latest)
+        ? row?.updatedAt
+        : latest,
+    null,
+  );
 
   const count = useSessionBroadCastCount([sessionId]);
   const mutateRetry = useSessionRetryFailed();
@@ -180,21 +200,20 @@ export default function CommsLogsDetailPage() {
     exportFailedLogs(sessionLogs?.httpReponse?.data?.data ?? []);
   };
 
-  const onExportAll = () => {
+  const onExportAll = async () => {
     try {
-      if (!logs || !activityDetail || !sessionLogs) {
+      if (!downloadUrl) {
         return toast.error(
           'Failed to load communication data. Please refresh and try again.',
         );
       }
-      if (!count?.data?.data) {
-        return toast.error(
-          'Communication statistics not available. Please try again.',
-        );
+      if (hasNoLogsForExport) {
+        return toast.error('No communication logs available to export.');
       }
-      const logsData = sessionLogs?.httpReponse?.data?.data;
-      const total = logsMeta?.total ?? 0;
-      exportAllLogs(logsData, logs, activityDetail, count.data.data, total);
+      const fileName = `${logs?.group?.name || 'group'}_${
+        activityDetail?.title || 'activity'
+      }_${new Date().toISOString().slice(0, 10)}.csv`;
+      await downloadLogsCsv(downloadUrl, fileName);
       toast.success('Communication logs exported successfully!');
     } catch (error) {
       console.error('Error exporting all logs:', error);
@@ -223,15 +242,12 @@ export default function CommsLogsDetailPage() {
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
   }, [from, projectID, activityId, tab, subTab, backFrom]);
 
-  const sessionLogsData = sessionLogs?.httpReponse?.data?.data;
-
   const hasNoLogsForExport =
     !isLoading &&
     !isLoadingActivity &&
     !isLoadingSessionLogs &&
     !isSessionLogsError &&
-    Array.isArray(sessionLogsData) &&
-    sessionLogsData.length === 0;
+    (logsMeta?.total ?? 0) === 0;
 
   const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
 
@@ -246,6 +262,15 @@ export default function CommsLogsDetailPage() {
               title={`Communication Details`}
               description="Here is the detailed view of selected communication"
             />
+          </div>
+          <div className="flex justify-between items-center">
+            {latestBroadcastUpdatedAt ? (
+              <p className="text-sm text-muted-foreground">
+                Updated At: {dateFormat(latestBroadcastUpdatedAt)}
+              </p>
+            ) : (
+              <div />
+            )}
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper
                 tip="No communication logs available to export"
@@ -370,7 +395,7 @@ export default function CommsLogsDetailPage() {
               </div>
 
               {/* Right Section (Data Cards) — 2/3 on large screens */}
-              <div className=" flex-1 flex flex-wrap gap-4">
+              <div className="flex-1 grid grid-cols-2 gap-4">
                 <DataCard
                   title="Successfully Delivered"
                   smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
@@ -379,6 +404,16 @@ export default function CommsLogsDetailPage() {
                 <DataCard
                   title="Failed Delivered"
                   smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Scheduled"
+                  smallNumber={(count?.data?.data?.SCHEDULED ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Pending"
+                  smallNumber={(count?.data?.data?.PENDING ?? 0).toString()}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
               </div>

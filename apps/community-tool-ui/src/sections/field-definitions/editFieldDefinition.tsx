@@ -45,6 +45,7 @@ export default function EditFieldDefinition({
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
+    isUnique: z.boolean(),
     variations: z.array(
       z.object({
         id: z.string(),
@@ -75,6 +76,7 @@ export default function EditFieldDefinition({
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
+      isUnique: data?.isUnique || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
       variations: variationTags,
     },
@@ -88,7 +90,9 @@ export default function EditFieldDefinition({
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
+      isUnique: data?.isUnique || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
+      variations: formattedVariations,
     });
   }, [
     data?.variations,
@@ -96,6 +100,7 @@ export default function EditFieldDefinition({
     data?.fieldType,
     data?.isActive,
     data?.isTargeting,
+    data?.isUnique,
     data?.name,
     form,
   ]);
@@ -114,32 +119,38 @@ export default function EditFieldDefinition({
   const handleEditFieldDefinition = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
-    let fieldPopulateBody: Array<{ label: string; value: string }> | [] = [];
-    if (!showLabelValue) {
-      fieldPopulateBody = [];
-    } else {
-      fieldPopulateBody = formData?.fieldPopulate;
+    const dirtyFields = form.formState.dirtyFields;
+    const payload: Record<string, unknown> = {};
+
+    if (dirtyFields.name) payload.name = formData.name;
+    if (dirtyFields.fieldType)
+      payload.fieldType = formData.fieldType as FieldType;
+    if (dirtyFields.isActive) payload.isActive = formData.isActive;
+    if (dirtyFields.isTargeting) payload.isTargeting = formData.isTargeting;
+    if (dirtyFields.isUnique) payload.isUnique = formData.isUnique;
+
+    if (dirtyFields.variations) {
+      payload.variations = variationTags.map((d) => d.text);
     }
 
-    const variationNames = variationTags.length
-      ? variationTags.map((d) => d.text)
-      : [];
+    if (dirtyFields.fieldPopulate) {
+      if (!showLabelValue) {
+        payload.fieldPopulate = null;
+      } else {
+        const optionsWithValue = formData.fieldPopulate.filter(
+          (f) => f.value !== '',
+        );
+        payload.fieldPopulate = optionsWithValue.length
+          ? { data: optionsWithValue }
+          : null;
+      }
+    }
 
-    const optionsWithValue = fieldPopulateBody.filter((f) => f.value !== '');
-    const populate = optionsWithValue.length
-      ? { data: optionsWithValue }
-      : null;
+    if (Object.keys(payload).length === 0) return;
 
     await updateFieldDefinition.mutateAsync({
       id: data?.id?.toString(),
-      data: {
-        name: formData?.name,
-        fieldType: formData?.fieldType as FieldType,
-        isActive: formData?.isActive,
-        isTargeting: formData?.isTargeting,
-        fieldPopulate: populate,
-        variations: variationNames,
-      },
+      data: payload as FieldDefinition,
     });
   };
 
@@ -278,14 +289,31 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-              {showLabelValue && (
+              <FormField
+                control={form.control}
+                name="isTargeting"
+                render={({ field }) => (
+                  <div className="flex flex-col items-right">
+                    <Label className="text-xs font-medium mb-1">
+                      Select as targeting criteria
+                    </Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
+              {form.watch('fieldType') !== FieldType.DROPDOWN && (
                 <FormField
                   control={form.control}
-                  name="isTargeting"
+                  name="isUnique"
                   render={({ field }) => (
                     <div className="flex flex-col items-right">
                       <Label className="text-xs font-medium mb-1">
-                        Select as targeting criteria
+                        isUnique
                       </Label>
                       <Switch
                         {...field}
@@ -299,70 +327,68 @@ export default function EditFieldDefinition({
               )}
             </div>
 
-            {showLabelValue && form.getValues('fieldPopulate')?.length > 0 && (
+            {showLabelValue && fields.length > 0 && (
               <div>
                 <Label className="text-xs font-medium mt-2">
                   Field Populate
                 </Label>
                 <div className="grid gap-3">
-                  {form
-                    .watch('fieldPopulate')
-                    .map((item: any, index: number) => (
-                      <div key={index} className="flex items-center">
-                        <div className="flex-1">
-                          <FormField
-                            control={form.control}
-                            name={`fieldPopulate.${index}.label`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Label className="text-xs font-medium">
-                                  Label
-                                </Label>
-                                <FormControl>
-                                  <Input
-                                    type="text"
-                                    placeholder="Label"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="flex-1 ml-2">
-                          <FormField
-                            control={form.control}
-                            name={`fieldPopulate.${index}.value`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Label className="text-xs font-medium">
-                                  Value
-                                </Label>
-                                <FormControl>
-                                  <Input
-                                    type="text"
-                                    placeholder="Value"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div>
-                          <Button
-                            type="button"
-                            onClick={() => remove(index)}
-                            className="mt-8 ml-3 text-xs"
-                            // disabled={fields.length === 1}
-                          >
-                            <Minus size={10} strokeWidth={1.5} />
-                          </Button>
-                        </div>
+                  {fields.map((item, index) => (
+                    <div key={item.id} className="flex items-center">
+                      <div className="flex-1">
+                        <FormField
+                          control={form.control}
+                          name={`fieldPopulate.${index}.label`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label className="text-xs font-medium">
+                                Label
+                              </Label>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder="Label"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
-                    ))}
+                      <div className="flex-1 ml-2">
+                        <FormField
+                          control={form.control}
+                          name={`fieldPopulate.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label className="text-xs font-medium">
+                                Value
+                              </Label>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder="Value"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <Button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="mt-8 ml-3 text-xs"
+                          // disabled={fields.length === 1}
+                        >
+                          <Minus size={10} strokeWidth={1.5} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
                 <div className="flex justify-start mb-4">
                   <Button

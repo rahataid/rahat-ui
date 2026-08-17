@@ -106,17 +106,14 @@ export const SUBJECT_ACTIONS = {
 
 export const PERMISSIONS = [
   {
-    id: 'manage',
-    label: 'Manage',
+    id: 'read',
+    label: 'Read',
   },
   {
     id: 'create',
     label: 'Create',
   },
-  {
-    id: 'read',
-    label: 'Read',
-  },
+
   {
     id: 'update',
     label: 'Update',
@@ -124,6 +121,10 @@ export const PERMISSIONS = [
   {
     id: 'delete',
     label: 'Delete',
+  },
+  {
+    id: 'manage',
+    label: 'Manage',
   },
 ] as const;
 

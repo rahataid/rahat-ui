@@ -27,7 +27,6 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import {
   useCommunitySettingList,
-  useCommunitySettingUpdate,
   useFieldDefinitionsList,
   useUploadStandardJson,
   useGetStandardFields,
@@ -53,7 +52,7 @@ export default function ListView({
 }: IProps) {
   const { data: fieldData } = useFieldDefinitionsList({
     page: 1,
-    perPage: 100,
+    perPage: 300,
   });
   const rows = React.useMemo(() => fieldData?.data?.rows || [], [fieldData]);
   const rowNamesKey = React.useMemo(
@@ -65,14 +64,12 @@ export default function ListView({
     [rows],
   );
 
-  const updateCommunitySettings = useCommunitySettingUpdate();
   const { data } = useCommunitySettingList({ page: 1, perPage: 20 });
   const schema = generateJsonSchemaFromFields(rows);
 
   const aiSetting = data?.data.find(
     (setting: { name: string }) => setting.name === 'AI_API_URL',
   );
-  console.log(aiSetting, 'aiSetting');
 
   const aiBaseurl = aiSetting?.value?.URL;
   const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
@@ -112,26 +109,6 @@ export default function ListView({
       },
       baseURL: aiBaseurl,
     });
-  };
-
-  const updateStandardSetting = async (standardName: string) => {
-    if (!aiSetting) return;
-
-    const finalSettingData = {
-      name: aiSetting.name,
-      requiredFields: [
-        ...(aiSetting.requiredFields ?? []),
-        'COMMUNITY_DATA_STANDARD',
-      ],
-      value: {
-        ...(aiSetting.value ?? {}),
-        COMMUNITY_DATA_STANDARD: standardName,
-      },
-      isReadOnly: aiSetting.isReadOnly,
-      isPrivate: aiSetting.isPrivate,
-    };
-
-    await updateCommunitySettings.mutateAsync(finalSettingData);
   };
 
   React.useEffect(() => {
@@ -183,11 +160,16 @@ export default function ListView({
   }, [aiBaseurl, aiStandardName, rowNamesKey]);
 
   const handleSyncClick = async () => {
-    if (!aiBaseurl || !aiSetting) return;
+    if (!aiSetting) return;
 
     setSyncing(true);
 
     try {
+      if (!aiBaseurl) {
+        toast.warn('AI API settings are missing.');
+        return;
+      }
+
       if (aiStandardName) {
         const existingJson = await getStandardFields.mutateAsync({
           standardName: aiStandardName,

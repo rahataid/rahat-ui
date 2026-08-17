@@ -29,9 +29,12 @@ export function ComboBox({
   column,
   selectedField,
   aiSuggestion,
+  labelMap = {},
 }: any) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
+
+  const getLabel = (field: string) => labelMap[field] ?? humanizeString(field);
 
   const handleClearSelection = () => {
     handleTargetFieldChange(EMPTY_SELECTION, value);
@@ -54,7 +57,11 @@ export function ComboBox({
           className="w-[400px] justify-between"
         >
           {value
-            ? data.find((d: string) => d.toLowerCase() === value.toLowerCase())
+            ? getLabel(
+                data.find(
+                  (d: string) => d.toLowerCase() === value.toLowerCase(),
+                ) ?? value,
+              )
             : '--Select Field--'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -84,12 +91,9 @@ export function ComboBox({
                   return (
                     <CommandItem
                       key={d}
-                      value={humanizeString(d)}
-                      onSelect={(currentValue) => {
-                        const formatted = currentValue
-                          .toLowerCase()
-                          .replace(/ /g, '_');
-                        setValue(formatted === value ? '' : formatted);
+                      value={getLabel(d)}
+                      onSelect={() => {
+                        setValue(d === value ? '' : d);
                         setOpen(false);
                         handleTargetFieldChange(column, d);
                       }}
@@ -97,13 +101,13 @@ export function ComboBox({
                       <Check
                         className={cn(
                           'mr-2 h-4 w-4',
-                          humanizeString(value) === humanizeString(d)
+                          getLabel(value) === getLabel(d)
                             ? 'opacity-100'
                             : 'opacity-0',
                         )}
                       />
                       <div className="flex items-center justify-between w-full">
-                        <span>{humanizeString(d)}</span>
+                        <span>{getLabel(d)}</span>
                         {isSuggested && (
                           <span className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-blue-100 text-blue-600 rounded-md border border-blue-200 shrink-0">
                             AI Suggested

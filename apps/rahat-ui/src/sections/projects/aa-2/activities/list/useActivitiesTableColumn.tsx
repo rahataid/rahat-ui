@@ -8,26 +8,7 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
-
-// function getStatusBg(status: string) {
-//   if (status === 'NOT_STARTED') {
-//     return 'bg-gray-200';
-//   }
-
-//   if (status === 'WORK_IN_PROGRESS') {
-//     return 'bg-orange-200';
-//   }
-
-//   if (status === 'COMPLETED') {
-//     return 'bg-green-200';
-//   }
-
-//   if (status === 'DELAYED') {
-//     return 'bg-red-200';
-//   }
-
-//   return '';
-// }
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export default function useActivitiesTableColumn() {
   const { id: projectID, title } = useParams();
@@ -50,11 +31,15 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
+      meta: { className: 'w-[250px]' },
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('title')} truncateByWidth />
+      ),
     },
     {
       accessorKey: 'category',
       header: 'Category',
+      meta: { className: 'w-[130px]' },
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
           <TruncatedCell text={row.getValue('category')} maxLength={15} />
@@ -65,6 +50,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'isAutomated',
       header: 'Type',
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize  text-xs font-normal text-muted-foreground">
           {row.getValue('isAutomated') ? 'Automated' : 'Manual'}
@@ -74,6 +60,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'responsibility',
       header: 'Responsibility',
+      meta: { className: 'w-[130px]' },
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('responsibility') || 'N/A'}
@@ -84,6 +71,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'responsibleStation',
       header: 'Responsible Station ',
+      meta: { className: 'w-[120px]' },
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('responsibleStation') || 'N/A'}
@@ -94,44 +82,44 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'status',
       header: 'Status',
+      meta: { className: 'w-[100px]' },
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        const bgColor = getStatusBg(status);
+        const rawStatus = row.getValue('status') as string;
+        const status = rawStatus
+          .toLowerCase()
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
         return (
-          <Badge
-            className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
-          >
+          <Badge className={getStatusBg(status)}>
             <TruncatedCell text={status} maxLength={10} />
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'completedBy',
       header: 'Completed By',
+      meta: { className: 'w-[110px]' },
       cell: ({ row }) => {
-        const completedBy = row.getValue('completedBy') as string;
-        return <TruncatedCell text={completedBy || 'N/A'} />;
-      },
-    },
-    {
-      accessorKey: 'completedAt',
-      header: 'Timestamp',
-      cell: ({ row }) => {
-        const completedAt = row.getValue('completedAt') as string;
-        if (completedAt) {
-          const d = new Date(completedAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return <TruncatedCell text={`${localeDate} ${localeTime}`} />;
-        }
-        return 'N/A';
+        const completedBy = row.original.completedBy;
+        const completedAt = row.original.completedAt;
+        return (
+          <div className="flex flex-col text-xs">
+            <span className="text-muted-foreground">
+              {completedBy || 'N/A'}
+            </span>
+            <span className="text-muted-foreground">
+              {completedAt ? dateFormat(completedAt) : 'N/A'}
+            </span>
+          </div>
+        );
       },
     },
     {
       id: 'actions',
       enableHiding: false,
       header: 'Action',
+      meta: { className: 'w-[60px]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

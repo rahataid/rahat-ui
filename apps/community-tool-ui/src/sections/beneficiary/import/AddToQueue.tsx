@@ -39,8 +39,9 @@ import {
   Check,
   ChevronsUpDown,
   CloudDownloadIcon,
+  RefreshCcw,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface IProps {
   data: any;
@@ -50,6 +51,11 @@ interface IProps {
   handleExportInvalidClick: any;
   hasUUID: boolean;
   loading: boolean;
+  mappings: { sourceField: string; targetField: string }[];
+  onDataChange: (updatedData: any[]) => void;
+  onRevalidate: () => void;
+  uniqueFields?: string;
+  hasPendingEdits?: boolean;
 }
 
 export default function AddToQueue({
@@ -60,11 +66,41 @@ export default function AddToQueue({
   handleExportInvalidClick,
   hasUUID,
   loading,
+  mappings,
+  onDataChange,
+  onRevalidate,
+  uniqueFields,
+  hasPendingEdits,
 }: IProps) {
+  const uniqueFieldSet = new Set(
+    (uniqueFields ?? '')
+      .split(',')
+      .map((f) => f.trim())
+      .filter(Boolean),
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [useExistingGroup, setUseExistingGroup] = useState(false);
   const [selectGroupName, setSelectedGroupName] = useState<string | null>(null);
   const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
+  const [localData, setLocalData] = useState<any[]>(data);
+
+  useEffect(() => {
+    setLocalData(data);
+  }, [data]);
+
+  const handleCellEdit = (rowIndex: number, key: string, value: string) => {
+    const updated = localData.map((row, i) => {
+      if (i !== rowIndex) return row;
+      const mapping = mappings.find((m) => m.targetField === key);
+      const sourceKey = mapping?.sourceField ?? key;
+      const updatedRawData = row.rawData
+        ? { ...row.rawData, [sourceKey]: value }
+        : row.rawData;
+      return { ...row, [key]: value, rawData: updatedRawData };
+    });
+    setLocalData(updated);
+    onDataChange(updated);
+  };
 
   const { pagination, filters } = usePagination();
   pagination.perPage = 50;
@@ -75,8 +111,8 @@ export default function AddToQueue({
   });
 
   const mappedData =
-    data.length > 0
-      ? data.map((d: any) => {
+    localData.length > 0
+      ? localData.map((d: any) => {
           const { rawData, ...rest } = d;
           return rest;
         })
@@ -96,12 +132,13 @@ export default function AddToQueue({
     return item[key];
   }
 
-  const hasDuplicates = data.some((item: any) => item.isDuplicate);
+  const hasDuplicates = localData.some((item: any) => item.isDuplicate);
 
   const enableDisableImportButton = () => {
-    if (hasUUID) return false;
-    if (invalidFields.length || hasDuplicates) return true;
     if (loading) return true;
+    if (invalidFields.length) return true;
+    if (hasPendingEdits) return true;
+    if (!hasUUID && hasDuplicates) return true;
     return false;
   };
 
@@ -131,14 +168,25 @@ export default function AddToQueue({
           <ArrowBigLeft size={18} strokeWidth={2} /> Back
         </Button>
 
-        <div>
+        <div className="flex gap-2">
           <Button
             disabled={!invalidFields.length && !hasDuplicates}
             onClick={handleExportInvalidClick}
-            className="w-40 mr-2 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+            className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
           >
             <ArrowBigUp size={18} strokeWidth={2} /> Export Invalid
           </Button>
+
+          {(invalidFields.length > 0 || hasDuplicates) && (
+            <Button
+              disabled={loading}
+              onClick={onRevalidate}
+              className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+            >
+              <RefreshCcw size={18} strokeWidth={2} />
+              &nbsp;{loading ? 'Validating...' : 'Re-validate'}
+            </Button>
+          )}
 
           <Button
             disabled={enableDisableImportButton()}
@@ -299,7 +347,7 @@ export default function AddToQueue({
           </thead>
 
           <tbody className="h-screen overflow-y-auto">
-            {data.map((item: any, index: number) => (
+            {localData.map((item: any, index: number) => (
               <tr
                 key={index}
                 className={`${
@@ -311,14 +359,34 @@ export default function AddToQueue({
                 {headerKeys.map((key) => {
                   const errorData = invalidFields.find(
                     (err: any) =>
-                      err.uuid === item['uuid'] &&
-                      err.value === item[key] &&
-                      key === err.fieldName,
+                      err.uuid === item['uuid'] && key === err.fieldName,
                   );
 
                   const isInvalid = !!errorData;
 
                   const cellContent = renderItemKey(item, key);
+
+                  const isEditableKey = key !== 'isDuplicate' && key !== 'uuid';
+
+                  const editableInput = (
+                    <input
+                      className="w-full bg-transparent border-b border-red-400 outline-none text-sm text-gray-800 focus:border-red-600"
+                      value={item[key] ?? ''}
+                      onChange={(e) =>
+                        handleCellEdit(index, key, e.target.value)
+                      }
+                    />
+                  );
+
+                  const duplicateEditableInput = (
+                    <input
+                      className="w-full bg-transparent border-b border-orange-400 outline-none text-sm text-gray-800 focus:border-orange-600"
+                      value={item[key] ?? ''}
+                      onChange={(e) =>
+                        handleCellEdit(index, key, e.target.value)
+                      }
+                    />
+                  );
 
                   // DUPLICATE + INVALID
                   if (item.isDuplicate && isInvalid) {
@@ -327,11 +395,10 @@ export default function AddToQueue({
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="w-full h-full cursor-pointer">
-                                {cellContent}
+                              <div className="w-full h-full">
+                                {isEditableKey ? editableInput : cellContent}
                               </div>
                             </TooltipTrigger>
-
                             <TooltipContent align="start">
                               <div className="space-y-1">
                                 <p>This row is duplicate!</p>
@@ -344,18 +411,17 @@ export default function AddToQueue({
                     );
                   }
 
-                  // INVALID STATUS
+                  // INVALID CELL — editable
                   if (isInvalid) {
                     return (
                       <td className="px-4 py-1.5 bg-red-100" key={key}>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="w-full h-full cursor-pointer">
-                                {cellContent}
+                              <div className="w-full h-full">
+                                {isEditableKey ? editableInput : cellContent}
                               </div>
                             </TooltipTrigger>
-
                             <TooltipContent align="start">
                               <p>{errorData?.message}</p>
                             </TooltipContent>
@@ -365,20 +431,31 @@ export default function AddToQueue({
                     );
                   }
 
-                  // DUPLICATE ROW
+                  // DUPLICATE ROW — only unique fields are editable
                   if (item.isDuplicate) {
+                    const isDuplicateField = uniqueFieldSet.has(key);
                     return (
-                      <td className="px-4 py-1.5" key={key}>
+                      <td
+                        className={`px-4 py-1.5 ${
+                          isDuplicateField ? 'bg-orange-50' : ''
+                        }`}
+                        key={key}
+                      >
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="w-full h-full cursor-pointer">
-                                {cellContent}
+                              <div className="w-full h-full">
+                                {isDuplicateField
+                                  ? duplicateEditableInput
+                                  : cellContent}
                               </div>
                             </TooltipTrigger>
-
                             <TooltipContent align="start">
-                              <p>This row is duplicate!</p>
+                              <p>
+                                {isDuplicateField
+                                  ? 'Duplicate value — edit to make it unique'
+                                  : 'This row has a duplicate unique field'}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

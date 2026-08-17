@@ -3,7 +3,7 @@ import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { UUID } from 'crypto';
-import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
+import { Copy, CopyCheck, Pencil, Trash2 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import CoreBtnComponent from '../../components/core.btn';
 import HeaderWithBack from '../projects/components/header.with.back';
@@ -158,6 +158,32 @@ export default function BeneficiaryDetail() {
           ))}
         </div>
       </div>
+
+      {beneficiary?.bankAccount && (
+        <div className="mt-3 space-y-3">
+          <h1 className="font-medium">Validated Bank Details</h1>
+          <div className="p-5 rounded-sm shadow border grid grid-cols-4 gap-5">
+            <div>
+              <h1 className="text-md text-muted-foreground">Bank Name</h1>
+              <p className="font-medium">
+                {beneficiary?.bankAccount?.bankName || 'N/A'}
+              </p>
+            </div>
+            <div>
+              <h1 className="text-md text-muted-foreground">Account Name</h1>
+              <p className="font-medium">
+                {beneficiary?.bankAccount?.accountName || 'N/A'}
+              </p>
+            </div>
+            <div>
+              <h1 className="text-md text-muted-foreground">Account Number</h1>
+              <p className="font-medium">
+                {beneficiary?.bankAccount?.accountNumber || 'N/A'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {Object.keys(beneficiary?.extras || {}).length > 0 &&
         beneficiary?.extras && (

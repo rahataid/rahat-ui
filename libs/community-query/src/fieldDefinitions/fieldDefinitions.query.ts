@@ -161,6 +161,21 @@ export const useFieldDefinitionsListById = (
   return query;
 };
 
+export const useUniqueFieldDefinitionsList = (): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.LIST_UNIQUE_FIELD_DEFINITIONS],
+      queryFn: () => fieldDefClient.listUnique(),
+    },
+    queryClient,
+  );
+
+  return query;
+};
+
 export const useAddBulkFile = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const fieldDefClient = getFieldDefinitionClient(rumsanService.client);

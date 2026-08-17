@@ -134,42 +134,19 @@ export function exportFailedLogs(logsData: SessionLog[]): void {
   XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
 }
 
-export function exportAllLogs(
-  logsData: SessionLog[],
-  logs: LogsData,
-  activityDetail: ActivityDetail,
-  countData: CountData,
-  total: number,
-): void {
-  if (!logsData?.length) return;
-
-  const communicationType =
-    logs?.sessionDetails?.Transport?.name || 'Communication';
-  const rowMapper = buildRowMapper(logs);
-  const communicationLogsData = logsData.map(rowMapper);
-
-  const detailsData = [
-    {
-      'Activity Title': activityDetail?.title || 'N/A',
-      'Activity Description': activityDetail?.description || 'N/A',
-      Phase: activityDetail?.phase?.name || 'N/A',
-      'Activity Status': activityDetail?.status || 'N/A',
-      'Total Audience Count': total,
-      'Successfully Delivered': countData?.SUCCESS ?? 0,
-      'Failed Delivered': countData?.FAIL ?? 0,
-    },
-  ];
-
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(
-    workbook,
-    XLSX.utils.json_to_sheet(communicationLogsData),
-    'Communication Logs',
-  );
-  XLSX.utils.book_append_sheet(
-    workbook,
-    XLSX.utils.json_to_sheet(detailsData),
-    'Details',
-  );
-  XLSX.writeFile(workbook, `${communicationType} Logs.xlsx`);
+export async function downloadLogsCsv(
+  url: string,
+  fileName: string,
+): Promise<void> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = objectUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectUrl);
 }

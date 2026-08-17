@@ -66,6 +66,7 @@ export default function EditTrigger() {
     title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
     isMandatory: z.boolean().optional(),
     description: z.string().optional(),
+    leadTime: z.string().optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -74,6 +75,7 @@ export default function EditTrigger() {
       title: '',
       isMandatory: false,
       description: '',
+      leadTime: '',
     },
   });
 
@@ -83,6 +85,7 @@ export default function EditTrigger() {
       description: z.string().optional(),
       source: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
       isMandatory: z.boolean().optional(),
+      leadTime: z.string().optional(),
       triggerStatement: buildTriggerStatementSchema(t),
       minLeadTimeDays: numeralString(),
       maxLeadTimeDays: numeralString(),
@@ -247,6 +250,7 @@ export default function EditTrigger() {
       description: '',
       source: '',
       isMandatory: false,
+      leadTime: '',
       triggerStatement: {
         source: undefined,
         sourceSubType: '',
@@ -283,6 +287,7 @@ export default function EditTrigger() {
       phaseId: trigger?.phaseId,
       uuid: trigger?.uuid,
       isMandatory: !data?.isMandatory,
+      leadTime: data.leadTime,
     };
 
     if (!isAutomatedFormData(data)) {
@@ -322,6 +327,7 @@ export default function EditTrigger() {
         title: trigger?.title,
         description: trigger?.description,
         isMandatory: !trigger?.isMandatory,
+        leadTime: trigger?.leadTime,
       };
     } else {
       const triggerSource = trigger?.triggerStatement?.source;
@@ -342,6 +348,7 @@ export default function EditTrigger() {
         source: formSource,
         isMandatory: !trigger?.isMandatory,
         description: trigger?.description || '',
+        leadTime: trigger?.leadTime,
         triggerStatement: {
           source: trigger?.triggerStatement?.source || '',
           sourceSubType: correctedSourceSubType,
@@ -384,7 +391,6 @@ export default function EditTrigger() {
   if (isLoading || isLoadingDataSourceTypes) {
     return <LoaderRahat />;
   }
-
   return (
     <>
       <div className={'p-4'}>
@@ -400,6 +406,7 @@ export default function EditTrigger() {
               phase={{
                 name: trigger?.phase?.name,
                 riverBasin: trigger?.phase?.source?.riverBasin,
+                isRequiredLeadTime: trigger?.phase?.isRequiredLeadTime,
               }}
               isEditing={true}
               sourceOptions={sourceOptions}
@@ -413,6 +420,8 @@ export default function EditTrigger() {
               phase={{
                 name: trigger?.phase?.name,
                 riverBasin: trigger?.phase?.source?.riverBasin,
+                isRequiredLeadTime: trigger?.phase?.isRequiredLeadTime,
+                leadTime: trigger?.leadTime,
               }}
               stationHeading={stationHeading}
             />

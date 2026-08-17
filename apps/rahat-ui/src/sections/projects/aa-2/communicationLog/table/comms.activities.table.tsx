@@ -3,7 +3,13 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
+import {
+  useActivitiesHavingComms,
+  usePagination,
+  usePhases,
+  usePhasesStore,
+  useProjectInfo,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 import {
@@ -13,6 +19,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function CommsActivitiesTable() {
   const tGlobal = useTranslations('GLOBAL');
@@ -35,6 +42,10 @@ export default function CommsActivitiesTable() {
 
   const { activitiesData, activitiesMeta, isLoading } =
     useActivitiesHavingComms(projectId as UUID, { ...pagination, filters });
+
+  useProjectInfo(projectId as UUID);
+  usePhases(projectId as UUID);
+  const { phases } = usePhasesStore((state) => ({ phases: state.phases }));
 
   const columns = useCommsActivitiesTableColumns();
 
@@ -74,14 +85,14 @@ export default function CommsActivitiesTable() {
           onSearch={(event) => handleFilterChange(event)}
         />
         <SelectComponent
-          name={t('PHASE')}
-          options={['ALL', 'ACTIVATION', 'READINESS', 'PREPAREDNESS']}
-          labels={{
-            ALL: tGlobal('ALL'),
-            ACTIVATION: tGlobal('ACTIVATION'),
-            READINESS: tGlobal('READINESS'),
-            PREPAREDNESS: tGlobal('PREPAREDNESS'),
-          }}
+          name="Phase"
+          options={['ALL', ...phases.map((p) => p.name)]}
+          labels={Object.fromEntries(
+            ['ALL', ...phases.map((p) => p.name)].map((name) => [
+              name,
+              translateValue(tGlobal, name, { fallbackStyle: 'raw' }),
+            ]),
+          )}
           onChange={(value) =>
             handleFilterChange({
               target: { name: 'phase', value },

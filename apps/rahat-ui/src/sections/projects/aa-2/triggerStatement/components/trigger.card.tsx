@@ -12,6 +12,7 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { SEP, toLabel, TriggerStatement } from '../utils';
 import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type IProps = {
   projectId: string;
   triggerId: string;
@@ -26,6 +27,7 @@ type IProps = {
   triggerType?: string;
   version?: number;
   id?: number;
+  leadTime?: string;
   triggerStatement: TriggerStatement;
 };
 
@@ -55,6 +57,7 @@ export default function TriggerCard({
   version,
   id,
   triggerStatement: tgSt,
+  leadTime,
 }: IProps) {
   const formatDate = useDateFormat();
   const t = useTranslations('AA_PROJECT');
@@ -101,6 +104,7 @@ export default function TriggerCard({
           {isTriggered ? t('TRIGGERED') : t('NOT_TRIGGERED')}
         </Badge>
       </div>
+
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -116,6 +120,7 @@ export default function TriggerCard({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
       <p className="text-muted-foreground text-sm/4 mb-1">
         {capitalizeFirstLetter(riverBasin)}
 
@@ -146,6 +151,11 @@ export default function TriggerCard({
       {triggeredAt && (
         <p className="text-muted-foreground text-sm/4">
           {t('TRIGGERED_AT_COLON')} {formatDate(triggeredAt)}
+        </p>
+      )}
+      {leadTime && (
+        <p className="text-muted-foreground text-sm/4">
+          Lead Time : {leadTime ?? 'N/A'}
         </p>
       )}
     </div>

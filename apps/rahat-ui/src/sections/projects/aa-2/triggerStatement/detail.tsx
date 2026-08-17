@@ -34,6 +34,11 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function TriggerStatementDetail() {
   const formatDate = useDateFormat();
@@ -140,10 +145,7 @@ export default function TriggerStatementDetail() {
           } text-xs`}
         />
         <div className="flex space-x-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.DELETE} subject={SUBJECTS.TRIGGER}>
             <TooltipWrapper
               tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
               disable={!isEditDeleteDisabled}
@@ -158,7 +160,7 @@ export default function TriggerStatementDetail() {
                 disabled={isEditDeleteDisabled}
               />
             </TooltipWrapper>
-          </RoleAuth>
+          </Can>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
@@ -271,6 +273,11 @@ export default function TriggerStatementDetail() {
                 <p className="mb-1">{t('TRIGGERED_BY')}</p>
                 <p>{trigger?.triggeredBy}</p>
               </div>
+            )}
+            {trigger?.leadTime && (
+              <p className="text-muted-foreground text-sm/4">
+                Lead Time : {trigger.leadTime ?? 'N/A'}
+              </p>
             )}
           </div>
         </div>

@@ -3,7 +3,7 @@ import { useQuery, useMutation, UseQueryResult } from '@tanstack/react-query';
 import { getRoleClient, getUserClient } from '@rumsan/sdk/clients';
 import Swal from 'sweetalert2';
 import { UUID } from 'crypto';
-import { ListRole, User } from '@rumsan/sdk/types';
+import { AssignRole, ListRole, User } from '@rumsan/sdk/types';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
@@ -126,7 +126,7 @@ export const useRoleList = (payload?: ListRole): any => {
   const { queryClient, rumsanService } = useRSQuery();
   const query = useQuery(
     {
-      queryKey: ['get_all_roles'],
+      queryKey: ['get_all_roles', payload],
       queryFn: () => rumsanService.role.listRole(payload),
       staleTime: 10 * 60 * 1000, // 10 min
     },
@@ -146,12 +146,7 @@ export const useCreateRole = () => {
       onSuccess: () => {
         Swal.fire('Roles Added Successfully', '', 'success');
         queryClient.invalidateQueries({
-          queryKey: [
-            'get_all_roles',
-            {
-              exact: true,
-            },
-          ],
+          queryKey: ['get_all_roles'],
         });
       },
       onError: (error: any) => {
@@ -189,12 +184,7 @@ export const useEditRole = () => {
       onSuccess: () => {
         Swal.fire('Role Updated Successfully', '', 'success');
         queryClient.invalidateQueries({
-          queryKey: [
-            'get_all_roles',
-            {
-              exact: true,
-            },
-          ],
+          queryKey: ['get_all_roles'],
         });
       },
       onError: (error: any) => {
@@ -232,6 +222,69 @@ export const useGetRole = (name: string) => {
   return query;
 };
 
+export const useRolePermissions = (name: string) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const roleClient = getRoleClient(rumsanService.client);
+  const query = useQuery(
+    {
+      queryKey: ['get_role_permissions', name],
+      queryFn: () => roleClient.listPermissionsByRole(name),
+      enabled: !!name,
+    },
+    queryClient,
+  );
+  return query;
+};
+
+export const useAssignRoleInProject = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const userClient = getUserClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: ['assign_role_in_project'],
+      mutationFn: ({ uuid, data }: { uuid: UUID; data: AssignRole }) =>
+        userClient.assignRoleInProject(uuid, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['get_user_roles'] });
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useListActiveRoles = (uuid?: UUID): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const userClient = getUserClient(rumsanService.client);
+  const query = useQuery(
+    {
+      queryKey: ['get_user_roles', uuid],
+      enabled: !!uuid,
+      queryFn: () => userClient.listActiveRoles(uuid as UUID),
+    },
+    queryClient,
+  );
+  return query;
+};
+
+export const useUserAbilitiesInProject = (
+  uuid?: string,
+  xrefId?: string,
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const userClient = getUserClient(rumsanService.client);
+  const query = useQuery(
+    {
+      queryKey: ['user_abilities_in_project', uuid, xrefId],
+      queryFn: () =>
+        userClient.getUserAbilitiesInProject(uuid as string, xrefId as string),
+      enabled: !!uuid && !!xrefId,
+    },
+    queryClient,
+  );
+  return query;
+};
+
 export const useDeleteRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);
@@ -244,12 +297,7 @@ export const useDeleteRole = () => {
       onSuccess: () => {
         Swal.fire('Role Deleted Successfully', '', 'success');
         queryClient.invalidateQueries({
-          queryKey: [
-            'get_all_roles',
-            {
-              exact: true,
-            },
-          ],
+          queryKey: ['get_all_roles'],
         });
       },
       onError: (error: any) => {

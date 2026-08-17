@@ -21,10 +21,15 @@ import {
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useTranslations } from 'next-intl';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function PhaseDetail() {
   const formatDate = useDateFormat();
@@ -92,10 +97,7 @@ export default function PhaseDetail() {
           description={phase?.name ? t('DETAILED_VIEW_OF_PHASE', { phase: phase?.name?.toLowerCase() }) : ''}
         />
         <div className="flex space-x-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.TRIGGER}>
             <TooltipWrapper
               tip={t('CANNOT_ADD_TRIGGERS_ACTIVE_PHASE')}
               disable={!phase?.isActive}
@@ -109,8 +111,7 @@ export default function PhaseDetail() {
                 handleClick={handleAddTriggerClick}
               />
             </TooltipWrapper>
-          </RoleAuth>
-
+          </Can>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}

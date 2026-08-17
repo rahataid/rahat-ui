@@ -32,6 +32,7 @@ import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { DurationData } from '../../activities/add/add.activity.view';
 
 // Labels are translation keys; resolved with `t()` where the options render.
 const operatorOptions = [
@@ -171,7 +172,6 @@ export default function AddAutomatedTriggerForm({
       ? value.split(':')
       : [value, null];
 
-
     const mappedType = dataSource === 'gfh' ? 'water_level' : type;
 
     setSelectedSource({ dataSource, type: mappedType });
@@ -225,6 +225,7 @@ export default function AddAutomatedTriggerForm({
             </FormControl>
             <FormMessage />
           </FormItem>
+
           <FormItem>
             <FormLabel>{computedStationHeading}</FormLabel>
             <FormControl>
@@ -256,6 +257,59 @@ export default function AddAutomatedTriggerForm({
               );
             }}
           />
+          {phase?.isRequiredLeadTime && (
+            <FormField
+              control={form.control}
+              name="leadTime"
+              render={({ field }) => {
+                const raw = field.value?.trim() ?? '';
+                const unitMatch = raw.match(/(hours|days)/i);
+                const unit = unitMatch
+                  ? unitMatch[0].toLowerCase()
+                  : 'days';
+                const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
+                return (
+                  <FormItem>
+                    <FormLabel>Lead Time</FormLabel>
+                      <div className="grid grid-cols-4">
+                        <Input
+                          type="text"
+                          placeholder="Enter lead time"
+                          className="col-span-3 rounded-r-none"
+                          value={lead}
+                          onChange={(e) => {
+                            const newLead = e.target.value;
+                            field.onChange(
+                              newLead ? `${newLead} ${unit}` : '',
+                            );
+                          }}
+                        />
+                        <Select
+                          value={unit}
+                          onValueChange={(val) => {
+                            field.onChange(lead ? `${lead} ${val}` : '');
+                          }}
+                        >
+                        <FormControl>
+                          <SelectTrigger className="rounded-l-none">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {DurationData.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          )}
           <FormField
             control={form.control}
             name="source"
@@ -327,8 +381,8 @@ export default function AddAutomatedTriggerForm({
                           {/* for heatwave */}
                           {(triggerSource === 'prob_humidity' ||
                             triggerSource === 'temperature_c') && (
-                              <SourceSubTypeField label={t('MEASUREMENT_PERIOD')} />
-                            )}
+                            <SourceSubTypeField label={t('MEASUREMENT_PERIOD')} />
+                          )}
                         </Select>
                         <FormMessage />
                       </FormItem>
@@ -355,7 +409,7 @@ export default function AddAutomatedTriggerForm({
                             }}
                             value={field.value}
                             key={field.value}
-                          // disabled={false}
+                            // disabled={false}
                           >
                             <FormLabel>{t('STATION')}</FormLabel>
                             <FormControl>
@@ -440,8 +494,8 @@ export default function AddAutomatedTriggerForm({
                           const meta =
                             triggerSource && triggerSource in SOURCE_META
                               ? SOURCE_META[
-                              triggerSource as keyof typeof SOURCE_META
-                              ]
+                                  triggerSource as keyof typeof SOURCE_META
+                                ]
                               : undefined;
                           return (
                             <FormItem>
@@ -469,8 +523,9 @@ export default function AddAutomatedTriggerForm({
                   </div>
                 </div>
               )}
+
               {triggerValue && (
-                <div className="col-span-2">
+                <div>
                   <div className="flex space-x-2 items-center ">
                     <p className="text-sm/6 text-primary">
                       Generated Expression
@@ -483,12 +538,12 @@ export default function AddAutomatedTriggerForm({
                     {triggerSource === 'water_level_m'
                       ? 'm'
                       : triggerSource === 'discharge_m3s'
-                        ? 'm³/s'
-                        : triggerSource === 'rainfall_mm'
-                          ? 'mm'
-                          : triggerSource === 'prob_flood'
-                            ? '%'
-                            : ''}
+                      ? 'm³/s'
+                      : triggerSource === 'rainfall_mm'
+                      ? 'mm'
+                      : triggerSource === 'prob_flood'
+                      ? '%'
+                      : ''}
                     )
                   </p>
                 </div>

@@ -15,19 +15,43 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionContent,
+} from '@rahat-ui/shadcn/src/components/ui/accordion';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import swal from 'sweetalert2';
 import PermissionsCard from './PermissionsCard';
-import { SUBJECT_ACTIONS } from 'apps/rahat-ui/src/constants/user.const';
+import ProjectPermissionsCard from './ProjectPermissionsCard';
+import {
+  SUBJECT_ACTIONS,
+  PROJECT_SUBJECT_ACTIONS,
+} from 'apps/rahat-ui/src/constants/user.const';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useUserRoleEdit } from '@rumsan/react-query';
-import Swal from 'sweetalert2';
 
 type Iprops = {
   roleDetail: any;
   currentPerms: any;
+};
+
+const splitPermsBySubjectGroup = (perms: any) => {
+  const roles: any = {};
+  const projectRoles: any = {};
+  if (perms) {
+    Object.keys(perms).forEach((subject) => {
+      if (subject in PROJECT_SUBJECT_ACTIONS) {
+        projectRoles[subject] = perms[subject];
+      } else {
+        roles[subject] = perms[subject];
+      }
+    });
+  }
+  return { roles, projectRoles };
 };
 
 export default function EditRole({ roleDetail, currentPerms }: Iprops) {
@@ -37,6 +61,36 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
 
   const [selectedSubjectActions, setSeletedSubjectActions] =
     useState<any>(null);
+  const [selectedProjectSubjectActions, setSelectedProjectSubjectActions] =
+    useState<any>(null);
+  const [roleSearch, setRoleSearch] = useState('');
+  const [projectRoleSearch, setProjectRoleSearch] = useState('');
+  const [openRolesSections, setOpenRolesSections] = useState<string[]>([
+    'roles',
+  ]);
+  const [openProjectRolesSections, setOpenProjectRolesSections] = useState<
+    string[]
+  >(['project-roles']);
+  const rolesSectionRef = useRef<HTMLDivElement>(null);
+  const projectRolesSectionRef = useRef<HTMLDivElement>(null);
+
+  const toggleSection = (
+    section: string,
+    open: string[],
+    setOpen: (value: string[]) => void,
+    ref: React.RefObject<HTMLDivElement>,
+  ) => {
+    const isOpening = !open.includes(section);
+    if (isOpening) {
+      setTimeout(() => {
+        ref.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 220);
+    }
+    setOpen(isOpening ? [...open, section] : open.filter((s) => s !== section));
+  };
 
   const FormSchema = z.object({
     roleName: z.string().min(2, {
@@ -53,35 +107,6 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
     },
   });
 
-  const handleEditRole = (data: any) => {
-    try {
-      const validateData = FormSchema.parse(data);
-      const sanitizedPerms = filterNonEmptyArrays(selectedSubjectActions);
-      const hasPerms = Object.keys(sanitizedPerms).length > 0;
-      if (!hasPerms)
-        return swal.fire(
-          'Error',
-          t('YOU_HAVE_TO_SELECT_AT_LEAST_ONE_PERMISSION'),
-          'error',
-        );
-      const k = {
-        name: validateData.roleName,
-        isSystem: validateData.isSystem,
-        permissions: sanitizedPerms,
-      };
-      edit.mutateAsync({ name: roleDetail?.data?.role?.name, data: k });
-      Swal.fire(t('ROLE_UPDATED_SUCCESSFULLY'), '', 'success');
-    } catch (err) {
-      const errMsg =
-        err instanceof Error ? err.message : 'Something went wrong';
-      Swal.fire(t('ERROR_UPDATING_ROLE'), errMsg, 'error');
-    } finally {
-      form.reset();
-      setSeletedSubjectActions(null);
-      closeSecondPanel();
-    }
-  };
-
   const filterNonEmptyArrays = (obj: any) => {
     return Object.keys(obj)
       .filter((key) => obj[key].length > 0)
@@ -91,83 +116,268 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
       }, {});
   };
 
+  const handleEditRole = async (data: z.infer<typeof FormSchema>) => {
+    const validateData = FormSchema.parse(data);
+    const sanitizedPerms = filterNonEmptyArrays({
+      ...selectedSubjectActions,
+      ...selectedProjectSubjectActions,
+    });
+    const hasPerms = Object.keys(sanitizedPerms).length > 0;
+    if (!hasPerms)
+      return swal.fire(
+        'Error',
+        t('YOU_HAVE_TO_SELECT_AT_LEAST_ONE_PERMISSION'),
+        'error',
+      );
+    const k = {
+      name: validateData.roleName,
+      isSystem: validateData.isSystem,
+      permissions: sanitizedPerms,
+    };
+
+    try {
+      await edit.mutateAsync({ name: roleDetail?.data?.role?.name, data: k });
+      swal.fire(t('ROLE_UPDATED_SUCCESSFULLY'), '', 'success');
+      closeSecondPanel();
+    } catch (err) {
+      const errMsg =
+        err instanceof Error ? err.message : 'Something went wrong';
+      swal.fire(t('ERROR_UPDATING_ROLE'), errMsg, 'error');
+    }
+  };
+
   const handlePermissionUpdate = (subject: string, action: string) => {
     setSeletedSubjectActions((prevPermissions: any) => {
-      const currentPerms = prevPermissions[subject]
-        ? prevPermissions[subject]
-        : [];
-      const updatedActions = currentPerms.includes(action)
-        ? currentPerms.filter((a: string) => {
-            return a !== action;
-          })
-        : [...currentPerms, action];
+      const currentActions =
+        prevPermissions && prevPermissions[subject]
+          ? prevPermissions[subject]
+          : [];
+      const updatedActions = currentActions.includes(action)
+        ? currentActions.filter((a: string) => a !== action)
+        : [...currentActions, action];
 
       return { ...prevPermissions, [subject]: updatedActions };
     });
   };
 
+  const handleProjectPermissionUpdate = (subject: string, action: string) => {
+    setSelectedProjectSubjectActions((prevPermissions: any) => {
+      const currentActions =
+        prevPermissions && prevPermissions[subject]
+          ? prevPermissions[subject]
+          : [];
+      const updatedActions = currentActions.includes(action)
+        ? currentActions.filter((a: string) => a !== action)
+        : [...currentActions, action];
+
+      return { ...prevPermissions, [subject]: updatedActions };
+    });
+  };
+
+  const filteredSubjects = Object.keys(SUBJECT_ACTIONS).filter((subject) =>
+    subject.toLowerCase().includes(roleSearch.toLowerCase().trim()),
+  );
+
+  const filteredProjectSubjects = Object.keys(PROJECT_SUBJECT_ACTIONS).filter(
+    (subject) =>
+      subject.toLowerCase().includes(projectRoleSearch.toLowerCase().trim()),
+  );
+
   useEffect(() => {
-    setSeletedSubjectActions(currentPerms);
-  }, [roleDetail.data.name]);
+    const { roles, projectRoles } = splitPermsBySubjectGroup(currentPerms);
+    setSeletedSubjectActions(roles);
+    setSelectedProjectSubjectActions(projectRoles);
+  }, [roleDetail?.data?.role?.name, currentPerms]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleEditRole)}>
-        <h1 className="text-lg font-semibold mb-6">{t('EDIT_ROLE_PERMISSIONS')}</h1>
-        <div className="p-4 rounded-sm">
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <FormField
-              control={form.control}
-              name="roleName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('ROLE_NAME')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('ROLE_NAME')} {...field} />
-                  </FormControl>
+      <form
+        onSubmit={form.handleSubmit(handleEditRole)}
+        className="flex flex-col flex-1 min-h-0"
+      >
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
+          <h1 className="text-lg font-semibold">{t('EDIT_ROLE_PERMISSIONS')}</h1>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="roleName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('ROLE_NAME')}</FormLabel>
+                <FormControl>
+                    <Input placeholder={t('ROLE_NAME')} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
             name="isSystem"
             render={({ field }) => (
-              <div className=" flex flex-col space-y-4">
+              <FormItem>
                 <FormLabel>{t('SYSTEM')}</FormLabel>
-                <Switch
-                  {...field}
-                  value={field.value ? 'true' : 'false'}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </div>
+                <FormControl>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      {...field}
+                      value={field.value ? 'true' : 'false'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      This role is part of the system
+                    </p>
+                  </div>
+                </FormControl>
+              </FormItem>
             )}
           />
 
-          <div className="mt-3 mb-5">
-            <h2 className="mb-2 font-semibold">{t('PERMISSIONS')}</h2>
-            <ScrollArea className="h-[calc(100vh-495px)]">
-              {Object.keys(SUBJECT_ACTIONS).map((subject) => (
-                <PermissionsCard
-                  key={subject}
-                  subject={subject}
-                  existingActions={
-                    selectedSubjectActions && selectedSubjectActions[subject]
-                      ? selectedSubjectActions[subject]
-                      : []
-                  }
-                  onUpdate={handlePermissionUpdate}
-                />
-              ))}
-            </ScrollArea>
+          <div className="border rounded-md p-3">
+            <Accordion
+              type="multiple"
+              value={openRolesSections}
+              onValueChange={setOpenRolesSections}
+            >
+              <AccordionItem value="roles" ref={rolesSectionRef}>
+                <div className="flex items-center justify-between mb-3 mr-2">
+                  <h2 className="font-semibold">Select Roles</h2>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      toggleSection(
+                        'roles',
+                        openRolesSections,
+                        setOpenRolesSections,
+                        rolesSectionRef,
+                      )
+                    }
+                    className="shrink-0 p-1"
+                    aria-label="Toggle select roles section"
+                  >
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-200 ${
+                        openRolesSections.includes('roles')
+                          ? 'rotate-180'
+                          : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+                <AccordionContent className="pb-0">
+                  <Input
+                    placeholder="Search roles"
+                    value={roleSearch}
+                    onChange={(e) => setRoleSearch(e.target.value)}
+                    className="mb-3"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <ScrollArea className="h-64 pr-3">
+                    {filteredSubjects.length === 0 ? (
+                      <p className="text-muted-foreground text-sm py-2">
+                        No roles found
+                      </p>
+                    ) : (
+                      filteredSubjects.map((subject) => (
+                        <PermissionsCard
+                          key={subject}
+                          subject={subject}
+                          existingActions={
+                            selectedSubjectActions &&
+                            selectedSubjectActions[subject]
+                              ? selectedSubjectActions[subject]
+                              : []
+                          }
+                          onUpdate={handlePermissionUpdate}
+                        />
+                      ))
+                    )}
+                  </ScrollArea>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+
+          <div className="border rounded-md p-3">
+            <Accordion
+              type="multiple"
+              value={openProjectRolesSections}
+              onValueChange={setOpenProjectRolesSections}
+            >
+              <AccordionItem value="project-roles" ref={projectRolesSectionRef}>
+                <div className="flex items-center justify-between mb-3 mr-2">
+                  <h2 className="font-semibold">Select Project Roles</h2>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      toggleSection(
+                        'project-roles',
+                        openProjectRolesSections,
+                        setOpenProjectRolesSections,
+                        projectRolesSectionRef,
+                      )
+                    }
+                    className="shrink-0 p-1"
+                    aria-label="Toggle select project roles section"
+                  >
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-200 ${
+                        openProjectRolesSections.includes('project-roles')
+                          ? 'rotate-180'
+                          : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+                <AccordionContent className="pb-0">
+                  <Input
+                    placeholder="Search project roles"
+                    value={projectRoleSearch}
+                    onChange={(e) => setProjectRoleSearch(e.target.value)}
+                    className="mb-3"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <ScrollArea className="h-64 pr-3">
+                    {filteredProjectSubjects.length === 0 ? (
+                      <p className="text-muted-foreground text-sm py-2">
+                        No project roles found
+                      </p>
+                    ) : (
+                      filteredProjectSubjects.map((subject) => (
+                        <ProjectPermissionsCard
+                          key={subject}
+                          subject={subject}
+                          actions={(PROJECT_SUBJECT_ACTIONS as any)[subject]}
+                          existingActions={
+                            selectedProjectSubjectActions &&
+                            selectedProjectSubjectActions[subject]
+                              ? selectedProjectSubjectActions[subject]
+                              : []
+                          }
+                          onUpdate={handleProjectPermissionUpdate}
+                        />
+                      ))
+                    )}
+                  </ScrollArea>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
-        <div className="flex justify-end mt-3">
-          <Button type="submit">{t('UPDATE_ROLE')}</Button>
+        <div className="flex justify-end space-x-2 p-4 border-t shrink-0">
+          <Button
+            type="button"
+            variant="secondary"
+            className="px-10"
+            onClick={closeSecondPanel}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" className="px-10">
+            {t('UPDATE_ROLE')}
+          </Button>
         </div>
       </form>
     </Form>

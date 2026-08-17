@@ -65,7 +65,8 @@ export function buildAutomatedFormSchema(t?: any) {
     description: z.string().optional(),
     source: z.string().min(1, { message: _t('PLEASE_SELECT_DATA_SOURCE') }),
     isMandatory: z.boolean().optional(),
-    triggerStatement: buildTriggerStatementSchema(_t),
+    leadTime: z.string().optional(),
+  triggerStatement: buildTriggerStatementSchema(_t),
   });
 }
 
@@ -139,6 +140,7 @@ export default function AddTriggerView() {
     title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
     description: z.string().optional(),
     isMandatory: z.boolean().optional(),
+    leadTime: z.string().optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -147,6 +149,7 @@ export default function AddTriggerView() {
       title: '',
       isMandatory: false,
       description: '',
+      leadTime: '',
     },
   });
 
@@ -158,6 +161,7 @@ export default function AddTriggerView() {
       description: '',
       source: '',
       isMandatory: false,
+      leadTime: '',
       triggerStatement: {
         source: undefined,
         sourceSubType: '',

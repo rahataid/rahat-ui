@@ -8,7 +8,10 @@ import { useSwal } from '../../../swal';
 import { useProjectSettingsStore } from '../../projects';
 import { MS_TRIGGERS_KEYS, PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useSettingsStore } from '../../settings';
-import { FORECAST_QUERY_KEYS } from './trigger-statements.constants';
+import {
+  FORECAST_QUERY_KEYS,
+  PHASE_QUERY_KEYS,
+} from './trigger-statements.constants';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -83,8 +86,8 @@ export const useCreatePhase = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['phases'] });
-      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: 'Phase added successfully.',
         icon: 'success',
@@ -131,9 +134,9 @@ export const useUpdatePhase = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['phase'] });
-      qc.invalidateQueries({ queryKey: ['phases'] });
-      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: 'Phase updated successfully.',
         icon: 'success',
@@ -187,9 +190,9 @@ export const useConfigureExtendedLogic = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['phase'] });
-      qc.invalidateQueries({ queryKey: ['phases'] });
-      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: 'Extended trigger logic configured successfully.',
         icon: 'success',
@@ -238,9 +241,9 @@ export const useDeletePhase = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['phase'] });
-      qc.invalidateQueries({ queryKey: ['phases'] });
-      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: 'Phase deleted successfully.',
         icon: 'success',
@@ -333,7 +336,7 @@ export const useDeleteTriggerStatement = () => {
 
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: 'Trigger statement removed successfully.',
         icon: 'success',
@@ -391,13 +394,7 @@ export const useDhmWaterLevels = (
   const { from, to } = payload;
 
   const query = useQuery({
-    queryKey: [
-      FORECAST_QUERY_KEYS.DHM_WATER_LEVELS,
-      uuid,
-      activeTab,
-      from,
-      to,
-    ],
+    queryKey: [FORECAST_QUERY_KEYS.DHM_WATER_LEVELS, uuid, activeTab, from, to],
     staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -820,7 +817,7 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
   }));
 
   const query = useQuery({
-    queryKey: ['triggerstatements', uuid, payload],
+    queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT, uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

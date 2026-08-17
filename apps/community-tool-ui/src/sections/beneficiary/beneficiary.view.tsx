@@ -95,7 +95,7 @@ function BeneficiaryView() {
     }
   }, [resetSelectedListItems, selectedBeneficiaries.length]);
 
-  console.log(columnVisibility);
+
   return (
     <Tabs defaultValue="list" className="h-full">
       <>

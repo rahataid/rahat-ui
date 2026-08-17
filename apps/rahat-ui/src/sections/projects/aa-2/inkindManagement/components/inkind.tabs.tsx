@@ -1,5 +1,3 @@
-'use client';
-
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import {
   Tabs,
@@ -7,7 +5,7 @@ import {
   TabsList,
   TabsTrigger,
 } from 'libs/shadcn/src/components/ui/tabs';
-import { ComponentType, useEffect } from 'react';
+import { useEffect } from 'react';
 import InkindList from './inkind.list';
 import InkindOverview from './inkind.overview';
 import InkindAllocationList from './inkind.allocation.list';
@@ -18,9 +16,7 @@ const INKIND_TABS = [
   { value: 'inkindAllocation', label: 'Allocation List' },
 ] as const;
 
-type InkindTabValue = (typeof INKIND_TABS)[number]['value'];
-
-const componentMap: Record<InkindTabValue, ComponentType> = {
+const componentMap: Record<string, React.ComponentType> = {
   inkindList: InkindList,
   inkindOverview: InkindOverview,
   inkindAllocation: InkindAllocationList,
@@ -30,9 +26,7 @@ export default function InkindTabs() {
   const { activeTab, setActiveTab } = useActiveTab('inkindOverview');
 
   useEffect(() => {
-    if (!activeTab) {
-      setActiveTab('inkindOverview');
-    }
+    if (!activeTab) setActiveTab('inkindOverview');
   }, [activeTab, setActiveTab]);
 
   return (

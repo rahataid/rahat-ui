@@ -55,6 +55,7 @@ export const AutomatedFormSchema = z.object({
   description: z.string().optional(),
   source: z.string().min(1, { message: 'Please select data source' }),
   isMandatory: z.boolean().optional(),
+  leadTime: z.string().optional(),
   triggerStatement: triggerStatementSchema,
 });
 
@@ -123,6 +124,7 @@ export default function AddTriggerView() {
     title: z.string().min(2, { message: 'Please enter trigger title' }),
     description: z.string().optional(),
     isMandatory: z.boolean().optional(),
+    leadTime: z.string().optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -131,6 +133,7 @@ export default function AddTriggerView() {
       title: '',
       isMandatory: false,
       description: '',
+      leadTime: '',
     },
   });
 
@@ -141,6 +144,7 @@ export default function AddTriggerView() {
       description: '',
       source: '',
       isMandatory: false,
+      leadTime: '',
       triggerStatement: {
         source: undefined,
         sourceSubType: '',

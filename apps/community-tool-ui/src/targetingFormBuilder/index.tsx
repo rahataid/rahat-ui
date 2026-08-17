@@ -15,6 +15,7 @@ export default function Index({ formField }: any) {
         placeholder={humanizeString(formField.name)}
         options={formField?.fieldPopulate?.data || []}
         fieldName={formField.name}
+        fieldType={formField.fieldType}
       />
     </>
   );

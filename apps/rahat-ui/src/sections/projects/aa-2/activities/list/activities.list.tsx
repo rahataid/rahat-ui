@@ -297,6 +297,7 @@ export default function ActivitiesList() {
           currentPage={pagination.page}
           perPage={pagination.perPage}
           total={activitiesMeta?.lastPage || 0}
+          isShowTotalCount={true}
         />
       </div>
     </div>

@@ -79,6 +79,7 @@ export default function TriggerStatementView() {
         id: phase?.uuid,
         name: phase?.name,
         source: phase?.source?.source,
+        isRequiredLeadTime: phase?.isRequiredLeadTime,
         riverBasin: capitalizeFirstLetter(phase?.source?.riverBasin),
       }),
     );

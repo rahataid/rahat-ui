@@ -50,7 +50,6 @@ export default function VendorDetail() {
     };
   }, [vendorDetail]);
 
-  console.log({ vendor });
 
   const isVendorAssigned = vendor?.projects?.length;
   const removeVendor = useRemoveVendor();
@@ -123,9 +122,16 @@ export default function VendorDetail() {
             vendor?.projects?.length ? (
               <div className="flex gap-2 flex-wrap">
                 {vendor.projects.map((project: any) => (
-                  <p key={project.id} className="font-medium">
-                    {project?.name}
-                  </p>
+                  <div key={project.id} className="flex items-center space-x-2">
+                    <p className="font-medium">{project?.name}</p>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        project.canSyncWalkin ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      }`}
+                    >
+                      {project.canSyncWalkin ? 'Can Sync Walkin' : 'Disabled'}
+                    </span>
+                  </div>
                 ))}
               </div>
             ) : (

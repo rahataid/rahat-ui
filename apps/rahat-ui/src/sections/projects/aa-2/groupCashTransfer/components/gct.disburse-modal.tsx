@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { useEffect, useState } from 'react';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
@@ -72,6 +73,7 @@ export function DisburseModal({
 }) {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const formatPhone = usePhoneFormat();
   const router = useRouter();
   const recordsListPath = `/projects/aa/${projectUUID}/group-cash-transfer?tab=gctManagementList`;
@@ -120,7 +122,15 @@ export function DisburseModal({
       await disburse.mutateAsync({ uuid: recordUuid, otp });
       setOtpVerified(true);
     } catch (e: any) {
-      setOtpError(e?.response?.data?.message || 'Invalid pin.');
+      const rawMessage = e?.response?.data?.message || 'Invalid pin.';
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
+      setOtpError(errorMessage);
     }
   };
 
@@ -185,7 +195,7 @@ export function DisburseModal({
                       inputMode="numeric"
                       autoFocus
                       className="h-11 text-lg"
-                      value={otp}
+                      value={formatDigits(otp)}
                       onChange={(e) => {
                         setOtp(toAsciiDigits(e.target.value).replace(/\D/g, ''));
                         setOtpError('');

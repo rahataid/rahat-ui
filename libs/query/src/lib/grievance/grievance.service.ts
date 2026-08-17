@@ -7,6 +7,7 @@ import { useProjectAction } from '../projects';
 import { GetGrievanceList, GrievanceFormData } from './types/grievance';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
 const MS_ACTIONS = {
   GRIEVANCES: {
@@ -99,6 +100,7 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
 
 export const useGrievanceAdd = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -146,8 +148,14 @@ export const useGrievanceAdd = () => {
         });
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || t('ERROR');
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBackendErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
         toast.fire({
           title: t('ERROR_WHILE_ADDING_GRIEVANCE'),
           icon: 'error',
@@ -192,6 +200,7 @@ export const useGrievanceDetails = ({
 
 export const useGrievanceEdit = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -238,8 +247,14 @@ export const useGrievanceEdit = () => {
         });
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || t('ERROR');
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBackendErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
         toast.fire({
           title: t('ERROR_WHILE_UPDATING_GRIEVANCE'),
           icon: 'error',
@@ -255,6 +270,7 @@ export const useGrievanceEdit = () => {
 
 export const useGrievanceEditStatus = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -301,8 +317,14 @@ export const useGrievanceEditStatus = () => {
         });
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || t('ERROR');
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBackendErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
         toast.fire({
           title: t('ERROR_WHILE_UPDATING_GRIEVANCE_STATUS'),
           icon: 'error',

@@ -7,6 +7,7 @@ import { TAGS } from 'libs/query/src/config';
 import { useProjectAction } from '../../projects';
 import { useRSQuery } from '@rumsan/react-query';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export enum PayoutType {
   FSP = 'FSP',
@@ -42,6 +43,7 @@ interface CreatePayout {
 
 export const useCreatePayout = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -74,7 +76,14 @@ export const useCreatePayout = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_CREATING_PAYOUT'),
@@ -192,6 +201,7 @@ export const useGetPayoutLog = (projectUUID: UUID, payload: any) => {
 
 export const useUpdatePayout = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -228,7 +238,14 @@ export const useUpdatePayout = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_PAYOUT'),
@@ -241,6 +258,7 @@ export const useUpdatePayout = () => {
 
 export const useTriggerForPayoutFailed = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -279,7 +297,14 @@ export const useTriggerForPayoutFailed = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_TRIGGERING_PAYOUT'),
@@ -292,6 +317,7 @@ export const useTriggerForPayoutFailed = () => {
 
 export const useTriggerForOnePayoutFailed = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -330,7 +356,14 @@ export const useTriggerForOnePayoutFailed = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_PAYOUT'),
@@ -343,6 +376,7 @@ export const useTriggerForOnePayoutFailed = () => {
 
 export const useSendPayoutOtp = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -380,7 +414,14 @@ export const useSendPayoutOtp = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT', 'GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_SENDING_OTP'),
@@ -393,6 +434,7 @@ export const useSendPayoutOtp = () => {
 
 export const useTriggerPayout = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -431,7 +473,14 @@ export const useTriggerPayout = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT', 'GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_PAYOUT'),
@@ -494,6 +543,8 @@ export const usePayoutExportLogs = ({
 
 export const useVerifyManualPayout = () => {
   const t = useTranslations('AA_PROJECT');
+  const tRoot = useTranslations();
+  const tb = useTranslations();
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
   const alert = useSwal();
@@ -542,8 +593,18 @@ export const useVerifyManualPayout = () => {
     },
     onError: (error: any) => {
       console.error('Upload error', error);
-      const message: string =
+      const rawMessage: string =
         error?.response?.data?.message || error?.message || '';
+      const message = resolveBackendErrorMessage(
+        tRoot,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        [
+          'PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS',
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+        ],
+        rawMessage,
+      );
 
       toast.fire({
         icon: 'error',

@@ -5,6 +5,7 @@ import { useSwal } from 'libs/query/src/swal';
 import { title } from 'process';
 import { group } from 'console';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export const useGetCommunicationLogs = (
   uuid: UUID,
@@ -40,6 +41,7 @@ export const useRetryFailedBroadcast = (
   activityId: string,
 ) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -72,8 +74,14 @@ export const useRetryFailedBroadcast = (
       });
     },
     onError: (error: any) => {
-      const errorMessage =
-        error?.response?.data?.message || 'An error occured!';
+      const rawMessage = error?.response?.data?.message || 'An error occured!';
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_ADDING_ACTIVITY'),

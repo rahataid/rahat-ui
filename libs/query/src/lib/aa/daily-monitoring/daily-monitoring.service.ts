@@ -4,6 +4,7 @@ import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export type HealthStatus = 'HEALTHY' | 'UNHEALTHY' | 'DEGRADED';
 
@@ -53,6 +54,7 @@ export interface HealthCacheData {
 
 export const useCreateDailyMonitoring = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -85,7 +87,14 @@ export const useCreateDailyMonitoring = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['DATA_SOURCES_DAILY_MONITORING'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_ADDING'),
@@ -194,6 +203,7 @@ export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
 
 export const useUpdateMonitoring = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -230,7 +240,14 @@ export const useUpdateMonitoring = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['DATA_SOURCES_DAILY_MONITORING'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING'),
@@ -243,6 +260,7 @@ export const useUpdateMonitoring = () => {
 
 export const useRemoveMonitoring = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -279,7 +297,14 @@ export const useRemoveMonitoring = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['DATA_SOURCES_DAILY_MONITORING'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_REMOVING'),

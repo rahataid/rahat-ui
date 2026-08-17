@@ -30,6 +30,7 @@ import {
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 import { Back, DemoTable } from 'apps/rahat-ui/src/common';
 import { useGetOneGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import {
   Tooltip,
   TooltipContent,
@@ -41,13 +42,13 @@ import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
 import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
 import { usePhoneFormat } from '../../../../../utils/i18n/phone';
-import { translateValue } from '../../../../../utils/i18n/translateValue';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctDetail() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
+  const tb = useTranslations();
 
   const statusLabel = (s: string) => {
     const map: Record<string, string> = {
@@ -62,18 +63,23 @@ export default function GctDetail() {
     return map[s] ?? s.replace(/_/g, ' ');
   };
 
-  // Bank validation messages come from the API, so there is no key to look up
-  // directly. Derive one from the message text and use it when a translation
-  // exists, otherwise show the server's wording unchanged.
-  const localiseValidationMessage = (message: string) => {
-    // Sentences can contain punctuation toKey() doesn't strip, so derive
-    // the key here rather than relying on translateValue's own derivation.
-    const key = String(message)
+  // Bank validation messages come from CIPS (external), so there's no fixed
+  // English string to key on. CIPS sends a stable `responseCode` alongside
+  // the message (e.g. "001") — prefer that when present, since it won't
+  // drift the way free-text wording can. When the code isn't available
+  // (or isn't keyed yet), fall back to a slug of the message text itself,
+  // then finally to the raw message unchanged.
+  const localiseValidationMessage = (message: string, responseCode?: string) => {
+    if (responseCode) {
+      const codeKey = `CIPS_${responseCode}`;
+      if (t.has(codeKey as never)) return t(codeKey as never);
+    }
+    const textKey = String(message)
       .trim()
       .toUpperCase()
       .replace(/[^A-Z0-9]+/g, '_')
       .replace(/^_+|_+$/g, '');
-    return translateValue(t, key, { fallback: message });
+    return t.has(textKey as never) ? t(textKey as never) : message;
   };
   const { id, uuid } = useParams();
   const projectUUID = id as UUID;
@@ -84,6 +90,7 @@ export default function GctDetail() {
   const [validationResult, setValidationResult] = useState<{
     success: boolean;
     message: string;
+    responseCode?: string;
   } | null>(null);
 
   const { data, isLoading } = useGetOneGroupCashTransfer(projectUUID, gctUUID);
@@ -118,15 +125,24 @@ export default function GctDetail() {
       setValidationResult({
         success: isValid,
         message: result?.data?.message || result?.message || (isValid ? t('BANK_ACCOUNT_VALIDATED_SUCCESSFULLY') : t('DISBURSEMENT_FAILED')),
+        responseCode: result?.data?.result?.cipsData?.responseCode,
       });
     } catch (error: unknown) {
-      const e = error as { response?: { data?: { message?: string } }; message?: string };
+      const e = error as {
+        response?: { data?: { message?: string; code?: string; params?: Record<string, unknown> } };
+        message?: string;
+      };
+      const rawMessage = e?.response?.data?.message || e?.message || t('DISBURSEMENT_FAILED');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       setValidationResult({
         success: false,
-        message:
-          e?.response?.data?.message ||
-          e?.message ||
-          t('DISBURSEMENT_FAILED'),
+        message: errorMessage,
       });
     }
   };
@@ -321,7 +337,7 @@ export default function GctDetail() {
                     : 'bg-red-50 text-red-600'
                 }`}
               >
-                {localiseValidationMessage(validationResult.message)}
+                {localiseValidationMessage(validationResult.message, validationResult.responseCode)}
               </div>
             )}
             <DetailRow label={t('BANK_NAME')} value={bankDetails?.bankName} />

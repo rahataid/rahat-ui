@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 import { api } from '../../utils/api';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
 export const useVendorList = (
   payload: any,
@@ -110,6 +112,7 @@ const updateVendor = async (uuid: UUID, payload: any) => {
 export const useUpdateVendor = () => {
   const qc = useQueryClient();
   const alert = useSwal();
+  const t = useTranslations();
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
@@ -128,7 +131,15 @@ export const useUpdateVendor = () => {
       });
     },
     onError: (error: any, variables: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const code = error?.response?.data?.code;
+      const name = error?.response?.data?.name;
+      const errorMessage = resolveBackendErrorMessage(
+        t,
+        code || name,
+        error?.response?.data?.params,
+        ['VENDORS', 'USERS'],
+        error?.response?.data?.message || 'Error',
+      );
       toast.fire({
         title: variables?.errorMessage || 'Error while updating vendor.',
         icon: 'error',
@@ -154,6 +165,7 @@ const removeVendor = async ({
 export const useRemoveVendor = () => {
   const qc = useQueryClient();
   const alert = useSwal();
+  const t = useTranslations();
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
@@ -178,7 +190,15 @@ export const useRemoveVendor = () => {
       });
     },
     onError: (error: any, variables: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const code = error?.response?.data?.code;
+      const name = error?.response?.data?.name;
+      const errorMessage = resolveBackendErrorMessage(
+        t,
+        code || name,
+        error?.response?.data?.params,
+        ['VENDORS', 'USERS'],
+        error?.response?.data?.message || 'Error',
+      );
       toast.fire({
         title: variables?.errorMessage || 'Error while removing vendor.',
         icon: 'error',

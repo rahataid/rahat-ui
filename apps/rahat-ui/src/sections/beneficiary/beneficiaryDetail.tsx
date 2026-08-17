@@ -295,7 +295,7 @@ export default function BeneficiaryDetail({
                 'John Doe'}
             </h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{beneficiaryDetail?.extras?.status ?? 'active'}</Badge>
+              <Badge>{formatEnumValue(beneficiaryDetail?.extras?.status ?? 'active')}</Badge>
               <p className="text-base text-muted-foreground">
                 {beneficiaryDetail?.extras?.age
                   ? formatNum(beneficiaryDetail.extras.age)

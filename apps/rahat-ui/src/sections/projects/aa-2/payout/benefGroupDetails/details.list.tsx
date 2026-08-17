@@ -190,10 +190,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       label: tv('PAYOUT_METHOD'),
       infoIcon: true,
       infoToolTip: tv('PAYOUT_METHOD_TOOLTIP'),
-      smallNumber:
+      smallNumber: translateValue(
+        tg,
         payout?.type === 'VENDOR'
           ? payout?.mode
           : payout?.extras?.paymentProviderName,
+        { fallbackStyle: 'raw' },
+      ),
       badge: true,
     },
   ];
@@ -286,7 +289,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                           >
                             <span className="flex items-center gap-2">
                               <CloudUpload className="w-4 h-4" />
-                              Verify Manual Payout
+                              {tv('VERIFY_MANUAL_PAYOUT')}
                             </span>
                             <ChevronDown className="w-4 h-4" />
                           </Button>
@@ -301,7 +304,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                             }
                           >
                             <Landmark className="w-4 h-4" />
-                            Bank Account
+                            {tv('BANK_ACCOUNT')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="gap-2"
@@ -312,7 +315,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                             }
                           >
                             <Smartphone className="w-4 h-4" />
-                            Phone Number
+                            {tg('PHONE_NUMBER')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

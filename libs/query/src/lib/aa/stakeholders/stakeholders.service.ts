@@ -16,6 +16,7 @@ import { useSwal } from 'libs/query/src/swal';
 import { useRSQuery } from '@rumsan/react-query';
 import { TAGS } from 'libs/query/src/config';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 interface IStakeholdersUpdatePayload {
   uuid: string;
@@ -78,6 +79,7 @@ export const useCreateStakeholders = <
   >,
 ): UseMutationResult<TData, TError, StakeholderArgs, TContext> => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -112,7 +114,15 @@ export const useCreateStakeholders = <
       onError: (error, variables, ctx) => {
         q.reset();
         options?.onError?.(error, variables, ctx);
-        const errorMessage = (error as any)?.response?.data?.message || t('ERROR');
+        const rawMessage =
+          (error as any)?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBackendErrorMessage(
+          tb,
+          (error as any)?.response?.data?.code,
+          (error as any)?.response?.data?.params,
+          ['STAKEHOLDERS_GROUPS'],
+          rawMessage,
+        );
         toast.fire({
           title: t('ERROR_WHILE_ADDING_STAKEHOLDER'),
           icon: 'error',
@@ -135,6 +145,7 @@ export const useCreateStakeholders = <
 
 export const useUpdateStakeholders = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -169,7 +180,14 @@ export const useUpdateStakeholders = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_STAKEHOLDER'),
@@ -182,6 +200,7 @@ export const useUpdateStakeholders = () => {
 
 export const useDeleteStakeholders = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -223,7 +242,14 @@ export const useDeleteStakeholders = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_REMOVING_STAKEHOLDER'),
@@ -290,6 +316,7 @@ export const useValidateStakeholders = () => {
 
 export const useUploadStakeholders = () => {
   const t = useTranslations('AA_PROJECT');
+  const tRoot = useTranslations();
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
   const alert = useSwal();
@@ -338,8 +365,15 @@ export const useUploadStakeholders = () => {
     },
     onError: (error: any) => {
       console.error('Upload error', error);
-      const message: string =
+      const rawMessage: string =
         error?.response?.data?.message || error?.message || '';
+      const message: string = resolveBackendErrorMessage(
+        tRoot,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
 
       const phoneMatch =
         message.match(/Phone\(s\):\s*([^|]+)/i) ||
@@ -349,11 +383,11 @@ export const useUploadStakeholders = () => {
       const errorLines: string[] = [];
 
       if (phoneMatch) {
-        errorLines.push('• Duplicate phone numbers found.');
+        errorLines.push(t('DUPLICATE_PHONE_NUMBERS_FOUND_BULLET'));
       }
 
       if (emailMatch) {
-        errorLines.push('• Duplicate emails found.');
+        errorLines.push(t('DUPLICATE_EMAILS_FOUND_BULLET'));
       }
 
       if (errorLines.length > 0) {

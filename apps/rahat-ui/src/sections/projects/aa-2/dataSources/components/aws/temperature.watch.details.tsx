@@ -17,9 +17,11 @@ import {
 } from './components';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 export default function TemperatureWatchDetails() {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const { id: projectId } = useParams() as { id: UUID };
@@ -106,14 +108,21 @@ export default function TemperatureWatchDetails() {
         <Back />
         <p className="text-sm text-red-500">
           {t('ERROR_LOADING_DATA')}{' '}
-          {(
-            error as {
-              response?: { data?: { message?: string } };
+          {(() => {
+            const err = error as {
+              response?: { data?: { message?: string; code?: string; params?: Record<string, unknown> } };
               message?: string;
-            }
-          )?.response?.data?.message ||
-            (error as { message?: string }).message ||
-            String(error)}
+            };
+            const rawMessage =
+              err?.response?.data?.message || err?.message || String(error);
+            return resolveBackendErrorMessage(
+              tb,
+              err?.response?.data?.code,
+              err?.response?.data?.params,
+              ['DATA_SOURCES_DAILY_MONITORING'],
+              rawMessage,
+            );
+          })()}
         </p>
       </div>
     );

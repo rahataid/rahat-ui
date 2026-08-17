@@ -23,6 +23,7 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Tag, TagInput } from 'emblor';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function EditStakeholders() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function EditStakeholders() {
   const stakeholdersId = params.stakeholdersId as UUID;
   const searchParams = useSearchParams();
   const t = useTranslations('AA_PROJECT');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const stakeholder = useStakeholderDetails(projectId, {
     uuid: stakeholdersId,
   });
@@ -283,6 +285,7 @@ export default function EditStakeholders() {
                           placeholder={t('ENTER_A_PHONE_NUMBER')}
                           className="[&_input]:h-[clamp(28px,3vw,36px)] [&_input]:text-[clamp(11px,1vw,14px)] [&_button]:h-[clamp(28px,3vw,36px)]"
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />

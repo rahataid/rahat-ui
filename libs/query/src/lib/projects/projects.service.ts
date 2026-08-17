@@ -20,6 +20,7 @@ import { useEffect, useMemo } from 'react';
 import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 import Swal from 'sweetalert2';
 
@@ -241,6 +242,7 @@ export const useAssignVendorToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -277,7 +279,14 @@ export const useAssignVendorToProject = () => {
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
     onError: (error: any, variables: any) => {
-      const errorMessage = error?.response?.data?.message || tg('ERROR');
+      const rawMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['VENDORS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_VENDOR'),
@@ -669,20 +678,20 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-            ...row,
-            uuid: row?.uuid?.toString(),
-            walletAddress: row?.walletAddress?.toString(),
-            voucherClaimStatus: row?.claimStatus,
-            name: row?.piiData?.name || '',
-            email: row?.piiData?.email || '',
-            gender: row?.projectData?.gender?.toString() || '',
-            phone: row?.piiData?.phone || 'N/A',
-            type: row?.type?.toString() || 'N/A',
-            phoneStatus: row?.projectData?.phoneStatus || '',
-            bankedStatus: row?.projectData?.bankedStatus || '',
-            internetStatus: row?.projectData?.internetStatus || '',
-            benTokens: row?.benTokens || 'N/A',
-          }))
+              ...row,
+              uuid: row?.uuid?.toString(),
+              walletAddress: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
+              benTokens: row?.benTokens || 'N/A',
+            }))
           : [],
       };
     }, [query.data]),
@@ -941,7 +950,13 @@ export const useProjectClose = () => {
         });
       },
       mutationKey: ['projectClose'],
-      mutationFn: async ({ uuid, data }: { uuid: UUID; data: { status: string } }) => {
+      mutationFn: async ({
+        uuid,
+        data,
+      }: {
+        uuid: UUID;
+        data: { status: string };
+      }) => {
         const res = await rumsanService.client.patch(
           `/projects/${uuid}/status`,
           data,

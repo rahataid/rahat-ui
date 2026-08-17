@@ -22,9 +22,11 @@ import {
   UpdateGctRecordPayload,
 } from './types';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -41,10 +43,18 @@ export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_CREATING_GROUP_CASH_TRANSFER'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });
@@ -52,6 +62,7 @@ export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
 
 export const useUpdateGroupCashTransfer = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -71,10 +82,18 @@ export const useUpdateGroupCashTransfer = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_UPDATING_GROUP_CASH_TRANSFER'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });
@@ -82,6 +101,7 @@ export const useUpdateGroupCashTransfer = (projectUUID: UUID) => {
 
 export const useDeleteGroupCashTransfer = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -98,10 +118,18 @@ export const useDeleteGroupCashTransfer = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_DELETING_GROUP_CASH_TRANSFER'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });
@@ -109,6 +137,7 @@ export const useDeleteGroupCashTransfer = (projectUUID: UUID) => {
 
 export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -128,10 +157,18 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_ASSIGNING_FUND'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });
@@ -139,6 +176,7 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
 
 export const useUpdateGctRecord = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -158,10 +196,18 @@ export const useUpdateGctRecord = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_UPDATING_RECORD'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });
@@ -169,6 +215,7 @@ export const useUpdateGctRecord = (projectUUID: UUID) => {
 
 export const useValidateBankAccount = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const toast = useToast();
 
@@ -177,16 +224,26 @@ export const useValidateBankAccount = (projectUUID: UUID) => {
       runAction(q, projectUUID, ACTION_NS + '.validateBankAccount', payload),
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('BANK_ACCOUNT_VALIDATION_FAILED'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });
 };
 
 export const useSendGctOtp = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const toast = useToast();
 
@@ -202,10 +259,18 @@ export const useSendGctOtp = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
-        title: 'Error sending OTP.',
+        title: t('ERROR_SENDING_OTP'),
         icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+        text: errorMessage,
       });
     },
   });
@@ -213,24 +278,46 @@ export const useSendGctOtp = (projectUUID: UUID) => {
 
 export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
 
   return useMutation({
-    mutationFn: ({ uuid, paymentProviderId }: { uuid: string; paymentProviderId: string }) =>
-      runAction(q, projectUUID, ACTION_NS + '.confirmDisburse', { uuid, paymentProviderId }),
+    mutationFn: ({
+      uuid,
+      paymentProviderId,
+    }: {
+      uuid: string;
+      paymentProviderId: string;
+    }) =>
+      runAction(q, projectUUID, ACTION_NS + '.confirmDisburse', {
+        uuid,
+        paymentProviderId,
+      }),
     onSuccess: () => {
       q.reset();
-      queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.get', projectUUID] });
-      queryClient.invalidateQueries({ queryKey: [ACTION_NS + '.getRecords', projectUUID] });
+      queryClient.invalidateQueries({
+        queryKey: [ACTION_NS + '.get', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ACTION_NS + '.getRecords', projectUUID],
+      });
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_CONFIRMING_DISBURSEMENT'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });
@@ -238,6 +325,7 @@ export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
 
 export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -254,10 +342,18 @@ export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_INITIATING_DISBURSEMENT'),
         icon: 'error',
-        text: error?.response?.data?.message || t('ERROR'),
+        text: errorMessage,
       });
     },
   });

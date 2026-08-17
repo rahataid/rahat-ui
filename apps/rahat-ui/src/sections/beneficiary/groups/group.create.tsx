@@ -16,12 +16,14 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCreateBeneficiaryGroup } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
+import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 export default function GroupCreateView() {
   const router = useRouter();
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const t = useTranslations('GLOBAL');
   const tb = useTranslations('BENEFICIARY_GROUP_CREATE');
+  const tRoot = useTranslations();
 
   const FormSchema = z.object({
     name: z
@@ -51,9 +53,15 @@ export default function GroupCreateView() {
         router.push('/beneficiary?tab=beneficiaryGroups');
       }
     } catch (e: any) {
-      toast.error(
-        e?.response?.data?.message || tb('FAILED_TO_ADD_GROUP'),
+      const rawMessage = e?.response?.data?.message || tb('FAILED_TO_ADD_GROUP');
+      const errorMessage = resolveBeneficiaryErrorMessage(
+        tRoot,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        rawMessage,
       );
+      toast.error(errorMessage);
     }
   };
 

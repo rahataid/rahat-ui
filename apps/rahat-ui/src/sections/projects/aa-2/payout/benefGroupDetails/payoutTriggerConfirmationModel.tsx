@@ -15,7 +15,10 @@ import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useSendPayoutOtp } from '@rahat-ui/query/lib/aa/payout/payout.service';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useEffect, useState } from 'react';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -37,6 +40,7 @@ export default function PayoutConfirmationDialog({
 }: IProps) {
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const formatNum = useNumberFormat();
 
   // Store goes here
@@ -44,6 +48,7 @@ export default function PayoutConfirmationDialog({
 
   // Mutations goes here
   const sendPayoutOtp = useSendPayoutOtp();
+  const formatDigits = useLabelDigits();
 
   // State goes here
   const [open, setOpen] = useState(false);
@@ -82,7 +87,15 @@ export default function PayoutConfirmationDialog({
       setTriggered(true);
       setOpen(false);
     } catch (e: any) {
-      setOtpError(e?.response?.data?.message || 'Invalid pin.');
+      const rawMessage = e?.response?.data?.message || 'Invalid pin.';
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT', 'GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
+      setOtpError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -144,9 +157,13 @@ export default function PayoutConfirmationDialog({
           <div className="flex justify-between">
             <span className="font-medium">{tv('PAYOUT_METHOD')}</span>
             <span>
-              {payoutData?.type === 'FSP'
-                ? payoutData?.extras?.paymentProviderName
-                : payoutData?.mode}
+              {translateValue(
+                tg,
+                payoutData?.type === 'FSP'
+                  ? payoutData?.extras?.paymentProviderName
+                  : payoutData?.mode,
+                { fallbackStyle: 'raw' },
+              )}
             </span>
           </div>
           <div className="flex justify-between">
@@ -187,7 +204,7 @@ export default function PayoutConfirmationDialog({
               inputMode="numeric"
               autoFocus
               className="h-11 text-lg"
-              value={otp}
+              value={formatDigits(otp)}
               onChange={(e) => {
                 setOtp(toAsciiDigits(e.target.value).replace(/\D/g, ''));
                 setOtpError('');

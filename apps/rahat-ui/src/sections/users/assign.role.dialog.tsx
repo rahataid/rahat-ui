@@ -35,6 +35,7 @@ import {
 import { UUID } from 'crypto';
 import Swal from 'sweetalert2';
 import { useSettingsStore } from '@rahat-ui/query';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import {
   useAddAdmin,
   useAddManager,
@@ -47,6 +48,7 @@ type IProps = {
 export default function AssignRoleDialog({ userDetails }: IProps) {
   const t = useTranslations('USERS_DETAIL');
   const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const contractSettings = useSettingsStore((state) => state.accessManager);
   const roleSync = useSettingsStore((state) => state.roleOnChainSync);
 
@@ -96,11 +98,31 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
         });
         Swal.fire(t('ROLE_ASSIGNED_SUCCESSFULLY'), '', 'success');
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : tg('AN_UNEXPECTED_ERROR_OCCURRED');
+    } catch (error: unknown) {
+      // error.message on an Axios error is a generic HTTP status string,
+      // not the backend's actual message -- read it from the response body.
+      const e = error as {
+        response?: {
+          data?: {
+            code?: string;
+            name?: string;
+            params?: Record<string, string | number | Date>;
+            message?: string;
+          };
+        };
+        message?: string;
+      };
+      const rawMessage: string =
+        e?.response?.data?.message ||
+        e?.message ||
+        tg('AN_UNEXPECTED_ERROR_OCCURRED');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['USERS'],
+        rawMessage,
+      );
       Swal.fire(t('ERROR_ASSIGNING_ROLE'), errorMessage, 'error');
     } finally {
       form.reset();

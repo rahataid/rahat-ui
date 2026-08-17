@@ -202,8 +202,8 @@ export default function AssignFundsForm({
                         ?.name
                     }
                     placeholder={t('SELECT_BENEFICIARY_GROUP')}
-                    searchPlaceholder="Search beneficiary group..."
-                    emptyMessage="No beneficiary group found."
+                    searchPlaceholder={t('SEARCH_BENEFICIARY_GROUP')}
+                    emptyMessage={t('NO_BENEFICIARY_GROUP_FOUND')}
                     options={
                       benGroups?.data?.map((g: BeneficiaryGroupListItem) => ({
                         label: g.name,

@@ -15,6 +15,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -105,6 +106,7 @@ export default function ImportStakeholder() {
   const inputRef = useRef<HTMLInputElement>(null);
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const formatNum = useNumberFormat();
 
   // Query goes here
@@ -556,9 +558,23 @@ export default function ImportStakeholder() {
         );
       }
     } catch (error: unknown) {
-      const errMsg =
-        (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message ?? t('VALIDATION_FAILED');
+      const e = error as {
+        response?: {
+          data?: {
+            code?: string;
+            params?: Record<string, string | number | Date>;
+            message?: string;
+          };
+        };
+      };
+      const rawMessage = e?.response?.data?.message ?? t('VALIDATION_FAILED');
+      const errMsg = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       toast.error(errMsg);
       setValidationCooldown(VALIDATION_COOLDOWN_SECONDS);
     } finally {
@@ -641,9 +657,23 @@ export default function ImportStakeholder() {
             : 'stakeholders';
         router.push(`/projects/aa/${id}/stakeholders?tab=${tab}`);
       } catch (error: unknown) {
-        const errMsg =
-          (error as { response?: { data?: { message?: string } } })?.response
-            ?.data?.message ?? t('IMPORT_FAILED');
+        const e = error as {
+          response?: {
+            data?: {
+              code?: string;
+              params?: Record<string, string | number | Date>;
+              message?: string;
+            };
+          };
+        };
+        const rawMessage = e?.response?.data?.message ?? t('IMPORT_FAILED');
+        const errMsg = resolveBackendErrorMessage(
+          tb,
+          e?.response?.data?.code,
+          e?.response?.data?.params,
+          ['STAKEHOLDERS_GROUPS'],
+          rawMessage,
+        );
         toast.error(errMsg);
       }
     },

@@ -23,7 +23,8 @@ import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
-import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { normalizeNumeralsPreprocessor, toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const makeAddFundSchema = (t: (key: string) => string) =>
   z.object({
@@ -54,6 +55,7 @@ type IProps = {
 
 export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   const addProjectFund = useAddProjectFund(projectUUID);
 
   const form = useForm<AddFundFormValues>({
@@ -98,6 +100,10 @@ export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
                       min="0"
                       placeholder={t('ENTER_FUND_AMOUNT_PLACEHOLDER')}
                       {...field}
+                      value={formatDigits(field.value ?? '')}
+                      onChange={(e) =>
+                        field.onChange(toAsciiDigits(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormMessage />

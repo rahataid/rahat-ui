@@ -4,6 +4,8 @@ import { getRoleClient, getUserClient } from '@rumsan/sdk/clients';
 import Swal from 'sweetalert2';
 import { UUID } from 'crypto';
 import { ListRole, User } from '@rumsan/sdk/types';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
 // export const useRoleList = (): any => {
 //   const { queryClient, rumsanService } = useRSQuery();
@@ -20,6 +22,7 @@ import { ListRole, User } from '@rumsan/sdk/types';
 export const useUserCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);
+  const t = useTranslations();
 
   return useMutation(
     {
@@ -37,11 +40,20 @@ export const useUserCreate = () => {
         });
       },
       onError: (error: any) => {
-        const errorMessage = error.response.data.message.includes(
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const rawMessage = error.response.data.message.includes(
           'Unique constraint failed',
         )
           ? 'User already exist'
           : error.response.data.message;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          rawMessage,
+        );
         Swal.fire(
           'Error',
           errorMessage || 'Encounter error on Creating Data',
@@ -70,6 +82,7 @@ export const useUsersList = (payload: any): UseQueryResult<any, Error> => {
 export const useUserUpdate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);
+  const t = useTranslations();
 
   return useMutation(
     {
@@ -88,9 +101,19 @@ export const useUserUpdate = () => {
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const rawMessage = error.response.data.message;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          rawMessage,
+        );
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          errorMessage || 'Encounter error on Creating Data',
           'error',
         );
       },
@@ -115,6 +138,7 @@ export const useRoleList = (payload?: ListRole): any => {
 export const useCreateRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);
+  const t = useTranslations();
   const query = useMutation(
     {
       mutationKey: ['create_role'],
@@ -131,9 +155,18 @@ export const useCreateRole = () => {
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          error.response.data.message,
+        );
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          errorMessage || 'Encounter error on Creating Data',
           'error',
         );
       },
@@ -146,6 +179,7 @@ export const useCreateRole = () => {
 export const useEditRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);
+  const t = useTranslations();
   const query = useMutation(
     {
       mutationKey: ['edit_role'],
@@ -164,9 +198,18 @@ export const useEditRole = () => {
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          error.response.data.message,
+        );
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          errorMessage || 'Encounter error on Creating Data',
           'error',
         );
       },
@@ -192,6 +235,7 @@ export const useGetRole = (name: string) => {
 export const useDeleteRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);
+  const t = useTranslations();
   const query = useMutation(
     {
       mutationKey: ['delete_role'],
@@ -209,9 +253,18 @@ export const useDeleteRole = () => {
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          error.response.data.message,
+        );
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Deleting Data',
+          errorMessage || 'Encounter error on Deleting Data',
           'error',
         );
       },

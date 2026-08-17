@@ -12,6 +12,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 type ValidateModalType = {
   value: boolean;
@@ -21,6 +22,7 @@ type ValidateModalType = {
 type ErrorData = {
   isAssignable: boolean;
   message: string;
+  code?: string;
   tokenAssignedBenfWallet: string[];
   foundAssignedBenf: string[];
   fiatRedeemNotCompleted: string[];
@@ -65,9 +67,18 @@ const WalletList = ({
 const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const { clickToCopy, copyAction } = useCopy();
 
   const isWarningOnly = errorData?.isAssignable === true;
+
+  const errorMessage = resolveBackendErrorMessage(
+    tb,
+    errorData?.code,
+    undefined,
+    ['STAKEHOLDERS_GROUPS'],
+    errorData?.message || '',
+  );
 
   return (
     <Dialog open={validateModal.value} onOpenChange={validateModal.onToggle}>
@@ -102,7 +113,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>{errorData?.message}</DialogTitle>
+              <DialogTitle>{errorMessage}</DialogTitle>
               <DialogDescription>
                 {t('CONFLICTS_FOUND', { groupName: errorData?.groupName ?? '' })}
               </DialogDescription>

@@ -33,11 +33,13 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { Wallet } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function EditBeneficiary({ beneficiary }: any) {
   const { closeSecondPanel } = useSecondPanel();
   const updateBeneficiary = useUpdateBeneficiary();
   const t = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
 
   const FormSchema = z.object({
     name: z
@@ -186,6 +188,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
                         <PhoneInput
                           placeholder={t('ENTER_PHONE_NUMBER')}
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />

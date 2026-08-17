@@ -28,10 +28,12 @@ import HeaderWithBack from '../projects/components/header.with.back';
 import { Gender } from '@rahataid/sdk/enums';
 import { useGetVendor, useUpdateVendor } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function EditVendors() {
   const t = useTranslations('VENDORS_EDIT');
   const g = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
 
@@ -177,6 +179,7 @@ export default function EditVendors() {
                           <PhoneInput
                             placeholder={g('ENTER_PHONE_NUMBER')}
                             {...field}
+                            {...phoneCountrySelectProps}
                           />
                         </FormControl>
                         <FormMessage />

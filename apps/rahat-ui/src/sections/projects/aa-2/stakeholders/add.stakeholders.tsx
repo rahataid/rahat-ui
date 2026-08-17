@@ -21,10 +21,12 @@ import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function AddStakeholders() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -240,6 +242,7 @@ export default function AddStakeholders() {
                           placeholder={t('ENTER_A_PHONE_NUMBER')}
                           className="[&_input]:h-[clamp(28px,3vw,36px)] [&_input]:text-[clamp(11px,1vw,14px)] [&_button]:h-[clamp(28px,3vw,36px)]"
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />

@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -25,6 +26,7 @@ type Iprops = {
 export default function EditUser({ userDetail }: Iprops) {
   const t = useTranslations('USERS_EDIT');
   const tg = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const { closeSecondPanel } = useSecondPanel();
   const updateUser = useUserUpdate();
   const FormSchema = z.object({
@@ -106,7 +108,11 @@ export default function EditUser({ userDetail }: Iprops) {
                 return (
                   <FormItem>
                     <FormControl>
-                      <PhoneInput placeholder={tg('PHONE')} {...field} />
+                      <PhoneInput
+                        placeholder={tg('PHONE')}
+                        {...field}
+                        {...phoneCountrySelectProps}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

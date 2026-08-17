@@ -42,6 +42,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useActiveTab } from '../../utils/useActivetab';
 import { useTranslations } from 'next-intl';
+import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { useDebounce } from '../../utils/useDebouncehooks';
 
 function BeneficiaryView() {
@@ -60,6 +61,7 @@ function BeneficiaryView() {
   const t = useTranslations('BENEFICIARY_LIST');
   const tg = useTranslations('GLOBAL');
   const tbd = useTranslations('BENEFICIARY_GROUP_DETAIL');
+  const tRoot = useTranslations();
 
   useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
@@ -152,9 +154,16 @@ function BeneficiaryView() {
         table.resetRowSelection(true);
       }
     } catch (e: any) {
-      toast.error(
-        e?.response?.data?.message || tbd('FAILED_TO_ADD_BENEFICIARY_GROUP'),
+      const rawMessage =
+        e?.response?.data?.message || tbd('FAILED_TO_ADD_BENEFICIARY_GROUP');
+      const errorMessage = resolveBeneficiaryErrorMessage(
+        tRoot,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        rawMessage,
       );
+      toast.error(errorMessage);
     }
   };
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');

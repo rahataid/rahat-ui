@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { PHASE_QUERY_KEYS } from '../trigger-statements/trigger-statements.constants';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export const useSinglePhase = (
   uuid: UUID,
@@ -64,6 +65,7 @@ export const useSinglePhase = (
 
 export const useRevertPhase = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -103,7 +105,14 @@ export const useRevertPhase = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_REVERTING_PHASE'),
@@ -179,6 +188,7 @@ export const usePhases = (uuid: UUID) => {
 
 export const useConfigureThreshold = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -216,7 +226,14 @@ export const useConfigureThreshold = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_CONFIGURING_THRESHOLD'),

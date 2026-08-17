@@ -19,6 +19,7 @@ import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
 import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 type StakeholderGroupArgs = {
   projectUUID: UUID;
@@ -41,6 +42,7 @@ export const useCreateStakeholdersGroups = <
   >,
 ): UseMutationResult<TData, TError, StakeholderGroupArgs, TContext> => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -81,7 +83,14 @@ export const useCreateStakeholdersGroups = <
     onError: (error, variables, ctx) => {
       q.reset();
       options?.onError?.(error, variables, ctx);
-      const errorMessage = (error as any)?.response?.data?.message || t('ERROR');
+      const rawMessage = (error as any)?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        (error as any)?.response?.data?.code,
+        (error as any)?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       toast.fire({
         title: t('ERROR_WHILE_ADDING_STAKEHOLDERS_GROUP'),
         icon: 'error',
@@ -102,6 +111,7 @@ export const useCreateStakeholdersGroups = <
 };
 export const useCreateBenficiariesGroups = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -139,7 +149,14 @@ export const useCreateBenficiariesGroups = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_ADDING_BENEFICIARIES_GROUP'),
@@ -152,6 +169,7 @@ export const useCreateBenficiariesGroups = () => {
 
 export const useReserveTokenForGroups = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -198,7 +216,14 @@ export const useReserveTokenForGroups = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_RESERVING_TOKENS'),
@@ -270,7 +295,11 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
 };
 
-export const useBeneficiaryGroups = (uuid: UUID, payload: any, options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn'>) => {
+export const useBeneficiaryGroups = (
+  uuid: UUID,
+  payload: any,
+  options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn'>,
+) => {
   const q = useProjectAction();
   const { setBeneficiaryGroups } = useBeneficiaryGroupsStore((state) => ({
     setBeneficiaryGroups: state.setBeneficiaryGroups,
@@ -430,6 +459,7 @@ export const useBeneficiariesGroups = (
 
 export const useUpdateStakeholdersGroups = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -482,7 +512,14 @@ export const useUpdateStakeholdersGroups = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_STAKEHOLDERS_GROUP'),
@@ -495,6 +532,7 @@ export const useUpdateStakeholdersGroups = () => {
 
 export const useDeleteStakeholdersGroups = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -538,7 +576,14 @@ export const useDeleteStakeholdersGroups = () => {
       }
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_REMOVING_STAKEHOLDERS_GROUP'),

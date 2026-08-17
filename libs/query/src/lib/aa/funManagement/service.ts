@@ -12,6 +12,7 @@ import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
 import { Pagination } from '@rumsan/sdk/types';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export type InitiateFundTransfer = {
   from: string;
@@ -65,6 +66,7 @@ export const useFetchTokenStatsStellar = (payload: any) => {
 // cash-tracker start
 export const useInitateFundTransfer = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const alert = useSwal();
@@ -98,7 +100,14 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
       }, 10000);
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['CASH_TRACKER_VENDOR_TOKEN_REDEMPTION'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_FUND_TRANSFER'),
@@ -111,6 +120,7 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
 
 export const useCreateBudget = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const alert = useSwal();
@@ -150,7 +160,14 @@ export const useCreateBudget = (projectUUID: UUID) => {
       }, 10000);
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['CASH_TRACKER_VENDOR_TOKEN_REDEMPTION'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_CREATING_BUDGET'),
@@ -256,6 +273,7 @@ export const useGetBalance = (projectUUID: UUID, smartAddress: string) => {
 
 export const useGetCash = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const alert = useSwal();
@@ -292,7 +310,14 @@ export const useGetCash = (projectUUID: UUID) => {
       }, 10000);
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['CASH_TRACKER_VENDOR_TOKEN_REDEMPTION'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_CONFIRM'),
@@ -308,6 +333,7 @@ export const useGetCash = (projectUUID: UUID) => {
 // inkind-tracker start
 export const useInitateInkindTransfer = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const alert = useSwal();
@@ -341,7 +367,14 @@ export const useInitateInkindTransfer = (projectUUID: UUID) => {
       }, 10000);
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_INKIND_TRANSFER'),
@@ -401,6 +434,7 @@ export const useGetInkindBalance = (
 
 export const useGetInkind = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const alert = useSwal();
@@ -432,7 +466,14 @@ export const useGetInkind = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_CONFIRM'),
@@ -474,8 +515,17 @@ export const useGetAASafeOwners = (projectUUID: UUID) => {
 };
 
 export const useCreateAASafeTransaction = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const projectActions = useProjectAction(['aa', 'multisig-actions']);
   const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   return useMutation({
     mutationKey: ['create-safe-transaction'],
@@ -501,6 +551,21 @@ export const useCreateAASafeTransaction = () => {
       qc.invalidateQueries({
         queryKey: ['safeOwners'],
         exact: false,
+      });
+    },
+    onError: (error: any) => {
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS'],
+        rawMessage,
+      );
+      toast.fire({
+        title: t('ERROR'),
+        icon: 'error',
+        text: errorMessage,
       });
     },
   });

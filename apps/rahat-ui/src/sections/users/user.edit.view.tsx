@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -40,6 +41,7 @@ import Swal from 'sweetalert2';
 export default function EditUser() {
   const t = useTranslations('USERS_EDIT');
   const tg = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const searchParams = useSearchParams()?.get('split');
@@ -178,6 +180,7 @@ export default function EditUser() {
                         <PhoneInput
                           placeholder={tg('ENTER_PHONE_NUMBER')}
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />

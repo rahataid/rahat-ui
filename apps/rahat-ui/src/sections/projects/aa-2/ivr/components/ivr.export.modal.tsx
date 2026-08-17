@@ -23,6 +23,7 @@ import { useUploadFile, useIvrTemplateUpdate, useIvrTestCall } from '@rahat-ui/q
 import { Link, Copy, Check, Globe, Phone, ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface ExportModalProps {
   open: boolean;
@@ -41,6 +42,7 @@ export default function ExportModal({
 }: ExportModalProps) {
   const { id: projectUUID } = useParams();
   const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   const [ipfsLink, setIpfsLink] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -238,7 +240,7 @@ export default function ExportModal({
               <Label>{t('PHONE_NUMBER')}</Label>
               <Input
                 placeholder={t('ENTER_PHONE_NUMBER')}
-                value={testPhone}
+                value={formatDigits(testPhone)}
                 onChange={(e) => setTestPhone(toAsciiDigits(e.target.value))}
               />
               <p className="text-xs text-muted-foreground">

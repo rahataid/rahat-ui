@@ -110,12 +110,12 @@ export default function SelectBeneficiaryView() {
             />
             <ViewColumns table={table} />
             {/* <DatePicker
-            placeholder="Pick Start Date"
+            placeholder={t('PICK_START_DATE')}
             handleDateChange={handleDateChange}
             type="start"
           />
           <DatePicker
-            placeholder="Pick End Date"
+            placeholder={t('PICK_END_DATE')}
             handleDateChange={handleDateChange}
             type="end"
           /> */}

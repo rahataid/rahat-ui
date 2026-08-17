@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useRoleList, useSettingsStore } from '@rahat-ui/query';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -43,6 +45,8 @@ import Swal from 'sweetalert2';
 export default function AddUser() {
   const t = useTranslations('USERS_ADD');
   const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST4') }),
@@ -102,11 +106,33 @@ export default function AddUser() {
       } else {
         await userCreate.mutateAsync(data);
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : t('AN_UNEXPECTED_ERROR_OCCURRED');
+    } catch (error: unknown) {
+      // error.message on an Axios error is a generic HTTP status string
+      // (e.g. "Request failed with status code 400"), not the backend's
+      // actual message -- read it from the response body instead. The
+      // user-service backend sends a stable `name` (RSError), not `code`.
+      const e = error as {
+        response?: {
+          data?: {
+            code?: string;
+            name?: string;
+            params?: Record<string, string | number | Date>;
+            message?: string;
+          };
+        };
+        message?: string;
+      };
+      const rawMessage: string =
+        e?.response?.data?.message ||
+        e?.message ||
+        t('AN_UNEXPECTED_ERROR_OCCURRED');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['USERS'],
+        rawMessage,
+      );
       Swal.fire(t('USER_CREATION_FAILED'), errorMessage, 'error');
     }
   };
@@ -197,6 +223,7 @@ export default function AddUser() {
                         <PhoneInput
                           placeholder={tg('ENTER_PHONE_NUMBER')}
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />

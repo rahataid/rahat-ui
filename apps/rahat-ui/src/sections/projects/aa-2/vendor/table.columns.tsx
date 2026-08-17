@@ -65,14 +65,15 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
     {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
-      cell: ({ row }) => <div>{formatPhone(row.getValue('phone')) || tg('N_A')}</div>,
+      cell: ({ row }) => (
+        <div>{formatPhone(row.getValue('phone')) || tg('N_A')}</div>
+      ),
     },
     {
       accessorKey: 'registeredApps',
       header: t('REGISTERED_APPS'),
       cell: ({ row }) => {
-        const apps =
-          row.original?.extras?.registeredApps;
+        const apps = row.original?.extras?.registeredApps;
 
         if (!apps?.length) {
           return <div>{tg('N_A')}</div>;
@@ -82,7 +83,7 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
           <div className="flex flex-wrap gap-1">
             {apps.map((app, index) => (
               <Badge key={index} className="bg-gray-200 text-gray-600">
-                {app}
+                {t.has(app as never) ? t(app as never) : app}
               </Badge>
             ))}
           </div>
@@ -138,7 +139,9 @@ export const useProjectVendorRedemptionTableColumns = () => {
     } catch (e: unknown) {
       console.error(e);
       const errorMessage =
-        e instanceof Error ? e.message : t('FAILED_TO_APPROVE_REDEMPTION_REQUEST');
+        e instanceof Error
+          ? e.message
+          : t('FAILED_TO_APPROVE_REDEMPTION_REQUEST');
       return toast.error(errorMessage);
     }
   };
@@ -161,10 +164,9 @@ export const useProjectVendorRedemptionTableColumns = () => {
         <TruncatedCell
           text={
             row.getValue('tokenAmount')
-              ? `${formatNum(Number(row.getValue('tokenAmount')))} ${getAssetCode(
-                settings,
-                id,
-              )}`
+              ? `${formatNum(
+                  Number(row.getValue('tokenAmount')),
+                )} ${getAssetCode(settings, id)}`
               : tg('N_A')
           }
           maxLength={15}
@@ -180,7 +182,11 @@ export const useProjectVendorRedemptionTableColumns = () => {
           : 0;
         return (
           <TruncatedCell
-            text={row.getValue('tokenAmount') ? `${t('RS')} ${formatNum(totalAmount)}` : tg('N_A')}
+            text={
+              row.getValue('tokenAmount')
+                ? `${t('RS')} ${formatNum(totalAmount)}`
+                : tg('N_A')
+            }
             maxLength={15}
           />
         );
@@ -195,8 +201,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
           return <div>{tg('N_A')}</div>;
         }
         const txUrl = getExplorerUrl({
-          chainSettings:
-            settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
           target: 'tx',
           value: row.original?.transactionHash,
         });
@@ -245,8 +250,8 @@ export const useProjectVendorRedemptionTableColumns = () => {
               row.original?.redemptionStatus === 'APPROVED'
                 ? t('APPROVED')
                 : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-                  ? `${t('REQUESTED')} ✓`
-                  : t('REQUESTED')
+                ? `${t('REQUESTED')} ✓`
+                : t('REQUESTED')
             }
             maxLength={15}
           />
@@ -282,9 +287,9 @@ export const useProjectVendorRedemptionTableColumns = () => {
                   <TruncatedCell
                     text={
                       row.original?.redemptionStatus === 'APPROVED' &&
-                        row.original?.approvedAt
+                      row.original?.approvedAt
                         ? formatDate(row.original?.approvedAt)
-              : tg('N_A')
+                        : tg('N_A')
                     }
                     maxLength={30}
                   />

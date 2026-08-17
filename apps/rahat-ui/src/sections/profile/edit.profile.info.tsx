@@ -17,6 +17,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { Loader2, Wallet } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Back from '../projects/components/back';
@@ -33,6 +34,7 @@ export default function EditUserProfile() {
 
   const t = useTranslations('PROFILE_EDIT');
   const g = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const FormSchema = z.object({
     name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST2') }),
     wallet: z.string().optional(),
@@ -112,7 +114,11 @@ export default function EditUserProfile() {
                     <FormItem>
                       <FormLabel>{g('PHONE')}</FormLabel>
                       <FormControl>
-                        <PhoneInput placeholder={g('PHONE')} {...field} />
+                        <PhoneInput
+                          placeholder={g('PHONE')}
+                          {...field}
+                          {...phoneCountrySelectProps}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

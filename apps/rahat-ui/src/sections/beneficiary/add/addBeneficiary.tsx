@@ -36,12 +36,16 @@ import Back from '../../projects/components/back';
 import HeaderWithBack from '../../projects/components/header.with.back';
 import { useTranslations } from 'next-intl';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
   const router = useRouter();
   const t = useTranslations('BENEFICIARY_ADD');
   const g = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
+  const tb = useTranslations();
 
   const FormSchema = z.object({
     name: z
@@ -118,8 +122,16 @@ export default function AddBeneficiaryForm() {
         router.push('/beneficiary');
         form.reset();
       }
-    } catch (e) {
-      toast.error(e?.response?.data?.message || t('FAILED_TO_ADD_BENEFICIARY'));
+    } catch (e: any) {
+      const rawMessage = e?.response?.data?.message || t('FAILED_TO_ADD_BENEFICIARY');
+      const errorMessage = resolveBeneficiaryErrorMessage(
+        tb,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        rawMessage,
+      );
+      toast.error(errorMessage);
     }
   };
 
@@ -210,6 +222,7 @@ export default function AddBeneficiaryForm() {
                           <PhoneInput
                             placeholder={g('ENTER_PHONE_NUMBER')}
                             {...field}
+                            {...phoneCountrySelectProps}
                           />
                         </FormControl>
                         <FormMessage />

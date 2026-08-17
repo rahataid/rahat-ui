@@ -33,6 +33,7 @@ import type { InkindFormData } from '../schemas/inkind.validation';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
@@ -55,6 +56,7 @@ export default function InkindDetailsForm({
   const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tglob = useTranslations('GLOBAL');
   const tAA = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   const formatNum = useNumberFormat();
   const InkindDetailsSchema = useMemo(
     () => buildInkindDetailsSchema(tAA),
@@ -191,7 +193,7 @@ export default function InkindDetailsForm({
                     type="text"
                     placeholder={tg('ENTER_QUANTITY')}
                     {...field}
-                    value={field.value ?? ''}
+                    value={formatDigits(field.value ?? '')}
                     onChange={(e) => {
                       const val = toAsciiDigits(e.target.value).replace(
                         /\D/g,

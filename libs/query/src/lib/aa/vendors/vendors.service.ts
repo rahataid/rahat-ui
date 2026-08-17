@@ -11,6 +11,7 @@ import { useMutation } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export const useAAVendorsList = (payload: any) => {
   const q = useProjectAction<any[]>();
@@ -218,6 +219,7 @@ export const useGetVendorTokenRedemptionList = (payload: any) => {
 
 export const useApproveVendorTokenRedemption = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -255,7 +257,14 @@ export const useApproveVendorTokenRedemption = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['CASH_TRACKER_VENDOR_TOKEN_REDEMPTION'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_APPROVING_VENDOR_TOKEN_REDEMPTION'),
@@ -421,6 +430,7 @@ export const useGetInkindRedemptionLogs = (payload: {
 
 export const useUpdateVendorRedemptionStatus = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const qc = useQueryClient();
@@ -461,7 +471,14 @@ export const useUpdateVendorRedemptionStatus = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_INKIND_REDEMPTION_STATUS'),

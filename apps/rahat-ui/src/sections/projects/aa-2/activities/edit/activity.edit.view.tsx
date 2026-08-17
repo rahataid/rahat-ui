@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -66,6 +67,7 @@ import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 
 export default function EditActivity() {
   const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   // State goes here
   const [open, setOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
@@ -503,8 +505,8 @@ export default function EditActivity() {
                               ?.name
                           }
                           placeholder={t('SELECT_RESPONSIBILITY')}
-                          searchPlaceholder="Search users..."
-                          emptyMessage="No user found."
+                          searchPlaceholder={t('SEARCH_USERS')}
+                          emptyMessage={t('NO_USER_FOUND')}
                           options={
                             users?.data?.map((u: any) => ({
                               label: u.name,
@@ -551,8 +553,8 @@ export default function EditActivity() {
                             phases?.find((p) => p.uuid === field.value)?.name
                           }
                           placeholder={t('SELECT_PHASE')}
-                          searchPlaceholder="Search phases..."
-                          emptyMessage="No phase found."
+                          searchPlaceholder={t('SEARCH_PHASES')}
+                          emptyMessage={t('NO_PHASE_FOUND')}
                           disabled
                           options={
                             phases?.map((p) => ({
@@ -581,8 +583,8 @@ export default function EditActivity() {
                               ?.name
                           }
                           placeholder={t('SELECT_CATEGORY')}
-                          searchPlaceholder="Search categories..."
-                          emptyMessage="No category found."
+                          searchPlaceholder={t('SEARCH_CATEGORIES')}
+                          emptyMessage={t('NO_CATEGORY_FOUND')}
                           options={
                             categories?.map((c: any) => ({
                               label: c.name,
@@ -643,7 +645,7 @@ export default function EditActivity() {
                                 type="text"
                                 placeholder={t('ENTER_LEAD_TIME')}
                                 className="col-span-3 rounded-r-none "
-                                value={lead}
+                                value={formatDigits(lead)}
                                 onChange={(e) => {
                                   const newLead = toAsciiDigits(
                                     e.target.value,

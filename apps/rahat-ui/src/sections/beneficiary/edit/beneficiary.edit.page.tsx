@@ -47,6 +47,7 @@ import {
 } from '@rahataid/sdk/enums';
 import { useTranslations } from 'next-intl';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function AddBeneficiaryForm() {
   const updateBeneficiary = useUpdateBeneficiary();
@@ -60,6 +61,7 @@ export default function AddBeneficiaryForm() {
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
   const t = useTranslations('BENEFICIARY_EDIT');
   const g = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
 
   const FormSchema = z.object({
     name: z
@@ -239,6 +241,7 @@ export default function AddBeneficiaryForm() {
                           <PhoneInput
                             placeholder={g('ENTER_PHONE_NUMBER')}
                             {...field}
+                            {...phoneCountrySelectProps}
                           />
                         </FormControl>
                         <FormMessage />

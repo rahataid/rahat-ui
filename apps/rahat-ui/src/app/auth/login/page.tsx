@@ -14,10 +14,13 @@ import { toast } from 'react-toastify';
 import Image from 'next/image';
 import posthog from 'posthog-js';
 import { useTranslations } from 'next-intl';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AuthPage() {
   const t = useTranslations('LOGIN');
   const g = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const [isEmailValid, setIsEmailValid] = React.useState<boolean>(false);
   const [otp, setOtp] = useState('');
   const [otpinputError, setOtpinputError] = useState(false);
@@ -143,15 +146,15 @@ export default function AuthPage() {
                       autoCapitalize="none"
                       autoComplete="otp"
                       autoCorrect="off"
-                      value={otp}
+                      value={formatDigits(otp)}
                       onChange={(e) => {
                         const integerRegex = /^\d*$/;
 
-                        const value = e.target.value;
+                        const value = toAsciiDigits(e.target.value);
 
                         if (integerRegex.test(value)) {
                           otpinputError && setOtpinputError(false);
-                          setOtp(e.target.value);
+                          setOtp(value);
                         } else {
                           setOtpinputError(true);
                         }

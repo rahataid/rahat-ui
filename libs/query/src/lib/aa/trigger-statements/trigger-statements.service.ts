@@ -13,9 +13,11 @@ import {
   PHASE_QUERY_KEYS,
 } from './trigger-statements.constants';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export const useCreateTriggerStatement = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -48,7 +50,14 @@ export const useCreateTriggerStatement = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_2'),
@@ -61,6 +70,7 @@ export const useCreateTriggerStatement = () => {
 
 export const useCreatePhase = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -97,7 +107,14 @@ export const useCreatePhase = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_ADDING_PHASE'),
@@ -110,6 +127,7 @@ export const useCreatePhase = () => {
 
 export const useUpdatePhase = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -147,7 +165,14 @@ export const useUpdatePhase = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_PHASE'),
@@ -160,6 +185,7 @@ export const useUpdatePhase = () => {
 
 export const useConfigureExtendedLogic = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -204,7 +230,14 @@ export const useConfigureExtendedLogic = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_CONFIGURING_EXTENDED_TRIGGER_LOGIC'),
@@ -217,6 +250,7 @@ export const useConfigureExtendedLogic = () => {
 
 export const useDeletePhase = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -256,7 +290,14 @@ export const useDeletePhase = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_DELETING_PHASE'),
@@ -269,6 +310,7 @@ export const useDeletePhase = () => {
 
 export const useAddTriggerStatementToPhase = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -301,7 +343,14 @@ export const useAddTriggerStatementToPhase = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_2'),
@@ -314,6 +363,7 @@ export const useAddTriggerStatementToPhase = () => {
 
 export const useDeleteTriggerStatement = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -351,7 +401,14 @@ export const useDeleteTriggerStatement = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_REMOVING_TRIGGER_STATEMENT'),
@@ -487,6 +544,7 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
 
 export const useSyncForecastData = (uuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
 
@@ -508,15 +566,13 @@ export const useSyncForecastData = (uuid: UUID) => {
           },
         }),
         new Promise<never>((_, reject) =>
-          setTimeout(
-            () =>
-              reject(
-                new Error(
-                  'The sync is taking longer than expected. Please check again in a few moments.',
-                ),
-              ),
-            60000,
-          ),
+          setTimeout(() => {
+            const timeoutError = new Error(
+              'The sync is taking longer than expected. Please check again in a few moments.',
+            );
+            timeoutError.name = 'ForecastSyncTimeoutError';
+            reject(timeoutError);
+          }, 60000),
         ),
       ]);
     },
@@ -533,7 +589,17 @@ export const useSyncForecastData = (uuid: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage =
+        error?.name === 'ForecastSyncTimeoutError'
+          ? t('FORECAST_SYNC_TIMEOUT')
+          : resolveBackendErrorMessage(
+              tb,
+              error?.response?.data?.code,
+              error?.response?.data?.params,
+              ['TRIGGER_STATEMENTS_PHASES'],
+              rawMessage,
+            );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_SYNCING_FORECAST_DATA'),
@@ -917,6 +983,7 @@ export const useSingleTriggerStatement = (
 
 export const useActivateTrigger = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -965,7 +1032,14 @@ export const useActivateTrigger = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('TRIGGER_ACTIVATION_FAILED'),
@@ -978,6 +1052,7 @@ export const useActivateTrigger = () => {
 
 export const useUpdateTriggerStatement = () => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -1013,7 +1088,14 @@ export const useUpdateTriggerStatement = () => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || t('ERROR');
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
         title: t('ERROR_WHILE_UPDATING_TRIGGER'),

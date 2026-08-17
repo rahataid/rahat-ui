@@ -30,6 +30,7 @@ import { Check, ChevronDown } from 'lucide-react';
 import { Tag } from 'emblor';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import GctSupportAreaInput from './gct.support-area-input';
 import { GctGroupValues } from '../types/gct.schemas';
 import { CIPS_BANKS } from '../types/cips-banks';
@@ -86,6 +87,7 @@ export function BasicInfoSection({
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tGlobal = useTranslations('GLOBAL');
   const formatDigits = useLabelDigits();
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   return (
     <SectionCard titleKey="BASIC_INFO">
       <div className="grid grid-cols-3 gap-4">
@@ -109,7 +111,12 @@ export function BasicInfoSection({
             <FormItem>
               <Label>{tGlobal('PHONE_NUMBER')} <Req /></Label>
               <FormControl>
-                <PhoneInput defaultCountry="NP" placeholder="+977" {...field} />
+                <PhoneInput
+                  defaultCountry="NP"
+                  placeholder="+977"
+                  {...field}
+                  {...phoneCountrySelectProps}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

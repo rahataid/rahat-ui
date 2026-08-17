@@ -97,12 +97,11 @@ export default function useActivitiesTableColumn() {
       },
     },
     {
-      accessorKey: 'completedBy',
       header: 'Completed By',
       meta: { className: 'w-[140px]' },
       cell: ({ row }) => {
-        const completedBy = row.getValue('completedBy') as string;
-        const completedAt = row.getValue('completedAt') as string;
+        const completedBy = row.original.completedBy as string;
+        const completedAt = row.original.completedAt as string;
         let timestamp = 'N/A';
         if (completedAt) {
           const d = new Date(completedAt);
@@ -113,7 +112,7 @@ export default function useActivitiesTableColumn() {
             <span className="text-muted-foreground">
               {completedBy || 'N/A'}
             </span>
-            <span>{timestamp}</span>
+            <span className="text-muted-foreground">{timestamp}</span>
           </div>
         );
       },

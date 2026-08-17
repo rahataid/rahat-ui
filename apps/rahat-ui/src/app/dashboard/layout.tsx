@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Nav } from '../../components/nav';
 import AuthGuard from '../../guards/auth-guard';
 import SideNav from '../../components/side-nav';
+import { ChatWidgetFrame } from '../../components/chat-widget';
 
 export default function DashboardLayout({
   margin = 'mt-14',
@@ -21,6 +22,7 @@ export default function DashboardLayout({
         <div className="w-full h-screen">
           <Nav hasDefaultHeader={hasDefaultHeader} />
           <div className={`border-0 bg-green ${margin}`}>{children}</div>
+          <ChatWidgetFrame />
         </div>
       </div>
     </AuthGuard>

@@ -4012,7 +4012,13 @@
       "BENEFICIARY_SECRET_NOT_FOUND": "Beneficiary secret not found",
       "NO_ACTIVE_PAYOUT_FOUND_FOR_GROUP": "No active payout found for the group",
       "NO_ACTIVE_TOKEN_FOUND_FOR_GROUP": "No active token found for group.",
-      "GROUP_CASH_TRANSFER_NAME_NOT_FOUND": "Group cash transfer '{name}' not found"
+      "GROUP_CASH_TRANSFER_NAME_NOT_FOUND": "Group cash transfer '{name}' not found",
+      "EVM_TRIGGERS_NOT_IMPLEMENTED": "EVM triggers not implemented yet",
+      "TRANSFER_TOKENS_NOT_IMPLEMENTED_FOR_EVM": "Transfer tokens not implemented for EVM",
+      "INVALID_GROUP_RESOLUTION_RESPONSE": "Invalid group resolution response",
+      "FAILED_TO_RESOLVE_GROUPS_TO_ADDRESSES": "Failed to resolve groups to addresses: {message}",
+      "CHAIN_SETTINGS_NOT_FOUND": "Chain settings not found",
+      "MISSING_REQUIRED_FIELD_IN_CHAIN_SETTINGS": "Missing required field {field} in chain settings"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "Beneficiary group tokens with UUID '{groupId}' not found",
@@ -4174,7 +4180,12 @@
       "TOKEN_REDEMPTION_INVALID_TARGET_STATUS": "Invalid status update. Only APPROVED, REJECTED, STELLAR_VERIFIED, or STELLAR_FAILED status is allowed"
     },
     "GRIEVANCES": {
-      "GRIEVANCE_NOT_FOUND": "Grievance not found"
+      "GRIEVANCE_NOT_FOUND": "Grievance not found",
+      "REPORTER_CONTACT_INVALID": "Contact information must be a valid email or phone number",
+      "TITLE_TOO_SHORT": "Title must be at least 5 characters long",
+      "TITLE_TOO_LONG": "Title must not be longer than 100 characters",
+      "DESCRIPTION_TOO_SHORT": "Description must be at least 10 characters long",
+      "DESCRIPTION_TOO_LONG": "Description must not be longer than 1000 characters"
     },
     "USERS": {
       "ROLE_NAME_INVALID": "Invalid characters in role name.",

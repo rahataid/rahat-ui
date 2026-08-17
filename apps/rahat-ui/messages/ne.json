@@ -4012,7 +4012,13 @@
       "BENEFICIARY_SECRET_NOT_FOUND": "लाभग्राहीको गोप्य कुञ्जी फेला परेन",
       "NO_ACTIVE_PAYOUT_FOUND_FOR_GROUP": "समूहका लागि कुनै सक्रिय भुक्तानी फेला परेन",
       "NO_ACTIVE_TOKEN_FOUND_FOR_GROUP": "समूहका लागि कुनै सक्रिय टोकन फेला परेन।",
-      "GROUP_CASH_TRANSFER_NAME_NOT_FOUND": "समूह नगद स्थानान्तरण '{name}' फेला परेन"
+      "GROUP_CASH_TRANSFER_NAME_NOT_FOUND": "समूह नगद स्थानान्तरण '{name}' फेला परेन",
+      "EVM_TRIGGERS_NOT_IMPLEMENTED": "EVM ट्रिगरहरू अझै लागू गरिएको छैन",
+      "TRANSFER_TOKENS_NOT_IMPLEMENTED_FOR_EVM": "EVM का लागि टोकन स्थानान्तरण लागू गरिएको छैन",
+      "INVALID_GROUP_RESOLUTION_RESPONSE": "अमान्य समूह समाधान प्रतिक्रिया",
+      "FAILED_TO_RESOLVE_GROUPS_TO_ADDRESSES": "समूहहरूलाई ठेगानाहरूमा समाधान गर्न असफल भयो: {message}",
+      "CHAIN_SETTINGS_NOT_FOUND": "चेन सेटिङहरू फेला परेनन्",
+      "MISSING_REQUIRED_FIELD_IN_CHAIN_SETTINGS": "चेन सेटिङहरूमा आवश्यक फिल्ड {field} छुटेको छ"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "UUID '{groupId}' भएको लाभग्राही समूह टोकन फेला परेन",
@@ -4174,7 +4180,12 @@
       "TOKEN_REDEMPTION_INVALID_TARGET_STATUS": "अमान्य स्थिति अपडेट। केवल APPROVED, REJECTED, STELLAR_VERIFIED, वा STELLAR_FAILED स्थिति मात्र अनुमति छ"
     },
     "GRIEVANCES": {
-      "GRIEVANCE_NOT_FOUND": "गुनासो फेला परेन"
+      "GRIEVANCE_NOT_FOUND": "गुनासो फेला परेन",
+      "REPORTER_CONTACT_INVALID": "सम्पर्क जानकारी मान्य इमेल वा फोन नम्बर हुनुपर्छ",
+      "TITLE_TOO_SHORT": "शीर्षक कम्तिमा ५ अक्षरको हुनुपर्छ",
+      "TITLE_TOO_LONG": "शीर्षक १०० अक्षरभन्दा लामो हुनु हुँदैन",
+      "DESCRIPTION_TOO_SHORT": "विवरण कम्तिमा १० अक्षरको हुनुपर्छ",
+      "DESCRIPTION_TOO_LONG": "विवरण १००० अक्षरभन्दा लामो हुनु हुँदैन"
     },
     "USERS": {
       "ROLE_NAME_INVALID": "भूमिकाको नाममा अमान्य अक्षरहरू छन्।",

@@ -7,7 +7,7 @@ import { useProjectAction } from '../projects';
 import { GetGrievanceList, GrievanceFormData } from './types/grievance';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
-import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
+import { resolveBeneficiaryErrorMessage } from '../../utils/i18n/backend-error';
 
 const MS_ACTIONS = {
   GRIEVANCES: {
@@ -149,7 +149,7 @@ export const useGrievanceAdd = () => {
       },
       onError: (error: any) => {
         const rawMessage = error?.response?.data?.message || t('ERROR');
-        const errorMessage = resolveBackendErrorMessage(
+        const errorMessage = resolveBeneficiaryErrorMessage(
           tb,
           error?.response?.data?.code,
           error?.response?.data?.params,
@@ -248,7 +248,7 @@ export const useGrievanceEdit = () => {
       },
       onError: (error: any) => {
         const rawMessage = error?.response?.data?.message || t('ERROR');
-        const errorMessage = resolveBackendErrorMessage(
+        const errorMessage = resolveBeneficiaryErrorMessage(
           tb,
           error?.response?.data?.code,
           error?.response?.data?.params,
@@ -318,7 +318,7 @@ export const useGrievanceEditStatus = () => {
       },
       onError: (error: any) => {
         const rawMessage = error?.response?.data?.message || t('ERROR');
-        const errorMessage = resolveBackendErrorMessage(
+        const errorMessage = resolveBeneficiaryErrorMessage(
           tb,
           error?.response?.data?.code,
           error?.response?.data?.params,

@@ -270,6 +270,11 @@ export default function TriggerStatementDetail() {
                 <p>{trigger?.triggeredBy}</p>
               </div>
             )}
+            {trigger?.leadTime && (
+              <p className="text-muted-foreground text-sm/4">
+                Lead Time : {trigger.leadTime ?? 'N/A'}
+              </p>
+            )}
           </div>
         </div>
         {source !== 'MANUAL' &&

@@ -205,6 +205,21 @@ export default function EditActivity() {
   }, [selectedPhase, form]);
 
   const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
+    const manager =
+      users?.data?.find((u) => u?.uuid === data.responsibility) || null;
+    const { responsibility, ...rest } = data;
+    const payloadData = {
+      manager: manager
+        ? {
+            id: manager.uuid?.toString(),
+            name: manager.name,
+            email: manager.email,
+            phone: manager.phone ?? '',
+          }
+        : null,
+      ...rest,
+    };
+
     let payload;
 
     if (communicationData?.length) {
@@ -215,13 +230,13 @@ export default function EditActivity() {
 
       payload = {
         uuid: activityID,
-        ...data,
         activityCommunication: activityCommunicationPayload,
+        ...payloadData,
       };
     } else {
       payload = {
         uuid: activityID,
-        ...data,
+        ...payloadData,
       };
     }
     try {

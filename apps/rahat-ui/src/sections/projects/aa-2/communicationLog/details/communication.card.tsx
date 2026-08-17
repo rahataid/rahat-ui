@@ -268,7 +268,7 @@ export function CommunicationDetailCard({
             );
             return latestUpdatedAt ? (
               <p className="text-sm text-gray-500">
-                Updated At: {dateFormat(latestUpdatedAt)}
+                {t('UPDATED_AT')}: {formatDate(latestUpdatedAt)}
               </p>
             ) : (
               <div />

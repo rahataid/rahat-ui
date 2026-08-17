@@ -7,6 +7,7 @@ import React from 'react';
 import { Notification } from '@rahat-ui/types';
 import { useTranslations } from 'next-intl';
 import NotificationItems from '../sections/notifications/notificationItems';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export default function NotificationPanel({
   isLoading = false,
 }: NotificationPanelProps) {
   const t = useTranslations('NOTIFICATIONS');
+  const formatNum = useNumberFormat();
   const displayedNotifications = notifications.slice(0, 4);
 
   if (!isOpen) return null;
@@ -39,7 +41,7 @@ export default function NotificationPanel({
             <h2 className="text-lg font-semibold">{t('NOTIFICATIONS')}</h2>
             {lengthOfNotification > 0 && (
               <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {lengthOfNotification}
+                {formatNum(lengthOfNotification)}
               </span>
             )}
           </div>

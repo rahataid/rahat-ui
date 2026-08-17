@@ -5,6 +5,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { useGetAllNotificatons } from '@rahat-ui/query';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const NotificationPanel = dynamic(() => import('./notification.panal'), {
   ssr: false,
@@ -12,6 +13,7 @@ const NotificationPanel = dynamic(() => import('./notification.panal'), {
 
 export function NotificationButton({ unreadCount = 0 }) {
   const { data, totalNotifications, isLoading } = useGetAllNotificatons();
+  const formatNum = useNumberFormat();
 
   const notifications = data?.pages.flatMap((page) => page.data || []) || [];
 
@@ -30,7 +32,7 @@ export function NotificationButton({ unreadCount = 0 }) {
         <Bell className="h-6 w-6" />
         {totalNotifications > 0 && (
           <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-            {totalNotifications}
+            {formatNum(totalNotifications)}
           </span>
         )}
       </button>

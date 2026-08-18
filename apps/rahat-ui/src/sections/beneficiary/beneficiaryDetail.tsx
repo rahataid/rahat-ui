@@ -49,12 +49,6 @@ export default function BeneficiaryDetail({
   const searchParams = useSearchParams();
   const { clickToCopy, copyAction } = useCopy();
   const { Id } = useParams();
-  const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
-    'details',
-  );
-  const [walletAddressCopied, setWalletAddressCopied] =
-    useState<boolean>(false);
-  const walletAddress = beneficiaryDetail.walletAddress || '';
   const t = useTranslations('BENEFICIARY_DETAIL');
   const g = useTranslations('GLOBAL');
 
@@ -63,17 +57,6 @@ export default function BeneficiaryDetail({
 
   const formatEnumValue = (value?: string) =>
     translateValue(g, value, { fallbackStyle: 'raw' });
-
-  const handleTabChange = (tab: 'details' | 'edit') => {
-    setActiveTab(tab);
-  };
-
-  // const clickToCopy = () => {
-  //   if (walletAddress) {
-  //     navigator.clipboard.writeText(walletAddress);
-  //     setWalletAddressCopied(true);
-  //   }
-  // };
 
   const handleAssignModalClick = () => {
     projectModal.onTrue();
@@ -99,118 +82,6 @@ export default function BeneficiaryDetail({
         deleteModal={deleteModal}
         closeSecondPanel={closeSecondPanel}
       />
-      {/* <div className="flex justify-between p-4 pt-5 bg-card border-b">
-        <div className="flex gap-3">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger onClick={closeSecondPanel}>
-                <Minus size={20} strokeWidth={1.5} />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Close</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div className="flex gap-3">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                disabled={benfAssignedToProject}
-                onClick={handleDeleteClick}
-              >
-                <Trash2
-                  className="cursor-pointer"
-                  color="red"
-                  size={20}
-                  strokeWidth={1.5}
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">
-                  {benfAssignedToProject
-                    ? 'Cannot delete a beneficiary assigned to project.'
-                    : 'Delete'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVertical
-                className="cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {activeTab === 'details' ? (
-                <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                  Edit
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                  Details
-                </DropdownMenuItem>
-              )}
-
-              <DropdownMenuItem onClick={handleAssignModalClick}>
-                Assign to project
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      <div className="p-2 flex items-center gap-2">
-        <Image
-          className="rounded-full"
-          src="/profile.png"
-          alt="cat"
-          height={80}
-          width={80}
-        />
-        <div>
-          <div className="flex gap-2 mb-1">
-            <h1 className="font-semibold text-xl">
-              {beneficiaryDetail?.piiData?.name}
-            </h1>
-            <Badge>{g('ACTIVE')}</Badge>
-          </div>
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex gap-3 items-center"
-                onClick={clickToCopy}
-              >
-                <p className="text-muted-foreground text-base">
-                  {truncateEthAddress(walletAddress)}
-                </p>
-                {walletAddressCopied ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
-                ) : (
-                  <Copy
-                    className="text-muted-foreground"
-                    size={15}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary" side="bottom">
-                <p className="text-xs font-medium">
-                  {walletAddressCopied ? 'copied' : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
-
-      {activeTab === 'details' && (
-        <SplitViewDetailCards beneficiaryDetail={beneficiary} />
-      )}
-      {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
-        <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
-      )} */}
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
           <TooltipComponent

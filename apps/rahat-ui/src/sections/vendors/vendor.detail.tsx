@@ -19,12 +19,16 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
+import { useAuthStore, useUserStore } from '@rumsan/react-query';
+import { verifyAuthorization } from 'viem/utils';
+import { isAuthorized } from '../../utils';
 
 export default function VendorDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+  const user = useUserStore((state) => state.user);
+
   const { data: vendorDetail } = useGetVendor(id);
-  // const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
 
   const vendor = React.useMemo(() => {
     const data = vendorDetail?.data;
@@ -50,7 +54,6 @@ export default function VendorDetail() {
     };
   }, [vendorDetail]);
 
-
   const isVendorAssigned = vendor?.projects?.length;
   const removeVendor = useRemoveVendor();
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -59,6 +62,16 @@ export default function VendorDetail() {
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(walletAddress);
+  };
+
+  const handleEditBtnClick = () => {
+    const userRoles = user?.data?.roles || [];
+    if (!isAuthorized(userRoles)) {
+      toast.warning('You are not authorized for this action.');
+      return;
+    }
+
+    router.push(`/vendors/${id}/edit`);
   };
 
   const deleteVendor = async () => {
@@ -81,7 +94,7 @@ export default function VendorDetail() {
           <CoreBtnComponent
             name="Edit"
             Icon={Pencil}
-            handleClick={() => router.push(`/vendors/${id}/edit`)}
+            handleClick={handleEditBtnClick}
           />
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
@@ -126,7 +139,9 @@ export default function VendorDetail() {
                     <p className="font-medium">{project?.name}</p>
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full ${
-                        project.canSyncWalkin ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        project.canSyncWalkin
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
                       }`}
                     >
                       {project.canSyncWalkin ? 'Can Sync Walkin' : 'Disabled'}

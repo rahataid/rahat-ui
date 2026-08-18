@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { toast } from 'react-toastify';
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {
     return address;
@@ -132,4 +133,16 @@ export const formatDateFromBloackChain = (dateString: string) => {
   // Form the date string
   const formattedDate = `${month} ${day}, ${year} ${hours12}:${minutes} ${period}`;
   return formattedDate;
+};
+
+const REQUIRED_ROLES = ['Admin', 'Manager'];
+
+export const isAuthorized = (roles: string[]): boolean => {
+  const authorized = roles.some((role) => REQUIRED_ROLES.includes(role));
+
+  if (!authorized) {
+    return false;
+  }
+
+  return true;
 };

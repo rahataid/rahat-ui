@@ -3,6 +3,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type IProps = {
   project: any;
@@ -22,7 +23,7 @@ export default function ProjectInfoCard({ project }: IProps) {
         <div>
           <h1 className="text-muted-foreground text-sm">{t('PROJECT_STATUS')}</h1>
           <Badge className="bg-green-100 text-green-500">
-            {project?.status}
+            {translateValue(tg, project?.status)}
           </Badge>
         </div>
         <div className="text-right">

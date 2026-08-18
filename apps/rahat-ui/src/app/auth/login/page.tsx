@@ -6,6 +6,7 @@ import {
   useRequestOtp,
   useVerifyOtp,
 } from '@rumsan/react-query/auth';
+import { useErrorStore } from '@rumsan/react-query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
@@ -16,10 +17,12 @@ import posthog from 'posthog-js';
 import { useTranslations } from 'next-intl';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 export default function AuthPage() {
   const t = useTranslations('LOGIN');
   const g = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const formatDigits = useLabelDigits();
   const [isEmailValid, setIsEmailValid] = React.useState<boolean>(false);
   const [otp, setOtp] = useState('');
@@ -28,15 +31,43 @@ export default function AuthPage() {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const { address, challenge, service, setAddress, setChallenge, error } =
+  const { address, challenge, service, setAddress, setChallenge } =
     useAuthStore((state) => ({
       challenge: state.challenge,
       service: state.service,
       address: state.address,
       setAddress: state.setAddress,
       setChallenge: state.setChallenge,
-      error: state.error,
     }));
+
+  // useRequestOtp/useVerifyOtp report failures via the shared error store
+  // (which also drives the global toast), not useAuthStore's own `error`
+  // field -- that field is never actually written to, so reading it here
+  // would always be null.
+  const authError = useErrorStore((state) => state.error);
+  const authErrorMessage = (() => {
+    if (!authError) return '';
+    const rawMessage: string =
+      (authError as any)?.response?.data?.message || '';
+    const byCodeOrName = resolveBackendErrorMessage(
+      tb,
+      (authError as any)?.response?.data?.code ||
+        (authError as any)?.response?.data?.name,
+      (authError as any)?.response?.data?.params,
+      ['USERS'],
+      rawMessage,
+    );
+    if (byCodeOrName !== rawMessage) return byCodeOrName;
+    // Some deployed backend versions send no code/name at all -- fall
+    // back to matching the message text itself, same as the global toast.
+    const slug = rawMessage
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    const key = `BACKEND.USERS.${slug}`;
+    return slug && tb.has(key as never) ? tb(key as never) : rawMessage;
+  })();
 
   const { mutateAsync: requestOtp, isSuccess, isPending } = useRequestOtp();
   const { mutateAsync: verifyOtp } = useVerifyOtp();
@@ -119,9 +150,9 @@ export default function AuthPage() {
                       onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
-                  {error && (
+                  {authErrorMessage && (
                     <p className="text-red-500 text-center">
-                      {error?.response?.data?.message}
+                      {authErrorMessage}
                     </p>
                   )}
                   <Button

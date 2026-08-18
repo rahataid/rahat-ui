@@ -1919,7 +1919,18 @@
     "NO_FURTHER_RETRIES_POSSIBLE": "थप पुन: प्रयास सम्भव छैन",
     "DUPLICATE_PHONE_NUMBERS_FOUND_BULLET": "• डुप्लिकेट फोन नम्बरहरू फेला परे।",
     "DUPLICATE_EMAILS_FOUND_BULLET": "• डुप्लिकेट इमेलहरू फेला परे।",
-    "ERROR_SENDING_OTP": "ओटीपी पठाउँदा त्रुटि भयो।"
+    "ERROR_SENDING_OTP": "ओटीपी पठाउँदा त्रुटि भयो।",
+    "FAILED_TO_FETCH_TEMPERATURE_DATA": "तापक्रम डाटा ल्याउन असफल भयो",
+    "FAILED_TO_FETCH_HUMIDITY_DATA": "आर्द्रता डाटा ल्याउन असफल भयो",
+    "FAILED_TO_FETCH_GFH_WATER_LEVELS": "GFH पानीको सतह डाटा ल्याउन असफल भयो",
+    "ERROR_LOADING_VERSION": "संस्करण लोड गर्दा त्रुटि",
+    "ERROR_LOADING_TRIGGER_STATEMENT": "ट्रिगर विवरण लोड गर्दा त्रुटि",
+    "FAILED_TO_FETCH_VERSION_DETAILS": "संस्करण विवरण ल्याउन असफल भयो",
+    "FAILED_TO_FETCH_TRIGGER_STATEMENT_DETAILS": "ट्रिगर विवरण विवरण ल्याउन असफल भयो",
+    "FAILED_TO_FETCH_ACTIVITY": "गतिविधि ल्याउन असफल भयो",
+    "FAILED_TO_FETCH_TRANSPORT_STATS": "ट्रान्सपोर्ट तथ्याङ्क ल्याउन असफल भयो",
+    "SETTING_ADDED_SUCCESSFULLY": "सेटिङ सफलतापूर्वक थपियो",
+    "FAILED_TO_ADD_SETTING": "सेटिङ थप्न असफल भयो"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खातावालाको नाम",
@@ -3355,7 +3366,27 @@
     "SOCIAL_MEDIA": "सामाजिक सञ्जाल",
     "PICK_START_DATE": "सुरु मिति छान्नुहोस्",
     "PICK_END_DATE": "अन्तिम मिति छान्नुहोस्",
-    "ACCOUNT_NUMBER_AND_BANK_NAME": "खाता नम्बर र बैंकको नाम"
+    "ACCOUNT_NUMBER_AND_BANK_NAME": "खाता नम्बर र बैंकको नाम",
+    "SCHEDULED": "तालिकाबद्ध",
+    "CLOSED": "बन्द",
+    "NOT_READY": "तयार छैन",
+    "BELOW_WARNING_LEVEL": "चेतावनी स्तर भन्दा तल",
+    "WARNING_LEVEL": "चेतावनी स्तर",
+    "WARNING": "चेतावनी",
+    "DANGER": "खतरा",
+    "DANGER_LEVEL": "खतरा स्तर",
+    "AIR_TEMPERATURE": "हावाको तापक्रम",
+    "HOURLY_PRECIPITATION": "घण्टागत वर्षा",
+    "ACCUMULATED_PRECIPITATION": "सञ्चित वर्षा",
+    "WIND_SPEED": "हावाको गति",
+    "WIND_GUST": "हावाको झोक्का",
+    "RELATIVE_HUMIDITY": "सापेक्षिक आर्द्रता",
+    "TOTAL_CLOUD_COVER": "कुल बादल आवरण",
+    "SMTP": "एसएमटीपी",
+    "API": "एपीआई",
+    "AUTH_APP_CREATED_SUCCESSFULLY": "अथ एप सफलतापूर्वक सिर्जना गरियो",
+    "PUBLIC_KEY_ALREADY_EXISTS": "पब्लिक की पहिले नै अवस्थित छ",
+    "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "लाभग्राहीहरू छिट्टै आयात हुनेछन्!"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -3908,7 +3939,20 @@
       "DUPLICATE_PHONE_NUMBERS_IN_BATCH": "दोहोरो फोन नम्बरहरू: {phones}",
       "DUPLICATE_WALLET_ADDRESSES_IN_BATCH": "दोहोरो वालेट ठेगानाहरू: {wallets}",
       "FAILED_TO_FETCH_BENEFICIARY_GROUPS_BY_UUIDS": "UUID अनुसार लाभग्राही समूहहरू ल्याउँदा त्रुटि भयो। {message}",
-      "FAILED_TO_UPDATE_BENEFICIARY_TOKENS": "समूह {groupUuid} का लागि लाभग्राही टोकनहरू अपडेट गर्न असफल भयो: {message}"
+      "FAILED_TO_UPDATE_BENEFICIARY_TOKENS": "समूह {groupUuid} का लागि लाभग्राही टोकनहरू अपडेट गर्न असफल भयो: {message}",
+      "INVALID_DB_TRANSACTION_ACTION": "अमान्य कार्य",
+      "DATABASE_TRANSACTION_FAILED": "डाटाबेस कारोबार असफल भयो: {message}",
+      "BENEFICIARY_GROUP_NOT_FOUND_SYNC": "लाभग्राही समूह फेला परेन: {groupUuid}",
+      "SDP_SETTINGS_NOT_FOUND": "SDP सेटिङहरू फेला परेनन्",
+      "FAILED_TO_FETCH_BALANCES": "ब्यालेन्सहरू ल्याउन असफल भयो",
+      "TEMP_GROUP_NOT_FOUND": "अस्थायी समूह फेला परेन।",
+      "NO_GROUPS_FOUND": "कुनै समूह फेला परेन!",
+      "NO_BENEFICIARIES_FOUND": "कुनै लाभग्राही फेला परेन!",
+      "DUPLICATE_WALLET_ADDRESS_FOUND": "दोहोरो वालेट ठेगाना फेला पर्यो: {wallets}",
+      "UUIDS_ARRAY_CANNOT_BE_EMPTY": "uuids सूची खाली हुन सक्दैन",
+      "UUID_MUST_BE_STRING": "प्रत्येक UUID स्ट्रिङ हुनुपर्छ",
+      "SELECT_FIELD_ARRAY_CANNOT_BE_EMPTY": "selectField सूची खाली हुन सक्दैन",
+      "FIELD_NAME_MUST_BE_STRING": "प्रत्येक फिल्ड नाम स्ट्रिङ हुनुपर्छ"
     },
     "PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS": {
       "MISSING_ACTION_OR_PROJECT_ID": "कार्य वा परियोजना आईडी हराइरहेको छ",
@@ -4021,7 +4065,15 @@
       "INVALID_GROUP_RESOLUTION_RESPONSE": "अमान्य समूह समाधान प्रतिक्रिया",
       "FAILED_TO_RESOLVE_GROUPS_TO_ADDRESSES": "समूहहरूलाई ठेगानाहरूमा समाधान गर्न असफल भयो: {message}",
       "CHAIN_SETTINGS_NOT_FOUND": "चेन सेटिङहरू फेला परेनन्",
-      "MISSING_REQUIRED_FIELD_IN_CHAIN_SETTINGS": "चेन सेटिङहरूमा आवश्यक फिल्ड {field} छुटेको छ"
+      "MISSING_REQUIRED_FIELD_IN_CHAIN_SETTINGS": "चेन सेटिङहरूमा आवश्यक फिल्ड {field} छुटेको छ",
+      "MULTISIG_SETTINGS_MISSING": "चेन सेटिङ, सेफ प्रस्तावक प्राइभेट ठेगाना, वा सेफ API कुञ्जी छुटेको हुन सक्छ",
+      "CHAIN_CONFIG_MISSING_TYPE": "चेन कन्फिगरेसनमा \"type\" फिल्ड (evm वा stellar) समावेश हुनुपर्छ",
+      "CHAIN_TYPE_NOT_REGISTERED": "चेन प्रकार {chainType} मोड्युलमा दर्ता गरिएको छैन",
+      "CHAIN_CONFIG_MISSING_FOR_TYPE": "चेन प्रकार {chainType} का लागि कन्फिगरेसन छुटेको छ",
+      "CHAIN_NOT_SUPPORTED_IN_INSTANCE": "चेन {chainType} यो इन्स्ट्यान्समा समर्थित छैन",
+      "WALLET_ADDRESS_NOT_FOUND": "वालेट ठेगाना फेला परेन",
+      "CHAIN_SETTINGS_CONFIG_NOT_FOUND": "चेन सेटिङ कन्फिगरेसन फेला परेन। कृपया एप्लिकेसन सेटिङहरूमा चेन सेटिङ कन्फिगर गर्नुहोस्।",
+      "INVALID_CHAIN_TYPE": "अमान्य चेन प्रकार \"{type}\"। यो मध्ये एउटा हुनुपर्छ: {validTypes}"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "UUID '{groupId}' भएको लाभग्राही समूह टोकन फेला परेन",
@@ -4066,7 +4118,9 @@
       "STELLAR_ERR_OTP_VERIFY_FAILED": "ओटीपी प्रमाणीकरण असफल भयो",
       "GROUP_PURPOSE_GENERAL_ONLY_FOR_VENDOR_PAYOUTS": "समूह उद्देश्य GENERAL केवल VENDOR भुक्तानीका लागि मात्र अनुमति छ। प्राप्त भुक्तानी प्रकार: {payoutType}।",
       "PAYOUT_TRIGGER_TOKENS_NOT_DISBURSED": "लाभग्राही समूह \"{groupName}\" लाई अझै टोकन वितरण नभएकाले भुक्तानी ट्रिगर गर्न सकिँदैन। कृपया कोष वितरण पूरा नभएसम्म पर्खनुहोस् र फेरि प्रयास गर्नुहोस्।",
-      "MANUAL_BANK_TRANSFER_PAYOUTS_CANNOT_BE_TRIGGERED": "म्यानुअल बैंक स्थानान्तरण भुक्तानीहरू ट्रिगर गर्न सकिँदैन। तिनीहरू सिर्जना हुनासाथ स्वचालित रूपमा प्रशोधन हुन्छन्।"
+      "MANUAL_BANK_TRANSFER_PAYOUTS_CANNOT_BE_TRIGGERED": "म्यानुअल बैंक स्थानान्तरण भुक्तानीहरू ट्रिगर गर्न सकिँदैन। तिनीहरू सिर्जना हुनासाथ स्वचालित रूपमा प्रशोधन हुन्छन्।",
+      "FAILED_TO_FETCH_PAYOUT_STATS": "भुक्तानी तथ्याङ्क ल्याउन असफल भयो",
+      "SETTING_KEY_NOT_FOUND": "सेटिङ '{key}' फेला परेन"
     },
     "ACTIVITIES": {
       "ACTIVITY_NOT_FOUND": "गतिविधि फेला परेन।",
@@ -4083,7 +4137,12 @@
       "SOMETHING_WENT_WRONG": "केही गडबड भयो",
       "NO_ACTIVITIES_PROVIDED": "कुनै गतिविधि प्रदान गरिएको छैन।",
       "COMMUNICATION_ALREADY_TRIGGERED": "कम्युनिकेसन पहिले नै ट्रिगर भइसकेको छ",
-      "NO_VALID_ADDRESSES_FOUND": "कुनै मान्य ठेगाना फेला परेन!"
+      "NO_VALID_ADDRESSES_FOUND": "कुनै मान्य ठेगाना फेला परेन!",
+      "COMMUNICATION_SETTINGS_NOT_FOUND": "प्रतिक्रियामा कम्युनिकेसन सेटिङहरू फेला परेनन्",
+      "COMMS_CLIENT_NOT_AVAILABLE": "कम्युनिकेसन सेवा उपलब्ध छैन। सेवा अझै सुरु हुँदैछ।",
+      "NO_EMAIL_SMTP_TRANSPORT_FOUND": "कुनै इमेल/SMTP ट्रान्सपोर्ट फेला परेन",
+      "INVALID_GROUP_TYPE": "अमान्य समूह प्रकार",
+      "NO_RESPONSE_FROM_MICROSERVICE": "माइक्रोसर्भिसबाट कुनै प्रतिक्रिया छैन"
     },
     "STAKEHOLDERS_GROUPS": {
       "PHONE_NUMBER_MUST_BE_UNIQUE": "फोन नम्बर अद्वितीय हुनुपर्छ",
@@ -4100,7 +4159,9 @@
       "GROUP_NOT_VALID_FOR_AA": "समूह AA का लागि मान्य छैन।",
       "INVALID_GROUP_PURPOSE_WITH_GENERAL": "अमान्य समूह उद्देश्य {purpose}। अनुमति प्राप्त उद्देश्यहरू: BANK_TRANSFER, MOBILE_MONEY, GENERAL।",
       "FAILED_TO_FETCH_STAKEHOLDERS_GROUPS_BY_UUIDS": "UUID अनुसार सरोकारवाला समूहहरू ल्याउँदा त्रुटि भयो। {message}",
-      "FAILED_TO_FETCH_RELATED_ACTIVITIES": "सम्बन्धित गतिविधिहरू ल्याउँदा त्रुटि भयो। {message}"
+      "FAILED_TO_FETCH_RELATED_ACTIVITIES": "सम्बन्धित गतिविधिहरू ल्याउँदा त्रुटि भयो। {message}",
+      "NO_STAKEHOLDERS_DATA_PROVIDED_FOR_VALIDATION": "प्रमाणीकरणका लागि कुनै डाटा प्रदान गरिएको छैन",
+      "MISSING_DATA_IN_BULK_ADD_PAYLOAD": "बल्क-थप पेलोडमा डाटा छुटेको छ"
     },
     "IN_KIND_VENDORS": {
       "VENDOR_NOT_FOUND": "id {uuid} भएको विक्रेता फेला परेन",
@@ -4180,7 +4241,10 @@
       "VENDOR_TOKEN_REDEMPTION_MS_FAILED": "माइक्रोसर्भिस कल असफल भयो: {message} (विक्रेता टोकन रिडेम्प्सन)",
       "TOKEN_REDEMPTION_NOT_FOUND": "टोकन रिडेम्प्सन फेला परेन (UUID: {uuid})",
       "TOKEN_REDEMPTION_INVALID_STATUS_FOR_UPDATE": "टोकन रिडेम्प्सन {uuid} REQUESTED वा STELLAR_VERIFIED स्थितिमा छैन",
-      "TOKEN_REDEMPTION_INVALID_TARGET_STATUS": "अमान्य स्थिति अपडेट। केवल APPROVED, REJECTED, STELLAR_VERIFIED, वा STELLAR_FAILED स्थिति मात्र अनुमति छ"
+      "TOKEN_REDEMPTION_INVALID_TARGET_STATUS": "अमान्य स्थिति अपडेट। केवल APPROVED, REJECTED, STELLAR_VERIFIED, वा STELLAR_FAILED स्थिति मात्र अनुमति छ",
+      "CASH_TRACKER_ENTITY_NOT_FOUND": "स्मार्ट ठेगाना {address} का लागि इकाई फेला परेन",
+      "CASH_TRACKER_MISSING_TO_ADDRESS": "कार्य {action} का लागि 'to' स्मार्ट ठेगाना छुटेको छ",
+      "CASH_TRACKER_UNKNOWN_ACTION": "अज्ञात कार्य: {action}"
     },
     "GRIEVANCES": {
       "GRIEVANCE_NOT_FOUND": "गुनासो फेला परेन",
@@ -4208,7 +4272,12 @@
       "INVALID_CHALLENGE": "अमान्य च्यालेन्ज प्रदान गरियो।",
       "IP_MISMATCH": "च्यालेन्जमा IP ठेगाना मेल खाएन।",
       "INVALID_SERVICE": "अमान्य सेवा प्रकार फेला पर्यो।",
-      "USER_DELETE_FAILED": "प्रयोगकर्ता फेला परेन वा मेटाउन अनुमति छैन।"
+      "USER_DELETE_FAILED": "प्रयोगकर्ता फेला परेन वा मेटाउन अनुमति छैन।",
+      "INVALID_EMAIL": "अमान्य इमेल!",
+      "OTP_DID_NOT_MATCH": "ओटिपी मेल खाएन!",
+      "USER_DOES_NOT_EXIST": "प्रयोगकर्ता अवस्थित छैन!",
+      "INVALID_CREDENTIALS": "अमान्य प्रमाणहरू!",
+      "INVALID_CREDENTIALS_IN_CHALLENGE": "च्यालेन्जमा अमान्य प्रमाणहरू!"
     }
   }
 }

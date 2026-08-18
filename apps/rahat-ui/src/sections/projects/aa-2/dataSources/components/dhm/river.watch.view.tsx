@@ -19,9 +19,11 @@ import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function RiverWatchView() {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const router = useRouter();
@@ -154,7 +156,7 @@ export default function RiverWatchView() {
           <Badge
             className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
           >
-            {primaryRiverWatchInfo?.status}
+            {translateValue(tg, primaryRiverWatchInfo?.status)}
           </Badge>
         </div>
       </div>

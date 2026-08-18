@@ -22,6 +22,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Player } from 'react-simple-player';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import React, { useMemo } from 'react';
@@ -42,6 +43,7 @@ type IHeadCardProps = {
 
 export default function CommsLogsDetailPage() {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
@@ -131,7 +133,7 @@ export default function CommsLogsDetailPage() {
       icon: MessageSquareWarning,
       content: (
         <Badge className="bg-orange-100 text-orange-600">
-          {logs?.sessionDetails?.status}
+          {translateValue(tg, logs?.sessionDetails?.status)}
         </Badge>
       ),
     },

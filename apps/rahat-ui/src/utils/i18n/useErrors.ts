@@ -5,9 +5,7 @@ import { useToast } from '@rahat-ui/shadcn/components/use-toast';
 import { useEffect } from 'react';
 import { useMessages, useTranslations } from 'next-intl';
 
-// Finds a translation for a backend error code without needing to know
-// which BACKEND.<GROUP> it belongs to — this hook is global/catch-all and
-// has no feature-area context, unlike the scoped onError handlers elsewhere.
+// No feature-area context here (global catch-all), so search every BACKEND.<GROUP>.
 const findBackendTranslation = (
   backendMessages: Record<string, Record<string, string>> | undefined,
   code: string | undefined,
@@ -21,6 +19,27 @@ const findBackendTranslation = (
   return undefined;
 };
 
+// Last-resort key when the backend sent no code/name: "Invalid EMAIL!" -> "INVALID_EMAIL".
+const toMessageSlug = (message: string | undefined): string | undefined => {
+  if (!message) return undefined;
+  const slug = message
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return slug || undefined;
+};
+
+// Some services embed the code in the message itself, e.g. "[UUID_MUST_BE_STRING] Each UUID must be a string".
+const parseBracketCode = (
+  message: string | undefined,
+): { code: string; text: string } | undefined => {
+  if (!message) return undefined;
+  const match = /^\[([A-Z0-9_]+)\]\s*([\s\S]*)$/.exec(message);
+  if (!match) return undefined;
+  return { code: match[1], text: match[2] };
+};
+
 export const useError = () => {
   const { toast } = useToast();
   const tg = useTranslations('GLOBAL');
@@ -29,30 +48,27 @@ export const useError = () => {
   };
 
   useEffect(() => {
-    const unsub3 = useErrorStore.subscribe((state, prevState) => {
-      if (state.error !== prevState.error && state.error !== null) {
-        // Extract error code/name and raw message
-        const code = state.error?.response?.data?.code;
-        const name = state.error?.response?.data?.name;
-        const rawMessage = state.error?.response?.data?.message;
+    const unsubscribe = useErrorStore.subscribe((state, prevState) => {
+      if (state.error === prevState.error || state.error === null) return;
 
-        const translated =
-          findBackendTranslation(messages.BACKEND, code) ||
-          findBackendTranslation(messages.BACKEND, name);
+      const code = state.error?.response?.data?.code;
+      const name = state.error?.response?.data?.name;
+      const rawMessage = state.error?.response?.data?.message;
+      const bracket = parseBracketCode(rawMessage);
 
-        // Show alert — translated description when the code/name is
-        // recognized, otherwise fall back to the raw backend message
-        // exactly as before (never a blank toast).
-        toast({
-          title: tg('ERROR'),
-          description: translated || rawMessage || name,
-          variant: 'destructive',
-        });
-      }
+      const translated =
+        findBackendTranslation(messages.BACKEND, code) ||
+        findBackendTranslation(messages.BACKEND, name) ||
+        (bracket && findBackendTranslation(messages.BACKEND, bracket.code)) ||
+        findBackendTranslation(messages.BACKEND, toMessageSlug(rawMessage));
+
+      toast({
+        title: tg('ERROR'),
+        description: translated || bracket?.text || rawMessage || name,
+        variant: 'destructive',
+      });
     });
 
-    return () => {
-      unsub3();
-    };
+    return unsubscribe;
   }, [toast, tg, messages]);
 };

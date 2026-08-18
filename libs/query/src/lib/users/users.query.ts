@@ -90,7 +90,7 @@ export const useUserUpdate = () => {
       mutationFn: ({ uuid, payload }: { uuid: UUID; payload: User }) =>
         userClient.updateUser(uuid, payload),
       onSuccess: () => {
-        Swal.fire('Users Updated Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.USERS_UPDATED_SUCCESSFULLY' as never), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             'get_all_user',
@@ -112,8 +112,8 @@ export const useUserUpdate = () => {
           rawMessage,
         );
         Swal.fire(
-          'Error',
-          errorMessage || 'Encounter error on Creating Data',
+          t('GLOBAL.ERROR' as never),
+          errorMessage || t('GLOBAL.ERROR_ON_CREATING_DATA' as never),
           'error',
         );
       },
@@ -144,7 +144,7 @@ export const useCreateRole = () => {
       mutationKey: ['create_role'],
       mutationFn: roleClient.createRole,
       onSuccess: () => {
-        Swal.fire('Roles Added Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.ROLES_ADDED_SUCCESSFULLY' as never), '', 'success');
         queryClient.invalidateQueries({
           queryKey: ['get_all_roles'],
         });
@@ -160,8 +160,8 @@ export const useCreateRole = () => {
           error.response.data.message,
         );
         Swal.fire(
-          'Error',
-          errorMessage || 'Encounter error on Creating Data',
+          t('GLOBAL.ERROR' as never),
+          errorMessage || t('GLOBAL.ERROR_ON_CREATING_DATA' as never),
           'error',
         );
       },
@@ -295,7 +295,7 @@ export const useDeleteRole = () => {
 
       mutationFn: ({ name }: { name: string }) => roleClient.deleteRole(name),
       onSuccess: () => {
-        Swal.fire('Role Deleted Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.ROLE_DELETED_SUCCESSFULLY' as never), '', 'success');
         queryClient.invalidateQueries({
           queryKey: ['get_all_roles'],
         });
@@ -311,8 +311,8 @@ export const useDeleteRole = () => {
           error.response.data.message,
         );
         Swal.fire(
-          'Error',
-          errorMessage || 'Encounter error on Deleting Data',
+          t('GLOBAL.ERROR' as never),
+          errorMessage || t('GLOBAL.ERROR_ON_DELETING_DATA' as never),
           'error',
         );
       },

@@ -496,7 +496,27 @@
     "SOCIAL_MEDIA": "Social Media",
     "PICK_START_DATE": "Pick start date",
     "PICK_END_DATE": "Pick end date",
-    "ACCOUNT_NUMBER_AND_BANK_NAME": "Account Number and Bank Name"
+    "ACCOUNT_NUMBER_AND_BANK_NAME": "Account Number and Bank Name",
+    "SCHEDULED": "Scheduled",
+    "CLOSED": "Closed",
+    "NOT_READY": "Not Ready",
+    "BELOW_WARNING_LEVEL": "Below Warning Level",
+    "WARNING_LEVEL": "Warning Level",
+    "WARNING": "Warning",
+    "DANGER": "Danger",
+    "DANGER_LEVEL": "Danger Level",
+    "AIR_TEMPERATURE": "Air Temperature",
+    "HOURLY_PRECIPITATION": "Hourly Precipitation",
+    "ACCUMULATED_PRECIPITATION": "Accumulated Precipitation",
+    "WIND_SPEED": "Wind Speed",
+    "WIND_GUST": "Wind Gust",
+    "RELATIVE_HUMIDITY": "Relative Humidity",
+    "TOTAL_CLOUD_COVER": "Total Cloud Cover",
+    "SMTP": "SMTP",
+    "API": "API",
+    "AUTH_APP_CREATED_SUCCESSFULLY": "Auth App Created Successfully",
+    "PUBLIC_KEY_ALREADY_EXISTS": "Public Key already exists",
+    "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "Beneficiaries will be imported shortly!"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -3330,7 +3350,18 @@
     "NO_FURTHER_RETRIES_POSSIBLE": "No further retries possible",
     "DUPLICATE_PHONE_NUMBERS_FOUND_BULLET": "• Duplicate phone numbers found.",
     "DUPLICATE_EMAILS_FOUND_BULLET": "• Duplicate emails found.",
-    "ERROR_SENDING_OTP": "Error sending OTP."
+    "ERROR_SENDING_OTP": "Error sending OTP.",
+    "FAILED_TO_FETCH_TEMPERATURE_DATA": "Failed to fetch temperature data",
+    "FAILED_TO_FETCH_HUMIDITY_DATA": "Failed to fetch humidity data",
+    "FAILED_TO_FETCH_GFH_WATER_LEVELS": "Failed to fetch GFH water levels",
+    "ERROR_LOADING_VERSION": "Error loading version",
+    "ERROR_LOADING_TRIGGER_STATEMENT": "Error loading trigger statement",
+    "FAILED_TO_FETCH_VERSION_DETAILS": "Failed to fetch version details",
+    "FAILED_TO_FETCH_TRIGGER_STATEMENT_DETAILS": "Failed to fetch trigger statement details",
+    "FAILED_TO_FETCH_ACTIVITY": "Failed to fetch activity",
+    "FAILED_TO_FETCH_TRANSPORT_STATS": "Failed to fetch transport stats",
+    "SETTING_ADDED_SUCCESSFULLY": "Setting added successfully",
+    "FAILED_TO_ADD_SETTING": "Failed to add setting"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",
@@ -3908,7 +3939,20 @@
       "DUPLICATE_PHONE_NUMBERS_IN_BATCH": "Duplicate phone numbers: {phones}",
       "DUPLICATE_WALLET_ADDRESSES_IN_BATCH": "Duplicate wallet addresses: {wallets}",
       "FAILED_TO_FETCH_BENEFICIARY_GROUPS_BY_UUIDS": "Error while fetching beneficiary groups by uuids. {message}",
-      "FAILED_TO_UPDATE_BENEFICIARY_TOKENS": "Failed to update beneficiary tokens for group {groupUuid}: {message}"
+      "FAILED_TO_UPDATE_BENEFICIARY_TOKENS": "Failed to update beneficiary tokens for group {groupUuid}: {message}",
+      "INVALID_DB_TRANSACTION_ACTION": "Invalid action",
+      "DATABASE_TRANSACTION_FAILED": "Database transaction failed: {message}",
+      "BENEFICIARY_GROUP_NOT_FOUND_SYNC": "Beneficiary group not found: {groupUuid}",
+      "SDP_SETTINGS_NOT_FOUND": "SDP settings not found in settings table",
+      "FAILED_TO_FETCH_BALANCES": "Failed to fetch balances",
+      "TEMP_GROUP_NOT_FOUND": "Temporary group not found.",
+      "NO_GROUPS_FOUND": "No groups found!",
+      "NO_BENEFICIARIES_FOUND": "No beneficiaries found!",
+      "DUPLICATE_WALLET_ADDRESS_FOUND": "Duplicate wallet address found: {wallets}",
+      "UUIDS_ARRAY_CANNOT_BE_EMPTY": "uuids array cannot be empty",
+      "UUID_MUST_BE_STRING": "Each UUID must be a string",
+      "SELECT_FIELD_ARRAY_CANNOT_BE_EMPTY": "selectField array cannot be empty",
+      "FIELD_NAME_MUST_BE_STRING": "Each field name must be a string"
     },
     "PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS": {
       "MISSING_ACTION_OR_PROJECT_ID": "Missing action or project id",
@@ -4021,7 +4065,15 @@
       "INVALID_GROUP_RESOLUTION_RESPONSE": "Invalid group resolution response",
       "FAILED_TO_RESOLVE_GROUPS_TO_ADDRESSES": "Failed to resolve groups to addresses: {message}",
       "CHAIN_SETTINGS_NOT_FOUND": "Chain settings not found",
-      "MISSING_REQUIRED_FIELD_IN_CHAIN_SETTINGS": "Missing required field {field} in chain settings"
+      "MISSING_REQUIRED_FIELD_IN_CHAIN_SETTINGS": "Missing required field {field} in chain settings",
+      "MULTISIG_SETTINGS_MISSING": "Chain settings, safe proposer private address, or safe API key may be missing",
+      "CHAIN_CONFIG_MISSING_TYPE": "Chain configuration must include a \"type\" field (evm or stellar)",
+      "CHAIN_TYPE_NOT_REGISTERED": "Chain type {chainType} is not registered in the module",
+      "CHAIN_CONFIG_MISSING_FOR_TYPE": "Configuration missing for chain type: {chainType}",
+      "CHAIN_NOT_SUPPORTED_IN_INSTANCE": "Chain {chainType} not supported in this instance",
+      "WALLET_ADDRESS_NOT_FOUND": "Wallet address not found",
+      "CHAIN_SETTINGS_CONFIG_NOT_FOUND": "Chain settings configuration not found. Please configure chain settings in the application settings.",
+      "INVALID_CHAIN_TYPE": "Invalid chain type \"{type}\". Must be one of: {validTypes}"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "Beneficiary group tokens with UUID '{groupId}' not found",
@@ -4066,7 +4118,9 @@
       "STELLAR_ERR_OTP_VERIFY_FAILED": "OTP verification failed",
       "GROUP_PURPOSE_GENERAL_ONLY_FOR_VENDOR_PAYOUTS": "Group purpose GENERAL is only allowed for VENDOR payouts. Received payout type: {payoutType}.",
       "PAYOUT_TRIGGER_TOKENS_NOT_DISBURSED": "Payout cannot be triggered as tokens have not been disbursed to the beneficiary group \"{groupName}\" yet. Please wait until the fund disbursement is completed and try again later.",
-      "MANUAL_BANK_TRANSFER_PAYOUTS_CANNOT_BE_TRIGGERED": "Manual bank transfer payouts cannot be triggered. They are processed automatically upon creation."
+      "MANUAL_BANK_TRANSFER_PAYOUTS_CANNOT_BE_TRIGGERED": "Manual bank transfer payouts cannot be triggered. They are processed automatically upon creation.",
+      "FAILED_TO_FETCH_PAYOUT_STATS": "Failed to fetch payout stats",
+      "SETTING_KEY_NOT_FOUND": "Setting '{key}' not found"
     },
     "ACTIVITIES": {
       "ACTIVITY_NOT_FOUND": "Activity not found.",
@@ -4083,7 +4137,12 @@
       "SOMETHING_WENT_WRONG": "Something went wrong",
       "NO_ACTIVITIES_PROVIDED": "No activities provided",
       "COMMUNICATION_ALREADY_TRIGGERED": "Communication already triggered",
-      "NO_VALID_ADDRESSES_FOUND": "No valid addresses found!"
+      "NO_VALID_ADDRESSES_FOUND": "No valid addresses found!",
+      "COMMUNICATION_SETTINGS_NOT_FOUND": "Communication settings not found in response",
+      "COMMS_CLIENT_NOT_AVAILABLE": "Communication service is not available. Service is still initializing.",
+      "NO_EMAIL_SMTP_TRANSPORT_FOUND": "No email/SMTP transport found",
+      "INVALID_GROUP_TYPE": "Invalid group type",
+      "NO_RESPONSE_FROM_MICROSERVICE": "No response from microservice"
     },
     "STAKEHOLDERS_GROUPS": {
       "PHONE_NUMBER_MUST_BE_UNIQUE": "Phone number must be unique",
@@ -4100,7 +4159,9 @@
       "GROUP_NOT_VALID_FOR_AA": "Group is not valid for AA.",
       "INVALID_GROUP_PURPOSE_WITH_GENERAL": "Invalid group purpose {purpose}. Allowed purposes: BANK_TRANSFER, MOBILE_MONEY, GENERAL.",
       "FAILED_TO_FETCH_STAKEHOLDERS_GROUPS_BY_UUIDS": "Error while fetching stakeholders groups by uuids. {message}",
-      "FAILED_TO_FETCH_RELATED_ACTIVITIES": "Error while fetching related activities. {message}"
+      "FAILED_TO_FETCH_RELATED_ACTIVITIES": "Error while fetching related activities. {message}",
+      "NO_STAKEHOLDERS_DATA_PROVIDED_FOR_VALIDATION": "No data provided for validation",
+      "MISSING_DATA_IN_BULK_ADD_PAYLOAD": "Missing data in bulk-add payload"
     },
     "IN_KIND_VENDORS": {
       "VENDOR_NOT_FOUND": "Vendor with id {uuid} not found",
@@ -4180,7 +4241,10 @@
       "VENDOR_TOKEN_REDEMPTION_MS_FAILED": "Microservice call failed: {message} (vendor token redemption)",
       "TOKEN_REDEMPTION_NOT_FOUND": "Token redemption with UUID {uuid} not found",
       "TOKEN_REDEMPTION_INVALID_STATUS_FOR_UPDATE": "Token redemption {uuid} is not in REQUESTED or STELLAR_VERIFIED status",
-      "TOKEN_REDEMPTION_INVALID_TARGET_STATUS": "Invalid status update. Only APPROVED, REJECTED, STELLAR_VERIFIED, or STELLAR_FAILED status is allowed"
+      "TOKEN_REDEMPTION_INVALID_TARGET_STATUS": "Invalid status update. Only APPROVED, REJECTED, STELLAR_VERIFIED, or STELLAR_FAILED status is allowed",
+      "CASH_TRACKER_ENTITY_NOT_FOUND": "Entity not found for smart address: {address}",
+      "CASH_TRACKER_MISSING_TO_ADDRESS": "Missing 'to' smart address for action: {action}",
+      "CASH_TRACKER_UNKNOWN_ACTION": "Unknown action: {action}"
     },
     "GRIEVANCES": {
       "GRIEVANCE_NOT_FOUND": "Grievance not found",
@@ -4208,7 +4272,12 @@
       "INVALID_CHALLENGE": "Invalid challenge provided.",
       "IP_MISMATCH": "IP address mismatch in challenge.",
       "INVALID_SERVICE": "Invalid service type detected.",
-      "USER_DELETE_FAILED": "User not found or deletion not permitted."
+      "USER_DELETE_FAILED": "User not found or deletion not permitted.",
+      "INVALID_EMAIL": "Invalid EMAIL!",
+      "OTP_DID_NOT_MATCH": "OTP did not match!",
+      "USER_DOES_NOT_EXIST": "User does not exist!",
+      "INVALID_CREDENTIALS": "Invalid credentials!",
+      "INVALID_CREDENTIALS_IN_CHALLENGE": "Invalid credentials in challenge!"
     }
   }
 }

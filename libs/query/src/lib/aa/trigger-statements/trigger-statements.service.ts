@@ -641,7 +641,8 @@ export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch temperature data';
+          error?.response?.data?.message ||
+          t('FAILED_TO_FETCH_TEMPERATURE_DATA');
         toast.fire({
           title: t('ERROR_LOADING_TEMPERATURE_DATA'),
           text: errorMessage,
@@ -685,7 +686,8 @@ export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch humidity data';
+          error?.response?.data?.message ||
+          t('FAILED_TO_FETCH_HUMIDITY_DATA');
         toast.fire({
           title: t('ERROR_LOADING_HUMIDITY_DATA'),
           text: errorMessage,
@@ -872,7 +874,8 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch GFH water levels';
+          error?.response?.data?.message ||
+          t('FAILED_TO_FETCH_GFH_WATER_LEVELS');
         toast.fire({
           title: t('ERROR_LOADING_GFH_WATER_LEVELS'),
           text: errorMessage,
@@ -933,6 +936,7 @@ export const useSingleTriggerStatement = (
   triggerId: string | string[] | number,
   version?: boolean,
 ) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -965,12 +969,14 @@ export const useSingleTriggerStatement = (
       } catch (error: any) {
         const errorMessage =
           error?.response?.data?.message ||
-          `Failed to fetch ${
-            version ? 'version' : 'trigger statement'
-          } details`;
+          t(
+            version
+              ? 'FAILED_TO_FETCH_VERSION_DETAILS'
+              : 'FAILED_TO_FETCH_TRIGGER_STATEMENT_DETAILS',
+          );
 
         toast.fire({
-          title: `Error loading ${version ? 'version' : 'trigger statement'}`,
+          title: t(version ? 'ERROR_LOADING_VERSION' : 'ERROR_LOADING_TRIGGER_STATEMENT'),
           text: errorMessage,
           icon: 'error',
         });

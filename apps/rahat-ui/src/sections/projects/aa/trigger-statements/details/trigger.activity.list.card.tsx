@@ -2,11 +2,13 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function TriggerActivityListCard({ triggerDetail }: any) {
   const router = useRouter();
   const { id: projectID } = useParams();
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
 
   const navigateToDetails = (activityId: string) => {
     router.push(`/projects/aa/${projectID}/activities/${activityId}`);
@@ -36,7 +38,7 @@ export default function TriggerActivityListCard({ triggerDetail }: any) {
                     : 'bg-green-100 text-green-700'
                 }
               >
-                {item.status}
+                {translateValue(tg, item.status)}
               </Badge>
             </div>
           );

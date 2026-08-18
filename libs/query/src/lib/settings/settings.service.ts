@@ -243,11 +243,11 @@ export const useAppSettingsCreate = () => {
             },
           ],
         });
-        Swal.fire('Settings Created Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.SETTINGS_CREATED_SUCCESSFULLY' as never), '', 'success');
       },
       onError: (error: any) => {
         const rawMessage =
-          error?.response?.data?.message || 'Encounter error on Creating Data';
+          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
         const errorMessage = resolveBackendErrorMessage(
           t,
           error?.response?.data?.code,
@@ -255,7 +255,7 @@ export const useAppSettingsCreate = () => {
           ['SETTINGS'],
           rawMessage,
         );
-        Swal.fire('Error', errorMessage, 'error');
+        Swal.fire(t('GLOBAL.ERROR' as never), errorMessage, 'error');
       },
     },
     queryClient,
@@ -295,11 +295,11 @@ export const useRahatSettingUpdate = () => {
             },
           ],
         });
-        Swal.fire('Settings Updated Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.SETTINGS_UPDATED_SUCCESSFULLY' as never), '', 'success');
       },
       onError: (error: any) => {
         const rawMessage =
-          error?.response?.data?.message || 'Encounter error on Creating Data';
+          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
         const errorMessage = resolveBackendErrorMessage(
           t,
           error?.response?.data?.code,
@@ -307,7 +307,7 @@ export const useRahatSettingUpdate = () => {
           ['SETTINGS'],
           rawMessage,
         );
-        Swal.fire('Error', errorMessage, 'error');
+        Swal.fire(t('GLOBAL.ERROR' as never), errorMessage, 'error');
       },
     },
     queryClient,

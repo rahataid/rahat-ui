@@ -414,7 +414,7 @@ export const useSendPayoutOtp = () => {
       });
     },
     onError: (error: any) => {
-      const rawMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || tb('GLOBAL.ERROR' as never);
       const errorMessage = resolveBackendErrorMessage(
         tb,
         error?.response?.data?.code,

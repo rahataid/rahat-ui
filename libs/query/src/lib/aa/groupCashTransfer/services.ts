@@ -253,13 +253,13 @@ export const useSendGctOtp = (projectUUID: UUID) => {
     onSuccess: (_data, { email }) => {
       q.reset();
       toast.fire({
-        title: `Rahat Pin sent successfully to ${email}`,
+        title: t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email }),
         icon: 'success',
       });
     },
     onError: (error: any) => {
       q.reset();
-      const rawMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || tb('GLOBAL.ERROR' as never);
       const errorMessage = resolveBackendErrorMessage(
         tb,
         error?.response?.data?.code,

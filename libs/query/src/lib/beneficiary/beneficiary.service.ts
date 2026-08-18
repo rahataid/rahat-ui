@@ -838,7 +838,7 @@ export const useTempBeneficiaryImport = () => {
     },
     onSuccess: (d) => {
       if (!d) return;
-      Swal.fire('Beneficiaries will be imported shortly!', '', 'success');
+      Swal.fire(t('GLOBAL.BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY' as never), '', 'success');
       queryClient.invalidateQueries({
         queryKey: [
           TAGS.GET_TEMP_BENEFICIARIES,
@@ -852,7 +852,7 @@ export const useTempBeneficiaryImport = () => {
       const code = error?.response?.data?.code;
       const params = error?.response?.data?.params;
       const rawMessage =
-        error.response.data.message || 'Encounter error on Creating Data';
+        error.response.data.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
       const errorMessage = resolveBeneficiaryErrorMessage(
         t,
         code,

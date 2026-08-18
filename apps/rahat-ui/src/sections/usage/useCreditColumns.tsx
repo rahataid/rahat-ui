@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export type CreditRow = {
   date: string;
@@ -16,6 +17,7 @@ export function useCreditColumns() {
   const t = useTranslations('USAGE');
   const g = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   const creditColumns: ColumnDef<CreditRow>[] = [
     {
@@ -23,16 +25,18 @@ export function useCreditColumns() {
       header: g('DATE'),
       cell: ({ row }) => {
         const date = row.getValue('date') as string;
-        return format(new Date(date), 'MMM dd, yyyy');
+        return formatDate(date, 'MMM dd, yyyy');
       },
     },
     {
       accessorKey: 'transportName',
       header: g('TRANSPORT'),
+      cell: ({ row }) => translateValue(g, row.getValue('transportName')),
     },
     {
       accessorKey: 'transportType',
       header: g('TYPE'),
+      cell: ({ row }) => translateValue(g, row.getValue('transportType')),
     },
     {
       accessorKey: 'credits',

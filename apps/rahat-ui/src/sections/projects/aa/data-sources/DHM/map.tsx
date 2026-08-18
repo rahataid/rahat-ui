@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 import Map, { MapRef, Marker, NavigationControl, Popup } from 'react-map-gl';
 import { Waves } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const DEFAULT_LAT = 28.3949;
@@ -15,6 +17,7 @@ type IProps = {
 };
 
 function DHMMap({ basin, lat, lng, status }: IProps) {
+  const tg = useTranslations('GLOBAL');
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState(null) as any;
 
@@ -64,7 +67,7 @@ function DHMMap({ basin, lat, lng, status }: IProps) {
               closeButton={false}
             >
               <p className="text-sm tracking-wide">{selectedMarker.basin}</p>
-              <p>{selectedMarker.status}</p>
+              <p>{translateValue(tg, selectedMarker.status)}</p>
             </Popup>
           </div> // Marker Details
         ) : null}

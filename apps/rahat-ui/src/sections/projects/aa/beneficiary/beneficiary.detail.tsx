@@ -24,6 +24,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Minus, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import TransactionTable from './beneficiary.transaction.table';
@@ -142,7 +143,7 @@ export default function BeneficiaryDetail({
                     <div className="grid grid-cols-2 gap-3">
                       <div className="text-right">
                         <p className="font-light text-base">
-                          {beneficiaryDetails?.gender}
+                          {translateValue(t, beneficiaryDetails?.gender)}
                         </p>
                         <p className="text-sm font-normal text-muted-foreground ">
                           Gender

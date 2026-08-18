@@ -152,7 +152,7 @@ export default function PayoutConfirmationDialog({
         <div className="bg-gray-50 rounded-sm p-4 mt-2 text-sm space-y-2">
           <div className="flex justify-between">
             <span className="font-medium">{tv('PAYOUT_TYPE')}</span>
-            <span>{payoutData?.type}</span>
+            <span>{translateValue(tg, payoutData?.type)}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-medium">{tv('PAYOUT_METHOD')}</span>

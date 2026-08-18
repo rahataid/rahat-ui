@@ -11,6 +11,7 @@ import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 interface InfoProp {
   riverWatch: {
     stationIndex: number;
@@ -31,6 +32,7 @@ interface InfoProp {
 
 export function Info({ riverWatch, updatedAt }: InfoProp) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const cardData = React.useMemo(
@@ -112,7 +114,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
           )}
         </p>
         <Badge className={`${renderStatusColor(riverWatch?.status)}`}>
-          {riverWatch?.status}
+          {translateValue(tg, riverWatch?.status)}
         </Badge>
       </div>
     </div>

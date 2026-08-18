@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   useReactTable,
   getCoreRowModel,
@@ -45,6 +46,7 @@ type CreditUsageSectionProps = {
 function transformCreditsForChart(
   credits: CreditData[],
   formatDate: (date: string | Date, pattern?: string) => string,
+  g: Parameters<typeof translateValue>[0],
 ) {
   // Bucket by ISO date: it sorts chronologically as a plain string and stays
   // locale-independent. The display label is derived separately, because a
@@ -70,7 +72,7 @@ function transformCreditsForChart(
   const transports = Array.from(transportNames);
 
   const series = transports.map((name) => ({
-    name,
+    name: translateValue(g, name),
     data: sortedDates.map((date) => dateMap.get(date)?.get(name) ?? 0),
   }));
 
@@ -91,12 +93,13 @@ export default function CreditUsageSection({
   defaultTo,
 }: CreditUsageSectionProps) {
   const t = useTranslations('USAGE');
+  const g = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const creditColumns = useCreditColumns();
   const chartData = useMemo(
-    () => transformCreditsForChart(credits ?? [], formatDate),
-    [credits, formatDate],
+    () => transformCreditsForChart(credits ?? [], formatDate, g),
+    [credits, formatDate, g],
   );
 
   const tableData: CreditRow[] = useMemo(

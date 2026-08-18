@@ -62,9 +62,15 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
             ) : (
               <BarChart
                 series={channelUsageStats.map((item: any) => item.count)}
-                // categories={channelUsageStats.map((item: any) => item.id)}
                 categories={channelUsageStats.map((item: any) =>
-                  item.id.replace(/([A-Z])/g, ' $1').trim(),
+                  translateValue(g, item.id, {
+                    keyMap: {
+                      FmRadio: 'FM_RADIO',
+                      MobilePhoneSms: 'MOBILE_PHONE_SMS',
+                      PeopleRepresentatives: 'PEOPLE_REPRESENTATIVES',
+                      SocialMedia: 'SOCIAL_MEDIA',
+                    },
+                  }),
                 )}
                 colors={['#4A90E2']}
                 xaxisLabels={true}

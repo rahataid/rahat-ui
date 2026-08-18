@@ -24,7 +24,7 @@ export const useCreateAuthApp = () => {
             },
           ],
         });
-        Swal.fire('Auth App Create Sucessfully', '', 'success');
+        Swal.fire(t('GLOBAL.AUTH_APP_CREATED_SUCCESSFULLY' as never), '', 'success');
       },
       onError: (error: any) => {
         const code = error?.response?.data?.code;
@@ -32,7 +32,7 @@ export const useCreateAuthApp = () => {
         const rawMessage = error.response.data.message.includes(
           'Unique constraint',
         )
-          ? 'Public Key already exist'
+          ? t('GLOBAL.PUBLIC_KEY_ALREADY_EXISTS' as never)
           : error.response.data.message;
         const errorMessage = resolveBackendErrorMessage(
           t,
@@ -41,7 +41,7 @@ export const useCreateAuthApp = () => {
           ['USERS'],
           rawMessage,
         );
-        Swal.fire('Error', errorMessage, 'error');
+        Swal.fire(t('GLOBAL.ERROR' as never), errorMessage, 'error');
       },
     },
     queryClient,

@@ -10,6 +10,7 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 // import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
@@ -57,6 +58,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 export default function CommsLogsDetailPage() {
   const tGlobal = useTranslations('GLOBAL');
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
@@ -481,7 +483,7 @@ export default function CommsLogsDetailPage() {
                         : 'bg-red-100 text-red-600 hover:bg-red-100'
                     } rounded-full px-3`}
                   >
-                    {logs?.sessionDetails?.status}
+                    {translateValue(tg, logs?.sessionDetails?.status)}
                   </Badge>
                 </div>
 

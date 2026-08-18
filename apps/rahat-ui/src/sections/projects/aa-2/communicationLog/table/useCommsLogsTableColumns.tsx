@@ -11,8 +11,10 @@ import {
 import { TriangleAlertIcon } from 'lucide-react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 export default function useCommsLogsTableColumns(transportName: string) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const renderDateTime = (dateTime: string) => formatDate(dateTime);
@@ -28,7 +30,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
       cell: ({ row }) => {
         return (
           <Badge className={renderBadgeBg(row?.original?.status)}>
-            {row?.original?.status}
+            {translateValue(tg, row?.original?.status)}
           </Badge>
         );
       },

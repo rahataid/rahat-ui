@@ -41,14 +41,15 @@ export const useAAProjectSettingsAdd = () => {
       queryClient.invalidateQueries({
         queryKey: ['aa.settings.list', projectUUID],
       });
-      toast.success('Setting added successfully');
+      toast.success(tb('AA_PROJECT.SETTING_ADDED_SUCCESSFULLY' as never));
     },
     onError: (error: any) => {
       // This throw comes from the shared @rumsan/settings package, which we
       // don't control, so there's no `code` field to key on -- match the
       // known fixed wording directly instead.
       const rawMessage: string =
-        error?.response?.data?.message || 'Failed to add setting';
+        error?.response?.data?.message ||
+        tb('AA_PROJECT.FAILED_TO_ADD_SETTING' as never);
       const errorMessage =
         rawMessage === 'Setting with this name already exists'
           ? tb('BACKEND.SETTINGS.SETTING_NAME_ALREADY_EXISTS' as never)

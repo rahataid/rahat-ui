@@ -214,7 +214,7 @@ export const useSingleActivity = (
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch activity';
+          error?.response?.data?.message || t('FAILED_TO_FETCH_ACTIVITY');
         toast.fire({
           title: t('ERROR_LOADING_ACTIVITY'),
           text: errorMessage,

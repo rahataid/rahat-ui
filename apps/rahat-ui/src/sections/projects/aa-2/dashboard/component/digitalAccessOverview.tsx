@@ -4,6 +4,7 @@ import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';
 import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 
@@ -53,7 +54,9 @@ const DigitalAccessOverview = ({ stats }: Props) => {
       <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
         {filteredStats?.map((stat) => {
           const chartData = stat.data.map((d: any) => ({
-            label: d.id,
+            label: translateValue(tg, d.id, {
+              keyMap: { 'Keypad/Brick': 'KEYPAD_BRICK' },
+            }),
             value: d.count,
           }));
 

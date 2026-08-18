@@ -13,6 +13,7 @@ import { FileText, Clock, User, ChevronRight } from 'lucide-react';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { Template } from 'apps/rahat-ui/src/types/activities';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import {
   useBeneficiariesGroupStore,
@@ -80,7 +81,7 @@ export function TemplateDetailsDialog({
                   template.status,
                 )} border h-6 px-2 text-xs font-medium`}
               >
-                {template.status}
+                {translateValue(tg, template.status)}
               </Badge>
             </div>
             <Button

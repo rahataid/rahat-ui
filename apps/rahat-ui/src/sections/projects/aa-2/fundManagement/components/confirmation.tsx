@@ -17,6 +17,7 @@ import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function Confirmation({
   payoutData,
@@ -26,6 +27,7 @@ export default function Confirmation({
   onPayoutData: (data: FundWithPayoutSchema | null) => void;
 }) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   // State goes here
   const errorModule = useBoolean();
   const [errorData, setErrorData] = useState(null);
@@ -134,14 +136,14 @@ export default function Confirmation({
                 <div>
                   <p className="text-sm text-muted-foreground">{t('METHOD')}</p>
                   <p className="text-base font-semibold text-primary">
-                    {payoutData.method}
+                    {translateValue(tg, payoutData.method)}
                   </p>
                 </div>
                 {payoutData.method != 'FSP' && (
                   <div>
                     <p className="text-sm text-muted-foreground">{t('MODE')}</p>
                     <p className="text-base font-semibold text-primary">
-                      {payoutData.mode}
+                      {translateValue(tg, payoutData.mode)}
                     </p>
                   </div>
                 )}

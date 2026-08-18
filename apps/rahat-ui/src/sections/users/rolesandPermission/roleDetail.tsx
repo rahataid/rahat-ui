@@ -63,8 +63,8 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
   const permissions = roleDetail?.data?.permissions || null;
 
   return (
-    <div className="border-l h-full">
-      <div className="flex justify-between items-center p-4 border-b">
+    <div className="border-l h-screen flex flex-col">
+      <div className="flex justify-between items-center p-4 border-b shrink-0">
         <div className="flex space-x-4">
           <TooltipComponent
             handleOnClick={closeSecondPanel}
@@ -100,7 +100,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
       </div>
       {/* Details View */}
       {activeTab === 'details' && (
-        <>
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {/* Role Details */}
           <Card className="shadow rounded m-2">
             <CardHeader className="mb-0 pb-0 font-semibold">
@@ -165,17 +165,11 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                 ))}
             </CardContent>
           </Card>
-        </>
+        </div>
       )}
       {/* Edit View */}
       {activeTab === 'edit' && permissions && (
-        <>
-          <div className="flex flex-col justify-between  ">
-            <div className="p-4">
-              <EditRole currentPerms={permissions} roleDetail={roleDetail} />
-            </div>
-          </div>
-        </>
+        <EditRole currentPerms={permissions} roleDetail={roleDetail} />
       )}
     </div>
   );

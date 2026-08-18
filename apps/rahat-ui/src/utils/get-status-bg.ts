@@ -31,7 +31,7 @@ export const getStatusBg = (status: string) => {
   }
 
   if (normalizedStatus === 'DELAYED') {
-    return 'bg-gray-200';
+    return 'bg-red-200';
   }
 
   return 'bg-red-200';

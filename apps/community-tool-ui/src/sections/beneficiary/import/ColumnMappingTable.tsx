@@ -41,7 +41,6 @@ export default function ColumnMappingTable({
   const [columns, setColumns] = useState([]) as any[];
   const { setMappings, fieldSuggestions } = useBeneficiaryImportStore();
 
-
   const extractColumns = () => {
     if (rawData.length > 0) {
       const firstItem = rawData[0];
@@ -64,6 +63,10 @@ export default function ColumnMappingTable({
   React.useEffect(() => {
     extractColumns();
   }, [rawData]);
+
+  const FIELD_LABEL_OVERRIDES: Record<string, string> = {
+    bank_ac_number: 'Bank Account Number',
+  };
 
   const fieldNameOnly = fieldDefs.length
     ? fieldDefs.map((f: any) => f.name)
@@ -154,8 +157,12 @@ export default function ColumnMappingTable({
                   <TooltipTrigger asChild>
                     <div className="flex items-center gap-1">
                       <span>{truncatedText(column, 40)}</span>
-                      {fieldSuggestions.find((s) => s.sourceField === column) && (
-                        <span className="text-[10px] bg-blue-100 text-blue-600 px-1 rounded">AI</span>
+                      {fieldSuggestions.find(
+                        (s) => s.sourceField === column,
+                      ) && (
+                        <span className="text-[10px] bg-blue-100 text-blue-600 px-1 rounded">
+                          AI
+                        </span>
                       )}
                     </div>
                   </TooltipTrigger>
@@ -173,6 +180,7 @@ export default function ColumnMappingTable({
                 aiSuggestion={fieldSuggestions.find(
                   (s) => s.sourceField === column,
                 )}
+                labelMap={FIELD_LABEL_OVERRIDES}
               />
             </th>
           ))}

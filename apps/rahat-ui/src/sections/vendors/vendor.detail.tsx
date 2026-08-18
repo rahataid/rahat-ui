@@ -19,12 +19,41 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
+import { useAuthStore, useUserStore } from '@rumsan/react-query';
+import { verifyAuthorization } from 'viem/utils';
+import { isAuthorized } from '../../utils';
 
 export default function VendorDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+  const user = useUserStore((state) => state.user);
+
   const { data: vendorDetail } = useGetVendor(id);
-  const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
+
+  const vendor = React.useMemo(() => {
+    const data = vendorDetail?.data;
+    if (!data) return null;
+
+    const isProjectVendorList = Array.isArray(data);
+    const ref = isProjectVendorList ? data[0]?.User : data;
+    const projects = isProjectVendorList
+      ? data.map((v: any) => ({
+          id: v.Project.uuid,
+          name: v.Project.name,
+          canSyncWalkin: v.canSyncWalkin,
+        }))
+      : undefined;
+
+    return {
+      name: ref?.name,
+      gender: ref?.gender,
+      email: ref?.email,
+      phone: ref?.phone,
+      wallet: ref?.wallet,
+      projects,
+    };
+  }, [vendorDetail]);
+
   const isVendorAssigned = vendor?.projects?.length;
   const removeVendor = useRemoveVendor();
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -33,6 +62,16 @@ export default function VendorDetail() {
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(walletAddress);
+  };
+
+  const handleEditBtnClick = () => {
+    const userRoles = user?.data?.roles || [];
+    if (!isAuthorized(userRoles)) {
+      toast.warning('You are not authorized for this action.');
+      return;
+    }
+
+    router.push(`/vendors/${id}/edit`);
   };
 
   const deleteVendor = async () => {
@@ -55,7 +94,7 @@ export default function VendorDetail() {
           <CoreBtnComponent
             name="Edit"
             Icon={Pencil}
-            handleClick={() => router.push(`/vendors/${id}/edit`)}
+            handleClick={handleEditBtnClick}
           />
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
@@ -96,9 +135,18 @@ export default function VendorDetail() {
             vendor?.projects?.length ? (
               <div className="flex gap-2 flex-wrap">
                 {vendor.projects.map((project: any) => (
-                  <p key={project.id} className="font-medium">
-                    {project?.name}
-                  </p>
+                  <div key={project.id} className="flex items-center space-x-2">
+                    <p className="font-medium">{project?.name}</p>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        project.canSyncWalkin
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}
+                    >
+                      {project.canSyncWalkin ? 'Can Sync Walkin' : 'Disabled'}
+                    </span>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -139,6 +187,6 @@ const DetailItem = ({
 }) => (
   <div>
     <h1 className="text-md text-muted-foreground">{title}</h1>
-    <p className="font-medium">{content ?? 'N/A'}</p>
+    <p className="font-medium">{content || 'N/A'}</p>
   </div>
 );

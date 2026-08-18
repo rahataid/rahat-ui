@@ -25,19 +25,53 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { UUID } from 'crypto';
 import HeaderWithBack from '../projects/components/header.with.back';
-import {
-  Gender,
-} from '@rahataid/sdk/enums';
+import { Gender } from '@rahataid/sdk/enums';
 import { useGetVendor, useUpdateVendor } from '@rahat-ui/query';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 
 export default function EditVendors() {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
 
-  const { data: vendorDetails, isLoading } = useGetVendor(id);
-  const vendor = React.useMemo(() => {
-    return vendorDetails?.data;
-  }, [vendorDetails]);
+  const { data: vendorDetail, isLoading } = useGetVendor(id);
+
+  const { vendor, projects } = React.useMemo(() => {
+    const data = vendorDetail?.data;
+    const ref = Array.isArray(data) ? data[0]?.User : data;
+    const projects = Array.isArray(data)
+      ? data.map((v: any) => ({
+          id: v.Project?.uuid,
+          name: v.Project?.name,
+          canSyncWalkin: !!v.canSyncWalkin,
+        }))
+      : [];
+
+    return {
+      vendor: {
+        name: ref?.name,
+        gender: ref?.gender,
+        email: ref?.email,
+        phone: ref?.phone,
+        wallet: ref?.wallet,
+      },
+      projects,
+    };
+  }, [vendorDetail]);
+
+  const [projectFlags, setProjectFlags] = React.useState<
+    Record<string, boolean>
+  >({});
+  React.useEffect(() => {
+    const map: Record<string, boolean> = {};
+    projects.forEach((p: any) => {
+      if (p?.id) map[p.id] = Boolean(p.canSyncWalkin);
+    });
+    setProjectFlags(map);
+  }, [projects]);
+
+  const toggleProjectFlag = (projectId: string) => {
+    setProjectFlags((s) => ({ ...s, [projectId]: !s[projectId] }));
+  };
 
   const updateVendor = useUpdateVendor();
 
@@ -77,12 +111,19 @@ export default function EditVendors() {
     }
   }, [vendor, form.reset]);
 
-
   const handleEditVendor = async (data: z.infer<typeof FormSchema>) => {
+    const projectVendorUpdates = projects.map((project: any) => ({
+      projectId: project.id,
+      canSyncWalkin: Boolean(projectFlags[project.id]),
+    }));
+
     await updateVendor.mutateAsync({
       uuid: id,
-      payload: { ...data }
-    })
+      payload: {
+        ...data,
+        projectVendorUpdates,
+      },
+    });
     router.push('/vendors');
   };
 
@@ -224,6 +265,32 @@ export default function EditVendors() {
                     );
                   }}
                 />
+                {projects.length > 0 && (
+                  <div className="col-span-2">
+                    <h3 className="text-sm font-medium mb-2">
+                      Project Permissions
+                    </h3>
+                    <div className="space-y-2">
+                      {projects.map((p: any) => (
+                        <div
+                          key={p.id}
+                          className="flex items-center justify-between p-2 border rounded"
+                        >
+                          <div>
+                            <div className="font-medium">{p.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              Control walkin sync for this vendor on the project
+                            </div>
+                          </div>
+                          <Switch
+                            checked={!!projectFlags[p.id]}
+                            onCheckedChange={() => toggleProjectFlag(p.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

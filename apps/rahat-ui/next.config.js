@@ -28,6 +28,11 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       reactNative: 'react-native-web',
+      '@x402/evm': false,
+      '@x402/evm/upto/client': false,
+      '@x402/evm/exact/client': false,
+      '@x402/core/client': false,
+      '@x402/svm/exact/client': false,
     };
 
     config.module.rules.push({

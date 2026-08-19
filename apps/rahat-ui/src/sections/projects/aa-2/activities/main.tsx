@@ -253,10 +253,6 @@ export default function ActivitiesView() {
               </div>
             ))}
             {sortedPhases.length === 2 && (
-              <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.Municipality]}
-                hasContent={false}
-              >
                 <div className="min-w-[320px]">
                   <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                     <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
@@ -282,8 +278,7 @@ export default function ActivitiesView() {
                     </CardContent>
                   </Card>
                 </div>
-              </RoleAuth>
-            )}
+              )}
           </div>
         )}
       </div>

@@ -4,7 +4,6 @@ import { TriggersListCard, TriggersPhaseCard } from './components';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
 import { useAATriggerStatements, usePhases } from '@rahat-ui/query';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -154,36 +153,31 @@ export default function TriggerStatementView() {
               ))}
 
               {sortedPhases.length === 3 && (
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.Municipality]}
-                  hasContent={false}
-                >
-                  <div>
-                    <Card className="flex flex-col rounded-xl h-full min-h-[calc(100vh-410px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
-                      <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
-                        <div className="flex flex-col gap-1 items-center ">
-                          <Button
-                            onClick={handleAddPhase}
-                            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
-                          >
-                            <div className="flex items-center justify-center w-4 h-4">
-                              <Plus
-                                className="  text-blue-500 hover:text-white"
-                                size={'2rem'}
-                              />
-                            </div>
-                          </Button>
-                          <p className="text-base font-medium text-blue-500 ">
-                            Add Phase
-                          </p>
-                          <p className="text-sm text-blue-400">
-                            Click here to add new phase
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </RoleAuth>
+                <div>
+                  <Card className="flex flex-col rounded-xl h-full min-h-[calc(100vh-410px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
+                    <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
+                      <div className="flex flex-col gap-1 items-center ">
+                        <Button
+                          onClick={handleAddPhase}
+                          className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
+                        >
+                          <div className="flex items-center justify-center w-4 h-4">
+                            <Plus
+                              className="  text-blue-500 hover:text-white"
+                              size={'2rem'}
+                            />
+                          </div>
+                        </Button>
+                        <p className="text-base font-medium text-blue-500 ">
+                          Add Phase
+                        </p>
+                        <p className="text-sm text-blue-400">
+                          Click here to add new phase
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
               {/* } */}
             </div>

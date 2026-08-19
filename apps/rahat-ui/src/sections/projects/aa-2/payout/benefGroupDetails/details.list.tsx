@@ -380,7 +380,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             smallNumber={payout?.payoutGap}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Gap between Activation phsae triggerd and payout disbursed"
+            infoTooltip="Gap between Activation phase triggered and payout disbursed"
           />
         </div>
       </div>

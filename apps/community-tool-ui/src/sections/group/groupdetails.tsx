@@ -9,6 +9,7 @@ import {
   Delete,
   Download,
   MoreVertical,
+  Pencil,
   Share,
   Upload,
   Trash,
@@ -81,6 +82,13 @@ import { deHumanizeString, simpleString } from '../../utils';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 
+const READ_ONLY_FIELDS = new Set([
+  'uuid',
+  'createdAt',
+  'updatedAt',
+  'createdBy',
+]);
+
 type IProps = {
   uuid: string;
   // closeSecondPanel: VoidFunction;
@@ -114,6 +122,10 @@ export default function GroupDetail({ uuid }: IProps) {
   });
   const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
   const bulkGenereateLink = useBulkGenerateVerificationLink();
+  console.log(
+    'Beneficiariesdataataata',
+    responseByUUID?.data?.beneficiariesGroup,
+  );
   const {
     deleteSelectedBeneficiariesFromImport,
     setDeleteSelectedBeneficiariesFromImport,
@@ -142,6 +154,70 @@ export default function GroupDetail({ uuid }: IProps) {
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [uniqueField, setUniqueField] = React.useState<string>('none');
+
+  const [editSubmitOpen, setEditSubmitOpen] = React.useState(false);
+  const [editableRows, setEditableRows] = React.useState<Record<string, any>[]>(
+    [],
+  );
+
+  const openEditSubmit = () => {
+    const rows = (responseByUUID?.data?.beneficiariesGroup ?? []).map(
+      (item: any) => {
+        const { extras, id: _id, ...rest } = item.beneficiary;
+        return {
+          ...rest,
+          archived: Boolean(rest.archived),
+          isVerified: Boolean(rest.isVerified),
+          latitude: rest.latitude != null ? Number(rest.latitude) : null,
+          longitude: rest.longitude != null ? Number(rest.longitude) : null,
+          ...(extras && typeof extras === 'object' ? extras : {}),
+        };
+      },
+    );
+    console.log('editableRows--------', rows);
+    setEditableRows(rows);
+    setEditSubmitOpen(true);
+  };
+
+  const handleCellChange = (rowIndex: number, field: string, value: string) => {
+    setEditableRows((prev) =>
+      prev.map((row, i) => (i === rowIndex ? { ...row, [field]: value } : row)),
+    );
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(editableRows);
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const file = new File(
+        [
+          new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          }),
+        ],
+        'bulk-edit.xlsx',
+        {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        },
+      );
+      const formData = new FormData();
+      formData.append('file', file);
+      await updateBulkBeneficiary.mutateAsync({
+        groupUUID: uuid,
+        data: formData,
+        uniqueField: 'uuid',
+      });
+      setEditSubmitOpen(false);
+    } catch (error) {
+      Swal.fire(
+        'Submit failed',
+        (error as any)?.response?.data?.message || 'Unknown error',
+        'error',
+      );
+    }
+  };
 
   const handleUnselect = (item: any) => {
     const filtered = labels.filter((s) => s !== item);
@@ -249,6 +325,7 @@ export default function GroupDetail({ uuid }: IProps) {
     });
 
     const rawData = response?.data?.data;
+    console.log('rawDatadownload--------', rawData);
 
     const filteredData = rawData.map((item: Record<string, any>) => {
       const filteredItem: Record<string, any> = {};
@@ -438,6 +515,15 @@ export default function GroupDetail({ uuid }: IProps) {
                   Bulk Update
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  onClick={openEditSubmit}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup?.length === 0
+                  }
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit & Submit
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
                   disabled={
                     responseByUUID?.data?.beneficiariesGroup.length === 0
@@ -622,6 +708,83 @@ export default function GroupDetail({ uuid }: IProps) {
                   >
                     Upload
                   </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Edit & Submit Dialog */}
+            <AlertDialog open={editSubmitOpen} onOpenChange={setEditSubmitOpen}>
+              <AlertDialogContent className="max-w-5xl w-full">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Edit & Submit Beneficiaries
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Edit the fields below and click Submit to update.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="overflow-auto max-h-[60vh]">
+                  {(() => {
+                    const allColumns =
+                      editableRows.length > 0
+                        ? Object.keys(editableRows[0])
+                        : [];
+                    return (
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr>
+                            {allColumns.map((col) => (
+                              <th
+                                key={col}
+                                className="border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap"
+                              >
+                                {col}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {editableRows.map((row, rowIndex) => (
+                            <tr key={row.uuid}>
+                              {allColumns.map((col) =>
+                                READ_ONLY_FIELDS.has(col) ? (
+                                  <td
+                                    key={col}
+                                    className="border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap"
+                                  >
+                                    {String(row[col] ?? '')}
+                                  </td>
+                                ) : (
+                                  <td key={col} className="border px-1 py-1">
+                                    <input
+                                      className="w-full bg-transparent outline-none text-sm px-1 min-w-[100px]"
+                                      value={row[col] ?? ''}
+                                      onChange={(e) =>
+                                        handleCellChange(
+                                          rowIndex,
+                                          col,
+                                          e.target.value,
+                                        )
+                                      }
+                                    />
+                                  </td>
+                                ),
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    );
+                  })()}
+                </div>
+                <AlertDialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditSubmitOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleEditSubmit}>Submit</Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

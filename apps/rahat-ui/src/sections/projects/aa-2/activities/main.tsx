@@ -1,6 +1,11 @@
 'use client';
 import { useActivities, usePhases } from '@rahat-ui/query';
-import { Heading, IconLabelBtn, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import {
+  Heading,
+  IconLabelBtn,
+  NoResult,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { UUID } from 'crypto';
@@ -14,6 +19,11 @@ import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
@@ -99,7 +109,6 @@ export default function ActivitiesView() {
     }
     return Array.from(phaseSet);
   }, [activitiesData]);
-
 
   const sortedPhases = useMemo(() => {
     const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
@@ -253,6 +262,7 @@ export default function ActivitiesView() {
               </div>
             ))}
             {sortedPhases.length === 2 && (
+              <Can action={ACTIONS.CREATE} subject={SUBJECTS.PHASE}>
                 <div className="min-w-[320px]">
                   <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                     <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
@@ -278,7 +288,8 @@ export default function ActivitiesView() {
                     </CardContent>
                   </Card>
                 </div>
-              )}
+              </Can>
+            )}
           </div>
         )}
       </div>

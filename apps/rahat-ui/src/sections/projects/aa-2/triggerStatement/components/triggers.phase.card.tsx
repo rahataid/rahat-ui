@@ -1,4 +1,3 @@
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -10,6 +9,11 @@ import { CardHeading } from 'apps/rahat-ui/src/common/card.heading';
 import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizontal-bar';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DISBURSEMENT_COLORS, formatMethod } from '../utils';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { Can } from 'apps/rahat-ui/src/components/can';
 
 type IProps = {
   title: string;
@@ -198,10 +202,7 @@ export default function TriggersPhaseCard({
 
       <div className="flex  gap-2 mt-1 ">
         <div className="flex-1">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.TRIGGER}>
             <TooltipWrapper
               tip={
                 isActive
@@ -220,7 +221,7 @@ export default function TriggersPhaseCard({
                 disabled={isActive}
               />
             </TooltipWrapper>
-          </RoleAuth>
+          </Can>
         </div>
         <div className="flex-1">
           <IconLabelBtn

@@ -516,7 +516,9 @@
     "API": "API",
     "AUTH_APP_CREATED_SUCCESSFULLY": "Auth App Created Successfully",
     "PUBLIC_KEY_ALREADY_EXISTS": "Public Key already exists",
-    "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "Beneficiaries will be imported shortly!"
+    "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "Beneficiaries will be imported shortly!",
+    "RESEND": "Resend",
+    "VERIFY": "Verify"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -3890,7 +3892,16 @@
     "THIS_GROUP_ALREADY_HAS_FUNDS_RESERVED": "This group already has funds reserved.",
     "BANK_NOT_REACHABLE": "Bank not reachable",
     "CIPS_001": "Beneficiary account validation not enabled for this bank. Transaction once sent is irreversible, please reconfirm.",
-    "BENEFICIARY_ACCOUNT_DOESNOT_EXISTS": "Beneficiary account doesnot exists."
+    "BENEFICIARY_ACCOUNT_DOESNOT_EXISTS": "Beneficiary account doesnot exists.",
+    "SENDING_RAHAT_PIN_TO_EMAIL": "Sending Rahat Pin to your email…",
+    "RAHAT_PIN_SENT_TO": "A Rahat Pin has been sent to",
+    "RAHAT_PIN_SENT_SUFFIX": ". Please enter it below to verify and start disbursement.",
+    "REGISTERED_EMAIL_FALLBACK": "the registered email",
+    "DIGIT_PIN_PLACEHOLDER": "{length} digit pin",
+    "PLEASE_ENTER_DIGIT_PIN": "Please enter the {length} digit pin.",
+    "INVALID_PIN_FALLBACK": "Invalid pin.",
+    "VERIFYING": "Verifying…",
+    "TRIGGERING": "Triggering…"
   },
   "BACKEND": {
     "VENDORS": {
@@ -4278,6 +4289,14 @@
       "USER_DOES_NOT_EXIST": "User does not exist!",
       "INVALID_CREDENTIALS": "Invalid credentials!",
       "INVALID_CREDENTIALS_IN_CHALLENGE": "Invalid credentials in challenge!"
+    },
+    "COMMON": {
+      "INTERNAL_SERVER_ERROR": "Something went wrong on our end. Please try again later.",
+      "UNAUTHORIZED": "Unauthorized",
+      "FORBIDDEN": "Forbidden",
+      "NOT_FOUND": "Not Found",
+      "BAD_REQUEST": "Bad Request",
+      "VALIDATION_FAILED": "Validation Failed"
     }
   }
 }

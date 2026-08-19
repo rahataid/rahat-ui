@@ -198,7 +198,7 @@ export default function AssignFundsForm({
                   <FormLabel className="mt-1">{t('BENEFICIARY_GROUP')}</FormLabel>
                   <DropdownSearch
                     selectedLabel={
-                      benGroups.data.find((group) => group.uuid === field.value)
+                      benGroups.data?.find((group) => group.uuid === field.value)
                         ?.name
                     }
                     placeholder={t('SELECT_BENEFICIARY_GROUP')}

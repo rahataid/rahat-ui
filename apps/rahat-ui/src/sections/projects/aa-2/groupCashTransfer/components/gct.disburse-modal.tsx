@@ -114,7 +114,7 @@ export function DisburseModal({
 
   const handleVerify = async () => {
     if (otp.length !== OTP_LENGTH) {
-      setOtpError(`Please enter the ${OTP_LENGTH} digit pin.`);
+      setOtpError(t('PLEASE_ENTER_DIGIT_PIN', { length: OTP_LENGTH }));
       return;
     }
     setOtpError('');
@@ -122,7 +122,7 @@ export function DisburseModal({
       await disburse.mutateAsync({ uuid: recordUuid, otp });
       setOtpVerified(true);
     } catch (e: any) {
-      const rawMessage = e?.response?.data?.message || 'Invalid pin.';
+      const rawMessage = e?.response?.data?.message || t('INVALID_PIN_FALLBACK');
       const errorMessage = resolveBackendErrorMessage(
         tb,
         e?.response?.data?.code,
@@ -162,7 +162,7 @@ export function DisburseModal({
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground animate-pulse">
                 {sendOtp.isPending
-                  ? 'Sending Rahat Pin to your email…'
+                  ? t('SENDING_RAHAT_PIN_TO_EMAIL')
                   : t('PLEASE_WAIT_DISBURSEMENT_INITIATING')}
               </p>
             </div>
@@ -182,15 +182,15 @@ export function DisburseModal({
               {!otpVerified && (
                 <div className="border-t pt-4">
                   <p className="text-base text-foreground">
-                    A Rahat Pin has been sent to{' '}
+                    {t('RAHAT_PIN_SENT_TO')}{' '}
                     <span className="font-semibold">
-                      {email || 'the registered email'}
+                      {email || t('REGISTERED_EMAIL_FALLBACK')}
                     </span>
-                    . Please enter it below to verify and start disbursement.
+                    {t('RAHAT_PIN_SENT_SUFFIX')}
                   </p>
                   <div className="flex items-center gap-3 mt-3">
                     <Input
-                      placeholder={`${OTP_LENGTH} digit pin`}
+                      placeholder={t('DIGIT_PIN_PLACEHOLDER', { length: OTP_LENGTH })}
                       maxLength={OTP_LENGTH}
                       inputMode="numeric"
                       autoFocus
@@ -206,7 +206,7 @@ export function DisburseModal({
                       disabled={!email || sendOtp.isPending || disburse.isPending}
                       onClick={handleSendOtp}
                     >
-                      Resend
+                      {tGlobal('RESEND')}
                     </Button>
                   </div>
                   {otpError && (
@@ -217,7 +217,7 @@ export function DisburseModal({
                     disabled={isVerifyDisabled}
                     onClick={handleVerify}
                   >
-                    {disburse.isPending ? 'Verifying…' : 'Verify'}
+                    {disburse.isPending ? t('VERIFYING') : tGlobal('VERIFY')}
                   </Button>
                 </div>
               )}

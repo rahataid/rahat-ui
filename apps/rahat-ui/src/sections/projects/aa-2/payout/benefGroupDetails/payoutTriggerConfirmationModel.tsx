@@ -87,7 +87,7 @@ export default function PayoutConfirmationDialog({
       setTriggered(true);
       setOpen(false);
     } catch (e: any) {
-      const rawMessage = e?.response?.data?.message || 'Invalid pin.';
+      const rawMessage = e?.response?.data?.message || tv('INVALID_PIN_FALLBACK');
       const errorMessage = resolveBackendErrorMessage(
         tb,
         e?.response?.data?.code,
@@ -136,7 +136,7 @@ export default function PayoutConfirmationDialog({
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground animate-pulse">
-              Sending Rahat Pin to your email…
+              {tv('SENDING_RAHAT_PIN_TO_EMAIL')}
             </p>
           </div>
         )}
@@ -191,15 +191,15 @@ export default function PayoutConfirmationDialog({
 
         <div className="border-t pt-4">
           <p className="text-base text-foreground">
-            A Rahat Pin has been sent to{' '}
+            {tv('RAHAT_PIN_SENT_TO')}{' '}
             <span className="font-semibold">
-              {email || 'the registered email'}
+              {email || tv('REGISTERED_EMAIL_FALLBACK')}
             </span>
-            . Please enter it below to verify and start disbursement.
+            {tv('RAHAT_PIN_SENT_SUFFIX')}
           </p>
           <div className="flex items-center gap-3 mt-3">
             <Input
-              placeholder={`${OTP_LENGTH} digit pin`}
+              placeholder={tv('DIGIT_PIN_PLACEHOLDER', { length: OTP_LENGTH })}
               maxLength={OTP_LENGTH}
               inputMode="numeric"
               autoFocus
@@ -215,7 +215,7 @@ export default function PayoutConfirmationDialog({
               disabled={!email || sendPayoutOtp.isPending}
               onClick={handleSendOtp}
             >
-              Resend
+              {tg('RESEND')}
             </Button>
           </div>
           {otpError && (
@@ -235,7 +235,7 @@ export default function PayoutConfirmationDialog({
             onClick={handleConfirm}
             disabled={isButtonDisabled}
           >
-            {submitting ? 'Triggering…' : tg('CONFIRM')}
+            {submitting ? tv('TRIGGERING') : tg('CONFIRM')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -2248,7 +2248,16 @@
     "THIS_GROUP_ALREADY_HAS_FUNDS_RESERVED": "यो समूहमा पहिले नै रकम आरक्षित छ।",
     "BANK_NOT_REACHABLE": "बैंकसँग सम्पर्क हुन सकेन",
     "CIPS_001": "यो बैंकको लागि लाभग्राही खाता प्रमाणीकरण सक्षम गरिएको छैन। कारोबार पठाइसकेपछि फिर्ता हुँदैन, कृपया पुनः पुष्टि गर्नुहोस्।",
-    "BENEFICIARY_ACCOUNT_DOESNOT_EXISTS": "लाभग्राहीको खाता अवस्थित छैन।"
+    "BENEFICIARY_ACCOUNT_DOESNOT_EXISTS": "लाभग्राहीको खाता अवस्थित छैन।",
+    "SENDING_RAHAT_PIN_TO_EMAIL": "तपाईंको इमेलमा राहत पिन पठाइँदैछ…",
+    "RAHAT_PIN_SENT_TO": "राहत पिन यहाँ पठाइएको छ",
+    "RAHAT_PIN_SENT_SUFFIX": "। भुक्तानी सुरु गर्न कृपया तल प्रमाणित गर्नुहोस्।",
+    "REGISTERED_EMAIL_FALLBACK": "दर्ता गरिएको इमेल",
+    "DIGIT_PIN_PLACEHOLDER": "{length} अंकको पिन",
+    "PLEASE_ENTER_DIGIT_PIN": "कृपया {length} अंकको पिन प्रविष्ट गर्नुहोस्।",
+    "INVALID_PIN_FALLBACK": "अमान्य पिन।",
+    "VERIFYING": "प्रमाणित गर्दै…",
+    "TRIGGERING": "सुरु गर्दै…"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "ACTIVE_OWNERS": "सक्रियअधिकार प्राप्त व्यक्तिहरु",
@@ -3386,7 +3395,9 @@
     "API": "एपीआई",
     "AUTH_APP_CREATED_SUCCESSFULLY": "अथ एप सफलतापूर्वक सिर्जना गरियो",
     "PUBLIC_KEY_ALREADY_EXISTS": "पब्लिक की पहिले नै अवस्थित छ",
-    "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "लाभग्राहीहरू छिट्टै आयात हुनेछन्!"
+    "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "लाभग्राहीहरू छिट्टै आयात हुनेछन्!",
+    "RESEND": "पुन: पठाउनुहोस्",
+    "VERIFY": "प्रमाणित गर्नुहोस्"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -4278,6 +4289,14 @@
       "USER_DOES_NOT_EXIST": "प्रयोगकर्ता अवस्थित छैन!",
       "INVALID_CREDENTIALS": "अमान्य प्रमाणहरू!",
       "INVALID_CREDENTIALS_IN_CHALLENGE": "च्यालेन्जमा अमान्य प्रमाणहरू!"
+    },
+    "COMMON": {
+      "INTERNAL_SERVER_ERROR": "हाम्रो प्रणालीमा समस्या भयो। कृपया केही बेरपछि पुन: प्रयास गर्नुहोस्।",
+      "UNAUTHORIZED": "अनधिकृत",
+      "FORBIDDEN": "निषेधित",
+      "NOT_FOUND": "फेला परेन",
+      "BAD_REQUEST": "अमान्य अनुरोध",
+      "VALIDATION_FAILED": "प्रमाणीकरण असफल भयो"
     }
   }
 }

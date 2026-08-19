@@ -65,6 +65,7 @@ import { createCommunicationFormSchema } from '../schemas/activity.schemas';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { renderGroups } from './renderGroup';
 import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -755,9 +756,14 @@ export default function AddCommunicationForm({
             render={({ field }) => {
               const isNep = /[\u0900-\u097F]/.test(field.value || '');
               const maxLen = isNep ? 350 : 700;
+              const smsInfo =
+                transportData?.name === 'SMS' && field.value
+                  ? getSmsInfo(field.value)
+                  : null;
               return (
                 <FormItem className="col-span-2">
                   <FormLabel>Message</FormLabel>
+
                   <FormControl>
                     <Textarea
                       placeholder="Write message"
@@ -769,9 +775,20 @@ export default function AddCommunicationForm({
                     {errors.message && (
                       <FormMessage>{errors.message.message}</FormMessage>
                     )}
-                    <p className="ml-auto text-xs text-muted-foreground">
-                      {field.value?.length || 0} / {maxLen} characters
-                    </p>
+
+                    <div className="ml-auto flex text-xs text-muted-foreground gap-4">
+                      {smsInfo && (
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">
+                            {smsInfo.smsCredits}
+                          </span>{' '}
+                          SMS credit{smsInfo.smsCredits !== 1 ? 's' : ''}
+                        </p>
+                      )}
+                      <p>
+                        {field.value?.length || 0} / {maxLen} characters
+                      </p>
+                    </div>
                   </div>
                 </FormItem>
               );

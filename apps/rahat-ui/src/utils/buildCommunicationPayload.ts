@@ -11,11 +11,11 @@ const GSM_7_CHARS =
   '0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§' +
   '¿abcdefghijklmnopqrstuvwxyzäöñüà';
 
-function isUnicode(message: string): boolean {
+export const isUnicode = (message: string): boolean => {
   return [...message].some((char) => !GSM_7_CHARS.includes(char));
-}
+};
 
-function getSmsInfo(message: string) {
+export const getSmsInfo = (message: string) => {
   const unicode = isUnicode(message);
   const characterCount = [...message].length;
   const smsCredits = unicode
@@ -27,7 +27,7 @@ function getSmsInfo(message: string) {
     encoding: unicode ? 'UNICODE' : 'NON-UNICODE',
     smsCredits,
   };
-}
+};
 
 export interface CommunicationPayload {
   communicationTitle?: string;

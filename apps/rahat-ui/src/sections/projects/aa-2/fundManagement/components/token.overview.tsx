@@ -80,6 +80,12 @@ export default function TokensOverview() {
       fallback: INFO_TOOL_TIPS[name] ?? '',
     });
 
+  // Some stats (e.g. Average Duration) send the literal string "N/A" from
+  // the backend instead of a number when there's no data to average yet --
+  // formatNum only converts digits, so it passes "N/A" through untranslated.
+  const formatStatValue = (value: unknown) =>
+    value === 'N/A' ? tg('N_A') : formatNum(value);
+
   // const projectBalance = useFundAssignmentStore(
   //   (state) => state.projectBalance,
   // );
@@ -186,7 +192,7 @@ export default function TokensOverview() {
                     <DataCard
                       className="rounded-sm h-[116px]"
                       title={t('TOKEN')}
-                      smallNumber={formatNum(item.value)}
+                      smallNumber={formatStatValue(item.value)}
                       infoIcon={!!infoTooltip}
                       infoTooltip={infoTooltip}
                       subtitle=" "
@@ -228,7 +234,7 @@ export default function TokensOverview() {
                   key={index}
                   className="rounded-sm h-[116px] p-0"
                   title={statTitle(item.name)}
-                  smallNumber={formatNum(item.value)}
+                  smallNumber={formatStatValue(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
                     subtitle={
@@ -251,7 +257,7 @@ export default function TokensOverview() {
                   key={index}
                   className="rounded-sm h-[116px] p-0"
                   title={statTitle(item.name)}
-                  smallNumber={formatNum(item.value)}
+                  smallNumber={formatStatValue(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
                     subtitle={

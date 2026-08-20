@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { ArrowLeftRight, Info } from 'lucide-react';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { Heading } from './page.heading';
@@ -32,6 +33,7 @@ export function TransactionCard({
   loading = false,
   cardHeight = 'h-[calc(80vh-200px)]',
 }: IProps) {
+  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const uuid = useParams().id;
   const projectId = uuid as UUID;
@@ -133,7 +135,7 @@ export function TransactionCard({
                               : 'bg-red-100 text-red-600'
                           }`}
                         >
-                          {isSuccessful ? 'Disbursed' : 'Failed'}
+                          {isSuccessful ? tg('DISBURSED') : tg('FAILED')}
                         </Badge>
                       </div>
                       <div className="flex items-center space-x-1 mt-1">
@@ -162,7 +164,7 @@ export function TransactionCard({
           <div className="h-32 grid place-items-center">
             <div className="flex flex-col items-center text-muted-foreground">
               <Info />
-              <p className="text-sm">No transactions made</p>
+              <p className="text-sm">{tg('NO_TRANSACTIONS_MADE')}</p>
             </div>
           </div>
         )}

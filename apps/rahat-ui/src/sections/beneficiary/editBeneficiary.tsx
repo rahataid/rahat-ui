@@ -43,29 +43,33 @@ export default function EditBeneficiary({ beneficiary }: any) {
 
   const FormSchema = z.object({
     name: z
-      .string({ required_error: t('REQUIRED') })
+      .string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') })
       .min(2, { message: t('NAME_MIN_LENGTH') }),
-    walletAddress: z.string({ required_error: t('REQUIRED') }),
+    walletAddress: z.string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') }),
     phone: z.preprocess(
       normalizeNumeralsPreprocessor,
       z
-        .string({ required_error: t('REQUIRED') })
+        .string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') })
         .refine(isValidPhoneNumber, { message: t('INVALID_PHONE') }),
     ),
     email: z.string().optional(),
     gender: z
-      .string({ required_error: t('GENDER_REQUIRED') })
+      .string({ required_error: t('GENDER_REQUIRED'), invalid_type_error: t('GENDER_REQUIRED') })
       .toUpperCase()
       .min(4, { message: t('GENDER_REQUIRED') }),
-    bankedStatus: z.string({ required_error: t('REQUIRED') }).toUpperCase(),
-    internetStatus: z
-      .string({ required_error: t('REQUIRED') })
+    bankedStatus: z
+      .string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') })
       .toUpperCase(),
-    phoneStatus: z.string({ required_error: t('REQUIRED') }).toUpperCase(),
-    address: z.string({ required_error: t('REQUIRED') }),
+    internetStatus: z
+      .string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') })
+      .toUpperCase(),
+    phoneStatus: z
+      .string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') })
+      .toUpperCase(),
+    address: z.string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') }),
     age: z.preprocess(
       normalizeNumeralsPreprocessor,
-      z.string({ required_error: t('REQUIRED') }),
+      z.string({ required_error: t('REQUIRED'), invalid_type_error: t('REQUIRED') }),
     ),
   });
 

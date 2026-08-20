@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 type Iprops = {
   className?: string;
@@ -34,16 +35,18 @@ export default function SelectComponent({
 }: Iprops) {
   const t = useTranslations('GLOBAL');
   const contentClassName = name === 'Group Type' ? 'h-30 ' : 'h-32';
+  const translatedName = translateValue(t, name, { fallback: name, silent: true });
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={t('SELECT_PLACEHOLDER', { name })} />
+        <SelectValue placeholder={t('SELECT_PLACEHOLDER', { name: translatedName })} />
       </SelectTrigger>
       <SelectContent className={contentClassName}>
         <SelectGroup>
           {options?.map((status: string) => (
             <SelectItem value={status} key={status}>
-              {labels?.[status] ?? titleCase(status)}
+              {labels?.[status] ??
+                translateValue(t, status, { fallback: titleCase(status), silent: true })}
             </SelectItem>
           ))}
         </SelectGroup>

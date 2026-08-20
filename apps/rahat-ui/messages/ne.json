@@ -3397,7 +3397,15 @@
     "PUBLIC_KEY_ALREADY_EXISTS": "पब्लिक की पहिले नै अवस्थित छ",
     "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "लाभग्राहीहरू छिट्टै आयात हुनेछन्!",
     "RESEND": "पुन: पठाउनुहोस्",
-    "VERIFY": "प्रमाणित गर्नुहोस्"
+    "VERIFY": "प्रमाणित गर्नुहोस्",
+    "BANK_ACCOUNT_DETAILS": "बैंक खाता विवरण",
+    "BANK_NAME": "बैंकको नाम",
+    "ACCOUNT_NAME": "खाताको नाम",
+    "ACCOUNT_NUMBER": "खाता नम्बर",
+    "VIEW_MORE": "थप हेर्नुहोस्",
+    "VIEW_LESS": "कम हेर्नुहोस्",
+    "NO_TRANSACTIONS_MADE": "कुनै लेनदेन गरिएको छैन",
+    "DISBURSED": "वितरण गरिएको"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -4084,7 +4092,12 @@
       "CHAIN_NOT_SUPPORTED_IN_INSTANCE": "चेन {chainType} यो इन्स्ट्यान्समा समर्थित छैन",
       "WALLET_ADDRESS_NOT_FOUND": "वालेट ठेगाना फेला परेन",
       "CHAIN_SETTINGS_CONFIG_NOT_FOUND": "चेन सेटिङ कन्फिगरेसन फेला परेन। कृपया एप्लिकेसन सेटिङहरूमा चेन सेटिङ कन्फिगर गर्नुहोस्।",
-      "INVALID_CHAIN_TYPE": "अमान्य चेन प्रकार \"{type}\"। यो मध्ये एउटा हुनुपर्छ: {validTypes}"
+      "INVALID_CHAIN_TYPE": "अमान्य चेन प्रकार \"{type}\"। यो मध्ये एउटा हुनुपर्छ: {validTypes}",
+      "GCT_NAME_MUST_BE_STRING": "नाम अक्षरमा हुनुपर्छ",
+      "GCT_UUID_MUST_BE_VALID": "UUID मान्य हुनुपर्छ",
+      "GCT_GROUP_ID_MUST_BE_VALID": "समूह नगद हस्तान्तरण आईडी मान्य UUID हुनुपर्छ",
+      "GCT_FUND_TITLE_MUST_BE_STRING": "शीर्षक अक्षरमा हुनुपर्छ",
+      "GCT_AMOUNT_MUST_BE_NUMBER": "रकम अंकमा हुनुपर्छ"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "UUID '{groupId}' भएको लाभग्राही समूह टोकन फेला परेन",

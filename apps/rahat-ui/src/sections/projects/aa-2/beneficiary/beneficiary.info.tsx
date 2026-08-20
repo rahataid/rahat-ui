@@ -133,14 +133,14 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
       {bankAccount && (
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Bank Account Details</h2>
+          <h2 className="text-lg font-semibold">{tg('BANK_ACCOUNT_DETAILS')}</h2>
 
           <button
             type="button"
             onClick={() => setViewMore((prev) => !prev)}
             className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
           >
-            {viewMore ? 'View less' : 'View more'}
+            {viewMore ? tg('VIEW_LESS') : tg('VIEW_MORE')}
             {viewMore ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
         </div>
@@ -148,14 +148,18 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
 
       {viewMore && bankAccount && (
         <div className="grid grid-cols-3 gap-6 mb-6">
-          <DataItem label="Bank Name" value={bankAccount?.bankName || 'N/A'} />
+          <DataItem label={tg('BANK_NAME')} value={bankAccount?.bankName || tg('N_A')} />
           <DataItem
-            label="Account Name"
-            value={bankAccount?.accountName || 'N/A'}
+            label={tg('ACCOUNT_NAME')}
+            value={bankAccount?.accountName || tg('N_A')}
           />
           <DataItem
-            label="Account Number"
-            value={bankAccount?.accountNumber || 'N/A'}
+            label={tg('ACCOUNT_NUMBER')}
+            value={
+              bankAccount?.accountNumber
+                ? formatDigits(bankAccount.accountNumber)
+                : tg('N_A')
+            }
           />
         </div>
       )}

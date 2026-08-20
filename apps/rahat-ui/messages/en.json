@@ -518,7 +518,15 @@
     "PUBLIC_KEY_ALREADY_EXISTS": "Public Key already exists",
     "BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY": "Beneficiaries will be imported shortly!",
     "RESEND": "Resend",
-    "VERIFY": "Verify"
+    "VERIFY": "Verify",
+    "BANK_ACCOUNT_DETAILS": "Bank Account Details",
+    "BANK_NAME": "Bank Name",
+    "ACCOUNT_NAME": "Account Name",
+    "ACCOUNT_NUMBER": "Account Number",
+    "VIEW_MORE": "View more",
+    "VIEW_LESS": "View less",
+    "NO_TRANSACTIONS_MADE": "No transactions made",
+    "DISBURSED": "Disbursed"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -4084,7 +4092,12 @@
       "CHAIN_NOT_SUPPORTED_IN_INSTANCE": "Chain {chainType} not supported in this instance",
       "WALLET_ADDRESS_NOT_FOUND": "Wallet address not found",
       "CHAIN_SETTINGS_CONFIG_NOT_FOUND": "Chain settings configuration not found. Please configure chain settings in the application settings.",
-      "INVALID_CHAIN_TYPE": "Invalid chain type \"{type}\". Must be one of: {validTypes}"
+      "INVALID_CHAIN_TYPE": "Invalid chain type \"{type}\". Must be one of: {validTypes}",
+      "GCT_NAME_MUST_BE_STRING": "Name must be a string",
+      "GCT_UUID_MUST_BE_VALID": "UUID must be a valid UUID",
+      "GCT_GROUP_ID_MUST_BE_VALID": "Group cash transfer ID must be a valid UUID",
+      "GCT_FUND_TITLE_MUST_BE_STRING": "Title must be a string",
+      "GCT_AMOUNT_MUST_BE_NUMBER": "Amount must be a number"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "Beneficiary group tokens with UUID '{groupId}' not found",

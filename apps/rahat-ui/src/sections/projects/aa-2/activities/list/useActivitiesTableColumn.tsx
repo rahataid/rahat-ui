@@ -10,26 +10,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
-
-// function getStatusBg(status: string) {
-//   if (status === 'NOT_STARTED') {
-//     return 'bg-gray-200';
-//   }
-
-//   if (status === 'WORK_IN_PROGRESS') {
-//     return 'bg-orange-200';
-//   }
-
-//   if (status === 'COMPLETED') {
-//     return 'bg-green-200';
-//   }
-
-//   if (status === 'DELAYED') {
-//     return 'bg-red-200';
-//   }
-
-//   return '';
-// }
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function useActivitiesTableColumn() {
   const t = useTranslations('AA_PROJECT');
@@ -55,23 +36,34 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: t('TITLE'),
-      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
+      meta: { className: 'w-[250px]' },
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('title') || ''} truncateByWidth />
+      ),
     },
     {
       accessorKey: 'category',
       header: t('CATEGORY'),
-      cell: ({ row }) => (
-        <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
-          <TruncatedCell text={row.getValue('category')} maxLength={15} />
-        </Badge>
-      ),
+      meta: { className: 'w-[130px]' },
+      cell: ({ row }) => {
+        const rawCategory = (row.getValue('category') as string) || '';
+        const translatedCategory = translateValue(t, rawCategory, {
+          fallbackStyle: 'raw',
+        });
+        return (
+          <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
+            <TruncatedCell text={translatedCategory} maxLength={15} />
+          </Badge>
+        );
+      },
     },
 
     {
       accessorKey: 'isAutomated',
       header: tg('TYPE'),
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => (
-        <Badge className="rounded-xl capitalize  text-xs font-normal text-muted-foreground">
+        <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
           {row.getValue('isAutomated') ? t('AUTOMATED') : t('MANUAL')}
         </Badge>
       ),
@@ -79,79 +71,77 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'responsibility',
       header: t('RESPONSIBILITY'),
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={row.getValue('responsibility') || tg('N_A')} 
-          maxLength={15}
-        />
-      ),
+      meta: { className: 'w-[130px]' },
+      cell: ({ row }) => {
+        const val = (row.getValue('responsibility') as string) || '';
+        const text = val ? translateValue(tg, val, { fallback: val }) : tg('N_A');
+        return <TruncatedCell text={text} maxLength={15} />;
+      },
     },
     {
       accessorKey: 'responsibleStation',
       header: t('RESPONSIBLE_STATION'),
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={row.getValue('responsibleStation') || tg('N_A')} 
-          maxLength={10}
-        />
-      ),
+      meta: { className: 'w-[120px]' },
+      cell: ({ row }) => {
+        const val = (row.getValue('responsibleStation') as string) || '';
+        const text = val ? translateValue(tg, val, { fallback: val }) : tg('N_A');
+        return <TruncatedCell text={text} maxLength={10} />;
+      },
     },
     {
       accessorKey: 'status',
       header: tg('STATUS'),
+      meta: { className: 'w-[100px]' },
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        const bgColor = getStatusBg(status);
-        const statusLabel =
-          status === 'NOT_STARTED' ? t('NOT_STARTED') :
-          status === 'WORK_IN_PROGRESS' ? t('IN_PROGRESS') :
-          status === 'COMPLETED' ? tg('COMPLETED') :
-          status === 'DELAYED' ? tg('DELAYED') : status;
+        const rawStatus = (row.getValue('status') as string) || '';
+        const devV2FormattedStatus = rawStatus
+          ? rawStatus
+              .toLowerCase()
+              .split('_')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')
+          : '';
+        const translatedStatus = translateValue(tg, rawStatus, {
+          fallback: devV2FormattedStatus,
+        });
         return (
-          <Badge
-            className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
-          >
-            <TruncatedCell text={statusLabel} maxLength={10} />
+          <Badge className={getStatusBg(rawStatus || devV2FormattedStatus)}>
+            <TruncatedCell text={translatedStatus} maxLength={10} />
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'completedBy',
       header: t('COMPLETED_BY'),
+      meta: { className: 'w-[110px]' },
       cell: ({ row }) => {
-        const completedBy = row.getValue('completedBy') as string;
-        return <TruncatedCell text={completedBy || tg('N_A')} />;
-      },
-    },
-    {
-      accessorKey: 'completedAt',
-      header: tg('TIMESTAMP'),
-      cell: ({ row }) => {
-        const completedAt = row.getValue('completedAt') as string;
-        if (completedAt) {
-          return <TruncatedCell text={formatDate(completedAt)} />;
-        }
-        return tg('N_A');
+        const completedBy = row.original?.completedBy;
+        const completedAt = row.original?.completedAt;
+        return (
+          <div className="flex flex-col text-xs">
+            <span className="text-muted-foreground">
+              {completedBy || tg('N_A')}
+            </span>
+            <span className="text-muted-foreground">
+              {completedAt ? formatDate(completedAt) : tg('N_A')}
+            </span>
+          </div>
+        );
       },
     },
     {
       id: 'actions',
       enableHiding: false,
       header: tg('ACTION'),
+      meta: { className: 'w-[60px]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
-            {/* <UpdateActivityStatusDialog
-              activityDetail={row.original}
-              loading={false}
-              iconStyle="w-4 h-4"
-            /> */}
             <TooltipComponent
               Icon={Eye}
               tip={t('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
-              handleOnClick={() => handleEyeClick(row.original.id)}
+              handleOnClick={() => handleEyeClick(row.original?.id)}
             />
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
@@ -162,7 +152,7 @@ export default function useActivitiesTableColumn() {
                 tip={t('UPDATE_ACTIVITY_STATUS')}
                 iconStyle="hover:text-primary cursor-pointer"
                 handleOnClick={() =>
-                  handleUpdateStatusIconClick(row.original.id)
+                  handleUpdateStatusIconClick(row.original?.id)
                 }
               />
             </RoleAuth>

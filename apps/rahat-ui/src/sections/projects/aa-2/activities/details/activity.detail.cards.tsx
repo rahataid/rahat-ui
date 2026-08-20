@@ -6,6 +6,7 @@ import * as React from 'react';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
@@ -34,18 +35,7 @@ export default function ActivityDetailCards({
   const formattedLeadTime = formatLeadTime(activityDetail?.leadTime);
 
   const getStatusLabel = (status?: string) => {
-    switch (status) {
-      case 'NOT_STARTED':
-        return t('NOT_STARTED');
-      case 'WORK_IN_PROGRESS':
-        return t('IN_PROGRESS');
-      case 'COMPLETED':
-        return tg('COMPLETED');
-      case 'DELAYED':
-        return tg('DELAYED');
-      default:
-        return status;
-    }
+    return translateValue(tg, status);
   };
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
@@ -59,9 +49,9 @@ export default function ActivityDetailCards({
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <TooltipWrapper tip={`${t('PHASE')}: ${activityDetail?.phase?.name}`}>
+            <TooltipWrapper tip={`${t('PHASE')}: ${activityDetail?.phase?.name || tg('N_A')}`}>
               <span className="bg-green-100 text-green-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
-                {activityDetail?.phase?.name}
+                {activityDetail?.phase?.name || tg('N_A')}
               </span>
             </TooltipWrapper>
 
@@ -75,9 +65,9 @@ export default function ActivityDetailCards({
               </span>
             </TooltipWrapper>
 
-            <TooltipWrapper tip={`${t('CATEGORY')}: ${activityDetail?.category?.name}`}>
+            <TooltipWrapper tip={`${t('CATEGORY')}: ${activityDetail?.category?.name || tg('N_A')}`}>
               <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
-                {activityDetail?.category?.name}
+                {activityDetail?.category?.name || tg('N_A')}
               </span>
             </TooltipWrapper>
 
@@ -98,49 +88,49 @@ export default function ActivityDetailCards({
               </TooltipWrapper>
             </div>
           </div>
-          <TooltipWrapper tip={`${t('ACTIVITY_TITLE')}: ${activityDetail?.title}`}>
-            <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate w-[420px] cursor-pointer">
-              {activityDetail?.title}
+          <TooltipWrapper tip={`${t('ACTIVITY_TITLE')}: ${activityDetail?.title || tg('N_A')}`}>
+            <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate max-w-full cursor-pointer">
+              {activityDetail?.title || tg('N_A')}
             </h3>
           </TooltipWrapper>
 
           {activityDetail?.description && (
             <TooltipWrapper                 tip={`${t('DESCRIPTION')}: ${activityDetail?.description}`}>
-              <p className="text-gray-600 text-sm mt-1 leading-tight cursor-pointer">
-                {activityDetail?.description?.substring(0, 100)}...
+              <p className="text-gray-600 text-sm mt-1 leading-tight truncate max-w-full cursor-pointer">
+                {activityDetail?.description}
               </p>
             </TooltipWrapper>
           )}
           <div className="text-gray-500 text-sm mt-2 flex flex-wrap gap-2">
             <TooltipWrapper
               tip={`${t('RESPONSIBLE_STATION')}: ${
-                activityDetail?.responsibleStation ?? 'N/A'
+                activityDetail?.responsibleStation ?? tg('N_A')
               }`}
             >
               <span className="cursor-pointer">
                 {activityDetail?.responsibleStation &&
                 activityDetail.responsibleStation.length > 20
                   ? `${activityDetail.responsibleStation.substring(0, 20)}...`
-                  : activityDetail?.responsibleStation ?? 'N/A'}
+                  : activityDetail?.responsibleStation ?? tg('N_A')}
               </span>
             </TooltipWrapper>
 
             <TooltipWrapper
-              tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? 'N/A'}`}
+              tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? tg('N_A')}`}
             >
               <span className="cursor-pointer">
                 {activityDetail?.leadTime && <span>&bull;</span>}
-                {formattedLeadTime ?? 'N/A'}
+                {formattedLeadTime ?? tg('N_A')}
               </span>
             </TooltipWrapper>
           </div>
           <div className="flex items-center text-gray-500 text-sm mt-1">
             <UserCircle className="w-4 h-4 mr-2 ml-1" />
             <TooltipWrapper
-              tip={`${t('RESPONSIBILITY')}: ${activityDetail?.manager?.name}`}
+              tip={`${t('RESPONSIBILITY')}: ${activityDetail?.manager?.name || tg('N_A')}`}
             >
               <span className="cursor-pointer">
-                {t('ASSIGNED_TO')}: {activityDetail?.manager?.name}
+                {t('ASSIGNED_TO')}: {activityDetail?.manager?.name || tg('N_A')}
               </span>
             </TooltipWrapper>
           </div>

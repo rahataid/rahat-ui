@@ -12,6 +12,7 @@ import {
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
@@ -134,7 +135,7 @@ export default function ActivitiesList() {
   }, [filters]);
 
   const handleDownloadReport = () => {
-    if (allData.length < 1) return toast.error(t('NO_DATA_TO_DOWNLOAD'));
+    if (!allData || allData.length < 1) return toast.error(t('NO_DATA_TO_DOWNLOAD'));
     const mappedData = allData?.map((item: Record<string, any>) => {
       let timeStamp;
       if (item?.completedAt) {
@@ -148,15 +149,11 @@ export default function ActivitiesList() {
         Category: item.category || 'N/A',
         Phase: item.phase || 'N/A',
         Type: item.isAutomated ? t('AUTOMATED') : t('MANUAL'),
-        Responsibility: item.responsibility,
+        Responsibility: item.responsibility || 'N/A',
         'Responsible Station': item.responsibleStation || 'N/A',
         'Lead Time': leadTimeValue || 'N/A',
         'Time Frame': leadTimeUnit || 'N/A',
-        Status: item.status === 'NOT_STARTED' ? t('NOT_STARTED') :
-          item.status === 'WORK_IN_PROGRESS' ? t('IN_PROGRESS') :
-          item.status === 'COMPLETED' ? tg('COMPLETED') :
-          item.status === 'DELAYED' ? tg('DELAYED') :
-          item.status || 'N/A',
+        Status: translateValue(tg, item.status, { fallback: 'N/A' }),
         Timestamp: timeStamp || 'N/A',
         'Completed by': item.completedBy || 'N/A',
         'Difference in trigger and activity completion':
@@ -303,6 +300,7 @@ export default function ActivitiesList() {
           currentPage={pagination.page}
           perPage={pagination.perPage}
           total={activitiesMeta?.lastPage || 0}
+          isShowTotalCount={true}
         />
       </div>
     </div>

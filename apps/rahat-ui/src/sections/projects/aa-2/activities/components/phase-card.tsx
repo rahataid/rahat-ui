@@ -14,6 +14,7 @@ import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 interface PhaseCardProps {
   id: string;
@@ -53,6 +54,7 @@ export default function PhaseCard({
     return `${formatDigits(num)} ${t(unitKey)}`;
   };
   const formattedLeadTime = formatLeadTime(leadTime);
+  const translatedStatus = translateValue(tg, status);
 
   return (
     <Card
@@ -61,8 +63,8 @@ export default function PhaseCard({
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <TooltipWrapper tip={`${t('ACTIVITY_STATUS')}: ${tg(status)}`}>
-            <Badge className={getStatusBg(status)}>{tg(status)}</Badge>
+          <TooltipWrapper tip={`${t('ACTIVITY_STATUS')}: ${translatedStatus}`}>
+            <Badge className={getStatusBg(status)}>{translatedStatus}</Badge>
           </TooltipWrapper>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
@@ -82,23 +84,21 @@ export default function PhaseCard({
           </RoleAuth>
         </div>
         <TooltipWrapper tip={`${t('ACTIVITY_TITLE')}: ${title}`}>
-          <h3 className="text-sm font-medium text-gray-900 truncate w-[320px]">
-            {title.length > 25
-              ? `${title.substring(0, 20)}...`
-              : title ?? 'N/A'}
+          <h3 className="text-sm font-medium text-gray-900 truncate max-w-full">
+            {title ?? tg('N_A')}
           </h3>
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">
           <TooltipWrapper
-            tip={`${t('RESPONSIBLE_STATION')}: ${responsibleStation ?? 'N/A'}`}
+            tip={`${t('RESPONSIBLE_STATION')}: ${responsibleStation ?? tg('N_A')}`}
           >
             {responsibleStation && responsibleStation.length > 20
               ? `${responsibleStation.substring(0, 20)}...`
-              : responsibleStation ?? 'N/A'}
+              : responsibleStation ?? tg('N_A')}
           </TooltipWrapper>
-          <TooltipWrapper tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? 'N/A'}`}>
+          <TooltipWrapper tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? tg('N_A')}`}>
             {leadTime && <span className="text-gray-400">&bull;</span>}
-            <span>{formattedLeadTime ?? 'N/A'}</span>
+            <span>{formattedLeadTime ?? tg('N_A')}</span>
           </TooltipWrapper>
         </div>
       </CardContent>

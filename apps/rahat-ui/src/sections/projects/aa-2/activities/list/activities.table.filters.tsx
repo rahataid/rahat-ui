@@ -106,10 +106,7 @@ export default function ActivitiesTableFilters({
             <SelectItem value="all">{t('ALL_STATUS')}</SelectItem>
             {statusList.map((s) => (
               <SelectItem key={s} value={s}>
-                {s === 'NOT_STARTED' ? t('NOT_STARTED') :
-                 s === 'WORK_IN_PROGRESS' ? t('IN_PROGRESS') :
-                 s === 'COMPLETED' ? tGlobal('COMPLETED') :
-                 s === 'DELAYED' ? tGlobal('DELAYED') : s}
+                {translateValue(tGlobal, s)}
               </SelectItem>
             ))}
           </SelectGroup>

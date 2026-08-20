@@ -1,14 +1,17 @@
 'use client';
 
 import { AAProjectSettingsView } from 'apps/rahat-ui/src/sections/projects/aa-2/settings';
-import { AARoles } from 'libs/auth/src/enums/aaRoles';
-import { RoleAuth } from 'libs/auth/src/lib/roleAuth';
+import { ProjectPermissionGuard } from 'apps/rahat-ui/src/guards/project-permission-guard';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN]}>
+    <ProjectPermissionGuard action={ACTIONS.MANAGE} subject={SUBJECTS.ALL}>
       <AAProjectSettingsView />
-    </RoleAuth>
+    </ProjectPermissionGuard>
   );
 };
 

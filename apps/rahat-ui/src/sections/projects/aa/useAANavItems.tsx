@@ -1,6 +1,11 @@
 'use client';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { AARoles } from '@rahat-ui/auth';
 import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import {
   defaultNavConfig,
   NavItemDB,
@@ -42,9 +47,12 @@ export const useNavItems = () => {
 
     if ('roles' in item && item.roles) {
       navItem.wrapper = (children: React.ReactNode) => (
-        <RoleAuth roles={item.roles} hasContent={false}>
+        <Can
+          action={item.action || ACTIONS.READ}
+          subject={item.subject || SUBJECTS.ALL}
+        >
           {children}
-        </RoleAuth>
+        </Can>
       );
     }
 

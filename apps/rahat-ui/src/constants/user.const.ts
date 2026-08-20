@@ -40,10 +40,14 @@ const PROJECT_SUBJECT_ACTION_OVERRIDES: Partial<Record<string, string[]>> = {
   [SUBJECTS.PHASE]: [ACTIONS.REVERT],
 };
 
+// `all` is a global subject owned by SUBJECT_ACTIONS; keep it out of the
+// project subject list so global manage-all stays a system-level permission.
 export const PROJECT_SUBJECT_ACTIONS: Record<string, string[]> =
   Object.fromEntries(
-    Object.values(SUBJECTS).map((subject) => [
-      subject,
-      PROJECT_SUBJECT_ACTION_OVERRIDES[subject] ?? ACTION_ITEMS,
-    ]),
+    Object.values(SUBJECTS)
+      .filter((subject) => subject !== SUBJECTS.ALL)
+      .map((subject) => [
+        subject,
+        PROJECT_SUBJECT_ACTION_OVERRIDES[subject] ?? ACTION_ITEMS,
+      ]),
   );

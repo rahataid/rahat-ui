@@ -64,9 +64,9 @@ export default function CommsLogsDetailPage() {
   const downloadUrl = useMemo(
     () =>
       commsSettings?.URL
-        ? `${commsSettings.URL}/broadcasts/download?sessionId=${encodeURIComponent(
-            sessionId,
-          )}`
+        ? `${
+            commsSettings.URL
+          }/broadcasts/download?sessionId=${encodeURIComponent(sessionId)}`
         : null,
     [commsSettings, sessionId],
   );
@@ -422,7 +422,7 @@ export default function CommsLogsDetailPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 ">
             <Card className="w-full col-span-1 bg-white rounded-sm">
-              <CardContent className="p-6 space-y-6">
+              <CardContent className="p-6 space-y-6 max-h-[calc(100vh-300px)] overflow-y-auto">
                 {/* Beneficiary Group */}
                 <div>
                   <p className="text-sm text-gray-500">
@@ -452,6 +452,23 @@ export default function CommsLogsDetailPage() {
                     <p className="text-sm text-gray-500">Completed At</p>
                     <p className="font-medium">
                       {dateFormat(logs?.sessionDetails?.updatedAt)}
+                    </p>
+                  </div>
+                )}
+                {logs?.sessionDetails?.startedAt && (
+                  <div>
+                    <p className="text-sm text-gray-500">Started At</p>
+                    <p className="font-medium">
+                      {dateFormat(logs?.sessionDetails?.startedAt)}
+                    </p>
+                  </div>
+                )}
+
+                {logs?.sessionDetails?.endedAt && (
+                  <div>
+                    <p className="text-sm text-gray-500">Ended At</p>
+                    <p className="font-medium">
+                      {dateFormat(logs?.sessionDetails?.endedAt)}
                     </p>
                   </div>
                 )}

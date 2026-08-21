@@ -80,7 +80,7 @@ export function CustomPagination({
       </div> */}
       {isShowTotalCount && (
         <div className="flex-1 text-sm text-muted-foreground">
-          Total Count : {meta?.total || total}
+          {t('TOTAL_COUNT')} : {formatNum(meta?.total || total || 0)}
         </div>
       )}
       {handlePageSizeChange && (

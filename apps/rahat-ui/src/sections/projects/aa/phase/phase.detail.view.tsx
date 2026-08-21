@@ -15,9 +15,11 @@ import PhaseTriggerStatementsList from './phase-triggers-table/trigger.statement
 import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
 import { generateExcel } from '../generate.excel';
 import { toast } from 'react-toastify';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function PhaseDetailView() {
   const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
@@ -59,49 +61,49 @@ export default function PhaseDetailView() {
           <div className="grid gap-2 px-4 py-2 bg-card rounded w-1/4">
             <h1 className="text-muted-foreground">{t('MANDATORY_TRIGGERS')}</h1>
             <p>
-              Total:{' '}
-              {
+              {t('TOTAL')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.mandatoryTriggers
-                  ?.totalTriggers
-              }
+                  ?.totalTriggers ?? 0,
+              )}
             </p>
             <p>
-              Required:{' '}
-              {
+              {t('REQUIRED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.mandatoryTriggers
-                  ?.requiredTriggers
-              }
+                  ?.requiredTriggers ?? 0,
+              )}
             </p>
             <p>
-              Received:{' '}
-              {
+              {t('RECEIVED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.mandatoryTriggers
-                  ?.receivedTriggers
-              }
+                  ?.receivedTriggers ?? 0,
+              )}
             </p>
           </div>
           <div className="grid gap-2 px-4 py-2 bg-card rounded w-1/4">
             <h1 className="text-muted-foreground">{t('OPTIONAL_TRIGGERS')}</h1>
             <p>
-              Total:{' '}
-              {
+              {t('TOTAL')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.optionalTriggers
-                  ?.totalTriggers
-              }
+                  ?.totalTriggers ?? 0,
+              )}
             </p>
             <p>
-              Required:{' '}
-              {
+              {t('REQUIRED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.optionalTriggers
-                  ?.requiredTriggers
-              }
+                  ?.requiredTriggers ?? 0,
+              )}
             </p>
             <p>
-              Received:{' '}
-              {
+              {t('RECEIVED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.optionalTriggers
-                  ?.receivedTriggers
-              }
+                  ?.receivedTriggers ?? 0,
+              )}
             </p>
           </div>
         </div>

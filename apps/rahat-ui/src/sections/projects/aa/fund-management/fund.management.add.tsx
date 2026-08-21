@@ -36,10 +36,12 @@ import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AddFundManagementView() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -143,12 +145,19 @@ export default function AddFundManagementView() {
           <Loader />
         ) : (
           <div className="grid gap-2">
-            <p>Total project budget: {parsedProjectBudget}</p>
-            <p>Total reserved budget: {totalReservedTokens}</p>
-            <p>Available budget: {availableBudget}</p>
+            <p>
+              {t('TOTAL_PROJECT_BUDGET_LABEL')} {formatNum(parsedProjectBudget)}
+            </p>
+            <p>
+              {t('TOTAL_RESERVED_BUDGET_LABEL')}{' '}
+              {formatNum(totalReservedTokens)}
+            </p>
+            <p>
+              {t('AVAILABLE_BUDGET_LABEL')} {formatNum(availableBudget)}
+            </p>
             {watchTotalTokensReserved > availableBudget && (
               <p className="text-red-500">
-                Warning: Total reserved tokens exceed the available budget!
+                {t('RESERVED_TOKENS_EXCEED_AVAILABLE_BUDGET')}
               </p>
             )}
           </div>

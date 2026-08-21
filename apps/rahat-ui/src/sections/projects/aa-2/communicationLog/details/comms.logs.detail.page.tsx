@@ -168,14 +168,14 @@ export default function CommsLogsDetailPage() {
   const logsGroupName = useMemo(() => {
     const groupName = logs?.group?.name || logs?.groupName || '';
 
-    if (!groupName) return 'N/A';
+    if (!groupName) return tg('N_A');
 
     if (groupName.length > 20) {
       return `${groupName.slice(0, 20)}...`;
     }
 
     return groupName;
-  }, [logs]);
+  }, [logs, tg]);
 
   const table = useReactTable({
     manualPagination: true,
@@ -276,7 +276,7 @@ export default function CommsLogsDetailPage() {
           <div className="flex justify-between items-center">
             {latestBroadcastUpdatedAt ? (
               <p className="text-sm text-muted-foreground">
-                Updated At: {formatDate(latestBroadcastUpdatedAt)}
+                {t('UPDATED_AT')}: {formatDate(latestBroadcastUpdatedAt)}
               </p>
             ) : (
               <div />
@@ -410,13 +410,13 @@ export default function CommsLogsDetailPage() {
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
-                  title="Scheduled"
-                  smallNumber={(count?.data?.data?.SCHEDULED ?? 0).toString()}
+                  title={tg('SCHEDULED')}
+                  smallNumber={formatNum(count?.data?.data?.SCHEDULED ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
-                  title="Pending"
-                  smallNumber={(count?.data?.data?.PENDING ?? 0).toString()}
+                  title={tg('PENDING')}
+                  smallNumber={formatNum(count?.data?.data?.PENDING ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
               </div>
@@ -430,8 +430,12 @@ export default function CommsLogsDetailPage() {
                 <div>
                   <p className="text-sm text-gray-500">
                     {logs?.communicationDetail?.groupType
-                      ? logs?.communicationDetail?.groupType + ' ' + t('GROUP')
-                      : 'N/A'}
+                      ? translateValue(tg, logs.communicationDetail.groupType, {
+                          fallbackStyle: 'raw',
+                        }) +
+                        ' ' +
+                        t('GROUP')
+                      : tg('N_A')}
                   </p>
                   <p className="font-medium">{logsGroupName}</p>
                 </div>
@@ -510,6 +514,7 @@ export default function CommsLogsDetailPage() {
                   <TooltipWrapper
                     tip={`${t('COMMUNICATION_MESSAGE')}: ${getCommunicationMessage(
                       logs?.communicationDetail?.message,
+                      tg('N_A'),
                     )}`}
                   >
                     <div>
@@ -578,11 +583,11 @@ export default function CommsLogsDetailPage() {
   );
 }
 
-function getCommunicationMessage(message: any): string {
+function getCommunicationMessage(message: any, naLabel: string): string {
   if (typeof message === 'string') {
     return message;
   }
-  return message?.fileName || 'N/A';
+  return message?.fileName || naLabel;
 }
 
 function renderMessage(message: any) {

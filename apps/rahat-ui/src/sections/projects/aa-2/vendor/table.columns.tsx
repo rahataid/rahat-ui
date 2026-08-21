@@ -15,6 +15,7 @@ import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagina
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { UUID } from 'crypto';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -83,7 +84,7 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
           <div className="flex flex-wrap gap-1">
             {apps.map((app, index) => (
               <Badge key={index} className="bg-gray-200 text-gray-600">
-                {t.has(app as never) ? t(app as never) : app}
+                {translateValue(t, app, { fallbackStyle: 'raw' })}
               </Badge>
             ))}
           </div>

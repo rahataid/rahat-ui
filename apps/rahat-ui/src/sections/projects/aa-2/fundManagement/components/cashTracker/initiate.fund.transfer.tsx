@@ -237,7 +237,7 @@ export default function InitiateFundTransfer({}: {}) {
               </TooltipProvider>
             </div>
             <p className="text-xl text-blue-500 font-bold">
-              {pendingTransfers || 0}
+              {formatNum(pendingTransfers || 0)}
             </p>
           </div>
         )}

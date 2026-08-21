@@ -30,9 +30,12 @@ export default function ProjectInfoCard({ project }: IProps) {
           <h1 className="text-muted-foreground text-sm">{t('PROJECT_STATUS')}</h1>
           <Badge className="bg-green-100 text-green-500">
             {project?.status
-              ? t.has(project.status as any)
-                ? t(project.status as any)
-                : translateValue(tg, project.status, { fallbackStyle: 'raw' })
+              ? translateValue(t, project.status, {
+                  silent: true,
+                  fallback: translateValue(tg, project.status, {
+                    fallbackStyle: 'raw',
+                  }),
+                })
               : tg('N_A')}
           </Badge>
         </div>

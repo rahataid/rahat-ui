@@ -1,3 +1,5 @@
+'use client';
+
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   Tooltip,
@@ -14,9 +16,7 @@ import {
   Upload,
   Trash,
   Wallet,
-  X,
 } from 'lucide-react';
-
 import {
   VisibilityState,
   getCoreRowModel,
@@ -39,39 +39,12 @@ import {
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@rahat-ui/shadcn/src/components/ui/command';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { GroupPurge } from '@rahataid/community-tool-sdk';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
@@ -81,17 +54,14 @@ import { SETTINGS_NAME } from '../../constants/settings.const';
 import { deHumanizeString, simpleString } from '../../utils';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
+import DownloadDialog from './DownloadDialog';
+import BulkUpdateDialog from './BulkUpdateDialog';
+import EditSubmitDialog from './EditSubmitDialog';
 
-const READ_ONLY_FIELDS = new Set([
-  'uuid',
-  'createdAt',
-  'updatedAt',
-  'createdBy',
-]);
+const EXCLUDE_FROM_XLSX = new Set(['latitude', 'longitude']);
 
 type IProps = {
   uuid: string;
-  // closeSecondPanel: VoidFunction;
 };
 
 export default function GroupDetail({ uuid }: IProps) {
@@ -104,6 +74,7 @@ export default function GroupDetail({ uuid }: IProps) {
     setPerPage,
     resetSelectedListItems,
   } = usePagination();
+
   const { data: responseByUUID, isLoading } = useCommunityGroupListByID(
     uuid,
     pagination,
@@ -122,16 +93,14 @@ export default function GroupDetail({ uuid }: IProps) {
   });
   const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
   const bulkGenereateLink = useBulkGenerateVerificationLink();
-  console.log(
-    'Beneficiariesdataataata',
-    responseByUUID?.data?.beneficiariesGroup,
-  );
+
   const {
     deleteSelectedBeneficiariesFromImport,
     setDeleteSelectedBeneficiariesFromImport,
     resetDeletedSelectedBeneficiaries,
   } = useCommunityGroupStore();
   const router = useRouter();
+
   const table = useReactTable({
     manualPagination: true,
     data: responseByUUID?.data?.beneficiariesGroup || [],
@@ -141,42 +110,210 @@ export default function GroupDetail({ uuid }: IProps) {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.beneficiary.uuid as string,
-    state: {
-      columnVisibility,
-      rowSelection: selectedListItems,
-    },
+    state: { columnVisibility, rowSelection: selectedListItems },
   });
 
-  const [labels, setLabels] = React.useState<any[]>([]);
+  // ── Download dialog state ──────────────────────────────────────────────────
+  const [downloadOpen, setDownloadOpen] = React.useState(false);
+  const [labels, setLabels] = React.useState<string[]>([]);
 
-  const [open, setOpen] = React.useState(false);
-
+  // ── Bulk Update dialog state ───────────────────────────────────────────────
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [uniqueField, setUniqueField] = React.useState<string>('none');
 
+  // ── Edit & Submit dialog state ─────────────────────────────────────────────
   const [editSubmitOpen, setEditSubmitOpen] = React.useState(false);
+  const [editSubmitLoading, setEditSubmitLoading] = React.useState(false);
   const [editableRows, setEditableRows] = React.useState<Record<string, any>[]>(
     [],
   );
+  const [availableColumns, setAvailableColumns] = React.useState<string[]>([]);
+  const [addedColumns, setAddedColumns] = React.useState<Set<string>>(
+    new Set(),
+  );
 
-  const openEditSubmit = () => {
-    const rows = (responseByUUID?.data?.beneficiariesGroup ?? []).map(
-      (item: any) => {
-        const { extras, id: _id, ...rest } = item.beneficiary;
-        return {
-          ...rest,
-          archived: Boolean(rest.archived),
-          isVerified: Boolean(rest.isVerified),
-          latitude: rest.latitude != null ? Number(rest.latitude) : null,
-          longitude: rest.longitude != null ? Number(rest.longitude) : null,
-          ...(extras && typeof extras === 'object' ? extras : {}),
-        };
-      },
+  // ── Download ───────────────────────────────────────────────────────────────
+  const selectables =
+    listFieldDef?.data?.filter(
+      (item: any) => !labels.includes(simpleString(item.name)),
+    ) || [];
+
+  const sortedSelectables = [
+    { uuid: 'select-all', name: 'Select All' },
+    ...selectables.sort((a: { name: string }, b: { name: string }) => {
+      const isANumber = /^\d/.test(a.name);
+      const isBNumber = /^\d/.test(b.name);
+      if (isANumber && !isBNumber) return -1;
+      if (!isANumber && isBNumber) return 1;
+      return a.name.localeCompare(b.name);
+    }),
+  ];
+
+  const handleDownload = async () => {
+    const response = await download.mutateAsync({
+      uuid,
+      config: { responseType: 'arraybuffer' },
+    });
+    const rawData = response?.data?.data;
+    const filteredData = rawData.map((item: Record<string, any>) => {
+      const filteredItem: Record<string, any> = {};
+      labels.forEach((key) => {
+        const dehumanizedString = deHumanizeString(key as string);
+        filteredItem[dehumanizedString] = Object.prototype.hasOwnProperty.call(
+          item,
+          dehumanizedString,
+        )
+          ? item[dehumanizedString]
+          : '';
+      });
+      filteredItem['uuid'] =
+        item['uuid'] ?? item['beneficiary']?.['uuid'] ?? '';
+      return filteredItem;
+    });
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(filteredData);
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, 'beneficiaries.xlsx');
+  };
+
+  // ── Bulk Upload ────────────────────────────────────────────────────────────
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      Swal.fire('Please select a file', '', 'warning');
+      return;
+    }
+    try {
+      const buffer = await selectedFile.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const rows: Record<string, string | number | boolean>[] =
+        XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+      if (rows.length > 0) {
+        const allColumns = Object.keys(rows[0]);
+        const nonEmptyColumns = allColumns.filter((col) =>
+          rows.some((row) => row[col] !== '' && row[col] != null),
+        );
+        const cleanedRows = rows.map((row) =>
+          nonEmptyColumns.reduce((acc, col) => {
+            acc[col] = row[col];
+            return acc;
+          }, {} as Record<string, string | number | boolean>),
+        );
+        const newWorkbook = XLSX.utils.book_new();
+        const newWorksheet = XLSX.utils.json_to_sheet(cleanedRows);
+        XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, sheetName);
+        const excelBuffer = XLSX.write(newWorkbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+        const cleanedFile = new File(
+          [
+            new Blob([excelBuffer], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            }),
+          ],
+          selectedFile.name,
+          {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          },
+        );
+        const formData = new FormData();
+        formData.append('file', cleanedFile);
+        await updateBulkBeneficiary.mutateAsync({
+          groupUUID: uuid,
+          data: formData,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
+        });
+      } else {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        await updateBulkBeneficiary.mutateAsync({
+          groupUUID: uuid,
+          data: formData,
+          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
+        });
+      }
+      setSelectedFile(null);
+      router.push('/group');
+    } catch (error) {
+      Swal.fire(
+        'Upload failed',
+        (error as Error & { response?: { data?: { message?: string } } })
+          ?.response?.data?.message || 'Unknown error',
+        'error',
+      );
+    }
+  };
+
+  // ── Edit & Submit ──────────────────────────────────────────────────────────
+  const openEditSubmit = async () => {
+    try {
+      setEditSubmitLoading(true);
+      const response = await download.mutateAsync({
+        uuid,
+        config: { responseType: 'arraybuffer' },
+      });
+      const rawData: Record<string, any>[] = response?.data?.data ?? [];
+
+      const allowedKeys = new Set<string>(
+        (listFieldDef?.data ?? []).flatMap((fd: any) => [
+          fd.name,
+          deHumanizeString(fd.name),
+        ]),
+      );
+
+      const presentKeys = new Set<string>();
+      rawData.forEach((item) => {
+        Object.keys(item).forEach((key) => {
+          if (allowedKeys.has(key) && key !== 'uuid') presentKeys.add(key);
+        });
+      });
+
+      const rows = rawData.map((item) => {
+        const filtered: Record<string, any> = { uuid: item.uuid ?? '' };
+        presentKeys.forEach((key) => {
+          filtered[key] = item[key] ?? '';
+        });
+        return filtered;
+      });
+
+      const remaining = [...allowedKeys].filter(
+        (k) => !presentKeys.has(k) && k !== 'uuid',
+      );
+
+      setEditableRows(rows);
+      setAvailableColumns(remaining);
+      setAddedColumns(new Set());
+      setEditSubmitOpen(true);
+    } catch (error) {
+      Swal.fire('Failed to load data', 'Unknown error', 'error');
+    } finally {
+      setEditSubmitLoading(false);
+    }
+  };
+
+  const handleAddColumn = (colKey: string) => {
+    setEditableRows((prev) => prev.map((row) => ({ ...row, [colKey]: '' })));
+    setAvailableColumns((prev) => prev.filter((c) => c !== colKey));
+    setAddedColumns((prev) => new Set(prev).add(colKey));
+  };
+
+  const handleRemoveColumn = (colKey: string) => {
+    setEditableRows((prev) =>
+      prev.map((row) => {
+        const { [colKey]: _, ...rest } = row;
+        return rest;
+      }),
     );
-    console.log('editableRows--------', rows);
-    setEditableRows(rows);
-    setEditSubmitOpen(true);
+    setAvailableColumns((prev) => [...prev, colKey]);
+    setAddedColumns((prev) => {
+      const next = new Set(prev);
+      next.delete(colKey);
+      return next;
+    });
   };
 
   const handleCellChange = (rowIndex: number, field: string, value: string) => {
@@ -187,8 +324,15 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const handleEditSubmit = async () => {
     try {
+      const rowsForUpload = editableRows.map((row) => {
+        const cleaned: Record<string, unknown> = {};
+        Object.entries(row).forEach(([k, v]) => {
+          if (!EXCLUDE_FROM_XLSX.has(k)) cleaned[k] = v;
+        });
+        return cleaned;
+      });
       const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(editableRows);
+      const ws = XLSX.utils.json_to_sheet(rowsForUpload);
       XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
       const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const file = new File(
@@ -213,22 +357,19 @@ export default function GroupDetail({ uuid }: IProps) {
     } catch (error) {
       Swal.fire(
         'Submit failed',
-        (error as any)?.response?.data?.message || 'Unknown error',
+        (error as Error & { response?: { data?: { message?: string } } })
+          ?.response?.data?.message || 'Unknown error',
         'error',
       );
     }
   };
 
-  const handleUnselect = (item: any) => {
-    const filtered = labels.filter((s) => s !== item);
-    setLabels(filtered);
-  };
-
+  // ── Group actions ──────────────────────────────────────────────────────────
   const removeBeneficiaryFromGroup = () => {
     if (deleteSelectedBeneficiariesFromImport.length > 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: `Disconnect beneficiary from ${responseByUUID?.data?.name} `,
+        text: `Disconnect beneficiary from ${responseByUUID?.data?.name}`,
         icon: 'question',
         showDenyButton: true,
         confirmButtonText: 'Yes, I am sure!',
@@ -241,120 +382,49 @@ export default function GroupDetail({ uuid }: IProps) {
         allowOutsideClick: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
-          const data = {
-            uuid: uuid,
+          await removeCommunityGroup.mutateAsync({
+            uuid,
             deleteBeneficiaryFlag: false,
             beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
-          };
-          await removeCommunityGroup.mutateAsync(data);
+          });
           router.push('/group');
         }
       });
     } else {
-      Swal.fire('Please select beneficiary to  disconnect', '', 'warning');
+      Swal.fire('Please select beneficiary to disconnect', '', 'warning');
     }
   };
 
   const handlePurge = async () => {
-    const data = {
-      groupUuid: uuid,
-      beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
-    };
     if (deleteSelectedBeneficiariesFromImport.length > 0) {
-      await purgeCommunityGroup.mutateAsync(data as GroupPurge);
-      return resetDeletedSelectedBeneficiaries();
-      // return router.push('/group/import-logs');
+      await purgeCommunityGroup.mutateAsync({
+        groupUuid: uuid,
+        beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+      } as GroupPurge);
+      resetDeletedSelectedBeneficiaries();
+    } else {
+      Swal.fire('Please select beneficiary to delete', '', 'warning');
     }
-
-    Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
   const handleExportPinnedBeneficiary = () => {
-    const filteredValue: any =
-      settingsData &&
+    const filteredValue: Record<string, string> | undefined =
       settingsData?.data?.find(
-        (item: any) => item.name === SETTINGS_NAME.EXTERNAL_APPS,
+        (item: { name: string }) => item.name === SETTINGS_NAME.EXTERNAL_APPS,
       )?.value;
-
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
-          acc[value] = key;
+          acc[value as string] = key;
           return acc;
-        }, {} as { [key: string]: string })
+        }, {} as Record<string, string>)
       : {};
-    const payload = {
-      groupUUID: uuid as string,
-      config: obj,
-    };
-    exportPinnedListBeneficiary.mutate(payload);
-  };
-
-  const handleSelectChange = (item) => {
-    if (item === 'Select All') {
-      const rdata = listFieldDef?.data?.map((item: any) =>
-        simpleString(item.name),
-      );
-      setLabels(rdata);
-      return;
-    }
-    const merged = [...labels, simpleString(item)];
-    setLabels(merged);
-  };
-
-  const selectables =
-    listFieldDef?.data?.filter(
-      (item: any) => !labels.includes(simpleString(item.name)),
-    ) || [];
-
-  const sortedSelectables = [
-    { uuid: 'select-all', name: 'Select All' },
-    ...selectables.sort((a, b) => {
-      const isANumber = /^\d/.test(a.name);
-      const isBNumber = /^\d/.test(b.name);
-
-      if (isANumber && !isBNumber) return -1;
-      if (!isANumber && isBNumber) return 1;
-
-      return a.name.localeCompare(b.name);
-    }),
-  ];
-  const handleDownload = async () => {
-    const response = await download.mutateAsync({
-      uuid: uuid,
-      config: { responseType: 'arraybuffer' },
-    });
-
-    const rawData = response?.data?.data;
-    console.log('rawDatadownload--------', rawData);
-
-    const filteredData = rawData.map((item: Record<string, any>) => {
-      const filteredItem: Record<string, any> = {};
-      labels.forEach((key) => {
-        const dehumanizedString = deHumanizeString(key as string);
-
-        if (item.hasOwnProperty(dehumanizedString)) {
-          filteredItem[dehumanizedString] = item[dehumanizedString];
-        } else {
-          filteredItem[dehumanizedString] = '';
-        }
-      });
-      filteredItem['uuid'] =
-        item['uuid'] ?? item['beneficiary']?.['uuid'] ?? '';
-      return filteredItem;
-    });
-
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(filteredData);
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-    XLSX.writeFile(wb, 'beneficiaries.xlsx');
+    exportPinnedListBeneficiary.mutate({ groupUUID: uuid, config: obj });
   };
 
   const handleVerificationLink = async () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: ' Send Verification Link',
+      text: 'Send Verification Link',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -371,88 +441,14 @@ export default function GroupDetail({ uuid }: IProps) {
       } else if (result.isDenied) {
         Swal.fire(
           'Cancelled',
-          `Generating Verification Link Canceled`,
+          'Generating Verification Link Canceled',
           'error',
         );
       }
     });
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      Swal.fire('Please select a file', '', 'warning');
-      return;
-    }
-    try {
-      const buffer = await selectedFile.arrayBuffer();
-      const workbook = XLSX.read(buffer, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const rows: Record<string, string | number | boolean>[] =
-        XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-
-      if (rows.length > 0) {
-        const allColumns = Object.keys(rows[0]);
-        const nonEmptyColumns = allColumns.filter((col) =>
-          rows.some(
-            (row) =>
-              row[col] !== '' && row[col] !== null && row[col] !== undefined,
-          ),
-        );
-        const cleanedRows = rows.map((row) =>
-          nonEmptyColumns.reduce((acc, col) => {
-            acc[col] = row[col];
-            return acc;
-          }, {} as Record<string, string | number | boolean>),
-        );
-
-        const newWorkbook = XLSX.utils.book_new();
-        const newWorksheet = XLSX.utils.json_to_sheet(cleanedRows);
-        XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, sheetName);
-        const excelBuffer = XLSX.write(newWorkbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
-        const cleanedFile = new File(
-          [
-            new Blob([excelBuffer], {
-              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            }),
-          ],
-          selectedFile.name,
-          {
-            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          },
-        );
-
-        const formData = new FormData();
-        formData.append('file', cleanedFile);
-
-        await updateBulkBeneficiary.mutateAsync({
-          groupUUID: uuid,
-          data: formData,
-          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
-        });
-      } else {
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        await updateBulkBeneficiary.mutateAsync({
-          groupUUID: uuid,
-          data: formData,
-          ...(uniqueField && uniqueField !== 'none' && { uniqueField }),
-        });
-      }
-
-      setSelectedFile(null);
-      router.push('/group');
-    } catch (error) {
-      Swal.fire(
-        'Upload failed',
-        (error as any)?.response?.data?.message || 'Unknown error',
-        'error',
-      );
-    }
-  };
+  // ── Effects ────────────────────────────────────────────────────────────────
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
@@ -460,27 +456,26 @@ export default function GroupDetail({ uuid }: IProps) {
   }, [selectedListItems, setDeleteSelectedBeneficiariesFromImport]);
 
   useEffect(() => {
-    if (deleteSelectedBeneficiariesFromImport.length === 0) {
+    if (deleteSelectedBeneficiariesFromImport.length === 0)
       resetSelectedListItems();
-    }
   }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
+
+  const beneficiariesEmpty = !responseByUUID?.data?.beneficiariesGroup?.length;
 
   return (
     <>
       <Tabs defaultValue="detail">
         <div className="flex justify-between items-center p-4 pb-1">
-          <div className="flex gap-4">
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Label>{responseByUUID?.data?.name}</Label>
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Group Name</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger>
+                <Label>{responseByUUID?.data?.name}</Label>
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary">
+                <p className="text-xs font-medium">Group Name</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <div className="flex gap-3">
             <DropdownMenu>
@@ -494,18 +489,14 @@ export default function GroupDetail({ uuid }: IProps) {
               <DropdownMenuContent>
                 <DropdownMenuItem
                   onClick={handleExportPinnedBeneficiary}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
+                  disabled={beneficiariesEmpty}
                 >
                   <Share className="mr-2 h-4 w-4" />
                   Export
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => setOpen(true)}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
+                  onClick={() => setDownloadOpen(true)}
+                  disabled={beneficiariesEmpty}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Download
@@ -516,18 +507,14 @@ export default function GroupDetail({ uuid }: IProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={openEditSubmit}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup?.length === 0
-                  }
+                  disabled={beneficiariesEmpty || editSubmitLoading}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit & Submit
+                  {editSubmitLoading ? 'Loading...' : 'Edit & Submit'}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
+                  disabled={beneficiariesEmpty}
                 >
                   <Delete className="mr-2 h-4 w-4" />
                   Disconnect
@@ -538,9 +525,7 @@ export default function GroupDetail({ uuid }: IProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handlePurge}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
+                  disabled={beneficiariesEmpty}
                 >
                   <Trash className="mr-2 h-4 w-4" />
                   Delete
@@ -548,246 +533,35 @@ export default function GroupDetail({ uuid }: IProps) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <AlertDialog open={open} onOpenChange={setOpen}>
-              <AlertDialogContent className="w-full">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    <div className="flex justify-between items-center pb-1 gap-4">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Label className="text-lg font-medium">
-                              Select fields to download
-                            </Label>
-                          </TooltipTrigger>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger onClick={() => setOpen(false)}>
-                            <X
-                              className="text-muted-foreground hover:text-foreground text-red-700"
-                              size={23}
-                              strokeWidth={1.9}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Close</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    <ScrollArea
-                      className={`${
-                        labels.length < 10 ? 'h-32' : 'h-52'
-                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
-                      hidden={labels.length === 0}
-                    >
-                      {labels.map((item) => {
-                        return (
-                          <Badge key={item} variant="secondary" className="m-1">
-                            {item}
-                            <button
-                              className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  handleUnselect(item);
-                                }
-                              }}
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }}
-                              onClick={() => handleUnselect(item)}
-                            >
-                              <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                            </button>
-                          </Badge>
-                        );
-                      })}
+            <DownloadDialog
+              open={downloadOpen}
+              onOpenChange={setDownloadOpen}
+              labels={labels}
+              onLabelsChange={setLabels}
+              sortedSelectables={sortedSelectables}
+              onDownload={handleDownload}
+            />
 
-                      {labels.length === 0 && (
-                        <h1 className="text-center ">No fields selected</h1>
-                      )}
-                    </ScrollArea>
+            <BulkUpdateDialog
+              open={uploadOpen}
+              onOpenChange={setUploadOpen}
+              uniqueField={uniqueField}
+              onUniqueFieldChange={setUniqueField}
+              onFileChange={setSelectedFile}
+              onUpload={handleUpload}
+            />
 
-                    <Command className="h-52">
-                      <CommandInput
-                        placeholder={'Search field...'}
-                        autoFocus={true}
-                      />
-                      <CommandList className="no-scrollbar">
-                        <CommandEmpty>No field found.</CommandEmpty>
-                        <CommandGroup>
-                          {sortedSelectables?.map((item) => (
-                            <CommandItem
-                              key={item.uuid}
-                              value={item.name}
-                              onSelect={() => handleSelectChange(item.name)}
-                            >
-                              {simpleString(item.name)}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setLabels(['uuid'])}
-                    disabled={labels.length <= 1}
-                  >
-                    Clear All
-                  </Button>
-                  <AlertDialogAction
-                    onClick={handleDownload}
-                    disabled={labels.length === 0}
-                  >
-                    Download
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            {/* Upload Dialog */}
-            <AlertDialog open={uploadOpen} onOpenChange={setUploadOpen}>
-              <AlertDialogContent className="w-full max-w-md">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Upload File</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    <div className="flex flex-col space-y-4">
-                      <input
-                        type="file"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            setSelectedFile(e.target.files[0]);
-                          }
-                        }}
-                        className="border rounded p-2"
-                      />
-                      <div className="flex flex-col space-y-2 mt-4 text-left">
-                        <Label className="text-sm font-medium text-foreground">
-                          Unique Field
-                        </Label>
-                        <Select
-                          value={uniqueField}
-                          onValueChange={setUniqueField}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select unique field" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="phone">Phone</SelectItem>
-                            <SelectItem value="govtIDNumber">
-                              Govt ID Number
-                            </SelectItem>
-                            <SelectItem value="email">Email</SelectItem>
-                            <SelectItem value="koboId">Kobo ID</SelectItem>
-                            <SelectItem value="none">--- None ---</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setUploadOpen(false)}
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    onClick={async () => {
-                      setUploadOpen(false);
-                      await handleUpload();
-                    }}
-                  >
-                    Upload
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-
-            {/* Edit & Submit Dialog */}
-            <AlertDialog open={editSubmitOpen} onOpenChange={setEditSubmitOpen}>
-              <AlertDialogContent className="max-w-5xl w-full">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Edit & Submit Beneficiaries
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Edit the fields below and click Submit to update.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="overflow-auto max-h-[60vh]">
-                  {(() => {
-                    const allColumns =
-                      editableRows.length > 0
-                        ? Object.keys(editableRows[0])
-                        : [];
-                    return (
-                      <table className="w-full text-sm border-collapse">
-                        <thead>
-                          <tr>
-                            {allColumns.map((col) => (
-                              <th
-                                key={col}
-                                className="border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap"
-                              >
-                                {col}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {editableRows.map((row, rowIndex) => (
-                            <tr key={row.uuid}>
-                              {allColumns.map((col) =>
-                                READ_ONLY_FIELDS.has(col) ? (
-                                  <td
-                                    key={col}
-                                    className="border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap"
-                                  >
-                                    {String(row[col] ?? '')}
-                                  </td>
-                                ) : (
-                                  <td key={col} className="border px-1 py-1">
-                                    <input
-                                      className="w-full bg-transparent outline-none text-sm px-1 min-w-[100px]"
-                                      value={row[col] ?? ''}
-                                      onChange={(e) =>
-                                        handleCellChange(
-                                          rowIndex,
-                                          col,
-                                          e.target.value,
-                                        )
-                                      }
-                                    />
-                                  </td>
-                                ),
-                              )}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    );
-                  })()}
-                </div>
-                <AlertDialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setEditSubmitOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleEditSubmit}>Submit</Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <EditSubmitDialog
+              open={editSubmitOpen}
+              onOpenChange={setEditSubmitOpen}
+              editableRows={editableRows}
+              addedColumns={addedColumns}
+              availableColumns={availableColumns}
+              onCellChange={handleCellChange}
+              onAddColumn={handleAddColumn}
+              onRemoveColumn={handleRemoveColumn}
+              onSubmit={handleEditSubmit}
+            />
           </div>
         </div>
 

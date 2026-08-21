@@ -125,6 +125,7 @@ export default function GroupDetail({ uuid }: IProps) {
   // ── Edit & Submit dialog state ─────────────────────────────────────────────
   const [editSubmitOpen, setEditSubmitOpen] = React.useState(false);
   const [editSubmitLoading, setEditSubmitLoading] = React.useState(false);
+  const [editSubmitSubmitting, setEditSubmitSubmitting] = React.useState(false);
   const [editableRows, setEditableRows] = React.useState<Record<string, any>[]>(
     [],
   );
@@ -324,6 +325,7 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const handleEditSubmit = async () => {
     try {
+      setEditSubmitSubmitting(true);
       const rowsForUpload = editableRows.map((row) => {
         const cleaned: Record<string, unknown> = {};
         Object.entries(row).forEach(([k, v]) => {
@@ -361,6 +363,8 @@ export default function GroupDetail({ uuid }: IProps) {
           ?.response?.data?.message || 'Unknown error',
         'error',
       );
+    } finally {
+      setEditSubmitSubmitting(false);
     }
   };
 
@@ -561,6 +565,7 @@ export default function GroupDetail({ uuid }: IProps) {
               onAddColumn={handleAddColumn}
               onRemoveColumn={handleRemoveColumn}
               onSubmit={handleEditSubmit}
+              isSubmitting={editSubmitSubmitting}
             />
           </div>
         </div>

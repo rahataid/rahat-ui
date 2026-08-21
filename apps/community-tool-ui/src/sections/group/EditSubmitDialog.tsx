@@ -36,6 +36,7 @@ type Props = {
   onAddColumn: (colKey: string) => void;
   onRemoveColumn: (colKey: string) => void;
   onSubmit: () => void;
+  isSubmitting?: boolean;
 };
 
 export default function EditSubmitDialog({
@@ -48,6 +49,7 @@ export default function EditSubmitDialog({
   onAddColumn,
   onRemoveColumn,
   onSubmit,
+  isSubmitting = false,
 }: Props) {
   const allColumns =
     editableRows.length > 0 ? Object.keys(editableRows[0]) : [];
@@ -151,10 +153,12 @@ export default function EditSubmitDialog({
         </div>
 
         <AlertDialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button onClick={onSubmit}>Submit</Button>
+          <Button onClick={onSubmit} disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

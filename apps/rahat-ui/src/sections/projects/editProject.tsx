@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Save } from 'lucide-react';
 import { ProjectStatus } from '@rahataid/sdk/enums';
+import { SystemUserAuth } from '@rahat-ui/auth';
 import { useProject, useProjectEdit } from '@rahat-ui/query';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import {
@@ -54,6 +55,14 @@ const EditProjectSchema = z.object({
 type EditProjectFormValues = z.infer<typeof EditProjectSchema>;
 
 export default function ProjectInfoForm() {
+  return (
+    <SystemUserAuth>
+      <ProjectInfoFormContent />
+    </SystemUserAuth>
+  );
+}
+
+function ProjectInfoFormContent() {
   const { id } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();

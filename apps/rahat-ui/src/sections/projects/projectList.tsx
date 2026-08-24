@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { SystemUserAuth } from '@rahat-ui/auth';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { UUID } from 'crypto';
 import {
@@ -131,14 +132,16 @@ export default function ListProject() {
         const project = row.original;
         return (
           <div className="flex items-center space-x-3">
-            <TooltipWrapper tip="Edit Project">
-              <button
-                onClick={() => router.push(`/project-info/${project.uuid}`)}
-                className="cursor-pointer"
-              >
-                <Pencil size={18} />
-              </button>
-            </TooltipWrapper>
+            <SystemUserAuth hasContent={false}>
+              <TooltipWrapper tip="Edit Project">
+                <button
+                  onClick={() => router.push(`/project-info/${project.uuid}`)}
+                  className="cursor-pointer"
+                >
+                  <Pencil size={18} />
+                </button>
+              </TooltipWrapper>
+            </SystemUserAuth>
 
             <TooltipWrapper
               tip={

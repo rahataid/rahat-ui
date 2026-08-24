@@ -126,7 +126,7 @@ export default function VendorsTable({
           <>
             {table.getRowModel().rows?.length ? (
               <>
-                <ScrollArea className="h-[calc(100vh-285px)]">
+                <ScrollArea className="h-[calc(100vh-290px)]">
                   <TableComponent>
                     <TableHeader className="sticky top-0 bg-card">
                       {table.getHeaderGroups().map((headerGroup) => (

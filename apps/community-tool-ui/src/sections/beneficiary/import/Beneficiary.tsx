@@ -1,6 +1,8 @@
 'use client';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useCommunityGroupList } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import {
   BENEF_IMPORT_SCREENS,
@@ -13,6 +15,7 @@ import {
   exportDataToExcel,
   formatNameString,
   includeOnlySelectedTarget,
+  normalizeInvalidFields,
   removeFieldsWithUnderscore,
   splitFullName,
   splitValidAndInvalid,
@@ -37,15 +40,18 @@ import {
   useCreateImportSource,
   useExistingFieldMappings,
   useFetchKoboSettings,
+  useFieldDefinitionsList,
   useGetStandardFields,
+  useUniqueFieldDefinitionsList,
   useUploadCsvForMapping,
   useUploadStandardJson,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
-// import beneficiaryStandard from '../../../../../../beneficiary.json';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
+import ImportDestinationDialog from './ImportDestinationDialog';
 import MyAlert from './MyAlert';
+import UniqueFieldSelector from './UniqueFieldSelector';
 
 interface IProps {
   fieldDefinitions: [];
@@ -66,11 +72,27 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const existingMapQuery = useExistingFieldMappings();
   const importSourceQuery = useCreateImportSource();
   const { isLoading, data } = useCommunitySettingList({ page: 1, perPage: 20 });
+  const uniqueFieldSetting = data?.data.find(
+    (setting: any) => setting.name === 'UNIQUE_FIELDS',
+  );
+  const getUniqueField = uniqueFieldSetting?.value?.DATA;
   const aiSetting = data?.data.find(
     (setting: any) => setting.name === 'AI_API_URL',
   );
 
+  const { data: fieldData } = useFieldDefinitionsList({
+    page: 1,
+    perPage: 20,
+  });
+  const totalPage = fieldData?.response?.meta?.total;
+  const { data: uniqueFieldDefs } = useUniqueFieldDefinitionsList();
+  const uniqueFieldNames: string[] = (uniqueFieldDefs?.data ?? []).map(
+    (f: { name: string }) => f.name,
+  );
+
   const aiBaseurl = aiSetting?.value?.URL;
+
+  const aiStandardName = aiSetting?.value?.COMMUNITY_DATA_STANDARD;
 
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
@@ -106,6 +128,36 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   } = useBeneficiaryImportStore();
   // ==========States=============
 
+  const [selectedUniqueFields, setSelectedUniqueFields] = React.useState<
+    string[]
+  >([]);
+  const [forceInsert, setForceInsert] = React.useState(false);
+  const [hasPendingEdits, setHasPendingEdits] = React.useState(false);
+
+  const [forceInsertDialogOpen, setForceInsertDialogOpen] =
+    React.useState(false);
+
+  const { pagination: fiPagination, filters: fiFilters } = usePagination();
+  fiPagination.perPage = 50;
+  fiPagination.page = 1;
+  const { data: fiGroupData } = useCommunityGroupList({
+    ...fiPagination,
+    ...fiFilters,
+  });
+
+  const isForceInsert = forceInsert;
+
+  React.useEffect(() => {
+    if (getUniqueField) {
+      setSelectedUniqueFields(
+        getUniqueField
+          .split(',')
+          .map((f: string) => f.trim())
+          .filter(Boolean),
+      );
+    }
+  }, [getUniqueField]);
+
   const fetchAiMappingSuggestions = async (file: File) => {
     try {
       setLoading(true);
@@ -116,6 +168,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const uploadResult = await uploadCsvForMapping.mutateAsync({
         payload: formData,
         baseURL: aiBaseurl,
+        standardName: aiStandardName,
+        totalPage: totalPage,
       });
 
       if (uploadResult && uploadResult.classified_headers.length) {
@@ -167,7 +221,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
             similarity: header.similarity,
           };
         });
-        console.log('AI Mapping Suggestions:', aiData);
 
         setFieldSuggestions(aiData); // Store AI suggestions separately
       }
@@ -342,16 +395,34 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleImportNowClick = async (groupName: string | null) => {
-    if (!validBenef.length)
-      return validateOrImport(IMPORT_ACTION.IMPORT, groupName);
-    const sourcePayload = {
-      action: IMPORT_ACTION.IMPORT,
-      name: importSource,
-      importId,
-      groupName,
-      fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
-    };
-    return createImportSource(sourcePayload);
+    // If we have processedData (came through validate screen), use it directly
+    // so any inline edits the user made are preserved in the payload.
+    if (processedData.length) {
+      const cleanedData = (processedData as any[]).map(
+        ({ isDuplicate, ...rest }) => rest,
+      );
+      const sourcePayload = {
+        action: IMPORT_ACTION.IMPORT,
+        name: importSource,
+        importId,
+        groupName,
+        fieldMapping: { data: cleanedData, sourceTargetMappings: mappings },
+      };
+      return createImportSource(sourcePayload);
+    }
+    // Fallback: no validated data yet — process from raw (shouldn't normally happen
+    // since Import button is only reachable after validation).
+    if (validBenef.length) {
+      const sourcePayload = {
+        action: IMPORT_ACTION.IMPORT,
+        name: importSource,
+        importId,
+        groupName,
+        fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
+      };
+      return createImportSource(sourcePayload);
+    }
+    return validateOrImport(IMPORT_ACTION.IMPORT, groupName);
   };
 
   const validateOrImport = (
@@ -458,6 +529,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       name: importSource,
       importId,
       groupName,
+      forceInsert,
+      uniqueFields: forceInsert ? [] : selectedUniqueFields,
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
@@ -483,8 +556,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const { result, invalidFields, hasUUID } = res?.data;
       setHasUUID(hasUUID);
 
+      const normalized = normalizeInvalidFields(invalidFields);
       setProcessedData(result);
-      if (invalidFields.length) setInvalidFields(invalidFields);
+      setInvalidFields(normalized);
+      if (normalized.length === 0) setHasPendingEdits(false);
       setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
     } catch (err) {
       console.log(err);
@@ -518,6 +593,20 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setValidBenef([]);
     setRawData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
+  };
+
+  const handleRevalidate = async () => {
+    const cleanedData = (processedData as any[]).map(
+      ({ isDuplicate, ...rest }) => rest,
+    );
+    const sourcePayload = {
+      action: IMPORT_ACTION.VALIDATE,
+      name: importSource,
+      importId,
+      groupName: null,
+      fieldMapping: { data: cleanedData, sourceTargetMappings: mappings },
+    };
+    return createImportSource(sourcePayload);
   };
 
   const handleExportInvalidClick = async () => {
@@ -573,8 +662,20 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               title="Field Mapping"
               message="Select matching field for your data"
             />
+
             {rawData.length > 0 && (
-              <div className="flex mb-5 mt-5 justify-between">
+              <UniqueFieldSelector
+                availableFields={uniqueFieldNames}
+                selectedFields={selectedUniqueFields}
+                forceInsert={forceInsert}
+                onChange={setSelectedUniqueFields}
+                onForceInsertChange={setForceInsert}
+                globalDefault={getUniqueField}
+              />
+            )}
+
+            {rawData.length > 0 && (
+              <div className="flex mb-5 mt-2 justify-between">
                 <Button
                   onClick={handleBackClick}
                   className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
@@ -582,16 +683,36 @@ export default function BenImp({ fieldDefinitions }: IProps) {
                   <ArrowBigLeft size={18} strokeWidth={2} /> Back
                 </Button>
                 &nbsp;
-                <Button
-                  disabled={loading}
-                  onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
-                  className="w-40 bg-primary hover:ring-2 ring-primary"
-                >
-                  <ArrowBigRight size={18} strokeWidth={2} />
-                  {loading ? 'Validating...' : 'Validate Data'}
-                </Button>
+                {isForceInsert ? (
+                  <Button
+                    disabled={loading}
+                    onClick={() => setForceInsertDialogOpen(true)}
+                    className="w-40 bg-primary hover:ring-2 ring-primary"
+                  >
+                    <ArrowBigRight size={18} strokeWidth={2} />
+                    {loading ? 'Importing...' : 'Import Invalid'}
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={loading}
+                    onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
+                    className="w-40 bg-primary hover:ring-2 ring-primary"
+                  >
+                    <ArrowBigRight size={18} strokeWidth={2} />
+                    {loading ? 'Validating...' : 'Validate Data'}
+                  </Button>
+                )}
               </div>
             )}
+
+            <ImportDestinationDialog
+              open={forceInsertDialogOpen}
+              onOpenChange={setForceInsertDialogOpen}
+              groups={fiGroupData?.data?.rows ?? []}
+              onConfirm={(groupName) =>
+                validateOrImport(IMPORT_ACTION.IMPORT, groupName)
+              }
+            />
 
             {hasExistingMapping && (
               <MyAlert
@@ -633,6 +754,14 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               handleImportWithGroup={handleImportNowClick}
               invalidFields={invalidFields}
               loading={loading}
+              mappings={mappings}
+              onDataChange={(updated) => {
+                setProcessedData(updated);
+                setHasPendingEdits(true);
+              }}
+              onRevalidate={handleRevalidate}
+              uniqueFields={selectedUniqueFields.join(',')}
+              hasPendingEdits={hasPendingEdits}
             />
           </div>
         )}

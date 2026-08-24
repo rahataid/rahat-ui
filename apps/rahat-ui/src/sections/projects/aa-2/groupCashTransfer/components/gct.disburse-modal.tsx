@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -36,9 +36,15 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import {
   useConfirmDisburseGroupCashTransfer,
+  useDisburseGroupCashTransfer,
   usePaymentProviders,
   usePhasePayoutStatus,
+  useSendGctOtp,
 } from '@rahat-ui/query';
+import { useUserCurrentUser } from '@rumsan/react-query';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+
+const OTP_LENGTH = 4;
 
 type PaymentProvider = { id: number | string; name: string; type: string; createdAt: string };
 
@@ -52,7 +58,6 @@ export function DisburseModal({
   group,
   open,
   onOpenChange,
-  disburseLoading = false,
 }: {
   projectUUID: UUID;
   recordUuid: string;
@@ -60,16 +65,55 @@ export function DisburseModal({
   group: any;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  disburseLoading?: boolean;
 }) {
   const router = useRouter();
   const recordsListPath = `/projects/aa/${projectUUID}/group-cash-transfer?tab=gctManagementList`;
   const confirmDisburse = useConfirmDisburseGroupCashTransfer(projectUUID);
+  const disburse = useDisburseGroupCashTransfer(projectUUID);
+  const sendOtp = useSendGctOtp(projectUUID);
+  const { data: currentUser } = useUserCurrentUser();
   const { data: providers, isLoading: providersLoading } = usePaymentProviders({ projectUUID });
 
   const [providerId, setProviderId] = useState<string>('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [otpVerified, setOtpVerified] = useState(false);
   const swal = useSwal();
+
+  const email = currentUser?.data?.email;
+  const isVerifyDisabled = otp.length !== OTP_LENGTH || disburse.isPending;
+
+  const handleSendOtp = () => {
+    if (!email) return;
+    sendOtp.mutate({ email });
+  };
+
+  // OTP is sent once per modal open; state resets on close.
+  useEffect(() => {
+    if (!open) {
+      setOtp('');
+      setOtpError('');
+      setOtpVerified(false);
+      setProviderId('');
+      return;
+    }
+    handleSendOtp();
+  }, [open, email]);
+
+  const handleVerify = async () => {
+    if (otp.length !== OTP_LENGTH) {
+      setOtpError(`Please enter the ${OTP_LENGTH} digit pin.`);
+      return;
+    }
+    setOtpError('');
+    try {
+      await disburse.mutateAsync({ uuid: recordUuid, otp });
+      setOtpVerified(true);
+    } catch (e: any) {
+      setOtpError(e?.response?.data?.message || 'Invalid pin.');
+    }
+  };
 
   const amountFmt = `Nrs. ${record?.amount?.toLocaleString() || '—'}`;
   const selectedProvider = providers?.find((p: PaymentProvider) => String(p.id) === providerId);
@@ -94,10 +138,14 @@ export function DisburseModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-lg p-0" onInteractOutside={(e) => e.preventDefault()}>
-          {disburseLoading && (
+          {(disburse.isPending || sendOtp.isPending) && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground animate-pulse">Please wait, disbursement is initiating…</p>
+              <p className="text-sm text-muted-foreground animate-pulse">
+                {sendOtp.isPending
+                  ? 'Sending Rahat Pin to your email…'
+                  : 'Please wait, disbursement is initiating…'}
+              </p>
             </div>
           )}
           <Card className="rounded-sm border-0 shadow-none">
@@ -112,7 +160,50 @@ export function DisburseModal({
                 ))}
               </div>
 
-              <div className="border-t pt-4 space-y-3">
+              {!otpVerified && (
+                <div className="border-t pt-4">
+                  <p className="text-base text-foreground">
+                    A Rahat Pin has been sent to{' '}
+                    <span className="font-semibold">
+                      {email || 'the registered email'}
+                    </span>
+                    . Please enter it below to verify and start disbursement.
+                  </p>
+                  <div className="flex items-center gap-3 mt-3">
+                    <Input
+                      placeholder={`${OTP_LENGTH} digit pin`}
+                      maxLength={OTP_LENGTH}
+                      inputMode="numeric"
+                      autoFocus
+                      className="h-11 text-lg"
+                      value={otp}
+                      onChange={(e) => {
+                        setOtp(e.target.value.replace(/\D/g, ''));
+                        setOtpError('');
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      disabled={!email || sendOtp.isPending || disburse.isPending}
+                      onClick={handleSendOtp}
+                    >
+                      Resend
+                    </Button>
+                  </div>
+                  {otpError && (
+                    <p className="text-sm text-destructive mt-2">{otpError}</p>
+                  )}
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700 text-white w-full mt-4"
+                    disabled={isVerifyDisabled}
+                    onClick={handleVerify}
+                  >
+                    {disburse.isPending ? 'Verifying…' : 'Verify'}
+                  </Button>
+                </div>
+              )}
+
+              <div className={`border-t pt-4 space-y-3 ${otpVerified ? '' : 'hidden'}`}>
                 <p className="text-sm font-medium">Select Payment Provider</p>
                 <Select value={providerId} onValueChange={setProviderId}>
                   <SelectTrigger className="w-full">

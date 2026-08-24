@@ -11,9 +11,9 @@ export default function PermissionsCard({
       <h3>
         <strong>{capitalizeFirstLetter(subject)}</strong>
       </h3>
-      <div className="flex flex-wrap gap-8">
+      <div className="flex flex-wrap gap-x-6 gap-y-1">
         {PERMISSIONS.map((d) => (
-          <div key={d.id} className="flex items-center mb-1">
+          <div key={d.id} className="flex items-center">
             <input
               type="checkbox"
               checked={existingActions.includes(d.id)}

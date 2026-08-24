@@ -76,15 +76,15 @@ export default function ActivityDetailCards({
             </div>
           </div>
           <TooltipWrapper tip={`Activity Title: ${activityDetail?.title}`}>
-            <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate w-[420px] cursor-pointer">
+            <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate max-w-full cursor-pointer">
               {activityDetail?.title}
             </h3>
           </TooltipWrapper>
 
           {activityDetail?.description && (
             <TooltipWrapper tip={`Description: ${activityDetail?.description}`}>
-              <p className="text-gray-600 text-sm mt-1 leading-tight cursor-pointer">
-                {activityDetail?.description?.substring(0, 100)}...
+              <p className="text-gray-600 text-sm mt-1 leading-tight truncate max-w-full cursor-pointer">
+                {activityDetail?.description}
               </p>
             </TooltipWrapper>
           )}

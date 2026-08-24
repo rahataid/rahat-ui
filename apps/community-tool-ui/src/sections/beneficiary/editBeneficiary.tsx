@@ -71,9 +71,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     firstName: z
       .string()
       .min(2, { message: 'FirstName must be at least 2 character' }),
-    lastName: z
-      .string()
-      .min(2, { message: 'LastName must be at least 2 character' }),
+    lastName: z.string().optional(),
     walletAddress: z
       .string()
       .optional()

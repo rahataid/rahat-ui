@@ -8,7 +8,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { useQueryClient } from '@rumsan/react-query';
 import { toast } from 'react-toastify';
 
 export default function DashboardLayout({
@@ -57,6 +56,17 @@ export default function DashboardLayout({
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
+      {(process.env.NEXT_PUBLIC_APP_VERSION ||
+        process.env.NEXT_PUBLIC_API_VERSION) && (
+        <div className="fixed bottom-2 right-3 text-xs text-muted-foreground select-none pointer-events-none flex gap-2">
+          {process.env.NEXT_PUBLIC_APP_VERSION && (
+            <span>App: {process.env.NEXT_PUBLIC_APP_VERSION}</span>
+          )}
+          {process.env.NEXT_PUBLIC_API_VERSION && (
+            <span>API: {process.env.NEXT_PUBLIC_API_VERSION}</span>
+          )}
+        </div>
+      )}
     </AuthGuard>
   );
 }

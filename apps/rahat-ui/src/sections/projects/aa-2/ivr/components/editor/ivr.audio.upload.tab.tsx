@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { useUploadFile } from '@rahat-ui/query';
-import { useTranslations } from 'next-intl';
 import { AudioPreviewPlayer } from '../ivr.audio.preview';
 
 type AudioUploadTabProps = {
@@ -12,7 +11,6 @@ type AudioUploadTabProps = {
 };
 
 export default function AudioUploadTab({ onUpdate, onUploadingChange }: AudioUploadTabProps) {
-  const t = useTranslations('AA_PROJECT');
   const [pendingUrl, setPendingUrl] = useState('');
   const [pendingName, setPendingName] = useState('');
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -63,7 +61,7 @@ export default function AudioUploadTab({ onUpdate, onUploadingChange }: AudioUpl
         >
           <Upload className="w-6 h-6 md:w-8 md:h-8 mx-auto text-muted-foreground mb-2" />
           <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
-            {t('CLICK_TO_BROWSE_OR_DRAG_AUDIO')}
+            Click to browse or drag audio file here
           </p>
           <p className="text-[clamp(10px,0.9vw,12px)] text-muted-foreground mt-1">
             MP3, WAV, OGG, WEBM

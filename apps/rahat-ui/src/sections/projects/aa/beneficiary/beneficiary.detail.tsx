@@ -97,7 +97,7 @@ export default function BeneficiaryDetail({
                   <h1 className="font-semibold text-xl">
                     {beneficiaryDetails?.name}
                   </h1>
-                  <Badge>Active</Badge>
+                  <Badge>{t('ACTIVE')}</Badge>
                 </div>
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
@@ -132,8 +132,8 @@ export default function BeneficiaryDetail({
           <Tabs defaultValue="details">
             <div className="p-2">
               <TabsList className="w-full grid grid-cols-2 border h-auto">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="transaction">Transaction</TabsTrigger>
+                <TabsTrigger value="details">{t('DETAILS')}</TabsTrigger>
+                <TabsTrigger value="transaction">{t('TRANSACTION')}</TabsTrigger>
               </TabsList>
             </div>
             <TabsContent value="details">

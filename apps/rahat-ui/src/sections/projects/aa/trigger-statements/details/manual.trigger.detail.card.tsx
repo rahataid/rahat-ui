@@ -18,6 +18,7 @@ export default function ManualTriggerDetailCard({
   triggeredBy
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
 
   const formatDate = useDateFormat();
 
@@ -45,7 +46,7 @@ export default function ManualTriggerDetailCard({
             status ? (
               <p>{formatDate(triggeredAt)}</p>
             ) : (
-              <p>{'N/A'}</p>
+              <p>{tg('N_A')}</p>
             )
           }
         </div>
@@ -59,17 +60,17 @@ export default function ManualTriggerDetailCard({
                 }
               </p>
             ) : (
-              <p>{'N/A'}</p>
+              <p>{tg('N_A')}</p>
             )
           }
         </div>
         <div className="col-span-2">
-          <p className="text-sm text-muted-foreground">Phase</p>
+          <p className="text-sm text-muted-foreground">{tg('PHASE')}</p>
           <p>{phase}</p>
         </div>
         <div className="col-span-2">
-          <p className="text-sm text-muted-foreground">Notes</p>
-          <p>{notes ? notes : 'N/A'}</p>
+          <p className="text-sm text-muted-foreground">{tg('NOTES')}</p>
+          <p>{notes ? notes : tg('N_A')}</p>
         </div>
       </div>
     </div>

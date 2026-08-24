@@ -185,14 +185,14 @@ export default function DailyMonitoringDetailView() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="DHM">
-            {DHM_data?.length ? <DHMCard data={DHM_data} /> : 'No Data'}
+            {DHM_data?.length ? <DHMCard data={DHM_data} /> : tg('NO_DATA')}
           </TabsContent>
 
           <TabsContent value="GLOFAS">
             {GLOFAS_data?.length ? (
               <GLOFASCard data={GLOFAS_data} />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
 
@@ -202,7 +202,7 @@ export default function DailyMonitoringDetailView() {
                 data={NCMRWF_Deterministic_Probabilistic_data}
               />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
 
@@ -210,7 +210,7 @@ export default function DailyMonitoringDetailView() {
             {NCMRWF_Accumulated_data?.length ? (
               <AccumulatedCard data={NCMRWF_Accumulated_data} />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
 
@@ -220,7 +220,7 @@ export default function DailyMonitoringDetailView() {
                 data={Flash_Flood_Risk_Monitoring_data}
               />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
         </Tabs>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
 import { useProjectAction } from '../../projects';
 import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
@@ -81,8 +80,6 @@ export const useIvrTemplateDetail = (projectUUID: UUID, id: number) => {
 export const useIvrTemplateCreate = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction();
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -114,15 +111,15 @@ export const useIvrTemplateCreate = () => {
         queryKey: [MS_ACTIONS.IVR_TEMPLATES.LIST],
       });
       toast.fire({
-        title: t('IVR_TEMPLATE_CREATED_SUCCESSFULLY'),
+        title: 'IVR template created successfully.',
         icon: 'success',
       });
     },
     onError: (error: any) => {
       q.reset();
-      const errorMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: t('ERROR_WHILE_CREATING_IVR_TEMPLATE'),
+        title: 'Error while creating IVR template.',
         icon: 'error',
         text: errorMessage,
       });
@@ -133,8 +130,6 @@ export const useIvrTemplateCreate = () => {
 export const useIvrTemplateUpdate = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction();
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -177,9 +172,9 @@ export const useIvrTemplateUpdate = () => {
     },
     onError: (error: any) => {
       q.reset();
-      const errorMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: t('ERROR_WHILE_UPDATING_IVR_TEMPLATE'),
+        title: 'Error while updating IVR template.',
         icon: 'error',
         text: errorMessage,
       });
@@ -190,8 +185,6 @@ export const useIvrTemplateUpdate = () => {
 export const useIvrTemplateDelete = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction();
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -223,15 +216,15 @@ export const useIvrTemplateDelete = () => {
         queryKey: [MS_ACTIONS.IVR_TEMPLATES.LIST],
       });
       toast.fire({
-        title: t('IVR_TEMPLATE_ARCHIVED_SUCCESSFULLY'),
+        title: 'IVR template archived successfully.',
         icon: 'success',
       });
     },
     onError: (error: any) => {
       q.reset();
-      const errorMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: t('ERROR_WHILE_DELETING_IVR_TEMPLATE'),
+        title: 'Error while deleting IVR template.',
         icon: 'error',
         text: errorMessage,
       });
@@ -241,8 +234,6 @@ export const useIvrTemplateDelete = () => {
 
 export const useIvrTestCall = () => {
   const q = useProjectAction();
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -271,15 +262,15 @@ export const useIvrTestCall = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: t('TEST_CALL_SENT_SUCCESSFULLY'),
+        title: 'Test call sent successfully.',
         icon: 'success',
       });
     },
     onError: (error: any) => {
       q.reset();
-      const errorMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
-        title: t('ERROR_SENDING_TEST_CALL'),
+        title: 'Error sending test call.',
         icon: 'error',
         text: errorMessage,
       });

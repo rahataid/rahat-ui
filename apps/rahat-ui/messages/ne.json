@@ -3410,7 +3410,14 @@
     "VIEW_MORE": "थप हेर्नुहोस्",
     "VIEW_LESS": "कम हेर्नुहोस्",
     "NO_TRANSACTIONS_MADE": "कुनै लेनदेन गरिएको छैन",
-    "DISBURSED": "वितरण गरिएको"
+    "DISBURSED": "वितरण गरिएको",
+    "LEAD_TIME": "लिड समय",
+    "ENTER_LEAD_TIME": "लिड समय प्रविष्ट गर्नुहोस्",
+    "NOTES": "टिप्पणीहरू",
+    "TRANSACTION": "कारोबार",
+    "NO_DATA": "कुनै तथ्याङ्क छैन",
+    "DOCUMENTS": "कागजातहरू",
+    "DOCUMENTS_NOT_AVAILABLE": "कागजातहरू उपलब्ध छैनन्।"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -3926,7 +3933,16 @@
       "WALLET_XCAPIT_SETTING_NOT_FOUND": "XCAPIT को सेटिङ फेला परेन",
       "WALLET_XCAPIT_CONFIG_MISSING": "XCAPIT_BASEURL, XCAPIT_EMAIL वा XCAPIT_PASSWORD आवश्यक छ",
       "INVALID_REGISTERED_APPS": "अमान्य दर्ता गरिएको एप(हरू): {invalid}। अनुमति प्राप्त मानहरू: {allowed}",
-      "VENDOR_EMAIL_MUST_BE_UNIQUE": "इमेल अद्वितीय हुनुपर्छ"
+      "VENDOR_EMAIL_MUST_BE_UNIQUE": "इमेल अद्वितीय हुनुपर्छ",
+      "VENDOR_ROLE_NOT_FOUND": "भूमिका फेला परेन",
+      "VENDOR_PHONE_NUMBER_MUST_BE_UNIQUE": "फोन नम्बर अद्वितीय हुनुपर्छ",
+      "USER_IS_NOT_A_VENDOR": "विक्रेता होइन",
+      "VENDOR_UPDATE_SAGA_FAILED": "परियोजना {projectId} मा विक्रेता अद्यावधिक असफल भयो: {message}",
+      "VENDOR_DATA_NOT_FOUND": "डाटा फेला परेन",
+      "PROJECT_VENDOR_NOT_FOUND": "परियोजना विक्रेता फेला परेन",
+      "VENDOR_NOT_FOUND_WITH_ID": "आईडी {id} सँग विक्रेता फेला परेन",
+      "SETTINGS_ALREADY_SEEDED_API_LOCKED": "सेटिङहरू पहिले नै सिड गरिसकिएको छ। API लक गरिएको छ।",
+      "PROJECT_CLOSED_ONLY_READ_ACTIONS_ALLOWED": "परियोजना बन्द छ। पढ्ने कार्यहरू मात्र अनुमति छ।"
     },
     "NOTIFICATIONS": {
       "NOTIFICATION_CREATE_FAILED": "सूचना सिर्जना गर्न असफल भयो",
@@ -3935,7 +3951,9 @@
     },
     "SETTINGS": {
       "SETTING_NAME_ALREADY_EXISTS": "यो नाम भएको सेटिङ पहिले नै अवस्थित छ",
-      "VALIDATION_FAILED": "प्रमाणीकरण असफल भयो (+ प्रत्येक Field का त्रुटिहरू)"
+      "VALIDATION_FAILED": "प्रमाणीकरण असफल भयो (+ प्रत्येक Field का त्रुटिहरू)",
+      "SETTING_INVALID_VALUE_DATA_TYPE": "'value' का लागि अमान्य डाटा प्रकार: {dataType}",
+      "SETTING_REQUIRED_FIELDS_MISSING": "'value' वस्तुमा आवश्यक फिल्डहरू छुटेका छन्: {fields}"
     },
     "COMMUNICATIONS_CAMPAIGNS": {
       "OTP_SMS_SETTINGS_REQUIRED": "SMS_TRANSPORT_ID, APP_ID, URL हरु आवश्यक छन्",
@@ -3976,7 +3994,11 @@
       "UUIDS_ARRAY_CANNOT_BE_EMPTY": "uuids सूची खाली हुन सक्दैन",
       "UUID_MUST_BE_STRING": "प्रत्येक UUID स्ट्रिङ हुनुपर्छ",
       "SELECT_FIELD_ARRAY_CANNOT_BE_EMPTY": "selectField सूची खाली हुन सक्दैन",
-      "FIELD_NAME_MUST_BE_STRING": "प्रत्येक फिल्ड नाम स्ट्रिङ हुनुपर्छ"
+      "FIELD_NAME_MUST_BE_STRING": "प्रत्येक फिल्ड नाम स्ट्रिङ हुनुपर्छ",
+      "CHAIN_CONFIG_MISSING_CURRENCY_SYMBOL": "चेन कन्फिगरेसनमा currency.symbol समावेश हुनुपर्छ",
+      "IMPORT_NOT_IN_NEW_STATUS": "आयात {uuid} NEW अवस्थामा छैन (हाल: {status})",
+      "BENEFICIARY_IMPORT_VALIDATION_ERRORS": "{count} पङ्क्ति(हरू)मा प्रमाणीकरण त्रुटिहरू फेला परे",
+      "IMPORT_ERROR_FILE_NOT_FOUND": "आयात {uuid} का लागि कुनै त्रुटि फाइल फेला परेन"
     },
     "PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS": {
       "MISSING_ACTION_OR_PROJECT_ID": "Action वा परियोजना ID दिइएको छैन",
@@ -4102,7 +4124,10 @@
       "GCT_UUID_MUST_BE_VALID": "UUID मान्य हुनुपर्छ",
       "GCT_GROUP_ID_MUST_BE_VALID": "समूह नगद हस्तान्तरण आईडी मान्य UUID हुनुपर्छ",
       "GCT_FUND_TITLE_MUST_BE_STRING": "शीर्षक अक्षरमा हुनुपर्छ",
-      "GCT_AMOUNT_MUST_BE_NUMBER": "रकम अंकमा हुनुपर्छ"
+      "GCT_AMOUNT_MUST_BE_NUMBER": "रकम अंकमा हुनुपर्छ",
+      "EVM_TRANSFER_TOKENS_NOT_IMPLEMENTED": "EVM का लागि टोकन स्थानान्तरण अझै लागू गरिएको छैन",
+      "EVM_DISBURSE_ON_CREATE_NOT_SUPPORTED": "EVM चेनमा सिर्जना-गर्दा-नै वितरण गर्न समर्थित छैन",
+      "ERROR_REDEEMING_INKIND": "वस्तुगत सहायता रिडिम गर्दा त्रुटि: {message}"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "UUID '{groupId}' भएको लाभग्राही समूहको टोकनहरु फेला परेन",

@@ -526,7 +526,14 @@
     "VIEW_MORE": "View more",
     "VIEW_LESS": "View less",
     "NO_TRANSACTIONS_MADE": "No transactions made",
-    "DISBURSED": "Disbursed"
+    "DISBURSED": "Disbursed",
+    "LEAD_TIME": "Lead Time",
+    "ENTER_LEAD_TIME": "Enter lead time",
+    "NOTES": "Notes",
+    "TRANSACTION": "Transaction",
+    "NO_DATA": "No Data",
+    "DOCUMENTS": "Documents",
+    "DOCUMENTS_NOT_AVAILABLE": "Documents not available."
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -3926,7 +3933,16 @@
       "WALLET_XCAPIT_SETTING_NOT_FOUND": "XCAPIT setting not found",
       "WALLET_XCAPIT_CONFIG_MISSING": "Missing XCAPIT_BASEURL, XCAPIT_EMAIL or XCAPIT_PASSWORD",
       "INVALID_REGISTERED_APPS": "Invalid registered app(s): {invalid}. Allowed values: {allowed}",
-      "VENDOR_EMAIL_MUST_BE_UNIQUE": "Email must be unique"
+      "VENDOR_EMAIL_MUST_BE_UNIQUE": "Email must be unique",
+      "VENDOR_ROLE_NOT_FOUND": "Role not found",
+      "VENDOR_PHONE_NUMBER_MUST_BE_UNIQUE": "Phone Number must be unique",
+      "USER_IS_NOT_A_VENDOR": "Not a vendor",
+      "VENDOR_UPDATE_SAGA_FAILED": "Vendor update saga failed at project {projectId}: {message}",
+      "VENDOR_DATA_NOT_FOUND": "Data not Found",
+      "PROJECT_VENDOR_NOT_FOUND": "Project vendor not found",
+      "VENDOR_NOT_FOUND_WITH_ID": "Vendor not found with id: {id}",
+      "SETTINGS_ALREADY_SEEDED_API_LOCKED": "Settings already seeded. API is locked.",
+      "PROJECT_CLOSED_ONLY_READ_ACTIONS_ALLOWED": "Project is closed. Only read actions are allowed."
     },
     "NOTIFICATIONS": {
       "NOTIFICATION_CREATE_FAILED": "Failed to create notification",
@@ -3935,7 +3951,9 @@
     },
     "SETTINGS": {
       "SETTING_NAME_ALREADY_EXISTS": "Setting with this name already exists",
-      "VALIDATION_FAILED": "Validation Failed (+ per-field errors)"
+      "VALIDATION_FAILED": "Validation Failed (+ per-field errors)",
+      "SETTING_INVALID_VALUE_DATA_TYPE": "Invalid data type for 'value': {dataType}",
+      "SETTING_REQUIRED_FIELDS_MISSING": "Required fields missing in 'value' object: {fields}"
     },
     "COMMUNICATIONS_CAMPAIGNS": {
       "OTP_SMS_SETTINGS_REQUIRED": "SMS_TRANSPORT_ID, APP_ID, URL are required",
@@ -3976,7 +3994,11 @@
       "UUIDS_ARRAY_CANNOT_BE_EMPTY": "uuids array cannot be empty",
       "UUID_MUST_BE_STRING": "Each UUID must be a string",
       "SELECT_FIELD_ARRAY_CANNOT_BE_EMPTY": "selectField array cannot be empty",
-      "FIELD_NAME_MUST_BE_STRING": "Each field name must be a string"
+      "FIELD_NAME_MUST_BE_STRING": "Each field name must be a string",
+      "CHAIN_CONFIG_MISSING_CURRENCY_SYMBOL": "Chain configuration must include currency.symbol",
+      "IMPORT_NOT_IN_NEW_STATUS": "Import {uuid} is not in NEW status (current: {status})",
+      "BENEFICIARY_IMPORT_VALIDATION_ERRORS": "Validation errors found in {count} row(s)",
+      "IMPORT_ERROR_FILE_NOT_FOUND": "No error file found for import {uuid}"
     },
     "PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS": {
       "MISSING_ACTION_OR_PROJECT_ID": "Missing action or project id",
@@ -4102,7 +4124,10 @@
       "GCT_UUID_MUST_BE_VALID": "UUID must be a valid UUID",
       "GCT_GROUP_ID_MUST_BE_VALID": "Group cash transfer ID must be a valid UUID",
       "GCT_FUND_TITLE_MUST_BE_STRING": "Title must be a string",
-      "GCT_AMOUNT_MUST_BE_NUMBER": "Amount must be a number"
+      "GCT_AMOUNT_MUST_BE_NUMBER": "Amount must be a number",
+      "EVM_TRANSFER_TOKENS_NOT_IMPLEMENTED": "Transfer tokens not implemented for EVM",
+      "EVM_DISBURSE_ON_CREATE_NOT_SUPPORTED": "Disburse-on-create not supported on EVM chain",
+      "ERROR_REDEEMING_INKIND": "Error redeeming in-kind: {message}"
     },
     "FUND_MANAGEMENT_PAYOUT": {
       "PAYOUT_ERR_GROUP_TOKENS_NOT_FOUND": "Beneficiary group tokens with UUID '{groupId}' not found",

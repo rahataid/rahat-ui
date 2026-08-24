@@ -37,6 +37,7 @@ export default function AddManualTriggerForm({
   stationHeading,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   return (
     <>
       <Form {...form}>
@@ -102,11 +103,11 @@ export default function AddManualTriggerForm({
                   const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
                   return (
                     <FormItem className="w-full">
-                      <FormLabel>Lead Time</FormLabel>
+                      <FormLabel>{tg('LEAD_TIME')}</FormLabel>
                       <div className="grid grid-cols-4">
                         <Input
                           type="text"
-                          placeholder="Enter lead time"
+                          placeholder={tg('ENTER_LEAD_TIME')}
                           className="col-span-3 rounded-r-none"
                           value={lead}
                           onChange={(e) => {

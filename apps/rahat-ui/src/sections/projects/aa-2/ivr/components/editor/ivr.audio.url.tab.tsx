@@ -2,7 +2,6 @@
 
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { useTranslations } from 'next-intl';
 
 type AudioUrlTabProps = {
   prompt: string;
@@ -10,10 +9,9 @@ type AudioUrlTabProps = {
 };
 
 export default function AudioUrlTab({ prompt, onUpdate }: AudioUrlTabProps) {
-  const t = useTranslations('AA_PROJECT');
   return (
     <div className="space-y-2">
-      <Label htmlFor="prompt-url-input" className="text-[clamp(12px,1vw,14px)]">{t('AUDIO_URL')}</Label>
+      <Label htmlFor="prompt-url-input" className="text-[clamp(12px,1vw,14px)]">Audio URL</Label>
       <Input
         id="prompt-url-input"
         value={prompt}

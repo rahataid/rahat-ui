@@ -22,7 +22,6 @@ import { MoreHorizontal, ArrowRight, Archive } from 'lucide-react';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { IvrListItem } from '../types/ivr.flow.types';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { useTranslations } from 'next-intl';
 
 const statusColors: Record<string, string> = {
   draft: 'bg-yellow-100 text-yellow-800',
@@ -38,13 +37,6 @@ type IvrCardProps = {
 function IvrCard({ item, onDelete }: IvrCardProps) {
   const router = useRouter();
   const { id } = useParams();
-  const g = useTranslations('GLOBAL');
-  const t = useTranslations('AA_PROJECT');
-  const statusLabels: Record<string, string> = {
-    draft: g('DRAFT'),
-    active: g('ACTIVE'),
-    archived: g('ARCHIVED'),
-  };
   const managePath = `/projects/aa/${id}/ivr/manage/${item.id}`;
 
   return (
@@ -69,7 +61,7 @@ function IvrCard({ item, onDelete }: IvrCardProps) {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onDelete(item)}>
                   <Archive className="w-4 h-4 mr-2" />
-                  {t('ARCHIVE')}
+                  Archive
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -79,7 +71,7 @@ function IvrCard({ item, onDelete }: IvrCardProps) {
       <CardContent>
         <div className="flex items-center gap-3">
           <Badge className={statusColors[item.status] || ''}>
-            {statusLabels[item.status] || item.status}
+            {item.status}
           </Badge>
           <span className="text-sm text-muted-foreground">
             {dateFormat(new Date(item.lastModified))}
@@ -91,7 +83,7 @@ function IvrCard({ item, onDelete }: IvrCardProps) {
           variant="outline"
           className="border-primary text-primary flex-1 flex-row-reverse gap-2"
           Icon={ArrowRight}
-          name={g('VIEW_DETAILS')}
+          name="View Details"
           handleClick={() => router.push(managePath)}
         />
       </CardFooter>

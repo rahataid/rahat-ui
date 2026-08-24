@@ -36,7 +36,9 @@ export default function EditUserProfile() {
   const g = useTranslations('GLOBAL');
   const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const FormSchema = z.object({
-    name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST2') }),
+    name: z
+      .string({ invalid_type_error: t('NAME_MUST_BE_AT_LEAST2') })
+      .min(2, { message: t('NAME_MUST_BE_AT_LEAST2') }),
     wallet: z.string().optional(),
     phone: z
       .string()
@@ -44,7 +46,7 @@ export default function EditUserProfile() {
       .refine((val) => !val || isValidPhoneNumber(val), {
         message: t('INVALID_PHONE_NUMBER'),
       }),
-    email: z.string(),
+    email: z.string({ invalid_type_error: g('REQUIRED') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

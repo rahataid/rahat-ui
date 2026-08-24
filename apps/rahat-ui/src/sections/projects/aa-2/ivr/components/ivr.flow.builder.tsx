@@ -27,17 +27,13 @@ import NodeEditorPanel from './ivr.node.editor';
 import JSONPreviewPanel from './ivr.json.preview';
 import SimulationModal from './ivr.simulation.modal';
 import ExportModal from './ivr.export.modal';
-import { useTranslations } from 'next-intl';
 
-function convertApiPayloadToNode(
-  payload: IvrFlowApiPayload,
-  t: ReturnType<typeof useTranslations>,
-): IvrFlowNode {
+function convertApiPayloadToNode(payload: IvrFlowApiPayload): IvrFlowNode {
   function mapOptions(options: IvrFlowOption[]): IvrFlowNode[] {
     return (options || []).map((opt) => ({
       id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       digit: String(opt.digit),
-      label: opt.digit ? t('DIGIT_N', { digit: opt.digit }) : t('MENU'),
+      label: opt.digit ? `Digit ${opt.digit}` : 'Menu',
       prompt: opt.prompt || '',
       hangup: opt.hangup || false,
       destination: opt.destination || '',
@@ -47,7 +43,7 @@ function convertApiPayloadToNode(
 
   return {
     id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    label: t('MAIN_MENU'),
+    label: 'Main Menu',
     prompt: payload.main?.prompt || '',
     hangup: false,
     destination: '',
@@ -62,8 +58,6 @@ interface FlowBuilderProps {
 export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
   const router = useRouter();
   const { id } = useParams();
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
 
   const flows = useIvrFlowStore((s) => s.flows);
   const loadFlow = useIvrFlowStore((s) => s.loadFlow);
@@ -113,7 +107,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         const response = await fetch(templateDetail.flowUrl);
         if (!response.ok) throw new Error('Failed to fetch flow data');
         const data: IvrFlowApiPayload = await response.json();
-        const rootMenu = convertApiPayloadToNode(data, t);
+        const rootMenu = convertApiPayloadToNode(data);
         setFlowRootMenu(ivrId, rootMenu);
       } catch (err) {
         console.error('Failed to load IVR flow from URL:', err);
@@ -213,10 +207,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
     return (
       <div className="h-[calc(100vh-80px)] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground">{t('IVR_FLOW_NOT_FOUND')}</p>
+          <p className="text-muted-foreground">IVR flow not found</p>
           <Button variant="outline" className="mt-4" onClick={handleBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('BACK_TO_IVR_LIST')}
+            Back to IVR list
           </Button>
         </div>
       </div>
@@ -225,7 +219,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
 
   const displayName = templateDetail?.name || flow.name;
   const displayDescription =
-    templateDetail?.description || flow.description || t('IVR_FLOW_BUILDER');
+    templateDetail?.description || flow.description || 'IVR Flow Builder';
 
   return (
     <div className="h-[calc(100vh-80px)] flex flex-col">
@@ -257,7 +251,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              {isSaving ? tg('SAVING') : tg('SAVE')}
+              {isSaving ? 'Saving...' : 'Save'}
             </Button>
             <Button
               variant="outline"
@@ -266,7 +260,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               onClick={handleExport}
             >
               <Download className="w-4 h-4" />
-              {tg('EXPORT')}
+              Export
             </Button>
           </div>
         </div>
@@ -279,7 +273,7 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
               <div className="flex flex-col items-center gap-3">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
-                  {t('LOADING_FLOW_DATA')}
+                  Loading flow data...
                 </span>
               </div>
             </div>
@@ -302,14 +296,14 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
                 className="w-full gap-2 data-[state=active]:bg-white"
               >
                 <Settings className="w-4 h-4" />
-                {t('NODE_EDITOR')}
+                Node Editor
               </TabsTrigger>
               <TabsTrigger
                 value="json"
                 className="w-full gap-2 data-[state=active]:bg-white"
               >
                 <Code className="w-4 h-4" />
-                {t('JSON_PREVIEW')}
+                JSON Preview
               </TabsTrigger>
             </TabsList>
 
@@ -330,9 +324,10 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
                         <Settings className="w-6 h-6 text-muted-foreground/60" />
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-medium">{t('NO_NODE_SELECTED')}</p>
+                        <p className="text-sm font-medium">No Node Selected</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {t('SELECT_MENU_ITEM_TO_EDIT')}
+                          Select a menu item from the tree to edit its
+                          properties
                         </p>
                       </div>
                     </div>
@@ -373,8 +368,8 @@ export default function FlowBuilder({ ivrId }: FlowBuilderProps) {
         isConfirmationDialogOpen={!!pendingNodeId}
         onCancel={handleDismissDialog}
         onConfirm={handleDismissDialog}
-        dialogTitle={t('UNSAVED_CHANGES')}
-        dialogMessage={t('UNSAVED_CHANGES_MESSAGE')}
+        dialogTitle="Unsaved Changes"
+        dialogMessage="Please save or cancel your changes in the editor before switching to another node."
       />
     </div>
   );

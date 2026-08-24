@@ -7,7 +7,6 @@ import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src';
 import { IvrFlowNode } from '../types/ivr.flow.types';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
-import { useTranslations } from 'next-intl';
 
 const LEVEL_COLORS = [
   {
@@ -76,8 +75,6 @@ function TreeItem({
   onDeleteNode,
   level,
 }: TreeItemProps) {
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const [isExpanded, setIsExpanded] = useState(true);
   const hasChildren = item.children.length > 0;
   const isSelected = selectedNodeId === item.id;
@@ -133,7 +130,7 @@ function TreeItem({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-base font-medium">
-              {level === 0 ? t('MAIN_MENU') : t('DIGIT')}
+              {level === 0 ? 'Main Menu' : 'Digit'}
             </span>
             {level > 0 && (
               <span className="rounded-full border border-gray-300 bg-gray-100 px-2 py-0.5 text-xs font-semibold">
@@ -143,33 +140,33 @@ function TreeItem({
           </div>
           <div className="text-xs text-muted-foreground truncate">
             {item.prompt
-              ? `${t('AUDIO')}: ` + item.prompt.slice(0, 40) + '...'
-              : t('NO_AUDIO_SET')}
+              ? 'Audio: ' + item.prompt.slice(0, 40) + '...'
+              : 'No audio set'}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <TooltipWrapper tip={t('ADD_CHILD_NODE')}>
+          <TooltipWrapper tip="Add child node">
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 hover:bg-transparent hover:text-inherit"
               onClick={handleAddChild}
               disabled={maxReached}
-              title={t('ADD_CHILD')}
+              title="Add child"
             >
               <Plus className="h-4 w-4" />
             </Button>
           </TooltipWrapper>
 
           {level > 0 && (
-            <TooltipWrapper tip={t('DELETE_THIS_NODE')}>
+            <TooltipWrapper tip="Delete this node">
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 hover:bg-transparent hover:text-inherit"
                 onClick={handleDelete}
-                title={tg('DELETE')}
+                title="Delete"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

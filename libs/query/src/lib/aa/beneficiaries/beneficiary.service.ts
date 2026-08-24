@@ -3,6 +3,7 @@ import { useProjectAction } from '../../projects';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSwal } from 'libs/query/src/swal';
 import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 function useToast() {
   const alert = useSwal();
@@ -49,6 +50,7 @@ export const useGetBeneficiariesQr = (payload: {
 
 export const useGenerateQrPdf = (projectUuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -75,9 +77,18 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
         icon: 'success',
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const rawMessage: string =
+        error?.response?.data?.message || t('FAILED_TO_GENERATE_QR_PDF');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['BENEFICIARIES_DASHBOARD_STATS'],
+        rawMessage,
+      );
       toast.fire({
-        title: error?.message || t('FAILED_TO_GENERATE_QR_PDF'),
+        title: errorMessage,
         icon: 'error',
       });
     },

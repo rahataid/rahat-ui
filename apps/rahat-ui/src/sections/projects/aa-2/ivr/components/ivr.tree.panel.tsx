@@ -6,14 +6,33 @@ import { Play } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src';
 import { IvrFlow } from '../types/ivr.flow.types';
 import TreeItem from './ivr.tree.item';
-import { useTranslations } from 'next-intl';
 
-const LEVEL_COLOR_STYLES = [
-  { selectedBg: 'bg-gray-100', selectedBorder: 'border-gray-300' },
-  { selectedBg: 'bg-blue-100', selectedBorder: 'border-blue-300' },
-  { selectedBg: 'bg-green-100', selectedBorder: 'border-green-300' },
-  { selectedBg: 'bg-purple-100', selectedBorder: 'border-purple-300' },
-  { selectedBg: 'bg-amber-100', selectedBorder: 'border-amber-300' },
+const LEVEL_COLORS = [
+  {
+    name: 'Main',
+    selectedBg: 'bg-gray-100',
+    selectedBorder: 'border-gray-300',
+  },
+  {
+    name: 'Level 1',
+    selectedBg: 'bg-blue-100',
+    selectedBorder: 'border-blue-300',
+  },
+  {
+    name: 'Level 2',
+    selectedBg: 'bg-green-100',
+    selectedBorder: 'border-green-300',
+  },
+  {
+    name: 'Level 3',
+    selectedBg: 'bg-purple-100',
+    selectedBorder: 'border-purple-300',
+  },
+  {
+    name: 'Level 4+',
+    selectedBg: 'bg-amber-100',
+    selectedBorder: 'border-amber-300',
+  },
 ];
 
 interface TreePanelProps {
@@ -33,21 +52,13 @@ export default function TreePanel({
   onDeleteNode,
   onSimulate,
 }: TreePanelProps) {
-  const t = useTranslations('AA_PROJECT');
-  const LEVEL_COLORS = [
-    { name: t('LEVEL_MAIN'), ...LEVEL_COLOR_STYLES[0] },
-    { name: t('LEVEL_1'), ...LEVEL_COLOR_STYLES[1] },
-    { name: t('LEVEL_2'), ...LEVEL_COLOR_STYLES[2] },
-    { name: t('LEVEL_3'), ...LEVEL_COLOR_STYLES[3] },
-    { name: t('LEVEL_4_PLUS'), ...LEVEL_COLOR_STYLES[4] },
-  ];
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-3 md:px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-          <h3 className="text-[clamp(18px,2vw,24px)] font-bold">{t('IVR_FLOW')}</h3>
+          <h3 className="text-[clamp(18px,2vw,24px)] font-bold">IVR Flow</h3>
           <div className="flex items-center gap-2 md:gap-3 text-[clamp(10px,0.9vw,12px)] text-muted-foreground flex-wrap">
-            <span className="font-medium">{t('LEVELS')}:</span>
+            <span className="font-medium">Levels:</span>
             {LEVEL_COLORS.map((lvl) => (
               <div key={lvl.name} className="flex items-center gap-1">
                 <span
@@ -69,7 +80,7 @@ export default function TreePanel({
           onClick={onSimulate}
         >
           <Play className="w-4 h-4" />
-          {t('SIMULATE')}
+          Simulate
         </Button>
       </div>
 

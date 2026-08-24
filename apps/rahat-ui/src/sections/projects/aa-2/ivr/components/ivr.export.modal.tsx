@@ -21,9 +21,6 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useUploadFile, useIvrTemplateUpdate, useIvrTestCall } from '@rahat-ui/query';
 import { Link, Copy, Check, Globe, Phone, ExternalLink } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface ExportModalProps {
   open: boolean;
@@ -41,8 +38,6 @@ export default function ExportModal({
   onExported,
 }: ExportModalProps) {
   const { id: projectUUID } = useParams();
-  const t = useTranslations('AA_PROJECT');
-  const formatDigits = useLabelDigits();
   const [ipfsLink, setIpfsLink] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -119,9 +114,9 @@ export default function ExportModal({
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>{t('EXPORT_IVR_FLOW')}</DialogTitle>
+          <DialogTitle>Export IVR Flow</DialogTitle>
           <DialogDescription>
-            {t('EXPORT_IVR_FLOW_DESCRIPTION')}
+            Download your IVR flow as JSON, copy a link, or send to a webhook.
           </DialogDescription>
         </DialogHeader>
 
@@ -131,25 +126,25 @@ export default function ExportModal({
               className="w-full data-[state=active]:bg-white gap-2"
               value="link"
             >
-              <Link className="w-4 h-4" /> {t('COPY_LINK')}
+              <Link className="w-4 h-4" /> Copy Link
             </TabsTrigger>
             <TabsTrigger
               className="w-full data-[state=active]:bg-white gap-2"
               value="webhook"
             >
-              <Globe className="w-4 h-4" /> {t('WEBHOOK')}
+              <Globe className="w-4 h-4" /> Webhook
             </TabsTrigger>
             <TabsTrigger
               className="w-full data-[state=active]:bg-white gap-2"
               value="test"
             >
-              <Phone className="w-4 h-4" /> {t('TEST_CALL')}
+              <Phone className="w-4 h-4" /> Test Call
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="link" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              {t('GENERATE_PERMANENT_IPFS_LINK')}
+              Generate a permanent IPFS link to your IVR flow JSON
             </p>
             <Button
               variant="default"
@@ -162,12 +157,12 @@ export default function ExportModal({
               ) : (
                 <Link className="w-4 h-4" />
               )}
-              {isGenerating ? t('GENERATING') : t('GENERATE_LINK')}
+              {isGenerating ? 'Generating...' : 'Generate Link'}
             </Button>
 
             {ipfsLink && (
               <div className="border rounded-sm p-3 space-y-2">
-                <Label>{t('IPFS_LINK')}</Label>
+                <Label>IPFS Link</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     value={ipfsLink}
@@ -178,7 +173,7 @@ export default function ExportModal({
                     size="icon"
                     variant="outline"
                     onClick={handleCopyLink}
-                    title={t('COPY_LINK')}
+                    title="Copy link"
                     className="rounded-sm"
                   >
                     {copiedLink ? (
@@ -191,7 +186,7 @@ export default function ExportModal({
                     size="icon"
                     variant="outline"
                     asChild
-                    title={t('OPEN_LINK')}
+                    title="Open link"
                     className="rounded-sm"
                   >
                     <a
@@ -207,7 +202,7 @@ export default function ExportModal({
             )}
 
             <div className="space-y-2">
-              <Label>{t('JSON_CONTENT')}</Label>
+              <Label>JSON Content</Label>
               <div className="rounded-sm border overflow-hidden">
                 <textarea
                   className="w-full h-40 p-3 text-xs font-mono bg-card resize-none focus:outline-none"
@@ -220,31 +215,31 @@ export default function ExportModal({
 
           <TabsContent value="webhook" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              {t('SEND_IVR_FLOW_TO_ENDPOINT')}
+              Send the IVR flow data to an external endpoint
             </p>
             <div className="space-y-2">
-              <Label>{t('WEBHOOK_URL')}</Label>
+              <Label>Webhook URL</Label>
               <Input placeholder="https://example.com/webhook" />
             </div>
             <Button variant="default" className="w-full gap-2 rounded-sm">
               <Globe className="w-4 h-4" />
-              {t('SEND_TO_WEBHOOK')}
+              Send to Webhook
             </Button>
           </TabsContent>
 
           <TabsContent value="test" className="space-y-4 mt-4">
             <p className="text-sm text-muted-foreground">
-              {t('SEND_TEST_CALL_DESCRIPTION')}
+              Send a test call to experience your IVR flow in real-time
             </p>
             <div className="space-y-2">
-              <Label>{t('PHONE_NUMBER')}</Label>
+              <Label>Phone Number</Label>
               <Input
-                placeholder={t('ENTER_PHONE_NUMBER')}
-                value={formatDigits(testPhone)}
-                onChange={(e) => setTestPhone(toAsciiDigits(e.target.value))}
+                placeholder="Enter phone number"
+                value={testPhone}
+                onChange={(e) => setTestPhone(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                {t('STANDARD_CALL_RATES_MAY_APPLY')}
+                Standard call rates may apply depending on your provider
               </p>
             </div>
             <Button
@@ -258,7 +253,7 @@ export default function ExportModal({
               ) : (
                 <Phone className="w-4 h-4" />
               )}
-              {isSending ? t('SENDING') : t('SEND_TEST_CALL')}
+              {isSending ? 'Sending...' : 'Send Test Call'}
             </Button>
           </TabsContent>
         </Tabs>

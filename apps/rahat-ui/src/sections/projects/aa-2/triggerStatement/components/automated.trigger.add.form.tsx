@@ -91,6 +91,7 @@ export default function AddAutomatedTriggerForm({
   projectType,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
@@ -270,11 +271,11 @@ export default function AddAutomatedTriggerForm({
                 const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
                 return (
                   <FormItem>
-                    <FormLabel>Lead Time</FormLabel>
+                    <FormLabel>{tg('LEAD_TIME')}</FormLabel>
                       <div className="grid grid-cols-4">
                         <Input
                           type="text"
-                          placeholder="Enter lead time"
+                          placeholder={tg('ENTER_LEAD_TIME')}
                           className="col-span-3 rounded-r-none"
                           value={lead}
                           onChange={(e) => {

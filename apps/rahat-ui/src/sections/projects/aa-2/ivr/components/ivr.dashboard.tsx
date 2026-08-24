@@ -13,19 +13,15 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useIvrTemplates, useIvrTemplateDelete } from '@rahat-ui/query';
-import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   Voicemail,
 } from 'lucide-react';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import CreateIVRDialog from './ivr.create.dialog';
 import IvrCard from './ivr.card';
-import { useTranslations } from 'next-intl';
 
 export default function IvrDashboard() {
   const { id: projectUUID } = useParams();
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const { data: templates, isLoading } = useIvrTemplates(projectUUID as UUID);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<
@@ -85,10 +81,10 @@ export default function IvrDashboard() {
         <div className="flex items-center gap-3">
           <div>
             <h1 className="text-[clamp(20px,2.5vw,28px)] font-bold text-foreground">
-              {t('IVR_MANAGER')}
+              IVR Manager
             </h1>
             <p className="text-[clamp(12px,1vw,14px)] text-muted-foreground">
-              {t('BUILD_AND_MANAGE_IVR_FLOWS')}
+              Build and manage IVR flows
             </p>
           </div>
         </div>
@@ -97,7 +93,7 @@ export default function IvrDashboard() {
 
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <Input
-          placeholder={t('SEARCH_IVRS')}
+          placeholder="Search IVRs..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-1 rounded-sm h-[clamp(32px,3vw,40px)]"
@@ -111,7 +107,7 @@ export default function IvrDashboard() {
               onClick={() => setStatusFilter(status)}
               className="capitalize rounded-sm h-[clamp(28px,2.5vw,36px)] text-[clamp(12px,1vw,14px)]"
             >
-              {translateValue(tg, status, { fallbackStyle: 'raw' })}
+              {status}
             </Button>
           ))}
         </div>
@@ -121,18 +117,18 @@ export default function IvrDashboard() {
         {isLoading ? (
           <Card className="rounded-sm">
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <p className="text-muted-foreground">{t('LOADING_IVR_TEMPLATES')}</p>
+              <p className="text-muted-foreground">Loading IVR templates...</p>
             </CardContent>
           </Card>
         ) : filteredList.length === 0 ? (
           <Card className="border-2 border-dashed rounded-sm">
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Voicemail className="w-12 h-12 text-muted-foreground mb-4" />
-              <CardTitle className="mb-2">{t('NO_IVRS_FOUND')}</CardTitle>
+              <CardTitle className="mb-2">No IVRs found</CardTitle>
               <CardDescription>
                 {ivrList.length === 0
-                  ? t('CREATE_YOUR_FIRST_IVR')
-                  : t('NO_IVRS_MATCH_SEARCH')}
+                  ? 'Create your first IVR to get started'
+                  : 'No IVRs match your search or filter'}
               </CardDescription>
             </CardContent>
           </Card>
@@ -153,8 +149,8 @@ export default function IvrDashboard() {
         isConfirmationDialogOpen={!!deleteTarget}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleConfirmDelete}
-        dialogTitle={t('ARCHIVE_IVR')}
-        dialogMessage={t('ARCHIVE_IVR_CONFIRMATION', { name: deleteTarget?.name ?? '' })}
+        dialogTitle="Archive IVR"
+        dialogMessage={`Are you sure you want to archive "${deleteTarget?.name}"? This action will archive the IVR template and cannot be undone.`}
       />
     </div>
   );

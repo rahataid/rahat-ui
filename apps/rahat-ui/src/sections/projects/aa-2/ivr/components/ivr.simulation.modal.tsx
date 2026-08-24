@@ -6,29 +6,19 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { X, Play, Pause, PhoneOff } from 'lucide-react';
 import { IvrFlow } from '../types/ivr.flow.types';
 import { findNodeById, flattenOptions, DIAL_PAD } from '../utils/utils';
-import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface SimulationModalProps {
   flow: IvrFlow;
   onClose: () => void;
 }
 
-type CallLogEntry = {
-  type: 'start' | 'input' | 'invalid' | 'end';
-  text: string;
-};
-
 export default function SimulationModal({
   flow,
   onClose,
 }: SimulationModalProps) {
-  const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
-  const formatLabel = useLabelDigits();
   const [currentNodeId, setCurrentNodeId] = useState<string>(flow.rootMenu.id);
-  const [callLog, setCallLog] = useState<CallLogEntry[]>([
-    { type: 'start', text: `${t('STARTED_CALL')} ${flow.rootMenu.label}` },
+  const [callLog, setCallLog] = useState<string[]>([
+    `[START] ${flow.rootMenu.label}`,
   ]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioError, setAudioError] = useState(false);
@@ -56,13 +46,10 @@ export default function SimulationModal({
       stopAudio();
       setCallLog((prev) => [
         ...prev,
-        {
-          type: 'end',
-          text: `${t('CALL_ENDED')} ${t('CALL_ENDED_TOTAL_INPUTS', { count: formatLabel(finalCount) })}`,
-        },
+        `[END] Call ended. Total inputs: ${finalCount}`,
       ]);
     },
-    [stopAudio, t, formatLabel],
+    [stopAudio],
   );
 
   const playAudio = useCallback(
@@ -124,21 +111,9 @@ export default function SimulationModal({
       const target = currentNode.children.find((child) => child.digit === key);
       if (target) {
         setCurrentNodeId(target.id);
-        setCallLog((prev) => [
-          ...prev,
-          {
-            type: 'input',
-            text: `${t('PRESSED')} ${formatLabel(key)} → ${target.label}`,
-          },
-        ]);
+        setCallLog((prev) => [...prev, `[INPUT] ${key} → ${target.label}`]);
       } else {
-        setCallLog((prev) => [
-          ...prev,
-          {
-            type: 'invalid',
-            text: `${t('INVALID')} ${t('KEY_NOT_RECOGNIZED', { key: formatLabel(key) })}`,
-          },
-        ]);
+        setCallLog((prev) => [...prev, `[INVALID] Key ${key} not recognized`]);
       }
       inputsRef.current += 1;
     }
@@ -149,10 +124,7 @@ export default function SimulationModal({
     stopAudio();
     setCallLog((prev) => [
       ...prev,
-      {
-        type: 'end',
-        text: `${t('CALL_ENDED')} ${t('CALL_ENDED_TOTAL_INPUTS', { count: formatLabel(inputsRef.current) })}`,
-      },
+      `[END] Call ended. Total inputs: ${inputsRef.current}`,
     ]);
   };
 
@@ -162,9 +134,7 @@ export default function SimulationModal({
     setLastDigit('');
     setCurrentNodeId(flow.rootMenu.id);
     inputsRef.current = 0;
-    setCallLog([
-      { type: 'start', text: `${t('STARTED_CALL')} ${flow.rootMenu.label}` },
-    ]);
+    setCallLog([`[START] ${flow.rootMenu.label}`]);
   };
 
   return (
@@ -172,9 +142,9 @@ export default function SimulationModal({
       <div className="bg-background rounded-sm shadow-lg w-full max-w-[clamp(320px,90vw,500px)]">
         <div className="flex justify-between items-start border-b p-4">
           <div>
-            <h2 className="text-lg font-bold">{t('IVR_FLOW_SIMULATOR')}</h2>
+            <h2 className="text-lg font-bold">IVR Flow Simulator</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {t('TEST_YOUR_IVR_FLOW')}
+              Test your IVR flow by navigating through it.
             </p>
           </div>
           <Button
@@ -195,7 +165,7 @@ export default function SimulationModal({
               className="rounded-sm"
               onClick={handleReset}
             >
-              {tg('RESET')}
+              Reset
             </Button>
             {!callEnded && (
               <div className="flex gap-2">
@@ -220,37 +190,35 @@ export default function SimulationModal({
                   onClick={handleHangup}
                 >
                   <PhoneOff className="w-4 h-4 mr-1" />
-                  {t('END_CALL')}
+                  End Call
                 </Button>
               </div>
             )}
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="font-medium">{tg('STATUS')}</span>
+            <span className="font-medium">Status</span>
             <Badge
               className={
                 callEnded ? 'bg-red-500 text-white' : 'bg-black text-white'
               }
             >
-              {callEnded ? t('ENDED') : tg('ACTIVE')}
+              {callEnded ? 'Ended' : 'Active'}
             </Badge>
           </div>
 
           <div className="rounded-sm border bg-muted/30 p-3 space-y-3">
             <div>
               <div className="text-xs text-muted-foreground mb-1">
-                {t('CURRENT_PROMPT')}
+                Current Prompt
               </div>
-              <div className="text-sm truncate">{audioUrl || t('NO_PROMPT')}</div>
+              <div className="text-sm truncate">{audioUrl || 'No prompt'}</div>
             </div>
             <div className="flex justify-between items-center">
               <Badge variant="outline">
-                {audioError ? t('FAILED') : isPlaying ? t('PLAYING') : t('READY')}
+                {audioError ? 'Failed' : isPlaying ? 'Playing' : 'Ready'}
               </Badge>
-              {lastDigit && (
-                <Badge variant="secondary">{formatLabel(lastDigit)}</Badge>
-              )}
+              {lastDigit && <Badge variant="secondary">{lastDigit}</Badge>}
             </div>
           </div>
 
@@ -277,18 +245,23 @@ export default function SimulationModal({
           )}
 
           <div>
-            <div className="font-medium mb-2">{t('CALL_HISTORY')}</div>
+            <div className="font-medium mb-2">Call History</div>
             <div className="rounded-sm border bg-muted/30 p-3 max-h-40 overflow-y-auto space-y-2">
               {callLog.map((log, index) => (
                 <div
                   key={index}
                   className={`text-xs ${
-                    log.type === 'end'
+                    log.includes('[END]')
                       ? 'text-red-500'
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {log.text}
+                  {log
+                    .replace('[START]', 'Started call')
+                    .replace('[INPUT]', 'Pressed')
+                    .replace('[BACK]', 'Back')
+                    .replace('[INVALID]', 'Invalid')
+                    .replace('[END]', 'Call ended')}
                 </div>
               ))}
             </div>
@@ -301,7 +274,7 @@ export default function SimulationModal({
               className="rounded-sm"
               onClick={onClose}
             >
-              {tg('CLOSE')}
+              Close
             </Button>
           </div>
         </div>

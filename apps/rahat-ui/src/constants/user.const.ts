@@ -38,6 +38,13 @@ const PROJECT_SUBJECT_ACTION_OVERRIDES: Partial<Record<string, string[]>> = {
     ACTIONS.ACTIVATE,
   ],
   [SUBJECTS.PHASE]: [ACTIONS.REVERT],
+  [SUBJECTS.ACTIVITY]: [
+    ACTIONS.MANAGE,
+    ACTIONS.CREATE,
+    ACTIONS.UPDATE,
+    ACTIONS.DELETE,
+  ],
+  [SUBJECTS.FUND_MANAGEMENT]: [ACTIONS.MANAGE, ACTIONS.CREATE, ACTIONS.READ],
 };
 
 // `all` is a global subject owned by SUBJECT_ACTIONS; keep it out of the

@@ -447,7 +447,7 @@ export default function CommsLogsDetailPage() {
                         Logs
                       </TabsTrigger>
                     </TabsList>
-                    <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
+                    <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
                       <TabsContent
                         value="details"
                         className="p-4 space-y-6 m-0"
@@ -482,7 +482,7 @@ export default function CommsLogsDetailPage() {
                           <p className="font-medium">{logsMeta?.total}</p>
                         </div>
 
-                        {logs?.sessionDetails?.status === 'COMPLETED' && (
+                        {/* {logs?.sessionDetails?.status === 'COMPLETED' && (
                           <div>
                             <p className="text-sm text-gray-500">
                               Completed At
@@ -491,7 +491,7 @@ export default function CommsLogsDetailPage() {
                               {dateFormat(logs?.sessionDetails?.updatedAt)}
                             </p>
                           </div>
-                        )}
+                        )} */}
                         {logs?.sessionDetails?.startedAt && (
                           <div>
                             <p className="text-sm text-gray-500">Started At</p>

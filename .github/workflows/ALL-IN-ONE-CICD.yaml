@@ -93,6 +93,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Extract version dynamically
+        id: extract_version
+        run: |
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       # -----------------------------
       # Strip prefix from Vault secret path
       # -----------------------------

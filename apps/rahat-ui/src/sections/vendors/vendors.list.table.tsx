@@ -84,11 +84,14 @@ export default function VendorsTable({
       <div className="flex items-center mb-2 space-x-2">
         <Input
           placeholder="Search Vendors"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
           className="rounded w-full"
+          value={filters?.name || ''}
+          onChange={(event) =>
+            setFilters({
+              ...filters,
+              name: event.target.value,
+            })
+          }
         />
 
         {/* TODO: fix this */}

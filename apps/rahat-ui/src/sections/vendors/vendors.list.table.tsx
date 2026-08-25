@@ -84,11 +84,14 @@ export default function VendorsTable({
       <div className="flex items-center mb-2 space-x-2">
         <Input
           placeholder="Search Vendors"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
           className="rounded w-full"
+          value={filters?.name || ''}
+          onChange={(event) =>
+            setFilters({
+              ...filters,
+              name: event.target.value,
+            })
+          }
         />
 
         {/* TODO: fix this */}
@@ -123,7 +126,7 @@ export default function VendorsTable({
           <>
             {table.getRowModel().rows?.length ? (
               <>
-                <ScrollArea className="h-[calc(100vh-285px)]">
+                <ScrollArea className="h-[calc(100vh-290px)]">
                   <TableComponent>
                     <TableHeader className="sticky top-0 bg-card">
                       {table.getHeaderGroups().map((headerGroup) => (

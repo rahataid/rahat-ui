@@ -33,5 +33,5 @@ export function mapStatus(status: string) {
     LENSES: 'Lenses',
     FRAMES: 'Frames',
   };
-  return statusMapping[status] || '-';
+  return statusMapping[status] || status || '-';
 }

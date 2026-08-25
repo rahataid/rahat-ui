@@ -275,8 +275,8 @@ on:
         required: false
         default: "4"
         type: string
-      service_to_destroy:
-        description: "Swarm service name to tear down (only used on destroy, e.g. eph-rahat-ui-aa-dev-123)"
+      container_to_destroy:
+        description: "Container name to tear down (only used on destroy, e.g. eph-rahat-ui-aa-dev-123)"
         required: false
         default: ""
         type: string
@@ -366,6 +366,13 @@ jobs:
           fi
           tee ./.env <<< "$ENV"
 
+      - name: Upload .env for deploy job
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-${{ matrix.app }}
+          path: ./.env
+          retention-days: 1
+
       # -----------------------------
       # Docker Setup
       # -----------------------------
@@ -418,9 +425,7 @@ jobs:
 
   deploy-ephemeral:
     name: Deploy Ephemeral Environment - ${{ matrix.app }}
-    # Runs on the ARC runner set that already lives in the private network,
-    # since the Swarm manager isn't reachable from GitHub-hosted runners.
-    # Replace this label with whatever your arc-runner-set is registered as.
+    # Runs on your arc-runner-set — needs network access to reach DEV_VM_SSH_HOST
     runs-on: arc-runner-set
     needs: [setup, build]
     if: ${{ inputs.action == 'create' }}
@@ -428,49 +433,56 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
-      - name: Configure SSH access to Swarm manager
+      - name: Download .env from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: env-${{ matrix.app }}
+          path: .
+
+      - name: Configure SSH access to dev VM
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SWARM_SSH_PRIVATE_KEY }}" > ~/.ssh/swarm_key
-          chmod 600 ~/.ssh/swarm_key
-          ssh-keyscan -H "${{ secrets.SWARM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
-          echo "DOCKER_HOST=ssh://${{ secrets.SWARM_SSH_USER }}@${{ secrets.SWARM_SSH_HOST }}" >> $GITHUB_ENV
-          echo "GIT_SSH_COMMAND=ssh -i ~/.ssh/swarm_key -o StrictHostKeyChecking=no" >> $GITHUB_ENV
+          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+          chmod 600 ~/.ssh/dev_vm_key
+          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Compute ephemeral service name
-        id: svc
+      - name: Compute ephemeral container name
+        id: c
         run: |
           SAFE_APP=$(echo "${{ matrix.app }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
           SAFE_TAG=$(echo "${{ inputs.tag_suffix }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
-          SVC="eph-${SAFE_APP}-${SAFE_TAG}-${{ needs.build.outputs.run_number }}"
-          echo "service=$SVC" >> $GITHUB_OUTPUT
+          NAME="eph-${SAFE_APP}-${SAFE_TAG}-${{ needs.build.outputs.run_number }}"
+          echo "name=$NAME" >> $GITHUB_OUTPUT
 
-      - name: Deploy service on Swarm
+      - name: Copy .env to dev VM
         run: |
-          export DOCKER_HOST="ssh://${{ secrets.SWARM_SSH_USER }}@${{ secrets.SWARM_SSH_HOST }}"
-          export DOCKER_SSH_OPTS="-i $HOME/.ssh/swarm_key -o StrictHostKeyChecking=no"
+          scp -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            .env "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}:/tmp/${{ steps.c.outputs.name }}.env"
 
-          docker service create \
-            --name ${{ steps.svc.outputs.service }} \
-            --label ephemeral=true \
-            --label app=${{ matrix.app }} \
-            --label created-at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --label ttl-hours="${{ inputs.ttl_hours }}" \
-            --publish published=0,target=3000 \
-            --with-registry-auth \
-            --replicas 1 \
-            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
+      - name: Run container on dev VM
+        run: |
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
+            set -e
+            docker run -d \
+              --name ${{ steps.c.outputs.name }} \
+              --label ephemeral=true \
+              --label app=${{ matrix.app }} \
+              --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              --label ttl-hours="${{ inputs.ttl_hours }}" \
+              --env-file /tmp/${{ steps.c.outputs.name }}.env \
+              -p 3000 \
+              ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
+            rm -f /tmp/${{ steps.c.outputs.name }}.env
+          EOF
 
-      - name: Resolve assigned port + build URL
+      - name: Resolve assigned port
         id: url
         run: |
-          export DOCKER_HOST="ssh://${{ secrets.SWARM_SSH_USER }}@${{ secrets.SWARM_SSH_HOST }}"
-          export DOCKER_SSH_OPTS="-i $HOME/.ssh/swarm_key -o StrictHostKeyChecking=no"
-
-          # Port assignment can take a moment to appear
-          for i in $(seq 1 15); do
-            PORT=$(docker service inspect ${{ steps.svc.outputs.service }} \
-              --format '{{ (index .Endpoint.Ports 0).PublishedPort }}' 2>/dev/null || echo "")
+          for i in $(seq 1 10); do
+            PORT=$(ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+              "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+              "docker port ${{ steps.c.outputs.name }} 3000" 2>/dev/null | cut -d: -f2 || echo "")
             [ -n "$PORT" ] && break
             sleep 2
           done
@@ -480,18 +492,7 @@ jobs:
             exit 1
           fi
 
-          echo "url=http://${{ secrets.SWARM_SSH_HOST }}:${PORT}" >> $GITHUB_OUTPUT
-
-      - name: Wait for service to be running
-        run: |
-          export DOCKER_HOST="ssh://${{ secrets.SWARM_SSH_USER }}@${{ secrets.SWARM_SSH_HOST }}"
-          export DOCKER_SSH_OPTS="-i $HOME/.ssh/swarm_key -o StrictHostKeyChecking=no"
-
-          for i in $(seq 1 30); do
-            RUNNING=$(docker service ps ${{ steps.svc.outputs.service }} --filter "desired-state=running" --format '{{.CurrentState}}' | grep -c "Running" || true)
-            [ "$RUNNING" -ge 1 ] && break
-            sleep 5
-          done
+          echo "url=http://${{ secrets.DEV_VM_SSH_HOST }}:${PORT}" >> $GITHUB_OUTPUT
 
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
@@ -501,9 +502,9 @@ jobs:
           SLACK_TITLE: 'Ephemeral Environment Ready — ${{ matrix.app }}'
           SLACK_MESSAGE: |
             *URL:* ${{ steps.url.outputs.url }} (private network / VPN only)
-            *Service:* `${{ steps.svc.outputs.service }}`
+            *Container:* `${{ steps.c.outputs.name }}`
             *Expires in:* ${{ inputs.ttl_hours }}h (auto-cleanup)
-            *Manual teardown:* re-run this workflow with `action=destroy` and `service_to_destroy=${{ steps.svc.outputs.service }}`
+            *Manual teardown:* re-run this workflow with `action=destroy` and `container_to_destroy=${{ steps.c.outputs.name }}`
           SLACK_FOOTER: ''
 
   destroy-ephemeral:
@@ -513,23 +514,23 @@ jobs:
     steps:
       - name: Validate input
         run: |
-          if [ -z "${{ inputs.service_to_destroy }}" ]; then
-            echo "ERROR: service_to_destroy is required when action=destroy"
+          if [ -z "${{ inputs.container_to_destroy }}" ]; then
+            echo "ERROR: container_to_destroy is required when action=destroy"
             exit 1
           fi
 
-      - name: Configure SSH access to Swarm manager
+      - name: Configure SSH access to dev VM
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SWARM_SSH_PRIVATE_KEY }}" > ~/.ssh/swarm_key
-          chmod 600 ~/.ssh/swarm_key
-          ssh-keyscan -H "${{ secrets.SWARM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+          chmod 600 ~/.ssh/dev_vm_key
+          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Remove service
+      - name: Remove container
         run: |
-          export DOCKER_HOST="ssh://${{ secrets.SWARM_SSH_USER }}@${{ secrets.SWARM_SSH_HOST }}"
-          export DOCKER_SSH_OPTS="-i $HOME/.ssh/swarm_key -o StrictHostKeyChecking=no"
-          docker service rm ${{ inputs.service_to_destroy }} || echo "Service not found, nothing to remove"
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+            "docker rm -f ${{ inputs.container_to_destroy }} || echo 'not found'"
 
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
@@ -538,6 +539,6 @@ jobs:
           SLACK_COLOR: '#999999'
           SLACK_TITLE: 'Ephemeral Environment Destroyed'
           SLACK_MESSAGE: |
-            *Service:* `${{ inputs.service_to_destroy }}`
+            *Container:* `${{ inputs.container_to_destroy }}`
             *Actor:* `${{ github.actor }}`
           SLACK_FOOTER: ''

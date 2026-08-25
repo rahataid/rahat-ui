@@ -470,7 +470,7 @@ jobs:
               --label app=${{ matrix.app }} \
               --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
               --label ttl-hours="${{ inputs.ttl_hours }}" \
-              --env-file /tmp/${{ steps.c.outputs.name }}.env \
+          
               -p 3000 \
               ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
             rm -f /tmp/${{ steps.c.outputs.name }}.env

@@ -564,6 +564,7 @@ export default function ComposeScheduleView() {
   const [selectedGroup, setSelectedGroup] = useState('');
   const [filterRows, setFilterRows] = useState<FilterRow[]>([]);
   const [campaignName, setCampaignName] = useState('');
+  const [fallbackEnabled, setFallbackEnabled] = useState(true);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [scheduleTimeZone, setScheduleTimeZone] = useState(detectedTimeZone);
@@ -743,7 +744,8 @@ export default function ComposeScheduleView() {
 
   const audienceEstimate =
     selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
-  const audienceNoun = selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
+  const audienceNoun =
+    selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
   // Count unique, valid phone numbers in the chosen column.
   const excelValidCount = useMemo(() => {
@@ -913,6 +915,7 @@ export default function ComposeScheduleView() {
         column: excelColumn || undefined,
         options: scheduleOptions,
         isScheduled: true,
+        ...(isWhatsApp ? { fallbackEnabled } : {}),
       });
 
       setIsConfirmDialogOpen(false);
@@ -960,6 +963,7 @@ export default function ComposeScheduleView() {
       message: messageContent,
       isScheduled: true,
       options: Object.keys(options).length ? options : undefined,
+      ...(isWhatsApp ? { fallbackEnabled } : {}),
     });
 
     if (campaign?.uuid) {
@@ -1001,6 +1005,7 @@ export default function ComposeScheduleView() {
     setSelectedGroup('');
     setFilterRows([]);
     setCampaignName('');
+    setFallbackEnabled(true);
     setScheduleDate('');
     setScheduleTime('');
     setScheduleTimeZone(detectedTimeZone);
@@ -1076,7 +1081,14 @@ export default function ComposeScheduleView() {
             </CardHeader>
 
             <CardContent className="pt-6">
-              <Tabs defaultValue={searchParams.get('tab') === 'automatic' ? 'automatic' : 'manual'} className="w-full">
+              <Tabs
+                defaultValue={
+                  searchParams.get('tab') === 'automatic'
+                    ? 'automatic'
+                    : 'manual'
+                }
+                className="w-full"
+              >
                 <TabsList className="grid w-full grid-cols-2 mb-6">
                   <TabsTrigger value="manual" className="gap-2">
                     <Calendar className="h-4 w-4" />
@@ -1170,7 +1182,9 @@ export default function ComposeScheduleView() {
                             <Textarea
                               placeholder="Type your message here…"
                               value={messageContent}
-                              onChange={(e) => setMessageContent(e.target.value)}
+                              onChange={(e) =>
+                                setMessageContent(e.target.value)
+                              }
                               rows={4}
                             />
                             {isPlasgate && plasgateSmsInfo && (
@@ -1194,9 +1208,9 @@ export default function ComposeScheduleView() {
                                 {plasgateSmsInfo.exceeded && (
                                   <p className="text-xs text-destructive">
                                     Message exceeds the {plasgateSmsInfo.limit}
-                                    -character limit for {plasgateSmsInfo.encoding}{' '}
-                                    encoding and will be sent as multiple SMS
-                                    segments.
+                                    -character limit for{' '}
+                                    {plasgateSmsInfo.encoding} encoding and will
+                                    be sent as multiple SMS segments.
                                   </p>
                                 )}
                               </div>
@@ -1690,6 +1704,30 @@ export default function ComposeScheduleView() {
                               </PopoverContent>
                             </Popover>
                           </div>
+
+                          {/* SMS fallback — WhatsApp only, since it is what
+                              can fail in a way another channel can recover. */}
+                          {isWhatsApp && (
+                            <div className="flex items-start gap-2">
+                              <Switch
+                                id="fallback-switch"
+                                checked={fallbackEnabled}
+                                onCheckedChange={setFallbackEnabled}
+                              />
+                              <div>
+                                <Label
+                                  htmlFor="fallback-switch"
+                                  className="text-xs cursor-pointer"
+                                >
+                                  Automatic SMS retry
+                                </Label>
+                                <p className="text-xs text-muted-foreground">
+                                  Messages that fail to deliver on WhatsApp are
+                                  resent as SMS.
+                                </p>
+                              </div>
+                            </div>
+                          )}
 
                           {!isScheduleDateTimeValid && (
                             <p className="text-sm text-destructive">
@@ -2212,6 +2250,14 @@ export default function ComposeScheduleView() {
                   <p className="text-muted-foreground">Template</p>
                   <p className="font-medium">{selectedTemplateName}</p>
                 </div>
+                {isWhatsApp && (
+                  <div>
+                    <p className="text-muted-foreground">SMS Retry</p>
+                    <p className="font-medium">
+                      {fallbackEnabled ? 'On' : 'Off'}
+                    </p>
+                  </div>
+                )}
                 {isUpload ? (
                   <>
                     <div>

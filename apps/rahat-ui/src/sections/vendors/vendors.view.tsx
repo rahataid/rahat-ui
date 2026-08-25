@@ -21,6 +21,7 @@ import { UUID } from 'crypto';
 import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
+import { useDebounce } from '../../utils/useDebouncehooks';
 
 function VendorsView() {
   const {
@@ -36,8 +37,10 @@ function VendorsView() {
   const [refetch, setRefetch] = React.useState(false);
 
   const addVendor = useAssignVendorToProject();
+
+  const debouncedFilters = useDebounce(filters, 500);
   const { data: vendorData, isLoading } = useVendorList(
-    { ...pagination, ...filters },
+    { ...pagination, ...debouncedFilters },
     refetch,
   );
   const [selectedProject, setSelectedProject] = React.useState<UUID>();

@@ -199,6 +199,7 @@ export default function ComposeMessageView() {
   const [filterRows, setFilterRows] = useState<FilterRow[]>([]);
   const [campaignName, setCampaignName] = useState('');
   const [isAutomatic, setIsAutomatic] = useState(false);
+  const [fallbackEnabled, setFallbackEnabled] = useState(true);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   // Upload-list mode state
@@ -426,6 +427,7 @@ export default function ComposeMessageView() {
         targetType: excelTargetType,
         fileBase64: parsedSheet.fileBase64,
         column: excelColumn || undefined,
+        ...(isWhatsApp ? { fallbackEnabled } : {}),
       });
       router.push(`/projects/el-crm/${projectUUID}/communications/messages`);
       return;
@@ -465,6 +467,7 @@ export default function ComposeMessageView() {
       transportId: selectedTransportId,
       message: messageContent,
       isAutomatic,
+      ...(isWhatsApp ? { fallbackEnabled } : {}),
     };
     await createCampaign.mutateAsync(payload);
     router.push(`/projects/el-crm/${projectUUID}/communications/messages`);
@@ -477,6 +480,7 @@ export default function ComposeMessageView() {
     setSelectedGroup('');
     setFilterRows([]);
     setCampaignName('');
+    setFallbackEnabled(true);
     setParsedSheet(null);
     setExcelColumn('');
     setExcelError('');
@@ -733,6 +737,30 @@ export default function ComposeMessageView() {
                       >
                         Automatic Campaign
                       </Label>
+                    </div>
+                  )}
+
+                  {/* SMS fallback — WhatsApp only, since it is what can fail
+                      in a way another channel can recover. */}
+                  {isWhatsApp && (
+                    <div className="flex items-start gap-2">
+                      <Switch
+                        id="fallback-switch"
+                        checked={fallbackEnabled}
+                        onCheckedChange={setFallbackEnabled}
+                      />
+                      <div>
+                        <Label
+                          htmlFor="fallback-switch"
+                          className="text-xs cursor-pointer"
+                        >
+                          Automatic SMS retry
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Messages that fail to deliver on WhatsApp are resent
+                          as SMS.
+                        </p>
+                      </div>
                     </div>
                   )}
 
@@ -1160,6 +1188,12 @@ export default function ComposeMessageView() {
               />
             )}
             <DetailRow label="Audience" value={selectedGroupName || '-'} />
+            {isWhatsApp && (
+              <DetailRow
+                label="SMS Retry"
+                value={fallbackEnabled ? 'On' : 'Off'}
+              />
+            )}
             {isUpload ? (
               <>
                 <DetailRow

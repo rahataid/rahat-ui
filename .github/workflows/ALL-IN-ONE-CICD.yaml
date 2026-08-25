@@ -454,10 +454,10 @@ jobs:
           NAME="eph-${SAFE_APP}-${SAFE_TAG}-${{ needs.build.outputs.run_number }}"
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
-      - name: Copy .env to dev VM
-        run: |
-          scp -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-            .env "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}:/tmp/${{ steps.c.outputs.name }}.env"
+      # - name: Copy .env to dev VM
+      #   run: |
+      #     scp -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+      #       .env "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}:/tmp/${{ steps.c.outputs.name }}.env"
 
       - name: Run container on dev VM
         run: |

@@ -508,7 +508,7 @@ jobs:
 
   destroy-ephemeral:
     name: Destroy Ephemeral Environment
-    runs-on: [self-hosted, arc-runner-set]
+    runs-on: arc-runner-set
     if: ${{ inputs.action == 'destroy' }}
     steps:
       - name: Validate input

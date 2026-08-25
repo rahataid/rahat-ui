@@ -49,12 +49,14 @@ export default function useCommsLogsTableColumns(transportName: string) {
         ]
       : []),
     {
-      accessorKey: 'timeStamp',
       header: 'Timestamp',
       cell: ({ row }) => {
         return (
-          <div className="flex items-center space-x-2 gap-2">
-            {dateFormat(row?.original?.updatedAt)}
+          <div className="flex  text-xs items-center space-x-2 gap-2">
+            <div className="flex flex-col ">
+              <span>{dateFormat(row?.original?.createdAt)}</span>
+              <span>{dateFormat(row?.original?.updatedAt)}</span>
+            </div>
             {transportName === 'VOICE' && row?.original?.status === 'FAIL' && (
               <TooltipProvider>
                 <Tooltip>

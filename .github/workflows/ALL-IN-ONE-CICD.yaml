@@ -463,17 +463,15 @@ jobs:
         run: |
           ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
             "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
-            set -e
-            docker run -d \
-              --name ${{ steps.c.outputs.name }} \
-              --label ephemeral=true \
-              --label app=${{ matrix.app }} \
-              --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-              --label ttl-hours="${{ inputs.ttl_hours }}" \
-          
-              -p 3000 \
-              ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
-            rm -f /tmp/${{ steps.c.outputs.name }}.env
+          set -e
+          docker run -d \
+            --name ${{ steps.c.outputs.name }} \
+            --label ephemeral=true \
+            --label app=${{ matrix.app }} \
+            --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --label ttl-hours="${{ inputs.ttl_hours }}" \
+            -p 3000 \
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
           EOF
 
       - name: Resolve assigned port

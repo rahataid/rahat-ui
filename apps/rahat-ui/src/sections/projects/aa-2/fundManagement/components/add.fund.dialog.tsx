@@ -22,8 +22,6 @@ import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Can } from 'apps/rahat-ui/src/components/can';
-import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
 const AddFundSchema = z.object({
   amount: z
@@ -110,22 +108,20 @@ export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
               >
                 Cancel
               </Button>
-              <Can action={ACTIONS.CREATE} subject={SUBJECTS.FUND_MANAGEMENT}>
-                <Button
-                  type="submit"
-                  disabled={addProjectFund.isPending}
-                  className="w-full rounded-sm"
-                >
-                  {addProjectFund.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Adding...
-                    </>
-                  ) : (
-                    'Add Fund'
-                  )}
-                </Button>
-              </Can>
+              <Button
+                type="submit"
+                disabled={addProjectFund.isPending}
+                className="w-full rounded-sm"
+              >
+                {addProjectFund.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  'Add Fund'
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

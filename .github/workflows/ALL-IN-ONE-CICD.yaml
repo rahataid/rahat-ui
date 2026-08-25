@@ -4,56 +4,55 @@ on:
   workflow_dispatch:
     inputs:
       apps_to_build:
-        description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
+        description: 'Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all.'
         required: false
-        default: ""
+        default: ''
         type: string
       tag_suffix:
-        description: "Tag suffix (e.g., aa-dev)"
+        description: 'Tag suffix (e.g., aa-dev)'
         required: true
-        default: "aa-dev"
+        default: 'aa-dev'
         type: string
       vault_secret_path:
-        description: "Vault secret path"
+        description: 'Vault secret path'
         required: true
         type: choice
         options:
           # Dev folder
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev"
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"
-          - "[DEV] github/data/rahat/rahat-ui/dev/el/crm"
-          - "[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink"
-          - "[DEV] github/data/rahat/rahat-ui/demo/aa/stellar"
+          - '[DEV] github/data/rahat/rahat-ui/dev/aa/dev'
+          - '[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa'
+          - '[DEV] github/data/rahat/rahat-ui/dev/aa/stellar'
+          - '[DEV] github/data/rahat/rahat-ui/dev/aa/unicef'
+          - '[DEV] github/data/rahat/rahat-ui/dev/el/crm'
+          - '[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink'
+          - '[DEV] github/data/rahat/rahat-ui/demo/aa/stellar'
 
           # Training
-          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn"
-          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs"
+          - '[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn'
+          - '[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs'
 
           # Demo folder
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/testload"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026"
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aa/testload'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aidlink'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma'
+          - '[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026'
 
           # Main folder
-          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"
-          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
-          - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
-          - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
-          - "[MAIN] github/data/rahat/rahat-ui/prod/aa/demo"
-
+          - '[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa'
+          - '[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm'
+          - '[MAIN] github/data/rahat/rahat-ui/main/aa/mcn'
+          - '[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge'
+          - '[MAIN] github/data/rahat/rahat-ui/prod/aa/demo'
 
       vault_secret_key:
-        description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"
+        description: 'Key within the Vault secret that holds the env (e.g., rahat-ui)'
         required: true
-        default: "rahat-ui"
+        default: 'rahat-ui'
         type: string
 
 env:
@@ -202,7 +201,6 @@ jobs:
             *Branch:* `${{ github.ref_name }}`
             *Actor:* `${{ github.actor }}`
             *Vault path:* `${{ steps.vault-path.outputs.VAULT_PATH }}`
-      
+
             :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
           SLACK_FOOTER: ''
-          

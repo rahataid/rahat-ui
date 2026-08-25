@@ -1,4 +1,3 @@
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -18,6 +17,11 @@ import { useUserCurrentUser } from '@rumsan/react-query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { Can } from 'apps/rahat-ui/src/components/can';
 
 const OTP_LENGTH = 4;
 
@@ -83,10 +87,7 @@ export default function PayoutConfirmationDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <RoleAuth
-        roles={[AARoles.ADMIN, AARoles.Municipality]}
-        hasContent={false}
-      >
+      <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
         {payoutData?.type === 'FSP' &&
           (payoutData?.extras?.paymentProviderName === 'NCHL' ||
             payoutData?.extras?.paymentProviderName === 'Namaste Pay') && (
@@ -110,7 +111,7 @@ export default function PayoutConfirmationDialog({
               </AlertDialogTrigger>
             </TooltipWrapper>
           )}
-      </RoleAuth>
+      </Can>
       <AlertDialogContent className="max-w-lg">
         {sendPayoutOtp.isPending && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">

@@ -26,8 +26,12 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { Can } from 'apps/rahat-ui/src/components/can';
 
 export default function BeneficiaryTransactionLogDetails() {
   const { id, uuid } = useParams();
@@ -97,10 +101,7 @@ export default function BeneficiaryTransactionLogDetails() {
           title="Transaction Log Details"
         />
         {data?.data?.payout?.type === 'FSP' && (
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
             <Button
               className={`gap-2 text-sm ${
                 !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
@@ -110,7 +111,7 @@ export default function BeneficiaryTransactionLogDetails() {
               <RotateCcw className="w-4 h-4" />
               Retry
             </Button>
-          </RoleAuth>
+          </Can>
         )}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
@@ -204,9 +205,7 @@ export default function BeneficiaryTransactionLogDetails() {
               <InfoItem label="Proof of Payment">
                 <FilePreview
                   url={data.data.info.mediaUrl}
-                  fileName={
-                    data.data.info.fileName
-                  }
+                  fileName={data.data.info.fileName}
                 />
               </InfoItem>
             )}

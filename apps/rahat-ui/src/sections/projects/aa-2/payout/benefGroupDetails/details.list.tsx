@@ -21,7 +21,6 @@ import {
   TableLoader,
 } from 'apps/rahat-ui/src/common';
 
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
@@ -48,6 +47,11 @@ import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { Can } from 'apps/rahat-ui/src/components/can';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -226,10 +230,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 payoutData={payout}
               />
               {payout?.type === 'FSP' && (
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
                   <Button
                     className={`gap-2 text-sm ${
                       payout?.hasFailedPayoutRequests === false && 'hidden'
@@ -244,17 +245,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                     />
                     Retry Failed Requests
                   </Button>
-                </RoleAuth>
+                </Can>
               )}
 
               {payout?.type === 'FSP' &&
                 (payout?.extras?.paymentProviderName ===
                   'Manual Bank Transfer' ||
                   payout?.extras?.paymentProviderName === 'Manual') && (
-                  <RoleAuth
-                    roles={[AARoles.ADMIN, AARoles.Municipality]}
-                    hasContent={false}
-                  >
+                  <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
                     <TooltipWrapper
                       tip="Payout cannot be verified because funds have not been disbursed to the beneficiary group."
                       disable={payout?.beneficiaryGroupToken?.isDisbursed}
@@ -303,7 +301,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TooltipWrapper>
-                  </RoleAuth>
+                  </Can>
                 )}
               <Button
                 className={`gap-2 text-sm ${

@@ -25,6 +25,11 @@ import { useState } from 'react';
 import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistory';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function Treasury() {
   const params = useParams();
@@ -65,11 +70,13 @@ export default function Treasury() {
               titleStyle="text-lg"
               description="Overview of token supply, project balance, and transfer history"
             />
-            <IconLabelBtn
-              Icon={Coins}
-              name="Add Fund"
-              handleClick={() => setAddFundOpen(true)}
-            />
+            <Can action={ACTIONS.CREATE} subject={SUBJECTS.FUND_MANAGEMENT}>
+              <IconLabelBtn
+                Icon={Coins}
+                name="Add Fund"
+                handleClick={() => setAddFundOpen(true)}
+              />
+            </Can>
           </div>
 
           {/* ── Top Stats Cards ─────────────────────────────────── */}

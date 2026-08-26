@@ -350,7 +350,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-4 pt-2">
+        <div
+          className={`grid ${
+            payout?.extras?.group_gap ? 'lg:grid-cols-5' : 'lg:grid-cols-4'
+          } gap-4 pt-2`}
+        >
           <DataCard
             title="Total no. of Beneficiaries"
             smallNumber={
@@ -382,6 +386,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             infoIcon={true}
             infoTooltip="Gap between Activation phase triggered and payout disbursed"
           />
+          {payout?.extras?.group_gap && (
+            <DataCard
+              title="Group Gap"
+              smallNumber={payout?.extras?.group_gap}
+              className="rounded-sm h-[80px] pt-10 pb-8 "
+              infoIcon={true}
+              infoTooltip="Gap between group creation and payout disbursed"
+            />
+          )}
         </div>
       </div>
 

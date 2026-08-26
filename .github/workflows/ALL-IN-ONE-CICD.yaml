@@ -304,6 +304,18 @@ jobs:
           JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
           echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
 
+  sast-scan:
+    name: CodeQL Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: 'javascript-typescript'
+      - uses: github/codeql-action/analyze@v3
+
   build:
     name: Build & Push - ${{ matrix.app }}
     runs-on: ubuntu-latest
@@ -366,13 +378,6 @@ jobs:
           fi
           tee ./.env <<< "$ENV"
 
-      # - name: Upload .env for deploy job
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: env-${{ matrix.app }}
-      #     path: ./.env
-      #     retention-days: 1
-
       # -----------------------------
       # Docker Setup
       # -----------------------------
@@ -391,6 +396,7 @@ jobs:
           echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
 
+
       # -----------------------------
       # Docker Build & Push
       # -----------------------------
@@ -405,6 +411,14 @@ jobs:
             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
           build-args: |
             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
+
+      - name: Scan Docker image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+      
 
       - name: Send Slack Alert on Failure
         if: failure()

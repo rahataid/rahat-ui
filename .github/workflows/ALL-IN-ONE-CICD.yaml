@@ -600,7 +600,7 @@ jobs:
       # --------------------------------------------------------
 
       - name: Run Trivy Container Scanner
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
           format: table
@@ -613,7 +613,7 @@ jobs:
       # --------------------------------------------------------
 
       - name: Run Trivy Scanner - SARIF
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
           format: sarif

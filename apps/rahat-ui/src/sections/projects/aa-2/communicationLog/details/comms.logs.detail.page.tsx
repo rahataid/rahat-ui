@@ -24,6 +24,7 @@ import {
   CustomPagination,
   DataCard,
   Heading,
+  NoResult,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
@@ -608,9 +609,7 @@ export default function CommsLogsDetailPage() {
                             ),
                           )
                         ) : (
-                          <p className="text-sm text-muted-foreground text-center py-4">
-                            No logs available
-                          </p>
+                          <NoResult message="No Logs Available" />
                         )}
                       </TabsContent>
                     </div>

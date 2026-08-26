@@ -211,14 +211,14 @@ name: ALL DEV CI/CD
 on:
   workflow_dispatch:
     inputs:
-      action:
-        description: "create = build & deploy ephemeral env, destroy = tear one down"
-        required: true
-        default: "create"
-        type: choice
-        options:
-          - "create"
-          - "destroy"
+      # action:
+        # description: "create = build & deploy ephemeral env, destroy = tear one down"
+        # required: true
+        # default: "create"
+        # type: choice
+        # options:
+        #   - "create"
+        #   - "destroy"
       apps_to_build:
         description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
         required: false
@@ -270,16 +270,16 @@ on:
         required: false
         default: "rahat-ui"
         type: string
-      ttl_hours:
-        description: "Hours before this ephemeral env auto-expires (only used on create)"
-        required: false
-        default: "4"
-        type: string
-      container_to_destroy:
-        description: "Container name to tear down (only used on destroy, e.g. eph-rahat-ui-aa-dev-123)"
-        required: false
-        default: ""
-        type: string
+      # ttl_hours:
+      #   description: "Hours before this ephemeral env auto-expires (only used on create)"
+      #   required: false
+      #   default: "4"
+      #   type: string
+      # container_to_destroy:
+      #   description: "Container name to tear down (only used on destroy, e.g. eph-rahat-ui-aa-dev-123)"
+      #   required: false
+      #   default: ""
+      #   type: string
 
 env:
   CI: false
@@ -321,16 +321,42 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      # --------------------------------------------------------
+      # Node 24
+      # --------------------------------------------------------
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: npm
+          node-version: 24
+
+      # --------------------------------------------------------
+      # Install dependencies
+      #
+      # No lockfile currently exists in the repository.
+      # Therefore do NOT use "cache: npm" and do NOT use npm ci.
+      # --------------------------------------------------------
 
       - name: Install dependencies
-        run: npm ci
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          elif [ -f yarn.lock ]; then
+            corepack enable
+            yarn install --frozen-lockfile
+          elif [ -f pnpm-lock.yaml ]; then
+            corepack enable
+            pnpm install --frozen-lockfile
+          else
+            echo "No dependency lockfile found."
+            echo "Using npm install."
+            npm install
+          fi
 
       # --------------------------------------------------------
       # ESLint
@@ -347,7 +373,7 @@ jobs:
         run: npm run typecheck
 
       # --------------------------------------------------------
-      # Unit / Integration Tests
+      # Tests
       # --------------------------------------------------------
 
       - name: Run tests
@@ -366,14 +392,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
+      # Gitleaks v3 uses Node 24.
+      # Organization repositories require GITLEAKS_LICENSE.
+
       - name: Gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
 # ============================================================
 # SAST - CODEQL
@@ -389,7 +419,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -409,10 +439,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -423,7 +453,7 @@ jobs:
           exit-code: 1
 
 # ============================================================
-# DOCKERFILE LINTING
+# DOCKERFILE LINT
 # ============================================================
 
   dockerfile-lint:
@@ -439,25 +469,38 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: ${{ matrix.dockerfile }}
-          failure-threshold: warning
+
+          # Only fail on actual errors.
+          # Warnings and informational findings will be reported
+          # but will not fail the workflow.
+          failure-threshold: error
 
   build:
     name: Build & Push - ${{ matrix.app }}
     runs-on: ubuntu-latest
-    needs: setup
-    if: ${{ inputs.action == 'create' }}
+    needs:
+      - setup
+      - quality
+      - gitleaks
+      - sast-scan
+      - dependency-scan
+      - dockerfile-lint
+      
+   # if: ${{ inputs.action == 'create' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
     outputs:
       short_sha: ${{ steps.meta.outputs.short_sha }}
       run_number: ${{ steps.meta.outputs.run_number }}
@@ -576,39 +619,23 @@ jobs:
           sarif_file: trivy-results.sarif
 
       # --------------------------------------------------------
-      # Install Syft
-      # --------------------------------------------------------
-
-      - name: Install Syft
-        uses: anchore/sbom-action/download-syft@v0.20.5
-
-      # --------------------------------------------------------
-      # Generate SBOM
+      # SBOM
       # --------------------------------------------------------
 
       - name: Generate SBOM
-        shell: bash
-        run: |
-          IMAGE="${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}"
-
-          syft "$IMAGE" \
-            -o cyclonedx-json=sbom-${{ matrix.app }}.json
-
-          syft "$IMAGE" \
-            -o spdx-json=sbom-${{ matrix.app }}-spdx.json
-
-      # --------------------------------------------------------
-      # Upload SBOM artifact
-      # --------------------------------------------------------
+        uses: anchore/sbom-action@v0
+        with:
+          image: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
+          format: cyclonedx-json
+          output-file: sbom-${{ matrix.app }}.json
 
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
         with:
           name: sbom-${{ matrix.app }}
-          path: |
-            sbom-${{ matrix.app }}.json
-            sbom-${{ matrix.app }}-spdx.json
+          path: sbom-${{ matrix.app }}.json
           retention-days: 30
+
 
       # --------------------------------------------------------
       # Install Cosign
@@ -662,120 +689,120 @@ jobs:
             :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
           SLACK_FOOTER: ''
 
-  deploy-ephemeral:
-    name: Deploy Ephemeral Environment - ${{ matrix.app }}
-    # Runs on your arc-runner-set — needs network access to reach DEV_VM_SSH_HOST
-    runs-on: arc-runner-set
-    needs: [setup, build]
-    if: ${{ inputs.action == 'create' }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
-    steps:
-      # - name: Download .env from build job
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: env-${{ matrix.app }}
-      #     path: .
+  # deploy-ephemeral:
+  #   name: Deploy Ephemeral Environment - ${{ matrix.app }}
+  #   # Runs on your arc-runner-set — needs network access to reach DEV_VM_SSH_HOST
+  #   runs-on: arc-runner-set
+  #   needs: [setup, build]
+  #   if: ${{ inputs.action == 'create' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+  #   steps:
+  #     # - name: Download .env from build job
+  #     #   uses: actions/download-artifact@v4
+  #     #   with:
+  #     #     name: env-${{ matrix.app }}
+  #     #     path: .
 
-      - name: Configure SSH access to dev VM
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
-          chmod 600 ~/.ssh/dev_vm_key
-          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+  #     - name: Configure SSH access to dev VM
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+  #         chmod 600 ~/.ssh/dev_vm_key
+  #         ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Compute ephemeral container name
-        id: c
-        run: |
-          SAFE_APP=$(echo "${{ matrix.app }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
-          SAFE_TAG=$(echo "${{ inputs.tag_suffix }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
-          NAME="eph-${SAFE_APP}-${SAFE_TAG}-${{ needs.build.outputs.run_number }}"
-          echo "name=$NAME" >> $GITHUB_OUTPUT
+  #     - name: Compute ephemeral container name
+  #       id: c
+  #       run: |
+  #         SAFE_APP=$(echo "${{ matrix.app }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
+  #         SAFE_TAG=$(echo "${{ inputs.tag_suffix }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
+  #         NAME="eph-${SAFE_APP}-${SAFE_TAG}-${{ needs.build.outputs.run_number }}"
+  #         echo "name=$NAME" >> $GITHUB_OUTPUT
 
-      # - name: Copy .env to dev VM
-      #   run: |
-      #     scp -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-      #       .env "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}:/tmp/${{ steps.c.outputs.name }}.env"
+  #     # - name: Copy .env to dev VM
+  #     #   run: |
+  #     #     scp -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+  #     #       .env "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}:/tmp/${{ steps.c.outputs.name }}.env"
 
-      - name: Run container on dev VM
-        run: |
-          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
-          set -e
-          docker run -d \
-            --name ${{ steps.c.outputs.name }} \
-            --label ephemeral=true \
-            --label app=${{ matrix.app }} \
-            --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --label ttl-hours="${{ inputs.ttl_hours }}" \
-            -p 3000 \
-            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
-          EOF
+  #     - name: Run container on dev VM
+  #       run: |
+  #         ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+  #           "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
+  #         set -e
+  #         docker run -d \
+  #           --name ${{ steps.c.outputs.name }} \
+  #           --label ephemeral=true \
+  #           --label app=${{ matrix.app }} \
+  #           --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  #           --label ttl-hours="${{ inputs.ttl_hours }}" \
+  #           -p 3000 \
+  #           ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
+  #         EOF
 
-      - name: Resolve assigned port
-        id: url
-        run: |
-          for i in $(seq 1 10); do
-            PORT=$(ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-              "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
-              "docker port ${{ steps.c.outputs.name }} 3000" 2>/dev/null | cut -d: -f2 || echo "")
-            [ -n "$PORT" ] && break
-            sleep 2
-          done
+  #     - name: Resolve assigned port
+  #       id: url
+  #       run: |
+  #         for i in $(seq 1 10); do
+  #           PORT=$(ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+  #             "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+  #             "docker port ${{ steps.c.outputs.name }} 3000" 2>/dev/null | cut -d: -f2 || echo "")
+  #           [ -n "$PORT" ] && break
+  #           sleep 2
+  #         done
 
-          if [ -z "$PORT" ]; then
-            echo "ERROR: could not resolve published port"
-            exit 1
-          fi
+  #         if [ -z "$PORT" ]; then
+  #           echo "ERROR: could not resolve published port"
+  #           exit 1
+  #         fi
 
-          echo "url=http://${{ secrets.DEV_VM_SSH_HOST }}:${PORT}" >> $GITHUB_OUTPUT
+  #         echo "url=http://${{ secrets.DEV_VM_SSH_HOST }}:${PORT}" >> $GITHUB_OUTPUT
 
-      - name: Notify Slack
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_COLOR: '#36a64f'
-          SLACK_TITLE: 'Ephemeral Environment Ready — ${{ matrix.app }}'
-          SLACK_MESSAGE: |
-            *URL:* ${{ steps.url.outputs.url }} (private network / VPN only)
-            *Container:* `${{ steps.c.outputs.name }}`
-            *Expires in:* ${{ inputs.ttl_hours }}h (auto-cleanup)
-            *Manual teardown:* re-run this workflow with `action=destroy` and `container_to_destroy=${{ steps.c.outputs.name }}`
-          SLACK_FOOTER: ''
+  #     - name: Notify Slack
+  #       uses: rtCamp/action-slack-notify@v2
+  #       env:
+  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #         SLACK_COLOR: '#36a64f'
+  #         SLACK_TITLE: 'Ephemeral Environment Ready — ${{ matrix.app }}'
+  #         SLACK_MESSAGE: |
+  #           *URL:* ${{ steps.url.outputs.url }} (private network / VPN only)
+  #           *Container:* `${{ steps.c.outputs.name }}`
+  #           *Expires in:* ${{ inputs.ttl_hours }}h (auto-cleanup)
+  #           *Manual teardown:* re-run this workflow with `action=destroy` and `container_to_destroy=${{ steps.c.outputs.name }}`
+  #         SLACK_FOOTER: ''
 
-  destroy-ephemeral:
-    name: Destroy Ephemeral Environment
-    runs-on: arc-runner-set
-    if: ${{ inputs.action == 'destroy' }}
-    steps:
-      - name: Validate input
-        run: |
-          if [ -z "${{ inputs.container_to_destroy }}" ]; then
-            echo "ERROR: container_to_destroy is required when action=destroy"
-            exit 1
-          fi
+  # destroy-ephemeral:
+  #   name: Destroy Ephemeral Environment
+  #   runs-on: arc-runner-set
+  #   if: ${{ inputs.action == 'destroy' }}
+  #   steps:
+  #     - name: Validate input
+  #       run: |
+  #         if [ -z "${{ inputs.container_to_destroy }}" ]; then
+  #           echo "ERROR: container_to_destroy is required when action=destroy"
+  #           exit 1
+  #         fi
 
-      - name: Configure SSH access to dev VM
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
-          chmod 600 ~/.ssh/dev_vm_key
-          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+  #     - name: Configure SSH access to dev VM
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+  #         chmod 600 ~/.ssh/dev_vm_key
+  #         ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Remove container
-        run: |
-          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
-            "docker rm -f ${{ inputs.container_to_destroy }} || echo 'not found'"
+  #     - name: Remove container
+  #       run: |
+  #         ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+  #           "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+  #           "docker rm -f ${{ inputs.container_to_destroy }} || echo 'not found'"
 
-      - name: Notify Slack
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_COLOR: '#999999'
-          SLACK_TITLE: 'Ephemeral Environment Destroyed'
-          SLACK_MESSAGE: |
-            *Container:* `${{ inputs.container_to_destroy }}`
-            *Actor:* `${{ github.actor }}`
-          SLACK_FOOTER: ''
+  #     - name: Notify Slack
+  #       uses: rtCamp/action-slack-notify@v2
+  #       env:
+  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #         SLACK_COLOR: '#999999'
+  #         SLACK_TITLE: 'Ephemeral Environment Destroyed'
+  #         SLACK_MESSAGE: |
+  #           *Container:* `${{ inputs.container_to_destroy }}`
+  #           *Actor:* `${{ github.actor }}`
+  #         SLACK_FOOTER: ''

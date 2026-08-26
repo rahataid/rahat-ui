@@ -25,6 +25,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import * as XLSX from 'xlsx';
 import SmsVoucherFiltersTags from '../filtersTags';
 import DataTablePagination from '../serverSidePagination';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -62,13 +63,15 @@ export default function BeneficiaryView() {
     setFilters('');
   }, []);
 
+  const debouncedFilters = useDebounce(filters, 500);
+
   const { data: beneficiaries, isLoading } = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...filters,
+    ...debouncedFilters,
   });
   const {
     data: consumerData,
@@ -77,7 +80,7 @@ export default function BeneficiaryView() {
   } = useListConsentConsumer(
     {
       projectUUID: id,
-      ...filters,
+      ...debouncedFilters,
     },
     enabled,
   );
@@ -169,11 +172,9 @@ export default function BeneficiaryView() {
             <SearchInput
               className="w-full"
               name="phone number"
-              value={
-                (table.getColumn('phone')?.getFilterValue() as string) ?? ''
-              }
+              value={filters?.phoneNumber || ''}
               onSearch={(event) =>
-                table.getColumn('phone')?.setFilterValue(event.target.value)
+                setFilters({ ...filters, phoneNumber: event.target.value })
               }
             />
 

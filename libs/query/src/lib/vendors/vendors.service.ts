@@ -31,6 +31,7 @@ export const useVendorList = (
       TAGS.GET_VENDORS,
       payload.page,
       payload.perPage,
+      payload.name,
       payload.status,
       payload.projectName,
       refetch,
@@ -38,6 +39,7 @@ export const useVendorList = (
     [
       payload.page,
       payload.perPage,
+      payload.name,
       payload.status,
       payload.projectName,
       refetch,

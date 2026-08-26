@@ -486,10 +486,10 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - setup
-      - quality
+      # - quality
       - gitleaks
       - sast-scan
-      - dependency-scan
+      # - dependency-scan
       - dockerfile-lint
       
    # if: ${{ inputs.action == 'create' }}

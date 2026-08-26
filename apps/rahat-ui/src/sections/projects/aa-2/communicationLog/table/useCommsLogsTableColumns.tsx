@@ -52,7 +52,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
       header: 'Timestamp',
       cell: ({ row }) => {
         return (
-          <div className="flex  text-xs items-center space-x-2 gap-2">
+          <div className="flex  text-[10px] items-center space-x-2 gap-2">
             <div className="flex flex-col ">
               <span>{dateFormat(row?.original?.createdAt)}</span>
               <span>{dateFormat(row?.original?.updatedAt)}</span>

@@ -135,13 +135,9 @@ export default function AddActivities() {
           ?.name.toLowerCase()}`;
 
   useStakeholdersGroups(projectID as UUID, {
-    page: 1,
-    perPage: 100,
   });
   useBeneficiariesGroups(projectID as UUID, {
-    excludeGroupPurpose: GroupPurpose.GENERAL,
-    page: 1,
-    perPage: 100,
+    excludeGroupPurpose: GroupPurpose.GENERAL
   });
   const appTransports = useListAllTransports();
 

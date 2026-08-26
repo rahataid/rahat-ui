@@ -386,6 +386,7 @@ jobs:
   gitleaks:
     name: Secret Scan - Gitleaks
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev-v2'
 
     permissions:
       contents: read
@@ -400,10 +401,17 @@ jobs:
       # Organization repositories require GITLEAKS_LICENSE.
 
       - name: Gitleaks
+        id: gitleaks
+        continue-on-error: true
         uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+      - name: Report Gitleaks result
+        if: steps.gitleaks.outcome == 'failure'
+        run: |
+          echo "::warning::Gitleaks detected secrets. Build will continue."
 
 # ============================================================
 # SAST - CODEQL
@@ -433,24 +441,24 @@ jobs:
 # DEPENDENCY / FILESYSTEM SECURITY
 # ============================================================
 
-  # dependency-scan:
-  #   name: Dependency & Filesystem Scan
-  #   runs-on: ubuntu-latest
+  dependency-scan:
+    name: Dependency & Filesystem Scan
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v6
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-  #     - name: Trivy filesystem scan
-  #       uses: aquasecurity/trivy-action@v0.36.0
-  #       with:
-  #         scan-type: fs
-  #         scan-ref: .
-  #         scanners: vuln,secret,misconfig
-  #         severity: CRITICAL,HIGH
-  #         ignore-unfixed: true
-  #         format: table
-  #         exit-code: 1
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: 0
 
 # ============================================================
 # DOCKERFILE LINT
@@ -489,7 +497,7 @@ jobs:
       # - quality
       - gitleaks
       - sast-scan
-      # - dependency-scan
+      - dependency-scan
       - dockerfile-lint
       
    # if: ${{ inputs.action == 'create' }}

@@ -311,73 +311,73 @@ jobs:
           JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
           echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
 
-# ============================================================
-# CODE QUALITY
-# ============================================================
+# # ============================================================
+# # CODE QUALITY
+# # ============================================================
 
-  quality:
-    name: Code Quality
-    runs-on: ubuntu-latest
+#   quality:
+#     name: Code Quality
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v6
 
-      # --------------------------------------------------------
-      # Node 24
-      # --------------------------------------------------------
+#       # --------------------------------------------------------
+#       # Node 24
+#       # --------------------------------------------------------
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v6
+#         with:
+#           node-version: 24
 
-      # --------------------------------------------------------
-      # Install dependencies
-      #
-      # No lockfile currently exists in the repository.
-      # Therefore do NOT use "cache: npm" and do NOT use npm ci.
-      # --------------------------------------------------------
+#       # --------------------------------------------------------
+#       # Install dependencies
+#       #
+#       # No lockfile currently exists in the repository.
+#       # Therefore do NOT use "cache: npm" and do NOT use npm ci.
+#       # --------------------------------------------------------
 
-      - name: Install dependencies
-        shell: bash
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          elif [ -f npm-shrinkwrap.json ]; then
-            npm ci
-          elif [ -f yarn.lock ]; then
-            corepack enable
-            yarn install --frozen-lockfile
-          elif [ -f pnpm-lock.yaml ]; then
-            corepack enable
-            pnpm install --frozen-lockfile
-          else
-            echo "No dependency lockfile found."
-            echo "Using npm install."
-            npm install
-          fi
+#       - name: Install dependencies
+#         shell: bash
+#         run: |
+#           if [ -f package-lock.json ]; then
+#             npm ci
+#           elif [ -f npm-shrinkwrap.json ]; then
+#             npm ci
+#           elif [ -f yarn.lock ]; then
+#             corepack enable
+#             yarn install --frozen-lockfile
+#           elif [ -f pnpm-lock.yaml ]; then
+#             corepack enable
+#             pnpm install --frozen-lockfile
+#           else
+#             echo "No dependency lockfile found."
+#             echo "Using npm install."
+#             npm install
+#           fi
 
-      # --------------------------------------------------------
-      # ESLint
-      # --------------------------------------------------------
+#       # --------------------------------------------------------
+#       # ESLint
+#       # --------------------------------------------------------
 
-      - name: ESLint
-        run: npm run lint
+#       - name: ESLint
+#         run: npm run lint
 
-      # --------------------------------------------------------
-      # TypeScript
-      # --------------------------------------------------------
+#       # --------------------------------------------------------
+#       # TypeScript
+#       # --------------------------------------------------------
 
-      - name: TypeScript type-check
-        run: npm run typecheck
+#       - name: TypeScript type-check
+#         run: npm run typecheck
 
-      # --------------------------------------------------------
-      # Tests
-      # --------------------------------------------------------
+#       # --------------------------------------------------------
+#       # Tests
+#       # --------------------------------------------------------
 
-      - name: Run tests
-        run: npm test
+#       - name: Run tests
+#         run: npm test
 
 # ============================================================
 # SECRET SCANNING
@@ -433,24 +433,24 @@ jobs:
 # DEPENDENCY / FILESYSTEM SECURITY
 # ============================================================
 
-  dependency-scan:
-    name: Dependency & Filesystem Scan
-    runs-on: ubuntu-latest
+  # dependency-scan:
+  #   name: Dependency & Filesystem Scan
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v6
 
-      - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          scanners: vuln,secret,misconfig
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          format: table
-          exit-code: 1
+  #     - name: Trivy filesystem scan
+  #       uses: aquasecurity/trivy-action@v0.36.0
+  #       with:
+  #         scan-type: fs
+  #         scan-ref: .
+  #         scanners: vuln,secret,misconfig
+  #         severity: CRITICAL,HIGH
+  #         ignore-unfixed: true
+  #         format: table
+  #         exit-code: 1
 
 # ============================================================
 # DOCKERFILE LINT

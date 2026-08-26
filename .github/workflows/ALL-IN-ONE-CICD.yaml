@@ -286,6 +286,13 @@ env:
   REGISTRY: docker.io
   IMAGE_NAMESPACE: esatya
 
+permissions:
+  contents: read
+
+# ============================================================
+# SETUP
+# ============================================================
+
 jobs:
   setup:
     name: Setup Build Matrix
@@ -304,17 +311,141 @@ jobs:
           JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
           echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
 
-  sast-scan:
-    name: CodeQL Security Scan
+# ============================================================
+# CODE QUALITY
+# ============================================================
+
+  quality:
+    name: Code Quality
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          languages: 'javascript-typescript'
-      - uses: github/codeql-action/analyze@v3
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # --------------------------------------------------------
+      # ESLint
+      # --------------------------------------------------------
+
+      - name: ESLint
+        run: npm run lint
+
+      # --------------------------------------------------------
+      # TypeScript
+      # --------------------------------------------------------
+
+      - name: TypeScript type-check
+        run: npm run typecheck
+
+      # --------------------------------------------------------
+      # Unit / Integration Tests
+      # --------------------------------------------------------
+
+      - name: Run tests
+        run: npm test
+
+# ============================================================
+# SECRET SCANNING
+# ============================================================
+
+  gitleaks:
+    name: Secret Scan - Gitleaks
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# ============================================================
+# SAST - CODEQL
+# ============================================================
+
+  sast-scan:
+    name: SAST - CodeQL
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@v3
+
+# ============================================================
+# DEPENDENCY / FILESYSTEM SECURITY
+# ============================================================
+
+  dependency-scan:
+    name: Dependency & Filesystem Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: 1
+
+# ============================================================
+# DOCKERFILE LINTING
+# ============================================================
+
+  dockerfile-lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile:
+          - Dockerfile.rahat-ui
+          - Dockerfile.community-tool-ui
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          failure-threshold: warning
 
   build:
     name: Build & Push - ${{ matrix.app }}
@@ -412,12 +543,106 @@ jobs:
           build-args: |
             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
 
-      - name: Scan Docker image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
+      # --------------------------------------------------------
+      # Trivy Docker image scan
+      # --------------------------------------------------------
+
+      - name: Run Trivy Container Scanner
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
-          exit-code: '0'
-          severity: 'CRITICAL,HIGH'
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: 1
+
+      # --------------------------------------------------------
+      # Trivy SARIF
+      # --------------------------------------------------------
+
+      - name: Run Trivy Scanner - SARIF
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: 0
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      # --------------------------------------------------------
+      # Install Syft
+      # --------------------------------------------------------
+
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0.20.5
+
+      # --------------------------------------------------------
+      # Generate SBOM
+      # --------------------------------------------------------
+
+      - name: Generate SBOM
+        shell: bash
+        run: |
+          IMAGE="${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}"
+
+          syft "$IMAGE" \
+            -o cyclonedx-json=sbom-${{ matrix.app }}.json
+
+          syft "$IMAGE" \
+            -o spdx-json=sbom-${{ matrix.app }}-spdx.json
+
+      # --------------------------------------------------------
+      # Upload SBOM artifact
+      # --------------------------------------------------------
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ matrix.app }}
+          path: |
+            sbom-${{ matrix.app }}.json
+            sbom-${{ matrix.app }}-spdx.json
+          retention-days: 30
+
+      # --------------------------------------------------------
+      # Install Cosign
+      # --------------------------------------------------------
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.8.1
+
+      # --------------------------------------------------------
+      # Sign image
+      # --------------------------------------------------------
+
+      - name: Sign Docker image
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        shell: bash
+        run: |
+          IMAGE="${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}"
+          TAG="${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}"
+
+          cosign sign \
+            --yes \
+            "${IMAGE}:${TAG}"
+
+      # --------------------------------------------------------
+      # Build provenance
+      # --------------------------------------------------------
+
+      - name: Generate build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
       
 
       - name: Send Slack Alert on Failure

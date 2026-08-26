@@ -134,18 +134,10 @@ export default function MessageDetailPage() {
     },
   );
 
-  const totalPrice = React.useMemo(() => {
-    if (!logs?.data) return 0;
-
-    return logs.data.reduce((sum: number, log: any) => {
-      let price = log?.disposition?.price;
-      if (typeof price === 'string' && price.startsWith('-')) {
-        price = price.substring(1);
-      }
-      const num = parseFloat(price);
-      return sum + (isNaN(num) ? 0 : num);
-    }, 0);
-  }, [logs]);
+  // Cost is aggregated server-side over every broadcast in the session (and
+  // narrowed by the same date filter), so it stays a campaign total instead of
+  // re-summing whichever log page is on screen.
+  const totalPrice = Number(count?.TOTAL_PRICE ?? 0) || 0;
 
   const table = useReactTable({
     manualPagination: true,

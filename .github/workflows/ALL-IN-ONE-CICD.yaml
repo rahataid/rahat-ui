@@ -297,7 +297,7 @@ jobs:
   setup:
     name: Setup Build Matrix
     runs-on: ubuntu-latest
-    if: ${{ inputs.action == 'create' }}
+    # if: ${{ inputs.action == 'create' }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -583,7 +583,8 @@ jobs:
       # Docker Build & Push
       # -----------------------------
       - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
+        id: build
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile.${{ matrix.app }}
@@ -599,7 +600,7 @@ jobs:
       # --------------------------------------------------------
 
       - name: Run Trivy Container Scanner
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.36.0
         with:
           image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
           format: table
@@ -612,7 +613,7 @@ jobs:
       # --------------------------------------------------------
 
       - name: Run Trivy Scanner - SARIF
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.36.0
         with:
           image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
           format: sarif

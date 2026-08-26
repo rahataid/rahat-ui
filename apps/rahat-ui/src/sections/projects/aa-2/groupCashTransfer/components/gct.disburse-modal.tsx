@@ -114,7 +114,7 @@ export function DisburseModal({
 
   const handleVerify = async () => {
     if (otp.length !== OTP_LENGTH) {
-      setOtpError(t('PLEASE_ENTER_DIGIT_PIN', { length: OTP_LENGTH }));
+      setOtpError(t('PLEASE_ENTER_DIGIT_PIN', { length: formatDigits(OTP_LENGTH) }));
       return;
     }
     setOtpError('');
@@ -190,7 +190,7 @@ export function DisburseModal({
                   </p>
                   <div className="flex items-center gap-3 mt-3">
                     <Input
-                      placeholder={t('DIGIT_PIN_PLACEHOLDER', { length: OTP_LENGTH })}
+                      placeholder={t('DIGIT_PIN_PLACEHOLDER', { length: formatDigits(OTP_LENGTH) })}
                       maxLength={OTP_LENGTH}
                       inputMode="numeric"
                       autoFocus

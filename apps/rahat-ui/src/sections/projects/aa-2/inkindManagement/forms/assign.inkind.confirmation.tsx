@@ -90,7 +90,7 @@ export default function AssignInkindConfirmation({
 
         <div className="w-[40%] p-4 rounded-md bg-gray-50 flex flex-col min-h-0">
           <p className="font-semibold text-sm mb-2">
-            {tv('BENEFICIARIES_LIST', { count: beneficiaries.length })}
+            {tv('BENEFICIARIES_LIST', { count: formatNum(beneficiaries.length) })}
           </p>
           {group.isLoading || group.isFetching ? (
             <div className="flex items-center justify-center h-24">

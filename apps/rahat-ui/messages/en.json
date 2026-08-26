@@ -533,7 +533,8 @@
     "TRANSACTION": "Transaction",
     "NO_DATA": "No Data",
     "DOCUMENTS": "Documents",
-    "DOCUMENTS_NOT_AVAILABLE": "Documents not available."
+    "DOCUMENTS_NOT_AVAILABLE": "Documents not available.",
+    "PROOF_OF_PAYMENT": "Proof of Payment"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",

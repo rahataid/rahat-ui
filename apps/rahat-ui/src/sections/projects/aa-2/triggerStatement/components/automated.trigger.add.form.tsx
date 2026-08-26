@@ -299,7 +299,7 @@ export default function AddAutomatedTriggerForm({
                         <SelectContent>
                           {DurationData.map((item) => (
                             <SelectItem key={item.value} value={item.value}>
-                              {item.label}
+                              {item.value === 'hours' ? t('HOURS') : t('DAYS')}
                             </SelectItem>
                           ))}
                         </SelectContent>

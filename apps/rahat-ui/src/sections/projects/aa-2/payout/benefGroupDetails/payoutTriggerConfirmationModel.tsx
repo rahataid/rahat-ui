@@ -199,7 +199,7 @@ export default function PayoutConfirmationDialog({
           </p>
           <div className="flex items-center gap-3 mt-3">
             <Input
-              placeholder={tv('DIGIT_PIN_PLACEHOLDER', { length: OTP_LENGTH })}
+              placeholder={tv('DIGIT_PIN_PLACEHOLDER', { length: formatDigits(OTP_LENGTH) })}
               maxLength={OTP_LENGTH}
               inputMode="numeric"
               autoFocus

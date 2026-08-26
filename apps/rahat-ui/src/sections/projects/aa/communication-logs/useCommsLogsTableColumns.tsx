@@ -4,11 +4,13 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function useCommsLogsTableColumns() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
@@ -30,7 +32,7 @@ export default function useCommsLogsTableColumns() {
       accessorKey: 'attempts',
       header: t('ATTEMPTS'),
       cell: ({ row }) => {
-        return <div className="ml-8">{row?.original?.attempts}</div>;
+        return <div className="ml-8">{formatNum(row?.original?.attempts ?? 0)}</div>;
       },
     },
     {
@@ -42,7 +44,11 @@ export default function useCommsLogsTableColumns() {
       accessorKey: 'duration',
       header: t('DURATION'),
       cell: ({ row }) => (
-        <div>{row?.original?.disposition?.cdr?.billableseconds || 'N/A'}</div>
+        <div>
+          {row?.original?.disposition?.cdr?.billableseconds != null
+            ? formatNum(row?.original?.disposition?.cdr?.billableseconds)
+            : tg('N_A')}
+        </div>
       ),
     },
   ];

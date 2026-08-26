@@ -30,6 +30,7 @@ import { useCallback } from 'react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function BeneficiaryTransactionLogDetails() {
   const t = useTranslations('AA_PROJECT');
@@ -197,17 +198,17 @@ export default function BeneficiaryTransactionLogDetails() {
                   data?.data?.status,
                 )}`}
               >
-                {data?.data?.status ? tg(data.data.status) : ''}
+                {translateValue(tg, data?.data?.status)}
               </Badge>
             </InfoItem>
             <InfoItem label={tv('TRANSACTION_TYPE')}>
               <Badge className="text-muted-foreground">
-                {data?.data?.transactionType.split('_').join(' ')}
+                {translateValue(tg, data?.data?.transactionType)}
               </Badge>
             </InfoItem>
 
             {data?.data?.info?.mediaUrl && (
-              <InfoItem label="Proof of Payment">
+              <InfoItem label={tg('PROOF_OF_PAYMENT')}>
                 <FilePreview
                   url={data.data.info.mediaUrl}
                   fileName={

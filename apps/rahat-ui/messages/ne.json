@@ -3390,7 +3390,7 @@
     "DANGER": "खतरा",
     "DANGER_LEVEL": "खतरा स्तर",
     "AIR_TEMPERATURE": "हावाको तापक्रम",
-    "HOURLY_PRECIPITATION": "घण्टागत वर्षा",
+    "HOURLY_PRECIPITATION": "प्रतिघण्टा वर्षा",
     "ACCUMULATED_PRECIPITATION": "सञ्चित वर्षा",
     "WIND_SPEED": "हावाको गति",
     "WIND_GUST": "हावाको झोक्का",
@@ -3417,7 +3417,8 @@
     "TRANSACTION": "कारोबार",
     "NO_DATA": "कुनै तथ्याङ्क छैन",
     "DOCUMENTS": "कागजातहरू",
-    "DOCUMENTS_NOT_AVAILABLE": "कागजातहरू उपलब्ध छैनन्।"
+    "DOCUMENTS_NOT_AVAILABLE": "कागजातहरू उपलब्ध छैनन्।",
+    "PROOF_OF_PAYMENT": "भुक्तानीको प्रमाण"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -3483,10 +3484,10 @@
     "SEND_OTP": "ओटिपी पठाउनुहोस्",
     "SIGN_IN": "साइन इन",
     "TERMS_OF_SERVICE": "सेवाका सर्तहरू",
-    "TO_ENSURE_YOU_SECURITY_PLEASE_ENTER": "तपाईंको सुरक्षाको लागि कृपया आफ्नो One-Time-Password राख्नुहोस्। ओटिपी {address} मा पठाइएको छ।",
+    "TO_ENSURE_YOU_SECURITY_PLEASE_ENTER": "तपाईंको सुरक्षाको लागि कृपया आफ्नो ओटिपी राख्नुहोस्। ओटिपी {address} मा पठाइएको छ।",
     "VERIFY": "प्रमाणित गर्नुहोस्",
     "VERIFY_WITH_OTP": "ओटिपीबाट प्रमाणित गर्नुहोस्",
-    "WELCOME_TO_RAHAT": "राहतमा तपाइलाई स्वागत छ।"
+    "WELCOME_TO_RAHAT": "राहतमा तपाईंलाई स्वागत छ।"
   },
   "NAVIGATION_SIDEBAR": {
     "EXIT_PROJECT": "परियोजनाबाट बाहिर निस्कनुहोस्",

@@ -12,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectTrigger,
@@ -20,7 +19,6 @@ import {
   SelectContent,
   SelectItem,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Plus,
@@ -44,7 +42,13 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
-import { Back, Heading, NoResult } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  FormInput,
+  FormTextarea,
+  Heading,
+  NoResult,
+} from 'apps/rahat-ui/src/common';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
@@ -61,6 +65,7 @@ import { transformCommunicationData } from 'apps/rahat-ui/src/utils/transformCom
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export default function EditActivity() {
   // State goes here
@@ -450,7 +455,7 @@ export default function EditActivity() {
                         <FormItem className="col-span-2">
                           <FormLabel>Activity title</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder="Enter activity title"
                               {...field}
@@ -500,7 +505,7 @@ export default function EditActivity() {
                         <FormItem>
                           <FormLabel>Responsible Station</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder="Enter responsible station"
                               {...field}
@@ -610,7 +615,7 @@ export default function EditActivity() {
                           <FormItem>
                             <FormLabel>Lead Time</FormLabel>
                             <div className="grid grid-cols-4">
-                              <Input
+                              <FormInput
                                 type="text"
                                 placeholder="Enter lead time"
                                 className="col-span-3 rounded-r-none "
@@ -662,8 +667,9 @@ export default function EditActivity() {
                         <FormItem className="col-span-2">
                           <FormLabel>Description</FormLabel>
                           <FormControl>
-                            <Textarea
+                            <FormTextarea
                               placeholder="Enter description"
+                              className=" rounded"
                               {...field}
                             />
                           </FormControl>

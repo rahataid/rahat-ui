@@ -24,7 +24,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -36,7 +35,6 @@ import {
 import MultipleSelector, {
   type Option,
 } from '@rahat-ui/shadcn/src/components/custom/multi-select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -65,6 +63,13 @@ import { createCommunicationFormSchema } from '../schemas/activity.schemas';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { renderGroups } from './renderGroup';
 import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
+import {
+  FormInput,
+  FormSelectTrigger,
+  FormTextarea,
+} from 'apps/rahat-ui/src/common';
+import { cn } from '@rahat-ui/shadcn/src';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -436,7 +441,7 @@ export default function AddCommunicationForm({
             <FormItem className="col-span-2">
               <FormLabel>Communication Title</FormLabel>
               <FormControl>
-                <Input placeholder="Write Communication title" {...field} />
+                <FormInput placeholder="Write Communication title" {...field} />
               </FormControl>
               {errors.communicationTitle && (
                 <FormMessage>{errors.communicationTitle.message}</FormMessage>
@@ -455,9 +460,9 @@ export default function AddCommunicationForm({
                 value={field.value || ''}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <FormSelectTrigger value={field.value}>
                     <SelectValue placeholder="Select group type" />
-                  </SelectTrigger>
+                  </FormSelectTrigger>
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="STAKEHOLDERS">Stakeholders</SelectItem>
@@ -485,7 +490,10 @@ export default function AddCommunicationForm({
                     inputProps={{
                       className: 'outline-none',
                     }}
-                    className="max-h-20 overflow-y-auto"
+                    className={cn(
+                      selectedGroups.length > 0 && 'field-filled pl-2',
+                      'max-h-20 overflow-y-auto',
+                    )}
                     dropdownClassName="max-h-36 w-80"
                     onChange={(options: Option[]) => {
                       field.onChange(options.map((opt: Option) => opt.value));
@@ -529,7 +537,7 @@ export default function AddCommunicationForm({
                   value={field.value?.[0] || ''}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <FormSelectTrigger value={field.value}>
                       <SelectValue
                         placeholder={
                           groupType
@@ -537,7 +545,7 @@ export default function AddCommunicationForm({
                             : 'Select group type first'
                         }
                       />
-                    </SelectTrigger>
+                    </FormSelectTrigger>
                   </FormControl>
                   <SelectContent>
                     <SelectGroup>
@@ -561,9 +569,9 @@ export default function AddCommunicationForm({
               <FormLabel>Communication Type</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <FormSelectTrigger value={field.value}>
                     <SelectValue placeholder="Select communication type" />
-                  </SelectTrigger>
+                  </FormSelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {appTransports?.map((transport) => {
@@ -721,7 +729,7 @@ export default function AddCommunicationForm({
               <FormItem className="col-span-2">
                 <FormLabel>Subject</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter subject" {...field} />
+                  <FormInput placeholder="Enter subject" {...field} />
                 </FormControl>
                 {errors.subject && (
                   <FormMessage>{errors.subject.message}</FormMessage>
@@ -759,9 +767,10 @@ export default function AddCommunicationForm({
                 <FormItem className="col-span-2">
                   <FormLabel>Message</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <FormTextarea
                       placeholder="Write message"
                       {...field}
+                      className="rounded"
                       maxLength={maxLen}
                     />
                   </FormControl>

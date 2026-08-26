@@ -53,7 +53,10 @@ const DropdownSearch = (props: DropdownSearchProps) => {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <Popover open={open && !disabled} onOpenChange={disabled ? () => {} : setOpen}>
+    <Popover
+      open={open && !disabled}
+      onOpenChange={disabled ? () => {} : setOpen}
+    >
       <PopoverTrigger asChild>
         <FormControl>
           <Button
@@ -63,6 +66,7 @@ const DropdownSearch = (props: DropdownSearchProps) => {
             className={cn(
               'w-full justify-between font-normal',
               !selectedLabel && 'text-muted-foreground',
+              selectedLabel && 'field-filled',
             )}
           >
             {selectedLabel || placeholder}

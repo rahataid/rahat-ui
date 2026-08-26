@@ -95,6 +95,13 @@
   }
 }
 
+@layer components {
+  .field-filled {
+    box-shadow: inset 4px 0 0 0 hsl(var(--primary)) !important;
+    background-color: #eff6ff !important;
+  }
+}
+
 .mapboxgl-ctrl-attrib-inner {
   display: none;
 }

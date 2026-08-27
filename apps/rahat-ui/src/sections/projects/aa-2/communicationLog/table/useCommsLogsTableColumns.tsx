@@ -50,9 +50,10 @@ export default function useCommsLogsTableColumns(transportName: string) {
       : []),
     {
       header: 'Timestamp',
+      meta: { className: 'w-[250px]' },
       cell: ({ row }) => {
         return (
-          <div className="flex text-[10px] items-center space-x-2 gap-2">
+          <div className="flex text-[10px] items-center space-x-2 gap-2 ">
             {transportName === 'SMS' || transportName === 'EMAIL' ? (
               <div>
                 <span>{dateFormat(row?.original?.updatedAt)}</span>
@@ -72,7 +73,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
                     </span>
                   </div>
                 ) : (
-                  <div className="flex flex-col">
+                  <div className="flex">
                     <span>{dateFormat(row?.original?.updatedAt)}</span>
                   </div>
                 )}

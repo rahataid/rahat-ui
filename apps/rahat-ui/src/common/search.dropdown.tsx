@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { FormControl } from '@rahat-ui/shadcn/src/components/ui/form';
+import { FormControl, useFormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import { useState } from 'react';
 
 export type DropdownOption = {
@@ -49,6 +49,8 @@ const DropdownSearch = (props: DropdownSearchProps) => {
     selectedLabel,
   } = props;
 
+  const { error } = useFormField();
+
   // State goes here
   const [open, setOpen] = useState<boolean>(false);
 
@@ -66,7 +68,8 @@ const DropdownSearch = (props: DropdownSearchProps) => {
             className={cn(
               'w-full justify-between font-normal',
               !selectedLabel && 'text-muted-foreground',
-              selectedLabel && 'field-filled',
+              selectedLabel && !error && 'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50',
+              error && 'shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50',
             )}
           >
             {selectedLabel || placeholder}

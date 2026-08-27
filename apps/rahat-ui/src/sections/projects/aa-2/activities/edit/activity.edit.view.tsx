@@ -453,7 +453,7 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel>Activity title</FormLabel>
+                          <FormLabel required>Activity title</FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
@@ -472,7 +472,7 @@ export default function EditActivity() {
                     name="responsibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Responsibility</FormLabel>
+                        <FormLabel required>Responsibility</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             users?.data?.find((u) => u.uuid === field.value)
@@ -503,7 +503,7 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>Responsible Station</FormLabel>
+                          <FormLabel required>Responsible Station</FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
@@ -521,7 +521,7 @@ export default function EditActivity() {
                     name="phaseId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phase</FormLabel>
+                        <FormLabel required>Phase</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             phases?.find((p) => p.uuid === field.value)?.name
@@ -550,7 +550,7 @@ export default function EditActivity() {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category</FormLabel>
+                        <FormLabel required>Category</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             categories?.find((c) => c.uuid === field.value)

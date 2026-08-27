@@ -134,9 +134,6 @@ export default function MessageDetailPage() {
     },
   );
 
-  // Cost is aggregated server-side over every broadcast in the session (and
-  // narrowed by the same date filter), so it stays a campaign total instead of
-  // re-summing whichever log page is on screen.
   const totalPrice = Number(count?.TOTAL_PRICE ?? 0) || 0;
 
   const table = useReactTable({

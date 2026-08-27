@@ -12,10 +12,21 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
 import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
@@ -31,6 +42,7 @@ export default function AddStakeholders() {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
   const [unsavedSupportAreaInput, setUnsavedSupportAreaInput] =
     useState<string>('');
+  const hasInteracted = useRef(false);
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
     return isValidPhoneNumber(value);
@@ -72,6 +84,7 @@ export default function AddStakeholders() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       phone: '+977',
@@ -81,6 +94,19 @@ export default function AddStakeholders() {
       district: '',
       municipality: '',
     },
+  });
+
+  const hasUnsavedChanges =
+    (hasInteracted.current && form.formState.isDirty) ||
+    unsavedSupportAreaInput.trim() !== '';
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {},
   });
   // Handle Enter key in the support area TagInput
   const handleSupportAreaKeyDown = (
@@ -122,11 +148,16 @@ export default function AddStakeholders() {
     <div className="p-4">
       <HeaderWithBack
         title={'Create Stakeholder'}
-        subtitle="Fill the form below  to create a new stakeholder"
+        subtitle="Fill the form below  to create a new stakeholders"
         path={`/projects/aa/${id}/stakeholders`}
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
+        <form
+          onSubmit={form.handleSubmit(handleCreateStakeholders)}
+          onFocus={() => {
+            hasInteracted.current = true;
+          }}
+        >
           <div className="p-[clamp(6px,1vw,10px)] rounded-sm border bg-card gap-3">
             <div className="grid grid-cols-2 gap-[clamp(6px,0.8vw,12px)]  ">
               <FormField
@@ -373,6 +404,25 @@ export default function AddStakeholders() {
           </div>
         </form>
       </Form>
+
+      <AlertDialog open={showDialog} onOpenChange={(open) => !open && handleCancelLeave()}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to leave? Your entered data will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelLeave}>
+              No, stay
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmLeave}>
+              Yes, leave
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

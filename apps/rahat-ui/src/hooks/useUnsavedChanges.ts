@@ -20,11 +20,9 @@ export function useUnsavedChanges({
   const savedRef = useRef(hasUnsavedChanges);
   savedRef.current = hasUnsavedChanges;
 
-  // Keep original methods in refs so we can call them without triggering our patches
-  const originalPush = useRef(router.push);
-  const originalBack = useRef(router.back);
-  originalPush.current = router.push;
-  originalBack.current = router.back;
+  // Keep original methods stable across all renders
+  const originalPushRef = useRef(router.push);
+  const originalBackRef = useRef(router.back);
 
   // Scenario 1: Page refresh / close
   useEffect(() => {
@@ -63,12 +61,12 @@ export function useUnsavedChanges({
 
   // Scenario 3: Intercept router.push and router.back
   useEffect(() => {
-    const push = router.push.bind(router);
-    const back = router.back.bind(router);
+    const currentPush = router.push.bind(router);
+    const currentBack = router.back.bind(router);
 
     router.push = (href: string) => {
       if (!savedRef.current) {
-        return push(href);
+        return currentPush(href);
       }
       pendingPath.current = href;
       pendingAction.current = 'push';
@@ -77,15 +75,15 @@ export function useUnsavedChanges({
 
     router.back = () => {
       if (!savedRef.current) {
-        return back();
+        return currentBack();
       }
       pendingAction.current = 'back';
       setShowDialog(true);
     };
 
     return () => {
-      router.push = push;
-      router.back = back;
+      router.push = currentPush;
+      router.back = currentBack;
     };
   }, [router]);
 
@@ -108,17 +106,22 @@ export function useUnsavedChanges({
   }, [hasUnsavedChanges]);
 
   const handleConfirmLeave = useCallback(() => {
-    setShowDialog(false);
     const path = pendingPath.current;
     const action = pendingAction.current;
-    pendingPath.current = null;
-    pendingAction.current = null;
+
+    // Call onConfirm first (to save data)
     onConfirm?.();
 
+    // Then close dialog and navigate
+    setShowDialog(false);
+    pendingPath.current = null;
+    pendingAction.current = null;
+
+    // Navigate using the original methods
     if (action === 'back') {
-      originalBack.current();
+      originalBackRef.current();
     } else if (action === 'push' && path) {
-      originalPush.current(path);
+      originalPushRef.current(path);
     }
   }, [onConfirm]);
 

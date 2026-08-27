@@ -386,7 +386,7 @@ jobs:
   gitleaks:
     name: Secret Scan - Gitleaks
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev-v2'
+    if: github.ref == 'refs/heads/removed-pagiton-from-add-edit-activity'
 
     permissions:
       contents: read

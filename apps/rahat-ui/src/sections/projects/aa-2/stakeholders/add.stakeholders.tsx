@@ -11,17 +11,7 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { HeaderWithBack, UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
 import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
 import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
@@ -405,24 +395,11 @@ export default function AddStakeholders() {
         </form>
       </Form>
 
-      <AlertDialog open={showDialog} onOpenChange={(open) => !open && handleCancelLeave()}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to leave? Your entered data will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelLeave}>
-              No, stay
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmLeave}>
-              Yes, leave
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+      />
     </div>
   );
 }

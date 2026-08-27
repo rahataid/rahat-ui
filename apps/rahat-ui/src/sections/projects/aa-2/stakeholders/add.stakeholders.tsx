@@ -125,7 +125,7 @@ export default function AddStakeholders() {
 
   const handleClearForm = () => {
     clearSaved();
-    form.reset();
+    form.reset(DEFAULT_FORM_VALUES);
     setVariationTags([]);
     setUnsavedSupportAreaInput('');
     setShowClearDialog(false);
@@ -443,6 +443,10 @@ export default function AddStakeholders() {
         open={showDialog}
         onConfirm={handleConfirmLeave}
         onCancel={handleCancelLeave}
+        title="Unsaved Changes"
+        description="You have unsaved changes. Your entered data will be saved and you can continue where you left off when you return."
+        cancelText="No, stay here"
+        confirmText="Yes, save and leave"
       />
 
       <UnsavedChangesDialog

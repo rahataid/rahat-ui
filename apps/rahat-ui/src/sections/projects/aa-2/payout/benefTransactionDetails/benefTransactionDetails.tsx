@@ -101,7 +101,7 @@ export default function BeneficiaryTransactionLogDetails() {
           title="Transaction Log Details"
         />
         {data?.data?.payout?.type === 'FSP' && (
-          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+          <Can action={ACTIONS.TRIGGER} subject={SUBJECTS.PAYOUT}>
             <Button
               className={`gap-2 text-sm ${
                 !isPayoutTransactionFailed(data?.data?.status) && 'hidden'

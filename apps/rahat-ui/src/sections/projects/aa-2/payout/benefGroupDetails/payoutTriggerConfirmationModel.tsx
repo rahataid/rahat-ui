@@ -87,7 +87,7 @@ export default function PayoutConfirmationDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+      <Can action={ACTIONS.TRIGGER} subject={SUBJECTS.PAYOUT}>
         {payoutData?.type === 'FSP' &&
           (payoutData?.extras?.paymentProviderName === 'NCHL' ||
             payoutData?.extras?.paymentProviderName === 'Namaste Pay') && (

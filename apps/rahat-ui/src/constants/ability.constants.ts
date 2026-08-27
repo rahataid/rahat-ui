@@ -7,6 +7,7 @@ export const ACTIONS = {
   DOWNLOAD: 'download',
   ACTIVATE: 'activate',
   REVERT: 'revert',
+  TRIGGER: 'trigger',
 };
 
 export const SUBJECTS = {

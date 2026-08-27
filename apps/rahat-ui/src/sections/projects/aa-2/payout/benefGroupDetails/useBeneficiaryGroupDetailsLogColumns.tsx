@@ -343,7 +343,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                   strokeWidth={2.5}
                 />
               ) : (
-                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+                <Can action={ACTIONS.TRIGGER} subject={SUBJECTS.PAYOUT}>
                   <TooltipComponent
                     Icon={RotateCcwIcon}
                     tip="Update"

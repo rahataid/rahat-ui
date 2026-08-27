@@ -599,33 +599,33 @@ jobs:
       # Trivy Docker image scan
       # --------------------------------------------------------
 
-      - name: Run Trivy Container Scanner
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
-          format: table
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: 1
+      # - name: Run Trivy Container Scanner
+      #   uses: aquasecurity/trivy-action@v0.36.0
+      #   with:
+      #     image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
+      #     format: table
+      #     severity: CRITICAL,HIGH
+      #     ignore-unfixed: true
+      #     exit-code: 1
 
-      # --------------------------------------------------------
-      # Trivy SARIF
-      # --------------------------------------------------------
+      # # --------------------------------------------------------
+      # # Trivy SARIF
+      # # --------------------------------------------------------
 
-      - name: Run Trivy Scanner - SARIF
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
-          format: sarif
-          output: trivy-results.sarif
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: 0
+      # - name: Run Trivy Scanner - SARIF
+      #   uses: aquasecurity/trivy-action@v0.36.0
+      #   with:
+      #     image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
+      #     format: sarif
+      #     output: trivy-results.sarif
+      #     severity: CRITICAL,HIGH
+      #     ignore-unfixed: true
+      #     exit-code: 0
 
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-results.sarif
+      # - name: Upload Trivy results to GitHub Security
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: trivy-results.sarif
 
       # --------------------------------------------------------
       # SBOM

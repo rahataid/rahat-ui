@@ -13,13 +13,35 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { HeaderWithBack, UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
 import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
+
+type FormValues = {
+  name: string;
+  phone: string;
+  email: string;
+  designation: string;
+  organization: string;
+  district: string;
+  municipality: string;
+  supportArea?: { id: string; text: string }[];
+};
+
+const DEFAULT_FORM_VALUES: FormValues = {
+  name: '',
+  phone: '+977',
+  email: '',
+  designation: '',
+  organization: '',
+  district: '',
+  municipality: '',
+};
 
 export default function AddStakeholders() {
   const { id } = useParams();
@@ -33,6 +55,14 @@ export default function AddStakeholders() {
   const [unsavedSupportAreaInput, setUnsavedSupportAreaInput] =
     useState<string>('');
   const hasInteracted = useRef(false);
+  const isRestored = useRef(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>({
+    key: 'addStakeholder',
+    projectId: id as string,
+    defaultValue: DEFAULT_FORM_VALUES,
+  });
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
     return isValidPhoneNumber(value);
@@ -72,19 +102,34 @@ export default function AddStakeholders() {
       .optional(),
   });
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
-    defaultValues: {
-      name: '',
-      phone: '+977',
-      email: '',
-      designation: '',
-      organization: '',
-      district: '',
-      municipality: '',
-    },
+    defaultValues: loadSaved(),
   });
+
+  // Restore supportArea tags from saved data
+  useEffect(() => {
+    if (isRestored.current) return;
+    const saved = loadSaved();
+    if (saved.supportArea && saved.supportArea.length > 0) {
+      setVariationTags(saved.supportArea);
+    }
+    isRestored.current = true;
+  }, []);
+
+  const saveCurrentForm = () => {
+    const values = form.getValues();
+    saveData({ ...values, supportArea: variationTags });
+  };
+
+  const handleClearForm = () => {
+    clearSaved();
+    form.reset();
+    setVariationTags([]);
+    setUnsavedSupportAreaInput('');
+    setShowClearDialog(false);
+  };
 
   const hasUnsavedChanges =
     (hasInteracted.current && form.formState.isDirty) ||
@@ -96,7 +141,9 @@ export default function AddStakeholders() {
     handleCancelLeave,
   } = useUnsavedChanges({
     hasUnsavedChanges,
-    onConfirm: () => {},
+    onConfirm: () => {
+      saveCurrentForm();
+    },
   });
   // Handle Enter key in the support area TagInput
   const handleSupportAreaKeyDown = (
@@ -127,6 +174,7 @@ export default function AddStakeholders() {
         projectUUID: id as UUID,
         stakeholderPayload: payload,
       });
+      clearSaved();
       router.push(`/projects/aa/${id}/stakeholders`);
       form.reset();
     } catch (e) {
@@ -373,11 +421,7 @@ export default function AddStakeholders() {
                 type="button"
                 variant="secondary"
                 className="h-[clamp(28px,3vw,36px)] px-[clamp(16px,2vw,32px)] text-[clamp(11px,1vw,14px)]"
-                onClick={() => {
-                  form.reset();
-                  setVariationTags([]);
-                  setUnsavedSupportAreaInput('');
-                }}
+                onClick={() => setShowClearDialog(true)}
               >
                 Clear
               </Button>
@@ -399,6 +443,16 @@ export default function AddStakeholders() {
         open={showDialog}
         onConfirm={handleConfirmLeave}
         onCancel={handleCancelLeave}
+      />
+
+      <UnsavedChangesDialog
+        open={showClearDialog}
+        onConfirm={handleClearForm}
+        onCancel={() => setShowClearDialog(false)}
+        title="Clear Form"
+        description="Are you sure you want to clear the form? All entered data will be lost and any saved progress will be removed."
+        cancelText="No, keep it"
+        confirmText="Yes, clear all"
       />
     </div>
   );

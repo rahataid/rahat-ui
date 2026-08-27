@@ -1,0 +1,71 @@
+name: Ephemeral Environment Cleanup
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour
+  workflow_dispatch: {}
+
+jobs:
+  cleanup:
+    name: Sweep expired ephemeral services
+    # Must run where it can SSH into the private-network Swarm manager
+    runs-on: [self-hosted, arc-runner-set]
+    steps:
+      - name: Configure SSH access to Swarm manager
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SWARM_SSH_PRIVATE_KEY }}" > ~/.ssh/swarm_key
+          chmod 600 ~/.ssh/swarm_key
+          ssh-keyscan -H "${{ secrets.SWARM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Find and remove expired services
+        id: sweep
+        run: |
+          export DOCKER_HOST="ssh://${{ secrets.SWARM_SSH_USER }}@${{ secrets.SWARM_SSH_HOST }}"
+          export DOCKER_SSH_OPTS="-i $HOME/.ssh/swarm_key -o StrictHostKeyChecking=no"
+
+          NOW=$(date -u +%s)
+          EXPIRED_LIST=""
+
+          for svc in $(docker service ls --filter label=ephemeral=true --format '{{.Name}}'); do
+            LABELS=$(docker service inspect "$svc" --format '{{json .Spec.Labels}}')
+            CREATED=$(echo "$LABELS" | jq -r '."created-at" // empty')
+            TTL=$(echo "$LABELS" | jq -r '."ttl-hours" // "4"')
+
+            if [ -z "$CREATED" ]; then
+              echo "Service $svc has no created-at label, skipping"
+              continue
+            fi
+
+            CREATED_EPOCH=$(date -u -d "$CREATED" +%s 2>/dev/null || echo 0)
+            AGE_HOURS=$(( (NOW - CREATED_EPOCH) / 3600 ))
+
+            if [ "$AGE_HOURS" -ge "$TTL" ]; then
+              echo "Removing expired service: $svc (age ${AGE_HOURS}h >= ttl ${TTL}h)"
+              docker service rm "$svc"
+              EXPIRED_LIST="${EXPIRED_LIST}${svc} (age ${AGE_HOURS}h)\n"
+            else
+              echo "Service $svc still within TTL (age ${AGE_HOURS}h < ttl ${TTL}h)"
+            fi
+          done
+
+          if [ -n "$EXPIRED_LIST" ]; then
+            {
+              echo "expired<<EOF"
+              echo -e "$EXPIRED_LIST"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          fi
+
+      - name: Notify Slack if anything was cleaned up
+        if: env.expired != ''
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: '#999999'
+          SLACK_TITLE: 'Ephemeral Environments Auto-Cleaned (TTL expired)'
+          SLACK_MESSAGE: |
+            ```
+            ${{ env.expired }}
+            ```
+          SLACK_FOOTER: ''

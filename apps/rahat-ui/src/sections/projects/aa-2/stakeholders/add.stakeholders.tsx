@@ -58,11 +58,13 @@ export default function AddStakeholders() {
   const isRestored = useRef(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
 
-  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>({
-    key: 'addStakeholder',
-    projectId: id as string,
-    defaultValue: DEFAULT_FORM_VALUES,
-  });
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>(
+    {
+      key: 'addStakeholder',
+      projectId: id as string,
+      defaultValue: DEFAULT_FORM_VALUES,
+    },
+  );
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
     return isValidPhoneNumber(value);
@@ -135,16 +137,13 @@ export default function AddStakeholders() {
     (hasInteracted.current && form.formState.isDirty) ||
     unsavedSupportAreaInput.trim() !== '';
 
-  const {
-    showDialog,
-    handleConfirmLeave,
-    handleCancelLeave,
-  } = useUnsavedChanges({
-    hasUnsavedChanges,
-    onConfirm: () => {
-      saveCurrentForm();
-    },
-  });
+  const { showDialog, handleConfirmLeave, handleCancelLeave } =
+    useUnsavedChanges({
+      hasUnsavedChanges,
+      onConfirm: () => {
+        saveCurrentForm();
+      },
+    });
   // Handle Enter key in the support area TagInput
   const handleSupportAreaKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -186,7 +185,7 @@ export default function AddStakeholders() {
     <div className="p-4">
       <HeaderWithBack
         title={'Create Stakeholder'}
-        subtitle="Fill the form below  to create a new stakeholders"
+        subtitle="Fill the form below  to create a new stakeholder"
         path={`/projects/aa/${id}/stakeholders`}
       />
       <Form {...form}>

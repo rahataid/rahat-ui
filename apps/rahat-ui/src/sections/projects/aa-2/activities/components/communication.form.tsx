@@ -346,8 +346,11 @@ export default function AddCommunicationForm({
     [stakeholdersGroupLoading, beneficiaryGroupLoading],
   );
 
-  const handleGroupTypeChange = (value: string) => {
-    form.setValue('groupType', value);
+  const handleGroupTypeChange = (
+    value: string,
+    onChange: (v: string) => void,
+  ) => {
+    onChange(value);
     form.setValue('groupId', []); // reset group selection on type change
   };
 
@@ -460,8 +463,10 @@ export default function AddCommunicationForm({
               <FormItem>
                 <FormLabel required>Group Type</FormLabel>
                 <Select
-                  onValueChange={handleGroupTypeChange}
-                  value={field.value || ''}
+                  onValueChange={(value) =>
+                    handleGroupTypeChange(value, field.onChange)
+                  }
+                  value={field.value}
                 >
                   <FormControl>
                     <FormSelectTrigger value={field.value}>

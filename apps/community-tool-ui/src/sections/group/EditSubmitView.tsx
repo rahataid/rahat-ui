@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft, Columns, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 const READ_ONLY_FIELDS = new Set(['uuid', 'createdAt', 'updatedAt', 'createdBy']);
@@ -46,6 +46,18 @@ export default function EditSubmitView({
 }: Props) {
   const allColumns =
     editableRows.length > 0 ? Object.keys(editableRows[0]) : [];
+
+  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
+  const visibleColumns = allColumns.filter((col) => !hiddenColumns.has(col));
+
+  const toggleColumnVisibility = (col: string) => {
+    setHiddenColumns((prev) => {
+      const next = new Set(prev);
+      if (next.has(col)) next.delete(col);
+      else next.add(col);
+      return next;
+    });
+  };
 
   const containerRef = useRef<HTMLDivElement>(null);
   const topScrollRef = useRef<HTMLDivElement>(null);
@@ -91,7 +103,7 @@ export default function EditSubmitView({
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [allColumns.length]);
+  }, [visibleColumns.length]);
 
   // Sync top scrollbar → table
   const onTopScroll = () => {
@@ -158,6 +170,43 @@ export default function EditSubmitView({
           </PopoverContent>
         </Popover>
 
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
+              <Columns size={12} />
+              Columns
+              {hiddenColumns.size > 0 && (
+                <span className="ml-1 rounded-full bg-primary text-primary-foreground px-1.5 py-0 text-[10px] leading-4">
+                  {hiddenColumns.size}
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search column..." className="text-xs h-8" />
+              <CommandList>
+                <CommandEmpty>No column found.</CommandEmpty>
+                <CommandGroup>
+                  {allColumns.map((col) => (
+                    <CommandItem
+                      key={col}
+                      value={col}
+                      className="text-xs flex items-center justify-between"
+                      onSelect={() => toggleColumnVisibility(col)}
+                    >
+                      <span>{col}</span>
+                      <span className={hiddenColumns.has(col) ? 'text-muted-foreground' : 'text-primary'}>
+                        {hiddenColumns.has(col) ? 'hidden' : 'visible'}
+                      </span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
         <Button
           size="sm"
           onClick={onSubmit}
@@ -192,7 +241,7 @@ export default function EditSubmitView({
         <table className="text-sm border-collapse" style={{ minWidth: 'max-content' }}>
           <thead>
             <tr>
-              {allColumns.map((col) => (
+              {visibleColumns.map((col) => (
                 <th
                   key={col}
                   className="border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap"
@@ -215,7 +264,7 @@ export default function EditSubmitView({
           <tbody>
             {editableRows.map((row, rowIndex) => (
               <tr key={row.uuid} className="odd:bg-white even:bg-muted/30">
-                {allColumns.map((col) =>
+                {visibleColumns.map((col) =>
                   READ_ONLY_FIELDS.has(col) ? (
                     <td
                       key={col}

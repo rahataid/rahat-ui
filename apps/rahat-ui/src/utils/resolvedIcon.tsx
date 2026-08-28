@@ -69,6 +69,12 @@ export const defaultNavConfig: NavConfigDB = {
       icon: 'CloudAlert',
     },
     {
+      title: 'Inkind Management',
+      icon: 'Box',
+      path: 'inkind-management',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+    },
+    {
       title: 'Fund Management',
       path: 'fund-management',
       icon: 'Coins',
@@ -81,6 +87,11 @@ export const defaultNavConfig: NavConfigDB = {
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
     {
+      title: 'Group Cash Transfer',
+      path: 'group-cash-transfer',
+      icon: 'Banknote',
+    },
+    {
       title: 'Communication Logs',
       path: 'communication-logs',
       icon: 'SmartphoneNfc',
@@ -90,6 +101,12 @@ export const defaultNavConfig: NavConfigDB = {
       title: 'Grievances',
       path: 'grievances',
       icon: 'Coins',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+    },
+    {
+      title: 'IVR',
+      path: 'ivr',
+      icon: 'PhoneCall',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
   ],

@@ -56,7 +56,7 @@ import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 import DownloadDialog from './DownloadDialog';
 import BulkUpdateDialog from './BulkUpdateDialog';
-import EditSubmitDialog from './EditSubmitDialog';
+import EditSubmitView from './EditSubmitView';
 
 const EXCLUDE_FROM_XLSX = new Set(['latitude', 'longitude']);
 
@@ -122,8 +122,8 @@ export default function GroupDetail({ uuid }: IProps) {
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [uniqueField, setUniqueField] = React.useState<string>('none');
 
-  // ── Edit & Submit dialog state ─────────────────────────────────────────────
-  const [editSubmitOpen, setEditSubmitOpen] = React.useState(false);
+  // ── Edit & Submit in-page view state ──────────────────────────────────────
+  const [editSubmitMode, setEditSubmitMode] = React.useState(false);
   const [editSubmitLoading, setEditSubmitLoading] = React.useState(false);
   const [editSubmitSubmitting, setEditSubmitSubmitting] = React.useState(false);
   const [editableRows, setEditableRows] = React.useState<Record<string, any>[]>(
@@ -288,7 +288,7 @@ export default function GroupDetail({ uuid }: IProps) {
       setEditableRows(rows);
       setAvailableColumns(remaining);
       setAddedColumns(new Set());
-      setEditSubmitOpen(true);
+      setEditSubmitMode(true);
     } catch (error) {
       Swal.fire('Failed to load data', 'Unknown error', 'error');
     } finally {
@@ -355,7 +355,7 @@ export default function GroupDetail({ uuid }: IProps) {
         data: formData,
         uniqueField: 'uuid',
       });
-      setEditSubmitOpen(false);
+      setEditSubmitMode(false);
     } catch (error) {
       Swal.fire(
         'Submit failed',
@@ -466,6 +466,28 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const beneficiariesEmpty = !responseByUUID?.data?.beneficiariesGroup?.length;
 
+  if (editSubmitMode) {
+    return (
+      <EditSubmitView
+        groupName={responseByUUID?.data?.name}
+        editableRows={editableRows}
+        availableColumns={availableColumns}
+        addedColumns={addedColumns}
+        onCellChange={handleCellChange}
+        onAddColumn={handleAddColumn}
+        onRemoveColumn={handleRemoveColumn}
+        onSubmit={handleEditSubmit}
+        onCancel={() => {
+          setEditSubmitMode(false);
+          setEditableRows([]);
+          setAvailableColumns([]);
+          setAddedColumns(new Set());
+        }}
+        isSubmitting={editSubmitSubmitting}
+      />
+    );
+  }
+
   return (
     <>
       <Tabs defaultValue="detail">
@@ -553,19 +575,6 @@ export default function GroupDetail({ uuid }: IProps) {
               onUniqueFieldChange={setUniqueField}
               onFileChange={setSelectedFile}
               onUpload={handleUpload}
-            />
-
-            <EditSubmitDialog
-              open={editSubmitOpen}
-              onOpenChange={setEditSubmitOpen}
-              editableRows={editableRows}
-              addedColumns={addedColumns}
-              availableColumns={availableColumns}
-              onCellChange={handleCellChange}
-              onAddColumn={handleAddColumn}
-              onRemoveColumn={handleRemoveColumn}
-              onSubmit={handleEditSubmit}
-              isSubmitting={editSubmitSubmitting}
             />
           </div>
         </div>

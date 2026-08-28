@@ -1,7 +1,6 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
-import { useUserStore } from '@rumsan/react-query';
+import { useCallback, useRef, useEffect } from 'react';
 
 interface UseSessionFormStorageOptions<T> {
   key: string;
@@ -14,15 +13,15 @@ export function useSessionFormStorage<T>({
   projectId,
   defaultValue,
 }: UseSessionFormStorageOptions<T>) {
-  const userId = useUserStore((state) => state.user?.data?.uuid);
-  const storageKeyRef = useRef(
-    `form_${projectId}_${key}_${userId || 'anonymous'}`,
-  );
-  // Update ref when userId loads
-  if (userId) {
-    storageKeyRef.current = `form_${projectId}_${key}_${userId}`;
-  }
+  const storageKeyRef = useRef(`${key}_${projectId}`);
   const hasRestored = useRef(false);
+
+  // Update storage key when projectId becomes available
+  useEffect(() => {
+    if (projectId) {
+      storageKeyRef.current = `${key}_${projectId}`;
+    }
+  }, [projectId, key]);
 
   const loadSaved = useCallback((): T => {
     if (typeof window === 'undefined') return defaultValue;

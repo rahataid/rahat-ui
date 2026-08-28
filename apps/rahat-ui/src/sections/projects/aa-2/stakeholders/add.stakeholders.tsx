@@ -60,7 +60,7 @@ export default function AddStakeholders() {
 
   const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>(
     {
-      key: 'addStakeholder',
+      key: 'stakeholder_draft',
       projectId: id as string,
       defaultValue: DEFAULT_FORM_VALUES,
     },
@@ -107,18 +107,21 @@ export default function AddStakeholders() {
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
-    defaultValues: loadSaved(),
+    defaultValues: DEFAULT_FORM_VALUES,
   });
 
-  // Restore supportArea tags from saved data
+  // Restore saved data after projectId becomes available
   useEffect(() => {
-    if (isRestored.current) return;
+    if (isRestored.current || !id) return;
     const saved = loadSaved();
-    if (saved.supportArea && saved.supportArea.length > 0) {
-      setVariationTags(saved.supportArea);
+    if (saved && Object.keys(saved).length > 0) {
+      form.reset(saved);
+      if (saved.supportArea && saved.supportArea.length > 0) {
+        setVariationTags(saved.supportArea);
+      }
     }
     isRestored.current = true;
-  }, []);
+  }, [id]);
 
   const saveCurrentForm = () => {
     const values = form.getValues();

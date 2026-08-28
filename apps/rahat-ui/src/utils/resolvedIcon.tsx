@@ -76,6 +76,7 @@ export const defaultNavConfig: NavConfigDB = {
       icon: 'Box',
       path: 'inkind-management',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      subject: SUBJECTS.INKIND,
     },
     {
       title: 'Fund Management',

@@ -189,19 +189,6 @@ export default function MessageDetailPage() {
     ? automations.isLoading || isAutomationLoading
     : isLogsLoading;
 
-  // Calculate total price from logs
-  const totalPrice = React.useMemo(() => {
-    if (!logsData.length) return 0;
-    return logsData.reduce((sum: number, log: any) => {
-      let price = log?.disposition?.price;
-      if (typeof price === 'string' && price.startsWith('-')) {
-        price = price.substring(1);
-      }
-      const num = parseFloat(price);
-      return sum + (isNaN(num) ? 0 : num);
-    }, 0);
-  }, [logsData]);
-
   const table = useReactTable({
     manualPagination: true,
     data: logsData,
@@ -311,7 +298,13 @@ export default function MessageDetailPage() {
 
   const meta = logsMetaRaw || { total: 0, currentPage: 0 };
   const automationCounts = automationDetail?.counts as
-    | { success?: number; failed?: number; sent?: number; total?: number }
+    | {
+        success?: number;
+        failed?: number;
+        sent?: number;
+        total?: number;
+        totalPrice?: number;
+      }
     | undefined;
   const isSent = isAutomatic
     ? (automationCounts?.sent ?? 0) > 0
@@ -332,6 +325,11 @@ export default function MessageDetailPage() {
     ? count?.TOTAL ?? 0
     : campaign?.recipientCount || 0;
   const recipientsLabel = isAutomatic ? 'Sent' : 'Recipients';
+
+  const totalPrice =
+    Number(
+      isAutomatic ? automationCounts?.totalPrice ?? 0 : count?.TOTAL_PRICE ?? 0,
+    ) || 0;
   const deliveryRate = computeRate(deliveredCount, totalRecipients);
   const failureRate = computeRate(failedCount, totalRecipients);
   const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;

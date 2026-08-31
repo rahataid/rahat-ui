@@ -1,12 +1,3 @@
-// import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-// import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-// import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-// import { useTriggerCommunication } from '@rahat-ui/query';
-// import { UUID } from 'crypto';
-// import { SessionStatus } from '@rumsan/connect/src/types/index';
-// import SpinnerLoader from '../../../components/spinner.loader';
-// import { Download } from 'lucide-react';
-
 import {
   Tabs,
   TabsContent,

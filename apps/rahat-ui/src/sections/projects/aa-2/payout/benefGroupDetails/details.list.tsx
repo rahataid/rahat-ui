@@ -230,7 +230,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 payoutData={payout}
               />
               {payout?.type === 'FSP' && (
-                <Can action={ACTIONS.TRIGGER} subject={SUBJECTS.PAYOUT}>
+                <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
                   <Button
                     className={`gap-2 text-sm ${
                       payout?.hasFailedPayoutRequests === false && 'hidden'

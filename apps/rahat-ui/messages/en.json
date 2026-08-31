@@ -183,7 +183,7 @@
     "YES": "Yes",
     "NO": "No",
     "SMARTPHONE": "Smartphone",
-    "KEYPAD_BRICK": "Keypad/Brick",
+    "BASIC_PHONE_BRICK": "Keypad/Brick",
     "BOTH": "Both",
     "PICK_DATE_RANGE": "Pick date range",
     "SEARCH_COUNTRY": "Search country...",

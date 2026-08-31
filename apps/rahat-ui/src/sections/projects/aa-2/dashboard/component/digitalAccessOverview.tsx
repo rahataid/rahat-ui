@@ -55,7 +55,7 @@ const DigitalAccessOverview = ({ stats }: Props) => {
         {filteredStats?.map((stat) => {
           const chartData = stat.data.map((d: any) => ({
             label: translateValue(tg, d.id, {
-              keyMap: { 'Keypad/Brick': 'KEYPAD_BRICK' },
+              keyMap: { 'Keypad/Brick': 'BASIC_PHONE_BRICK' },
             }),
             value: d.count,
           }));

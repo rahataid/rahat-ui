@@ -7,9 +7,9 @@ import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 // "Keypad/Brick" contains a slash, which the generic key derivation doesn't
-// normalize, so it needs an explicit override to reach KEYPAD_BRICK.
+// normalize, so it needs an explicit override to reach BASIC_PHONE_BRICK.
 const LABEL_KEY_OVERRIDES: Record<string, string> = {
-  'Keypad/Brick': 'KEYPAD_BRICK',
+  'Keypad/Brick': 'BASIC_PHONE_BRICK',
 };
 
 const findStat = (data: any[], name: string) => {

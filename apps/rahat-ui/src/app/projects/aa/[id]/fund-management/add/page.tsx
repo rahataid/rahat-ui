@@ -1,6 +1,5 @@
 'use client';
 
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import {
   ACTIONS,
   SUBJECTS,

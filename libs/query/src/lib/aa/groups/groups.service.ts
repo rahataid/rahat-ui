@@ -266,7 +266,11 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
 };
 
-export const useBeneficiaryGroups = (uuid: UUID, payload: any, options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn'>) => {
+export const useBeneficiaryGroups = (
+  uuid: UUID,
+  payload: any,
+  options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn'>,
+) => {
   const q = useProjectAction();
   const { setBeneficiaryGroups } = useBeneficiaryGroupsStore((state) => ({
     setBeneficiaryGroups: state.setBeneficiaryGroups,

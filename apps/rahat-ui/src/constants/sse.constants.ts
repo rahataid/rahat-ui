@@ -28,9 +28,17 @@ export const EVENT_QUERY_MAP: Record<
 
   'phase.deleted': (projectUuid) => [[PHASE_QUERY_KEYS.PHASES, projectUuid]],
 
-  'trigger.updated': (projectUuid) => [[PHASE_QUERY_KEYS.PHASE, projectUuid]],
+  'trigger.updated': (projectUuid) => [
+    [PHASE_QUERY_KEYS.PHASE, projectUuid],
+    [PHASE_QUERY_KEYS.PHASES, projectUuid],
+    [PHASE_QUERY_KEYS.TRIGGER_STATEMENT, projectUuid],
+  ],
 
-  'trigger.created': (projectUuid) => [[PHASE_QUERY_KEYS.PHASE, projectUuid]],
+  'trigger.created': (projectUuid) => [
+    [PHASE_QUERY_KEYS.PHASE, projectUuid],
+    [PHASE_QUERY_KEYS.PHASES, projectUuid],
+    [PHASE_QUERY_KEYS.TRIGGER_STATEMENT, projectUuid],
+  ],
 
   'activity.created': (projectUuid) => [
     [ACTIVITY_QUERY_KEYS.ACTIVITIES, projectUuid],

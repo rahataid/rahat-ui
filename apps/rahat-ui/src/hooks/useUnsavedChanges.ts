@@ -46,8 +46,17 @@ export function useUnsavedChanges({
       if (!target) return;
 
       const href = target.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
-      if (href.startsWith('http') && !href.startsWith(window.location.origin)) return;
+      const normalizedHref = href?.trim().toLowerCase();
+      if (
+        !href ||
+        href.startsWith('#') ||
+        normalizedHref?.startsWith('javascript:') ||
+        normalizedHref?.startsWith('data:') ||
+        normalizedHref?.startsWith('vbscript:')
+      )
+        return;
+      if (href.startsWith('http') && !href.startsWith(window.location.origin))
+        return;
 
       e.preventDefault();
       pendingPath.current = href;

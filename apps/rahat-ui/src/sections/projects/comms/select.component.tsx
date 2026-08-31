@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -24,10 +25,11 @@ export default function SelectComponent({
   value,
   onChange,
 }: Iprops) {
+  const t = useTranslations('GLOBAL');
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={`Select ${name}`} />
+        <SelectValue placeholder={t('SELECT_PLACEHOLDER', { name })} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

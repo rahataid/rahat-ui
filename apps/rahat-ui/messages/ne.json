@@ -1935,7 +1935,31 @@
     "FAILED_TO_FETCH_ACTIVITY": "गतिविधि ल्याउन असफल भयो",
     "FAILED_TO_FETCH_TRANSPORT_STATS": "ट्रान्सपोर्ट तथ्याङ्क ल्याउन असफल भयो",
     "SETTING_ADDED_SUCCESSFULLY": "सेटिङ सफलतापूर्वक थपियो",
-    "FAILED_TO_ADD_SETTING": "सेटिङ थप्न असफल भयो"
+    "FAILED_TO_ADD_SETTING": "सेटिङ थप्न असफल भयो",
+    "CHOOSE_WHICH_DISBURSEMENT_METHODS_ARE_AVAILABLE": "यस परियोजनाको लागि कुन वितरण विधिहरू उपलब्ध छन् छान्नुहोस्।",
+    "FORECAST_TABS": "पूर्वानुमान ट्याबहरू",
+    "CHOOSE_WHICH_FORECAST_DATA_TABS_ARE_ENABLED": "यस परियोजनाको लागि कुन पूर्वानुमान डाटा ट्याबहरू सक्षम छन् छान्नुहोस्।",
+    "FUND_MANAGEMENT_TABS": "कोष व्यवस्थापन ट्याबहरू",
+    "CHOOSE_WHICH_FUND_MANAGEMENT_TABS_ARE_ENABLED": "यस परियोजनाको लागि कुन कोष व्यवस्थापन ट्याबहरू सक्षम छन् छान्नुहोस्।",
+    "INKIND_TRACKER": "इन्काइन्ड ट्र्याकर",
+    "MULTISIG_WALLET": "मल्टिसिग वालेट",
+    "PAYOUT_TYPES": "भुक्तानीका प्रकारहरू",
+    "CHOOSE_WHICH_PAYOUT_METHODS_ARE_AVAILABLE": "यस परियोजनाको लागि कुन भुक्तानी विधिहरू उपलब्ध छन् छान्नुहोस्।",
+    "PROJECT_NAVIGATION": "परियोजना नेभिगेसन",
+    "CHOOSE_WHICH_PAGES_ARE_ENABLED": "यस परियोजनाको लागि कुन पृष्ठहरू सक्षम छन् छान्नुहोस्।",
+    "TRIGGER_TABS": "ट्रिगर ट्याबहरू",
+    "CHOOSE_WHICH_TRIGGER_TABS_ARE_ENABLED": "यस परियोजनाको लागि कुन ट्रिगर ट्याबहरू सक्षम छन् छान्नुहोस्।",
+    "UPDATE_SETTING": "सेटिङ अपडेट गर्नुहोस्",
+    "UPDATING": "अपडेट गर्दै...",
+    "UPDATE_SETTINGS_QUESTION": "सेटिङहरू अपडेट गर्ने हो?",
+    "ARE_YOU_SURE_YOU_WANT_TO_UPDATE_PROJECT_SETTINGS": "के तपाईं यी परियोजना सेटिङहरू अपडेट गर्न निश्चित हुनुहुन्छ?",
+    "SETTINGS_UPDATED_SUCCESSFULLY": "सेटिङहरू सफलतापूर्वक अपडेट भयो",
+    "FAILED_TO_UPDATE_SETTINGS": "सेटिङहरू अपडेट गर्न असफल भयो",
+    "RETRY_SPONSORSHIP": "स्पन्सरशिप पुनः प्रयास गर्नुहोस्",
+    "SPONSORED_OF_TOTAL": "स्पन्सर गरिएको {sponsored}/{total}",
+    "SUCCESS_COUNT": "सफल: {count}",
+    "FAILED_COUNT": "असफल: {count}",
+    "FAILED_TO_RETRY_SPONSORSHIP": "स्पन्सरशिप पुनः प्रयास गर्न असफल भयो"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खातावालाको नाम",
@@ -3418,7 +3442,19 @@
     "NO_DATA": "कुनै तथ्याङ्क छैन",
     "DOCUMENTS": "कागजातहरू",
     "DOCUMENTS_NOT_AVAILABLE": "कागजातहरू उपलब्ध छैनन्।",
-    "PROOF_OF_PAYMENT": "भुक्तानीको प्रमाण"
+    "PROOF_OF_PAYMENT": "भुक्तानीको प्रमाण",
+    "ROOT": "रुट",
+    "PROJECT_INFO": "परियोजना जानकारी",
+    "MANAGE_BASIC_PROJECT_DETAILS": "आधारभूत परियोजना विवरण व्यवस्थापन गर्नुहोस्",
+    "SELECT_STATUS": "स्थिति छान्नुहोस्",
+    "SAVE_CHANGES_QUESTION": "परिवर्तनहरू सुरक्षित गर्ने हो?",
+    "ARE_YOU_SURE_YOU_WANT_TO_UPDATE_THIS_PROJECTS_INFO": "के तपाईं यस परियोजनाको जानकारी अपडेट गर्न निश्चित हुनुहुन्छ?",
+    "EDIT_PROJECT_NAME_MIN_LENGTH": "नाम कम्तिमा २ अक्षरको हुनुपर्छ",
+    "EDIT_PROJECT_DESCRIPTION_MIN_LENGTH": "विवरण कम्तिमा ४ अक्षरको हुनुपर्छ",
+    "PLEASE_SELECT_A_STATUS": "कृपया स्थिति छान्नुहोस्।",
+    "ACTIVITY": "गतिविधि",
+    "PAYOUT": "भुक्तानी",
+    "INKIND": "इन्काइन्ड"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -3540,7 +3576,7 @@
     "PROJECT_EDITED_SUCCESSFULLY": "परियोजना सफलतापूर्वक सम्पादन भयो",
     "ERROR_WHILE_EDITING_PROJECT": "परियोजना सम्पादन गर्दा त्रुटि भयो।",
     "CLOSE_PROJECT_DESC": "के तपाइँ यो परियोजना बन्द गर्न निश्चित हुनुहुन्छ? एकपटक बन्द भएपछि यसलाई पुनः सक्रिय गर्न सकिँदैन।",
-    "CLOSE_PROJECT_TITLE": "\"{name}\" बन्द गर्नुहोस्?",
+    "CLOSE_PROJECT_TITLE": "\"{name}\" बन्द गर्ने हो?",
     "CLOSING": "बन्द गर्दै...",
     "CONTACT_ADMIN": "कृपया परियोजना थप्नको लागि प्रशासकलाई सम्पर्क गर्नुहोस्।",
     "HERE_IS_A_LIST_OF_ALL": "यहाँ सबै परियोजनाहरूको सूची छ",
@@ -3552,7 +3588,8 @@
     "PROJECT_IS_CLOSED": "परियोजना बन्द छ",
     "PROJECT_NOT_READY": "यो परियोजना अझै तयार भईसकेको छैन। तपाईंले यस परियोजनामा जान सक्नुहुन्न।",
     "SEARCH_PROJECT_BY_NAME": "परियोजना नामले खोज्नुहोस्...",
-    "UNPIN_PROJECT": "परियोजना अनपिन गर्नुहोस्"
+    "UNPIN_PROJECT": "परियोजना अनपिन गर्नुहोस्",
+    "EDIT_PROJECT": "परियोजना सम्पादन गर्नुहोस्"
   },
   "QUEUES": {
     "ACTIVE": "सक्रिय",
@@ -3785,7 +3822,13 @@
     "SELECT_ROLES": "भूमिकाहरू छान्नुहोस्",
     "SELECT_ROLES_BELOW_TO_ASSIGN_TO": "प्रयोगकर्तालाई तोक्न तलका भूमिकाहरू छान्नुहोस्",
     "SOMETHING_WENT_WRONG": "केही गडबड भयो",
-    "THIS_ROLE_IS_PART_OF_THE": "यो भूमिका प्रणालीद्वारा पूर्वनिर्धारित हो"
+    "THIS_ROLE_IS_PART_OF_THE": "यो भूमिका प्रणालीद्वारा पूर्वनिर्धारित हो",
+    "TOGGLE_SELECT_ROLES_SECTION": "भूमिका चयन खण्ड टगल गर्नुहोस्",
+    "SELECT_PROJECT_ROLES": "परियोजना भूमिकाहरू चयन गर्नुहोस्",
+    "SELECT_PROJECT_ROLES_BELOW_TO_ASSIGN_TO": "प्रयोगकर्तालाई तोक्न तलका परियोजना-स्तरका भूमिकाहरू चयन गर्नुहोस्",
+    "TOGGLE_SELECT_PROJECT_ROLES_SECTION": "परियोजना भूमिका चयन खण्ड टगल गर्नुहोस्",
+    "SEARCH_PROJECT_ROLES": "परियोजना भूमिकाहरू खोज्नुहोस्",
+    "SEARCH_ROLES": "भूमिकाहरू खोज्नुहोस्"
   },
   "USERS_DETAIL": {
     "ASSIGN_ROLE": "भूमिका तोक्नुहोस्",
@@ -3858,7 +3901,8 @@
     "PERM_CREATE": "क्रिएट",
     "PERM_READ": "पढ्नुहोस्",
     "PERM_UPDATE": "अधावाधिक गर्नुहोस्",
-    "PERM_DELETE": "डिलिट"
+    "PERM_DELETE": "डिलिट",
+    "PERM_ACTIVATE": "सक्रिय गर्नुहोस्"
   },
   "USERS_SPLIT_VIEW": {
     "ARCHIVE_USER": "अभिलेख प्रयोगकर्ता",
@@ -4332,7 +4376,8 @@
       "OTP_DID_NOT_MATCH": "OTP मेल खाएन!",
       "USER_DOES_NOT_EXIST": "प्रयोगकर्ता फेला परेन!",
       "INVALID_CREDENTIALS": "लगइन विवरण मान्य छैन!",
-      "INVALID_CREDENTIALS_IN_CHALLENGE": "प्रयोग गरिएको लगइन विवरण मान्य छैन!"
+      "INVALID_CREDENTIALS_IN_CHALLENGE": "प्रयोग गरिएको लगइन विवरण मान्य छैन!",
+      "CANNOT_DELETE_THIS_ROLE_BECAUSE_IT_IS_ASSIGNED_TO_USERS_PLEASE_REMOVE_THE_ROLE_ASSIGNMENT_FIRST": "यो भूमिका प्रयोगकर्ताहरूलाई तोकिएको हुनाले मेटाउन सकिँदैन। कृपया पहिले भूमिका तोकिएको हटाउनुहोस्"
     },
     "COMMON": {
       "INTERNAL_SERVER_ERROR": "हाम्रो प्रणालीमा समस्या भयो। कृपया केही बेरपछि पुन: प्रयास गर्नुहोस्।",

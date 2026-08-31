@@ -33,25 +33,24 @@ import TooltipWrapper from '../../components/tooltip.wrapper';
 import { useDateFormat } from '../../utils/i18n/date';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
+import { translateValue } from '../../utils/i18n/translateValue';
 export const STATUS_CONFIG: Record<
   string,
-  { label: string; className: string }
+  { className: string }
 > = {
   NOT_READY: {
-    label: 'Not Ready',
     className: 'bg-yellow-100 text-yellow-700 border-yellow-300',
   },
   ACTIVE: {
-    label: 'Active',
     className: 'bg-green-100 text-green-700 border-green-300',
   },
   CLOSED: {
-    label: 'Closed',
     className: 'bg-red-100 text-red-700 border-red-300',
   },
 };
 
 export function StatusBadge({ status }: { status?: string }) {
+  const t = useTranslations('PROJECTS_LIST');
   const config = STATUS_CONFIG[status ?? ''];
   return (
     <Badge
@@ -59,7 +58,7 @@ export function StatusBadge({ status }: { status?: string }) {
         config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'
       }`}
     >
-      {config?.label ?? status ?? '—'}
+      {status ? translateValue(t, status, { fallback: status }) : '—'}
     </Badge>
   );
 }
@@ -136,7 +135,7 @@ export default function ListProject() {
         return (
           <div className="flex items-center space-x-3">
             <SystemUserAuth hasContent={false}>
-              <TooltipWrapper tip="Edit Project">
+              <TooltipWrapper tip={t('EDIT_PROJECT')}>
                 <button
                   onClick={() => router.push(`/project-info/${project.uuid}`)}
                   className="cursor-pointer"
@@ -149,8 +148,8 @@ export default function ListProject() {
             <TooltipWrapper
               tip={
                 project.status === 'CLOSED'
-                  ? 'Project is Closed'
-                  : 'Close Project'
+                  ? t('PROJECT_IS_CLOSED')
+                  : t('CLOSE_PROJECT')
               }
             >
               <button
@@ -231,7 +230,7 @@ export default function ListProject() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Close &quot;{selectedProject?.name}&quot;?
+              {t('CLOSE_PROJECT_TITLE', { name: selectedProject?.name ?? '' })}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {t('CLOSE_PROJECT_DESC')}

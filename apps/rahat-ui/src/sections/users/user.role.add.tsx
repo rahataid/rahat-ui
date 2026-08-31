@@ -246,7 +246,7 @@ export default function UserAddRoleView() {
                           type="button"
                           onClick={() => toggleSection('roles')}
                           className="shrink-0 p-1"
-                          aria-label="Toggle select roles section"
+                          aria-label={t('TOGGLE_SELECT_ROLES_SECTION')}
                         >
                           <ChevronDown
                             className={`h-4 w-4 transition-transform duration-200 ${
@@ -259,7 +259,7 @@ export default function UserAddRoleView() {
                       </div>
                       <AccordionContent className="pb-0">
                         <Input
-                          placeholder="Search roles"
+                          placeholder={t('SEARCH_ROLES')}
                           value={roleSearch}
                           onChange={(e) => setRoleSearch(e.target.value)}
                           className="mb-4"
@@ -304,18 +304,17 @@ export default function UserAddRoleView() {
                       <div className="flex items-center justify-between mb-4 mr-2">
                         <div>
                           <h1 className="font-medium text-lg">
-                            Select Project Roles
+                            {t('SELECT_PROJECT_ROLES')}
                           </h1>
                           <p className="text-muted-foreground text-sm">
-                            Select project-level roles below to assign to the
-                            user
+                            {t('SELECT_PROJECT_ROLES_BELOW_TO_ASSIGN_TO')}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => toggleSection('project-roles')}
                           className="shrink-0 p-1"
-                          aria-label="Toggle select project roles section"
+                          aria-label={t('TOGGLE_SELECT_PROJECT_ROLES_SECTION')}
                         >
                           <ChevronDown
                             className={`h-4 w-4 transition-transform duration-200 ${
@@ -328,7 +327,7 @@ export default function UserAddRoleView() {
                       </div>
                       <AccordionContent className="pb-0">
                         <Input
-                          placeholder="Search project roles"
+                          placeholder={t('SEARCH_PROJECT_ROLES')}
                           value={projectRoleSearch}
                           onChange={(e) =>
                             setProjectRoleSearch(e.target.value)

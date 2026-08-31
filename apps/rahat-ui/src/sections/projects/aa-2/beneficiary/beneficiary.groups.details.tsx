@@ -143,7 +143,7 @@ const BeneficiaryGroupsDetails = () => {
                 disabled={isRetrying}
                 onClick={() => retrySponsorship(groupId)}
               >
-                Retry Sponsorship
+                {t('RETRY_SPONSORSHIP')}
               </Button>
             )}
         </div>
@@ -151,15 +151,18 @@ const BeneficiaryGroupsDetails = () => {
       {sponsorshipStatus?.isStellarChain ? (
         <div className="flex items-center gap-4 mb-3 text-sm">
           <span className="px-2 py-1 rounded bg-secondary text-secondary-foreground">
-            Sponsored {sponsorshipStatus.sponsored}/{sponsorshipStatus.total}
+            {t('SPONSORED_OF_TOTAL', {
+              sponsored: formatNum(sponsorshipStatus.sponsored),
+              total: formatNum(sponsorshipStatus.total),
+            })}
           </span>
           {sponsorshipStatus.pending === 0 && (
             <>
               <span className="text-green-600">
-                Success: {sponsorshipStatus.sponsored}
+                {t('SUCCESS_COUNT', { count: formatNum(sponsorshipStatus.sponsored) })}
               </span>
               <span className="text-red-600">
-                Failed: {sponsorshipStatus.failed}
+                {t('FAILED_COUNT', { count: formatNum(sponsorshipStatus.failed) })}
               </span>
             </>
           )}

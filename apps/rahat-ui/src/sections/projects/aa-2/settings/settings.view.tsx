@@ -80,15 +80,15 @@ export default function AASettingsView() {
     <div>
       <div className="pb-3 flex justify-between items-center space-x-4">
         <div>
-          <h2 className="text-lg font-semibold">Settings</h2>
+          <h2 className="text-lg font-semibold">{tg('SETTINGS')}</h2>
           <p className="text-xs text-muted-foreground">
-            Manage project settings
+            {t('MANAGE_PROJECT_SETTINGS')}
           </p>
         </div>
         <IconLabelBtn
           Icon={Save}
           handleClick={handleUpdateClick}
-          name={updateSettings.isPending ? 'Updating...' : 'Update Setting'}
+          name={updateSettings.isPending ? t('UPDATING') : t('UPDATE_SETTING')}
           className="px-3 py-2"
           disabled={updateSettings.isPending}
         />
@@ -108,18 +108,18 @@ export default function AASettingsView() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Update settings?</AlertDialogTitle>
+            <AlertDialogTitle>{t('UPDATE_SETTINGS_QUESTION')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to update these project settings?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_UPDATE_PROJECT_SETTINGS')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{tg('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmUpdate}
               disabled={updateSettings.isPending}
             >
-              {updateSettings.isPending ? 'Updating...' : 'Confirm'}
+              {updateSettings.isPending ? t('UPDATING') : tg('CONFIRM')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

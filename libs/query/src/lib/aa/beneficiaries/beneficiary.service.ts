@@ -98,6 +98,8 @@ export const useGetSponsorshipStatusForGroup = (payload: {
 };
 
 export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -119,9 +121,20 @@ export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
         queryKey: ['sponsorshipStatus', { projectUuid, groupUuid }],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const rawMessage: string =
+        error?.response?.data?.message ||
+        error?.message ||
+        t('FAILED_TO_RETRY_SPONSORSHIP');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['BENEFICIARIES_DASHBOARD_STATS'],
+        rawMessage,
+      );
       toast.fire({
-        title: error?.message || 'Failed to retry sponsorship',
+        title: errorMessage,
         icon: 'error',
       });
     },

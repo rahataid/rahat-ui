@@ -534,7 +534,19 @@
     "NO_DATA": "No Data",
     "DOCUMENTS": "Documents",
     "DOCUMENTS_NOT_AVAILABLE": "Documents not available.",
-    "PROOF_OF_PAYMENT": "Proof of Payment"
+    "PROOF_OF_PAYMENT": "Proof of Payment",
+    "ROOT": "root",
+    "PROJECT_INFO": "Project Info",
+    "MANAGE_BASIC_PROJECT_DETAILS": "Manage basic project details",
+    "SELECT_STATUS": "Select status",
+    "SAVE_CHANGES_QUESTION": "Save changes?",
+    "ARE_YOU_SURE_YOU_WANT_TO_UPDATE_THIS_PROJECTS_INFO": "Are you sure you want to update this project's info?",
+    "EDIT_PROJECT_NAME_MIN_LENGTH": "Name must be at least 2 characters",
+    "EDIT_PROJECT_DESCRIPTION_MIN_LENGTH": "Description must be at least 4 characters",
+    "PLEASE_SELECT_A_STATUS": "Please select a status.",
+    "ACTIVITY": "Activity",
+    "PAYOUT": "Payout",
+    "INKIND": "Inkind"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -1234,7 +1246,13 @@
     "PLEASE_SELECT_AT_LEAST_ONE_PERMISSION": "Please select at least one permission",
     "ROLE_CREATED_SUCCESSFULLY": "Role Created Successfully",
     "SOMETHING_WENT_WRONG": "Something went wrong",
-    "NAME_MUST_BE_AT_LEAST4": "Name must be at least 4 character"
+    "NAME_MUST_BE_AT_LEAST4": "Name must be at least 4 character",
+    "TOGGLE_SELECT_ROLES_SECTION": "Toggle select roles section",
+    "SELECT_PROJECT_ROLES": "Select Project Roles",
+    "SELECT_PROJECT_ROLES_BELOW_TO_ASSIGN_TO": "Select project-level roles below to assign to the user",
+    "TOGGLE_SELECT_PROJECT_ROLES_SECTION": "Toggle select project roles section",
+    "SEARCH_PROJECT_ROLES": "Search project roles",
+    "SEARCH_ROLES": "Search roles"
   },
   "USERS_ROLES_PERMISSIONS": {
     "ROLES_AND_PERMISSIONS": "Roles and Permissions",
@@ -1269,7 +1287,8 @@
     "PERM_CREATE": "Create",
     "PERM_READ": "Read",
     "PERM_UPDATE": "Update",
-    "PERM_DELETE": "Delete"
+    "PERM_DELETE": "Delete",
+    "PERM_ACTIVATE": "Activate"
   },
   "USERS_SPLIT_VIEW": {
     "ARCHIVE_USER": "Archive User",
@@ -1364,7 +1383,8 @@
     "PROJECT_NOT_READY": "This project is not ready yet. You cannot enter into it.",
     "PIN_PROJECT": "Pin project",
     "UNPIN_PROJECT": "Unpin project",
-    "OK": "Ok"
+    "OK": "Ok",
+    "EDIT_PROJECT": "Edit Project"
   },
   "TOP_NAVIGATION_HEADER": {
     "LOGGED_OUT_SUCCESSFULLY": "Logged out successfully.",
@@ -3384,7 +3404,31 @@
     "FAILED_TO_FETCH_ACTIVITY": "Failed to fetch activity",
     "FAILED_TO_FETCH_TRANSPORT_STATS": "Failed to fetch transport stats",
     "SETTING_ADDED_SUCCESSFULLY": "Setting added successfully",
-    "FAILED_TO_ADD_SETTING": "Failed to add setting"
+    "FAILED_TO_ADD_SETTING": "Failed to add setting",
+    "CHOOSE_WHICH_DISBURSEMENT_METHODS_ARE_AVAILABLE": "Choose which disbursement methods are available for this project.",
+    "FORECAST_TABS": "Forecast Tabs",
+    "CHOOSE_WHICH_FORECAST_DATA_TABS_ARE_ENABLED": "Choose which forecast data tabs are enabled for this project.",
+    "FUND_MANAGEMENT_TABS": "Fund Management Tabs",
+    "CHOOSE_WHICH_FUND_MANAGEMENT_TABS_ARE_ENABLED": "Choose which fund management tabs are enabled for this project.",
+    "INKIND_TRACKER": "InKind Tracker",
+    "MULTISIG_WALLET": "Multisig Wallet",
+    "PAYOUT_TYPES": "Payout Types",
+    "CHOOSE_WHICH_PAYOUT_METHODS_ARE_AVAILABLE": "Choose which payout methods are available for this project.",
+    "PROJECT_NAVIGATION": "Project Navigation",
+    "CHOOSE_WHICH_PAGES_ARE_ENABLED": "Choose which pages are enabled for this project.",
+    "TRIGGER_TABS": "Trigger Tabs",
+    "CHOOSE_WHICH_TRIGGER_TABS_ARE_ENABLED": "Choose which trigger tabs are enabled for this project.",
+    "UPDATE_SETTING": "Update Setting",
+    "UPDATING": "Updating...",
+    "UPDATE_SETTINGS_QUESTION": "Update settings?",
+    "ARE_YOU_SURE_YOU_WANT_TO_UPDATE_PROJECT_SETTINGS": "Are you sure you want to update these project settings?",
+    "SETTINGS_UPDATED_SUCCESSFULLY": "Settings updated successfully",
+    "FAILED_TO_UPDATE_SETTINGS": "Failed to update settings",
+    "RETRY_SPONSORSHIP": "Retry Sponsorship",
+    "SPONSORED_OF_TOTAL": "Sponsored {sponsored}/{total}",
+    "SUCCESS_COUNT": "Success: {count}",
+    "FAILED_COUNT": "Failed: {count}",
+    "FAILED_TO_RETRY_SPONSORSHIP": "Failed to retry sponsorship"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",
@@ -4332,7 +4376,8 @@
       "OTP_DID_NOT_MATCH": "OTP did not match!",
       "USER_DOES_NOT_EXIST": "User does not exist!",
       "INVALID_CREDENTIALS": "Invalid credentials!",
-      "INVALID_CREDENTIALS_IN_CHALLENGE": "Invalid credentials in challenge!"
+      "INVALID_CREDENTIALS_IN_CHALLENGE": "Invalid credentials in challenge!",
+      "CANNOT_DELETE_THIS_ROLE_BECAUSE_IT_IS_ASSIGNED_TO_USERS_PLEASE_REMOVE_THE_ROLE_ASSIGNMENT_FIRST": "Cannot delete this role because it is assigned to users. Please remove the role assignment first"
     },
     "COMMON": {
       "INTERNAL_SERVER_ERROR": "Something went wrong on our end. Please try again later.",

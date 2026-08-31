@@ -23,10 +23,25 @@ function translateFieldParam(
   return { ...params, field: t(key as never) };
 }
 
+// "Cannot delete this role because it is assigned to users." -> a stable-ish
+// key derived from the message text itself, for backend responses that carry
+// no code/name at all (plain ForbiddenException/BadRequestException, or a
+// deployed backend version ahead of what's checked out locally).
+function toMessageSlug(message: string | undefined): string | undefined {
+  if (!message) return undefined;
+  const slug = message
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return slug || undefined;
+}
+
 // Resolves a backend error `code` (or, for third-party packages that only
 // send a stable `name` field, e.g. @rumsan/user's RSError) against one or
-// more BACKEND.<GROUP> catalog namespaces (checked in order), falling back
-// to the raw English message when nothing matches in any namespace.
+// more BACKEND.<GROUP> catalog namespaces (checked in order). Falls back to
+// matching a key derived from the raw message text itself (for responses
+// with no code/name at all), then to the raw English message unchanged.
 export const resolveBackendErrorMessage = (
   t: ReturnType<typeof useTranslations>,
   identifier: string | undefined,
@@ -34,9 +49,17 @@ export const resolveBackendErrorMessage = (
   groups: string[],
   rawMessage: string,
 ): string => {
-  if (!identifier) return rawMessage;
   for (const group of groups) {
+    if (!identifier) break;
     const key = `BACKEND.${group}.${identifier}`;
+    if (t.has(key as never)) {
+      return t(key as never, translateFieldParam(t, params) as never);
+    }
+  }
+  const slug = toMessageSlug(rawMessage);
+  for (const group of groups) {
+    if (!slug) break;
+    const key = `BACKEND.${group}.${slug}`;
     if (t.has(key as never)) {
       return t(key as never, translateFieldParam(t, params) as never);
     }

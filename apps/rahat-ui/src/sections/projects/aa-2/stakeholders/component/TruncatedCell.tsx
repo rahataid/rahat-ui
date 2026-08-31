@@ -23,19 +23,14 @@ export function TruncatedCell({
 
   if (truncateByWidth) {
     return (
-      <TooltipProvider>
+      <TooltipProvider >
         <Tooltip>
           <TooltipTrigger asChild>
-            <span
-              className={cn(
-                'block truncate cursor-pointer',
-                className,
-              )}
-            >
+            <span className={cn('block truncate cursor-pointer', className)}>
               {text}
             </span>
           </TooltipTrigger>
-          <TooltipContent className="rounded-sm max-w-[200px]">
+          <TooltipContent className="rounded-sm max-w-[400px]">
             <p className="whitespace-pre-line flex wrap break-words text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
               {text}
             </p>

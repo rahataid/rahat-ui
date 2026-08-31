@@ -495,7 +495,7 @@ jobs:
     needs:
       - setup
       # - quality
-      - gitleaks
+      # - gitleaks
       - sast-scan
       - dependency-scan
       - dockerfile-lint

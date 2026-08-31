@@ -15,6 +15,7 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
+import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
@@ -41,6 +42,8 @@ function BeneficiaryGroupsView() {
     ...pagination,
     ...filters,
   });
+
+  const isLoading = data?.isLoading || data?.isFetching;
 
   const groups = data?.data || [];
 
@@ -87,7 +90,9 @@ function BeneficiaryGroupsView() {
           </Button>
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
-          {filteredGroups.length > 0 ? (
+          {isLoading ? (
+            <LoaderRahat />
+          ) : filteredGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((i: any, index: number) => {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;

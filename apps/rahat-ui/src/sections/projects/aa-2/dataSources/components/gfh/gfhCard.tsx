@@ -61,7 +61,7 @@ const GFHCard = ({
       <Card className="px-4 py-3 rounded-xl mb-4">
         {/* title */}
         <div className="flex items-center gap-2 mb-1">
-          <h2 className="font-bold text-lg">{t('DODA_RIVER_FORECAST')}</h2>
+          <h2 className="font-bold text-lg">{stationName || 'N/A'}</h2>
 
           <CircleAlert
             className="w-4 h-4 cursor-pointer"

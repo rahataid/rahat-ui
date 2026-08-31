@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { SystemUserAuth } from '@rahat-ui/auth';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { UUID } from 'crypto';
 import {
@@ -23,7 +24,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { DemoTable, SearchInput } from '../../common';
-import { LockKeyhole, LockKeyholeOpen } from 'lucide-react';
+import { LockKeyhole, LockKeyholeOpen, Pencil } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import SelectComponent from './comms/select.component';
 import CustomPagination from '../../components/customPagination';
@@ -31,23 +33,39 @@ import TooltipWrapper from '../../components/tooltip.wrapper';
 import { useDateFormat } from '../../utils/i18n/date';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
-
-const STATUS_CLASSES: Record<string, string> = {
-  NOT_READY: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-  ACTIVE: 'bg-green-100 text-green-700 border-green-300',
-  CLOSED: 'bg-red-100 text-red-700 border-red-300',
+export const STATUS_CONFIG: Record<
+  string,
+  { label: string; className: string }
+> = {
+  NOT_READY: {
+    label: 'Not Ready',
+    className: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+  },
+  ACTIVE: {
+    label: 'Active',
+    className: 'bg-green-100 text-green-700 border-green-300',
+  },
+  CLOSED: {
+    label: 'Closed',
+    className: 'bg-red-100 text-red-700 border-red-300',
+  },
 };
 
 export function StatusBadge({ status }: { status?: string }) {
-  const t = useTranslations('PROJECTS_LIST');
+  const config = STATUS_CONFIG[status ?? ''];
   return (
-    <Badge className={`border ${STATUS_CLASSES[status ?? ''] ?? 'bg-gray-100 text-gray-500 border-gray-300'}`}>
-      {t(status ?? '')}
+    <Badge
+      className={`border ${
+        config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'
+      }`}
+    >
+      {config?.label ?? status ?? '—'}
     </Badge>
   );
 }
 
 export default function ListProject() {
+  const router = useRouter();
   const t = useTranslations('PROJECTS_LIST');
   const g = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
@@ -87,9 +105,11 @@ export default function ListProject() {
     {
       header: g('DESCRIPTION'),
       accessorKey: 'description',
-      cell: ({ row }) => <div>
-        <TruncatedCell text={row.getValue('description')} />
-      </div>,
+      cell: ({ row }) => (
+        <div>
+          <TruncatedCell text={row.getValue('description')} />
+        </div>
+      ),
     },
     {
       header: g('TYPE'),
@@ -106,26 +126,46 @@ export default function ListProject() {
       header: g('CREATED_AT'),
       accessorKey: 'createdAt',
       cell: ({ row }) =>
-        row.original.createdAt
-          ? formatDate(row.original.createdAt, 'MMMM d, yyyy, h:mm:ss a')
-          : '—',
+        row.original.createdAt ? formatDate(row.original.createdAt, 'MMMM d, yyyy, h:mm:ss a') : '—',
     },
     {
       id: 'actions',
       header: g('ACTIONS'),
       cell: ({ row }) => {
         const project = row.original;
-        console.log('project in actions', project);
         return (
-          <TooltipWrapper tip={project.status === 'CLOSED' ? t('PROJECT_IS_CLOSED') : t('CLOSE_PROJECT')} >
-            <button
-              onClick={() => setSelectedProject(project)}
-              className=" cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
-              disabled={project.status === 'CLOSED'}
+          <div className="flex items-center space-x-3">
+            <SystemUserAuth hasContent={false}>
+              <TooltipWrapper tip="Edit Project">
+                <button
+                  onClick={() => router.push(`/project-info/${project.uuid}`)}
+                  className="cursor-pointer"
+                >
+                  <Pencil size={18} />
+                </button>
+              </TooltipWrapper>
+            </SystemUserAuth>
+
+            <TooltipWrapper
+              tip={
+                project.status === 'CLOSED'
+                  ? 'Project is Closed'
+                  : 'Close Project'
+              }
             >
-              {project.status === 'CLOSED' ? <LockKeyhole /> : <LockKeyholeOpen />}
-            </button>
-          </TooltipWrapper>
+              <button
+                onClick={() => setSelectedProject(project)}
+                className=" cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
+                disabled={project.status === 'CLOSED'}
+              >
+                {project.status === 'CLOSED' ? (
+                  <LockKeyhole />
+                ) : (
+                  <LockKeyholeOpen />
+                )}
+              </button>
+            </TooltipWrapper>
+          </div>
         );
       },
     },
@@ -159,7 +199,9 @@ export default function ListProject() {
           name={g('STATUS')}
           options={['ALL', 'ACTIVE', 'NOT_READY', 'CLOSED']}
           optionLabels={{ ALL: g('ALL'), ACTIVE: t('ACTIVE'), NOT_READY: t('NOT_READY'), CLOSED: t('CLOSED') }}
-          onChange={(value) => setFilter('status', value === 'ALL' ? '' : value)}
+          onChange={(value) =>
+            setFilter('status', value === 'ALL' ? '' : value)
+          }
           value={getFilterValue('status') || 'ALL'}
           className="flex-[1]"
         />
@@ -188,7 +230,9 @@ export default function ListProject() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('CLOSE_PROJECT_TITLE', { name: selectedProject?.name })}</AlertDialogTitle>
+            <AlertDialogTitle>
+              Close &quot;{selectedProject?.name}&quot;?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t('CLOSE_PROJECT_DESC')}
             </AlertDialogDescription>

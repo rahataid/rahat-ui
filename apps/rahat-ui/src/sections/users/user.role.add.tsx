@@ -15,6 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { SystemUserAuth } from '@rahat-ui/auth';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Accordion,
@@ -200,26 +201,28 @@ export default function UserAddRoleView() {
                     );
                   }}
                 />
-                <FormField
-                  control={form.control}
-                  name="isSystem"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('IS_SYSTEM')}</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                          <p className="text-sm text-muted-foreground">
-                            {t('THIS_ROLE_IS_PART_OF_THE')}
-                          </p>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                <SystemUserAuth hasContent={false}>
+                  <FormField
+                    control={form.control}
+                    name="isSystem"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('IS_SYSTEM')}</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                            <p className="text-sm text-muted-foreground">
+                              {t('THIS_ROLE_IS_PART_OF_THE')}
+                            </p>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </SystemUserAuth>
               </div>
               <ScrollArea className="h-[calc(100vh-253px)] pr-3">
               <div className="flex flex-col space-y-4">

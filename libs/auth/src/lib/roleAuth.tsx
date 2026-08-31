@@ -1,10 +1,8 @@
 /* eslint-disable-next-line */
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useUserStore } from '@rumsan/react-query';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ShieldX } from 'lucide-react';
 import { AARoles } from '../enums/aaRoles';
+import { AccessDenied } from './accessDenied';
 
 // In the future, if additional projects define their own roles,
 // extend CombinedRole as a union of all relevant role enums.
@@ -27,37 +25,13 @@ export function RoleAuth({
   const { user } = useUserStore((state) => ({
     user: state.user,
   }));
-  const router = useRouter();
   const t = useTranslations('GLOBAL');
   const hasRequiredRole =
     roles.length === 0 ||
     roles.some((role) => user?.data?.roles?.includes(role));
 
   if (!hasRequiredRole) {
-    return hasContent ? (
-      <div className="min-h-screen flex items-center justify-center bg-background/50 backdrop-blur-sm p-4">
-        <div className="max-w-md w-full bg-card rounded-lg shadow-lg p-8 border border-border">
-          <div className="flex flex-col items-center text-center space-y-6">
-            <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-              <ShieldX className="w-10 h-10 text-red-600 dark:text-red-400" />
-            </div>
-
-            <h3 className="text-2xl font-bold text-red-600 ">{t('ACCESS_DENIED')}</h3>
-
-            <p className="text-muted-foreground">
-              {t('ACCESS_DENIED_MESSAGE')}
-            </p>
-
-            <Button
-              onClick={router.back}
-              className="bg-gradient-to-r bg-blue-500 hover:bg-blue-600 text-white"
-            >
-              {t('RETURN_BACK')}
-            </Button>
-          </div>
-        </div>
-      </div>
-    ) : null;
+    return hasContent ? <AccessDenied /> : null;
   }
 
   return <>{children}</>;

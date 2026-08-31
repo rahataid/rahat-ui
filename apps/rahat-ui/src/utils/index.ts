@@ -146,6 +146,7 @@ export const intlFormatDate = (dateStr?: string) => {
     hour12: true,
     hour: 'numeric',
     minute: 'numeric',
+    second: 'numeric',
   }).format(date);
 };
 

@@ -50,7 +50,7 @@ const PROJECT_SUBJECT_ACTION_OVERRIDES: Partial<Record<string, string[]>> = {
     ACTIONS.CREATE,
     ACTIONS.UPDATE,
     ACTIONS.READ,
-    ACTIONS.TRIGGER,
+    ACTIONS.ACTIVATE,
   ],
 };
 

@@ -41,6 +41,7 @@ interface BaseCommunication {
   sessionStatus: string;
   sessionId: string;
   completedAt: string;
+  extras?: { smsCredits: number };
   onSend?: () => void;
   onEdit?: () => void;
 }
@@ -195,6 +196,16 @@ export function CommunicationCard({
               >
                 <span>{activityCommunication?.groupName}</span>
               </TooltipWrapper>
+              {activityCommunication?.extras && (
+                <>
+                  <span>•</span>
+                  <TooltipWrapper
+                    tip={`SMS credit: ${activityCommunication?.extras.smsCredits}`}
+                  >
+                    <span>{activityCommunication?.extras.smsCredits}</span>
+                  </TooltipWrapper>
+                </>
+              )}
             </div>
           </div>
 

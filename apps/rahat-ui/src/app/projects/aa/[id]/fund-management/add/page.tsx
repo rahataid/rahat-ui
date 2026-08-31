@@ -1,6 +1,5 @@
 'use client';
 
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import {
   ACTIONS,
   SUBJECTS,
@@ -14,7 +13,6 @@ const AddFundManagement = () => {
       action={ACTIONS.CREATE}
       subject={SUBJECTS.FUND_MANAGEMENT}
     >
-      <h1 className="color-red">testing this page</h1>
       <AAAssignFundsView />
     </ProjectPermissionGuard>
   );

@@ -261,7 +261,7 @@ export function CommunicationCard({
 
         {/* Voice Content */}
         {activityCommunication?.transportName === 'VOICE' &&
-          Object.keys(activityCommunication?.message).length !== 0 && (
+          Object.keys(activityCommunication?.message || {}).length !== 0 && (
             <TooltipWrapper
               tip={`Voice File: ${activityCommunication?.message?.fileName}`}
             >

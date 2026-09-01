@@ -183,6 +183,7 @@ export default function InkindAllocationDetail() {
         String(r.quantity ?? r.quantityDisbursed ?? 0),
         r.redeemedAt ?? r.createdAt ?? 'N/A',
         r.txHash ?? 'N/A',
+        r.beneficiary?.name ?? 'N/A',
         r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
         r.beneficiary?.phone ?? 'N/A',
         r.vendor?.name ?? 'N/A',
@@ -260,6 +261,16 @@ export default function InkindAllocationDetail() {
   }, [logsData]);
 
   const columns: ColumnDef<LogRow>[] = [
+    {
+      accessorKey: 'beneficiaryName',
+      header: 'Beneficiary Name',
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.original.beneficiaryName ?? 'N/A'}
+          maxLength={20}
+        />
+      ),
+    },
     {
       accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet',

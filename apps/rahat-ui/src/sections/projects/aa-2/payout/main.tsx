@@ -9,7 +9,6 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useMemo, useState } from 'react';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import {
   Tabs,
   TabsContent,
@@ -19,6 +18,11 @@ import {
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import PayoutTransactionList from './table/payoutTransactionList';
 import PayoutOverview from './component/payout-overview';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function PayoutView() {
   const params = useParams();
@@ -81,10 +85,7 @@ export default function PayoutView() {
           description="Track all the payout reports here"
         />
         <div className="flex flex-end gap-2 items-center">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.PAYOUT}>
             <IconLabelBtn
               Icon={Plus}
               handleClick={() => {
@@ -96,7 +97,7 @@ export default function PayoutView() {
               variant="default"
               payout-main-bug-refactor
             />
-          </RoleAuth>
+          </Can>
         </div>
       </div>
       <div className="flex justify-between items-center space-x-4 ">

@@ -13,7 +13,6 @@ const AddFundManagement = () => {
       action={ACTIONS.CREATE}
       subject={SUBJECTS.FUND_MANAGEMENT}
     >
-      <h1 className="color-red">testing this page</h1>
       <AAAssignFundsView />
     </ProjectPermissionGuard>
   );

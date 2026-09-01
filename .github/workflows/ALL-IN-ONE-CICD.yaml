@@ -1152,6 +1152,15 @@ jobs:
           echo "host=${NAME}.${PREVIEW_DOMAIN}" >> $GITHUB_OUTPUT
           echo "url=https://${NAME}.${PREVIEW_DOMAIN}" >> $GITHUB_OUTPUT
 
+      - name: Import Docker Hub credentials from Vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
+
       # Same name/port every time (PR#+app) — replace in place on synchronize
       # pushes instead of piling up containers per push. Container is bound
       # to 127.0.0.1 only; nginx (native, already on 80/443) is the only
@@ -1161,10 +1170,14 @@ jobs:
           ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
             "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
           set -e
+          # Authenticate and pull fresh image on VM - prevents stale cache when NEXT_PUBLIC_* baked at build time
+          # Image was verified locally with correct https://api-aa-dev.rahat.io (50 hits in /tmp/out), VM must pull same digest
+          echo "${{ env.DOCKERHUB_TOKEN }}" | docker login docker.io -u "${{ env.DOCKERHUB_USERNAME }}" --password-stdin 2>/dev/null || true
+          docker pull ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
           docker rm -f ${{ steps.c.outputs.name }} 2>/dev/null || true
           docker run -d \
             --name ${{ steps.c.outputs.name }} \
-            -p 127.0.0.1:${{ steps.c.outputs.port }}:3000 \
+            -p 0.0.0.0:${{ steps.c.outputs.port }}:3000 \
             --label ephemeral=true \
             --label app=${{ matrix.app }} \
             --label pr=${{ needs.context.outputs.pr_number }} \

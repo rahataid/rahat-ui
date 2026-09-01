@@ -1023,6 +1023,13 @@ jobs:
             github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
             ${{ needs.context.outputs.vault_secret_path }} ${{ needs.context.outputs.vault_secret_key }} | ENV ;
 
+      - name: Debug Vault Output
+        run: |
+          echo "Vault path used: ${{ needs.context.outputs.vault_secret_path }}"
+          echo "Vault key used: ${{ needs.context.outputs.vault_secret_key }}"
+          echo "Loaded ENV variables:"
+          echo "$ENV" | grep "NEXT_PUBLIC_API_HOST_URL"
+
       - name: Create environment file
         run: |
           if [ -z "$ENV" ]; then

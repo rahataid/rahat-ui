@@ -56,6 +56,7 @@ export default function AddStakeholders() {
     useState<string>('');
   const hasInteracted = useRef(false);
   const isRestored = useRef(false);
+  const isSubmittingRef = useRef(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
 
   const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>(
@@ -137,8 +138,9 @@ export default function AddStakeholders() {
   };
 
   const hasUnsavedChanges =
-    (hasInteracted.current && form.formState.isDirty) ||
-    unsavedSupportAreaInput.trim() !== '';
+    !isSubmittingRef.current &&
+    ((hasInteracted.current && form.formState.isDirty) ||
+      unsavedSupportAreaInput.trim() !== '');
 
   const { showDialog, handleConfirmLeave, handleCancelLeave } =
     useUnsavedChanges({
@@ -167,6 +169,7 @@ export default function AddStakeholders() {
     }
   };
   const handleCreateStakeholders = async (data: z.infer<typeof FormSchema>) => {
+    isSubmittingRef.current = true;
     try {
       const payload = {
         ...data,
@@ -177,9 +180,10 @@ export default function AddStakeholders() {
         stakeholderPayload: payload,
       });
       clearSaved();
-      router.push(`/projects/aa/${id}/stakeholders`);
       form.reset();
+      router.push(`/projects/aa/${id}/stakeholders`);
     } catch (e) {
+      isSubmittingRef.current = false;
       console.error('Create Stakeholder Error::', e);
     }
   };

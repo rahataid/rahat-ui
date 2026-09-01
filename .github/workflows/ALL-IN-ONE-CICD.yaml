@@ -1,224 +1,224 @@
-name: ALL DEV CI/CD
+# name: ALL DEV CI/CD
 
-on:
-  workflow_dispatch:
-    inputs:
-      apps_to_build:
-        description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
-        required: false
-        default: ""
-        type: string
-      tag_suffix:
-        description: "Tag suffix (e.g., aa-dev)"
-        required: true
-        default: "aa-dev"
-        type: string
-      vault_secret_path:
-        description: "Vault secret path"
-        required: true
-        type: choice
-        options:
-          # Dev folder
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev"
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
-          - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"
-          - "[DEV] github/data/rahat/rahat-ui/dev/el/crm"
-          - "[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink"
-          - "[DEV] github/data/rahat/rahat-ui/demo/aa/stellar"
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       apps_to_build:
+#         description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
+#         required: false
+#         default: ""
+#         type: string
+#       tag_suffix:
+#         description: "Tag suffix (e.g., aa-dev)"
+#         required: true
+#         default: "aa-dev"
+#         type: string
+#       vault_secret_path:
+#         description: "Vault secret path"
+#         required: true
+#         type: choice
+#         options:
+#           # Dev folder
+#           - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev"
+#           - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
+#           - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
+#           - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"
+#           - "[DEV] github/data/rahat/rahat-ui/dev/el/crm"
+#           - "[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink"
+#           - "[DEV] github/data/rahat/rahat-ui/demo/aa/stellar"
 
-          # Training
-          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn"
-          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs"
+#           # Training
+#           - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn"
+#           - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs"
 
-          # Demo folder
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/testload"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026"
+#           # Demo folder
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/testload"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026"
 
-          # Main folder
-          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"
-          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
-          - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
-          - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
-          - "[MAIN] github/data/rahat/rahat-ui/prod/aa/demo"
+#           # Main folder
+#           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"
+#           - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
+#           - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
+#           - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
+#           - "[MAIN] github/data/rahat/rahat-ui/prod/aa/demo"
 
 
-      vault_secret_key:
-        description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"
-        required: true
-        default: "rahat-ui"
-        type: string
+#       vault_secret_key:
+#         description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"
+#         required: true
+#         default: "rahat-ui"
+#         type: string
 
-env:
-  CI: false
-  REGISTRY: docker.io
-  IMAGE_NAMESPACE: esatya
+# env:
+#   CI: false
+#   REGISTRY: docker.io
+#   IMAGE_NAMESPACE: esatya
 
-jobs:
-  setup:
-    name: Setup Build Matrix
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: Generate build matrix
-        id: set-matrix
-        run: |
-          APPS="${{ inputs.apps_to_build }}"
-          if [ -z "$APPS" ]; then
-            APPS="rahat-ui,community-tool-ui"
-          fi
-          JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
-          echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
+# jobs:
+#   setup:
+#     name: Setup Build Matrix
+#     runs-on: ubuntu-latest
+#     outputs:
+#       matrix: ${{ steps.set-matrix.outputs.matrix }}
+#     steps:
+#       - name: Generate build matrix
+#         id: set-matrix
+#         run: |
+#           APPS="${{ inputs.apps_to_build }}"
+#           if [ -z "$APPS" ]; then
+#             APPS="rahat-ui,community-tool-ui"
+#           fi
+#           JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
+#           echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
 
-  build:
-    name: Build & Push - ${{ matrix.app }}
-    runs-on: ubuntu-latest
-    needs: setup
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
-    permissions:
-      contents: read
-      packages: write
+#   build:
+#     name: Build & Push - ${{ matrix.app }}
+#     runs-on: ubuntu-latest
+#     needs: setup
+#     strategy:
+#       fail-fast: false
+#       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+#     permissions:
+#       contents: read
+#       packages: write
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
 
-      - name: Extract version dynamically
-        id: extract_version
-        run: |
-          KEY="${{ matrix.app }}-version"
-          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+#       - name: Extract version dynamically
+#         id: extract_version
+#         run: |
+#           KEY="${{ matrix.app }}-version"
+#           VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
 
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      # -----------------------------
-      # Strip prefix from Vault secret path
-      # -----------------------------
-      - name: Strip prefix from Vault path
-        id: vault-path
-        run: |
-          RAW_PATH="${{ inputs.vault_secret_path }}"
-          CLEAN_PATH="${RAW_PATH#*] }"
-          echo "VAULT_PATH=${CLEAN_PATH}" >> $GITHUB_OUTPUT
+#           echo "VERSION=$VERSION" >> $GITHUB_ENV
+#           echo "version=$VERSION" >> $GITHUB_OUTPUT
+#       # -----------------------------
+#       # Strip prefix from Vault secret path
+#       # -----------------------------
+#       - name: Strip prefix from Vault path
+#         id: vault-path
+#         run: |
+#           RAW_PATH="${{ inputs.vault_secret_path }}"
+#           CLEAN_PATH="${RAW_PATH#*] }"
+#           echo "VAULT_PATH=${CLEAN_PATH}" >> $GITHUB_OUTPUT
 
-      # -----------------------------
-      # Vault Secret Import
-      # -----------------------------
-      - name: Import Secrets from Vault
-        id: vault
-        uses: hashicorp/vault-action@v2.4.0
-        with:
-          url: ${{ secrets.VAULT_URL }}
-          token: ${{ secrets.VAULT_TOKEN }}
-          secrets: |
-            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
-            github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
-            ${{ steps.vault-path.outputs.VAULT_PATH }} ${{ inputs.vault_secret_key }} | ENV ;
+#       # -----------------------------
+#       # Vault Secret Import
+#       # -----------------------------
+#       - name: Import Secrets from Vault
+#         id: vault
+#         uses: hashicorp/vault-action@v2.4.0
+#         with:
+#           url: ${{ secrets.VAULT_URL }}
+#           token: ${{ secrets.VAULT_TOKEN }}
+#           secrets: |
+#             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+#             github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
+#             ${{ steps.vault-path.outputs.VAULT_PATH }} ${{ inputs.vault_secret_key }} | ENV ;
 
-      # -----------------------------
-      # Environment Injection
-      # -----------------------------
-      - name: Create environment file
-        run: |
-          if [ -z "$ENV" ]; then
-            echo "ERROR: Vault secret is empty!"
-            exit 1
-          fi
-          tee ./.env <<< "$ENV"
+#       # -----------------------------
+#       # Environment Injection
+#       # -----------------------------
+#       - name: Create environment file
+#         run: |
+#           if [ -z "$ENV" ]; then
+#             echo "ERROR: Vault secret is empty!"
+#             exit 1
+#           fi
+#           tee ./.env <<< "$ENV"
 
-      # -----------------------------
-      # Node + PNPM Setup
-      # -----------------------------
-      # - name: Enable pnpm via Corepack
-      #   run: corepack enable && corepack prepare pnpm@8.14.1 --activate
+#       # -----------------------------
+#       # Node + PNPM Setup
+#       # -----------------------------
+#       # - name: Enable pnpm via Corepack
+#       #   run: corepack enable && corepack prepare pnpm@8.14.1 --activate
 
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 20.10.0
-      #     cache: "pnpm"
+#       # - name: Setup Node.js
+#       #   uses: actions/setup-node@v4
+#       #   with:
+#       #     node-version: 20.10.0
+#       #     cache: "pnpm"
 
-      # - name: Install dependencies
-      #   run: pnpm install --frozen-lockfile
+#       # - name: Install dependencies
+#       #   run: pnpm install --frozen-lockfile
 
-      # - name: Build application
-      #   run: pnpm build:all
+#       # - name: Build application
+#       #   run: pnpm build:all
 
-      # -----------------------------
-      # Docker Setup
-      # -----------------------------
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#       # -----------------------------
+#       # Docker Setup
+#       # -----------------------------
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ env.DOCKERHUB_TOKEN }}
+#       - name: Login to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ env.DOCKERHUB_USERNAME }}
+#           password: ${{ env.DOCKERHUB_TOKEN }}
 
-      - name: Extract Git metadata
-        id: meta
-        run: |
-          echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-          echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+#       - name: Extract Git metadata
+#         id: meta
+#         run: |
+#           echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+#           echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
 
-      # -----------------------------
-      # Docker Build & Push
-      # -----------------------------
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.${{ matrix.app }}
-          push: true
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
-          tags: |
-            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
-            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
-          build-args: |
-            NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
+#       # -----------------------------
+#       # Docker Build & Push
+#       # -----------------------------
+#       - name: Build and Push Docker Image
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: .
+#           file: Dockerfile.${{ matrix.app }}
+#           push: true
+#           # cache-from: type=gha
+#           # cache-to: type=gha,mode=max
+#           tags: |
+#             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
+#             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
+#           build-args: |
+#             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
 
-      - name: Send Slack Alert on Failure
-        if: failure()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_COLOR: '#ff0000'
-          SLACK_TITLE: 'Build Failed — ${{ matrix.app }}'
-          SLACK_MESSAGE: |
-            *App:* `${{ matrix.app }}`
-            *Tag:* `${{ inputs.tag_suffix }}`
-            *Branch:* `${{ github.ref_name }}`
-            *Actor:* `${{ github.actor }}`
-            *Vault path:* `${{ steps.vault-path.outputs.VAULT_PATH }}`
+#       - name: Send Slack Alert on Failure
+#         if: failure()
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           SLACK_COLOR: '#ff0000'
+#           SLACK_TITLE: 'Build Failed — ${{ matrix.app }}'
+#           SLACK_MESSAGE: |
+#             *App:* `${{ matrix.app }}`
+#             *Tag:* `${{ inputs.tag_suffix }}`
+#             *Branch:* `${{ github.ref_name }}`
+#             *Actor:* `${{ github.actor }}`
+#             *Vault path:* `${{ steps.vault-path.outputs.VAULT_PATH }}`
       
-            :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
-          SLACK_FOOTER: ''
+#             :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
+#           SLACK_FOOTER: ''
 
 # name: ALL DEV CI/CD
 
 # on:
 #   workflow_dispatch:
 #     inputs:
-#       # action:
-#         # description: "create = build & deploy ephemeral env, destroy = tear one down"
-#         # required: true
-#         # default: "create"
-#         # type: choice
-#         # options:
-#         #   - "create"
-#         #   - "destroy"
+#       action:
+#         description: "create = build & deploy ephemeral env, destroy = tear one down"
+#         required: true
+#         default: "create"
+#         type: choice
+#         options:
+#           - "create"
+#           - "destroy"
 #       apps_to_build:
 #         description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
 #         required: false
@@ -270,16 +270,16 @@ jobs:
 #         required: false
 #         default: "rahat-ui"
 #         type: string
-#       # ttl_hours:
-#       #   description: "Hours before this ephemeral env auto-expires (only used on create)"
-#       #   required: false
-#       #   default: "4"
-#       #   type: string
-#       # container_to_destroy:
-#       #   description: "Container name to tear down (only used on destroy, e.g. eph-rahat-ui-aa-dev-123)"
-#       #   required: false
-#       #   default: ""
-#       #   type: string
+#       ttl_hours:
+#         description: "Hours before this ephemeral env auto-expires (only used on create)"
+#         required: false
+#         default: "4"
+#         type: string
+#       container_to_destroy:
+#         description: "Container name to tear down (only used on destroy, e.g. eph-rahat-ui-aa-dev-123)"
+#         required: false
+#         default: ""
+#         type: string
 
 # env:
 #   CI: false
@@ -311,73 +311,6 @@ jobs:
 #           JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
 #           echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
 
-# # # ============================================================
-# # # CODE QUALITY
-# # # ============================================================
-
-# #   quality:
-# #     name: Code Quality
-# #     runs-on: ubuntu-latest
-
-# #     steps:
-# #       - name: Checkout repository
-# #         uses: actions/checkout@v6
-
-# #       # --------------------------------------------------------
-# #       # Node 24
-# #       # --------------------------------------------------------
-
-# #       - name: Setup Node.js
-# #         uses: actions/setup-node@v6
-# #         with:
-# #           node-version: 24
-
-# #       # --------------------------------------------------------
-# #       # Install dependencies
-# #       #
-# #       # No lockfile currently exists in the repository.
-# #       # Therefore do NOT use "cache: npm" and do NOT use npm ci.
-# #       # --------------------------------------------------------
-
-# #       - name: Install dependencies
-# #         shell: bash
-# #         run: |
-# #           if [ -f package-lock.json ]; then
-# #             npm ci
-# #           elif [ -f npm-shrinkwrap.json ]; then
-# #             npm ci
-# #           elif [ -f yarn.lock ]; then
-# #             corepack enable
-# #             yarn install --frozen-lockfile
-# #           elif [ -f pnpm-lock.yaml ]; then
-# #             corepack enable
-# #             pnpm install --frozen-lockfile
-# #           else
-# #             echo "No dependency lockfile found."
-# #             echo "Using npm install."
-# #             npm install
-# #           fi
-
-# #       # --------------------------------------------------------
-# #       # ESLint
-# #       # --------------------------------------------------------
-
-# #       - name: ESLint
-# #         run: npm run lint
-
-# #       # --------------------------------------------------------
-# #       # TypeScript
-# #       # --------------------------------------------------------
-
-# #       - name: TypeScript type-check
-# #         run: npm run typecheck
-
-# #       # --------------------------------------------------------
-# #       # Tests
-# #       # --------------------------------------------------------
-
-# #       - name: Run tests
-# #         run: npm test
 
 # # ============================================================
 # # SECRET SCANNING
@@ -495,7 +428,7 @@ jobs:
 #     needs:
 #       - setup
 #       # - quality
-#       - gitleaks
+#       # - gitleaks
 #       - sast-scan
 #       - dependency-scan
 #       - dockerfile-lint
@@ -595,37 +528,6 @@ jobs:
 #           build-args: |
 #             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
 
-#       # --------------------------------------------------------
-#       # Trivy Docker image scan
-#       # --------------------------------------------------------
-
-#       # - name: Run Trivy Container Scanner
-#       #   uses: aquasecurity/trivy-action@v0.36.0
-#       #   with:
-#       #     image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
-#       #     format: table
-#       #     severity: CRITICAL,HIGH
-#       #     ignore-unfixed: true
-#       #     exit-code: 1
-
-#       # # --------------------------------------------------------
-#       # # Trivy SARIF
-#       # # --------------------------------------------------------
-
-#       # - name: Run Trivy Scanner - SARIF
-#       #   uses: aquasecurity/trivy-action@v0.36.0
-#       #   with:
-#       #     image-ref: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}'
-#       #     format: sarif
-#       #     output: trivy-results.sarif
-#       #     severity: CRITICAL,HIGH
-#       #     ignore-unfixed: true
-#       #     exit-code: 0
-
-#       # - name: Upload Trivy results to GitHub Security
-#       #   uses: github/codeql-action/upload-sarif@v3
-#       #   with:
-#       #     sarif_file: trivy-results.sarif
 
 #       # --------------------------------------------------------
 #       # SBOM
@@ -669,18 +571,6 @@ jobs:
 #             --yes \
 #             "${IMAGE}:${TAG}"
 
-#       # --------------------------------------------------------
-#       # Build provenance
-#       # --------------------------------------------------------
-
-#       - name: Generate build provenance
-#         uses: actions/attest-build-provenance@v2
-#         with:
-#           subject-name: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}
-#           subject-digest: ${{ steps.build.outputs.digest }}
-#           push-to-registry: true
-      
-
 #       - name: Send Slack Alert on Failure
 #         if: failure()
 #         uses: rtCamp/action-slack-notify@v2
@@ -698,120 +588,668 @@ jobs:
 #             :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
 #           SLACK_FOOTER: ''
 
-  # deploy-ephemeral:
-  #   name: Deploy Ephemeral Environment - ${{ matrix.app }}
-  #   # Runs on your arc-runner-set — needs network access to reach DEV_VM_SSH_HOST
-  #   runs-on: arc-runner-set
-  #   needs: [setup, build]
-  #   if: ${{ inputs.action == 'create' }}
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
-  #   steps:
-  #     # - name: Download .env from build job
-  #     #   uses: actions/download-artifact@v4
-  #     #   with:
-  #     #     name: env-${{ matrix.app }}
-  #     #     path: .
+#   deploy-ephemeral:
+#     name: Deploy Ephemeral Environment - ${{ matrix.app }}
+#     # Runs on your arc-runner-set — needs network access to reach DEV_VM_SSH_HOST
+#     runs-on: arc-runner-set
+#     needs: [setup, build]
+#     if: ${{ inputs.action == 'create' }}
+#     strategy:
+#       fail-fast: false
+#       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+#     steps:
+#       # - name: Download .env from build job
+#       #   uses: actions/download-artifact@v4
+#       #   with:
+#       #     name: env-${{ matrix.app }}
+#       #     path: .
 
-  #     - name: Configure SSH access to dev VM
-  #       run: |
-  #         mkdir -p ~/.ssh
-  #         echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
-  #         chmod 600 ~/.ssh/dev_vm_key
-  #         ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+#       - name: Configure SSH access to dev VM
+#         run: |
+#           mkdir -p ~/.ssh
+#           echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+#           chmod 600 ~/.ssh/dev_vm_key
+#           ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-  #     - name: Compute ephemeral container name
-  #       id: c
-  #       run: |
-  #         SAFE_APP=$(echo "${{ matrix.app }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
-  #         SAFE_TAG=$(echo "${{ inputs.tag_suffix }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
-  #         NAME="eph-${SAFE_APP}-${SAFE_TAG}-${{ needs.build.outputs.run_number }}"
-  #         echo "name=$NAME" >> $GITHUB_OUTPUT
+#       - name: Compute ephemeral container name
+#         id: c
+#         run: |
+#           SAFE_APP=$(echo "${{ matrix.app }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
+#           SAFE_TAG=$(echo "${{ inputs.tag_suffix }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-')
+#           NAME="eph-${SAFE_APP}-${SAFE_TAG}-${{ needs.build.outputs.run_number }}"
+#           echo "name=$NAME" >> $GITHUB_OUTPUT
 
-  #     # - name: Copy .env to dev VM
-  #     #   run: |
-  #     #     scp -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-  #     #       .env "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}:/tmp/${{ steps.c.outputs.name }}.env"
+#       # - name: Copy .env to dev VM
+#       #   run: |
+#       #     scp -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+#       #       .env "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}:/tmp/${{ steps.c.outputs.name }}.env"
 
-  #     - name: Run container on dev VM
-  #       run: |
-  #         ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-  #           "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
-  #         set -e
-  #         docker run -d \
-  #           --name ${{ steps.c.outputs.name }} \
-  #           --label ephemeral=true \
-  #           --label app=${{ matrix.app }} \
-  #           --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-  #           --label ttl-hours="${{ inputs.ttl_hours }}" \
-  #           -p 3000 \
-  #           ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
-  #         EOF
+#       - name: Run container on dev VM
+#         run: |
+#           ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+#             "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
+#           set -e
+#           docker run -d \
+#             --name ${{ steps.c.outputs.name }} \
+#             --label ephemeral=true \
+#             --label app=${{ matrix.app }} \
+#             --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+#             --label ttl-hours="${{ inputs.ttl_hours }}" \
+#             -p 3000 \
+#             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
+#           EOF
 
-  #     - name: Resolve assigned port
-  #       id: url
-  #       run: |
-  #         for i in $(seq 1 10); do
-  #           PORT=$(ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-  #             "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
-  #             "docker port ${{ steps.c.outputs.name }} 3000" 2>/dev/null | cut -d: -f2 || echo "")
-  #           [ -n "$PORT" ] && break
-  #           sleep 2
-  #         done
+#       - name: Resolve assigned port
+#         id: url
+#         run: |
+#           for i in $(seq 1 10); do
+#             PORT=$(ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+#               "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+#               "docker port ${{ steps.c.outputs.name }} 3000" 2>/dev/null | cut -d: -f2 || echo "")
+#             [ -n "$PORT" ] && break
+#             sleep 2
+#           done
 
-  #         if [ -z "$PORT" ]; then
-  #           echo "ERROR: could not resolve published port"
-  #           exit 1
-  #         fi
+#           if [ -z "$PORT" ]; then
+#             echo "ERROR: could not resolve published port"
+#             exit 1
+#           fi
 
-  #         echo "url=http://${{ secrets.DEV_VM_SSH_HOST }}:${PORT}" >> $GITHUB_OUTPUT
+#           echo "url=http://${{ secrets.DEV_VM_SSH_HOST }}:${PORT}" >> $GITHUB_OUTPUT
 
-  #     - name: Notify Slack
-  #       uses: rtCamp/action-slack-notify@v2
-  #       env:
-  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-  #         SLACK_COLOR: '#36a64f'
-  #         SLACK_TITLE: 'Ephemeral Environment Ready — ${{ matrix.app }}'
-  #         SLACK_MESSAGE: |
-  #           *URL:* ${{ steps.url.outputs.url }} (private network / VPN only)
-  #           *Container:* `${{ steps.c.outputs.name }}`
-  #           *Expires in:* ${{ inputs.ttl_hours }}h (auto-cleanup)
-  #           *Manual teardown:* re-run this workflow with `action=destroy` and `container_to_destroy=${{ steps.c.outputs.name }}`
-  #         SLACK_FOOTER: ''
+#       - name: Notify Slack
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           SLACK_COLOR: '#36a64f'
+#           SLACK_TITLE: 'Ephemeral Environment Ready — ${{ matrix.app }}'
+#           SLACK_MESSAGE: |
+#             *URL:* ${{ steps.url.outputs.url }} (private network / VPN only)
+#             *Container:* `${{ steps.c.outputs.name }}`
+#             *Expires in:* ${{ inputs.ttl_hours }}h (auto-cleanup)
+#             *Manual teardown:* re-run this workflow with `action=destroy` and `container_to_destroy=${{ steps.c.outputs.name }}`
+#           SLACK_FOOTER: ''
 
-  # destroy-ephemeral:
-  #   name: Destroy Ephemeral Environment
-  #   runs-on: arc-runner-set
-  #   if: ${{ inputs.action == 'destroy' }}
-  #   steps:
-  #     - name: Validate input
-  #       run: |
-  #         if [ -z "${{ inputs.container_to_destroy }}" ]; then
-  #           echo "ERROR: container_to_destroy is required when action=destroy"
-  #           exit 1
-  #         fi
+#   destroy-ephemeral:
+#     name: Destroy Ephemeral Environment
+#     runs-on: arc-runner-set
+#     if: ${{ inputs.action == 'destroy' }}
+#     steps:
+#       - name: Validate input
+#         run: |
+#           if [ -z "${{ inputs.container_to_destroy }}" ]; then
+#             echo "ERROR: container_to_destroy is required when action=destroy"
+#             exit 1
+#           fi
 
-  #     - name: Configure SSH access to dev VM
-  #       run: |
-  #         mkdir -p ~/.ssh
-  #         echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
-  #         chmod 600 ~/.ssh/dev_vm_key
-  #         ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+#       - name: Configure SSH access to dev VM
+#         run: |
+#           mkdir -p ~/.ssh
+#           echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+#           chmod 600 ~/.ssh/dev_vm_key
+#           ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-  #     - name: Remove container
-  #       run: |
-  #         ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-  #           "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
-  #           "docker rm -f ${{ inputs.container_to_destroy }} || echo 'not found'"
+#       - name: Remove container
+#         run: |
+#           ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+#             "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+#             "docker rm -f ${{ inputs.container_to_destroy }} || echo 'not found'"
 
-  #     - name: Notify Slack
-  #       uses: rtCamp/action-slack-notify@v2
-  #       env:
-  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-  #         SLACK_COLOR: '#999999'
-  #         SLACK_TITLE: 'Ephemeral Environment Destroyed'
-  #         SLACK_MESSAGE: |
-  #           *Container:* `${{ inputs.container_to_destroy }}`
-  #           *Actor:* `${{ github.actor }}`
-  #         SLACK_FOOTER: ''
+#       - name: Notify Slack
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           SLACK_COLOR: '#999999'
+#           SLACK_TITLE: 'Ephemeral Environment Destroyed'
+#           SLACK_MESSAGE: |
+#             *Container:* `${{ inputs.container_to_destroy }}`
+#             *Actor:* `${{ github.actor }}`
+#           SLACK_FOOTER: ''
+
+
+name: ALL DEV CI/CD
+ 
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "create = build & deploy ephemeral env, destroy = tear one down"
+        required: true
+        default: "create"
+        type: choice
+        options:
+          - "create"
+          - "destroy"
+      apps_to_build:
+        description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
+        required: false
+        default: ""
+        type: string
+      tag_suffix:
+        description: "Tag suffix (e.g., aa-dev)"
+        required: true
+        default: "aa-dev"
+        type: string
+      vault_secret_path:
+        description: "Vault secret path"
+        required: false
+        type: choice
+        options:
+          # Dev folder
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev"
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"
+          - "[DEV] github/data/rahat/rahat-ui/dev/el/crm"
+          - "[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink"
+          - "[DEV] github/data/rahat/rahat-ui/demo/aa/stellar"
+ 
+          # Training
+          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn"
+          - "[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs"
+ 
+          # Demo folder
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/testload"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026"
+ 
+          # Main folder
+          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"
+          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
+          - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
+          - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
+          - "[MAIN] github/data/rahat/rahat-ui/prod/aa/demo"
+      vault_secret_key:
+        description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"
+        required: false
+        default: "rahat-ui"
+        type: string
+      ttl_hours:
+        description: "Hours before this ephemeral env auto-expires (only used on create)"
+        required: false
+        default: "4"
+        type: string
+      container_to_destroy:
+        description: "Container name to tear down (only used on destroy, e.g. eph-rahat-ui-aa-dev-123)"
+        required: false
+        default: ""
+        type: string
+ 
+  # --- NEW: automatic PR preview environments ---
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+ 
+env:
+  CI: false
+  REGISTRY: docker.io
+  IMAGE_NAMESPACE: esatya
+  # Wildcard DNS *.dev.rahat.io -> dev VM IP is set once in Cloudflare (out of band).
+  # Traefik on the dev VM does the routing based on container labels, so no
+  # per-PR DNS work happens in this workflow at all.
+  PREVIEW_DOMAIN: dev.rahat.io
+  # Default Vault secret used for auto PR-preview builds (workflow_dispatch still
+  # lets you pick a different path manually for one-off/ad-hoc deployments).
+  PR_PREVIEW_VAULT_PATH: github/data/rahat/rahat-ui/dev/aa/dev-qa
+  PR_PREVIEW_VAULT_KEY: rahat-ui
+ 
+permissions:
+  contents: read
+ 
+# ============================================================
+# CONTEXT — normalizes workflow_dispatch inputs vs. pull_request
+# event fields into one set of outputs every downstream job reads.
+# This is the only place event-specific branching happens.
+# ============================================================
+ 
+jobs:
+  context:
+    name: Resolve Deployment Context
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+    outputs:
+      action: ${{ steps.ctx.outputs.action }}
+      apps_to_build: ${{ steps.ctx.outputs.apps_to_build }}
+      slug: ${{ steps.ctx.outputs.slug }}
+      vault_secret_path: ${{ steps.ctx.outputs.vault_secret_path }}
+      vault_secret_key: ${{ steps.ctx.outputs.vault_secret_key }}
+      ttl_hours: ${{ steps.ctx.outputs.ttl_hours }}
+      pr_number: ${{ steps.ctx.outputs.pr_number }}
+    steps:
+      - name: Compute context
+        id: ctx
+        run: |
+          set -e
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            ACTION="create"
+            if [ "${{ github.event.action }}" = "closed" ]; then
+              ACTION="destroy"
+            fi
+            RAW_SLUG="pr-${PR_NUMBER}"
+            VAULT_PATH="${PR_PREVIEW_VAULT_PATH}"
+            VAULT_KEY="${PR_PREVIEW_VAULT_KEY}"
+            TTL="0" # PR previews are cleaned up on close, not by TTL
+            APPS=""
+          else
+            PR_NUMBER=""
+            ACTION="${{ inputs.action }}"
+            RAW_SLUG="${{ inputs.tag_suffix }}"
+            RAW_VAULT_PATH="${{ inputs.vault_secret_path }}"
+            VAULT_PATH="${RAW_VAULT_PATH#*] }"
+            VAULT_KEY="${{ inputs.vault_secret_key }}"
+            TTL="${{ inputs.ttl_hours }}"
+            APPS="${{ inputs.apps_to_build }}"
+          fi
+ 
+          # DNS-label-safe slug: lowercase, [a-z0-9-] only, collapse repeats,
+          # trim leading/trailing hyphens, cap at 63 chars (DNS label limit).
+          SLUG=$(echo "$RAW_SLUG" \
+            | tr '[:upper:]' '[:lower:]' \
+            | tr -c 'a-z0-9-' '-' \
+            | sed -E 's/-+/-/g; s/^-//; s/-$//' \
+            | cut -c1-63)
+ 
+          if [ -z "$SLUG" ]; then
+            echo "ERROR: computed slug is empty — check tag_suffix/branch name"
+            exit 1
+          fi
+ 
+          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
+          echo "apps_to_build=$APPS" >> "$GITHUB_OUTPUT"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "vault_secret_path=$VAULT_PATH" >> "$GITHUB_OUTPUT"
+          echo "vault_secret_key=$VAULT_KEY" >> "$GITHUB_OUTPUT"
+          echo "ttl_hours=$TTL" >> "$GITHUB_OUTPUT"
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+ 
+  setup:
+    name: Setup Build Matrix
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          APPS="${{ needs.context.outputs.apps_to_build }}"
+          if [ -z "$APPS" ]; then
+            APPS="rahat-ui,community-tool-ui"
+          fi
+          JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
+          echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
+ 
+# ============================================================
+# SECRET SCANNING / SAST / DEPENDENCY / LINT — unchanged
+# ============================================================
+ 
+  gitleaks:
+    name: Secret Scan - Gitleaks
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/removed-pagiton-from-add-edit-activity'
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        id: gitleaks
+        continue-on-error: true
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      - name: Report Gitleaks result
+        if: steps.gitleaks.outcome == 'failure'
+        run: echo "::warning::Gitleaks detected secrets. Build will continue."
+ 
+  sast-scan:
+    name: SAST - CodeQL
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@v3
+ 
+  dependency-scan:
+    name: Dependency & Filesystem Scan
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: 0
+ 
+  dockerfile-lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile:
+          - Dockerfile.rahat-ui
+          - Dockerfile.community-tool-ui
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          failure-threshold: error
+ 
+# ============================================================
+# BUILD
+# ============================================================
+ 
+  build:
+    name: Build & Push - ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    needs:
+      - context
+      - setup
+      - sast-scan
+      - dependency-scan
+      - dockerfile-lint
+    if: needs.context.outputs.action == 'create'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      short_sha: ${{ steps.meta.outputs.short_sha }}
+      run_number: ${{ steps.meta.outputs.run_number }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # For pull_request events, build the PR's head commit, not the merge ref
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+ 
+      - name: Extract version dynamically
+        id: extract_version
+        run: |
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+ 
+      - name: Import Secrets from Vault
+        id: vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
+            ${{ needs.context.outputs.vault_secret_path }} ${{ needs.context.outputs.vault_secret_key }} | ENV ;
+ 
+      - name: Create environment file
+        run: |
+          if [ -z "$ENV" ]; then
+            echo "ERROR: Vault secret is empty!"
+            exit 1
+          fi
+          tee ./.env <<< "$ENV"
+ 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+ 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+ 
+      - name: Extract Git metadata
+        id: meta
+        run: |
+          echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+ 
+      - name: Build and Push Docker Image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.${{ matrix.app }}
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
+          build-args: |
+            NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
+ 
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}'
+          format: cyclonedx-json
+          output-file: sbom-${{ matrix.app }}.json
+ 
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ matrix.app }}
+          path: sbom-${{ matrix.app }}.json
+          retention-days: 30
+ 
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.8.1
+ 
+      - name: Sign Docker image
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        shell: bash
+        run: |
+          IMAGE="${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}"
+          TAG="${{ needs.context.outputs.slug }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}"
+          cosign sign --yes "${IMAGE}:${TAG}"
+ 
+      - name: Send Slack Alert on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: '#ff0000'
+          SLACK_TITLE: 'Build Failed — ${{ matrix.app }}'
+          SLACK_MESSAGE: |
+            *App:* `${{ matrix.app }}`
+            *Tag:* `${{ needs.context.outputs.slug }}`
+            *Branch:* `${{ github.head_ref || github.ref_name }}`
+            *Actor:* `${{ github.actor }}`
+            :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
+          SLACK_FOOTER: ''
+ 
+# ============================================================
+# DEPLOY — deterministic name + Traefik labels, no port polling
+# ============================================================
+ 
+  deploy-ephemeral:
+    name: Deploy Ephemeral Environment - ${{ matrix.app }}
+    runs-on: arc-runner-set
+    needs: [context, setup, build]
+    if: needs.context.outputs.action == 'create'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    outputs: {}
+    steps:
+      - name: Configure SSH access to dev VM
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+          chmod 600 ~/.ssh/dev_vm_key
+          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+ 
+      - name: Compute deterministic name + hostname
+        id: c
+        run: |
+          NAME="${{ needs.context.outputs.slug }}-${{ matrix.app }}"
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "host=${NAME}.${PREVIEW_DOMAIN}" >> $GITHUB_OUTPUT
+          echo "url=https://${NAME}.${PREVIEW_DOMAIN}" >> $GITHUB_OUTPUT
+ 
+      # Same name every time (PR#+app) — replace in place on synchronize
+      # pushes instead of piling up containers per push.
+      - name: Deploy (replace-in-place) on dev VM via Traefik
+        run: |
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
+          set -e
+          docker rm -f ${{ steps.c.outputs.name }} 2>/dev/null || true
+          docker run -d \
+            --name ${{ steps.c.outputs.name }} \
+            --network traefik-net \
+            --label ephemeral=true \
+            --label app=${{ matrix.app }} \
+            --label pr=${{ needs.context.outputs.pr_number }} \
+            --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --label ttl-hours="${{ needs.context.outputs.ttl_hours }}" \
+            --label traefik.enable=true \
+            --label traefik.http.routers.${{ steps.c.outputs.name }}.rule=Host\(\`${{ steps.c.outputs.host }}\`\) \
+            --label traefik.http.routers.${{ steps.c.outputs.name }}.entrypoints=websecure \
+            --label traefik.http.routers.${{ steps.c.outputs.name }}.tls.certresolver=letsencrypt \
+            --label traefik.http.services.${{ steps.c.outputs.name }}.loadbalancer.server.port=3000 \
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
+          EOF
+ 
+      - name: Write job summary (Actions annotation for the link)
+        run: |
+          {
+            echo "### 🚀 Preview ready — ${{ matrix.app }}"
+            echo ""
+            echo "**${{ steps.c.outputs.url }}**"
+            echo ""
+            echo "Expires: ${{ needs.context.outputs.pr_number != '' && 'when PR closes' || format('~{0}h', needs.context.outputs.ttl_hours) }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+ 
+      - name: Post/update sticky PR comment with link
+        if: needs.context.outputs.pr_number != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          comment-tag: preview-${{ matrix.app }}
+          body: |
+            🚀 **${{ matrix.app }}** preview deployed: ${{ steps.c.outputs.url }}
+            _Updated at ${{ github.event.pull_request.head.sha }}_
+ 
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: '#36a64f'
+          SLACK_TITLE: 'Ephemeral Environment Ready — ${{ matrix.app }}'
+          SLACK_MESSAGE: |
+            *URL:* ${{ steps.c.outputs.url }}
+            *Container:* `${{ steps.c.outputs.name }}`
+            *PR:* ${{ needs.context.outputs.pr_number || 'manual dispatch' }}
+          SLACK_FOOTER: ''
+ 
+# ============================================================
+# DESTROY — manual (workflow_dispatch) path, unchanged
+# ============================================================
+ 
+  destroy-ephemeral:
+    name: Destroy Ephemeral Environment (manual)
+    runs-on: arc-runner-set
+    needs: context
+    if: needs.context.outputs.action == 'destroy' && github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Validate input
+        run: |
+          if [ -z "${{ inputs.container_to_destroy }}" ]; then
+            echo "ERROR: container_to_destroy is required when action=destroy"
+            exit 1
+          fi
+      - name: Configure SSH access to dev VM
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+          chmod 600 ~/.ssh/dev_vm_key
+          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+      - name: Remove container
+        run: |
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+            "docker rm -f ${{ inputs.container_to_destroy }} || echo 'not found'"
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: '#999999'
+          SLACK_TITLE: 'Ephemeral Environment Destroyed'
+          SLACK_MESSAGE: |
+            *Container:* `${{ inputs.container_to_destroy }}`
+            *Actor:* `${{ github.actor }}`
+          SLACK_FOOTER: ''
+ 
+  # --- NEW: automatic teardown when a PR is closed/merged ---
+  destroy-pr-preview:
+    name: Destroy PR Preview
+    runs-on: arc-runner-set
+    needs: context
+    if: needs.context.outputs.action == 'destroy' && github.event_name == 'pull_request'
+    strategy:
+      matrix:
+        app: [rahat-ui, community-tool-ui]
+    steps:
+      - name: Configure SSH access to dev VM
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+          chmod 600 ~/.ssh/dev_vm_key
+          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+ 
+      - name: Remove container (name is deterministic — no manual input needed)
+        run: |
+          NAME="${{ needs.context.outputs.slug }}-${{ matrix.app }}"
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" \
+            "docker rm -f $NAME || echo 'not found (already gone)'"
+ 
+      - name: Update sticky PR comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          comment-tag: preview-${{ matrix.app }}
+          body: |
+            🧹 **${{ matrix.app }}** preview environment destroyed (PR closed).

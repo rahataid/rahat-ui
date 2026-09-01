@@ -171,6 +171,7 @@ export default function InkindAllocationDetail() {
       'quantity',
       'redeemedAt',
       'txHash',
+      'beneficiary name',
       'beneficiary walletAddress',
       'beneficiary phone',
       'vendor name',
@@ -321,11 +322,7 @@ export default function InkindAllocationDetail() {
       cell: ({ row }) => {
         const reason = row.original.otpExemptionReason;
         const skipped = reason !== null;
-        return (
-          <span>
-            {skipped ? 'Yes' : 'No'}
-          </span>
-        );
+        return <span>{skipped ? 'Yes' : 'No'}</span>;
       },
     },
     {

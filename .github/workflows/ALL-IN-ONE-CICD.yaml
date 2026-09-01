@@ -1168,7 +1168,7 @@ jobs:
       - name: Deploy (replace-in-place) on dev VM behind existing nginx
         run: |
           ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << 'EOSSH'
           set -e
           # Authenticate and pull fresh image on VM - prevents stale cache when NEXT_PUBLIC_* baked at build time
           # Image was verified locally with correct https://api-aa-dev.rahat.io (50 hits in /tmp/out), VM must pull same digest
@@ -1181,7 +1181,7 @@ jobs:
             --label ephemeral=true \
             --label app=${{ matrix.app }} \
             --label pr=${{ needs.context.outputs.pr_number }} \
-            --label created-at="\$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --label created-at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             --label ttl-hours="${{ needs.context.outputs.ttl_hours }}" \
             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
 
@@ -1190,7 +1190,7 @@ jobs:
           sudo ln -sf /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf /etc/nginx/sites-enabled/${{ steps.c.outputs.name }}.conf
           sudo nginx -t
           sudo systemctl reload nginx
-          EOF
+          EOSSH
 
       - name: Write job summary (Actions annotation for the link)
         run: |

@@ -24,6 +24,7 @@ import TokensOverview from './token.overview';
 import Treasury from './treasury';
 import { defaultFundManagementTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
 import { useEffect } from 'react';
+import DisburseButton from './disburse.button';
 
 const componentMap = {
   tokenOverview: TokensOverview,
@@ -109,17 +110,20 @@ export default function FundManagementTabs() {
         defaultValue={activeTab}
         onValueChange={setActiveTab}
       >
-        <TabsList className="border bg-secondary rounded mb-2">
-          {availableTabsConfig.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="flex items-center justify-between mb-2">
+          <TabsList className="border bg-secondary rounded">
+            {availableTabsConfig.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <DisburseButton />
+        </div>
 
         {availableTabsConfig.map((tab) => {
           const Component = tab.component;

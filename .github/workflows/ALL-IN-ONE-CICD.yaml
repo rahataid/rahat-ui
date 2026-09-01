@@ -796,7 +796,7 @@ env:
   PREVIEW_DOMAIN: dev.rahat.io
   # Default Vault secret used for auto PR-preview builds (workflow_dispatch still
   # lets you pick a different path manually for one-off/ad-hoc deployments).
-  PR_PREVIEW_VAULT_PATH: github/data/rahat/rahat-ui/dev/aa/dev-qa
+  PR_PREVIEW_VAULT_PATH: github/data/rahat/rahat-ui/dev/aa/dev
   PR_PREVIEW_VAULT_KEY: rahat-ui
 
 permissions:

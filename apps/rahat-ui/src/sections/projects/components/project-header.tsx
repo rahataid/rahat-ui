@@ -64,7 +64,7 @@ export function ProjectNav({
     <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
       <div className="flex items-center space-x-4">{component}</div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
-        {!isClosed && <ConnectWallet />}
+        {!isClosed && !isAAProject && <ConnectWallet />}
         {showNotification && <NotificationButton unreadCount={0} />}
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -83,9 +83,7 @@ export function ProjectNav({
           >
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
-                <span className="font-medium">
-                  {user?.data?.name}
-                </span>
+                <span className="font-medium">{user?.data?.name}</span>{' '}
                 <span>{user?.data?.email}</span>
               </div>
               <Separator />

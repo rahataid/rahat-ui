@@ -27,6 +27,7 @@ import {
   ForecastDataSection,
 } from './components';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
@@ -42,6 +43,7 @@ import {
 
 export default function TriggerStatementDetail() {
   const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
   const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
@@ -276,7 +278,8 @@ export default function TriggerStatementDetail() {
             )}
             {trigger?.leadTime && (
               <p className="text-muted-foreground text-sm/4">
-                Lead Time : {trigger.leadTime ?? 'N/A'}
+                {t('LEAD_TIME')} : {formatNum(parseFloat(trigger.leadTime) || 0)}{' '}
+                {/hours/i.test(trigger.leadTime) ? t('HOURS') : t('DAYS')}
               </p>
             )}
           </div>

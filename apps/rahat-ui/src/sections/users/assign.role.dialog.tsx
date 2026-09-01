@@ -202,7 +202,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Role</FormLabel>
+                        <FormLabel>{tg('ROLE')}</FormLabel>
                         <Select
                           onValueChange={(value) => {
                             field.onChange([value]);
@@ -236,14 +236,14 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Project (optional)</FormLabel>
+                        <FormLabel>{t('PROJECT_OPTIONAL')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select project" />
+                              <SelectValue placeholder={tg('SELECT_PROJECT')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

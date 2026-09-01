@@ -367,7 +367,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-4 pt-2">
+        <div
+          className={`grid ${
+            payout?.extras?.group_gap ? 'lg:grid-cols-5' : 'lg:grid-cols-4'
+          } gap-4 pt-2`}
+        >
           <DataCard
             title={tv('TOTAL_NO_OF_BENEFICIARIES')}
             smallNumber={formatNum(payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ?? 0)}
@@ -396,6 +400,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             infoIcon={true}
             infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
           />
+          {payout?.extras?.group_gap && (
+            <DataCard
+              title={tv('GROUP_GAP')}
+              smallNumber={formatNum(payout?.extras?.group_gap ?? 0)}
+              className="rounded-sm h-[80px] pt-10 pb-8 "
+              infoIcon={true}
+              infoTooltip={tv('GROUP_GAP_TOOLTIP')}
+            />
+          )}
         </div>
       </div>
 

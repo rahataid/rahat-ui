@@ -23,7 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Select,
@@ -32,9 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserList } from '@rumsan/react-query';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  FormInput,
+  FormTextarea,
+  Heading,
+} from 'apps/rahat-ui/src/common';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
@@ -541,9 +544,9 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel>{t('ACTIVITY_TITLE2')}</FormLabel>
+                          <FormLabel required>{t('ACTIVITY_TITLE2')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={t('ENTER_ACTIVITY_TITLE')}
                               {...field}
@@ -560,7 +563,7 @@ export default function AddActivities() {
                     name="responsibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('RESPONSIBILITY')}</FormLabel>
+                        <FormLabel required>{t('RESPONSIBILITY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             users?.data?.find(
@@ -592,9 +595,9 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>{t('RESPONSIBLE_STATION')}</FormLabel>
+                          <FormLabel required>{t('RESPONSIBLE_STATION')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={t('ENTER_RESPONSIBLE_STATION')}
                               {...field}
@@ -610,7 +613,7 @@ export default function AddActivities() {
                     name="phaseId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('PHASE')}</FormLabel>
+                        <FormLabel required>{t('PHASE')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             phases?.find(
@@ -641,7 +644,7 @@ export default function AddActivities() {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('CATEGORY')}</FormLabel>
+                        <FormLabel required>{t('CATEGORY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             categories?.find((c) => c.uuid === field.value)
@@ -738,7 +741,7 @@ export default function AddActivities() {
                           <FormItem>
                             <FormLabel>{t('LEAD_TIME')}</FormLabel>
                             <div className="grid grid-cols-4">
-                              <Input
+                              <FormInput
                                 type="text"
                                 placeholder={t('ENTER_LEAD_TIME')}
                                 className="col-span-3 rounded-r-none"
@@ -792,7 +795,7 @@ export default function AddActivities() {
                         <FormItem className="col-span-2 ">
                           <FormLabel>{tg('DESCRIPTION')}</FormLabel>
                           <FormControl>
-                            <Textarea
+                            <FormTextarea
                               placeholder={t('ENTER_DESCRIPTION')}
                               className=" rounded"
                               {...field}
@@ -824,7 +827,7 @@ export default function AddActivities() {
                                 <span className="text-primary">{t('BROWSE')}</span>
                               </p>
                             </div>
-                            <Input
+                            <FormInput
                               className="opacity-0 cursor-pointer"
                               type="file"
                               multiple

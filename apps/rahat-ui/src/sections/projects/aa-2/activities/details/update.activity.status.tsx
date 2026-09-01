@@ -4,7 +4,12 @@ import { useTranslations } from 'next-intl';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React, { useEffect, useMemo } from 'react';
 
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  FormSelectTrigger,
+  FormTextarea,
+  Heading,
+} from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { CloudUpload, File, LoaderCircle, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -24,21 +29,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ACTIVITY_STATUS } from 'apps/rahat-ui/src/constants/aa.constants';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
@@ -226,9 +229,9 @@ export default function UpdateStatus() {
                         value={field.value || ''}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <FormSelectTrigger value={field.value}>
                             <SelectValue placeholder={t('SELECT_STATUS')} />
-                          </SelectTrigger>
+                          </FormSelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {statusList.map((status) => (
@@ -252,8 +255,9 @@ export default function UpdateStatus() {
                           {t('ADD_NOTE')}
                         </FormLabel>
                         <FormControl>
-                          <Textarea
+                          <FormTextarea
                             placeholder={t('ENTER_NOTES')}
+                            className="rounded"
                             {...field}
                           />
                         </FormControl>

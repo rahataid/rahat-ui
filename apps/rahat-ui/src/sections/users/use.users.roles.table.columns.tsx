@@ -49,7 +49,7 @@ export const useUsersRolesTableColumns = ({
     },
     {
       id: 'project',
-      header: 'Project',
+      header: tg('PROJECT'),
       cell: ({ row }) => {
         const xrefId = row.original?.xrefId;
         if (!xrefId) return <span className="text-muted-foreground">-</span>;

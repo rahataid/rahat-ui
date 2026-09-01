@@ -609,6 +609,49 @@ export const useGetTransferList = (projectUUID: UUID, payload: Pagination) => {
   });
   return query;
 };
+export const useDisburseChain = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({ dName, groups = [] }: { dName: string; groups?: string[] }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.chain.disburse',
+          payload: { dName, groups },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Disbursement triggered successfully.',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['groupsreservedfunds', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while triggering disbursement.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useAddProjectFund = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();

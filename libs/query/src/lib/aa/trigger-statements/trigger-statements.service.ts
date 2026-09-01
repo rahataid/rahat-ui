@@ -19,6 +19,8 @@ export const useCreateTriggerStatement = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
+  const qc = useQueryClient();
+
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -44,6 +46,8 @@ export const useCreateTriggerStatement = () => {
     },
     onSuccess: () => {
       q.reset();
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: t('TRIGGER_STATEMENT_ADDED_SUCCESSFULLY'),
         icon: 'success',
@@ -312,6 +316,7 @@ export const useAddTriggerStatementToPhase = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
+  const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -337,6 +342,8 @@ export const useAddTriggerStatementToPhase = () => {
     },
     onSuccess: () => {
       q.reset();
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: t('TRIGGER_STATEMENT_ADDED_SUCCESSFULLY'),
         icon: 'success',
@@ -394,6 +401,7 @@ export const useDeleteTriggerStatement = () => {
 
     onSuccess: () => {
       q.reset();
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       toast.fire({
         title: t('TRIGGER_STATEMENT_REMOVED_SUCCESSFULLY'),

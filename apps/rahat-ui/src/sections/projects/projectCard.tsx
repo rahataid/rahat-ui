@@ -24,6 +24,7 @@ type CardProps = {
   isPinned?: boolean;
   onTogglePin?: () => void;
   hidePin?: boolean;
+  extras?: Record<string, any> | null;
 };
 
 export default function CommonCard({
@@ -36,6 +37,7 @@ export default function CommonCard({
   isPinned = false,
   onTogglePin,
   hidePin = false,
+  extras,
 }: CardProps) {
   const t = useTranslations('PROJECTS_LIST');
   const router = useRouter();
@@ -47,7 +49,8 @@ export default function CommonCard({
       toast.warn(t('PROJECT_NOT_READY'));
       return;
     }
-    router.push(`/projects/${badge.toLowerCase()}/${address}`);
+    const type = extras?.REDIRECT_TO ?? badge;
+    router.push(`/projects/${type.toLowerCase()}/${address}`);
   };
 
   return (

@@ -59,10 +59,36 @@ export default function useCommsLogsTableColumns(transportName: string) {
     {
       accessorKey: 'timeStamp',
       header: t('TIMESTAMP'),
+      meta: { className: 'w-[250px]' },
       cell: ({ row }) => {
         return (
-          <div className="flex items-center space-x-2 gap-2">
-            {formatDate(row?.original?.updatedAt)}
+          <div className="flex text-[10px] items-center space-x-2 gap-2 ">
+            {transportName === 'SMS' || transportName === 'EMAIL' ? (
+              <div>
+                <span>{formatDate(row?.original?.updatedAt)}</span>
+              </div>
+            ) : (
+              <>
+                {row?.original?.status === 'SUCCESS' ? (
+                  <div className="flex flex-col">
+                    <span>
+                      {formatDate(row?.original?.disposition?.cdr?.starttime) ??
+                        tg('N_A')}
+                    </span>
+                    <span className="text-muted-foreground">{tg('TO')}</span>
+                    <span>
+                      {formatDate(row?.original?.disposition?.cdr?.endtime) ??
+                        tg('N_A')}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex">
+                    <span>{formatDate(row?.original?.updatedAt)}</span>
+                  </div>
+                )}
+              </>
+            )}
+
             {transportName === 'VOICE' && row?.original?.status === 'FAIL' && (
               <TooltipProvider>
                 <Tooltip>

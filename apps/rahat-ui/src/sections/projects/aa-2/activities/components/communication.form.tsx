@@ -19,25 +19,23 @@ import {
 } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import MultipleSelector, {
   type Option,
 } from '@rahat-ui/shadcn/src/components/custom/multi-select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -67,6 +65,14 @@ import { createCommunicationFormSchema } from '../schemas/activity.schemas';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { renderGroups } from './renderGroup';
 import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
+import {
+  FormInput,
+  FormSelectTrigger,
+  FormTextarea,
+} from 'apps/rahat-ui/src/common';
+import { cn } from '@rahat-ui/shadcn/src';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -118,8 +124,6 @@ export default function AddCommunicationForm({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const isResettingRef = useRef(false);
-  const audioFileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedAudioFileName, setSelectedAudioFileName] = useState('');
 
   const pad = (num: number) => String(num).padStart(2, '0');
   const hh = pad(Math.floor(timer / 3600));
@@ -359,8 +363,11 @@ export default function AddCommunicationForm({
     [stakeholdersGroupLoading, beneficiaryGroupLoading],
   );
 
-  const handleGroupTypeChange = (value: string) => {
-    form.setValue('groupType', value);
+  const handleGroupTypeChange = (
+    value: string,
+    onChange: (v: string) => void,
+  ) => {
+    onChange(value);
     form.setValue('groupId', []); // reset group selection on type change
   };
 
@@ -443,171 +450,184 @@ export default function AddCommunicationForm({
   }, [transportData]);
 
   return (
-    <div className="border border-dashed rounded p-4 my-8">
-      <div className="flex justify-between items-center mb-2">
-        <h1 className="text-lg font-semibold">{t('ADD_COMMUNICATION')}</h1>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="communicationTitle"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>{t('COMMUNICATION_TITLE')}</FormLabel>
-              <FormControl>
-                <Input placeholder={t('WRITE_COMMUNICATION_TITLE')} {...field} />
-              </FormControl>
-              {errors.communicationTitle && (
-                <FormMessage>{errors.communicationTitle.message}</FormMessage>
-              )}
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="groupType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('GROUP_TYPE')}</FormLabel>
-              <Select
-                onValueChange={handleGroupTypeChange}
-                value={field.value || ''}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="STAKEHOLDERS">{t('STAKEHOLDERS')}</SelectItem>
-                  <SelectItem value="BENEFICIARY">{t('BENEFICIARY')}</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.groupType && (
-                <FormMessage>{errors.groupType.message}</FormMessage>
-              )}
-            </FormItem>
-          )}
-        />
-
-        {isMultiSelect ? (
+    <Form {...form}>
+      <div className="border border-dashed rounded p-4 my-8">
+        <div className="flex justify-between items-center mb-2">
+          <h1 className="text-lg font-semibold">{t('ADD_COMMUNICATION')}</h1>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="groupId"
+            name="communicationTitle"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('GROUPS')}</FormLabel>
+              <FormItem className="col-span-2">
+                <FormLabel required>{t('COMMUNICATION_TITLE')}</FormLabel>
                 <FormControl>
-                  <MultipleSelector
-                    options={groupOptions}
-                    value={selectedGroups}
-                    inputProps={{
-                      className: 'outline-none',
-                    }}
-                    className="max-h-20 overflow-y-auto"
-                    dropdownClassName="max-h-36 w-80"
-                    onChange={(options: Option[]) => {
-                      field.onChange(options.map((opt: Option) => opt.value));
-                    }}
-                    placeholder={
-                      groupType ? t('SELECT_GROUPS') : t('SELECT_GROUP_TYPE_FIRST')
-                    }
-                    loading={isLoading}
-                    loadingIndicator={
-                      <div className="flex items-center justify-center p-6">
-                        <Loader />
-                      </div>
-                    }
-                    emptyIndicator={
-                      <p className="text-sm text-muted-foreground">
-                        {t('NO_GROUPS_FOUND')}
-                      </p>
-                    }
-                    disabled={isLoading || !groupType}
+                  <FormInput
+                    placeholder={t('WRITE_COMMUNICATION_TITLE')}
+                    {...field}
                   />
                 </FormControl>
-                {errors.groupId && (
-                  <FormMessage>{errors.groupId.message}</FormMessage>
+                {errors.communicationTitle && (
+                  <FormMessage>{errors.communicationTitle.message}</FormMessage>
                 )}
               </FormItem>
             )}
           />
-        ) : (
           <FormField
             control={form.control}
-            name="groupId"
+            name="groupType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('GROUPS')}</FormLabel>
+                <FormLabel required>{t('GROUP_TYPE')}</FormLabel>
                 <Select
-                  disabled={!groupType || isLoading}
-                  onValueChange={(value) => {
-                    // Set groupId as an array with the selected value
-                    field.onChange([value]);
-                  }}
-                  value={field.value?.[0] || ''}
+                  onValueChange={(value) =>
+                    handleGroupTypeChange(value, field.onChange)
+                  }
+                  value={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          groupType
-                            ? t('SELECT_GROUPS')
-                            : t('SELECT_GROUP_TYPE_FIRST')
-                        }
-                      />
-                    </SelectTrigger>
+                    <FormSelectTrigger value={field.value}>
+                      <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
+                    </FormSelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectGroup>
-                      {renderGroups(groupOptions, isLoading, t)}
-                    </SelectGroup>
+                    <SelectItem value="STAKEHOLDERS">{t('STAKEHOLDERS')}</SelectItem>
+                    <SelectItem value="BENEFICIARY">{t('BENEFICIARY')}</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.groupId && (
-                  <FormMessage>{errors.groupId.message}</FormMessage>
+                {errors.groupType && (
+                  <FormMessage>{errors.groupType.message}</FormMessage>
                 )}
               </FormItem>
             )}
           />
-        )}
 
-        <FormField
-          control={form.control}
-          name="transportId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('COMMUNICATION_TYPE')}</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {appTransports?.map((transport) => {
-                    return (
-                      <SelectItem
-                        key={transport?.cuid}
-                        value={transport?.cuid as string}
-                      >
-                        {tg(transport?.name as any) || transport?.name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-              {errors.transportId && (
-                <FormMessage>{errors.transportId.message}</FormMessage>
+          {isMultiSelect ? (
+            <FormField
+              control={form.control}
+              name="groupId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>{t('GROUPS')}</FormLabel>
+                  <FormControl>
+                    <MultipleSelector
+                      options={groupOptions}
+                      value={selectedGroups}
+                      inputProps={{
+                        className: 'outline-none',
+                      }}
+                      className={cn(
+                        selectedGroups.length > 0 &&
+                          !errors.groupId &&
+                          'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50 pl-2',
+                        errors.groupId &&
+                          'shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50',
+                        'max-h-20 overflow-y-auto',
+                      )}
+                      dropdownClassName="max-h-36 w-80"
+                      onChange={(options: Option[]) => {
+                        field.onChange(options.map((opt: Option) => opt.value));
+                      }}
+                      placeholder={
+                        groupType ? t('SELECT_GROUPS') : t('SELECT_GROUP_TYPE_FIRST')
+                      }
+                      loading={isLoading}
+                      loadingIndicator={
+                        <div className="flex items-center justify-center p-6">
+                          <Loader />
+                        </div>
+                      }
+                      emptyIndicator={
+                        <p className="text-sm text-muted-foreground">
+                          {t('NO_GROUPS_FOUND')}
+                        </p>
+                      }
+                      disabled={isLoading || !groupType}
+                    />
+                  </FormControl>
+                  {errors.groupId && (
+                    <FormMessage>{errors.groupId.message}</FormMessage>
+                  )}
+                </FormItem>
               )}
-            </FormItem>
+            />
+          ) : (
+            <FormField
+              control={form.control}
+              name="groupId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>{t('GROUPS')}</FormLabel>
+                  <Select
+                    disabled={!groupType || isLoading}
+                    onValueChange={(value) => {
+                      // Set groupId as an array with the selected value
+                      field.onChange([value]);
+                    }}
+                    value={field.value?.[0] || ''}
+                  >
+                    <FormControl>
+                      <FormSelectTrigger value={field.value}>
+                        <SelectValue
+                          placeholder={
+                            groupType
+                              ? t('SELECT_GROUPS')
+                              : t('SELECT_GROUP_TYPE_FIRST')
+                          }
+                        />
+                      </FormSelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        {renderGroups(groupOptions, isLoading, t)}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {errors.groupId && (
+                    <FormMessage>{errors.groupId.message}</FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
           )}
-        />
 
-        {contentType === ValidationContent.URL && !fileUpload.isSuccess && (
-          <div className="col-span-2">
-            <Tabs defaultValue="upload" className="items-center">
-              <TabsList className="">
+          <FormField
+            control={form.control}
+            name="transportId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel required>{t('COMMUNICATION_TYPE')}</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <FormSelectTrigger value={field.value}>
+                      <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
+                    </FormSelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {appTransports?.map((transport) => {
+                      return (
+                        <SelectItem
+                          key={transport?.cuid}
+                          value={transport?.cuid as string}
+                        >
+                          {tg(transport?.name as any) || transport?.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                {errors.transportId && (
+                  <FormMessage>{errors.transportId.message}</FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+
+          {contentType === ValidationContent.URL && !fileUpload.isSuccess && (
+            <div className="col-span-2">
+              <Tabs defaultValue="upload" className="items-center">
+                <TabsList className="">
                   <TabsTrigger value="upload" className="group gap-2">
                     <UploadIcon className="w-5 h-5" />
                     {t('UPLOAD')}
@@ -616,85 +636,19 @@ export default function AddCommunicationForm({
                     <MicIcon className="w-5 h-5" />
                     {t('RECORD')}
                   </TabsTrigger>
-              </TabsList>
+                </TabsList>
 
-              <TabsContent value="upload">
-                <FormField
-                  control={form.control}
-                  name="audioURL"
-                  render={() => (
-                    <FormItem className="col-span-2">
-                      <FormControl>
-                        <div
-                          className="flex items-center border rounded-sm cursor-pointer w-full"
-                          onClick={() => audioFileInputRef.current?.click()}
-                        >
-                          <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 h-9 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
-                            {tg('CHOOSE_FILE')}
-                          </span>
-                          <span className="px-3 text-sm truncate w-full">
-                            {selectedAudioFileName || tg('NO_FILE_CHOSEN')}
-                          </span>
+                <TabsContent value="upload">
+                  <FormField
+                    control={form.control}
+                    name="audioURL"
+                    render={() => (
+                      <FormItem className="col-span-2">
+                        <FormControl>
                           <Input
                             type="file"
                             accept="audio/*"
-                            ref={audioFileInputRef}
-                            className="sr-only"
-                            onChange={(e) => {
-                              setSelectedAudioFileName(
-                                e.target.files?.[0]?.name ?? '',
-                              );
-                              handleAudioFileChange(e);
-                            }}
-                          />
-                        </div>
-                      </FormControl>
-                      <div className="flex justify-end">
-                        {fileUpload.isPending && (
-                          <p className="text-green-600 text-xs">{t('UPLOADING')}</p>
-                        )}
-                        {fileUpload.isError && (
-                          <p className="text-red-600 text-xs">{t('UPLOAD_ERROR')}</p>
-                        )}
-                        {fileUpload.isSuccess && (
-                          <p className="text-green-600 text-xs">
-                            {t('UPLOAD_COMPLETE')}
-                          </p>
-                        )}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </TabsContent>
-              <TabsContent value="record">
-                <FormField
-                  control={form.control}
-                  name="audioURL"
-                  render={() => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <AudioRecorder
-                            isRecording={isRecording}
-                            isFinished={isFinished}
-                            timer={`${hh}:${mm}:${ss}`}
-                            recordedFile={recordedFile}
-                            chunks={chunks}
-                            setChunks={setChunks}
-                            startRecording={startRecording}
-                            stopRecording={stopRecording}
-                            resetRecording={resetRecording}
-                            animationRef={animationRef}
-                            analyserRef={analyserRef}
-                            resumeRecording={resumeRecording}
-                            pauseRecording={pauseRecording}
-                            isPaused={isPaused}
-                            handleUpload={() => {
-                              setShowConfirmDialog(true);
-                            }}
-                            canvasRef={canvasRef}
-                            fileUploadPending={fileUpload.isPending}
+                            onChange={handleAudioFileChange}
                           />
                         </FormControl>
                         <div className="flex justify-end">
@@ -703,181 +657,251 @@ export default function AddCommunicationForm({
                               {t('UPLOADING')}
                             </p>
                           )}
-
                           {fileUpload.isError && (
                             <p className="text-red-600 text-xs">{t('UPLOAD_ERROR')}</p>
                           )}
-
                           {fileUpload.isSuccess && (
                             <p className="text-green-600 text-xs">
                               {t('UPLOAD_COMPLETE')}
                             </p>
                           )}
                         </div>
-
                         <FormMessage />
                       </FormItem>
-                    );
-                  }}
-                />
-              </TabsContent>
-            </Tabs>
-            {errors.audioURL && (
-              <FormMessage>{errors.audioURL.message}</FormMessage>
-            )}
-          </div>
-        )}
+                    )}
+                  />
+                </TabsContent>
+                <TabsContent value="record">
+                  <FormField
+                    control={form.control}
+                    name="audioURL"
+                    render={() => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <AudioRecorder
+                              isRecording={isRecording}
+                              isFinished={isFinished}
+                              timer={`${hh}:${mm}:${ss}`}
+                              recordedFile={recordedFile}
+                              chunks={chunks}
+                              setChunks={setChunks}
+                              startRecording={startRecording}
+                              stopRecording={stopRecording}
+                              resetRecording={resetRecording}
+                              animationRef={animationRef}
+                              analyserRef={analyserRef}
+                              resumeRecording={resumeRecording}
+                              pauseRecording={pauseRecording}
+                              isPaused={isPaused}
+                              handleUpload={() => {
+                                setShowConfirmDialog(true);
+                              }}
+                              canvasRef={canvasRef}
+                              fileUploadPending={fileUpload.isPending}
+                            />
+                          </FormControl>
+                          <div className="flex justify-end">
+                            {fileUpload.isPending && (
+                              <p className="text-green-600 text-xs">
+                                {t('UPLOADING')}
+                              </p>
+                            )}
 
-        {contentType === ValidationContent.URL &&
-          audioFile?.fileName &&
-          audioFile?.mediaURL && (
-            <div className="pt-2 w-full">
-              <h3 className="text-sm font-medium mb-2">
-                {audioFile?.fileName}
-              </h3>
-              <div className="flex gap-2 items-center justify-center">
-                <audio
-                  src={audioFile?.mediaURL}
-                  controls
-                  className="w-full h-10 bg-none"
-                />
-                <Trash2
-                  onClick={removeFile}
-                  className="h-5 w-5s hover:cursor-pointer"
-                  color="red"
-                />
-              </div>
+                            {fileUpload.isError && (
+                              <p className="text-red-600 text-xs">
+                                {t('UPLOAD_ERROR')}
+                              </p>
+                            )}
+
+                            {fileUpload.isSuccess && (
+                              <p className="text-green-600 text-xs">
+                                {t('UPLOAD_COMPLETE')}
+                              </p>
+                            )}
+                          </div>
+
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </TabsContent>
+              </Tabs>
+              {errors.audioURL && (
+                <FormMessage>{errors.audioURL.message}</FormMessage>
+              )}
             </div>
           )}
 
-        {transportData?.name === 'EMAIL' && (
-          <FormField
-            control={form.control}
-            name="subject"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel>{t('SUBJECT')}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t('ENTER_SUBJECT')} {...field} />
-                </FormControl>
-                {errors.subject && (
-                  <FormMessage>{errors.subject.message}</FormMessage>
-                )}
-              </FormItem>
+          {contentType === ValidationContent.URL &&
+            audioFile?.fileName &&
+            audioFile?.mediaURL && (
+              <div className="pt-2 w-full">
+                <h3 className="text-sm font-medium mb-2">
+                  {audioFile?.fileName}
+                </h3>
+                <div className="flex gap-2 items-center justify-center">
+                  <audio
+                    src={audioFile?.mediaURL}
+                    controls
+                    className="w-full h-10 bg-none"
+                  />
+                  <Trash2
+                    onClick={removeFile}
+                    className="h-5 w-5s hover:cursor-pointer"
+                    color="red"
+                  />
+                </div>
+              </div>
             )}
-          />
-        )}
 
-        {contentType === ValidationContent.TEXT && (
-          <FormField
-            control={form.control}
-            name="message"
-            rules={{
-              validate: (value) => {
-                if (!value) return true;
-
-                if (/[\u0900-\u097F]/.test(value)) {
-                  return (
-                    value.length <= 350 ||
-                    t('NEPALI_MESSAGE_LIMIT')
-                  );
-                } else {
-                  return (
-                    value.length <= 700 ||
-                    t('ENGLISH_MESSAGE_LIMIT')
-                  );
-                }
-              },
-            }}
-            render={({ field }) => {
-              const isNep = /[\u0900-\u097F]/.test(field.value || '');
-              const maxLen = isNep ? 350 : 700;
-              return (
+          {transportData?.name === 'EMAIL' && (
+            <FormField
+              control={form.control}
+              name="subject"
+              render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>{tg('MESSAGE')}</FormLabel>
+                  <FormLabel required>{t('SUBJECT')}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder={t('WRITE_MESSAGE')}
-                      {...field}
-                      maxLength={maxLen}
-                    />
+                    <FormInput placeholder={t('ENTER_SUBJECT')} {...field} />
                   </FormControl>
-                  <div className="flex justify-between items-center">
-                    {errors.message && (
-                      <FormMessage>{errors.message.message}</FormMessage>
-                    )}
-                    <p className="ml-auto text-xs text-muted-foreground">
-                      {formatNum(field.value?.length ?? 0)} / {formatNum(maxLen)} {charactersText}
-                    </p>
-                  </div>
+                  {errors.subject && (
+                    <FormMessage>{errors.subject.message}</FormMessage>
+                  )}
                 </FormItem>
-              );
-            }}
-          />
-        )}
-      </div>
+              )}
+            />
+          )}
 
-      <div className="flex justify-end mt-4 gap-4">
-        <Button
-          variant="outline"
-          onClick={clearCommunicationForm}
-          type="button"
-        >
-          {editMode?.value ? t('RESET') : tg('CLEAR')}
-        </Button>
-        <Button
-          variant="outline"
-          onClick={handleSave}
-          type="button"
-          disabled={fileUpload.isPending}
-        >
-          {tg('SAVE')}
-        </Button>
-      </div>
+          {contentType === ValidationContent.TEXT && (
+            <FormField
+              control={form.control}
+              name="message"
+              rules={{
+                validate: (value) => {
+                  if (!value) return true;
 
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent
-          onInteractOutside={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>{t('ENTER_A_FILE_NAME')}</DialogTitle>
-            <DialogDescription>
-              <Input
-                placeholder={t('ENTER_FILE_NAME')}
-                value={customFileName}
-                onChange={(e) => setCustomFileName(e.target.value)}
-              />
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              onClick={() => setShowConfirmDialog(false)}
-              type="button"
-            >
-              {tg('CANCEL')}
-            </Button>
-
-            <Button
-              onClick={() => {
-                const blob = new Blob(chunks, { type: 'audio/wav' });
-                const file = new File([blob], `${customFileName}.wav`, {
-                  type: 'audio/wav',
-                });
-                handleAudioFileChange(file);
-                setShowConfirmDialog(false);
+                  if (/[ऀ-ॿ]/.test(value)) {
+                    return (
+                      value.length <= 350 ||
+                      t('NEPALI_MESSAGE_LIMIT')
+                    );
+                  } else {
+                    return (
+                      value.length <= 700 ||
+                      t('ENGLISH_MESSAGE_LIMIT')
+                    );
+                  }
+                },
               }}
-              type="button"
-              disabled={!customFileName}
-            >
-              {t('CONFIRM_UPLOAD')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+              render={({ field }) => {
+                const isNep = /[ऀ-ॿ]/.test(field.value || '');
+                const maxLen = isNep ? 350 : 700;
+              const smsInfo =
+                transportData?.name === 'SMS' && field.value
+                  ? getSmsInfo(field.value)
+                  : null;
+                return (
+                  <FormItem className="col-span-2">
+                    <FormLabel required>{tg('MESSAGE')}</FormLabel>
+
+                    <FormControl>
+                      <FormTextarea
+                        placeholder={t('WRITE_MESSAGE')}
+                        {...field}
+                        className="rounded"
+                        maxLength={maxLen}
+                      />
+                    </FormControl>
+                    <div className="flex justify-between items-center">
+                      {errors.message && (
+                        <FormMessage>{errors.message.message}</FormMessage>
+                      )}
+
+                      <div className="ml-auto flex text-xs text-muted-foreground gap-4">
+                      {smsInfo && (
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">
+                            {smsInfo.smsCredits}
+                          </span>{' '}
+                          SMS credit{smsInfo.smsCredits !== 1 ? 's' : ''}
+                        </p>
+                      )}
+                      <p>
+                          {formatNum(field.value?.length ?? 0)} / {formatNum(maxLen)} {charactersText}
+                        </p>
+                    </div>
+                    </div>
+                  </FormItem>
+                );
+              }}
+            />
+          )}
+        </div>
+
+        <div className="flex justify-end mt-4 gap-4">
+          <Button
+            variant="outline"
+            onClick={clearCommunicationForm}
+            type="button"
+          >
+            {editMode?.value ? t('RESET') : tg('CLEAR')}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleSave}
+            type="button"
+            disabled={fileUpload.isPending}
+          >
+            {tg('SAVE')}
+          </Button>
+        </div>
+
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <DialogContent
+            onInteractOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle>{t('ENTER_A_FILE_NAME')}</DialogTitle>
+              <DialogDescription>
+                <Input
+                  placeholder={t('ENTER_FILE_NAME')}
+                  value={customFileName}
+                  onChange={(e) => setCustomFileName(e.target.value)}
+                />
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => setShowConfirmDialog(false)}
+                type="button"
+              >
+                {tg('CANCEL')}
+              </Button>
+
+              <Button
+                onClick={() => {
+                  const blob = new Blob(chunks, { type: 'audio/wav' });
+                  const file = new File([blob], `${customFileName}.wav`, {
+                    type: 'audio/wav',
+                  });
+                  handleAudioFileChange(file);
+                  setShowConfirmDialog(false);
+                }}
+                type="button"
+                disabled={!customFileName}
+              >
+                {t('CONFIRM_UPLOAD')}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </Form>
   );
 }

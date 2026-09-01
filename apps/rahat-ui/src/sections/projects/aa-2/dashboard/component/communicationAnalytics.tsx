@@ -63,6 +63,7 @@ const CommunicationAnalytics = ({
   };
 
   const labelMap: Record<string, string> = {
+    numberOfStakeholders: t('NUMBER_OF_STAKEHOLDERS'),
     avcSuccessfullySent: t('AVC_SUCCESSFULLY_SENT'),
     smsSuccessfullySent: t('SMS_SUCCESSFULLY_SENT'),
     deliveryFailures: t('DELIVERY_FAILURES'),

@@ -149,6 +149,7 @@ export const intlFormatDate = (dateStr?: string, locale: string = 'en') => {
     hour12: true,
     hour: 'numeric',
     minute: 'numeric',
+    second: 'numeric',
   };
   const neOptions =
     locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;

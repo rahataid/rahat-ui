@@ -19,6 +19,7 @@ import { UUID } from 'crypto';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useFundManagementTableColumns } from '../columns/useFMColumns';
 import { useTranslations } from 'next-intl';
+import DisburseButton from '../components/disburse.button';
 
 export default function FundManagementList() {
   const tGlobal = useTranslations('GLOBAL');
@@ -83,11 +84,14 @@ export default function FundManagementList() {
 
   return (
     <div className="">
-      <Heading
-        title={t('FUND_MANAGEMENT_LIST')}
-        titleStyle="text-lg"
-        description={t('LIST_OF_ALL_THE_FUNDS_CREATED')}
-      />
+      <div className="flex items-start justify-between">
+        <Heading
+          title={t('FUND_MANAGEMENT_LIST')}
+          titleStyle="text-lg"
+          description={t('LIST_OF_ALL_THE_FUNDS_CREATED')}
+        />
+        <DisburseButton />
+      </div>
       <SearchInput
         className="w-full mb-2"
         name={tGlobal('TITLE')}

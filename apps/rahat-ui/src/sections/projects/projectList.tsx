@@ -36,15 +36,18 @@ import { useTranslations } from 'next-intl';
 import { translateValue } from '../../utils/i18n/translateValue';
 export const STATUS_CONFIG: Record<
   string,
-  { className: string }
+  { label: string; className: string }
 > = {
   NOT_READY: {
+    label: 'Not Ready',
     className: 'bg-yellow-100 text-yellow-700 border-yellow-300',
   },
   ACTIVE: {
+    label: 'Active',
     className: 'bg-green-100 text-green-700 border-green-300',
   },
   CLOSED: {
+    label: 'Closed',
     className: 'bg-red-100 text-red-700 border-red-300',
   },
 };
@@ -54,9 +57,11 @@ export function StatusBadge({ status }: { status?: string }) {
   const config = STATUS_CONFIG[status ?? ''];
   return (
     <Badge
-      className={`border ${
-        config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'
-      }`}
+
+      className={`border ${config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'
+
+        }`}
+
     >
       {status ? translateValue(t, status, { fallback: status }) : '—'}
     </Badge>
@@ -125,7 +130,7 @@ export default function ListProject() {
       header: g('CREATED_AT'),
       accessorKey: 'createdAt',
       cell: ({ row }) =>
-        row.original.createdAt ? formatDate(row.original.createdAt, 'MMMM d, yyyy, h:mm:ss a') : '—',
+        row.original.createdAt ? formatDate(row.original.createdAt) : '—',
     },
     {
       id: 'actions',
@@ -135,7 +140,7 @@ export default function ListProject() {
         return (
           <div className="flex items-center space-x-3">
             <SystemUserAuth hasContent={false}>
-              <TooltipWrapper tip={t('EDIT_PROJECT')}>
+              <TooltipWrapper tip="Edit Project">
                 <button
                   onClick={() => router.push(`/project-info/${project.uuid}`)}
                   className="cursor-pointer"
@@ -148,8 +153,8 @@ export default function ListProject() {
             <TooltipWrapper
               tip={
                 project.status === 'CLOSED'
-                  ? t('PROJECT_IS_CLOSED')
-                  : t('CLOSE_PROJECT')
+                  ? 'Project is Closed'
+                  : 'Close Project'
               }
             >
               <button
@@ -197,7 +202,6 @@ export default function ListProject() {
         <SelectComponent
           name={g('STATUS')}
           options={['ALL', 'ACTIVE', 'NOT_READY', 'CLOSED']}
-          optionLabels={{ ALL: g('ALL'), ACTIVE: t('ACTIVE'), NOT_READY: t('NOT_READY'), CLOSED: t('CLOSED') }}
           onChange={(value) =>
             setFilter('status', value === 'ALL' ? '' : value)
           }
@@ -230,7 +234,9 @@ export default function ListProject() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
+              
               {t('CLOSE_PROJECT_TITLE', { name: selectedProject?.name ?? '' })}
+            
             </AlertDialogTitle>
             <AlertDialogDescription>
               {t('CLOSE_PROJECT_DESC')}

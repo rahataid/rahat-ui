@@ -1,5 +1,4 @@
 /* eslint-disable-next-line */
-import { useTranslations } from 'next-intl';
 import { useUserStore } from '@rumsan/react-query';
 import { AARoles } from '../enums/aaRoles';
 import { AccessDenied } from './accessDenied';
@@ -25,7 +24,6 @@ export function RoleAuth({
   const { user } = useUserStore((state) => ({
     user: state.user,
   }));
-  const t = useTranslations('GLOBAL');
   const hasRequiredRole =
     roles.length === 0 ||
     roles.some((role) => user?.data?.roles?.includes(role));

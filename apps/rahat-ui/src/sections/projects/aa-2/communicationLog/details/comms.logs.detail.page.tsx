@@ -12,7 +12,6 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-// import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
   Card,
   CardContent,
@@ -26,6 +25,7 @@ import {
   CustomPagination,
   DataCard,
   Heading,
+  NoResult,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
@@ -40,7 +40,14 @@ import {
   RefreshCcw,
   Mic,
   MessageSquare,
+  Clock,
 } from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
 
 import { useParams, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
@@ -72,9 +79,9 @@ export default function CommsLogsDetailPage() {
   const downloadUrl = useMemo(
     () =>
       commsSettings?.URL
-        ? `${commsSettings.URL}/broadcasts/download?sessionId=${encodeURIComponent(
-            sessionId,
-          )}`
+        ? `${
+            commsSettings.URL
+          }/broadcasts/download?sessionId=${encodeURIComponent(sessionId)}`
         : null,
     [commsSettings, sessionId],
   );
@@ -425,102 +432,184 @@ export default function CommsLogsDetailPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 ">
             <Card className="w-full col-span-1 bg-white rounded-sm">
-              <CardContent className="p-6 space-y-6">
-                {/* Beneficiary Group */}
-                <div>
-                  <p className="text-sm text-gray-500">
-                    {logs?.communicationDetail?.groupType
-                      ? translateValue(tg, logs.communicationDetail.groupType, {
-                          fallbackStyle: 'raw',
-                        }) +
-                        ' ' +
-                        t('GROUP')
-                      : tg('N_A')}
-                  </p>
-                  <p className="font-medium">{logsGroupName}</p>
-                </div>
+              <CardContent className="p-0">
+                <div className="gap-2 p-2 mb-2">
+                  <Tabs defaultValue="details" className="w-full">
+                    <TabsList className="border bg-secondary rounded h-[clamp(28px,3vw,36px)] mb-2">
+                      <TabsTrigger
+                        id="details"
+                        className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] "
+                        value="details"
+                      >
+                        {tg('DETAILS')}
+                      </TabsTrigger>
+                      <TabsTrigger
+                        id="logs"
+                        className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] ]"
+                        value="logs"
+                      >
+                        {t('LOGS_TAB')}
+                      </TabsTrigger>
+                    </TabsList>
+                    <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
+                      <TabsContent
+                        value="details"
+                        className="p-4 space-y-6 m-0"
+                      >
+                        {/* Beneficiary Group */}
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            {logs?.communicationDetail?.groupType
+                              ? translateValue(tg, logs.communicationDetail.groupType, {
+                                  fallbackStyle: 'raw',
+                                }) +
+                                ' ' +
+                                t('GROUP')
+                              : tg('N_A')}
+                          </p>
+                          <p className="font-medium">{logsGroupName}</p>
+                        </div>
 
-                {/* Triggered Date */}
-                <div>
-                  <p className="text-sm text-gray-500">{t('TRIGGERED_DATE')}</p>
-                  <p className="font-medium">
-                    {formatDate(logs?.sessionDetails?.updatedAt)}
-                  </p>
-                </div>
+                        {/* Triggered Date */}
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            {t('TRIGGERED_DATE')}
+                          </p>
+                          <p className="font-medium">
+                            {formatDate(logs?.sessionDetails?.updatedAt)}
+                          </p>
+                        </div>
 
-                {/* Total Audience */}
-                <div>
-                  <p className="text-sm text-gray-500">{t('TOTAL_AUDIENCE')}</p>
-                  <p className="font-medium">{formatNum(logsMeta?.total ?? 0)}</p>
-                </div>
+                        {/* Total Audience */}
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            {t('TOTAL_AUDIENCE')}
+                          </p>
+                          <p className="font-medium">{formatNum(logsMeta?.total ?? 0)}</p>
+                        </div>
 
-                {logs?.sessionDetails?.status === 'COMPLETED' && (
-                  <div>
-                    <p className="text-sm text-gray-500">{t('COMPLETED_AT')}</p>
-                    <p className="font-medium">
-                      {formatDate(logs?.sessionDetails?.updatedAt)}
-                    </p>
-                  </div>
-                )}
+                        {logs?.sessionDetails?.startedAt && (
+                          <div>
+                            <p className="text-sm text-gray-500">{t('STARTED_AT')}</p>
+                            <p className="font-medium">
+                              {formatDate(logs?.sessionDetails?.startedAt)}
+                            </p>
+                          </div>
+                        )}
 
-                {/* VOICE Status */}
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      {resolvedTransportName === 'VOICE' ? (
-                        <Mic />
-                      ) : resolvedTransportName === 'EMAIL' ? (
-                        <Mail />
-                      ) : (
-                        <MessageSquare />
-                      )}
+                        {logs?.sessionDetails?.endedAt && (
+                          <div>
+                            <p className="text-sm text-gray-500">{t('ENDED_AT')}</p>
+                            <p className="font-medium">
+                              {formatDate(logs?.sessionDetails?.endedAt)}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* VOICE Status */}
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 flex items-center justify-center">
+                              {resolvedTransportName === 'VOICE' ? (
+                                <Mic />
+                              ) : resolvedTransportName === 'EMAIL' ? (
+                                <Mail />
+                              ) : (
+                                <MessageSquare />
+                              )}
+                            </div>
+                            <span className="font-medium">
+                              {resolvedTransportName}
+                            </span>
+                          </div>
+
+                          <Badge
+                            className={`${
+                              logs?.sessionDetails?.status === 'COMPLETED'
+                                ? 'bg-green-100 text-green-600 hover:bg-green-100'
+                                : logs?.sessionDetails?.status === 'PENDING'
+                                ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
+                                : 'bg-red-100 text-red-600 hover:bg-red-100'
+                            } rounded-full px-3`}
+                          >
+                            {translateValue(tg, logs?.sessionDetails?.status)}
+                          </Badge>
+                        </div>
+
+                        {/* Communication */}
+                        <div className="space-y-3">
+                          <TooltipWrapper
+                            tip={`${t('COMMUNICATION_TITLE')}: ${communicationTitle}`}
+                          >
+                            <p className="text-sm text-gray-500">
+                              {communicationTitle}
+                            </p>
+                          </TooltipWrapper>
+                          {logs?.communicationDetail?.subject && (
+                            <TooltipWrapper
+                              tip={`${t('COMMUNICATION_SUBJECT')}: ${logs?.communicationDetail?.subject}`}
+                            >
+                              <div>
+                                <p className="font-medium">
+                                  {logs.communicationDetail.subject}
+                                </p>
+                              </div>
+                            </TooltipWrapper>
+                          )}
+                          <TooltipWrapper
+                            tip={`${t('COMMUNICATION_MESSAGE')}: ${getCommunicationMessage(
+                              logs?.communicationDetail?.message,
+                              tg('N_A'),
+                            )}`}
+                          >
+                            <div>
+                              {renderMessage(
+                                logs?.communicationDetail?.message,
+                              )}
+                            </div>
+                          </TooltipWrapper>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="logs" className="p-2 m-0 space-y-3">
+                        {logs?.sessionDetails?.stats?.runs?.length ? (
+                          logs.sessionDetails.stats.runs.map(
+                            (run: any, index: number) => (
+                              <Card
+                                key={index}
+                                className="rounded-sm shadow-sm"
+                              >
+                                <CardContent className="p-4 space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-4 w-4 text-muted-foreground" />
+                                      <span className="text-sm font-medium">
+                                        {t('RUN_NUMBER', { number: index + 1 })}
+                                      </span>
+                                    </div>
+                                    <Badge
+                                      className={`text-[10px] ${
+                                        run.trigger === 'initial'
+                                          ? 'bg-blue-100 text-blue-600'
+                                          : 'bg-orange-100 text-orange-600'
+                                      }`}
+                                    >
+                                      {run.trigger}
+                                    </Badge>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground space-y-1">
+                                    <p>{t('STARTED')}: {formatDate(run.startedAt)}</p>
+                                    <p>{t('ENDED')}: {formatDate(run.endedAt)}</p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ),
+                          )
+                        ) : (
+                          <NoResult message={t('NO_LOGS_AVAILABLE')} />
+                        )}
+                      </TabsContent>
                     </div>
-                    <span className="font-medium">{resolvedTransportName}</span>
-                  </div>
-
-                  <Badge
-                    className={`${
-                      logs?.sessionDetails?.status === 'COMPLETED'
-                        ? 'bg-green-100 text-green-600 hover:bg-green-100'
-                        : logs?.sessionDetails?.status === 'PENDING'
-                        ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
-                        : 'bg-red-100 text-red-600 hover:bg-red-100'
-                    } rounded-full px-3`}
-                  >
-                    {translateValue(tg, logs?.sessionDetails?.status)}
-                  </Badge>
-                </div>
-
-                {/* Communication */}
-                <div className="space-y-3">
-                  <TooltipWrapper
-                    tip={`${t('COMMUNICATION_TITLE')}: ${communicationTitle}`}
-                  >
-                    <p className="text-sm text-gray-500">
-                      {communicationTitle}
-                    </p>
-                  </TooltipWrapper>
-                  {logs?.communicationDetail?.subject && (
-                    <TooltipWrapper
-                      tip={`${t('COMMUNICATION_SUBJECT')}: ${logs?.communicationDetail?.subject}`}
-                    >
-                      <div>
-                        <p className="font-medium">
-                          {logs.communicationDetail.subject}
-                        </p>
-                      </div>
-                    </TooltipWrapper>
-                  )}
-                  <TooltipWrapper
-                    tip={`${t('COMMUNICATION_MESSAGE')}: ${getCommunicationMessage(
-                      logs?.communicationDetail?.message,
-                      tg('N_A'),
-                    )}`}
-                  >
-                    <div>
-                      {renderMessage(logs?.communicationDetail?.message)}
-                    </div>
-                  </TooltipWrapper>
+                  </Tabs>
                 </div>
               </CardContent>
             </Card>

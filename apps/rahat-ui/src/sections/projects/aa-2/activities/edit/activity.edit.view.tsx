@@ -15,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectTrigger,
@@ -23,7 +22,6 @@ import {
   SelectContent,
   SelectItem,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Plus,
@@ -47,7 +45,13 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
-import { Back, Heading, NoResult } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  FormInput,
+  FormTextarea,
+  Heading,
+  NoResult,
+} from 'apps/rahat-ui/src/common';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
@@ -64,6 +68,7 @@ import { transformCommunicationData } from 'apps/rahat-ui/src/utils/transformCom
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export default function EditActivity() {
   const t = useTranslations('AA_PROJECT');
@@ -440,7 +445,7 @@ export default function EditActivity() {
       <div className="p-4 h-full">
         <Back path={redirectUpdatePath} />
         <div className="flex justify-center items-center h-full">
-          <NoResult message="Error while loading activity details" />
+          <NoResult message={t('ERROR_WHILE_LOADING_ACTIVITY_DETAILS')} />
         </div>
       </div>
     );
@@ -494,9 +499,9 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel>{t('ACTIVITY_TITLE2')}</FormLabel>
+                          <FormLabel required>{t('ACTIVITY_TITLE2')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={t('ENTER_ACTIVITY_TITLE')}
                               {...field}
@@ -513,7 +518,7 @@ export default function EditActivity() {
                     name="responsibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('RESPONSIBILITY')}</FormLabel>
+                        <FormLabel required>{t('RESPONSIBILITY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             users?.data?.find((u) => u.uuid === field.value)
@@ -544,9 +549,9 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>{t('RESPONSIBLE_STATION')}</FormLabel>
+                          <FormLabel required>{t('RESPONSIBLE_STATION')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={t('ENTER_RESPONSIBLE_STATION')}
                               {...field}
@@ -562,7 +567,7 @@ export default function EditActivity() {
                     name="phaseId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('PHASE')}</FormLabel>
+                        <FormLabel required>{t('PHASE')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             phases?.find((p) => p.uuid === field.value)?.name
@@ -591,7 +596,7 @@ export default function EditActivity() {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('CATEGORY')}</FormLabel>
+                        <FormLabel required>{t('CATEGORY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             categories?.find((c) => c.uuid === field.value)
@@ -656,7 +661,7 @@ export default function EditActivity() {
                           <FormItem>
                             <FormLabel>{t('LEAD_TIME')}</FormLabel>
                             <div className="grid grid-cols-4">
-                              <Input
+                              <FormInput
                                 type="text"
                                 placeholder={t('ENTER_LEAD_TIME')}
                                 className="col-span-3 rounded-r-none "
@@ -712,8 +717,9 @@ export default function EditActivity() {
                         <FormItem className="col-span-2">
                           <FormLabel>{t('DESCRIPTION')}</FormLabel>
                           <FormControl>
-                            <Textarea
+                            <FormTextarea
                               placeholder={t('ENTER_DESCRIPTION')}
+                              className=" rounded"
                               {...field}
                             />
                           </FormControl>

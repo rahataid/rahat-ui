@@ -13,24 +13,41 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import HeaderWithBack from '../../projects/components/header.with.back';
-import { useParams, useRouter } from 'next/navigation';
-import { UUID } from 'crypto';
+import { useRouter } from 'next/navigation';
 import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Share } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/components/dialog';
+import { Download, Share } from 'lucide-react';
 import { useUploadBeneficiary } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
+
+const SAMPLE_BENEFICIARY_HEADERS = [
+  'Name',
+  'Phone Number',
+  'Gender*',
+  'Age',
+  'Government ID',
+];
+
 import { useTranslations } from 'next-intl';
 
 export default function ExcelUploader() {
-  const { id } = useParams() as { id: UUID };
   const router = useRouter();
-  const [data, setData] = useState<any[][]>([]);
-  const [fileName, setFileName] = useState<string>('No File Choosen');
+  const [data, setData] = useState<string[][]>([]);
+  const [fileName, setFileName] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showGroupDialog, setShowGroupDialog] = useState(false);
+  const [showGroupNameForm, setShowGroupNameForm] = useState(false);
+  const [groupNameInput, setGroupNameInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadBeneficiary = useUploadBeneficiary();
   const t = useTranslations('GLOBAL');
@@ -45,8 +62,10 @@ export default function ExcelUploader() {
         const wb = XLSX.read(bstr, { type: 'binary' });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        setData(data as any[][]);
+        const parsedData = XLSX.utils.sheet_to_json(ws, {
+          header: 1,
+        }) as string[][];
+        setData(parsedData);
       };
       reader.readAsBinaryString(file);
       setSelectedFile(file);
@@ -59,17 +78,68 @@ export default function ExcelUploader() {
     csv: 'csv',
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (groupName?: string) => {
     if (!selectedFile) return toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
 
-    // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
 
     await uploadBeneficiary.mutateAsync({
       selectedFile,
       doctype,
+      groupName,
     });
+  };
+
+  const handleAddClick = () => {
+    if (!selectedFile) {
+      toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
+      return;
+    }
+
+    setGroupNameInput('');
+    setShowGroupNameForm(false);
+    setShowGroupDialog(true);
+  };
+
+  const handleSkipForNow = async () => {
+    setShowGroupDialog(false);
+    setShowGroupNameForm(false);
+    await handleUpload();
+  };
+
+  const handleCreateGroupSubmit = async () => {
+    const trimmedName = groupNameInput.trim();
+
+    if (!trimmedName) {
+      toast.error(t('PLEASE_ENTER_A_GROUP_NAME'));
+      return;
+    }
+
+    setShowGroupDialog(false);
+    setShowGroupNameForm(false);
+    await handleUpload(trimmedName);
+  };
+
+  const handleDownloadSample = () => {
+    const worksheet = XLSX.utils.aoa_to_sheet([SAMPLE_BENEFICIARY_HEADERS]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
+
+    const firstRowStyle = {
+      font: { bold: true },
+      alignment: { horizontal: 'center' },
+    };
+
+    SAMPLE_BENEFICIARY_HEADERS.forEach((_, index) => {
+      const cellRef = XLSX.utils.encode_cell({ r: 0, c: index });
+      if (!worksheet[cellRef]) {
+        worksheet[cellRef] = { t: 's', v: '' };
+      }
+      worksheet[cellRef].s = firstRowStyle;
+    });
+
+    XLSX.writeFile(workbook, 'beneficiary_sample.xlsx');
   };
 
   useEffect(() => {
@@ -78,17 +148,29 @@ export default function ExcelUploader() {
       router.push('/beneficiary');
     }
     // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
-  }, [uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError]);
+  }, [router, uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError]);
 
   return (
     <>
       <div className="p-4  h-[calc(100vh-115px)]">
-        <div className="flex justify-between items-center mb-4">
-          <HeaderWithBack
-            title={t('IMPORT_BENEFICIARIES')}
-            subtitle={t('SELECT_BENEFICIARY_FILE_TO_UPDATE') || 'Select beneficiary file to update (Excel file)'}
-            path="/beneficiary"
-          />
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex-1">
+            <HeaderWithBack
+              title={t('IMPORT_BENEFICIARIES')}
+              subtitle={t('SELECT_BENEFICIARY_FILE_TO_UPDATE') || 'Select beneficiary file to update (Excel file)'}
+              path="/beneficiary"
+            />
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2 shrink-0"
+            onClick={handleDownloadSample}
+          >
+            <Download size={16} />
+            {t('DOWNLOAD_SAMPLE')}
+          </Button>
         </div>
 
         <div className="rounded-lg p-4 border bg-card">
@@ -108,7 +190,9 @@ export default function ExcelUploader() {
                   <Share size={22} className="px-1" />
                   {t('CHOOSE_FILE')}
                 </span>
-                <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
+                <span className="px-4 py-2 flex-grow truncate">
+                  {fileName || t('NO_FILE_CHOSEN')}
+                </span>
               </div>
             </div>
           </div>
@@ -116,36 +200,38 @@ export default function ExcelUploader() {
 
         <>
           {data.length > 0 && (
-            <div className="border-2 border-dashed  border-black sm:w-[1500px] w-[1600px] mt-6 p-4 mx-auto">
-              <ScrollArea className="h-[calc(100vh-430px)]">
-                <Table className="w-full table-auto">
-                  <TableHeader className="sticky top-0 bg-card">
-                    <TableRow>
-                      {data[0].map((header, index) => (
-                        <TableHead
-                          key={index}
-                          className="truncate max-w-[150px] overflow-hidden"
-                        >
-                          {header}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.slice(1).map((row, rowIndex) => (
-                      <TableRow key={rowIndex}>
-                        {row.map((cell, cellIndex) => (
-                          <TableCell
-                            key={cellIndex}
+            <div className="border-2 border-dashed border-black mt-6 p-4 mx-auto w-full overflow-x-auto">
+              <ScrollArea className="h-[calc(100vh-430px)] w-full">
+                <div className="min-w-[900px]">
+                  <Table className="w-full table-auto">
+                    <TableHeader className="sticky top-0 bg-card">
+                      <TableRow>
+                        {data[0].map((header, index) => (
+                          <TableHead
+                            key={index}
                             className="truncate max-w-[150px] overflow-hidden"
                           >
-                            {cell}
-                          </TableCell>
+                            {header}
+                          </TableHead>
                         ))}
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {data.slice(1).map((row, rowIndex) => (
+                        <TableRow key={rowIndex}>
+                          {row.map((cell, cellIndex) => (
+                            <TableCell
+                              key={cellIndex}
+                              className="truncate max-w-[100px] overflow-hidden"
+                            >
+                              {cell}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
 
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
@@ -163,7 +249,7 @@ export default function ExcelUploader() {
             variant="secondary"
             onClick={() => {
               setData([]);
-              setFileName('No File Choosen');
+              setFileName('');
               setSelectedFile(null);
 
               // router.push('/beneficiary')
@@ -179,7 +265,7 @@ export default function ExcelUploader() {
         ) : ( */}
           <Button
             className="w-40 bg-primary hover:ring-2 ring-primary"
-            onClick={handleUpload}
+            onClick={handleAddClick}
             disabled={uploadBeneficiary?.isPending || !data?.length}
           >
             {uploadBeneficiary?.isPending ? <>{t('UPLOADING')}</> : t('ADD')}
@@ -187,6 +273,79 @@ export default function ExcelUploader() {
           {/* )} */}
         </div>
       </div>
+      <Dialog
+        open={showGroupDialog}
+        onOpenChange={(open) => {
+          setShowGroupDialog(open);
+          if (!open) setShowGroupNameForm(false);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('CREATE_BENEFICIARY_GROUP')}</DialogTitle>
+            <DialogDescription>
+              {showGroupNameForm
+                ? t('ENTER_A_NAME_FOR_THE_NEW_GROUP')
+                : t('DO_YOU_WANT_TO_CREATE_A_GROUP_OR_SKIP')}
+            </DialogDescription>
+          </DialogHeader>
+
+          {!showGroupNameForm ? (
+            <div className="flex gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={handleSkipForNow}
+                disabled={uploadBeneficiary?.isPending}
+              >
+                {t('SKIP_FOR_NOW')}
+              </Button>
+              <Button
+                type="button"
+                className="flex-1"
+                onClick={() => setShowGroupNameForm(true)}
+                disabled={uploadBeneficiary?.isPending}
+              >
+                {t('CREATE_GROUP')}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4 pt-2">
+              <Input
+                type="text"
+                value={groupNameInput}
+                onChange={(e) => setGroupNameInput(e.target.value)}
+                placeholder={t('ENTER_GROUP_NAME')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleCreateGroupSubmit();
+                  }
+                }}
+              />
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setShowGroupNameForm(false)}
+                >
+                  {t('BACK')}
+                </Button>
+                <Button
+                  type="button"
+                  className="flex-1"
+                  onClick={handleCreateGroupSubmit}
+                  disabled={uploadBeneficiary?.isPending}
+                >
+                  {t('SUBMIT')}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

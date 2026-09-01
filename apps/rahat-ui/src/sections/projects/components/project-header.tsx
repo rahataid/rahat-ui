@@ -19,11 +19,14 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
+import { usePhases } from '@rahat-ui/query';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { toast } from 'react-toastify';
+import { UUID } from 'crypto';
 // SidebarTrigger moved into the sidebar header; no top-header trigger needed here.
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
+import { CircleAlert } from 'lucide-react';
 
 export function ProjectNav({
   component,
@@ -39,6 +42,14 @@ export function ProjectNav({
   const settingsPath = isAAProject
     ? `/projects/aa/${params.id}/update-aa-settings`
     : null;
+
+  const { data: phases } = usePhases(params?.id as UUID);
+  const activePhase = phases
+    ?.filter((p: any) => p.isActive)
+    ?.sort(
+      (a: any, b: any) =>
+        new Date(b.activatedAt).getTime() - new Date(a.activatedAt).getTime(),
+    )?.[0];
 
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
@@ -62,7 +73,21 @@ export function ProjectNav({
 
   return (
     <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
-      <div className="flex items-center space-x-4">{component}</div>
+      <div className="flex items-center space-x-4">
+        {component}
+
+        {isAAProject &&
+          (activePhase ? (
+            <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+              <span>{activePhase.name} has been triggered</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-500">
+              <CircleAlert className="h-4 w-4" />
+              <span>No phase triggered yet</span>
+            </div>
+          ))}
+      </div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
         {!isClosed && !isAAProject && <ConnectWallet />}
         {showNotification && <NotificationButton unreadCount={0} />}

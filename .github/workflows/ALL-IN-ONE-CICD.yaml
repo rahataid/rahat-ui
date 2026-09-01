@@ -1109,6 +1109,8 @@ jobs:
     runs-on: arc-runner-set
     needs: [context, setup, build]
     if: needs.context.outputs.action == 'create'
+    permissions:
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
@@ -1180,13 +1182,24 @@ jobs:
             echo "Expires: ${{ needs.context.outputs.pr_number != '' && 'when PR closes' || format('~{0}h', needs.context.outputs.ttl_hours) }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Find existing preview comment for this app
+        if: needs.context.outputs.pr_number != ''
+        id: fc
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- preview-comment:${{ matrix.app }} -->'
+
       - name: Post/update sticky PR comment with link
         if: needs.context.outputs.pr_number != ''
         uses: peter-evans/create-or-update-comment@v4
         with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ needs.context.outputs.pr_number }}
-          comment-tag: preview-${{ matrix.app }}
+          edit-mode: replace
           body: |
+            <!-- preview-comment:${{ matrix.app }} -->
             🚀 **${{ matrix.app }}** preview deployed: ${{ steps.c.outputs.url }}
             _Updated at ${{ github.event.pull_request.head.sha }}_
 
@@ -1246,6 +1259,8 @@ jobs:
     runs-on: arc-runner-set
     needs: context
     if: needs.context.outputs.action == 'destroy' && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
     strategy:
       matrix:
         app: [rahat-ui, community-tool-ui]
@@ -1268,10 +1283,21 @@ jobs:
           sudo nginx -t && sudo systemctl reload nginx
           EOF
 
-      - name: Update sticky PR comment
-        uses: peter-evans/create-or-update-comment@v4
+      - name: Find existing preview comment for this app
+        id: fc
+        uses: peter-evans/find-comment@v3
         with:
           issue-number: ${{ needs.context.outputs.pr_number }}
-          comment-tag: preview-${{ matrix.app }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- preview-comment:${{ matrix.app }} -->'
+
+      - name: Update sticky PR comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          edit-mode: replace
           body: |
+            <!-- preview-comment:${{ matrix.app }} -->
             🧹 **${{ matrix.app }}** preview environment destroyed (PR closed).

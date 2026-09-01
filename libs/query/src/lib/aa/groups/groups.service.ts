@@ -562,6 +562,15 @@ export const useGroupsReservedFunds = (uuid: UUID, payload: any) => {
       });
       return mutate;
     },
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data?.data?.length) return false;
+      const hasActive = data.data.some(
+        (p: any) =>
+          p.status === 'NOT_DISBURSED' || p.status === 'STARTED',
+      );
+      return hasActive ? 5000 : false;
+    },
   });
 
   return query;

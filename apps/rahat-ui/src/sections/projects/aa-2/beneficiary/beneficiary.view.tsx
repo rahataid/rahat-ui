@@ -60,14 +60,14 @@ function BeneficiaryView() {
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             id="beneficiary"
-            className="w-full data-[state=active]:bg-white"
+            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white "
             value="beneficiary"
           >
             Beneficiary
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
-            className="w-full data-[state=active]:bg-white"
+            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white"
             value="beneficiaryGroups"
           >
             Beneficiary Groups

@@ -662,20 +662,20 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-            ...row,
-            uuid: row?.uuid?.toString(),
-            walletAddress: row?.walletAddress?.toString(),
-            voucherClaimStatus: row?.claimStatus,
-            name: row?.piiData?.name || '',
-            email: row?.piiData?.email || '',
-            gender: row?.projectData?.gender?.toString() || '',
-            phone: row?.piiData?.phone || 'N/A',
-            type: row?.type?.toString() || 'N/A',
-            phoneStatus: row?.projectData?.phoneStatus || '',
-            bankedStatus: row?.projectData?.bankedStatus || '',
-            internetStatus: row?.projectData?.internetStatus || '',
-            benTokens: row?.benTokens || 'N/A',
-          }))
+              ...row,
+              uuid: row?.uuid?.toString(),
+              walletAddress: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
+              benTokens: row?.benTokens || 'N/A',
+            }))
           : [],
       };
     }, [query.data]),
@@ -935,7 +935,13 @@ export const useProjectClose = () => {
         });
       },
       mutationKey: ['projectClose'],
-      mutationFn: async ({ uuid, data }: { uuid: UUID; data: { status: string } }) => {
+      mutationFn: async ({
+        uuid,
+        data,
+      }: {
+        uuid: UUID;
+        data: { status: string };
+      }) => {
         const res = await rumsanService.client.patch(
           `/projects/${uuid}/status`,
           data,

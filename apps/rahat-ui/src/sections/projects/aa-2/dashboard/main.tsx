@@ -1,69 +1,58 @@
 'use client';
 
 import {
+  useBackFill,
   useProjectDashboardReporting,
   useProjectInfo,
   useStellarSettings,
 } from '@rahat-ui/query';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import BeneficiaryDemographics from './component/beneficiaryDemographics';
-import CommunicationAnalytics from './component/communicationAnalytics';
-import MapView from './component/mapView';
-import ResilienceOverview from './component/resilienceOverview';
-import SocialProtectionBenefits from './component/socialProtectionBenefits';
 import DashboardSkeleton from './dashboard.skeleton';
-import DigitalAccessOverview from './component/digitalAccessOverview';
-import AccessAndResilienceOverview from './component/accessPieAndBar';
+import { RefreshCcw } from 'lucide-react';
+import DashboardTabs from './component/dashboard.tabs';
 
 const Main = () => {
   const { id } = useParams();
   const projectId = id as UUID;
 
-  // useAAStations(projectId);
   useStellarSettings(projectId);
-  useProjectInfo(projectId);
+  const { data: projectInfo, isPending: isProjectInfoLoading } =
+    useProjectInfo(projectId);
 
+  const projectType = projectInfo?.value.project_type;
   const { data, isLoading } = useProjectDashboardReporting(projectId);
+  const { mutate: syncStats, isPending: isSyncing } = useBackFill(projectId);
 
-  if (isLoading) return <DashboardSkeleton />;
+  if (isProjectInfoLoading || isLoading) return <DashboardSkeleton />;
 
   return (
-    <>
-      <div className="space-y-3 p-5">
+    <div className="space-y-3 sm:space-y-4 p-3 sm:p-5">
+      <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
         <Heading
           title="Project Dashboard"
           description="Overview of your system"
-          titleStyle={'text-xl xl:text-3xl'}
+          titleStyle="text-lg sm:text-xl xl:text-3xl"
         />
-        <ResilienceOverview
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
+        <IconLabelBtn
+          name={isSyncing ? 'Updating' : 'Sync Stats'}
+          Icon={RefreshCcw}
+          disabled={isSyncing}
+          handleClick={() => syncStats()}
+          variant="outline"
+          className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
         />
-        <BeneficiaryDemographics
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
-        />
-        <SocialProtectionBenefits
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
-        />
-        <DigitalAccessOverview stats={data?.benefStats} />
-        <AccessAndResilienceOverview data={data?.benefStats} />
-        <CommunicationAnalytics
-          benefStats={data?.benefStats}
-          triggeersStats={data?.triggeersStats}
-          projectId={projectId}
-        />
-        <div className="mb-2 h-full w-full">
-          <MapView projectId={projectId} benefStats={data?.benefStats} />
-        </div>
       </div>
-    </>
+
+      <DashboardTabs
+        benefStats={data?.benefStats ?? []}
+        triggeersStats={data?.triggeersStats ?? []}
+        tokenStats={data?.tokenStats}
+        projectId={projectId}
+        projectType={projectType}
+      />
+    </div>
   );
 };
 

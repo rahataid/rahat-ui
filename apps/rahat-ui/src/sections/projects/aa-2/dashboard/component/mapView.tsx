@@ -141,7 +141,7 @@ export default function MapView({
         </div>
       </div>
 
-      <div className="relative bg-card shadow-sm border rounded-sm p-1 w-full  h-[400px] z-0">
+      <div className="relative bg-card shadow-sm border rounded-sm p-1 w-full h-[300px] sm:h-[400px] z-0">
         <Map
           ref={mapRef}
           initialViewState={{

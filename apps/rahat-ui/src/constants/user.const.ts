@@ -1,5 +1,5 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-import { ACTIONS, SUBJECTS } from "./ability.constants";
+import { ACTIONS, SUBJECTS } from './ability.constants';
 
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export const USER_NAV_ROUTE = {
@@ -31,6 +31,7 @@ export const SUBJECT_ACTIONS = {
 // Any subject not listed falls back to ACTION_ITEMS by default.
 const PROJECT_SUBJECT_ACTION_OVERRIDES: Partial<Record<string, string[]>> = {
   [SUBJECTS.TRIGGER]: [...ACTION_ITEMS, ACTIONS.ACTIVATE],
+  [SUBJECTS.PHASE]: [ACTIONS.REVERT],
 };
 
 export const PROJECT_SUBJECT_ACTIONS: Record<string, string[]> =

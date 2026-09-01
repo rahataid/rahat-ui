@@ -43,7 +43,7 @@ export function ProjectNav({
     ? `/projects/aa/${params.id}/update-aa-settings`
     : null;
 
-  const { data: phases } = usePhases(params?.id as UUID);
+  const { data: phases, isLoading } = usePhases(params?.id as UUID);
   const activePhase = phases
     ?.filter((p: any) => p.isActive)
     ?.sort(
@@ -77,9 +77,10 @@ export function ProjectNav({
         {component}
 
         {isAAProject &&
+          !isLoading &&
           (activePhase ? (
-            <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-              <span>{activePhase.name} has been triggered</span>
+            <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500">
+              <span>{activePhase.name} phase has been triggered</span>
             </div>
           ) : (
             <div className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-500">

@@ -18,7 +18,11 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -207,10 +211,7 @@ export function CommunicationCard({
 
           {/* Send Button */}
           {activityCommunication?.sessionStatus === SessionStatus.NEW && (
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper tip="Send Communication">
                 <Button
                   className="h-10 w-10 rounded-full p-0 flex-shrink-0"
@@ -227,7 +228,7 @@ export function CommunicationCard({
                   )}
                 </Button>
               </TooltipWrapper>
-            </RoleAuth>
+            </Can>
           )}
         </div>
 

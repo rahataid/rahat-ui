@@ -92,15 +92,21 @@ export const useFundManagementTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'status',
+      // accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as FundStatus;
+        const status = row?.original?.status as FundStatus;
 
         return (
-          <Badge className={renderBadgeStyle(status)}>
-            {status.replace(/_/g, ' ') || 'N/A'}
-          </Badge>
+          <div className="flex gap-2 w-full">
+            <Badge className={renderBadgeStyle(status)}>
+              {status.replace(/_/g, ' ') || 'N/A'}
+            </Badge>
+
+            <span className="text-[12px]">
+              {row?.original.totalSuccess} / {row?.original.totalBeneficiaries}
+            </span>
+          </div>
         );
       },
     },
@@ -129,8 +135,8 @@ export const useFundManagementTableColumns = () => {
                   <div className="flex space-x-2 items-center">
                     <TriangleAlert size={16} strokeWidth={1.5} color="red" />
                     <span className="font-semibold text-sm/6">
-                      Token disbursement failed for this group. Contact
-                      admin for assistance.
+                      Token disbursement failed for this group. Contact admin
+                      for assistance.
                     </span>
                   </div>
                   <Collapsible className="mt-2">

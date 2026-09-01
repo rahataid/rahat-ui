@@ -39,3 +39,49 @@ export type ActionButtonProps = {
   onClick: () => void;
   disabled?: boolean;
 };
+export interface Movement {
+  id: number;
+  uuid: string;
+  inkindId: string;
+  quantity: number;
+  type: string;
+  groupInkindId: string | null;
+  redemptionId: string | null;
+  createdAt: string;
+  inkind: {
+    id: number;
+    uuid: string;
+    name: string;
+    type: string;
+    description: string;
+    availableStock: number;
+    createdAt: string;
+  } | null;
+  groupInkind: {
+    id: number;
+    uuid: string;
+    group: {
+      name: string;
+    };
+    groupId: string;
+    inkindId: string;
+    quantityAllocated: number;
+    quantityRedeemed: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
+  redemption: unknown | null;
+}
+export interface InkindSummary {
+  totalInkindTypes: number;
+  totalStock: number;
+  totalAvailableStock: number;
+  totalAssignedStock: number;
+  totalRedeemedStock: number;
+  chartData: {
+    redemptionType: {
+      predefined: number;
+      walkIn: number;
+    };
+  };
+}

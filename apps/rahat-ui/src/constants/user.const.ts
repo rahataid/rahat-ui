@@ -1,4 +1,6 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+import { ACTIONS, SUBJECTS } from './ability.constants';
+
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export const USER_NAV_ROUTE = {
   ADD_ROLE: 'add_role',
@@ -7,18 +9,35 @@ export const USER_NAV_ROUTE = {
   ADD_USER: 'add_user',
 };
 
-const ACTION_ITEMS = ['manage', 'create', 'read', 'update', 'delete'];
+const ACTION_ITEMS = [
+  ACTIONS.MANAGE,
+  ACTIONS.CREATE,
+  ACTIONS.READ,
+  ACTIONS.UPDATE,
+  ACTIONS.DELETE,
+];
 
 export const SUBJECT_ACTIONS = {
   all: ACTION_ITEMS,
   beneficiary: ACTION_ITEMS,
-  // group: ACTION_ITEMS,
-  // fieldDefinition: ACTION_ITEMS,
   role: ACTION_ITEMS,
   settings: ACTION_ITEMS,
-  // source: ACTION_ITEMS,
-  // target: ACTION_ITEMS,
   user: ACTION_ITEMS,
   project: ACTION_ITEMS,
   vendor: ACTION_ITEMS,
 };
+
+// Subjects listed here get extra actions on top of ACTION_ITEMS.
+// Any subject not listed falls back to ACTION_ITEMS by default.
+const PROJECT_SUBJECT_ACTION_OVERRIDES: Partial<Record<string, string[]>> = {
+  [SUBJECTS.TRIGGER]: [...ACTION_ITEMS, ACTIONS.ACTIVATE],
+  [SUBJECTS.PHASE]: [ACTIONS.REVERT],
+};
+
+export const PROJECT_SUBJECT_ACTIONS: Record<string, string[]> =
+  Object.fromEntries(
+    Object.values(SUBJECTS).map((subject) => [
+      subject,
+      PROJECT_SUBJECT_ACTION_OVERRIDES[subject] ?? ACTION_ITEMS,
+    ]),
+  );

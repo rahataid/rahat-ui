@@ -1,21 +1,24 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { UserRole } from '@rumsan/sdk/types';
 import { Trash2 } from 'lucide-react';
 import { useUserRolesRemove } from '@rumsan/react-query';
 import { UUID } from 'crypto';
 import Swal from 'sweetalert2';
 import React from 'react';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { ActiveUserRole } from './use.user.active.roles';
 
 type IProps = {
   loggedUserRoles: string[];
   userUUID: UUID;
+  projectNameByUuid: Record<string, string>;
 };
 
 export const useUsersRolesTableColumns = ({
   loggedUserRoles,
   userUUID,
+  projectNameByUuid,
 }: IProps) => {
   const removeUserRole = useUserRolesRemove();
 
@@ -35,15 +38,22 @@ export const useUsersRolesTableColumns = ({
     }
   };
 
-  const columns: ColumnDef<UserRole>[] = [
+  const columns: ColumnDef<ActiveUserRole>[] = [
     {
-      accessorKey: 'name',
+      id: 'name',
       header: 'Role',
+      cell: ({ row }) => row.original?.Role?.name,
+    },
+    {
+      id: 'project',
+      header: 'Project',
       cell: ({ row }) => {
-        return row.getValue('name');
+        const xrefId = row.original?.xrefId;
+        if (!xrefId) return <span className="text-muted-foreground">-</span>;
+        const projectName = projectNameByUuid[xrefId] || xrefId;
+        return <TruncatedCell text={projectName} maxLength={20} />;
       },
     },
-
     {
       id: 'actions',
       header: () => <div className="flex justify-end">Action</div>,
@@ -52,7 +62,7 @@ export const useUsersRolesTableColumns = ({
         return (
           <div className="flex justify-end">
             <Trash2
-              onClick={() => deleteUserRole([row?.original?.name])}
+              onClick={() => deleteUserRole([row.original?.Role?.name])}
               size={20}
               strokeWidth={1.5}
               className="cursor-pointer"

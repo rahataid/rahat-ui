@@ -17,7 +17,6 @@ interface FilterBoxProps {
   rawData: any;
   handleSampleDownload: any;
   loading: boolean;
-  // handleUniqueFieldChange: any;
 }
 
 export default function FilterBox({

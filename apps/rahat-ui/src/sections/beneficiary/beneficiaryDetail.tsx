@@ -1,50 +1,28 @@
 'use client';
 
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ListBeneficiary } from '@rahat-ui/types';
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { UUID } from 'crypto';
 import {
   Copy,
   CopyCheck,
   Expand,
-  FolderDot,
   FolderPlus,
   Landmark,
-  LandmarkIcon,
   Mail,
   MapPin,
-  Minus,
-  MoreVertical,
   Pencil,
   Phone,
   Trash2,
-  User,
   WalletIcon,
   Wifi,
   X,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import AssignToProjectModal from './components/assignToProjectModal';
 import DeleteBeneficiaryModal from './components/deleteBenfModal';
-import SplitViewDetailCards from './components/split.view.detail.cards';
-import EditBeneficiary from './editBeneficiary';
 import TooltipComponent from '../../components/tooltip';
 import { humanizeString } from '../../utils';
 import useCopy from '../../hooks/useCopy';
@@ -67,23 +45,6 @@ export default function BeneficiaryDetail({
   const searchParams = useSearchParams();
   const { clickToCopy, copyAction } = useCopy();
   const { Id } = useParams();
-  const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
-    'details',
-  );
-  const [walletAddressCopied, setWalletAddressCopied] =
-    useState<boolean>(false);
-  const walletAddress = beneficiaryDetail.walletAddress || '';
-
-  const handleTabChange = (tab: 'details' | 'edit') => {
-    setActiveTab(tab);
-  };
-
-  // const clickToCopy = () => {
-  //   if (walletAddress) {
-  //     navigator.clipboard.writeText(walletAddress);
-  //     setWalletAddressCopied(true);
-  //   }
-  // };
 
   const handleAssignModalClick = () => {
     projectModal.onTrue();
@@ -92,9 +53,7 @@ export default function BeneficiaryDetail({
   const handleDeleteClick = () => {
     deleteModal.onTrue();
   };
-
   const benfAssignedToProject = beneficiaryDetail?.BeneficiaryProject?.length;
-
   const fromTab = searchParams.get('fromTab');
   const isAssignedToProject = searchParams.get('isAssignedToProject');
   const isGroupValidForAA = searchParams.get('isGroupValidForAA');
@@ -111,118 +70,6 @@ export default function BeneficiaryDetail({
         deleteModal={deleteModal}
         closeSecondPanel={closeSecondPanel}
       />
-      {/* <div className="flex justify-between p-4 pt-5 bg-card border-b">
-        <div className="flex gap-3">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger onClick={closeSecondPanel}>
-                <Minus size={20} strokeWidth={1.5} />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Close</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div className="flex gap-3">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                disabled={benfAssignedToProject}
-                onClick={handleDeleteClick}
-              >
-                <Trash2
-                  className="cursor-pointer"
-                  color="red"
-                  size={20}
-                  strokeWidth={1.5}
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">
-                  {benfAssignedToProject
-                    ? 'Cannot delete a beneficiary assigned to project.'
-                    : 'Delete'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVertical
-                className="cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {activeTab === 'details' ? (
-                <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                  Edit
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                  Details
-                </DropdownMenuItem>
-              )}
-
-              <DropdownMenuItem onClick={handleAssignModalClick}>
-                Assign to project
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      <div className="p-2 flex items-center gap-2">
-        <Image
-          className="rounded-full"
-          src="/profile.png"
-          alt="cat"
-          height={80}
-          width={80}
-        />
-        <div>
-          <div className="flex gap-2 mb-1">
-            <h1 className="font-semibold text-xl">
-              {beneficiaryDetail?.piiData?.name}
-            </h1>
-            <Badge>Active</Badge>
-          </div>
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex gap-3 items-center"
-                onClick={clickToCopy}
-              >
-                <p className="text-muted-foreground text-base">
-                  {truncateEthAddress(walletAddress)}
-                </p>
-                {walletAddressCopied ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
-                ) : (
-                  <Copy
-                    className="text-muted-foreground"
-                    size={15}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary" side="bottom">
-                <p className="text-xs font-medium">
-                  {walletAddressCopied ? 'copied' : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
-
-      {activeTab === 'details' && (
-        <SplitViewDetailCards beneficiaryDetail={beneficiary} />
-      )}
-      {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
-        <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
-      )} */}
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
           <TooltipComponent
@@ -412,6 +259,30 @@ export default function BeneficiaryDetail({
           </div>
         )}
 
+        {beneficiaryDetail?.bankAccount && (
+          <div className="p-4 flex flex-col space-y-4 ml-2">
+            <h1 className="font-medium">Validated Bank Details</h1>
+            <div className="flex justify-between items-center">
+              <p>Bank Name</p>
+              <p className="text-muted-foreground text-base">
+                {beneficiaryDetail.bankAccount.bankName || '-'}
+              </p>
+            </div>
+            <div className="flex justify-between items-center">
+              <p>Account Name</p>
+              <p className="text-muted-foreground text-base">
+                {beneficiaryDetail.bankAccount.accountName || '-'}
+              </p>
+            </div>
+            <div className="flex justify-between items-center">
+              <p>Account Number</p>
+              <p className="text-muted-foreground text-base">
+                {beneficiaryDetail.bankAccount.accountNumber || '-'}
+              </p>
+            </div>
+          </div>
+        )}
+
         {beneficiaryDetail?.extras && (
           <div className="p-4 flex flex-col space-y-4 ml-2">
             <h1 className="font-medium">Extra Details</h1>
@@ -422,7 +293,6 @@ export default function BeneficiaryDetail({
                   {Object.entries(beneficiaryDetail.extras)
                     .filter(([key]) => {
                       const cleanKey = key.trim().toLowerCase();
-                      console.log(cleanKey);
                       return ![
                         'error',
                         'bankedstatus',

@@ -76,6 +76,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+ARG NEXT_PUBLIC_APP_VERSION
+ENV NEXT_PUBLIC_APP_VERSION=$NEXT_PUBLIC_APP_VERSION
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm nx run community-tool-ui:build
 RUN find dist/apps/community-tool-ui/.next/standalone -name "*.map" -delete

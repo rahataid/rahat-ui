@@ -17,6 +17,7 @@ import * as React from 'react';
 import GrievancesLayout from '../../../../sections/projects/aa-2/grievances/grievances.layout';
 import { SseProvider } from 'apps/rahat-ui/src/providers/sse-provider';
 import { ProjectLayout } from '../../../../sections/projects/components';
+import { ProjectAbilityProvider } from '../../../../providers/project-ability-provider';
 
 export default function ProjectLayoutRoot({
   children,
@@ -40,10 +41,7 @@ export default function ProjectLayoutRoot({
 
   const isSettingsLoading =
     !hasSettingsInStore &&
-    (
-      isContractLoading ||
-      isSubgraphLoading ||
-      isAAContractLoading);
+    (isContractLoading || isSubgraphLoading || isAAContractLoading);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);
@@ -63,13 +61,15 @@ export default function ProjectLayoutRoot({
 
   return (
     // <GarphQlProvider>
-    <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-      <SseProvider>
-        <GrievancesLayout>
-          {secondPanel ? [children, secondPanel] : children}
-        </GrievancesLayout>
-      </SseProvider>
-    </ProjectLayout>
+    <ProjectAbilityProvider>
+      <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
+        <SseProvider>
+          <GrievancesLayout>
+            {secondPanel ? [children, secondPanel] : children}
+          </GrievancesLayout>
+        </SseProvider>
+      </ProjectLayout>
+    </ProjectAbilityProvider>
     // </GarphQlProvider>
   );
 }

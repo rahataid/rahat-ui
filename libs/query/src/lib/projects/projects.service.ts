@@ -891,6 +891,9 @@ export const useProjectEdit = () => {
         queryClient.invalidateQueries({
           queryKey: [TAGS.GET_PROJECT_DETAILS],
         });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_ALL_PROJECTS],
+        });
       },
       onError: () => {
         toast.fire({

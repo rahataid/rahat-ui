@@ -23,12 +23,25 @@ import {
 
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { CloudDownload, RotateCcw } from 'lucide-react';
+import {
+  ChevronDown,
+  CloudDownload,
+  CloudUpload,
+  Landmark,
+  RotateCcw,
+  Smartphone,
+} from 'lucide-react';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import * as XLSX from 'xlsx';
@@ -246,19 +259,49 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                       tip="Payout cannot be verified because funds have not been disbursed to the beneficiary group."
                       disable={payout?.beneficiaryGroupToken?.isDisbursed}
                     >
-                      <Button
-                        className={`gap-2 text-sm ${
-                          payout?.status === 'COMPLETED' && 'hidden'
-                        } `}
-                        disabled={!payout?.beneficiaryGroupToken?.isDisbursed}
-                        onClick={() =>
-                          router.push(
-                            `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,
-                          )
-                        }
-                      >
-                        Verify Manual Payout
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            className={`gap-2 text-sm w-56 justify-between ${
+                              payout?.status === 'COMPLETED' && 'hidden'
+                            } `}
+                            disabled={
+                              !payout?.beneficiaryGroupToken?.isDisbursed
+                            }
+                            variant={'outline'}
+                          >
+                            <span className="flex items-center gap-2">
+                              <CloudUpload className="w-4 h-4" />
+                              Verify Manual Payout
+                            </span>
+                            <ChevronDown className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuItem
+                            className="gap-2"
+                            onClick={() =>
+                              router.push(
+                                `/projects/aa/${projectId}/payout/details/${payoutId}/verify?matchBy=bankAccount`,
+                              )
+                            }
+                          >
+                            <Landmark className="w-4 h-4" />
+                            Bank Account
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="gap-2"
+                            onClick={() =>
+                              router.push(
+                                `/projects/aa/${projectId}/payout/details/${payoutId}/verify?matchBy=phoneNumber`,
+                              )
+                            }
+                          >
+                            <Smartphone className="w-4 h-4" />
+                            Phone Number
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TooltipWrapper>
                   </RoleAuth>
                 )}
@@ -307,7 +350,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-4 pt-2">
+        <div
+          className={`grid ${
+            payout?.extras?.group_gap ? 'lg:grid-cols-5' : 'lg:grid-cols-4'
+          } gap-4 pt-2`}
+        >
           <DataCard
             title="Total no. of Beneficiaries"
             smallNumber={
@@ -337,8 +384,17 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             smallNumber={payout?.payoutGap}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Gap between Activation phsae triggerd and payout disbursed"
+            infoTooltip="Gap between Activation phase triggered and payout disbursed"
           />
+          {payout?.extras?.group_gap && (
+            <DataCard
+              title="Group Gap"
+              smallNumber={payout?.extras?.group_gap}
+              className="rounded-sm h-[80px] pt-10 pb-8 "
+              infoIcon={true}
+              infoTooltip="Gap between group creation and payout disbursed"
+            />
+          )}
         </div>
       </div>
 

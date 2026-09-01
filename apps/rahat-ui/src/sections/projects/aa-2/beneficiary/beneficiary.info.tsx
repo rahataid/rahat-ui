@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Copy, CopyCheck, User } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ChevronDown, ChevronUp, Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
@@ -23,6 +23,9 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
   const { clickToCopy, copyAction } = useCopy();
+  const [viewMore, setViewMore] = useState(false);
+
+  const bankAccount = beneficiary?.projectData?.bankAccount;
 
   const { data: tokenData, isPending } = useTokenDetails({
     projectUUID: projectId,
@@ -46,7 +49,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
 
   const hasTokenData = !!(tokenData?.assignedToken || tokenData?.redemmedToken);
   const showBorder = filteredInkinds.length > 0;
-
   return (
     <>
       <div className="flex items-center">
@@ -110,12 +112,39 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           isBadge
         />
       </div>
+      {bankAccount && (
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Bank Account Details</h2>
+
+          <button
+            type="button"
+            onClick={() => setViewMore((prev) => !prev)}
+            className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
+          >
+            {viewMore ? 'View less' : 'View more'}
+            {viewMore ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+        </div>
+      )}
+
+      {viewMore && bankAccount && (
+        <div className="grid grid-cols-3 gap-6 mb-6">
+          <DataItem label="Bank Name" value={bankAccount?.bankName || 'N/A'} />
+          <DataItem
+            label="Account Name"
+            value={bankAccount?.accountName || 'N/A'}
+          />
+          <DataItem
+            label="Account Number"
+            value={bankAccount?.accountNumber || 'N/A'}
+          />
+        </div>
+      )}
       <div
-        className={`p-4 w-full max-w-2xl bg-white ${
+        className={`p-4 h-full w-full max-w-2xl bg-white ${
           showBorder ? 'border rounded-xl shadow-sm' : ''
         }`}
       >
-        {/* Title */}
         {isPending ? (
           <>
             <div className="animate-pulse flex gap-4 mb-6">
@@ -136,14 +165,14 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           </>
         ) : hasTokenData ? (
           <div className="flex gap-4 mb-6">
-            <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+            <div className="flex-1 bg-gray-100 rounded-xl p-2 text-center">
               <p className="text-sm text-gray-500">Assigned</p>
               <h3 className="text-xl font-bold">
                 {tokenData?.assignedToken} Tokens
               </h3>
               <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
             </div>
-            <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+            <div className="flex-1 bg-gray-100 rounded-xl p-2 text-center">
               <p className="text-sm text-gray-500">Redeemed</p>
               <h3 className="text-xl font-bold">
                 {tokenData?.redemmedToken} Tokens

@@ -1,12 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { useRouter } from 'next/navigation';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { SEP, toLabel, TriggerStatement } from '../utils';
 import { SOURCE_CONFIG } from '../trigger.statement.schema';
@@ -25,6 +20,7 @@ type IProps = {
   triggerType?: string;
   version?: number;
   id?: number;
+  leadTime?: string;
   triggerStatement: TriggerStatement;
 };
 
@@ -54,6 +50,7 @@ export default function TriggerCard({
   version,
   id,
   triggerStatement: tgSt,
+  leadTime,
 }: IProps) {
   const router = useRouter();
 
@@ -74,7 +71,7 @@ export default function TriggerCard({
 
   return (
     <div
-      className="p-4 rounded-xl border shadow cursor-pointer hover:shadow-md"
+      className="p-4 rounded-xl border shadow cursor-pointer hover:shadow-md  "
       onClick={handleRoute}
     >
       <div className="flex justify-between items-center space-x-4 mb-2">
@@ -86,7 +83,6 @@ export default function TriggerCard({
               text={phase ? phase : triggerType || ''}
               maxLength={10}
             />
-            {/* {phase ? phase : triggerType} */}
           </Badge>
           <Badge className="font-medium">{capitalizeFirstLetter(type)}</Badge>
           {!!version && <Badge className="font-medium">V{version}</Badge>}
@@ -99,21 +95,10 @@ export default function TriggerCard({
           {isTriggered ? 'Triggered' : 'Not Triggered'}
         </Badge>
       </div>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className=" text-sm/6 font-medium mb-2 truncate w-52 hover:cursor-pointer">
-              {title}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent
-            side="bottom"
-            className="w-80 rounded-sm text-justify "
-          >
-            <p className="text-sm/6 font-medium mb-2">{title}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+
+      <div className="text-sm/6 font-medium mb-2 w-80  hover:cursor-pointer">
+        <TruncatedCell text={title} truncateByWidth />
+      </div>
       <p className="text-muted-foreground text-sm/4 mb-1">
         {capitalizeFirstLetter(riverBasin)}
 
@@ -144,6 +129,11 @@ export default function TriggerCard({
       {triggeredAt && (
         <p className="text-muted-foreground text-sm/4">
           Triggered at : {dateFormat(triggeredAt)}
+        </p>
+      )}
+      {leadTime && (
+        <p className="text-muted-foreground text-sm/4">
+          Lead Time : {leadTime ?? 'N/A'}
         </p>
       )}
     </div>

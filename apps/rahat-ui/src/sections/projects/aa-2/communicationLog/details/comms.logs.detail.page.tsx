@@ -6,11 +6,11 @@ import {
   useSessionBroadCastCount,
   useSessionRetryFailed,
   useSingleActivity,
+  useSettingsStore,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-// import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ import {
   CustomPagination,
   DataCard,
   Heading,
+  NoResult,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
@@ -38,13 +39,20 @@ import {
   RefreshCcw,
   Mic,
   MessageSquare,
+  Clock,
 } from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
 
 import { useParams, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { toast } from 'react-toastify';
 
-import { exportAllLogs, exportFailedLogs } from './comms.logs.export.utils';
+import { downloadLogsCsv, exportFailedLogs } from './comms.logs.export.utils';
 import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
@@ -57,6 +65,18 @@ export default function CommsLogsDetailPage() {
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');
+
+  const commsSettings = useSettingsStore((state) => state.commsSettings);
+
+  const downloadUrl = useMemo(
+    () =>
+      commsSettings?.URL
+        ? `${
+            commsSettings.URL
+          }/broadcasts/download?sessionId=${encodeURIComponent(sessionId)}`
+        : null,
+    [commsSettings, sessionId],
+  );
 
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
@@ -122,6 +142,13 @@ export default function CommsLogsDetailPage() {
   } = useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
+  const latestBroadcastUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
+    (latest: string | null, row: any) =>
+      !latest || new Date(row?.updatedAt) > new Date(latest)
+        ? row?.updatedAt
+        : latest,
+    null,
+  );
 
   const count = useSessionBroadCastCount([sessionId]);
   const mutateRetry = useSessionRetryFailed();
@@ -180,21 +207,20 @@ export default function CommsLogsDetailPage() {
     exportFailedLogs(sessionLogs?.httpReponse?.data?.data ?? []);
   };
 
-  const onExportAll = () => {
+  const onExportAll = async () => {
     try {
-      if (!logs || !activityDetail || !sessionLogs) {
+      if (!downloadUrl) {
         return toast.error(
           'Failed to load communication data. Please refresh and try again.',
         );
       }
-      if (!count?.data?.data) {
-        return toast.error(
-          'Communication statistics not available. Please try again.',
-        );
+      if (hasNoLogsForExport) {
+        return toast.error('No communication logs available to export.');
       }
-      const logsData = sessionLogs?.httpReponse?.data?.data;
-      const total = logsMeta?.total ?? 0;
-      exportAllLogs(logsData, logs, activityDetail, count.data.data, total);
+      const fileName = `${logs?.group?.name || 'group'}_${
+        activityDetail?.title || 'activity'
+      }_${new Date().toISOString().slice(0, 10)}.csv`;
+      await downloadLogsCsv(downloadUrl, fileName);
       toast.success('Communication logs exported successfully!');
     } catch (error) {
       console.error('Error exporting all logs:', error);
@@ -223,15 +249,12 @@ export default function CommsLogsDetailPage() {
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
   }, [from, projectID, activityId, tab, subTab, backFrom]);
 
-  const sessionLogsData = sessionLogs?.httpReponse?.data?.data;
-
   const hasNoLogsForExport =
     !isLoading &&
     !isLoadingActivity &&
     !isLoadingSessionLogs &&
     !isSessionLogsError &&
-    Array.isArray(sessionLogsData) &&
-    sessionLogsData.length === 0;
+    (logsMeta?.total ?? 0) === 0;
 
   const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
 
@@ -246,6 +269,15 @@ export default function CommsLogsDetailPage() {
               title={`Communication Details`}
               description="Here is the detailed view of selected communication"
             />
+          </div>
+          <div className="flex justify-between items-center">
+            {latestBroadcastUpdatedAt ? (
+              <p className="text-sm text-muted-foreground">
+                Updated At: {dateFormat(latestBroadcastUpdatedAt)}
+              </p>
+            ) : (
+              <div />
+            )}
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper
                 tip="No communication logs available to export"
@@ -370,7 +402,7 @@ export default function CommsLogsDetailPage() {
               </div>
 
               {/* Right Section (Data Cards) — 2/3 on large screens */}
-              <div className=" flex-1 flex flex-wrap gap-4">
+              <div className="flex-1 grid grid-cols-2 gap-4">
                 <DataCard
                   title="Successfully Delivered"
                   smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
@@ -381,103 +413,207 @@ export default function CommsLogsDetailPage() {
                   smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
+                <DataCard
+                  title="Scheduled"
+                  smallNumber={(count?.data?.data?.SCHEDULED ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Pending"
+                  smallNumber={(count?.data?.data?.PENDING ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
               </div>
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 ">
             <Card className="w-full col-span-1 bg-white rounded-sm">
-              <CardContent className="p-6 space-y-6">
-                {/* Beneficiary Group */}
-                <div>
-                  <p className="text-sm text-gray-500">
-                    {logs?.communicationDetail?.groupType
-                      ? logs?.communicationDetail?.groupType + ' ' + 'GROUP'
-                      : 'N/A'}
-                  </p>
-                  <p className="font-medium">{logsGroupName}</p>
-                </div>
+              <CardContent className="p-0">
+                <div className="gap-2 p-2 mb-2">
+                  <Tabs defaultValue="details" className="w-full">
+                    <TabsList className="border bg-secondary rounded h-[clamp(28px,3vw,36px)] mb-2">
+                      <TabsTrigger
+                        id="details"
+                        className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] "
+                        value="details"
+                      >
+                        Details
+                      </TabsTrigger>
+                      <TabsTrigger
+                        id="logs"
+                        className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] ]"
+                        value="logs"
+                      >
+                        Logs
+                      </TabsTrigger>
+                    </TabsList>
+                    <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
+                      <TabsContent
+                        value="details"
+                        className="p-4 space-y-6 m-0"
+                      >
+                        {/* Beneficiary Group */}
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            {logs?.communicationDetail?.groupType
+                              ? logs?.communicationDetail?.groupType +
+                                ' ' +
+                                'GROUP'
+                              : 'N/A'}
+                          </p>
+                          <p className="font-medium">{logsGroupName}</p>
+                        </div>
 
-                {/* Triggered Date */}
-                <div>
-                  <p className="text-sm text-gray-500">Triggered Date</p>
-                  <p className="font-medium">
-                    {dateFormat(logs?.sessionDetails?.updatedAt)}
-                  </p>
-                </div>
+                        {/* Triggered Date */}
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Triggered Date
+                          </p>
+                          <p className="font-medium">
+                            {dateFormat(logs?.sessionDetails?.updatedAt)}
+                          </p>
+                        </div>
 
-                {/* Total Audience */}
-                <div>
-                  <p className="text-sm text-gray-500">Total Audience</p>
-                  <p className="font-medium">{logsMeta?.total}</p>
-                </div>
+                        {/* Total Audience */}
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Total Audience
+                          </p>
+                          <p className="font-medium">{logsMeta?.total}</p>
+                        </div>
 
-                {logs?.sessionDetails?.status === 'COMPLETED' && (
-                  <div>
-                    <p className="text-sm text-gray-500">Completed At</p>
-                    <p className="font-medium">
-                      {dateFormat(logs?.sessionDetails?.updatedAt)}
-                    </p>
-                  </div>
-                )}
+                        {/* {logs?.sessionDetails?.status === 'COMPLETED' && (
+                          <div>
+                            <p className="text-sm text-gray-500">
+                              Completed At
+                            </p>
+                            <p className="font-medium">
+                              {dateFormat(logs?.sessionDetails?.updatedAt)}
+                            </p>
+                          </div>
+                        )} */}
+                        {logs?.sessionDetails?.startedAt && (
+                          <div>
+                            <p className="text-sm text-gray-500">Started At</p>
+                            <p className="font-medium">
+                              {dateFormat(logs?.sessionDetails?.startedAt)}
+                            </p>
+                          </div>
+                        )}
 
-                {/* VOICE Status */}
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      {resolvedTransportName === 'VOICE' ? (
-                        <Mic />
-                      ) : resolvedTransportName === 'EMAIL' ? (
-                        <Mail />
-                      ) : (
-                        <MessageSquare />
-                      )}
+                        {logs?.sessionDetails?.endedAt && (
+                          <div>
+                            <p className="text-sm text-gray-500">Ended At</p>
+                            <p className="font-medium">
+                              {dateFormat(logs?.sessionDetails?.endedAt)}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* VOICE Status */}
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 flex items-center justify-center">
+                              {resolvedTransportName === 'VOICE' ? (
+                                <Mic />
+                              ) : resolvedTransportName === 'EMAIL' ? (
+                                <Mail />
+                              ) : (
+                                <MessageSquare />
+                              )}
+                            </div>
+                            <span className="font-medium">
+                              {resolvedTransportName}
+                            </span>
+                          </div>
+
+                          <Badge
+                            className={`${
+                              logs?.sessionDetails?.status === 'COMPLETED'
+                                ? 'bg-green-100 text-green-600 hover:bg-green-100'
+                                : logs?.sessionDetails?.status === 'PENDING'
+                                ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
+                                : 'bg-red-100 text-red-600 hover:bg-red-100'
+                            } rounded-full px-3`}
+                          >
+                            {logs?.sessionDetails?.status}
+                          </Badge>
+                        </div>
+
+                        {/* Communication */}
+                        <div className="space-y-3">
+                          <TooltipWrapper
+                            tip={`Communication Title: ${communicationTitle}`}
+                          >
+                            <p className="text-sm text-gray-500">
+                              {communicationTitle}
+                            </p>
+                          </TooltipWrapper>
+                          {logs?.communicationDetail?.subject && (
+                            <TooltipWrapper
+                              tip={`Communication Subject: ${logs?.communicationDetail?.subject}`}
+                            >
+                              <div>
+                                <p className="font-medium">
+                                  {logs.communicationDetail.subject}
+                                </p>
+                              </div>
+                            </TooltipWrapper>
+                          )}
+                          <TooltipWrapper
+                            tip={`Communication Message: ${getCommunicationMessage(
+                              logs?.communicationDetail?.message,
+                            )}`}
+                          >
+                            <div>
+                              {renderMessage(
+                                logs?.communicationDetail?.message,
+                              )}
+                            </div>
+                          </TooltipWrapper>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="logs" className="p-2 m-0 space-y-3">
+                        {logs?.sessionDetails?.stats?.runs?.length ? (
+                          logs.sessionDetails.stats.runs.map(
+                            (run: any, index: number) => (
+                              <Card
+                                key={index}
+                                className="rounded-sm shadow-sm"
+                              >
+                                <CardContent className="p-4 space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-4 w-4 text-muted-foreground" />
+                                      <span className="text-sm font-medium">
+                                        Run {index + 1}
+                                      </span>
+                                    </div>
+                                    <Badge
+                                      className={`text-[10px] ${
+                                        run.trigger === 'initial'
+                                          ? 'bg-blue-100 text-blue-600'
+                                          : 'bg-orange-100 text-orange-600'
+                                      }`}
+                                    >
+                                      {run.trigger}
+                                    </Badge>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground space-y-1">
+                                    <p>Started: {dateFormat(run.startedAt)}</p>
+                                    <p>Ended: {dateFormat(run.endedAt)}</p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ),
+                          )
+                        ) : (
+                          <NoResult message="No Logs Available" />
+                        )}
+                      </TabsContent>
                     </div>
-                    <span className="font-medium">{resolvedTransportName}</span>
-                  </div>
-
-                  <Badge
-                    className={`${
-                      logs?.sessionDetails?.status === 'COMPLETED'
-                        ? 'bg-green-100 text-green-600 hover:bg-green-100'
-                        : logs?.sessionDetails?.status === 'PENDING'
-                        ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
-                        : 'bg-red-100 text-red-600 hover:bg-red-100'
-                    } rounded-full px-3`}
-                  >
-                    {logs?.sessionDetails?.status}
-                  </Badge>
-                </div>
-
-                {/* Communication */}
-                <div className="space-y-3">
-                  <TooltipWrapper
-                    tip={`Communication Title: ${communicationTitle}`}
-                  >
-                    <p className="text-sm text-gray-500">
-                      {communicationTitle}
-                    </p>
-                  </TooltipWrapper>
-                  {logs?.communicationDetail?.subject && (
-                    <TooltipWrapper
-                      tip={`Communication Subject: ${logs?.communicationDetail?.subject}`}
-                    >
-                      <div>
-                        <p className="font-medium">
-                          {logs.communicationDetail.subject}
-                        </p>
-                      </div>
-                    </TooltipWrapper>
-                  )}
-                  <TooltipWrapper
-                    tip={`Communication Message: ${getCommunicationMessage(
-                      logs?.communicationDetail?.message,
-                    )}`}
-                  >
-                    <div>
-                      {renderMessage(logs?.communicationDetail?.message)}
-                    </div>
-                  </TooltipWrapper>
+                  </Tabs>
                 </div>
               </CardContent>
             </Card>

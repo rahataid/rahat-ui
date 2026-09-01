@@ -6,25 +6,18 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import AASettingsView from './settings.view';
 import AACategoriesView from './categories/categories.view';
 import AAProjectPhasesView from './aa.phases';
 import { useSearchParams } from 'next/navigation';
 
 export default function AAProjectSettingsView() {
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab') || 'settings';
+  const tab = searchParams.get('tab') || 'categories';
 
   return (
     <div className="p-4">
-      <Tabs defaultValue={tab || 'settings'}>
+      <Tabs defaultValue={tab || 'categories'}>
         <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            className="w-full data-[state=active]:bg-white"
-            value="settings"
-          >
-            Settings
-          </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="categories"
@@ -38,9 +31,6 @@ export default function AAProjectSettingsView() {
             Phases
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="settings">
-          <AASettingsView />
-        </TabsContent>
         <TabsContent value="categories">
           <AACategoriesView />
         </TabsContent>

@@ -34,7 +34,7 @@ const DynamicPieChart = ({
     return (
       <div className="relative w-full h-full flex items-center justify-center">
         <svg
-          className="max-w-[200px] max-h-[200px] w-40 h-40"
+          className="w-full h-full max-w-[280px] max-h-[280px]"
           viewBox="0 0 120 120"
           role="img"
           aria-label="No data"

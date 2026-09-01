@@ -44,6 +44,7 @@ export default function DynamicTriggersList({
               triggerType={t?.isMandatory ? 'Mandatory' : 'Optional'}
               version={t?.version}
               triggerStatement={t?.triggerStatement}
+              leadTime={t?.leadTime}
             />
           ))
         ) : (

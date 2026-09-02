@@ -96,7 +96,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
       >
         <p className="text-primary font-semibold text-3xl/10">
           {truncateValue(riverWatch?.waterLevel?.value, 2)}
-          {riverWatch?.unit}
+          {riverWatch?.unit ?? 'm'}
         </p>
         <p className="text-sm/6 font-medium">Water Level</p>
         <p className="text-gray-500 text-sm/6">

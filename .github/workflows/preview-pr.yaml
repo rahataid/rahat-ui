@@ -1,0 +1,428 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+env:
+  CI: false
+  REGISTRY: docker.io
+  IMAGE_NAMESPACE: esatya
+  PREVIEW_DOMAIN: dev.rahat.io
+  PR_PREVIEW_VAULT_PATH: github/data/rahat/rahat-ui/dev/aa/dev
+  PR_PREVIEW_VAULT_KEY: rahat-ui
+
+permissions:
+  contents: read
+
+jobs:
+  context:
+    name: Resolve PR Context
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    outputs:
+      action: ${{ steps.ctx.outputs.action }}
+      slug: ${{ steps.ctx.outputs.slug }}
+      vault_secret_path: ${{ steps.ctx.outputs.vault_secret_path }}
+      vault_secret_key: ${{ steps.ctx.outputs.vault_secret_key }}
+      pr_number: ${{ steps.ctx.outputs.pr_number }}
+    steps:
+      - name: Compute context
+        id: ctx
+        run: |
+          set -e
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          ACTION="create"
+          if [ "${{ github.event.action }}" = "closed" ]; then
+            ACTION="destroy"
+          fi
+          RAW_SLUG="pr-${PR_NUMBER}"
+          SLUG=$(echo "$RAW_SLUG" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | sed -E 's/-+/-/g; s/^-//; s/-$//' | cut -c1-63)
+          if [ -z "$SLUG" ]; then
+            echo "ERROR: computed slug is empty"
+            exit 1
+          fi
+          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "vault_secret_path=${PR_PREVIEW_VAULT_PATH}" >> "$GITHUB_OUTPUT"
+          echo "vault_secret_key=${PR_PREVIEW_VAULT_KEY}" >> "$GITHUB_OUTPUT"
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+  setup:
+    name: Setup Build Matrix
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          APPS="rahat-ui,community-tool-ui"
+          JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
+          echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
+
+  gitleaks:
+    name: Secret Scan - Gitleaks
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/removed-pagiton-from-add-edit-activity'
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        id: gitleaks
+        continue-on-error: true
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      - name: Report Gitleaks result
+        if: steps.gitleaks.outcome == 'failure'
+        run: echo "::warning::Gitleaks detected secrets. Build will continue."
+
+  sast-scan:
+    name: SAST - CodeQL
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@v3
+
+  dependency-scan:
+    name: Dependency & Filesystem Scan
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: 0
+
+  dockerfile-lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.action == 'create'
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile:
+          - Dockerfile.rahat-ui
+          - Dockerfile.community-tool-ui
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          failure-threshold: error
+
+  build:
+    name: Build & Push - ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    needs:
+      - context
+      - setup
+      - sast-scan
+      - dependency-scan
+      - dockerfile-lint
+    if: needs.context.outputs.action == 'create'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      short_sha: ${{ steps.meta.outputs.short_sha }}
+      run_number: ${{ steps.meta.outputs.run_number }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Extract version dynamically
+        id: extract_version
+        run: |
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
+            ${{ needs.context.outputs.vault_secret_path }} ${{ needs.context.outputs.vault_secret_key }} | ENV ;
+
+      - name: Debug Vault Output
+        run: |
+          echo "Vault path used: ${{ needs.context.outputs.vault_secret_path }}"
+          echo "Vault key used: ${{ needs.context.outputs.vault_secret_key }}"
+          echo "$ENV" | grep "NEXT_PUBLIC_API_HOST_URL" || true
+
+      - name: Create environment file
+        run: |
+          if [ -z "$ENV" ]; then
+            echo "ERROR: Vault secret is empty!"
+            exit 1
+          fi
+          tee ./.env <<< "$ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Extract Git metadata
+        id: meta
+        run: |
+          echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.${{ matrix.app }}
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
+          build-args: |
+            NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: '${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}'
+          format: cyclonedx-json
+          output-file: sbom-${{ matrix.app }}.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ matrix.app }}
+          path: sbom-${{ matrix.app }}.json
+          retention-days: 30
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.8.1
+
+      - name: Sign Docker image
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          IMAGE="${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}"
+          TAG="${{ needs.context.outputs.slug }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}"
+          cosign sign --yes "${IMAGE}:${TAG}"
+
+      - name: Send Slack Alert on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: '#ff0000'
+          SLACK_TITLE: 'Build Failed — ${{ matrix.app }}'
+          SLACK_MESSAGE: |
+            *App:* `${{ matrix.app }}`
+            *Tag:* `${{ needs.context.outputs.slug }}`
+            *Branch:* `${{ github.head_ref || github.ref_name }}`
+            *Actor:* `${{ github.actor }}`
+            :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
+          SLACK_FOOTER: ''
+
+  deploy-ephemeral:
+    name: Deploy Ephemeral Environment - ${{ matrix.app }}
+    runs-on: arc-runner-set
+    needs: [context, setup, build]
+    if: needs.context.outputs.action == 'create'
+    permissions:
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    steps:
+      - name: Configure SSH access to dev VM
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+          chmod 600 ~/.ssh/dev_vm_key
+          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Compute deterministic name, port, and hostname
+        id: c
+        run: |
+          NAME="${{ needs.context.outputs.slug }}-${{ matrix.app }}"
+          case "${{ matrix.app }}" in
+            rahat-ui) APP_IDX=0 ;;
+            community-tool-ui) APP_IDX=1 ;;
+            *) APP_IDX=9 ;;
+          esac
+          NUMKEY="${{ needs.context.outputs.pr_number }}"
+          PORT=$((20000 + NUMKEY * 2 + APP_IDX))
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "port=$PORT" >> $GITHUB_OUTPUT
+          echo "host=${NAME}.${PREVIEW_DOMAIN}" >> $GITHUB_OUTPUT
+          echo "url=https://${NAME}.${PREVIEW_DOMAIN}" >> $GITHUB_OUTPUT
+
+      - name: Import Docker Hub credentials from Vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
+
+      - name: Deploy (replace-in-place) on dev VM behind existing nginx
+        run: |
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << 'EOSSH'
+          set -e
+          echo "${{ env.DOCKERHUB_TOKEN }}" | docker login docker.io -u "${{ env.DOCKERHUB_USERNAME }}" --password-stdin 2>/dev/null || true
+          docker pull ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
+          docker rm -f ${{ steps.c.outputs.name }} 2>/dev/null || true
+          docker run -d \
+            --name ${{ steps.c.outputs.name }} \
+            -p 0.0.0.0:${{ steps.c.outputs.port }}:3000 \
+            --label ephemeral=true \
+            --label app=${{ matrix.app }} \
+            --label pr=${{ needs.context.outputs.pr_number }} \
+            --label created-at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --label ttl-hours="0" \
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.context.outputs.slug }}-${{ needs.build.outputs.short_sha }}-${{ needs.build.outputs.run_number }}
+
+          sudo sed "s/__HOST__/${{ steps.c.outputs.host }}/g; s/__PORT__/${{ steps.c.outputs.port }}/g" \
+            /etc/nginx/templates/preview.conf.template | sudo tee /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf > /dev/null
+          sudo ln -sf /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf /etc/nginx/sites-enabled/${{ steps.c.outputs.name }}.conf
+          sudo nginx -t
+          sudo systemctl reload nginx
+          EOSSH
+
+      - name: Write job summary
+        run: |
+          {
+            echo "### 🚀 Preview ready — ${{ matrix.app }}"
+            echo ""
+            echo "**${{ steps.c.outputs.url }}**"
+            echo ""
+            echo "Expires: when PR closes"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Find existing preview comment for this app
+        if: needs.context.outputs.pr_number != ''
+        id: fc
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- preview-comment:${{ matrix.app }} -->'
+
+      - name: Post/update sticky PR comment with link
+        if: needs.context.outputs.pr_number != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          edit-mode: replace
+          body: |
+            <!-- preview-comment:${{ matrix.app }} -->
+            🚀 **${{ matrix.app }}** preview deployed: ${{ steps.c.outputs.url }}
+            _Updated at ${{ github.event.pull_request.head.sha }}_
+
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: '#36a64f'
+          SLACK_TITLE: 'Ephemeral Environment Ready — ${{ matrix.app }}'
+          SLACK_MESSAGE: |
+            *URL:* ${{ steps.c.outputs.url }}
+            *Container:* `${{ steps.c.outputs.name }}`
+            *PR:* ${{ needs.context.outputs.pr_number }}
+          SLACK_FOOTER: ''
+
+  destroy-pr-preview:
+    name: Destroy PR Preview
+    runs-on: arc-runner-set
+    needs: context
+    if: needs.context.outputs.action == 'destroy'
+    permissions:
+      pull-requests: write
+    strategy:
+      matrix:
+        app: [rahat-ui, community-tool-ui]
+    steps:
+      - name: Configure SSH access to dev VM
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_VM_SSH_PRIVATE_KEY }}" > ~/.ssh/dev_vm_key
+          chmod 600 ~/.ssh/dev_vm_key
+          ssh-keyscan -H "${{ secrets.DEV_VM_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Remove container + nginx vhost
+        run: |
+          NAME="${{ needs.context.outputs.slug }}-${{ matrix.app }}"
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
+          set -e
+          docker rm -f $NAME 2>/dev/null || echo 'container not found (already gone)'
+          sudo rm -f /etc/nginx/sites-enabled/$NAME.conf /etc/nginx/sites-available/$NAME.conf
+          sudo nginx -t && sudo systemctl reload nginx
+          EOF
+
+      - name: Find existing preview comment for this app
+        id: fc
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- preview-comment:${{ matrix.app }} -->'
+
+      - name: Update sticky PR comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ needs.context.outputs.pr_number }}
+          edit-mode: replace
+          body: |
+            <!-- preview-comment:${{ matrix.app }} -->
+            🧹 **${{ matrix.app }}** preview environment destroyed (PR closed).

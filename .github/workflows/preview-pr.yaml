@@ -334,6 +334,62 @@ jobs:
           sudo ln -sf /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf /etc/nginx/sites-enabled/${{ steps.c.outputs.name }}.conf
           sudo nginx -t
           sudo systemctl reload nginx
+          if [ ! -s /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf ]; then
+            echo "WARN: vhost empty, regenerating"
+            sudo bash -c 'sed "s/__HOST__/${{ steps.c.outputs.host }}/g; s/__PORT__/${{ steps.c.outputs.port }}/g" /etc/nginx/templates/preview.conf.template > /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf'
+            sudo ln -sf /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf /etc/nginx/sites-enabled/${{ steps.c.outputs.name }}.conf
+            sudo nginx -t && sudo systemctl reload nginx
+          fi
+          test -s /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf
+          echo "--- vhost OK ---"
+          cat /etc/nginx/sites-available/${{ steps.c.outputs.name }}.conf
+          EOSSH
+
+      - name: Verify nginx + upstream (fail-closed)
+        run: |
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << 'EOSSH'
+          set -e
+          NAME="${{ steps.c.outputs.name }}"
+          PORT="${{ steps.c.outputs.port }}"
+          echo "checking $NAME -> $PORT"
+          test -s /etc/nginx/sites-available/$NAME.conf
+          grep -q "proxy_pass http://127.0.0.1:$PORT" /etc/nginx/sites-available/$NAME.conf
+          curl -sf http://127.0.0.1:$PORT/ > /dev/null
+          curl -kIsf https://$NAME.${PREVIEW_DOMAIN}/ > /dev/null || curl -kIsf http://$NAME.${PREVIEW_DOMAIN}/ > /dev/null || true
+          echo "verify ok $NAME"
+          EOSSH
+
+      - name: Ensure VM auto-heal reconciler (idempotent)
+        run: |
+          ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << 'EOSSH'
+          set -e
+          sudo tee /usr/local/bin/preview-reconcile.sh > /dev/null << 'RECON'
+          #!/bin/bash
+          set -e
+          TEMPLATE=/etc/nginx/templates/preview.conf.template
+          [ -f "$TEMPLATE" ] || exit 0
+          # Reconcile every ephemeral container -> vhost; fixes 0-byte bug without manual sed
+          docker ps --filter label=ephemeral=true --format '{{.Names}} {{.Ports}}' | while read NAME PORTS; do
+            # derive port: first host port
+            PORT=$(echo "$PORTS" | grep -oE '[0-9]+->3000' | cut -d- -f1 | head -1)
+            [ -z "$PORT" ] && continue
+            HOST="${NAME}.dev.rahat.io"
+            CONF="/etc/nginx/sites-available/${NAME}.conf"
+            if [ ! -s "$CONF" ] || ! grep -q "proxy_pass http://127.0.0.1:${PORT}" "$CONF" 2>/dev/null; then
+              echo "[reconcile] fixing $NAME -> $PORT"
+              sed "s/__HOST__/${HOST}/g; s/__PORT__/${PORT}/g" "$TEMPLATE" | tee "$CONF" > /dev/null
+              ln -sf "$CONF" "/etc/nginx/sites-enabled/${NAME}.conf"
+            fi
+          done
+          nginx -t && systemctl reload nginx
+          RECON
+          sudo chmod +x /usr/local/bin/preview-reconcile.sh
+          # run once now to fix pr-2588 empty vhost immediately
+          sudo /usr/local/bin/preview-reconcile.sh || true
+          # install cron if missing (every 5m)
+          (sudo crontab -l 2>/dev/null | grep -q preview-reconcile) || (sudo crontab -l 2>/dev/null; echo "*/5 * * * * /usr/local/bin/preview-reconcile.sh") | sudo crontab -
           EOSSH
 
       - name: Write job summary
@@ -401,12 +457,12 @@ jobs:
         run: |
           NAME="${{ needs.context.outputs.slug }}-${{ matrix.app }}"
           ssh -i ~/.ssh/dev_vm_key -o StrictHostKeyChecking=no \
-            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << EOF
+            "${{ secrets.DEV_VM_SSH_USER }}@${{ secrets.DEV_VM_SSH_HOST }}" bash -s << 'EOSSH'
           set -e
           docker rm -f $NAME 2>/dev/null || echo 'container not found (already gone)'
           sudo rm -f /etc/nginx/sites-enabled/$NAME.conf /etc/nginx/sites-available/$NAME.conf
           sudo nginx -t && sudo systemctl reload nginx
-          EOF
+          EOSSH
 
       - name: Find existing preview comment for this app
         id: fc

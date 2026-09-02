@@ -29,6 +29,11 @@ import {
 } from './phase.schema';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function EditPhaseView() {
   const t = useTranslations('AA_PROJECT');
@@ -194,26 +199,30 @@ export default function EditPhaseView() {
           title={t('EDIT_PHASE')}
           description={t('EDIT_FORM_TO_UPDATE_PHASE')}
         />
-        <TooltipWrapper
-          tip={
-            phase?._count?.Activity > 0 || phase?.triggers?.length > 0
-              ? t('CANNOT_DELETE_PHASE_WITH_TRIGGERS')
-              : t('DELETE_PHASE')
-          }
-        >
-          <DialogComponent
-            buttonIcon={Trash}
-            buttonText={t('DELETE_PHASE')}
-            dialogTitle={t('DELETE_PHASE')}
-            dialogDescription={t('DELETE_PHASE_CONFIRM')}
-            confirmButtonText={deletePhase.isPending ? t('DELETING') : t('DELETE')}
-            handleClick={handleDeletePhase}
-            buttonClassName="rounded-sm w-full text-red-500 border-red-500"
-            confirmButtonClassName="rounded-sm w-full bg-red-500"
-            variant="outline"
-            data={phase}
-          />
-        </TooltipWrapper>
+        <Can action={ACTIONS.DELETE} subject={SUBJECTS.PHASE}>
+          <TooltipWrapper
+            tip={
+              phase?._count?.Activity > 0 || phase?.triggers?.length > 0
+                ? t('CANNOT_DELETE_PHASE_WITH_TRIGGERS')
+                : t('DELETE_PHASE')
+            }
+          >
+            <DialogComponent
+              buttonIcon={Trash}
+              buttonText={t('DELETE_PHASE')}
+              dialogTitle={t('DELETE_PHASE')}
+              dialogDescription={t('DELETE_PHASE_CONFIRM')}
+              confirmButtonText={
+                deletePhase.isPending ? t('DELETING') : t('DELETE')
+              }
+              handleClick={handleDeletePhase}
+              buttonClassName="rounded-sm w-full text-red-500 border-red-500"
+              confirmButtonClassName="rounded-sm w-full bg-red-500"
+              variant="outline"
+              data={phase}
+            />
+          </TooltipWrapper>
+        </Can>
       </div>
       <PhaseForm
         form={form}

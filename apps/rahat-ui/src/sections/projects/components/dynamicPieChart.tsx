@@ -4,7 +4,6 @@ import { ApexOptions } from 'apexcharts';
 import { useTranslations } from 'next-intl';
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
-import { NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 
 interface IDynamicPieChartProps {
@@ -33,9 +32,9 @@ const DynamicPieChart = ({
     return <Loader />;
   }
 
-  if (pieData.length === 0) {
-    return <NoResult size="small" />;
-  }
+  // if (pieData.length === 0) {
+  //   return <NoResult size="small" />;
+  // }
 
   if (total === 0) {
     // show gray donut placeholder and list fields with values (e.g., Male: 0)

@@ -5,7 +5,8 @@ export const ACTIONS = {
   DELETE: 'delete',
   MANAGE:'manage',
   DOWNLOAD:'download',
-  ACTIVATE:'activate'
+  ACTIVATE:'activate',
+  REVERT:'revert'
 };
 
 export const SUBJECTS = {

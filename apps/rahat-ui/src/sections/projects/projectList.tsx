@@ -57,13 +57,13 @@ export function StatusBadge({ status }: { status?: string }) {
   const config = STATUS_CONFIG[status ?? ''];
   return (
     <Badge
-
-      className={`border ${config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'
-
-        }`}
-
+      className={`border ${
+        config?.className ?? 'bg-gray-100 text-gray-500 border-gray-300'
+      }`}
     >
-      {status ? translateValue(t, status, { fallback: status }) : '—'}
+      {status
+        ? translateValue(t, status, { fallback: config?.label ?? status })
+        : '—'}
     </Badge>
   );
 }
@@ -234,9 +234,7 @@ export default function ListProject() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              
               {t('CLOSE_PROJECT_TITLE', { name: selectedProject?.name ?? '' })}
-            
             </AlertDialogTitle>
             <AlertDialogDescription>
               {t('CLOSE_PROJECT_DESC')}

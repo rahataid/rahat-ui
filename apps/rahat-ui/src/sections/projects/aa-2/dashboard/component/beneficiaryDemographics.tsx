@@ -86,14 +86,15 @@ const BeneficiaryDemographics = ({
             />
           );
         })}
-        <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
+        <div className="border rounded-sm p-2 flex flex-col h-full min-h-[200px] sm:min-h-[300px]">
           <h1 className="text-sm font-medium">{t('GENDER_DISTRIBUTION')}</h1>
           <div className="w-full flex-1 flex justify-center p-4 pt-0 items-center">
             <DynamicPieChart pieData={genderPieData} colors={genderColors} options={chartOpts} />
           </div>
         </div>
 
-        <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
+        {/* Bar Chart */}
+        <div className="border rounded-sm p-2 flex flex-col h-full min-h-[200px] sm:min-h-[300px]">
           <h1 className="text-sm font-medium">{t('AGE_GROUPS')}</h1>
           <div className="flex-1 p-2">
             {ageChartData.length === 0 ? (

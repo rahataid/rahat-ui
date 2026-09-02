@@ -20,7 +20,6 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Can } from 'apps/rahat-ui/src/components/can';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
@@ -30,6 +29,7 @@ import {
   ACTIONS,
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
+import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 
 export default function PhaseDetail() {
   const formatDate = useDateFormat();
@@ -112,8 +112,9 @@ export default function PhaseDetail() {
               />
             </TooltipWrapper>
           </Can>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
+          <ProjectPermissionGuard
+            action={ACTIONS.REVERT}
+            subject={SUBJECTS.PHASE}
             hasContent={false}
           >
             <>
@@ -140,7 +141,7 @@ export default function PhaseDetail() {
                 </TooltipWrapper>
               )}
             </>
-          </RoleAuth>
+          </ProjectPermissionGuard>
         </div>
       </div>
       {phase?.isActive && (

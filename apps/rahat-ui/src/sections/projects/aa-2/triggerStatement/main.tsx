@@ -5,12 +5,16 @@ import { TriggersListCard, TriggersPhaseCard } from './components';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
 import { useAATriggerStatements, usePhases } from '@rahat-ui/query';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
@@ -156,10 +160,7 @@ export default function TriggerStatementView() {
               ))}
 
               {sortedPhases.length === 3 && (
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.CREATE} subject={SUBJECTS.PHASE}>
                   <div>
                     <Card className="flex flex-col rounded-xl h-full min-h-[calc(100vh-410px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                       <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
@@ -185,7 +186,7 @@ export default function TriggerStatementView() {
                       </CardContent>
                     </Card>
                   </div>
-                </RoleAuth>
+                </Can>
               )}
               {/* } */}
             </div>

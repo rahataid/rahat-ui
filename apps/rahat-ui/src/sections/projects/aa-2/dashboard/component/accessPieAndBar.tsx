@@ -50,15 +50,17 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
           const stat = getStat(key);
           if (!stat || !Array.isArray(stat.data)) return null;
 
-          const pieData = stat.data.map((item) => ({
-            label: translateValue(tg, item.id, { fallbackStyle: 'raw' }),
-            value: item.count,
-          }));
+          const pieData = stat.data
+            .filter((item: any) => item.count > 0)
+            .map((item: any) => ({
+              label: translateValue(tg, item.id, { fallbackStyle: 'raw' }),
+              value: item.count,
+            }));
 
           return (
             <div
               key={key}
-              className="border rounded-sm p-2 flex flex-col h-full min-h-[290px] col-span-1"
+              className="border rounded-sm p-2 flex flex-col h-full min-h-[200px] sm:min-h-[290px] col-span-1"
             >
               <h1 className="text-sm font-medium">{t(chartTitleKeys[key])}</h1>
               <div className="w-full flex-1 p-4 pt-0">
@@ -67,9 +69,12 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
             </div>
           );
         })}
-        <div className="flex flex-col h-full min-h-[340px] lg:col-span-2">
-          <div className="border rounded-sm p-2 flex flex-col h-full min-h-[350px] lg:col-span-2 col-span-1">
-            <h1 className="text-sm font-medium">{t('INFORMATION_CHANNELS_USED')}</h1>
+        <div className="flex flex-col h-full min-h-[240px] sm:min-h-[340px] lg:col-span-2">
+          {/* Bar chart: Information Channel */}
+          <div className="border rounded-sm p-2 flex flex-col h-full min-h-[250px] sm:min-h-[350px] lg:col-span-2 col-span-1">
+            <h1 className="text-sm font-medium">
+              {t('INFORMATION_CHANNELS_USED')}
+            </h1>
             <div className="flex-1 p-2">
               {channelUsageStats.length === 0 ? (
                 <div className="flex justify-center h-[300px] items-center">

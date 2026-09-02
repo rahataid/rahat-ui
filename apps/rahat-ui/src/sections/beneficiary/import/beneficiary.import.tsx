@@ -64,6 +64,7 @@ export default function ExcelUploader() {
         const ws = wb.Sheets[wsname];
         const parsedData = XLSX.utils.sheet_to_json(ws, {
           header: 1,
+          defval: '',
         }) as string[][];
         setData(parsedData);
       };
@@ -157,7 +158,7 @@ export default function ExcelUploader() {
           <div className="flex-1">
             <HeaderWithBack
               title={t('IMPORT_BENEFICIARIES')}
-              subtitle={t('SELECT_BENEFICIARY_FILE_TO_UPDATE') || 'Select beneficiary file to update (Excel file)'}
+              subtitle={t('SELECT_BENEFICIARY_FILE_TO_UPDATE')}
               path="/beneficiary"
             />
           </div>

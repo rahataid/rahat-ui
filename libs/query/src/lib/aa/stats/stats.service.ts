@@ -1,13 +1,23 @@
 'use client';
 import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useProjectAction } from '../../projects';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useStatsStore } from './stats.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+function useToast() {
+  const alert = useSwal();
+  return alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+}
 export const usePhasesStats = (uuid: UUID) => {
   const q = useProjectAction();
   const { setPhasesStats } = useStatsStore((state) => ({
@@ -140,10 +150,10 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
 
 export const useProjectDashboardReporting = (uuid: UUID) => {
   const q = useProjectAction();
-
   const query = useQuery({
     queryKey: ['projectDashboard', uuid],
     staleTime: 1000 * 60 * 60 * 4,
+    enabled: !!uuid,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -159,6 +169,42 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
   });
 
   return query;
+};
+
+export const useBackFill = (projectUuid: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.stats.backFill',
+          payload: {
+            appId: projectUuid,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['allStats', projectUuid],
+      });
+      toast.fire({
+        title: 'Stats Data Synced successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error) => {
+      toast.fire({
+        title: error?.message || 'Failed to Back Fill',
+        icon: 'error',
+      });
+    },
+  });
 };
 
 export const useTransportSessionStats = (uuid: UUID) => {

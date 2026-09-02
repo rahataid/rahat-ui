@@ -10,10 +10,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/carousel';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Heading } from 'apps/rahat-ui/src/common';
-import { Home, Users } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { PHASE_COLORS } from '../utils/dashbord-constants';
 
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const t = useTranslations('AA_PROJECT');
@@ -26,31 +26,15 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   )?.data;
 
   const progressMetrics =
-    activitiesData?.map((item: any) => {
+    activitiesData?.map((item: any, idx: number) => {
       const phaseName = item.phase?.name ?? 'UNKNOWN';
       const percentage = parseFloat(item.completedPercentage);
-      const colors: any = {
-        PREPAREDNESS: {
-          color: 'bg-teal-500',
-          bgColor: 'bg-teal-50',
-          borderColor: 'border-teal-200',
-        },
-        READINESS: {
-          color: 'bg-yellow-500',
-          bgColor: 'bg-yellow-50',
-          borderColor: 'border-yellow-200',
-        },
-        ACTIVATION: {
-          color: 'bg-red-500',
-          bgColor: 'bg-red-50',
-          borderColor: 'border-red-200',
-        },
-      };
+      const palette = PHASE_COLORS[idx % PHASE_COLORS.length];
 
       return {
         title: phaseName,
         percentage,
-        ...(colors[phaseName] || {}),
+        ...palette,
       };
     }) ?? [];
 
@@ -61,7 +45,7 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
     { src: '/projects/project3.png' },
   ];
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2  min-h-[400px] gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[300px] sm:min-h-[400px] gap-4">
       {/* Left Content Section */}
       <div className="flex flex-col justify-between space-y-2">
         {/* Header */}
@@ -77,9 +61,14 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
           <Heading
             title={t('ACTIVITIES_STATUS')}
             titleStyle="text-lg"
-            description={t('PROGRESS_ACROSS_PREPAREDNESS_READINESS_AND_ACTIVATION')}
+            description={t('PROGRESS_ACROSS_ALL_PHASES')}
           />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            style={{
+              gridTemplateColumns: `repeat(auto-fill, minmax(200px, 1fr))`,
+            }}
+          >
             {progressMetrics.map((metric, index) => (
               <Card
                 key={index}

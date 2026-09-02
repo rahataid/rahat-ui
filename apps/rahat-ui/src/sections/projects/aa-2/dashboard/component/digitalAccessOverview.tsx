@@ -7,7 +7,12 @@ import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
+import { chartTitles } from '../utils/dashbord-constants';
 
+// Translation key per chart, mirroring `chartTitles` in dashbord-constants.
+// `chartTitles` stays the source of truth for which charts render; anything
+// not mapped here falls back to its shared title so a newly added chart
+// renders instead of crashing.
 const chartTitleKeys: Record<string, string> = {
   DO_YOU_HAVE_ACCESS_TO_MOBILE_PHONES: 'ACCESS_TO_MOBILE_PHONES',
   DO_YOU_HAVE_ACCESS_TO_INTERNET: 'ACCESS_TO_INTERNET',
@@ -34,7 +39,7 @@ const DigitalAccessOverview = ({ stats }: Props) => {
   const getStat = (name: string) => stats.find((item) => item.name === name);
   const beneficiaryCountByBank = getStat('BENEFICIARY_COUNTBYBANK')?.data || [];
 
-  const filteredStats = stats.filter((stat) => chartTitleKeys[stat.name]);
+  const filteredStats = stats.filter((stat) => chartTitles[stat.name]);
 
   const pieChartOpts = {
     tooltip: {
@@ -63,9 +68,15 @@ const DigitalAccessOverview = ({ stats }: Props) => {
           return (
             <div
               key={stat.name}
-              className="border rounded-sm pt-2 flex flex-col h-full min-h-[280px]"
+              className="border rounded-sm pt-2 flex flex-col h-full min-h-[200px] sm:min-h-[280px]"
             >
-              <h1 className="text-sm font-medium px-2 ">{t(chartTitleKeys[stat.name])}</h1>
+              <h1 className="text-sm font-medium px-2 ">
+                {translateValue(
+                  t,
+                  chartTitleKeys[stat.name] ?? chartTitles[stat.name],
+                  { fallbackStyle: 'raw' },
+                )}
+              </h1>
               <div className="w-full flex-1 pt-0">
                 <DynamicPieChart
                   pieData={chartData}

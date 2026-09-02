@@ -1,13 +1,18 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Settings2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type {
   ExtendedTriggerLogic,
   ExtendedTriggerLogicGroup,
 } from '../types/extended-trigger-logic.types';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 type TriggerItem = {
   uuid?: string;
@@ -22,7 +27,6 @@ type TriggerRef =
       logicKey?: string;
       uuid?: string;
     };
-
 
 function getTriggerRefKey(logicKey: TriggerRef): string {
   return typeof logicKey === 'string'
@@ -106,10 +110,7 @@ export default function ExtendedTriggerLogicCard({
             {t('ADDITIONAL_GROUPED_AND_OR_CONDITIONS')}
           </p>
         </div>
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
+        <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PHASE}>
           <Button
             variant="outline"
             size="sm"
@@ -119,31 +120,33 @@ export default function ExtendedTriggerLogicCard({
             <Settings2 className="h-4 w-4" />
             {t('VIEW_CONFIGURE')}
           </Button>
-        </RoleAuth>
+        </Can>
       </div>
 
       {hasConfig ? (
         <div className="max-h-[200px] overflow-y-auto">
-        <div className="space-y-2 pr-2.5">
-          {extendedTriggerLogic.groups.map((group, i) => (
-            <div key={i}>
-              <GroupCard group={group} index={i} triggers={triggers} />
-              {i < extendedTriggerLogic.groups.length - 1 && (
-                <div className="flex items-center justify-center py-1.5">
-                  <Badge
-                    className={`text-xs ${
-                      extendedTriggerLogic.joinOperator === 'AND'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-orange-100 text-orange-700'
-                    }`}
-                  >
-                    {t(extendedTriggerLogic.joinOperator)}
-                  </Badge>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+          <div className="space-y-2 pr-2.5">
+            {extendedTriggerLogic.groups.map((group, i) => (
+              <div key={i}>
+                <GroupCard group={group} index={i} triggers={triggers} />
+                {i < extendedTriggerLogic.groups.length - 1 && (
+                  <div className="flex items-center justify-center py-1.5">
+                    <Badge
+                      className={`text-xs ${
+                        extendedTriggerLogic.joinOperator === 'AND'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-orange-100 text-orange-700'
+                      }`}
+                    >
+                      {translateValue(t, extendedTriggerLogic.joinOperator, {
+                        fallbackStyle: 'raw',
+                      })}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="text-center py-6 text-sm text-gray-400">

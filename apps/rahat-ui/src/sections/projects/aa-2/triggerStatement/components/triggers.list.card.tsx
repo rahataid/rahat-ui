@@ -34,7 +34,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 createdAt={trigger?.createdAt}
                 triggeredAt={trigger?.triggeredAt}
                 triggerStatement={trigger?.triggerStatement}
-                leadTime={t?.leadTime}
+                leadTime={trigger?.leadTime}
               />
             ))
           ) : (

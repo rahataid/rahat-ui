@@ -782,7 +782,7 @@ export default function AddCommunicationForm({
                 validate: (value) => {
                   if (!value) return true;
 
-                  if (/[ऀ-ॿ]/.test(value)) {
+                  if (/[\u0900-\u097F]/.test(value)) {
                     return (
                       value.length <= 350 ||
                       t('NEPALI_MESSAGE_LIMIT')
@@ -796,7 +796,7 @@ export default function AddCommunicationForm({
                 },
               }}
               render={({ field }) => {
-                const isNep = /[ऀ-ॿ]/.test(field.value || '');
+                const isNep = /[\u0900-\u097F]/.test(field.value || '');
                 const maxLen = isNep ? 350 : 700;
               const smsInfo =
                 transportData?.name === 'SMS' && field.value

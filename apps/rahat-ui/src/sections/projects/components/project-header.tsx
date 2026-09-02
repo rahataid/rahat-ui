@@ -76,18 +76,11 @@ export function ProjectNav({
       <div className="flex items-center space-x-4">
         {component}
 
-        {isAAProject &&
-          !isLoading &&
-          (activePhase ? (
-            <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500">
-              <span>{activePhase.name} phase has been triggered</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-500">
-              <CircleAlert className="h-4 w-4" />
-              <span>No phase triggered yet</span>
-            </div>
-          ))}
+        {isAAProject && !isLoading && activePhase && (
+          <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500">
+            <span>{activePhase.name} phase has been triggered</span>
+          </div>
+        )}
       </div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
         {!isClosed && !isAAProject && <ConnectWallet />}

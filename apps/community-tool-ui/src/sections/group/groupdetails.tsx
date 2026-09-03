@@ -124,15 +124,22 @@ export default function GroupDetail({ uuid }: IProps) {
 
   // ── Edit & Submit in-page view state ──────────────────────────────────────
   const [editSubmitMode, setEditSubmitMode] = React.useState(false);
-  const [editSubmitLoading, setEditSubmitLoading] = React.useState(false);
   const [editSubmitSubmitting, setEditSubmitSubmitting] = React.useState(false);
-  const [editableRows, setEditableRows] = React.useState<Record<string, any>[]>(
-    [],
+  const [dirtyRows, setDirtyRows] = React.useState<
+    Map<string, Record<string, unknown>>
+  >(new Map());
+  const [allowedEditKeys, setAllowedEditKeys] = React.useState<Set<string>>(
+    new Set(),
   );
   const [availableColumns, setAvailableColumns] = React.useState<string[]>([]);
   const [addedColumns, setAddedColumns] = React.useState<Set<string>>(
     new Set(),
   );
+  const [editPage, setEditPage] = React.useState(1);
+  const [editPerPage, setEditPerPage] = React.useState(20);
+
+  const { data: editPageData, isLoading: editPageLoading } =
+    useCommunityGroupListByID(uuid, { page: editPage, perPage: editPerPage });
 
   // ── Download ───────────────────────────────────────────────────────────────
   const selectables =
@@ -250,65 +257,63 @@ export default function GroupDetail({ uuid }: IProps) {
   };
 
   // ── Edit & Submit ──────────────────────────────────────────────────────────
-  const openEditSubmit = async () => {
-    try {
-      setEditSubmitLoading(true);
-      const response = await download.mutateAsync({
-        uuid,
-        config: { responseType: 'arraybuffer' },
+  const openEditSubmit = () => {
+    const allowedKeys = new Set<string>(
+      (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
+        fd.name,
+        deHumanizeString(fd.name),
+      ]),
+    );
+
+    // Build the set of keys present in data: top-level beneficiary fields +
+    // extras keys — both filtered by allowedKeys.
+    const sampleBg = (responseByUUID?.data?.beneficiariesGroup ?? []) as {
+      beneficiary?: { extras?: Record<string, unknown> } & Record<
+        string,
+        unknown
+      >;
+    }[];
+
+    const presentInData = new Set<string>();
+    sampleBg.forEach((bg) => {
+      const bene = bg.beneficiary ?? {};
+      // top-level fields that match allowedKeys
+      Object.keys(bene).forEach((k) => {
+        if (allowedKeys.has(k) && k !== 'uuid') presentInData.add(k);
       });
-      const rawData: Record<string, any>[] = response?.data?.data ?? [];
-
-      const allowedKeys = new Set<string>(
-        (listFieldDef?.data ?? []).flatMap((fd: any) => [
-          fd.name,
-          deHumanizeString(fd.name),
-        ]),
-      );
-
-      const presentKeys = new Set<string>();
-      rawData.forEach((item) => {
-        Object.keys(item).forEach((key) => {
-          if (allowedKeys.has(key) && key !== 'uuid') presentKeys.add(key);
-        });
+      // extras fields that match allowedKeys
+      Object.keys(bene.extras ?? {}).forEach((k) => {
+        if (allowedKeys.has(k)) presentInData.add(k);
       });
+    });
 
-      const rows = rawData.map((item) => {
-        const filtered: Record<string, any> = { uuid: item.uuid ?? '' };
-        presentKeys.forEach((key) => {
-          filtered[key] = item[key] ?? '';
-        });
-        return filtered;
-      });
+    const remaining = [...allowedKeys].filter(
+      (k) => k !== 'uuid' && !presentInData.has(k),
+    );
 
-      const remaining = [...allowedKeys].filter(
-        (k) => !presentKeys.has(k) && k !== 'uuid',
-      );
-
-      setEditableRows(rows);
-      setAvailableColumns(remaining);
-      setAddedColumns(new Set());
-      setEditSubmitMode(true);
-    } catch (error) {
-      Swal.fire('Failed to load data', 'Unknown error', 'error');
-    } finally {
-      setEditSubmitLoading(false);
-    }
+    setDirtyRows(new Map());
+    setAllowedEditKeys(allowedKeys);
+    setAvailableColumns(remaining);
+    setAddedColumns(new Set());
+    setEditPage(1);
+    setEditPerPage(20);
+    setEditSubmitMode(true);
   };
 
   const handleAddColumn = (colKey: string) => {
-    setEditableRows((prev) => prev.map((row) => ({ ...row, [colKey]: '' })));
     setAvailableColumns((prev) => prev.filter((c) => c !== colKey));
     setAddedColumns((prev) => new Set(prev).add(colKey));
   };
 
   const handleRemoveColumn = (colKey: string) => {
-    setEditableRows((prev) =>
-      prev.map((row) => {
-        const { [colKey]: _, ...rest } = row;
-        return rest;
-      }),
-    );
+    setDirtyRows((prev) => {
+      const next = new Map(prev);
+      next.forEach((fields, uuid) => {
+        const { [colKey]: _, ...rest } = fields;
+        next.set(uuid, rest);
+      });
+      return next;
+    });
     setAvailableColumns((prev) => [...prev, colKey]);
     setAddedColumns((prev) => {
       const next = new Set(prev);
@@ -317,22 +322,29 @@ export default function GroupDetail({ uuid }: IProps) {
     });
   };
 
-  const handleCellChange = (rowIndex: number, field: string, value: string) => {
-    setEditableRows((prev) =>
-      prev.map((row, i) => (i === rowIndex ? { ...row, [field]: value } : row)),
-    );
+  const handleCellChange = (rowUuid: string, field: string, value: string) => {
+    setDirtyRows((prev) => {
+      const next = new Map(prev);
+      next.set(rowUuid, { ...(next.get(rowUuid) ?? {}), [field]: value });
+      return next;
+    });
   };
 
   const handleEditSubmit = async () => {
+    if (dirtyRows.size === 0) {
+      Swal.fire('No changes', 'Edit some cells first.', 'info');
+      return;
+    }
     try {
       setEditSubmitSubmitting(true);
-      const rowsForUpload = editableRows.map((row) => {
-        const cleaned: Record<string, unknown> = {};
-        Object.entries(row).forEach(([k, v]) => {
-          if (!EXCLUDE_FROM_XLSX.has(k)) cleaned[k] = v;
-        });
-        return cleaned;
-      });
+      const rowsForUpload = Array.from(dirtyRows.entries()).map(
+        ([rowUuid, fields]) => ({
+          uuid: rowUuid,
+          ...Object.fromEntries(
+            Object.entries(fields).filter(([k]) => !EXCLUDE_FROM_XLSX.has(k)),
+          ),
+        }),
+      );
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.json_to_sheet(rowsForUpload);
       XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
@@ -470,16 +482,37 @@ export default function GroupDetail({ uuid }: IProps) {
     return (
       <EditSubmitView
         groupName={responseByUUID?.data?.name}
-        editableRows={editableRows}
+        pageRows={editPageData?.data?.beneficiariesGroup ?? []}
+        dirtyRows={dirtyRows}
+        allowedKeys={allowedEditKeys}
         availableColumns={availableColumns}
         addedColumns={addedColumns}
+        isLoading={editPageLoading}
+        page={editPage}
+        perPage={editPerPage}
+        total={editPageData?.response?.meta?.total ?? 0}
+        meta={
+          editPageData?.response?.meta ?? {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: editPerPage,
+            prev: null,
+            next: null,
+          }
+        }
+        onPageChange={setEditPage}
+        onPerPageChange={(v: string | number) => {
+          setEditPerPage(Number(v));
+          setEditPage(1);
+        }}
         onCellChange={handleCellChange}
         onAddColumn={handleAddColumn}
         onRemoveColumn={handleRemoveColumn}
         onSubmit={handleEditSubmit}
         onCancel={() => {
           setEditSubmitMode(false);
-          setEditableRows([]);
+          setDirtyRows(new Map());
           setAvailableColumns([]);
           setAddedColumns(new Set());
         }}
@@ -533,10 +566,10 @@ export default function GroupDetail({ uuid }: IProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={openEditSubmit}
-                  disabled={beneficiariesEmpty || editSubmitLoading}
+                  disabled={beneficiariesEmpty}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
-                  {editSubmitLoading ? 'Loading...' : 'Edit & Submit'}
+                  Edit & Submit
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}

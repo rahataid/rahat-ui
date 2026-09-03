@@ -282,6 +282,9 @@ export const useUploadBulkBeneficiaryUpdate = () => {
       queryClient.invalidateQueries({
         queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
       });
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID],
+      });
     },
 
     onError: (error: any) => {

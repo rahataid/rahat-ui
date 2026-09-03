@@ -154,14 +154,7 @@ export async function downloadLogsCsv(
 
   const csvText = await res.text();
   const rows = parseCsv(csvText);
-  console.log('Parsed rows:', rows);
-  console.log('First row:', rows[0]);
-  console.log({
-    address: rows[0]?.address,
-    lastAttempt: rows[0]?.lastAttempt,
-  });
   const exportRows = buildExportRows(rows, meta);
-  console.log('Export rows:', exportRows);
 
   const workbook = XLSX.utils.book_new();
   const sheet = XLSX.utils.json_to_sheet(exportRows);

@@ -235,6 +235,8 @@ export default function CommsLogsDetailPage() {
           communicationTitle || activityDetail?.title || 'N/A',
         message,
         subject: logs?.communicationDetail?.subject,
+        sessionStartedAt: logs?.sessionDetails?.startedAt,
+        sessionEndedAt: logs?.sessionDetails?.endedAt,
       });
       toast.success('Communication logs exported successfully!');
     } catch (error) {

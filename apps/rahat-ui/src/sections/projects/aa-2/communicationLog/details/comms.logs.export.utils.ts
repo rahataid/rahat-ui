@@ -1,4 +1,5 @@
 import { BroadcastStatus } from '@rumsan/connect/src/types';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import * as XLSX from 'xlsx';
 
 type SessionLog = {
@@ -17,6 +18,8 @@ type ExportMeta = {
   communicationTitle: string;
   message?: string;
   subject?: string;
+  sessionStartedAt?: string;
+  sessionEndedAt?: string;
 };
 
 const UNWANTED_COLUMNS = new Set([
@@ -63,8 +66,8 @@ function buildVoiceRow(raw: Record<string, string>, meta: ExportMeta) {
     'Triggered Date': raw.createdAt ?? '',
     'Created Date': raw.createdAt ?? '',
     'Updated Date': raw.updatedAt ?? '',
-    'Session Start Date': raw.answerTime ?? '',
-    'Session End Date': raw.endTime ?? '',
+    'Session Start Date': formatDateFull(meta.sessionStartedAt ?? ''),
+    'Session End Date': formatDateFull(meta.sessionEndedAt ?? ''),
     Address: raw.address ?? '',
     'Last Attempt': raw.lastAttempt ?? '',
   };

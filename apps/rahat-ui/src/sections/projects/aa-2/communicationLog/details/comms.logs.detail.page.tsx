@@ -217,10 +217,25 @@ export default function CommsLogsDetailPage() {
       if (hasNoLogsForExport) {
         return toast.error('No communication logs available to export.');
       }
+
       const fileName = `${logs?.group?.name || 'group'}_${
         activityDetail?.title || 'activity'
-      }_${new Date().toISOString().slice(0, 10)}.csv`;
-      await downloadLogsCsv(downloadUrl, fileName);
+      }_${new Date().toISOString().slice(0, 10)}`;
+
+      const message =
+        typeof logs?.communicationDetail?.message === 'string'
+          ? logs.communicationDetail.message
+          : undefined;
+
+      await downloadLogsCsv(downloadUrl, fileName, {
+        groupName: logs?.group?.name || logs?.groupName || 'N/A',
+        groupType: logs?.communicationDetail?.groupType || 'N/A',
+        transportName: resolvedTransportName,
+        communicationTitle:
+          communicationTitle || activityDetail?.title || 'N/A',
+        message,
+        subject: logs?.communicationDetail?.subject,
+      });
       toast.success('Communication logs exported successfully!');
     } catch (error) {
       console.error('Error exporting all logs:', error);

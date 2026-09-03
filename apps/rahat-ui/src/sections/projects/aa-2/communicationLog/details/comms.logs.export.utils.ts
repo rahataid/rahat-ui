@@ -63,12 +63,11 @@ function buildVoiceRow(raw: Record<string, string>, meta: ExportMeta) {
     Attempts: raw.attempts ?? '',
     'Max Attempts': raw.maxAttempts ?? '',
     'Is Complete': raw.isComplete ?? '',
-    'Triggered Date': raw.createdAt ?? '',
-    'Created Date': raw.createdAt ?? '',
-    'Updated Date': raw.updatedAt ?? '',
+    'Triggered Date': formatDateFull(raw.createdAt),
+    'Created Date': formatDateFull(raw.createdAt),
+    'Updated Date': formatDateFull(raw.updatedAt),
     'Session Start Date': formatDateFull(meta.sessionStartedAt ?? ''),
     'Session End Date': formatDateFull(meta.sessionEndedAt ?? ''),
-    Address: raw.address ?? '',
     'Last Attempt': raw.lastAttempt ?? '',
   };
 }
@@ -85,10 +84,9 @@ function buildSmsRow(raw: Record<string, string>, meta: ExportMeta) {
     Attempts: raw.attempts ?? '',
     'Max Attempts': raw.maxAttempts ?? '',
     'Is Complete': raw.isComplete ?? '',
-    'Triggered Date': raw.createdAt ?? '',
-    'Created Date': raw.createdAt ?? '',
-    'Updated Date': raw.updatedAt ?? '',
-    Address: raw.address ?? '',
+    'Triggered Date': formatDateFull(raw.createdAt),
+    'Created Date': formatDateFull(raw.createdAt),
+    'Updated Date': formatDateFull(raw.updatedAt),
     'Last Attempt': raw.lastAttempt ?? '',
   };
 }
@@ -106,10 +104,9 @@ function buildEmailRow(raw: Record<string, string>, meta: ExportMeta) {
     Attempts: raw.attempts ?? '',
     'Max Attempts': raw.maxAttempts ?? '',
     'Is Complete': raw.isComplete ?? '',
-    'Triggered Date': raw.createdAt ?? '',
-    'Created Date': raw.createdAt ?? '',
-    'Updated Date': raw.updatedAt ?? '',
-    Address: raw.address ?? '',
+    'Triggered Date': formatDateFull(raw.createdAt),
+    'Created Date': formatDateFull(raw.createdAt),
+    'Updated Date': formatDateFull(raw.updatedAt),
     'Last Attempt': raw.lastAttempt ?? '',
   };
 }

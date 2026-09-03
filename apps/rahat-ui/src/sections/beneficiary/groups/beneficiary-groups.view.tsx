@@ -3,7 +3,7 @@ import React, { memo, useEffect, useRef } from 'react';
 
 import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { LandmarkIcon, Phone, Plus, Users } from 'lucide-react';
+import { LandmarkIcon, Loader2, Phone, Plus, Users } from 'lucide-react';
 import SearchInput from '../../projects/components/search.input';
 import AddButton from '../../projects/components/add.btn';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -15,7 +15,6 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
-import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
@@ -45,14 +44,14 @@ function BeneficiaryGroupsView() {
     ...filters,
   });
 
-  const isLoading = data?.isLoading || data?.isFetching;
+  const isLoading = data?.isLoading;
 
   useEffect(() => {
     if (!data?.data) return;
     setAllGroups((prev) =>
       pagination.page === 1 ? data.data : [...prev, ...data.data],
     );
-  }, [data.data, pagination.page]);
+  }, [data.dataUpdatedAt, pagination.page]);
 
   const hasMore = (pagination.page ?? 1) < (data?.meta?.lastPage ?? 1);
 
@@ -110,7 +109,9 @@ function BeneficiaryGroupsView() {
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
           {isLoading ? (
-            <LoaderRahat />
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
           ) : filteredGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((i: any, index: number) => {

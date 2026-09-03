@@ -15,6 +15,8 @@ export default function ProjectPermissionsCard({
   onUpdate,
 }: ProjectPermissionsCardProps) {
   // const options = PERMISSIONS.filter((d) => actions.includes(d.id));
+  const actionLabel = (action: string) =>
+    action === 'manage' ? 'access all' : action;
 
   return (
     <div className="border-t pt-4 first:border-t-0 first:pt-0">
@@ -30,7 +32,7 @@ export default function ProjectPermissionsCard({
               onChange={() => onUpdate(subject, d)}
               className="mr-2"
             />
-            <label>{d}</label>
+            <label>{actionLabel(d)}</label>
           </div>
         ))}
       </div>

@@ -1,12 +1,3 @@
-// import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-// import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-// import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-// import { useTriggerCommunication } from '@rahat-ui/query';
-// import { UUID } from 'crypto';
-// import { SessionStatus } from '@rumsan/connect/src/types/index';
-// import SpinnerLoader from '../../../components/spinner.loader';
-// import { Download } from 'lucide-react';
-
 import {
   Tabs,
   TabsContent,
@@ -22,8 +13,11 @@ import { CommunicationCard } from '../components/communicationCard';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useMemo } from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { RoleAuth } from 'libs/auth/src/lib/roleAuth';
-import { AARoles } from 'libs/auth/src/enums/aaRoles';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { PlusIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -84,17 +78,14 @@ export default function CommunicationList({
           </div>
           <div>
             {' '}
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
               <IconLabelBtn
                 Icon={PlusIcon}
                 handleClick={() => router.push(`${pathname}/edit#comm`)}
                 name="Add Communication"
                 className="rounded-sm w-full "
               />
-            </RoleAuth>
+            </Can>
           </div>
         </div>
       </div>

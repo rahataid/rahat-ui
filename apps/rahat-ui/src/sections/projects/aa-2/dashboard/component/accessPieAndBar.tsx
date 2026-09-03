@@ -38,18 +38,19 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
       <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-2 gap-4 mt-2">
         {pieChartKeys.map((key) => {
           const stat = getStat(key);
-          console.log(chartTitles[key], 'l', key);
           if (!stat || !Array.isArray(stat.data)) return null;
 
-          const pieData = stat.data.map((item) => ({
-            label: item.id,
-            value: item.count,
-          }));
+          const pieData = stat.data
+            .filter((item: any) => item.count > 0)
+            .map((item: any) => ({
+              label: item.id,
+              value: item.count,
+            }));
 
           return (
             <div
               key={key}
-              className="border rounded-sm p-2 flex flex-col h-full min-h-[290px] col-span-1"
+              className="border rounded-sm p-2 flex flex-col h-full min-h-[200px] sm:min-h-[290px] col-span-1"
             >
               <h1 className="text-sm font-medium">{chartTitles[key]}</h1>
               <div className="w-full flex-1 p-4 pt-0">
@@ -58,9 +59,9 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
             </div>
           );
         })}
-        <div className="flex flex-col h-full min-h-[340px] lg:col-span-2">
+        <div className="flex flex-col h-full min-h-[240px] sm:min-h-[340px] lg:col-span-2">
           {/* Bar chart: Information Channel */}
-          <div className="border rounded-sm p-2 flex flex-col h-full min-h-[350px] lg:col-span-2 col-span-1">
+          <div className="border rounded-sm p-2 flex flex-col h-full min-h-[250px] sm:min-h-[350px] lg:col-span-2 col-span-1">
             <h1 className="text-sm font-medium">Information Channels Used</h1>
             <div className="flex-1 p-2">
               {channelUsageStats.length === 0 ? (

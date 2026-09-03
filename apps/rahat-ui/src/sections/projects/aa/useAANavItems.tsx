@@ -1,6 +1,11 @@
 'use client';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { AARoles } from '@rahat-ui/auth';
 import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import {
   defaultNavConfig,
   NavItemDB,
@@ -22,11 +27,18 @@ export const useNavItems = () => {
   );
 
   const backendNavs = data?.value?.navsettings
-    ? data?.value?.navsettings.map((item: NavItemDB) => ({
-        ...item,
-        roles: item.roles?.map((r) => AARoles[r as keyof typeof AARoles]),
-        icon: resolveIcon(item.icon),
-      }))
+    ? data?.value?.navsettings.map((item: NavItemDB) => {
+        // DB records may not have `subject` — fall back to defaultNavConfig match by path
+        const defaultMatch = defaultNavConfig.navsettings.find(
+          (d) => d.path === item.path,
+        );
+        return {
+          ...item,
+          subject: item.subject ?? defaultMatch?.subject,
+          roles: item.roles?.map((r) => AARoles[r as keyof typeof AARoles]),
+          icon: resolveIcon(item.icon),
+        };
+      })
     : defaultNavConfig.navsettings.map((item) => ({
         ...item,
         roles: item.roles?.map((r) => AARoles[r as keyof typeof AARoles]),
@@ -40,11 +52,17 @@ export const useNavItems = () => {
       icon: item.icon,
     };
 
-    if ('roles' in item && item.roles) {
+    const hasAbilityGuard =
+      (item.subject && item.subject !== SUBJECTS.ALL) ||
+      ('roles' in item && item.roles);
+    if (hasAbilityGuard) {
       navItem.wrapper = (children: React.ReactNode) => (
-        <RoleAuth roles={item.roles} hasContent={false}>
+        <Can
+          action={item.action || ACTIONS.READ}
+          subject={item.subject || SUBJECTS.ALL}
+        >
           {children}
-        </RoleAuth>
+        </Can>
       );
     }
 

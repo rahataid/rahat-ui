@@ -13,7 +13,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
@@ -102,14 +103,14 @@ export function ProjectNav({
                 Home
               </Link>
               {settingsPath && (
-                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                <Can action={ACTIONS.MANAGE} subject={SUBJECTS.ALL}>
                   <Link
                     className="p-1 hover:bg-secondary rounded"
                     href={settingsPath}
                   >
                     Settings
                   </Link>
-                </RoleAuth>
+                </Can>
               )}
               {/* <ThemeSwitch /> */}
               <Badge

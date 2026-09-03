@@ -3,7 +3,6 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import usePayoutTransactionLogTableColumn from './usePayoutTransactionLogTableColumn';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 import {
   CustomPagination,
@@ -15,6 +14,11 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 export default function PayoutTransactionList() {
   const { id: projectID } = useParams();
 
@@ -107,19 +111,12 @@ export default function PayoutTransactionList() {
         </div>
       </div>
 
-      <RoleAuth
-        roles={[
-          AARoles.ADMIN,
-          AARoles.MANAGER,
-          AARoles.Municipality,
-          AARoles.UNICEFNepalCO,
-        ]}
-      >
+      <ProjectPermissionGuard action={ACTIONS.READ} subject={SUBJECTS.PAYOUT}>
         <div className="rounded-sm border border-gray-100 space-y-2 p-4">
           <div className="flex gap-2">
             <SearchInput
               className="w-full flex-[4]"
-              name="group name"
+              name="group nameo"
               onSearch={(e) => handleSearch(e, 'groupName')}
               value={filters?.groupName || ''}
             />
@@ -156,7 +153,7 @@ export default function PayoutTransactionList() {
             total={payouts?.response?.meta?.total || 0}
           />
         </div>
-      </RoleAuth>
+      </ProjectPermissionGuard>
     </div>
   );
 }

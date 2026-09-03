@@ -1,5 +1,5 @@
 'use client';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 
 import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
@@ -33,9 +33,11 @@ function BeneficiaryGroupsView() {
     setFilters,
     filters,
   } = usePagination();
+  const [allGroups, setAllGroups] = React.useState<any[]>([]);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setPagination({ page: 1, perPage: 100, order: 'desc', sort: 'createdAt' });
+    setPagination({ page: 1, perPage: 9, order: 'desc', sort: 'createdAt' });
   }, []);
 
   const data = useBeneficiaryGroupsList({
@@ -45,13 +47,30 @@ function BeneficiaryGroupsView() {
 
   const isLoading = data?.isLoading || data?.isFetching;
 
-  const groups = data?.data || [];
+  useEffect(() => {
+    if (!data?.data) return;
+    setAllGroups((prev) =>
+      pagination.page === 1 ? data.data : [...prev, ...data.data],
+    );
+  }, [data.data, pagination.page]);
+
+  const hasMore = (pagination.page ?? 1) < (data?.meta?.lastPage ?? 1);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore || data.isFetching) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) setNextPage();
+    });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, data.isFetching, setNextPage]);
 
   const filteredGroups = React.useMemo(() => {
-    return groups.filter((group) =>
+    return allGroups.filter((group) =>
       group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  }, [groups, searchTerm]);
+  }, [allGroups, searchTerm]);
 
   const handleSearch = React.useCallback((value: string) => {
     setSearchTerm(value);
@@ -189,11 +208,12 @@ function BeneficiaryGroupsView() {
                 );
               })}
             </div>
-          ) : (
+          ) : data.isFetching ? null : (
             <p className="text-center mt-10 text-muted-foreground">
               No result.
             </p>
           )}
+          {hasMore && <div ref={sentinelRef} className="h-1" />}
         </ScrollArea>
       </div>
     </>

@@ -17,7 +17,12 @@ import {
 import { ArrowLeft, Columns, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-const READ_ONLY_FIELDS = new Set(['uuid', 'createdAt', 'updatedAt', 'createdBy']);
+const READ_ONLY_FIELDS = new Set([
+  'uuid',
+  'createdAt',
+  'updatedAt',
+  'createdBy',
+]);
 
 type Props = {
   groupName?: string;
@@ -47,8 +52,51 @@ export default function EditSubmitView({
   const allColumns =
     editableRows.length > 0 ? Object.keys(editableRows[0]) : [];
 
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
-  const visibleColumns = allColumns.filter((col) => !hiddenColumns.has(col));
+  const [draggedCol, setDraggedCol] = useState<string | null>(null);
+  const [dragOverCol, setDragOverCol] = useState<string | null>(null);
+
+  const allColumnsKey = allColumns.join(',');
+
+  // Keep columnOrder in sync when allColumns changes (e.g. column added/removed)
+  useEffect(() => {
+    setColumnOrder((prev) => {
+      const prevSet = new Set(prev);
+      const added = allColumns.filter((c) => !prevSet.has(c));
+      const filtered = prev.filter((c) => allColumns.includes(c));
+      return [...filtered, ...added];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allColumnsKey]);
+
+  const orderedColumns = columnOrder.length ? columnOrder : allColumns;
+  const visibleColumns = orderedColumns.filter(
+    (col) => !hiddenColumns.has(col),
+  );
+
+  const handleDragStart = (col: string) => setDraggedCol(col);
+  const handleDragOver = (e: React.DragEvent, col: string) => {
+    e.preventDefault();
+    if (col !== draggedCol) setDragOverCol(col);
+  };
+  const handleDrop = (targetCol: string) => {
+    if (!draggedCol || draggedCol === targetCol) return;
+    setColumnOrder((prev) => {
+      const next = [...prev];
+      const fromIdx = next.indexOf(draggedCol);
+      const toIdx = next.indexOf(targetCol);
+      next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, draggedCol);
+      return next;
+    });
+    setDraggedCol(null);
+    setDragOverCol(null);
+  };
+  const handleDragEnd = () => {
+    setDraggedCol(null);
+    setDragOverCol(null);
+  };
 
   const toggleColumnVisibility = (col: string) => {
     setHiddenColumns((prev) => {
@@ -184,7 +232,10 @@ export default function EditSubmitView({
           </PopoverTrigger>
           <PopoverContent className="w-56 p-0" align="start">
             <Command>
-              <CommandInput placeholder="Search column..." className="text-xs h-8" />
+              <CommandInput
+                placeholder="Search column..."
+                className="text-xs h-8"
+              />
               <CommandList>
                 <CommandEmpty>No column found.</CommandEmpty>
                 <CommandGroup>
@@ -196,7 +247,13 @@ export default function EditSubmitView({
                       onSelect={() => toggleColumnVisibility(col)}
                     >
                       <span>{col}</span>
-                      <span className={hiddenColumns.has(col) ? 'text-muted-foreground' : 'text-primary'}>
+                      <span
+                        className={
+                          hiddenColumns.has(col)
+                            ? 'text-muted-foreground'
+                            : 'text-primary'
+                        }
+                      >
                         {hiddenColumns.has(col) ? 'hidden' : 'visible'}
                       </span>
                     </CommandItem>
@@ -227,7 +284,12 @@ export default function EditSubmitView({
       <div
         ref={topScrollRef}
         onScroll={onTopScroll}
-        style={{ overflowX: 'scroll', overflowY: 'hidden', height: 12, width: '100%' }}
+        style={{
+          overflowX: 'scroll',
+          overflowY: 'hidden',
+          height: 12,
+          width: '100%',
+        }}
       >
         <div style={{ width: tableScrollWidth, height: 1 }} />
       </div>
@@ -238,13 +300,25 @@ export default function EditSubmitView({
         onScroll={onTableScroll}
         style={{ overflowX: 'scroll', width: '100%' }}
       >
-        <table className="text-sm border-collapse" style={{ minWidth: 'max-content' }}>
+        <table
+          className="text-sm border-collapse"
+          style={{ minWidth: 'max-content' }}
+        >
           <thead>
             <tr>
               {visibleColumns.map((col) => (
                 <th
                   key={col}
-                  className="border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap"
+                  draggable
+                  onDragStart={() => handleDragStart(col)}
+                  onDragOver={(e) => handleDragOver(e, col)}
+                  onDrop={() => handleDrop(col)}
+                  onDragEnd={handleDragEnd}
+                  className={`border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap select-none cursor-grab active:cursor-grabbing transition-colors ${
+                    dragOverCol === col
+                      ? 'border-l-2 border-l-primary bg-primary/10'
+                      : ''
+                  } ${draggedCol === col ? 'opacity-40' : ''}`}
                 >
                   <div className="flex items-center gap-1">
                     {col}

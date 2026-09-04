@@ -2,7 +2,7 @@
   "name": "@rahat-ui/source",
   "version": "0.0.0",
   "rahat-ui-version": "0.0.0",
-  "community-tool-version": "0.0.0",
+  "community-tool-ui-version": "v1.0.0",
   "license": "MPL-2.0",
   "scripts": {
     "rahat-ui": "nx serve rahat-ui",
@@ -50,7 +50,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@rahataid/c2c-query": "0.0.9",
-    "@rahataid/community-tool-sdk": "0.0.43",
+    "@rahataid/community-tool-sdk": "0.0.44",
     "@rahataid/el-subgraph": "0.0.14",
     "@rahataid/sdk": "0.0.37",
     "@rumsan/communication": "^0.0.23",

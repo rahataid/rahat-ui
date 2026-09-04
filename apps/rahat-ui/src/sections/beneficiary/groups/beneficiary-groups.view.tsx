@@ -21,26 +21,16 @@ function BeneficiaryGroupsView() {
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [selectedGroup, setSelectedGroup] =
     React.useState<ListBeneficiaryGroup>([]);
-  const {
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
+  const { setFilters, filters } = usePagination();
+  const [page, setPage] = React.useState(1);
   const [allGroups, setAllGroups] = React.useState<any[]>([]);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setPagination({ page: 1, perPage: 9, order: 'desc', sort: 'createdAt' });
-  }, []);
-
   const data = useBeneficiaryGroupsList({
-    ...pagination,
+    page,
+    perPage: 9,
+    order: 'desc',
+    sort: 'createdAt',
     ...filters,
   });
 
@@ -48,22 +38,20 @@ function BeneficiaryGroupsView() {
 
   useEffect(() => {
     if (!data?.data) return;
-    setAllGroups((prev) =>
-      pagination.page === 1 ? data.data : [...prev, ...data.data],
-    );
-  }, [data.dataUpdatedAt, pagination.page]);
+    setAllGroups((prev) => (page === 1 ? data.data : [...prev, ...data.data]));
+  }, [data.dataUpdatedAt, page]);
 
-  const hasMore = (pagination.page ?? 1) < (data?.meta?.lastPage ?? 1);
+  const hasMore = page < (data?.meta?.lastPage ?? 1);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasMore || data.isFetching) return;
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) setNextPage();
+      if (entries[0].isIntersecting) setPage((p) => p + 1);
     });
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, data.isFetching, setNextPage]);
+  }, [hasMore, data.isFetching]);
 
   const filteredGroups = React.useMemo(() => {
     return allGroups.filter((group) =>

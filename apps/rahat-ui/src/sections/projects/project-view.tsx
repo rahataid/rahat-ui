@@ -110,13 +110,16 @@ export default function ProjectListView() {
         </div>
         <ScrollArea className="pb-2 h-[calc(100vh-253px)]">
           {sortedProjects.length > 0 ? (
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {sortedProjects.map((project) => (
                 <ProjectCard
                   address={project?.uuid}
                   key={project.uuid}
                   title={project.name}
-                  image={getImageForProjectType(project.type)}
+                  image={
+                    (project as any).extras?.project_image ||
+                    getImageForProjectType((project as any).type)
+                  }
                   subTitle={project.description as string}
                   badge={project.type}
                   status={project.status}

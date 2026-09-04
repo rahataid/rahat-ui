@@ -953,6 +953,45 @@ export const useProjectClose = () => {
   );
 };
 
+export const useProjectImageUpdate = () => {
+  const { queryClient } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation(
+    {
+      onSuccess: () => {
+        toast.fire({
+          title: 'Project image updated successfully',
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_PROJECT_DETAILS],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_ALL_PROJECTS],
+        });
+      },
+      onError: () => {
+        toast.fire({
+          title: 'Error while updating project image.',
+          icon: 'error',
+        });
+      },
+      mutationKey: ['projectImageUpdate'],
+      mutationFn: async ({ uuid, url }: { uuid: UUID; url: string }) => {
+        const res = await api.patch(`projects/${uuid}/image`, { url });
+        return res.data;
+      },
+    },
+    queryClient,
+  );
+};
+
 export const useCHWList = (payload: any) => {
   const action = useProjectAction();
   const { projectUUID, ...restPayload } = payload;

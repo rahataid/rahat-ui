@@ -39,6 +39,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import ProjectImageEditor from './projectImage.editor';
 
 const STATUS_OPTIONS = Object.values(ProjectStatus);
 
@@ -121,6 +122,9 @@ function ProjectInfoFormContent() {
 
   return (
     <Form {...form}>
+      <ProjectImageEditor
+        currentImage={(project as any)?.extras?.project_image}
+      />
       <form onSubmit={form.handleSubmit(setPendingValues)}>
         <div className="pb-3 flex justify-between items-center space-x-4">
           <div>

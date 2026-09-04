@@ -47,6 +47,8 @@ export default function FundManagementDetail() {
           title={isLoading ? <Skeleton className="h-7 w-56" /> : data?.title}
           subtitle="Detailed view of reserved fund"
           status={isLoading ? undefined : data?.status?.replace(/_/g, ' ')}
+          totalSuccess={data?.totalSuccess}
+          totalBeneficiaries={data?.totalBeneficiaries}
           badgeClassName={
             data?.status === 'DISBURSED'
               ? 'bg-green-100 text-green-500'

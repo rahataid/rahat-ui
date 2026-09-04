@@ -100,7 +100,6 @@ export const useFundManagementTableColumns = () => {
       ),
     },
     {
-      // accessorKey: 'status',
       header: 'Status',
       meta: { className: 'w-[220px]' },
       cell: ({ row }) => {
@@ -111,10 +110,13 @@ export const useFundManagementTableColumns = () => {
             <Badge className={renderBadgeStyle(status)}>
               {status.replace(/_/g, ' ') || 'N/A'}
             </Badge>
-
-            <span className="text-[12px]">
-              {row?.original.totalSuccess} / {row?.original.totalBeneficiaries}
-            </span>
+            {row?.original?.totalSuccess != null &&
+              row?.original?.totalBeneficiaries != null && (
+                <span className="text-[12px]">
+                  {row?.original.totalSuccess} /{' '}
+                  {row?.original.totalBeneficiaries}
+                </span>
+              )}
           </div>
         );
       },

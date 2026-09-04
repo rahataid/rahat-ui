@@ -76,9 +76,6 @@ function BeneficiaryGroupsView() {
     );
   }, [visibleGroups, searchTerm]);
 
-  const loadingMore =
-    hasMore && data.isFetching && allGroups.length <= visibleLimit;
-
   const handleSearch = React.useCallback((value: string) => {
     setSearchTerm(value);
   }, []);
@@ -223,7 +220,7 @@ function BeneficiaryGroupsView() {
             </p>
           )}
           {hasMore && <div ref={sentinelRef} className="h-1" />}
-          {loadingMore && (
+          {hasMore && (
             <div className="flex justify-center py-4">
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             </div>

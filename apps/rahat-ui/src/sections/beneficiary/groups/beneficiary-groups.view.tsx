@@ -23,6 +23,7 @@ function BeneficiaryGroupsView() {
     React.useState<ListBeneficiaryGroup>([]);
   const { setFilters, filters } = usePagination();
   const [limit, setLimit] = React.useState(20);
+  const [visibleLimit, setVisibleLimit] = React.useState(20);
   const [allGroups, setAllGroups] = React.useState<any[]>([]);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -34,30 +35,49 @@ function BeneficiaryGroupsView() {
     ...filters,
   });
 
-  const isLoading = allGroups.length === 0 && (data?.isLoading || data?.isFetching);
+  const isLoading =
+    allGroups.length === 0 && (data?.isLoading || data?.isFetching);
+  const total = data?.meta?.total ?? 0;
+  const hasMore = visibleLimit < total;
 
   useEffect(() => {
     if (!data?.data) return;
     setAllGroups(data.data);
   }, [data.dataUpdatedAt]);
 
-  const hasMore = allGroups.length < (data?.meta?.total ?? 0);
+  // Prefetch the next batch as soon as the current fetch lands, staying one batch ahead.
+  useEffect(() => {
+    if (data.isFetching) return;
+    if (allGroups.length < limit) return;
+    if (limit >= total) return;
+    if (limit >= visibleLimit + 9) return;
+    setLimit((l) => l + 9);
+  }, [data.isFetching, allGroups, limit, visibleLimit, total]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel || !hasMore || data.isFetching) return;
+    if (!sentinel || !hasMore) return;
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) setLimit((l) => l + 9);
+      if (!entries[0].isIntersecting) return;
+      setVisibleLimit((v) => Math.min(v + 12, Math.max(allGroups.length, v)));
     });
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, data.isFetching]);
+  }, [hasMore, allGroups.length]);
+
+  const visibleGroups = React.useMemo(
+    () => allGroups.slice(0, visibleLimit),
+    [allGroups, visibleLimit],
+  );
 
   const filteredGroups = React.useMemo(() => {
-    return allGroups.filter((group) =>
+    return visibleGroups.filter((group) =>
       group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  }, [allGroups, searchTerm]);
+  }, [visibleGroups, searchTerm]);
+
+  const loadingMore =
+    hasMore && data.isFetching && allGroups.length <= visibleLimit;
 
   const handleSearch = React.useCallback((value: string) => {
     setSearchTerm(value);
@@ -203,6 +223,11 @@ function BeneficiaryGroupsView() {
             </p>
           )}
           {hasMore && <div ref={sentinelRef} className="h-1" />}
+          {loadingMore && (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
+          )}
         </ScrollArea>
       </div>
     </>

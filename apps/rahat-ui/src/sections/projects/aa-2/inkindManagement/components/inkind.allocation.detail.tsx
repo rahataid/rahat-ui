@@ -171,6 +171,7 @@ export default function InkindAllocationDetail() {
       'quantity',
       'redeemedAt',
       'txHash',
+      'beneficiary name',
       'beneficiary walletAddress',
       'beneficiary phone',
       'vendor name',
@@ -182,6 +183,7 @@ export default function InkindAllocationDetail() {
         String(r.quantity ?? r.quantityDisbursed ?? 0),
         r.redeemedAt ?? r.createdAt ?? 'N/A',
         r.txHash ?? 'N/A',
+        r.beneficiary?.name ?? 'N/A',
         r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
         r.beneficiary?.phone ?? 'N/A',
         r.vendor?.name ?? 'N/A',
@@ -260,6 +262,16 @@ export default function InkindAllocationDetail() {
 
   const columns: ColumnDef<LogRow>[] = [
     {
+      accessorKey: 'beneficiaryName',
+      header: 'Beneficiary Name',
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.original.beneficiaryName ?? 'N/A'}
+          maxLength={20}
+        />
+      ),
+    },
+    {
       accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet',
       cell: ({ row }) => (
@@ -321,11 +333,7 @@ export default function InkindAllocationDetail() {
       cell: ({ row }) => {
         const reason = row.original.otpExemptionReason;
         const skipped = reason !== null;
-        return (
-          <span>
-            {skipped ? 'Yes' : 'No'}
-          </span>
-        );
+        return <span>{skipped ? 'Yes' : 'No'}</span>;
       },
     },
     {

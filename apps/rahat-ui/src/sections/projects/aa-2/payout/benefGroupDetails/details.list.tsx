@@ -216,6 +216,12 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 .replace(/_/g, ' ')
                 .replace(/^./, (char: string) => char.toUpperCase())}
               badgeClassName={isCompleteBgStatus(payout?.status)}
+              totalBeneficiaries={
+                payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+                  ?.beneficiaries
+              }
+              totalSuccessAmount={payout?.totalSuccessAmount}
+              isShowStats={true}
             />
           </div>
           {

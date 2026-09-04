@@ -109,6 +109,8 @@ export default function usePayoutTransactionLogTableColumn() {
       meta: { className: 'w-[150px]' },
       cell: ({ row }) => {
         const status = row?.original?.status;
+        const totalBeneficiaries = row.original.totalBeneficiaries;
+        const totalSuccess = row?.original?.totalSuccessAmount;
         return (
           <div className="flex gap-2 w-full">
             <Badge
@@ -121,10 +123,12 @@ export default function usePayoutTransactionLogTableColumn() {
                 .replace(/_/g, ' ')
                 .replace(/^./, (char) => char.toUpperCase())}
             </Badge>
-            <span className="text-[12px]">
-              {row?.original.totalSuccessAmount} /{' '}
-              {row.getValue('totalBeneficiaries')}
-            </span>
+
+            {totalBeneficiaries != null && totalSuccess != null && (
+              <span className="text-[12px]">
+                {totalSuccess} / {totalBeneficiaries}
+              </span>
+            )}
           </div>
         );
       },

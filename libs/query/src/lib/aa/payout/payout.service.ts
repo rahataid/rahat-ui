@@ -103,7 +103,10 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
       const data = query.state.data;
       if (!data?.data?.length) return false;
       const hasActive = data.data.some(
-        (p: any) => p.status !== 'COMPLETED' && p.status !== 'FAILED',
+        (p: any) =>
+          p.status !== 'COMPLETED' &&
+          p.status !== 'FAILED' &&
+          p.status !== 'NOT_STARTED',
       );
       return hasActive ? 5000 : false;
     },

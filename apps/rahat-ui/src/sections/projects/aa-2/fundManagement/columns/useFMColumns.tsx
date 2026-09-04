@@ -51,17 +51,19 @@ export const useFundManagementTableColumns = () => {
       accessorFn: (row) => row?.title,
       header: 'Title',
       cell: ({ row }) => (
-        <TruncatedCell text={row?.original?.title || 'N/A'} maxLength={10} />
+        <TruncatedCell text={row?.original?.title || 'N/A'} truncateByWidth />
       ),
     },
     {
       accessorKey: 'beneficiaryGroup',
       header: 'Beneficiary Group',
+      meta: { className: 'w-[200px]' },
+
       cell: ({ row }) => {
         return (
           <TruncatedCell
             text={row.original?.group?.name || 'N/A'}
-            maxLength={15}
+            truncateByWidth
           />
         );
       },
@@ -69,11 +71,15 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'tokens',
       header: 'Total Tokens',
+      meta: { className: 'w-[120px]' },
+
       cell: ({ row }) => <div>{row?.original?.numberOfTokens}</div>,
     },
     {
       accessorKey: 'tokensperBenef',
       header: 'Token Per Beneficiary',
+      meta: { className: 'w-[120px]' },
+
       cell: ({ row }) => (
         <div>
           {row?.original?.numberOfTokens /
@@ -84,23 +90,34 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: 'Created By',
+      meta: { className: 'w-[150px]' },
+
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('createdBy') || 'N/A'}
-          maxLength={15}
+          truncateByWidth
         />
       ),
     },
     {
-      accessorKey: 'status',
       header: 'Status',
+      meta: { className: 'w-[220px]' },
       cell: ({ row }) => {
-        const status = row.getValue('status') as FundStatus;
+        const status = row?.original?.status as FundStatus;
 
         return (
-          <Badge className={renderBadgeStyle(status)}>
-            {status.replace(/_/g, ' ') || 'N/A'}
-          </Badge>
+          <div className="flex gap-2 w-full">
+            <Badge className={renderBadgeStyle(status)}>
+              {status.replace(/_/g, ' ') || 'N/A'}
+            </Badge>
+            {row?.original?.totalSuccess != null &&
+              row?.original?.totalBeneficiaries != null && (
+                <span className="text-[12px]">
+                  {row?.original.totalSuccess} /{' '}
+                  {row?.original.totalBeneficiaries}
+                </span>
+              )}
+          </div>
         );
       },
     },
@@ -108,6 +125,7 @@ export const useFundManagementTableColumns = () => {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => {
         const status = row.getValue('status') as FundStatus;
         return (
@@ -129,8 +147,8 @@ export const useFundManagementTableColumns = () => {
                   <div className="flex space-x-2 items-center">
                     <TriangleAlert size={16} strokeWidth={1.5} color="red" />
                     <span className="font-semibold text-sm/6">
-                      Token disbursement failed for this group. Contact
-                      admin for assistance.
+                      Token disbursement failed for this group. Contact admin
+                      for assistance.
                     </span>
                   </div>
                   <Collapsible className="mt-2">

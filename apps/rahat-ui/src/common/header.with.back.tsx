@@ -9,12 +9,16 @@ type IProps = {
   status?: string;
   badgeClassName?: string;
   onBack?: () => void;
+  totalSuccess?: number;
+  totalBeneficiaries?: number;
 };
 
 export function HeaderWithBack({
   title,
   path,
   subtitle,
+  totalSuccess,
+  totalBeneficiaries,
   status,
   badgeClassName,
   onBack,
@@ -24,10 +28,17 @@ export function HeaderWithBack({
       <div className="flex flex-col justify-center ml-1 ">
         <Back path={path} onBack={onBack} className="mb-1" />
         <h1 className="font-semibold text-[28px] text-[clamp(16px,2vw,28px)]">
-          {title} {status && <Badge className={badgeClassName}>{status}</Badge>}
+          {title} {status && <Badge className={badgeClassName}>{status}</Badge>}{' '}
+          {totalSuccess != null && totalBeneficiaries != null && (
+            <span className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
+              {totalSuccess}/{totalBeneficiaries} Beneficiaries
+            </span>
+          )}
         </h1>
       </div>
-      <p className="ml-1 text-muted-foreground text-[clamp(11px,1vw,14px)] leading-4">{subtitle}</p>
+      <p className="ml-1 text-muted-foreground text-[clamp(11px,1vw,14px)] leading-4">
+        {subtitle}
+      </p>
     </div>
   );
 }

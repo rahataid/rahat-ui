@@ -22,32 +22,32 @@ function BeneficiaryGroupsView() {
   const [selectedGroup, setSelectedGroup] =
     React.useState<ListBeneficiaryGroup>([]);
   const { setFilters, filters } = usePagination();
-  const [page, setPage] = React.useState(1);
+  const [limit, setLimit] = React.useState(20);
   const [allGroups, setAllGroups] = React.useState<any[]>([]);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const data = useBeneficiaryGroupsList({
-    page,
-    perPage: 9,
+    page: 1,
+    perPage: limit,
     order: 'desc',
     sort: 'createdAt',
     ...filters,
   });
 
-  const isLoading = data?.isLoading;
+  const isLoading = allGroups.length === 0 && (data?.isLoading || data?.isFetching);
 
   useEffect(() => {
     if (!data?.data) return;
-    setAllGroups((prev) => (page === 1 ? data.data : [...prev, ...data.data]));
-  }, [data.dataUpdatedAt, page]);
+    setAllGroups(data.data);
+  }, [data.dataUpdatedAt]);
 
-  const hasMore = page < (data?.meta?.lastPage ?? 1);
+  const hasMore = allGroups.length < (data?.meta?.total ?? 0);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasMore || data.isFetching) return;
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) setPage((p) => p + 1);
+      if (entries[0].isIntersecting) setLimit((l) => l + 9);
     });
     observer.observe(sentinel);
     return () => observer.disconnect();

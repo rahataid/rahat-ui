@@ -25,6 +25,7 @@ function BeneficiaryGroupsView() {
   const [limit, setLimit] = React.useState(20);
   const [visibleLimit, setVisibleLimit] = React.useState(20);
   const [allGroups, setAllGroups] = React.useState<any[]>([]);
+  const [total, setTotal] = React.useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const data = useBeneficiaryGroupsList({
@@ -37,12 +38,12 @@ function BeneficiaryGroupsView() {
 
   const isLoading =
     allGroups.length === 0 && (data?.isLoading || data?.isFetching);
-  const total = data?.meta?.total ?? 0;
   const hasMore = visibleLimit < total;
 
   useEffect(() => {
     if (!data?.data) return;
     setAllGroups(data.data);
+    if (data?.meta?.total != null) setTotal(data.meta.total);
   }, [data.dataUpdatedAt]);
 
   // Prefetch the next batch as soon as the current fetch lands, staying one batch ahead.

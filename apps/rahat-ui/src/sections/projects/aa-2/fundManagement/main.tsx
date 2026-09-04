@@ -3,18 +3,16 @@ import { FundManagementTabs } from './components';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { useFundAssignmentStore } from '@rahat-ui/query';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function FundManagementView() {
   const router = useRouter();
   const { id: projectUUID } = useParams() as { id: UUID };
   const projectBalance = useProjectBalance(projectUUID);
-  // const projectBalance = useFundAssignmentStore(
-  //   (state) => state.projectBalance,
-  // );
 
   return (
     <div className="p-4">
@@ -23,10 +21,7 @@ export default function FundManagementView() {
           title="Fund Management"
           description="Track all the fund management reports here"
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
+        <Can action={ACTIONS.CREATE} subject={SUBJECTS.FUND_MANAGEMENT}>
           <IconLabelBtn
             Icon={Plus}
             handleClick={() =>
@@ -34,7 +29,7 @@ export default function FundManagementView() {
             }
             name="Assign Funds"
           />
-        </RoleAuth>
+        </Can>
       </div>
       <FundManagementTabs />
     </div>

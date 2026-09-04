@@ -17,6 +17,8 @@ export type NavItem = {
   disabled?: boolean;
   wrapper?: (children: React.ReactNode) => React.ReactNode;
   roles?: AARoles[];
+  subject?: string;
+  action?: string;
 };
 
 export type ProjectNavItemsReturnType = {

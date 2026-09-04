@@ -51,17 +51,19 @@ export const useFundManagementTableColumns = () => {
       accessorFn: (row) => row?.title,
       header: 'Title',
       cell: ({ row }) => (
-        <TruncatedCell text={row?.original?.title || 'N/A'} maxLength={10} />
+        <TruncatedCell text={row?.original?.title || 'N/A'} truncateByWidth />
       ),
     },
     {
       accessorKey: 'beneficiaryGroup',
       header: 'Beneficiary Group',
+      meta: { className: 'w-[200px]' },
+
       cell: ({ row }) => {
         return (
           <TruncatedCell
             text={row.original?.group?.name || 'N/A'}
-            maxLength={15}
+            truncateByWidth
           />
         );
       },
@@ -69,11 +71,15 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'tokens',
       header: 'Total Tokens',
+      meta: { className: 'w-[120px]' },
+
       cell: ({ row }) => <div>{row?.original?.numberOfTokens}</div>,
     },
     {
       accessorKey: 'tokensperBenef',
       header: 'Token Per Beneficiary',
+      meta: { className: 'w-[120px]' },
+
       cell: ({ row }) => (
         <div>
           {row?.original?.numberOfTokens /
@@ -84,16 +90,19 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: 'Created By',
+      meta: { className: 'w-[150px]' },
+
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('createdBy') || 'N/A'}
-          maxLength={15}
+          truncateByWidth
         />
       ),
     },
     {
       // accessorKey: 'status',
       header: 'Status',
+      meta: { className: 'w-[220px]' },
       cell: ({ row }) => {
         const status = row?.original?.status as FundStatus;
 
@@ -114,6 +123,7 @@ export const useFundManagementTableColumns = () => {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => {
         const status = row.getValue('status') as FundStatus;
         return (

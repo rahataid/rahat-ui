@@ -23,7 +23,9 @@ export default function ProjectInfoView() {
 
   const { data } = useProject(projectUUID);
   const project = data?.data;
-  const isAAProject = project?.type?.toUpperCase() === 'AA';
+  const isAAProject =
+    project?.type?.toUpperCase()?.toLowerCase() === 'aa' ||
+    project?.extras?.REDIRECT_TO?.toLowerCase() === 'aa';
 
   return (
     <div className="p-4">

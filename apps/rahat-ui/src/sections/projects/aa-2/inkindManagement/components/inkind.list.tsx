@@ -84,7 +84,11 @@ import {
 import { useTranslations } from 'next-intl';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 function ActionButton({
   label,
@@ -99,10 +103,11 @@ function ActionButton({
         <button
           onClick={onClick}
           disabled={disabled}
-          className={`p-1.5 rounded transition-colors ${disabled
-            ? 'opacity-35 cursor-not-allowed text-muted-foreground'
-            : hoverClass
-            }`}
+          className={`p-1.5 rounded transition-colors ${
+            disabled
+              ? 'opacity-35 cursor-not-allowed text-muted-foreground'
+              : hoverClass
+          }`}
         >
           {icon}
         </button>
@@ -393,24 +398,25 @@ export default function InkindList() {
           const item = row.original;
           const isAssigned = isGroupAssigned(item.uuid);
           return (
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.Municipality]}
-              hasContent={false}
-            >
-              <TooltipProvider>
-                <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <div className="flex items-center gap-1">
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.INKIND}>
                   <ActionButton
                     label={tv('ADD_STOCK')}
                     icon={<PlusCircle size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-green-50 text-green-600"
                     onClick={() => openStockDialog(item, 'add')}
                   />
+                </Can>
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.INKIND}>
                   <ActionButton
                     label={tv('REMOVE_STOCK')}
                     icon={<MinusCircle size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-yellow-50 text-yellow-600"
                     onClick={() => openStockDialog(item, 'remove')}
                   />
+                </Can>
+                <Can action={ACTIONS.DELETE} subject={SUBJECTS.INKIND}>
                   <ActionButton
                     label={
                       isAssigned
@@ -422,15 +428,17 @@ export default function InkindList() {
                     disabled={isAssigned}
                     onClick={() => handleDelete(item)}
                   />
+                </Can>
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.INKIND}>
                   <ActionButton
                     label={tv('UPDATE_DETAILS')}
                     icon={<Pencil size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-blue-50 text-blue-500"
                     onClick={() => openUpdateDialog(item)}
                   />
-                </div>
-              </TooltipProvider>
-            </RoleAuth>
+                </Can>
+              </div>
+            </TooltipProvider>
           );
         },
       },
@@ -462,10 +470,7 @@ export default function InkindList() {
           titleStyle="font-medium text-lg"
           description={tv('LIST_OF_ALL_BUDGET_ITEMS')}
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN,]}
-          hasContent={false}
-        >
+        <Can action={ACTIONS.CREATE} subject={SUBJECTS.INKIND}>
           <Button
             variant="default"
             size="sm"
@@ -476,7 +481,7 @@ export default function InkindList() {
           >
             {tv('CREATE_INKIND')}
           </Button>
-        </RoleAuth>
+        </Can>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <SearchInput
@@ -647,10 +652,11 @@ export default function InkindList() {
                   {tg('NAME')}
                 </Label>
                 <span
-                  className={`text-xs ${updateDialog.name.length >= NAME_MAX
-                    ? 'text-destructive'
-                    : 'text-muted-foreground'
-                    }`}
+                  className={`text-xs ${
+                    updateDialog.name.length >= NAME_MAX
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                  }`}
                 >
                   {formatNum(updateDialog.name.length)}/{formatNum(NAME_MAX)}
                 </span>
@@ -686,10 +692,11 @@ export default function InkindList() {
                   {tg('DESCRIPTION')}
                 </Label>
                 <span
-                  className={`text-xs ${updateDialog.description.length >= DESCRIPTION_MAX
-                    ? 'text-destructive'
-                    : 'text-muted-foreground'
-                    }`}
+                  className={`text-xs ${
+                    updateDialog.description.length >= DESCRIPTION_MAX
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                  }`}
                 >
                   {formatNum(updateDialog.description.length)}/
                   {formatNum(DESCRIPTION_MAX)}
@@ -740,9 +747,9 @@ export default function InkindList() {
                 !updateDialog.description.trim() ||
                 (updateDialog.item !== null &&
                   updateDialog.name.trim() ===
-                  (updateDialog.item.name ?? '').trim() &&
+                    (updateDialog.item.name ?? '').trim() &&
                   updateDialog.description.trim() ===
-                  (updateDialog.item.description ?? '').trim())
+                    (updateDialog.item.description ?? '').trim())
               }
             >
               {tg('CONTINUE')}

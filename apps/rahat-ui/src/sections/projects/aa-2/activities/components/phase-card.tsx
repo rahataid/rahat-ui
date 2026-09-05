@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -15,6 +14,11 @@ import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 interface PhaseCardProps {
   id: string;
@@ -66,10 +70,7 @@ export default function PhaseCard({
           <TooltipWrapper tip={`${t('ACTIVITY_STATUS')}: ${translatedStatus}`}>
             <Badge className={getStatusBg(status)}>{translatedStatus}</Badge>
           </TooltipWrapper>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
             <TooltipWrapper tip={t('UPDATE_ACTIVITY_STATUS')}>
               <div
                 className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
@@ -81,7 +82,7 @@ export default function PhaseCard({
                 {t('UPDATE_STATUS')} <RefreshCw className="w-4 h-4" />
               </div>
             </TooltipWrapper>
-          </RoleAuth>
+          </Can>
         </div>
         <TooltipWrapper tip={`${t('ACTIVITY_TITLE')}: ${title}`}>
           <h3 className="text-sm font-medium text-gray-900 truncate max-w-full">

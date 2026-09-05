@@ -24,10 +24,14 @@ import {
   transactionBgStatus,
 } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { getExplorerUrl, intlFormatDate } from 'apps/rahat-ui/src/utils';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { Can } from 'apps/rahat-ui/src/components/can';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -343,10 +347,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                   strokeWidth={2.5}
                 />
               ) : (
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
                   <TooltipComponent
                     Icon={RotateCcwIcon}
                     tip={tg('UPDATE')}
@@ -355,7 +356,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                       handleTriggerSinglePayoutFailed(row.original.uuid)
                     }
                   />
-                </RoleAuth>
+                </Can>
               ))}
 
             <TooltipComponent

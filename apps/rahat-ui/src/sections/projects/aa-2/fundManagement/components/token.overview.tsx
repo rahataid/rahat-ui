@@ -30,6 +30,8 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useTranslations } from 'next-intl';
 import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function TokensOverview() {
   const t = useTranslations('AA_PROJECT');
@@ -133,14 +135,16 @@ export default function TokensOverview() {
           <TooltipWrapper
             tip={hasData ? '' : tg('NO_TOKEN_DATA_TO_EXPORT')}
           >
-            <IconLabelBtn
-              Icon={CloudDownloadIcon}
-              handleClick={() => exportTokenStats(data)}
-              name={tg('EXPORT_REPORT')}
-              variant="outline"
-              disabled={!hasData}
-              className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-            />
+            <Can action={ACTIONS.READ} subject={SUBJECTS.FUND_MANAGEMENT}>
+              <IconLabelBtn
+                Icon={CloudDownloadIcon}
+                handleClick={() => exportTokenStats(data)}
+                name={tg('EXPORT_REPORT')}
+                variant="outline"
+                disabled={!hasData}
+                className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+              />
+            </Can>
           </TooltipWrapper>
           <DateRangePicker
             placeholder={tg('PICK_DATE_RANGE')}

@@ -6,7 +6,11 @@ import { Eye, RefreshCcw } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
@@ -143,10 +147,7 @@ export default function useActivitiesTableColumn() {
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleEyeClick(row.original?.id)}
             />
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipComponent
                 Icon={RefreshCcw}
                 tip={t('UPDATE_ACTIVITY_STATUS')}
@@ -155,7 +156,7 @@ export default function useActivitiesTableColumn() {
                   handleUpdateStatusIconClick(row.original?.id)
                 }
               />
-            </RoleAuth>
+            </Can>
           </div>
         );
       },

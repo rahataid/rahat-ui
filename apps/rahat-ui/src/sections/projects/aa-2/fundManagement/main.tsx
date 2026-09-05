@@ -4,19 +4,17 @@ import { FundManagementTabs } from './components';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { useFundAssignmentStore } from '@rahat-ui/query';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function FundManagementView() {
   const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const { id: projectUUID } = useParams() as { id: UUID };
   const projectBalance = useProjectBalance(projectUUID);
-  // const projectBalance = useFundAssignmentStore(
-  //   (state) => state.projectBalance,
-  // );
 
   return (
     <div className="p-4">
@@ -25,10 +23,7 @@ export default function FundManagementView() {
           title={t('FUND_MANAGEMENT')}
           description={t('TRACK_ALL_THE_FUND_MANAGEMENT_REPORTS')}
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
+        <Can action={ACTIONS.CREATE} subject={SUBJECTS.FUND_MANAGEMENT}>
           <IconLabelBtn
             Icon={Plus}
             handleClick={() =>
@@ -36,7 +31,7 @@ export default function FundManagementView() {
             }
             name={t('ASSIGN_FUNDS')}
           />
-        </RoleAuth>
+        </Can>
       </div>
       <FundManagementTabs />
     </div>

@@ -30,14 +30,38 @@ export const SUBJECT_ACTIONS = {
 // Subjects listed here get extra actions on top of ACTION_ITEMS.
 // Any subject not listed falls back to ACTION_ITEMS by default.
 const PROJECT_SUBJECT_ACTION_OVERRIDES: Partial<Record<string, string[]>> = {
-  [SUBJECTS.TRIGGER]: [...ACTION_ITEMS, ACTIONS.ACTIVATE],
+  [SUBJECTS.TRIGGER]: [
+    ACTIONS.MANAGE,
+    ACTIONS.CREATE,
+    ACTIONS.UPDATE,
+    ACTIONS.DELETE,
+    ACTIONS.ACTIVATE,
+  ],
   [SUBJECTS.PHASE]: [ACTIONS.REVERT],
+  [SUBJECTS.ACTIVITY]: [
+    ACTIONS.MANAGE,
+    ACTIONS.CREATE,
+    ACTIONS.UPDATE,
+    ACTIONS.DELETE,
+  ],
+  [SUBJECTS.FUND_MANAGEMENT]: [ACTIONS.MANAGE, ACTIONS.CREATE, ACTIONS.READ],
+  [SUBJECTS.PAYOUT]: [
+    ACTIONS.MANAGE,
+    ACTIONS.CREATE,
+    ACTIONS.UPDATE,
+    ACTIONS.READ,
+    ACTIONS.ACTIVATE,
+  ],
 };
 
+// `all` is a global subject owned by SUBJECT_ACTIONS; keep it out of the
+// project subject list so global manage-all stays a system-level permission.
 export const PROJECT_SUBJECT_ACTIONS: Record<string, string[]> =
   Object.fromEntries(
-    Object.values(SUBJECTS).map((subject) => [
-      subject,
-      PROJECT_SUBJECT_ACTION_OVERRIDES[subject] ?? ACTION_ITEMS,
-    ]),
+    Object.values(SUBJECTS)
+      .filter((subject) => subject !== SUBJECTS.ALL)
+      .map((subject) => [
+        subject,
+        PROJECT_SUBJECT_ACTION_OVERRIDES[subject] ?? ACTION_ITEMS,
+      ]),
   );

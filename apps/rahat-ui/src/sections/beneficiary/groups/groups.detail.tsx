@@ -371,7 +371,7 @@ export default function GroupDetailView() {
             iconStyle="bg-white text-secondary-muted"
             title={t('TOTAL_BENEFICIARIES')}
             Icon={UsersRound}
-            number={formatDigits(group?.data?.groupedBeneficiaries?.length)}
+            number={formatDigits(group?.meta?.total)}
           />
           {group?.data?.beneficiaryGroupProject?.length > 0 && (
             <DataCard
@@ -443,13 +443,13 @@ export default function GroupDetailView() {
         />
       </div>
       <CustomPagination
-        meta={group?.data?.response?.meta || { total: 0, currentPage: 0 }}
+        meta={group?.meta || { total: 0, currentPage: 0 }}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
         perPage={pagination.perPage}
-        total={group?.data?.response?.meta.total || 0}
+        total={group?.meta?.total || 0}
       />
     </>
   );

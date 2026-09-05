@@ -27,6 +27,11 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function Treasury() {
   const t = useTranslations('AA_PROJECT');
@@ -70,11 +75,13 @@ export default function Treasury() {
               titleStyle="text-lg"
               description={t('OVERVIEW_OF_TOKEN_SUPPLY')}
             />
-            <IconLabelBtn
-              Icon={Coins}
-              name={t('ADD_FUND')}
-              handleClick={() => setAddFundOpen(true)}
-            />
+            <Can action={ACTIONS.CREATE} subject={SUBJECTS.FUND_MANAGEMENT}>
+              <IconLabelBtn
+                Icon={Coins}
+                name={t('ADD_FUND')}
+                handleClick={() => setAddFundOpen(true)}
+              />
+            </Can>
           </div>
 
           {/* ── Top Stats Cards ─────────────────────────────────── */}

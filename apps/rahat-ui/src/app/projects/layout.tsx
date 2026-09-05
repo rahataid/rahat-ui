@@ -12,6 +12,7 @@ import {
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
+import { ProjectAbilityProvider } from '../../providers/project-ability-provider';
 
 export default function ProjectLayoutRoot({
   children,
@@ -54,6 +55,7 @@ export default function ProjectLayoutRoot({
 
   return (
     <GarphQlProvider>
+      <ProjectAbilityProvider>
       <DashboardLayout
         hasDefaultHeader={allowNavPaths.includes(pathName)}
         margin="mt-0"
@@ -65,6 +67,7 @@ export default function ProjectLayoutRoot({
           <ProjectLayout projectType="ALL">{children}</ProjectLayout>
         )}
       </DashboardLayout>
+      </ProjectAbilityProvider>
     </GarphQlProvider>
   );
 }

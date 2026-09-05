@@ -14,7 +14,6 @@ import { CloudDownloadIcon, Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
@@ -88,8 +87,8 @@ export default function ActivitiesView() {
     [projectID, pinnedPhases],
   );
 
-  const uniquePhaseNames = Array.from(
-    new Set(phases.map((phase: any) => phase.name)),
+  const uniquePhaseNames: string[] = Array.from(
+    new Set<string>(phases.map((phase: any) => phase.name)),
   );
 
   const PHASE_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
@@ -188,10 +187,7 @@ export default function ActivitiesView() {
             />
           </div>
           <div className="fixed top-[72px] right-6 z-40 flex gap-2">
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.READ} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper
                 tip={
                   !hasActivities
@@ -207,11 +203,8 @@ export default function ActivitiesView() {
                   disabled={!hasActivities}
                 />
               </TooltipWrapper>
-            </RoleAuth>
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            </Can>
+            <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper
                 tip={
                   !hasPhases ? t('CREATE_PHASE_BEFORE_ACTIVITIES') : ''
@@ -229,7 +222,7 @@ export default function ActivitiesView() {
                   disabled={!hasPhases}
                 />
               </TooltipWrapper>
-            </RoleAuth>
+            </Can>
           </div>
         </div>
         {!hasPhases ? (

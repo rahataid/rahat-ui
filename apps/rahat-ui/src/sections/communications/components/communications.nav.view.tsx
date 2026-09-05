@@ -1,6 +1,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
+import { useTranslations } from 'next-intl';
 
 type CommunicationNavViewProps = {
   title: string;

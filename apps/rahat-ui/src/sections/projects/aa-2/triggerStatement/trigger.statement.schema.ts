@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export const SOURCE_CONFIG = {
   water_level_m: {
@@ -46,14 +47,54 @@ const sourceValues = Object.keys(SOURCE_CONFIG) as [
 const operatorValues = ['>', '<', '=', '>=', '<='] as const;
 
 const fieldLabels: Record<keyof typeof SOURCE_CONFIG, string> = {
-  water_level_m: 'Level Type',
-  discharge_m3s: 'Discharge Type',
-  rainfall_mm: 'Measurement Period',
-  prob_flood: 'Probability Period',
+  water_level_m: 'LEVEL_TYPE',
+  discharge_m3s: 'DISCHARGE_TYPE',
+  rainfall_mm: 'MEASUREMENT_PERIOD',
+  prob_flood: 'PROBABILITY_PERIOD',
   // for heatwave
-  prob_humidity: 'Humidity Period',
-  temperature_c: 'Temperature Period',
+  prob_humidity: 'HUMIDITY_PERIOD',
+  temperature_c: 'TEMPERATURE_PERIOD',
 };
+
+// Translation keys for SOURCE_CONFIG's `label`. Reuses the existing GFH/GLOFAS
+// acronym keys where the label is just that acronym.
+const sourceLabelKeys: Record<keyof typeof SOURCE_CONFIG, string> = {
+  water_level_m: 'WATER_LEVEL_M_LABEL',
+  discharge_m3s: 'GFH',
+  rainfall_mm: 'RAINFALL_MM_LABEL',
+  prob_flood: 'GLOFAS',
+  prob_humidity: 'PROB_HUMIDITY_LABEL',
+  temperature_c: 'TEMPERATURE_C_LABEL',
+};
+
+// Translation keys for SOURCE_CONFIG's `sourceSubType`. Each translated value
+// must keep the "Name (unit)" shape (unit as the trailing, space-separated,
+// parenthesised token) since consumers extract the unit via `/\((.*?)\)/`
+// and split off the trailing word to get the name alone.
+const sourceSubTypeKeys: Record<keyof typeof SOURCE_CONFIG, string> = {
+  water_level_m: 'WATER_LEVEL_M_SUBTYPE',
+  discharge_m3s: 'DISCHARGE_M3S_SUBTYPE',
+  rainfall_mm: 'RAINFALL_MM_SUBTYPE',
+  prob_flood: 'PROB_FLOOD_SUBTYPE',
+  prob_humidity: 'PROB_HUMIDITY_SUBTYPE',
+  temperature_c: 'TEMPERATURE_C_SUBTYPE',
+};
+
+export function getSourceLabel(
+  key: string | undefined,
+  t: (k: string) => string,
+): string | undefined {
+  if (!key || !(key in SOURCE_CONFIG)) return undefined;
+  return t(sourceLabelKeys[key as keyof typeof SOURCE_CONFIG]);
+}
+
+export function getSourceSubTypeLabel(
+  key: string | undefined,
+  t: (k: string) => string,
+): string | undefined {
+  if (!key || !(key in SOURCE_CONFIG)) return undefined;
+  return t(sourceSubTypeKeys[key as keyof typeof SOURCE_CONFIG]);
+}
 
 const emptyStringToUndefined = (val: unknown) => (val === '' ? undefined : val);
 
@@ -64,10 +105,16 @@ const operatorSchema = z
   .optional();
 
 const valueSchema = z
-  .union([z.coerce.number().finite(), z.literal('')])
+  .preprocess(
+    normalizeNumeralsToNumberPreprocessor,
+    z.union([z.coerce.number().finite(), z.literal('')]),
+  )
   .optional();
 
-export const triggerStatementSchemaBase = z
+type Translator = (key: string, values?: Record<string, any>) => string;
+
+export const buildTriggerStatementSchemaBase = (t: Translator) =>
+  z
   .object({
     source: sourceSchema,
     sourceSubType: z.string().optional(),
@@ -81,20 +128,20 @@ export const triggerStatementSchemaBase = z
     if (!data.source) return;
 
     if (!data.sourceSubType) {
-      let message = 'Source subtype is required';
+      let message = t('SOURCE_SUBTYPE_IS_REQUIRED');
 
       switch (data.source) {
         case 'water_level_m':
-          message = 'Level type is required';
+          message = t('LEVEL_TYPE_IS_REQUIRED');
           break;
         case 'discharge_m3s':
-          message = 'Discharge type is required';
+          message = t('DISCHARGE_TYPE_IS_REQUIRED');
           break;
         case 'rainfall_mm':
-          message = 'Measurement period is required';
+          message = t('MEASUREMENT_PERIOD_IS_REQUIRED');
           break;
         case 'prob_flood':
-          message = 'Probability period is required';
+          message = t('PROBABILITY_PERIOD_IS_REQUIRED');
           break;
       }
 
@@ -108,7 +155,7 @@ export const triggerStatementSchemaBase = z
     if (data.sourceSubType && !data.operator) {
       ctx.addIssue({
         path: ['operator'],
-        message: 'Operator is required',
+        message: t('OPERATOR_IS_REQUIRED'),
         code: z.ZodIssueCode.custom,
       });
     }
@@ -121,7 +168,7 @@ export const triggerStatementSchemaBase = z
     ) {
       ctx.addIssue({
         path: ['value'],
-        message: 'Value is required',
+        message: t('VALUE_IS_REQUIRED'),
         code: z.ZodIssueCode.custom,
       });
     }
@@ -130,7 +177,7 @@ export const triggerStatementSchemaBase = z
       if (data.value <= 0) {
         ctx.addIssue({
           path: ['value'],
-          message: 'Value must be a positive number',
+          message: t('VALUE_MUST_BE_A_POSITIVE_NUMBER'),
           code: z.ZodIssueCode.custom,
         });
       }
@@ -138,7 +185,7 @@ export const triggerStatementSchemaBase = z
       if (data.source === 'prob_flood' && data.value > 100) {
         ctx.addIssue({
           path: ['value'],
-          message: 'Value cannot exceed 100 for flood probability',
+          message: t('VALUE_CANNOT_EXCEED_100_FLOOD_PROBABILITY'),
           code: z.ZodIssueCode.custom,
         });
       }
@@ -150,7 +197,7 @@ export const triggerStatementSchemaBase = z
     ) {
       ctx.addIssue({
         path: ['expression'],
-        message: 'Expression must contain an operator and value',
+        message: t('EXPRESSION_MUST_CONTAIN_OPERATOR_AND_VALUE'),
         code: z.ZodIssueCode.custom,
       });
     }
@@ -159,7 +206,7 @@ export const triggerStatementSchemaBase = z
       if (!data.stationId) {
         ctx.addIssue({
           path: ['stationId'],
-          message: 'Station is required',
+          message: t('STATION_IS_REQUIRED'),
           code: z.ZodIssueCode.custom,
         });
       }
@@ -167,14 +214,15 @@ export const triggerStatementSchemaBase = z
       if (!data.stationName) {
         ctx.addIssue({
           path: ['stationName'],
-          message: 'Station is required',
+          message: t('STATION_IS_REQUIRED'),
           code: z.ZodIssueCode.custom,
         });
       }
     }
   });
 
-export const triggerStatementSchema = triggerStatementSchemaBase.superRefine(
+export const buildTriggerStatementSchema = (t: Translator) =>
+  buildTriggerStatementSchemaBase(t).superRefine(
   (value, ctx) => {
     if (!value.source) return;
 
@@ -186,9 +234,10 @@ export const triggerStatementSchema = triggerStatementSchemaBase.superRefine(
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `${
-          fieldLabels[value.source]
-        } must be one of [${config.subTypes.join(', ')}]`,
+        message: t('MUST_BE_ONE_OF', {
+          field: t(fieldLabels[value.source]),
+          options: config.subTypes.join(', '),
+        }),
         path: ['sourceSubType'],
       });
     }
@@ -196,7 +245,7 @@ export const triggerStatementSchema = triggerStatementSchemaBase.superRefine(
     if (value.operator && !value.expression?.includes(value.operator)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Expression must include the selected operator',
+        message: t('EXPRESSION_MUST_INCLUDE_SELECTED_OPERATOR'),
         path: ['expression'],
       });
     }
@@ -207,7 +256,7 @@ export const triggerStatementSchema = triggerStatementSchemaBase.superRefine(
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Expression must reference the selected sourceSubType',
+        message: t('EXPRESSION_MUST_REFERENCE_SELECTED_SOURCE_SUBTYPE'),
         path: ['expression'],
       });
     }

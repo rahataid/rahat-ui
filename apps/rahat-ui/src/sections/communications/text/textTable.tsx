@@ -46,8 +46,11 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { usePagination } from '@rahat-ui/query';
 import TableLoader from '../../../components/table.loader';
 import CommunicationSummary from '../components/communication.summary';
+import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export default function TextTableView() {
+  const tg = useTranslations('GLOBAL');
   const campaignStore = useCampaignStore();
   const {
     pagination,
@@ -112,7 +115,7 @@ export default function TextTableView() {
         <>
           <div className="flex items-center mb-2">
             <Input
-              placeholder="Filter campaigns..."
+              placeholder={tg('FILTER_CAMPAIGNS')}
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }
@@ -125,11 +128,11 @@ export default function TextTableView() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">
                   <Settings2 className="mr-2 h-4 w-5" />
-                  View
+                  {tg('VIEW')}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+                <DropdownMenuLabel>{tg('TOGGLE_COLUMNS')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {table
                   .getAllColumns()
@@ -144,7 +147,7 @@ export default function TextTableView() {
                           column.toggleVisibility(!!value)
                         }
                       >
-                        {column.id}
+                        {getColumnLabel(column)}
                       </DropdownMenuCheckboxItem>
                     );
                   })}
@@ -195,7 +198,7 @@ export default function TextTableView() {
                         colSpan={columns.length}
                         className="h-24 text-center"
                       >
-                        No results.
+                        {tg('NO_RESULTS')}
                       </TableCell>
                     </TableRow>
                   )}

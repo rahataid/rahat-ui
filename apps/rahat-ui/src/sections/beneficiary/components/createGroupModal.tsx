@@ -1,6 +1,5 @@
 'use client';
 
-import { useProjectList } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -10,17 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/components/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { UUID } from 'crypto';
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 type GroupModalType = {
   value: boolean;
@@ -38,11 +30,14 @@ export default function CreateGroupModal({
   handleSubmit,
   selectedBeneficiaries,
 }: IProps) {
+  const t = useTranslations('BENEFICIARY_GROUP_CREATE');
+  const tb = useTranslations('BENEFICIARY_LIST');
+  const tg = useTranslations('GLOBAL');
   const [groupName, setGroupName] = React.useState('');
 
   const handleCreateGroup = async (benf: any) => {
     if (!groupName.trim()) {
-      return alert('Group name cannot be empty.');
+      return alert(t('GROUP_NAME_CANNOT_BE_EMPTY'));
     }
     handleSubmit({
       beneficiaries: benf,
@@ -54,10 +49,11 @@ export default function CreateGroupModal({
     <Dialog open={groupModal.value} onOpenChange={groupModal.onToggle}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Group</DialogTitle>
+          <DialogTitle>{tg('CREATE_GROUP')}</DialogTitle>
           <DialogDescription>
-            Enter group name to be created for the{' '}
-            {selectedBeneficiaries.length > 1 ? 'beneficiaries' : 'beneficiary'}
+            {selectedBeneficiaries.length > 1
+              ? tb('ENTER_GROUP_NAME_TO_BE_CREATED')
+              : tb('ENTER_GROUP_NAME_TO_BE_CREATED2')}
           </DialogDescription>
         </DialogHeader>
         <div>
@@ -65,13 +61,13 @@ export default function CreateGroupModal({
             type="text"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            placeholder="Group Name"
+            placeholder={tg('GROUP_NAME')}
           />
         </div>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
-              Close
+              {tg('CLOSE')}
             </Button>
           </DialogClose>
           <DialogClose asChild>
@@ -83,7 +79,7 @@ export default function CreateGroupModal({
               variant="ghost"
               className="text-primary"
             >
-              Create
+              {tg('CREATE')}
             </Button>
           </DialogClose>
         </DialogFooter>

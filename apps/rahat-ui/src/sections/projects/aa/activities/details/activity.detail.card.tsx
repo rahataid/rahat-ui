@@ -1,47 +1,44 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DocumentCard from '../../../components/document.card';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useTranslations } from 'next-intl';
 
 export default function ActivityDetailCard({ activityDetail }: any) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const detailData = [
     {
-      title: 'Category',
+      title: t('CATEGORY'),
       content: <p>{activityDetail?.category?.name}</p>,
     },
     {
-      title: 'Responsibility',
+      title: t('RESPONSIBILITY'),
       content: <p>{activityDetail?.responsibility}</p>,
     },
     {
-      title: 'Description',
-      content: <p>{activityDetail?.description || 'N/A'} </p>,
+      title: t('DESCRIPTION'),
+      content: <p>{activityDetail?.description || tg('NA')} </p>,
     },
     {
-      title: 'Lead Time',
-      content: <p>{activityDetail?.leadTime || 'N/A'} </p>,
+      title: t('LEAD_TIME'),
+      content: <p>{activityDetail?.leadTime || tg('NA')} </p>,
     },
     {
-      title: 'Completed By',
-      content: <p>{activityDetail?.completedBy || 'N/A'}</p>,
+      title: t('COMPLETED_BY'),
+      content: <p>{activityDetail?.completedBy || tg('NA')}</p>,
     },
     {
-      title: 'Completed At',
+      title: t('COMPLETED_AT'),
       content: (
-        <p>
-          {(() => {
-            if (!activityDetail?.completedAt) return 'N/A';
-            const d = new Date(activityDetail?.completedAt);
-            const localeDate = d.toLocaleDateString();
-            const localeTime = d.toLocaleTimeString();
-            return `${localeDate} ${localeTime}`;
-          })()}
-        </p>
+        <p>{activityDetail?.completedAt ? formatDate(activityDetail?.completedAt) : tg('NA')}</p>
       ),
     },
   ];
 
   return (
     <div className="bg-card p-4 rounded">
-      <h1 className="font-semibold text-lg">Activity Details</h1>
+      <h1 className="font-semibold text-lg">{t('ACTIVITY_DETAILS')}</h1>
       <ScrollArea className="h-[calc(100vh-310px)]">
         <div>
           {detailData.map((item) => (
@@ -52,7 +49,7 @@ export default function ActivityDetailCard({ activityDetail }: any) {
           ))}
         </div>
         <div className="mt-4">
-          <h1 className="text-muted-foreground text-sm">Documents</h1>
+          <h1 className="text-muted-foreground text-sm">{t('DOCUMENTS')}</h1>
           {activityDetail?.activityDocuments?.length ? (
             <div className="grid gap-2 mt-2">
               {activityDetail?.activityDocuments?.map(

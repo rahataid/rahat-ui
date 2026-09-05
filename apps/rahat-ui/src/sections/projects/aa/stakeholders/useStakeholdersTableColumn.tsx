@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -25,8 +26,13 @@ import { useDeleteStakeholders } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { setPaginationToLocalStorage } from '../prev.pagination.storage';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function useStakeholdersTableColumn() {
+  const t = useTranslations('GLOBAL');
+  const ta = useTranslations('AA_PROJECT');
+  const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
+  const formatPhone = usePhoneFormat();
   const { id } = useParams();
   const router = useRouter();
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -46,37 +52,37 @@ export default function useStakeholdersTableColumn() {
   const columns: ColumnDef<IStakeholdersItem>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+      header: t('PHONE'),
+      cell: ({ row }) => <div>{formatPhone(row.getValue('phone')) || t('N_A')}</div>,
     },
     {
       accessorKey: 'email',
-      header: 'Email Address',
-      cell: ({ row }) => <div>{row.getValue('email') || 'N/A'}</div>,
+      header: t('EMAIL_ADDRESS'),
+      cell: ({ row }) => <div>{row.getValue('email') || t('N_A')}</div>,
     },
     {
       accessorKey: 'designation',
-      header: 'Designation',
+      header: ta('DESIGNATION'),
       cell: ({ row }) => <div>{row.getValue('designation')}</div>,
     },
     {
       accessorKey: 'organization',
-      header: 'Organization',
+      header: t('ORGANIZATION'),
       cell: ({ row }) => <div>{row.getValue('organization')}</div>,
     },
     {
       accessorKey: 'district',
-      header: 'District',
+      header: ta('DISTRICT'),
       cell: ({ row }) => <div>{row.getValue('district')}</div>,
     },
     {
       accessorKey: 'municipality',
-      header: 'Municipality',
+      header: t('MUNICIPALITY'),
       cell: ({ row }) => <div>{row.getValue('municipality')}</div>,
     },
     {
@@ -109,7 +115,7 @@ export default function useStakeholdersTableColumn() {
                   />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Edit</p>
+                  <p className="text-xs font-medium">{t('EDIT')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -128,26 +134,25 @@ export default function useStakeholdersTableColumn() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          Are you absolutely sure?
+                          {t('ARE_YOU_ABSOLUTELY_SURE')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete this stakeholder.
+                          {tc('THIS_ACTION_CANNOT_BE_UNDONE_THIS', { name: t('STAKEHOLDER') })}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{t('CANCEL')}</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => removeStakeholder(row.original)}
                         >
-                          Continue
+                          {t('CONTINUE')}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Delete</p>
+                  <p className="text-xs font-medium">{t('DELETE')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

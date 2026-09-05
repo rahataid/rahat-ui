@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import {
   TabsContent,
@@ -10,6 +11,7 @@ import VendorsBeneficiaryList from '../tables/beneficiary.table';
 import { useGetTxnRedemptionRequestList } from '@rahat-ui/query';
 
 export default function VendorDetailsTabs() {
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="rounded-md p-4 border">
       <Tabs defaultValue="transactionHistory">
@@ -18,13 +20,13 @@ export default function VendorDetailsTabs() {
             className="w-full data-[state=active]:bg-white"
             value="transactionHistory"
           >
-            Transaction History
+            {t('TRANSACTION_HISTORY')}
           </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryList"
           >
-            Beneficiary List
+            {t('BENEFICIARY_LIST')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">

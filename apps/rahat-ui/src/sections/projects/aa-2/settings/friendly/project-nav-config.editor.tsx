@@ -3,10 +3,12 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import { SettingDataType, useAAProjectSettingsList } from '@rahat-ui/query';
 import { defaultNavConfig } from 'apps/rahat-ui/src/utils/resolvedIcon';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 const setsAreEqual = (a: Set<string>, b: Set<string>) =>
   a.size === b.size && [...a].every((value) => b.has(value));
@@ -20,6 +22,8 @@ type IProps = {
 };
 
 export default function ProjectNavConfigEditor({ submitRef }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const g = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -69,15 +73,15 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
   });
 
   if (isLoading) {
-    return <div className="p-4 text-sm text-muted-foreground">Loading...</div>;
+    return <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>;
   }
 
   return (
     <div className="rounded border bg-white p-4">
       <div className="mb-3">
-        <h2 className="text-sm font-semibold">Project Navigation</h2>
+        <h2 className="text-sm font-semibold">{t('PROJECT_NAVIGATION')}</h2>
         <p className="text-xs text-muted-foreground">
-          Choose which pages are enabled for this project.
+          {t('CHOOSE_WHICH_PAGES_ARE_ENABLED')}
         </p>
       </div>
 
@@ -95,7 +99,9 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
               }
             />
             <Label htmlFor={`nav-path-${item.title }`}>
-              {item.title || '(root)'}
+              {item.title
+                ? translateValue(t, item.title, { keyMap: { Payout: 'PAYOUT2' } })
+                : `(${g('ROOT')})`}
             </Label>
           </div>
         ))}

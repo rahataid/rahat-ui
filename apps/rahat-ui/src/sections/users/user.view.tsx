@@ -17,8 +17,10 @@ import { useUserList, useUserStore } from '@rumsan/react-query';
 import CoreBtnComponent from '../../components/core.btn';
 import { UserCog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function UserView() {
+  const t = useTranslations('USERS_LIST');
   const router = useRouter();
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
@@ -56,9 +58,9 @@ export default function UserView() {
       <div className="p-4">
         <div className="flex justify-between items-center space-x-8 mb-4">
           <div>
-            <h1 className="font-semibold text-[28px]">Users</h1>
+            <h1 className="font-semibold text-[28px]">{t('USERS')}</h1>
             <p className="text-muted-foreground text-base">
-              Here is the list of all the users
+              {t('HERE_IS_THE_LIST_OF_ALL')}
             </p>
           </div>
           {(loggedUserRoles?.includes('Admin') ||
@@ -66,7 +68,7 @@ export default function UserView() {
             <CoreBtnComponent
               className="hover:text-primary"
               Icon={UserCog}
-              name="Manage Roles"
+              name={t('MANAGE_ROLES')}
               handleClick={() => router.push('/users/roles')}
             />
           )}

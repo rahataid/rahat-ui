@@ -27,12 +27,13 @@ import {
   DialogFooter,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+import { useTranslations } from 'next-intl';
 
 const queueTypes = [
-  { label: 'Contract Jobs', value: 'contract-jobs' },
-  { label: 'Rahat Jobs', value: 'rahat-jobs' },
-  { label: 'Rahat Beneficiary Jobs', value: 'rahat-beneficiary-jobs' },
-  { label: 'Meta Transaction Jobs', value: 'meta-txn-jobs' },
+  { label: 'CONTRACT_JOBS', value: 'contract-jobs' },
+  { label: 'RAHAT_JOBS', value: 'rahat-jobs' },
+  { label: 'RAHAT_BENEFICIARY_JOBS', value: 'rahat-beneficiary-jobs' },
+  { label: 'META_TRANSACTION_JOBS', value: 'meta-txn-jobs' },
 ];
 
 // / Recursive function to render nested data
@@ -61,6 +62,8 @@ export const renderNestedData = (data: any, depth = 0): React.ReactNode => {
 };
 
 const QueueList: React.FC = () => {
+  const t = useTranslations('QUEUES');
+  const tg = useTranslations('GLOBAL');
   const [queueType, setQueueType] = useState(queueTypes[0].value);
   const [filters, setFilters] = useState({
     status: '',
@@ -106,7 +109,7 @@ const QueueList: React.FC = () => {
               value={type.value}
               className="px-4 py-2 text-sm font-medium text-gray-700 rounded dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              {type.label}
+              {t(type.label)}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -120,15 +123,15 @@ const QueueList: React.FC = () => {
                 onChange={handleChange}
                 className="bg-gray-100 border border-gray-300 text-gray-800 rounded px-3 py-2 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 focus:outline-none focus:ring focus:ring-blue-500"
               >
-                <option value="">All</option>
-                <option value="waiting">Waiting</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-                <option value="failed">Failed</option>
-                <option value="delayed">Delayed</option>
+                <option value="">{tg('ALL')}</option>
+                <option value="waiting">{t('WAITING')}</option>
+                <option value="active">{t('ACTIVE')}</option>
+                <option value="completed">{t('COMPLETED')}</option>
+                <option value="failed">{tg('FAILED')}</option>
+                <option value="delayed">{t('DELAYED')}</option>
               </select>
               <Input
-                placeholder="Job Name"
+                placeholder={t('JOB_NAME')}
                 name="name"
                 onChange={handleChange}
                 className="flex-1 bg-gray-100 text-gray-800 border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
@@ -150,7 +153,7 @@ const QueueList: React.FC = () => {
                 onClick={clearFilters}
                 className="bg-blue-500 text-white dark:bg-blue-600"
               >
-                Clear Filters
+                {t('CLEAR_FILTERS')}
               </Button>
             </div>
 
@@ -165,22 +168,22 @@ const QueueList: React.FC = () => {
                   <TableHeader className="bg-gray-100 dark:bg-gray-800">
                     <TableRow className="border-b border-gray-300 dark:border-gray-700">
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
-                        Job ID
+                        {t('JOB_ID')}
                       </TableCell>
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
-                        Job Name
+                        {t('JOB_NAME')}
                       </TableCell>
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
-                        Processed On
+                        {t('PROCESSED_ON')}
                       </TableCell>
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
-                        Finished On
+                        {t('FINISHED_ON')}
                       </TableCell>
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
-                        Status
+                        {tg('STATUS')}
                       </TableCell>
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
-                        Retry
+                        {t('RETRY')}
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -227,7 +230,7 @@ const QueueList: React.FC = () => {
                                   onClick={() => openJobDetails(job)}
                                   className="bg-blue-500 text-white"
                                 >
-                                  Details
+                                  {tg('DETAILS')}
                                 </Button>
                               </>
                             }
@@ -247,33 +250,33 @@ const QueueList: React.FC = () => {
       {selectedJob && (
         <Dialog open={true} onOpenChange={closeJobDetails}>
           <DialogContent>
-            <DialogTitle>Job Details</DialogTitle>
+            <DialogTitle>{t('JOB_DETAILS')}</DialogTitle>
             <DialogDescription className="space-y-4">
               <p>
-                <strong>Job ID:</strong> {selectedJob.id}
+                <strong>{t('JOB_ID2')}</strong> {selectedJob.id}
               </p>
               <p>
-                <strong>Job Name:</strong> {selectedJob.name}
+                <strong>{t('JOB_NAME2')}</strong> {selectedJob.name}
               </p>
               <p>
-                <strong>Status:</strong> {selectedJob.status}
+                <strong>{t('STATUS')}</strong> {selectedJob.status}
               </p>
               <p>
-                <strong>Processed On:</strong>{' '}
+                <strong>{t('PROCESSED_ON2')}</strong>{' '}
                 {new Date(selectedJob.processedOn).toLocaleString()}
               </p>
               <p>
-                <strong>Finished On:</strong>{' '}
+                <strong>{t('FINISHED_ON2')}</strong>{' '}
                 {new Date(selectedJob.finishedOn).toLocaleString()}
               </p>
               <p>
-                <strong>Attempts Made:</strong> {selectedJob.attemptsMade}
+                <strong>{t('ATTEMPTS_MADE')}</strong> {selectedJob.attemptsMade}
               </p>
               <p>
-                <strong>Failed Reason:</strong> {selectedJob.failedReason}
+                <strong>{t('FAILED_REASON')}</strong> {selectedJob.failedReason}
               </p>
               <p>
-                <strong>Batch Details:</strong>
+                <strong>{t('BATCH_DETAILS')}</strong>
               </p>
               <div className="max-h-64 overflow-y-auto">
                 <div className="max-h-64 overflow-y-auto">
@@ -286,7 +289,7 @@ const QueueList: React.FC = () => {
                 onClick={closeJobDetails}
                 className="bg-blue-500 text-white"
               >
-                Close
+                {tg('CLOSE')}
               </Button>
             </DialogFooter>
           </DialogContent>

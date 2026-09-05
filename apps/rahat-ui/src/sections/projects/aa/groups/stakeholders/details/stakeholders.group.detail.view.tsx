@@ -20,8 +20,10 @@ import Back from '../../../../components/back';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import SearchInput from '../../../../components/search.input';
+import { useTranslations } from 'next-intl';
 
 export default function StakeholdersGroupDetailView() {
+  const tGlobal = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -80,7 +82,7 @@ export default function StakeholdersGroupDetailView() {
             <div className="flex gap-4 items-center">
               <EditButton path={editPath} />
               <DeleteButton
-                name="Stakeholders Group"
+                name={tGlobal('STAKEHOLDER')}
                 handleContinueClick={handleDelete}
               />
             </div>
@@ -88,7 +90,7 @@ export default function StakeholdersGroupDetailView() {
           {/* Table Starts  */}
           <div className="flex justify-between gap-2">
             <SearchInput
-              name="Stakeholder"
+              name={tGlobal('STAKEHOLDER')}
               className="mb-2 w-full"
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
@@ -98,7 +100,7 @@ export default function StakeholdersGroupDetailView() {
               }
             />
             <SearchInput
-              name="Organization"
+              name={tGlobal('ORGANIZATION')}
               className="mb-2 w-full"
               value={
                 (table.getColumn('organization')?.getFilterValue() as string) ??
@@ -111,7 +113,7 @@ export default function StakeholdersGroupDetailView() {
               }
             />
             <SearchInput
-              name="Municipality"
+              name={tGlobal('MUNICIPALITY')}
               className="mb-2 w-full"
               value={
                 (table.getColumn('municipality')?.getFilterValue() as string) ??

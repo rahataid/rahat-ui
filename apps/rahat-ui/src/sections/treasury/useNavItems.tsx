@@ -1,40 +1,33 @@
 import { ArrowRightLeft, Coins, PlusSquare } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { NavItem } from './nav-items.types';
 
 export const useTreasuryNavItems = () => {
+  const t = useTranslations('TREASURY_NAVIGATION');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const menuItems: NavItem[] = [
     {
-      title: 'General',
+      title: t('GENERAL'),
       children: [
-        // {
-        //   title: 'Portfolio',
-        //   path: '/treasury/portfolio',
-        //   icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
-        // },
         {
-          title: 'Transactions',
+          title: t('TRANSACTIONS'),
           path: '/treasury/transactions',
           icon: <ArrowRightLeft size={18} strokeWidth={1.5} />,
         },
-        // {
-        //   title: 'Portfolio',
-        //   path: '/treasury/portfolio',
-        //   icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
-        // },
         {
-          title: 'Assets',
+          title: t('ASSETS'),
           path: '/treasury/assets',
           icon: <Coins size={18} strokeWidth={1.5} />,
         },
       ],
     },
     {
-      title: 'Actions',
+      title: tg('ACTIONS'),
       children: [
         {
-          title: 'Create Token',
+          title: t('CREATE_TOKEN'),
           path: `/treasury/createToken`,
           icon: <PlusSquare size={18} strokeWidth={1.5} />,
         },

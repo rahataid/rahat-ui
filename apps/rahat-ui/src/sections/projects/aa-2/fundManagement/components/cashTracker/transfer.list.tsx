@@ -21,6 +21,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useGetCashApprovedByMe } from '@rahat-ui/query';
 import { AARoles } from '@rahat-ui/auth';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 function TransferList({
   transfers,
@@ -35,6 +38,9 @@ function TransferList({
   currentEntity?: any;
   onConfirmReceipt?: (payload: any) => void;
 }) {
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
   const id = useParams().id as UUID;
   const [confirmingTransferId, setConfirmingTransferId] = useState<
     string | null
@@ -52,18 +58,8 @@ function TransferList({
     from: donorSmartAccount || '',
     to: currentEntity?.smartaccount || '',
   });
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   const handleConfirmClick = (transfer: FundTransfer, pendingTransfer: any) => {
     setSelectedTransfer({ transfer, pendingTransfer });
@@ -89,9 +85,7 @@ function TransferList({
   };
 
   const formatAmount = (amount: number) => {
-    return `Rs.${amount.toLocaleString('en-IN', {
-      maximumFractionDigits: 0,
-    })}`;
+    return `${t('RS')}${formatNum(amount)}`;
   };
 
   return (
@@ -101,7 +95,7 @@ function TransferList({
           <div className="h-96 flex items-center justify-center p-6 text-center">
             <div className="flex flex-col items-center gap-2">
               <OctagonAlert className="h-10 w-10 text-gray-400" />
-              <p className="text-sm text-gray-500">No transactions</p>
+              <p className="text-sm text-gray-500">{tv('NO_TRANSACTIONS')}</p>
             </div>
           </div>
         ) : (
@@ -162,22 +156,22 @@ function TransferList({
                             }`}
                           >
                             {isConfirmed
-                              ? 'CONFIRMED'
+                              ? tv('CONFIRMED')
                               : isPending
-                              ? 'PENDING'
-                              : 'BLOCKED'}
+                              ? tv('PENDING')
+                              : tv('BLOCKED')}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-1">
                           {transfer.comments}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {formatDate(new Date(transfer.timestamp))}
+                           {formatDate(transfer.timestamp, 'dd MMMM, yyyy')}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900 mt-1">
-                          Rs. {transfer.amount.toLocaleString()}
+                          {t('RS')} {formatNum(transfer.amount)}
                         </p>
 
                         {canConfirm &&
@@ -194,8 +188,8 @@ function TransferList({
                             >
                               <Check size={16} className="mr-2" />
                               {confirmingTransferId === transfer.id
-                                ? 'Confirming...'
-                                : 'Confirm Received'}
+                                ? tv('SUBMITTING')
+                                : tv('CONFIRM_RECEIPT')}
                             </Button>
                           )}
                       </div>
@@ -213,11 +207,11 @@ function TransferList({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="text-center">
-              Fund Transfer Confirmation
+              {tv('FUND_TRANSFER_CONFIRMATION')}
             </DialogTitle>
             <DialogDescription className="text-center text-base text-gray-700 mt-2">
               {selectedTransfer &&
-                `Please confirm receipt of funds from ${selectedTransfer.transfer.from}`}
+                tv('PLEASE_CONFIRM_RECEIPT', { from: selectedTransfer.transfer.from })}
             </DialogDescription>
           </DialogHeader>
 
@@ -229,7 +223,7 @@ function TransferList({
                   {formatAmount(selectedTransfer.transfer.amount)}
                 </div>
                 <div className="text-sm text-gray-700 mt-1">
-                  Transfer Amount
+                  {tv('TRANSFER_AMOUNT')}
                 </div>
               </div>
             </div>
@@ -239,21 +233,21 @@ function TransferList({
           {selectedTransfer && (
             <div className="space-y-3 py-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">From:</span>
+                <span className="text-sm text-gray-600">{tv('FROM_LABEL')}:</span>
                 <span className="text-sm font-medium text-gray-900">
                   {selectedTransfer.transfer.from}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">To:</span>
+                <span className="text-sm text-gray-600">{tv('TO_LABEL')}:</span>
                 <span className="text-sm font-medium text-gray-900">
                   {selectedTransfer.transfer.to}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Transfer Date:</span>
+                <span className="text-sm text-gray-600">{tv('TRANSFER_DATE')}:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {formatDate(new Date(selectedTransfer.transfer.timestamp))}
+                   {formatDate(selectedTransfer.transfer.timestamp, 'dd MMMM, yyyy')}
                 </span>
               </div>
             </div>
@@ -269,7 +263,7 @@ function TransferList({
                 setSelectedTransfer(null);
               }}
             >
-              Cancel
+              {tg('CANCEL')}
             </Button>
             <Button
               type="button"
@@ -278,7 +272,7 @@ function TransferList({
               disabled={confirmingTransferId !== null}
             >
               <Check size={16} className="mr-2" />
-              {confirmingTransferId ? 'Confirming...' : 'Confirm Receipt'}
+              {confirmingTransferId ? tv('CONFIRMING') : tv('CONFIRM_RECEIPT')}
             </Button>
           </DialogFooter>
         </DialogContent>

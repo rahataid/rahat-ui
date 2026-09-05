@@ -18,10 +18,12 @@ import { UUID } from 'crypto';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { useProjectVendorTableColumns } from '../table.columns';
+import { useTranslations } from 'next-intl';
 
 export const VendorList = ({ id }: { id: UUID }) => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const tGlobal = useTranslations('GLOBAL');
   const searchParams = useSearchParams();
   const {
     filters,
@@ -88,7 +90,7 @@ export const VendorList = ({ id }: { id: UUID }) => {
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
           className="w-full"
-          name="name"
+          name={tGlobal('NAME')}
           onSearch={(e) => handleSearch(e, 'search')}
           value={filters?.search || ''}
         />
@@ -97,7 +99,7 @@ export const VendorList = ({ id }: { id: UUID }) => {
         table={table}
         tableHeight="h-[500px]"
         loading={isLoading}
-        message="No Vendors Available"
+        message={tGlobal('NO_VENDORS_AVAILABLE')}
       />
       {isPaginationReady && (
         <CustomPagination

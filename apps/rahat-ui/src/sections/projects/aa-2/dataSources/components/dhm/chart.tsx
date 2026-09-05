@@ -1,10 +1,41 @@
 'use client';
 
 import React from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+
 import dynamic from 'next/dynamic';
-import { format } from 'date-fns';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/i18n/date';
 import { roundValue } from '../aws/utils/color.utils';
+
+const CHART_DATE_PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
+  'h:mm a': { hour: 'numeric', minute: '2-digit', hour12: true },
+  'MMMM d': { month: 'long', day: 'numeric' },
+  'MMM d': { month: 'short', day: 'numeric' },
+  PPp: {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  },
+};
+
+const formatChartDate = (value: string | number, pattern: string, locale: string) => {
+  const options = CHART_DATE_PATTERN_MAP[pattern] ?? CHART_DATE_PATTERN_MAP['h:mm a'];
+  const neOptions = locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
+  const d = new Date(value);
+  const formatter = new Intl.DateTimeFormat(
+    locale === 'ne' ? 'ne-NP' : locale,
+    neOptions,
+  );
+  if (locale === 'ne' && (options.weekday || options.month)) {
+    return localizeNepaliParts(d, options, formatter.formatToParts(d));
+  }
+  return formatter.format(d);
+};
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -25,10 +56,14 @@ const TimeSeriesChart = ({
   warningLevel,
   extremeLevel,
   xDateFormat = 'h:mm a',
-  yaxisTitle = 'Water Level (m)',
+  yaxisTitle: yaxisTitleProp,
   unit = '',
   yAxisFormatter,
 }: ChartProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const locale = useLocale();
+  const formatNum = useNumberFormat();
+  const resolvedYaxisTitle = yaxisTitleProp ?? t('WATER_LEVEL_METERS');
   if (!data || data.length === 0) return null;
 
   const roundToOneDecimal = (value: number) => Number(roundValue(value));
@@ -40,8 +75,8 @@ const TimeSeriesChart = ({
   );
 
   const series = keys.map((key) => ({
-    name: key === 'value' ? 'average' : key,
-    data: sortedData.map((d) => {
+    name: key === 'value' ? t('AVERAGE') : key,
+          data: sortedData.map((d) => {
       const result = convertToLocalTimeOrMillisecond(d.datetime);
       if (typeof result === 'string' || !result) {
         return [0, d[key]]; // Fallback to 0 or handle error as needed
@@ -83,17 +118,33 @@ const TimeSeriesChart = ({
       zoom: { enabled: false },
       offsetX: 0,
       offsetY: 10,
+      // The export menu is rendered by ApexCharts itself, so its labels can only
+      // be translated through Apex's own `locales` option.
+      locales: [
+        {
+          name: 'app',
+          options: {
+            toolbar: {
+              exportToSVG: t('DOWNLOAD_SVG'),
+              exportToPNG: t('DOWNLOAD_PNG'),
+              exportToCSV: t('DOWNLOAD_CSV'),
+              download: t('CHART_MENU'),
+            },
+          },
+        },
+      ],
+      defaultLocale: 'app',
     },
     xaxis: {
       type: 'datetime',
       min: minTime,
       max: maxTime,
-      title: {
-        text: 'Time Stamp',
-      },
+        title: {
+          text: t('TIME_STAMP'),
+        },
       labels: {
         formatter: function (value) {
-          return format(new Date(value), xDateFormat);
+          return formatChartDate(value, xDateFormat, locale);
         },
         rotate: 0,
       },
@@ -101,7 +152,7 @@ const TimeSeriesChart = ({
     },
     yaxis: {
       title: {
-        text: yaxisTitle,
+        text: resolvedYaxisTitle,
       },
       min: minY - 0.5,
       max: maxY + 0.5,
@@ -116,7 +167,7 @@ const TimeSeriesChart = ({
               return `${roundedValue}`;
             }
           }
-          return `${roundedValue}`;
+          return formatNum(roundedValue);
         },
       },
     },
@@ -124,12 +175,12 @@ const TimeSeriesChart = ({
       shared: false,
       x: {
         formatter: function (value) {
-          return format(new Date(value), 'PPp');
+          return formatChartDate(value, 'PPp', locale);
         },
       },
       y: {
         formatter: function (value) {
-          return `${roundValue(Number(value))} ${unit}`;
+          return `${formatNum(roundValue(Number(value)))} ${unit}`;
         },
       },
     },
@@ -160,7 +211,7 @@ const TimeSeriesChart = ({
                     color: '#fff',
                     background: '#FFA500',
                   },
-                  text: 'Warning Level',
+                  text: t('WARNING_LEVEL'),
                 },
               },
             ]
@@ -176,7 +227,7 @@ const TimeSeriesChart = ({
                     color: '#fff',
                     background: '#FF0000',
                   },
-                  text: 'Danger Level',
+                  text: t('DANGER_LEVEL'),
                 },
               },
             ]
@@ -192,7 +243,7 @@ const TimeSeriesChart = ({
                     color: '#fff',
                     background: '#A51D1D',
                   },
-                  text: 'Extreme Level',
+                  text: t('EXTREME_LEVEL'),
                 },
               },
             ]

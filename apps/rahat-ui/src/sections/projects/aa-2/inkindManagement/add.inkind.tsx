@@ -9,11 +9,15 @@ import InkindConfirmation from './forms/inkind.confirmation';
 import type { InkindDetailsValues } from './schemas/inkind.validation';
 import { useInkinds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AddInkindView() {
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
+  const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<InkindDetailsValues>>({});
@@ -54,7 +58,7 @@ export default function AddInkindView() {
           className="flex items-center gap-0 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />
-          <p className="ml-0 mb-0">Back</p>
+          <p className="ml-0 mb-0">{t('BACK')}</p>
         </button>
       </div>
 
@@ -103,7 +107,7 @@ export default function AddInkindView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  Step {index + 1}
+                  {t('STEP', { index: formatDigits(index + 1) })}
                 </span>
                 <span
                   className={`text-md mt-0.5 text-center transition-colors ${
@@ -114,7 +118,7 @@ export default function AddInkindView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {step.title}
+                  {t(step.titleKey)}
                 </span>
               </div>
             </div>

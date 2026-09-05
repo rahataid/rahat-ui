@@ -9,26 +9,29 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { Edit } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
+import { useTranslations } from 'next-intl';
 interface AppAuthentication {
   name: string;
   publicKey: string;
 }
 export const useAppAuthenticationColumns = () => {
+  const t = useTranslations('AUTH_APPS_LIST');
+  const tg = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const columns: ColumnDef<AppAuthentication>[] = [
     {
-      header: 'App Name',
+      header: t('APP_NAME'),
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      header: 'Address',
+      header: tg('ADDRESS'),
       accessorKey: 'address',
       cell: ({ row }) => <div>{row.getValue('address')}</div>,
     },
     {
-      header: 'Description',
+      header: tg('DESCRIPTION'),
       accessorKey: 'description',
       cell: ({ row }) => <div>{row.getValue('description')}</div>,
     },

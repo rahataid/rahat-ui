@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import { AddButton, SearchInput } from 'apps/rahat-ui/src/common';
 // import AddButton from '../../components/add.btn';
 // import SearchInput from '../../components/search.input';
@@ -20,6 +21,7 @@ export default function StakeholdersTableFilters({
   filters,
   setFilters,
 }: IProps) {
+  const tGlobal = useTranslations('GLOBAL');
   const [stakeholderSearchText, setStakeholderSearchText] = React.useState('');
   const [organizationSearchText, setOrganizationSearchText] =
     React.useState('');
@@ -45,7 +47,7 @@ export default function StakeholdersTableFilters({
       <SearchInput
         className="flex-1 min-w-[120px]"
         inputClassName="h-[clamp(28px,3vw,36px)]"
-        name="name"
+        name={tGlobal('NAME')}
         value={stakeholderSearchText}
         onSearch={(e) => handleSearch(e, 'name')}
       />
@@ -54,7 +56,7 @@ export default function StakeholdersTableFilters({
       <SearchInput
         className="flex-1 min-w-[120px]"
         inputClassName="h-[clamp(28px,3vw,36px)]"
-        name="organization"
+        name={tGlobal('ORGANIZATION')}
         value={organizationSearchText}
         onSearch={(e) => handleSearch(e, 'organization')}
       />
@@ -63,7 +65,7 @@ export default function StakeholdersTableFilters({
       <SearchInput
         className="flex-1 min-w-[120px]"
         inputClassName="h-[clamp(28px,3vw,36px)]"
-        name="municipality"
+        name={tGlobal('MUNICIPALITY')}
         value={municipalitySearchText}
         onSearch={(e) => handleSearch(e, 'municipality')}
       />
@@ -72,7 +74,7 @@ export default function StakeholdersTableFilters({
       <SearchInput
         className="flex-1 min-w-[120px]"
         inputClassName="h-[clamp(28px,3vw,36px)]"
-        name="support area"
+        name={tGlobal('SUPPORT_AREA')}
         value={supportAreaText}
         onSearch={(e) => handleSearch(e, 'supportArea')}
       />

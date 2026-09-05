@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -36,10 +37,14 @@ import {
   useAssignGroupCashTransferFund,
   useGetAllValidGroupCashTransfers,
 } from '@rahat-ui/query';
-import { AssignCashSchema, AssignCashValues } from './types/gct.schemas';
+import { buildAssignCashSchema, AssignCashValues } from './types/gct.schemas';
+import { useNumberFormat } from '../../../../utils/i18n/number';
 import { SectionCard } from './components/gct.form-sections';
 
 export default function AssignCashGct() {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -53,6 +58,7 @@ export default function AssignCashGct() {
   const [groupSearch, setGroupSearch] = useState('');
   const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
   const [selectedGroupName, setSelectedGroupName] = useState('');
+  const formatNum = useNumberFormat();
   const [pendingValues, setPendingValues] = useState<AssignCashValues | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -62,6 +68,7 @@ export default function AssignCashGct() {
     return groups.filter((g) => g.name.toLowerCase().includes(lower));
   }, [groups, groupSearch]);
 
+  const AssignCashSchema = buildAssignCashSchema(t);
   const form = useForm<AssignCashValues>({
     resolver: zodResolver(AssignCashSchema),
     defaultValues: { title: '', groupCashTransferId: '', amount: '' },
@@ -86,7 +93,7 @@ export default function AssignCashGct() {
       const msg: string = error?.response?.data?.message || error?.message || '';
       if (/already|duplicate|reserved/i.test(msg)) {
         form.setError('groupCashTransferId', {
-          message: 'This group already has funds reserved.',
+          message: t('THIS_GROUP_ALREADY_HAS_FUNDS_RESERVED'),
         });
       }
     }
@@ -95,14 +102,14 @@ export default function AssignCashGct() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Assign Cash"
-        subtitle="Fill the form below to assign cash to a GCT Group"
+        title={t('ASSIGN_CASH')}
+        subtitle={t('FILL_THE_FORM_BELOW_TO_ASSIGN_CASH')}
         path={`/projects/aa/${id}/group-cash-transfer?tab=gctManagementList`}
       />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <SectionCard title="Fund Details">
+          <SectionCard titleKey="FUND_DETAILS">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -110,10 +117,10 @@ export default function AssignCashGct() {
                 render={({ field }) => (
                   <FormItem>
                     <Label>
-                      GCT Fund Title <span className="text-destructive">*</span>
+                      {t('GCT_FUND_TITLE')} <span className="text-destructive">*</span>
                     </Label>
                     <FormControl>
-                      <Input placeholder="Enter fund title" {...field} />
+                      <Input placeholder={t('ENTER_FUND_TITLE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,7 +133,7 @@ export default function AssignCashGct() {
                 render={({ field }) => (
                   <FormItem>
                     <Label>
-                      GCT Group <span className="text-destructive">*</span>
+                      {t('GCT_GROUP')} <span className="text-destructive">*</span>
                     </Label>
                     <Popover
                       open={groupPopoverOpen}
@@ -141,8 +148,8 @@ export default function AssignCashGct() {
                             className="w-full justify-between font-normal"
                           >
                             {groupsLoading
-                              ? 'Loading groups…'
-                              : selectedGroupName || 'Select a validated GCT Group'}
+                              ? t('LOADING_GROUPS')
+                              : selectedGroupName || t('SELECT_A_VALIDATED_GCT_GROUP')}
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -154,7 +161,7 @@ export default function AssignCashGct() {
                           />
                           <input
                             className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground"
-                            placeholder="Search groups…"
+                            placeholder={t('SEARCH_GROUPS')}
                             value={groupSearch}
                             onChange={(e) => setGroupSearch(e.target.value)}
                           />
@@ -162,7 +169,7 @@ export default function AssignCashGct() {
                         <div className="max-h-[200px] overflow-y-auto">
                           {filteredGroups.length === 0 ? (
                             <p className="text-sm text-muted-foreground p-3 text-center">
-                              No validated groups found.
+                              {t('NO_VALIDATED_GROUPS_FOUND')}
                             </p>
                           ) : (
                             filteredGroups.map((g) => (
@@ -197,13 +204,13 @@ export default function AssignCashGct() {
                 render={({ field }) => (
                   <FormItem>
                     <Label>
-                      Amount <span className="text-destructive">*</span>
+                      {t('AMOUNT')} <span className="text-destructive">*</span>
                     </Label>
                     <FormControl>
                       <Input
                         type="number"
                         min={1}
-                        placeholder="Enter amount"
+                        placeholder={t('ENTER_AMOUNT')}
                         {...field}
                       />
                     </FormControl>
@@ -225,7 +232,7 @@ export default function AssignCashGct() {
                 }}
                 disabled={assignFund.isPending}
               >
-                Clear
+                {t('CLEAR')}
               </Button>
               <Button
                 type="submit"
@@ -235,10 +242,10 @@ export default function AssignCashGct() {
                 {assignFund.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Assigning…
+                    {t('ASSIGNING')}
                   </>
                 ) : (
-                  'Assign Cash'
+                  t('ASSIGN_CASH')
                 )}
               </Button>
             </div>
@@ -249,21 +256,16 @@ export default function AssignCashGct() {
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Assign Cash</AlertDialogTitle>
+            <AlertDialogTitle>{t('CONFIRM_ASSIGN_CASH')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to assign{' '}
-              <span className="font-semibold text-foreground">
-                NPR {Number(pendingValues?.amount).toLocaleString()}
-              </span>{' '}
-              to{' '}
-              <span className="font-semibold text-foreground">
-                "{selectedGroupName}"
-              </span>
-              ?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_ASSIGN', {
+                amount: `NPR ${formatNum(Number(pendingValues?.amount ?? 0))}`,
+                groupName: selectedGroupName,
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={assignFund.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={assignFund.isPending}>{tGlobal('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmedAssign}
               disabled={assignFund.isPending}
@@ -271,10 +273,10 @@ export default function AssignCashGct() {
               {assignFund.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Assigning…
+                  {t('ASSIGNING')}
                 </>
               ) : (
-                'Assign Cash'
+                t('ASSIGN_CASH')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

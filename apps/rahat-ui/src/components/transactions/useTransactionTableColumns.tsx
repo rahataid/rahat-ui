@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 type Transaction = {
   id: string;
@@ -31,6 +32,8 @@ type Transaction = {
 };
 
 export const useTransactionTableColumns = () => {
+  const t = useTranslations('TRANSACTIONS');
+  const tg = useTranslations('GLOBAL');
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<number>();
 
@@ -66,7 +69,7 @@ export const useTransactionTableColumns = () => {
     // },
     {
       accessorKey: 'topic',
-      header: 'Topic',
+      header: tg('TOPIC'),
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('topic')}</div>
       ),
@@ -79,7 +82,7 @@ export const useTransactionTableColumns = () => {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Beneficiary
+            {tg('BENEFICIARY')}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -102,7 +105,7 @@ export const useTransactionTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+                {walletAddressCopied === row.index ? tg('COPIED') : tg('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -117,7 +120,7 @@ export const useTransactionTableColumns = () => {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            VoucherId
+            {t('VOUCHERID')}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -136,7 +139,7 @@ export const useTransactionTableColumns = () => {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Timestamp
+            {tg('TIMESTAMP')}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -153,7 +156,7 @@ export const useTransactionTableColumns = () => {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            TxHash
+            {t('TXHASH')}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -174,16 +177,16 @@ export const useTransactionTableColumns = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">{tg('OPEN_MENU')}</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>{tg('ACTIONS')}</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(payment.id)}
               >
-                Copy payment Txhash
+                {t('COPY_PAYMENT_TXHASH')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

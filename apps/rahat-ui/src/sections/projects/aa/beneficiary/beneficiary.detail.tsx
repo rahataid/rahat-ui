@@ -23,11 +23,14 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Minus, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import TransactionTable from './beneficiary.transaction.table';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useQuery } from 'urql';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -38,6 +41,8 @@ export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const walletAddress = beneficiaryDetails.walletAddress;
 
   const isLoading = false;
@@ -72,7 +77,7 @@ export default function BeneficiaryDetail({
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Close</p>
+                  <p className="text-xs font-medium">{t('CLOSE')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -92,7 +97,7 @@ export default function BeneficiaryDetail({
                   <h1 className="font-semibold text-xl">
                     {beneficiaryDetails?.name}
                   </h1>
-                  <Badge>Active</Badge>
+                  <Badge>{t('ACTIVE')}</Badge>
                 </div>
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
@@ -115,7 +120,7 @@ export default function BeneficiaryDetail({
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
-                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                        {walletAddressCopied ? t('COPIED') : t('CLICK_TO_COPY')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -127,8 +132,8 @@ export default function BeneficiaryDetail({
           <Tabs defaultValue="details">
             <div className="p-2">
               <TabsList className="w-full grid grid-cols-2 border h-auto">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="transaction">Transaction</TabsTrigger>
+                <TabsTrigger value="details">{t('DETAILS')}</TabsTrigger>
+                <TabsTrigger value="transaction">{t('TRANSACTION')}</TabsTrigger>
               </TabsList>
             </div>
             <TabsContent value="details">
@@ -138,7 +143,7 @@ export default function BeneficiaryDetail({
                     <div className="grid grid-cols-2 gap-3">
                       <div className="text-right">
                         <p className="font-light text-base">
-                          {beneficiaryDetails?.gender}
+                          {translateValue(t, beneficiaryDetails?.gender)}
                         </p>
                         <p className="text-sm font-normal text-muted-foreground ">
                           Gender
@@ -154,7 +159,7 @@ export default function BeneficiaryDetail({
                       </div>
                       <div className="text-right">
                         <p className="font-light text-base">
-                          {beneficiaryDetails?.phone}
+                          {formatPhone(beneficiaryDetails?.phone)}
                         </p>
                         <p className="text-sm font-normal text-muted-foreground ">
                           Phone
@@ -165,26 +170,26 @@ export default function BeneficiaryDetail({
                 </Card>
                 <Card className="shadow rounded">
                   <CardHeader>
-                    <CardTitle className="text-lg">Token Details</CardTitle>
+                    <CardTitle className="text-lg">{t('TOKEN_DETAILS')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-col gap-4">
                       <div className="flex justify-between items-center">
-                        <p>Token Reserved</p>
+                        <p>{t('TOKEN_RESERVED')}</p>
                         <p className="text-sm">
                           {beneficiaryDetails?.benTokens}
                         </p>
                       </div>
                       <div className="flex justify-between items-center">
-                        <p>Assigned Status</p>
+                        <p>{t('ASSIGNED_STATUS')}</p>
                         <p className="text-sm">
                           {!result?.data?.benTokensAssigneds?.length
-                            ? 'None'
-                            : 'Complete'}
+                            ? t('NONE')
+                            : t('COMPLETE')}
                         </p>
                       </div>
                       <div className="flex justify-between items-center">
-                        <p>Wallet Address</p>
+                        <p>{t('WALLET_ADDRESS')}</p>
                         <p className="text-sm">
                           {truncateEthAddress(walletAddress)}
                         </p>

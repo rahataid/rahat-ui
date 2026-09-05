@@ -33,9 +33,15 @@ import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contract
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
+import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AddFundManagementView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -60,10 +66,11 @@ export default function AddFundManagementView() {
   const availableBudget = parsedProjectBudget - totalReservedTokens;
 
   const FormSchema = z.object({
-    title: z.string().min(2, { message: 'Title must be at least 4 character' }),
-    numberOfTokens: z.coerce
-      .number()
-      .gte(1, { message: 'Token must be greater than 0' }),
+    title: z.string().min(2, { message: t('TITLE_MUST_BE_AT_LEAST_4_CHARACTER') }),
+    numberOfTokens: z.preprocess(
+      normalizeNumeralsToNumberPreprocessor,
+      z.coerce.number().gte(1, { message: t('TOKEN_MUST_BE_GREATER_THAN_0') }),
+    ),
     beneficiaryGroup: z.string(),
     totalTokensReserved: z.number(),
   });
@@ -133,17 +140,24 @@ export default function AddFundManagementView() {
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
       <div className="w-full rounded bg-card p-4 shadow mb-4">
-        <h1 className="text-lg font-semibold mb-6">Reservation Stats</h1>
+        <h1 className="text-lg font-semibold mb-6">{t('RESERVATION_STATS')}</h1>
         {isLoadingReservationStats ? (
           <Loader />
         ) : (
           <div className="grid gap-2">
-            <p>Total project budget: {parsedProjectBudget}</p>
-            <p>Total reserved budget: {totalReservedTokens}</p>
-            <p>Available budget: {availableBudget}</p>
+            <p>
+              {t('TOTAL_PROJECT_BUDGET_LABEL')} {formatNum(parsedProjectBudget)}
+            </p>
+            <p>
+              {t('TOTAL_RESERVED_BUDGET_LABEL')}{' '}
+              {formatNum(totalReservedTokens)}
+            </p>
+            <p>
+              {t('AVAILABLE_BUDGET_LABEL')} {formatNum(availableBudget)}
+            </p>
             {watchTotalTokensReserved > availableBudget && (
               <p className="text-red-500">
-                Warning: Total reserved tokens exceed the available budget!
+                {t('RESERVED_TOKENS_EXCEED_AVAILABLE_BUDGET')}
               </p>
             )}
           </div>
@@ -152,16 +166,16 @@ export default function AddFundManagementView() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleReserveTokenToGroup)}>
           <div className="shadow-md p-4 rounded-sm bg-card grid gap-2">
-            <h1 className="text-lg font-semibold mb-4">Reserve Funds</h1>
+            <h1 className="text-lg font-semibold mb-4">{t('RESERVE_FUNDS')}</h1>
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>{t('TITLE')}</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Enter title" {...field} />
+                      <Input type="text" placeholder={t('ENTER_TITLE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -174,7 +188,7 @@ export default function AddFundManagementView() {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Beneficiary Group</FormLabel>
+                    <FormLabel>{t('BENEFICIARY_GROUP')}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -182,7 +196,7 @@ export default function AddFundManagementView() {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select beneficiary group" />
+                          <SelectValue placeholder={t('SELECT_BENEFICIARY_GROUP')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -206,12 +220,12 @@ export default function AddFundManagementView() {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>No. of Tokens</FormLabel>
+                    <FormLabel>{t('NO_OF_TOKENS')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         inputMode="decimal"
-                        placeholder="Enter number of tokens for each members"
+                        placeholder={t('ENTER_NUMBER_OF_TOKENS_FOR_EACH')}
                         {...field}
                       />
                     </FormControl>
@@ -233,7 +247,7 @@ export default function AddFundManagementView() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Total tokens reserved</FormLabel>
+                      <FormLabel>{t('TOTAL_TOKENS_RESERVED')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -257,7 +271,7 @@ export default function AddFundManagementView() {
               >
                 Cancel
               </Button>
-              <Button type="submit">Add Fund Management</Button>
+              <Button type="submit">{t('ADD_FUND_MANAGEMENT')}</Button>
             </div>
           </div>
         </form>

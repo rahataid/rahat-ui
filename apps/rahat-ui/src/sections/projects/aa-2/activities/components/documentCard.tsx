@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   FilePreview,
@@ -38,11 +39,12 @@ interface DocumentListProps {
 }
 
 export function DocumentList({ documents, loading }: DocumentListProps) {
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 ">
-      <h3 className="text-lg font-semibold text-gray-900">Documents</h3>
+      <h3 className="text-lg font-semibold text-gray-900">{t('DOCUMENTS')}</h3>
       <p className="text-gray-600 text-sm mb-4">
-        List of all the uploaded documents
+        {t('LIST_OF_ALL_THE_UPLOADED_DOCUMENTS')}
       </p>
       <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-540px)]  h-[calc(340px)] ">
         {loading && <SpinnerLoader />}
@@ -53,7 +55,7 @@ export function DocumentList({ documents, loading }: DocumentListProps) {
             ))}
           </div>
         ) : (
-          <NoResult message="No document available" />
+          <NoResult message={t('NO_DOCUMENT_AVAILABLE')} />
         )}
       </div>
     </div>

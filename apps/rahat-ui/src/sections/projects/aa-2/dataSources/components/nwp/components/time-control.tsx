@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
-import { format } from 'date-fns';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 interface TimeControlProps {
   currentTime: Date;
@@ -21,6 +24,9 @@ export function TimeControl({
   onOpacityChange,
   availableTimes,
 }: TimeControlProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -132,11 +138,11 @@ export function TimeControl({
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium">
               {availableTimes.length > 0
-                ? format(currentTime, 'MMMM dd, yyyy HH:mm')
+                ? formatDate(currentTime, 'MMMM dd, yyyy HH:mm')
                 : 'Loading...'}
             </div>
             <div className="text-xs text-muted-foreground">
-              {currentIndex + 1}/{availableTimes.length}
+              {formatNum(currentIndex + 1)}/{formatNum(availableTimes.length)}
             </div>
           </div>
 
@@ -154,7 +160,7 @@ export function TimeControl({
 
         {/* Opacity Control */}
         <div className="flex items-center gap-3 min-w-[200px]">
-          <span className="text-sm font-medium whitespace-nowrap">Opacity</span>
+          <span className="text-sm font-medium whitespace-nowrap">{t('OPACITY')}</span>
           <Slider
             value={[opacity * 100]}
             onValueChange={(value: number[]) => onOpacityChange(value[0] / 100)}

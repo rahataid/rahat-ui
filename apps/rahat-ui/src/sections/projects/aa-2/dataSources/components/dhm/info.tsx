@@ -1,6 +1,8 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading } from 'apps/rahat-ui/src/common';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   renderCardColor,
   renderStatusColor,
@@ -8,6 +10,8 @@ import {
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 interface InfoProp {
   riverWatch: {
     stationIndex: number;
@@ -27,31 +31,35 @@ interface InfoProp {
 }
 
 export function Info({ riverWatch, updatedAt }: InfoProp) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const cardData = React.useMemo(
     () => [
       {
         icon: RadioTower,
-        label: 'Station Index',
+        label: t('STATION_INDEX'),
         value: riverWatch?.stationIndex,
       },
       {
         icon: Globe,
-        label: 'Latitude',
+        label: t('LATITUDE'),
         value: riverWatch?.latitude,
       },
       {
         icon: Globe,
-        label: 'Longitude',
+        label: t('LONGITUDE'),
         value: riverWatch?.longitude,
       },
       {
         icon: TrendingUp,
-        label: 'Elevation',
+        label: t('ELEVATION'),
         value: riverWatch?.elevation,
       },
       {
         icon: MapPin,
-        label: 'District',
+        label: t('DISTRICT'),
         value: riverWatch?.district,
       },
     ],
@@ -82,7 +90,7 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
                 </div>
                 <div>
                   <p className="text-sm/6 font-medium mb-1">{d.label}</p>
-                  <p className="text-sm/4 text-gray-600">{d.value}</p>
+                  <p className="text-sm/4 text-gray-600">{formatNum(d.value)}</p>
                 </div>
               </div>
             );
@@ -95,18 +103,18 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
         )}`}
       >
         <p className="text-primary font-semibold text-3xl/10">
-          {truncateValue(riverWatch?.waterLevel?.value, 2)}
+          {formatNum(truncateValue(riverWatch?.waterLevel?.value, 2))}
           {riverWatch?.unit ?? 'm'}
         </p>
-        <p className="text-sm/6 font-medium">Water Level</p>
+        <p className="text-sm/6 font-medium">{t('WATER_LEVEL')}</p>
         <p className="text-gray-500 text-sm/6">
-          {dateFormat(
+          {formatDate(
             riverWatch?.waterLevel?.datetime,
             'eee, MMM d yyyy, hh:mm:ss a',
           )}
         </p>
         <Badge className={`${renderStatusColor(riverWatch?.status)}`}>
-          {riverWatch?.status}
+          {translateValue(tg, riverWatch?.status)}
         </Badge>
       </div>
     </div>

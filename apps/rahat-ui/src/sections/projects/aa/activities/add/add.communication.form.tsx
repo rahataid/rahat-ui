@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   FormControl,
   FormField,
@@ -40,6 +41,8 @@ export default function AddCommunicationForm({
   setLoading,
   appTransports
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const [audioFile, setAudioFile] = React.useState({});
   const [contentType, setContentType] = React.useState<ValidationContent | "">("");
 
@@ -64,7 +67,7 @@ export default function AddCommunicationForm({
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
-    let groups = <SelectLabel>Please select group type</SelectLabel>;
+    let groups = <SelectLabel>{t('PLEASE_SELECT_GROUP_TYPE')}</SelectLabel>;
     switch (selectedGroupType) {
       case 'STAKEHOLDERS':
         groups = stakeholdersGroups.map((group: any) => (
@@ -120,16 +123,16 @@ export default function AddCommunicationForm({
           name={fieldName('groupType')}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Group Type</FormLabel>
+              <FormLabel>{t('GROUP_TYPE')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group type" />
+                    <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="STAKEHOLDERS">Stakeholders</SelectItem>
-                  <SelectItem value="BENEFICIARY">Beneficiary</SelectItem>
+                  <SelectItem value="STAKEHOLDERS">{t('STAKEHOLDERS')}</SelectItem>
+                  <SelectItem value="BENEFICIARY">{t('BENEFICIARY')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -141,11 +144,11 @@ export default function AddCommunicationForm({
           name={fieldName('groupId')}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Group</FormLabel>
+              <FormLabel>{t('GROUP')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
+                    <SelectValue placeholder={tg('SELECT_GROUP')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -161,11 +164,11 @@ export default function AddCommunicationForm({
           name={fieldName('transportId')}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Communication Type</FormLabel>
+                        <FormLabel>{t('COMMUNICATION_TYPE')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select communication type" />
+                    <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -191,7 +194,7 @@ export default function AddCommunicationForm({
             render={() => {
               return (
                 <FormItem>
-                  <FormLabel>Upload audio</FormLabel>
+                        <FormLabel>{t('UPLOAD_AUDIO')}</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -224,9 +227,9 @@ export default function AddCommunicationForm({
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-2">
-                    <FormLabel>Message</FormLabel>
+                        <FormLabel>{t('MESSAGE')}</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Write message" {...field} />
+                      <Textarea placeholder={t('WRITE_MESSAGE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

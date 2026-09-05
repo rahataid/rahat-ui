@@ -21,8 +21,14 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Entities } from './types';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function InitiateInKindTransfer({}: {}) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const formatNum = useNumberFormat();
   const [formData, setFormData] = useState({
     from: '',
     to: '',
@@ -86,27 +92,26 @@ export default function InitiateInKindTransfer({}: {}) {
           className="text-sm text-gray-500 mb-2"
           onClick={() => router.back()}
         >
-          &larr; Back
+          &larr; {t('BACK')}
         </button>
-        <h1 className="text-2xl font-bold">Initiate In-kind Transfer</h1>
+        <h1 className="text-2xl font-bold">{tg('INITIATE_IN_KIND_TRANSFER')}</h1>
         <p className="text-sm text-gray-500">
-          Fill the form below to initiate in-kind transfer
+          {tg('FILL_THE_FORM_BELOW_TO_INITIATE')}
         </p>
       </div>
 
       {/* Budget & Balance */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-500">Total Stock</p>
+          <p className="text-sm text-gray-500">{tg('TOTAL_STOCK')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {Number(balance?.data?.formatted) + Number(balance?.data?.sent) ||
-              0}
+            {formatNum(Number(balance?.data?.formatted) + Number(balance?.data?.sent) || 0)}
           </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-500">Remaining Stock</p>
+          <p className="text-sm text-gray-500">{tg('REMAINING_STOCK')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {balance?.data?.formatted || 0}
+            {formatNum(balance?.data?.formatted || 0)}
           </p>
         </div>
       </div>
@@ -115,10 +120,10 @@ export default function InitiateInKindTransfer({}: {}) {
         {/* From & To */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>From</Label>
+            <Label>{t('FROM')}</Label>
             <Select value={formData.from} disabled>
               <SelectTrigger>
-                <SelectValue placeholder="Select sender" />
+                <SelectValue placeholder={t('SELECT_SENDER')} />
               </SelectTrigger>
               <SelectContent>
                 {stakeholders?.map((s) => (
@@ -131,13 +136,13 @@ export default function InitiateInKindTransfer({}: {}) {
           </div>
 
           <div>
-            <Label>To</Label>
+            <Label>{t('TO')}</Label>
             <Select
               value={formData.to}
               onValueChange={(value) => setFormData({ ...formData, to: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select recipient" />
+                <SelectValue placeholder={t('SELECT_RECIPIENT')} />
               </SelectTrigger>
               <SelectContent>
                 {stakeholders?.map((s) => (
@@ -156,7 +161,7 @@ export default function InitiateInKindTransfer({}: {}) {
 
         {/* Amount */}
         <div>
-          <Label>Amount</Label>
+          <Label>{t('AMOUNT')}</Label>
           <div className="flex gap-2">
             <Select
               defaultValue="Hygiene Kits"
@@ -170,19 +175,22 @@ export default function InitiateInKindTransfer({}: {}) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem defaultChecked={true} value="Hygiene Kits">
-                  Hygiene Kits
+                  {tg('HYGIENE_KITS')}
                 </SelectItem>
-                <SelectItem value="Food Packages">Food Packages</SelectItem>
-                <SelectItem value="Water Packages">Water Packages</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                <SelectItem value="Food Packages">{tg('FOOD_PACKAGES')}</SelectItem>
+                <SelectItem value="Water Packages">{tg('WATER_PACKAGES')}</SelectItem>
+                <SelectItem value="Other">{t('OTHER')}</SelectItem>
               </SelectContent>
             </Select>
             <Input
               type="number"
-              placeholder="Enter number"
+              placeholder={tg('ENTER_NUMBER')}
               value={formData.amount}
               onChange={(e) =>
-                setFormData({ ...formData, amount: e.target.value })
+                setFormData({
+                  ...formData,
+                  amount: toAsciiDigits(e.target.value),
+                })
               }
               className="flex-1"
             />
@@ -191,9 +199,9 @@ export default function InitiateInKindTransfer({}: {}) {
 
         {/* Remarks */}
         <div>
-          <Label>Remarks</Label>
+          <Label>{t('REMARKS')}</Label>
           <Textarea
-            placeholder="Write remarks"
+            placeholder={t('WRITE_REMARKS')}
             value={formData.comments}
             onChange={(e) =>
               setFormData({ ...formData, comments: e.target.value })
@@ -204,7 +212,7 @@ export default function InitiateInKindTransfer({}: {}) {
         {/* Buttons */}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline">
-            Clear
+            {t('CLEAR')}
           </Button>
           <Button
             type="submit"
@@ -215,7 +223,7 @@ export default function InitiateInKindTransfer({}: {}) {
               !formData.amount
             }
           >
-            {initiateInKindTransfer.isPending ? 'Submitting…' : 'Confirm'}
+            {initiateInKindTransfer.isPending ? t('SUBMITTING') : t('CONFIRM')}
           </Button>
         </div>
       </form>

@@ -32,7 +32,7 @@ export default function BeneficiaryCard({
     <Card className="shadow-md border">
       <CardHeader className="relative">
         <Checkbox
-          onCheckedChange={(e: boolean) => {}}
+          onCheckedChange={() => undefined}
           className="absolute top-2 left-2"
         />
         <div className="flex justify-center mt-6">

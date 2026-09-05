@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   PROJECT_SETTINGS_KEYS,
   useEntities,
@@ -6,6 +7,7 @@ import {
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { UUID } from 'crypto';
 import {
   Tabs,
@@ -43,6 +45,7 @@ interface BackendTab {
 type ComponentKey = keyof typeof componentMap;
 
 export default function FundManagementTabs() {
+  const t = useTranslations('AA_PROJECT');
   const { activeTab, setActiveTab } = useActiveTab('');
   const { id: projectID } = useParams();
 
@@ -110,15 +113,24 @@ export default function FundManagementTabs() {
         onValueChange={setActiveTab}
       >
         <TabsList className="border bg-secondary rounded mb-2">
-          {availableTabsConfig.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
+          {availableTabsConfig.map((tab) => {
+            // Tab labels come from the backend, so punctuation has to be folded
+            // out before they can be used as keys: "Multi-Sig (Gnosis)" would
+            // otherwise derive "MULTI-SIG_(GNOSIS)" and never match.
+            const labelKey = tab.label
+              .toUpperCase()
+              .replace(/[^A-Z0-9]+/g, '_')
+              .replace(/^_+|_+$/g, '');
+            return (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+              >
+                {translateValue(t, labelKey, { fallback: tab.label })}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
         {availableTabsConfig.map((tab) => {

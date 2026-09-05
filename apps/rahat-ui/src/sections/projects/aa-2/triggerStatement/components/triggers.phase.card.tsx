@@ -9,6 +9,8 @@ import { CardHeading } from 'apps/rahat-ui/src/common/card.heading';
 import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizontal-bar';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DISBURSEMENT_COLORS, formatMethod } from '../utils';
+import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   ACTIONS,
   SUBJECTS,
@@ -62,7 +64,17 @@ export default function TriggersPhaseCard({
   hasExtendedLogic = false,
   disbursementMethods,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
+  // Disbursement method values come straight from the backend enum
+  // (GROUP_TOKEN, TOKEN, INKIND, ...) — translate the known ones, fall
+  // back to the raw formatted string for anything not yet mapped.
+  const disbursementMethodLabels: Record<string, string> = {
+    GROUP_TOKEN: t('GROUP_CASH_TOKEN'),
+    TOKEN: t('TOKEN'),
+    INKIND: t('INKIND'),
+  };
   return (
     <div className="p-4 rounded-xl border shadow-md flex flex-col justify-between">
       <div>
@@ -74,7 +86,7 @@ export default function TriggersPhaseCard({
               title={title}
               titleStyle="text-xl"
               description={subtitle}
-              status={isActive ? 'Triggered' : 'Not Triggered'}
+              status={isActive ? t('TRIGGERED') : t('NOT_TRIGGERED')}
               badgeStyle={`${
                 isActive
                   ? 'text-red-500 bg-red-100'
@@ -90,8 +102,8 @@ export default function TriggersPhaseCard({
                 {isPinned ? (
                   <Image
                     src="/svg/pin-on.svg"
-                    alt="Unpin phase"
-                    title="Unpin phase"
+                    alt={t('UNPIN_PHASE')}
+                    title={t('UNPIN_PHASE')}
                     className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                     width={25}
                     height={25}
@@ -99,8 +111,8 @@ export default function TriggersPhaseCard({
                 ) : (
                   <Image
                     src="/svg/pin-off.svg"
-                    alt="Pin phase"
-                    title="Pin phase"
+                    alt={t('PIN_PHASE')}
+                    title={t('PIN_PHASE')}
                     className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                     width={25}
                     height={25}
@@ -119,7 +131,7 @@ export default function TriggersPhaseCard({
                   DISBURSEMENT_COLORS[i % DISBURSEMENT_COLORS.length]
                 } text-[10px] font-medium px-2 py-0.5 rounded-sm`}
               >
-                {formatMethod(method)}
+                {disbursementMethodLabels[method] || formatMethod(method)}
               </Badge>
             ))}
           </div>
@@ -132,7 +144,7 @@ export default function TriggersPhaseCard({
                   className="max-w-[200px] max-h-[200px] w-[250px] h-[250px]"
                   viewBox="0 0 120 120"
                   role="img"
-                  aria-label="No data"
+                  aria-label={t('NO_DATA')}
                 >
                   <circle
                     cx="60"
@@ -144,7 +156,7 @@ export default function TriggersPhaseCard({
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-gray-600">No Data</p>
+                  <p className="text-gray-600">{t('NO_DATA')}</p>
                 </div>
               </div>
             ) : (
@@ -157,13 +169,35 @@ export default function TriggersPhaseCard({
                 showLegend={chartType === 'donut'}
                 colors={['#297AD6', '#E8C468']}
                 showDonutLabel={true}
+                options={{
+                  plotOptions: {
+                    pie: {
+                      donut: {
+                        labels: {
+                          value: {
+                            formatter: (val: string) => formatDigits(val),
+                          },
+                          total: {
+                            label: t('TOTAL'),
+                            formatter: () => formatDigits(totalCharSeries),
+                          },
+                        },
+                      },
+                    },
+                  },
+                  tooltip: {
+                    y: {
+                      formatter: (val: number) => formatDigits(val),
+                    },
+                  },
+                }}
               />
             )}
           </div>
         )}
         <div className="grid grid-cols-2 gap-2">
           <TriggerDetailsCard
-            title="Mandatory"
+            title={t('MANDATORY')}
             color="blue"
             bgColor="bg-[#EAF2FB]"
             totalTriggers={mandatoryTriggers}
@@ -171,7 +205,7 @@ export default function TriggersPhaseCard({
             totalRequiredTriggers={requiredMandatoryTriggers}
           />
           <TriggerDetailsCard
-            title="Optional"
+            title={t('OPTIONAL')}
             color="yellow"
             bgColor="bg-[#FCF6E9]"
             totalTriggers={optionalTriggers}
@@ -194,7 +228,7 @@ export default function TriggersPhaseCard({
           <div className="mt-2 flex items-center gap-1.5">
             <Badge className="bg-purple-100 text-purple-700 text-[10px] gap-1 font-normal">
               <Settings2 className="h-3 w-3" />
-              Extended Logic
+              {t('EXTENDED_LOGIC')}
             </Badge>
           </div>
         )}
@@ -206,8 +240,8 @@ export default function TriggersPhaseCard({
             <TooltipWrapper
               tip={
                 isActive
-                  ? 'Cannot add triggers to an active phase'
-                  : 'Add a trigger to this phase'
+                  ? t('CANNOT_ADD_TRIGGERS_TO_ACTIVE_PHASE')
+                  : t('ADD_TRIGGER_TO_THIS_PHASE')
               }
             >
               <IconLabelBtn
@@ -216,7 +250,7 @@ export default function TriggersPhaseCard({
                   hideAddTrigger && 'hidden'
                 }`}
                 Icon={Plus}
-                name="Add Trigger"
+                name={t('ADD_TRIGGER')}
                 handleClick={handleAddTrigger}
                 disabled={isActive}
               />
@@ -229,9 +263,9 @@ export default function TriggersPhaseCard({
             className={`border-primary text-primary flex-1 flex-row-reverse gap-2 w-full ${
               hideViewDetails && 'hidden'
             }`}
-            Icon={ArrowRight}
-            name="View Details"
-            handleClick={handleViewDetails}
+                Icon={ArrowRight}
+                name={t('VIEW_DETAILS')}
+                handleClick={handleViewDetails}
           />
         </div>
       </div>

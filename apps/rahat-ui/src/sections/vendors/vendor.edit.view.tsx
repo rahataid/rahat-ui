@@ -27,8 +27,13 @@ import { UUID } from 'crypto';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { Gender } from '@rahataid/sdk/enums';
 import { useGetVendor, useUpdateVendor } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function EditVendors() {
+  const t = useTranslations('VENDORS_EDIT');
+  const g = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
 
@@ -40,16 +45,16 @@ export default function EditVendors() {
   const updateVendor = useUpdateVendor();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST4') }),
     wallet: z.string(),
     phone: z
       .string()
-      .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
+      .refine(isValidPhoneNumber, { message: t('INVALID_PHONE_NUMBER') }),
     email: z.string().optional(),
     gender: z
       .string()
       .toUpperCase()
-      .min(4, { message: 'Must select a Gender' }),
+      .min(4, { message: t('MUST_SELECT_A_GENDER') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -79,6 +84,8 @@ export default function EditVendors() {
     await updateVendor.mutateAsync({
       uuid: id,
       payload: { ...data },
+      successMessage: g('VENDOR_UPDATED_SUCCESSFULLY'),
+      errorMessage: g('ERROR_WHILE_UPDATING_VENDOR'),
     });
     router.push('/vendors');
   };
@@ -89,8 +96,8 @@ export default function EditVendors() {
         <form onSubmit={form.handleSubmit(handleEditVendor)}>
           <div className="p-4 h-[calc(100vh-115px)]">
             <HeaderWithBack
-              title="Edit Vendor"
-              subtitle="Edit Vendor Detail"
+              title={t('EDIT_VENDOR')}
+              subtitle={t('EDIT_VENDOR_DETAIL')}
               path="/vendors"
             />
             <div className="shadow-md p-4 rounded-sm bg-card">
@@ -101,11 +108,11 @@ export default function EditVendors() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Vendor Name</FormLabel>
+                        <FormLabel>{t('VENDOR_NAME')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter vendor name"
+                            placeholder={t('ENTER_VENDOR_NAME')}
                             {...field}
                           />
                         </FormControl>
@@ -119,7 +126,7 @@ export default function EditVendors() {
                   name="gender"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>Gender</FormLabel>
+                      <FormLabel>{g('GENDER')}</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -130,28 +137,28 @@ export default function EditVendors() {
                             <FormControl>
                               <RadioGroupItem value={Gender.MALE} />
                             </FormControl>
-                            <FormLabel className="font-normal">Male</FormLabel>
+                            <FormLabel className="font-normal">{g('MALE')}</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value={Gender.FEMALE} />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              Female
+                              {g('FEMALE')}
                             </FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value={Gender.OTHER} />
                             </FormControl>
-                            <FormLabel className="font-normal">Other</FormLabel>
+                            <FormLabel className="font-normal">{g('OTHER')}</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="UNKNOWN" />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              Unknown
+                              {g('UNKNOWN')}
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
@@ -167,11 +174,12 @@ export default function EditVendors() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>{g('PHONE_NUMBER')}</FormLabel>
                         <FormControl>
                           <PhoneInput
-                            placeholder="Enter phone number"
+                            placeholder={g('ENTER_PHONE_NUMBER')}
                             {...field}
+                            {...phoneCountrySelectProps}
                           />
                         </FormControl>
                         <FormMessage />
@@ -185,9 +193,9 @@ export default function EditVendors() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{g('EMAIL')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter email address" {...field} />
+                          <Input placeholder={g('ENTER_EMAIL_ADDRESS')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -201,18 +209,17 @@ export default function EditVendors() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
+                        <FormLabel>{g('WALLET_ADDRESS')}</FormLabel>
                         <FormControl>
                           <div className="relative w-full">
                             <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                               type="text"
-                              placeholder="Enter wallet address"
+                              placeholder={g('ENTER_WALLET_ADDRESS')}
                               {...field}
                             />
                             <p className="text-xs text-amber-500 mt-2">
-                              * Wallet address is required. If not entered, it
-                              will be automatically filled.
+                              {g('WALLET_ADDRESS_IS_REQUIRED_IF_NOT')}
                             </p>
                           </div>
                         </FormControl>
@@ -230,18 +237,17 @@ export default function EditVendors() {
               variant="secondary"
               onClick={() => {
                 form.reset();
-                // router.push('/vendors')
               }}
             >
-              Reset
+              {g('RESET')}
             </Button>
             {updateVendor.isPending ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
+                {g('PLEASE_WAIT')}
               </Button>
             ) : (
-              <Button className="px-10">Save Changes</Button>
+              <Button className="px-10">{g('SAVE_CHANGES')}</Button>
             )}
           </div>
         </form>

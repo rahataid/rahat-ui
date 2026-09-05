@@ -4,8 +4,10 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   renderCardColor,
   renderStatusColor,
@@ -16,8 +18,14 @@ import { Info, MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { truncateValue } from '../aws/utils/color.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function RiverWatchView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -51,22 +59,22 @@ export default function RiverWatchView() {
     () => [
       {
         icon: RadioTower,
-        label: 'Station Index',
+        label: t('STATION_INDEX'),
         value: primaryRiverWatchInfo?.stationIndex,
       },
       {
         icon: MapPin,
-        label: 'District',
+        label: t('DISTRICT'),
         value: primaryRiverWatchInfo?.district,
       },
       {
         icon: TriangleAlert,
-        label: 'Warning Level',
+        label: t('WARNING_LEVEL'),
         value: primaryRiverWatchInfo?.warning_level,
       },
       {
         icon: Skull,
-        label: 'Danger Level',
+        label: t('DANGER_LEVEL'),
         value: primaryRiverWatchInfo?.danger_level,
       },
     ],
@@ -80,7 +88,7 @@ export default function RiverWatchView() {
   if (!riverWatch || !primaryRiverWatchInfo) {
     return (
       <div className="p-4">
-        <NoResult message="No River Watch Data" />
+        <NoResult message={t('NO_RIVER_WATCH_DATA')} />
       </div>
     );
   }
@@ -122,7 +130,7 @@ export default function RiverWatchView() {
                   </div>
                   <div>
                     <p className="text-sm/6 font-medium mb-1">{d.label}</p>
-                    <p className="text-sm/4 text-gray-600">{d.value}</p>
+                    <p className="text-sm/4 text-gray-600">{formatNum(d.value)}</p>
                   </div>
                 </div>
               );
@@ -135,12 +143,12 @@ export default function RiverWatchView() {
           )}`}
         >
           <p className="text-primary w-full font-semibold text-3xl/10">
-            {truncateValue(primaryRiverWatchInfo?.waterLevel?.value, 2)}
+            {formatNum(truncateValue(primaryRiverWatchInfo?.waterLevel?.value, 2))}
             {primaryRiverWatchInfo?.unit ?? 'm'}
           </p>
-          <p className="text-sm/6 font-medium">Water Level</p>
+          <p className="text-sm/6 font-medium">{t('WATER_LEVEL')}</p>
           <p className="text-gray-500 text-sm/6">
-            {dateFormat(
+            {formatDate(
               primaryRiverWatchInfo?.waterLevel?.datetime,
               'eee, MMM d yyyy, hh:mm:ss a',
             )}
@@ -148,7 +156,7 @@ export default function RiverWatchView() {
           <Badge
             className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
           >
-            {primaryRiverWatchInfo?.status}
+            {translateValue(tg, primaryRiverWatchInfo?.status)}
           </Badge>
         </div>
       </div>

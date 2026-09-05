@@ -45,6 +45,8 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import TooltipWrapper from '../../components/tooltip.wrapper';
 import SelectComponent from '../projects/el-kenya/select.component';
 import { Project } from '@rahataid/sdk/project/project.types';
+import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export type IVendor = {
   id: string;
@@ -77,6 +79,8 @@ export default function VendorsTable({
   projectModal,
   selectedRow,
 }: IProps) {
+  const t = useTranslations('VENDORS_LIST');
+  const g = useTranslations('GLOBAL');
   const projectList = useProjectList({ page: 1, perPage: 1000 });
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -93,7 +97,7 @@ export default function VendorsTable({
     <div className="border rounded shadow p-3">
       <div className="flex items-center mb-2 space-x-2">
         <Input
-          placeholder="Search Vendors"
+          placeholder={t('SEARCH_VENDORS')}
           value={vendorNameFilter}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
@@ -107,8 +111,13 @@ export default function VendorsTable({
               !event || event === 'All' ? '' : event;
             table.getColumn('status')?.setFilterValue(nextStatusFilter);
           }}
-          name="Status"
+          name={g('STATUS')}
           options={['All', 'Assigned', 'Pending']}
+          labels={{
+            All: g('ALL'),
+            Assigned: g('ASSIGNED'),
+            Pending: g('PENDING'),
+          }}
           value={statusFilter || 'All'}
         />
 
@@ -118,19 +127,20 @@ export default function VendorsTable({
               !event || event === 'All' ? '' : event;
             table.getColumn('projectName')?.setFilterValue(nextProjectFilter);
           }}
-          name="Project Name"
+          name={g('PROJECT_NAME')}
           options={['All', ...projectNames]}
+          labels={{ All: g('ALL') }}
           value={projectFilter || 'All'}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               <Settings2 className="mr-2 h-4 w-5" />
-              View
+              {g('VIEW')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+            <DropdownMenuLabel>{g('TOGGLE_COLUMNS')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table
               .getAllColumns()
@@ -145,7 +155,7 @@ export default function VendorsTable({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {getColumnLabel(column)}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -199,9 +209,9 @@ export default function VendorsTable({
           <div className="w-full h-[calc(100vh-290px)]">
             <div className="flex flex-col items-center justify-center">
               <Image src="/noData.png" height={250} width={250} alt="no data" />
-              <p className="text-medium text-base mb-1">No Data Available</p>
+              <p className="text-medium text-base mb-1">{g('NO_DATA_AVAILABLE')}</p>
               <p className="text-sm mb-4 text-gray-500">
-                There are no vendors to display at the moment
+                {t('THERE_ARE_NO_VENDORS_TO_DISPLAY')}
               </p>
             </div>
           </div>
@@ -211,18 +221,18 @@ export default function VendorsTable({
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign Project</DialogTitle>
+            <DialogTitle>{g('ASSIGN_PROJECT')}</DialogTitle>
             <DialogDescription>
               {!selectedProject && (
-                <p>Select a project to assign the selected vendor</p>
+                <p>{t('SELECT_A_PROJECT_TO_ASSIGN_THE')}</p>
               )}
             </DialogDescription>
           </DialogHeader>
           <div>
-            <Label>Project</Label>
+            <Label>{t('PROJECT')}</Label>
             <Select onValueChange={handleProjectChange}>
               <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select Project Name" />
+                <SelectValue placeholder={t('SELECT_PROJECT_NAME')} />
               </SelectTrigger>
               <SelectContent>
                 {projectList.data?.data.length ? (
@@ -240,7 +250,7 @@ export default function VendorsTable({
                     return (
                       <TooltipWrapper
                         key={project.id}
-                        tip="Project Already Assigned"
+                        tip={t('PROJECT_ALREADY_ASSIGNED')}
                         disable={!isAssigned}
                       >
                         <SelectItem
@@ -254,7 +264,7 @@ export default function VendorsTable({
                     );
                   })
                 ) : (
-                  <p className="text-xs">No project found</p>
+                  <p className="text-xs">{t('NO_PROJECT_FOUND')}</p>
                 )}
               </SelectContent>
             </Select>
@@ -262,7 +272,7 @@ export default function VendorsTable({
           <DialogFooter>
             <DialogClose asChild>
               <Button className="w-full" type="button" variant="secondary">
-                Close
+                {g('CLOSE')}
               </Button>
             </DialogClose>
             <DialogClose asChild>
@@ -271,7 +281,7 @@ export default function VendorsTable({
                 onClick={handleAssignProject}
                 type="button"
               >
-                Confirm
+                {g('CONFIRM')}
               </Button>
             </DialogClose>
           </DialogFooter>

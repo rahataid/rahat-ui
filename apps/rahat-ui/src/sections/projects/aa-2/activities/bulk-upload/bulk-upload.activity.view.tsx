@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUserList } from '@rumsan/react-query';
@@ -33,8 +34,11 @@ import {
   generateSampleWorkbook,
   parseUploadedSheet,
 } from './bulk-upload.utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function BulkUploadActivities() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams() as { id: UUID };
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -55,9 +59,10 @@ export default function BulkUploadActivities() {
     roles: 'admin , manager',
   });
 
+  const formatNum = useNumberFormat();
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<string[][]>([]);
-  const [fileName, setFileName] = useState('No File Choosen');
+  const [fileName, setFileName] = useState(tg('NO_FILE_CHOSEN'));
   const [results, setResults] = useState<RowResult[] | null>(null);
 
   const { mutateAsync: validateActivities, isPending: isValidating } =
@@ -80,7 +85,7 @@ export default function BulkUploadActivities() {
     const categoryNames = categories.map((c) => c.name);
 
     if (!userNames.length || !phaseNames.length || !categoryNames.length) {
-      toast.error('Reference data is still loading, please try again in a moment.');
+      toast.error(t('REFERENCE_DATA_STILL_LOADING'));
       return;
     }
 
@@ -100,7 +105,7 @@ export default function BulkUploadActivities() {
       setHeaders([]);
       setRows([]);
       setResults(null);
-      setFileName(file?.name ?? 'No File Choosen');
+      setFileName(file?.name ?? tg('NO_FILE_CHOSEN'));
       if (!file) return;
 
       const reader = new FileReader();
@@ -108,8 +113,10 @@ export default function BulkUploadActivities() {
         const bstr = evt.target?.result;
         if (!bstr) return;
         const parsed = parseUploadedSheet(bstr);
-        if ('error' in parsed) {
-          toast.error(parsed.error, { autoClose: 5000 });
+        if ('errorKey' in parsed) {
+          toast.error(t(parsed.errorKey as any, parsed.errorParams), {
+            autoClose: 5000,
+          });
           return;
         }
         setHeaders(parsed.headers);
@@ -125,7 +132,7 @@ export default function BulkUploadActivities() {
     setHeaders([]);
     setRows([]);
     setResults(null);
-    setFileName('No File Choosen');
+    setFileName(tg('NO_FILE_CHOSEN'));
     if (inputRef.current) inputRef.current.value = '';
   }, []);
 
@@ -151,9 +158,9 @@ export default function BulkUploadActivities() {
 
       const failedCount = rowResults.filter((r) => r.error).length;
       if (failedCount === 0) {
-        toast.success('All rows are valid.');
+        toast.success(t('ALL_ROWS_ARE_VALID'));
       } else {
-        toast.error(`${failedCount} of ${rows.length} row(s) failed validation.`);
+        toast.error(t('X_OF_Y_ROWS_FAILED_VALIDATION', { failedCount: formatNum(failedCount), totalCount: formatNum(rows.length) }));
       }
     } catch {
       // toast already shown by useValidateBulkAddActivities's onError
@@ -163,13 +170,13 @@ export default function BulkUploadActivities() {
   const submitRows = useCallback(
     async (rowsToSubmit: RowResult[]) => {
       try {
-        toast.loading('Uploading activity details...', { autoClose: false });
+        toast.loading(t('UPLOADING_ACTIVITY_DETAILS'), { autoClose: false });
         await submitActivities({
           projectUUID: projectID,
           activities: rowsToSubmit.map((r) => r.payload),
         });
         toast.dismiss();
-        toast.success('Activities uploaded successfully.');
+        toast.success(t('ACTIVITIES_UPLOADED_SUCCESSFULLY'));
         const phaseParam = searchParams.get('phase');
         router.push(
           phaseParam
@@ -178,7 +185,7 @@ export default function BulkUploadActivities() {
         );
       } catch (error) {
         toast.dismiss();
-        toast.error('Failed to upload activities. Please try again.');
+        toast.error(t('FAILED_TO_UPLOAD_ACTIVITIES'));
       }
     },
     [submitActivities, projectID, router, searchParams],
@@ -204,8 +211,8 @@ export default function BulkUploadActivities() {
       <div className="p-4 flex flex-col flex-1 min-w-0">
         <div className="flex justify-between items-start mb-2">
           <HeaderWithBack
-            title="Bulk Upload Activities"
-            subtitle="Upload an excel sheet to add multiple activities at once"
+            title={t('BULK_UPLOAD_ACTIVITIES')}
+            subtitle={t('UPLOAD_AN_EXCEL_SHEET_TO_ADD')}
             path={`/projects/aa/${projectID}/activities`}
           />
           <div className="flex gap-2 mt-4">
@@ -217,7 +224,7 @@ export default function BulkUploadActivities() {
                 className="rounded-sm"
               >
                 <FileWarning className="mr-1" size={16} />
-                Download Errors
+                {t('DOWNLOAD_ERRORS')}
               </Button>
             )}
             <Button
@@ -227,7 +234,7 @@ export default function BulkUploadActivities() {
               className="rounded-sm"
             >
               <CloudDownload className="mr-1" size={16} />
-              Download Sample
+                {t('DOWNLOAD_SAMPLE')}
             </Button>
           </div>
         </div>
@@ -248,12 +255,12 @@ export default function BulkUploadActivities() {
               <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 h-9 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
                 {rows.length > 0 ? (
                   <>
-                    <Repeat2 className="mr-1" size={16} /> Replace
+                    <Repeat2 className="mr-1" size={16} /> {t('REPLACE')}
                   </>
                 ) : (
                   <>
                     <Share className="mr-1" size={16} />
-                    Choose File
+                    {tg('CHOOSE_FILE')}
                   </>
                 )}
               </span>
@@ -315,12 +322,12 @@ export default function BulkUploadActivities() {
       <div className="flex justify-between items-center py-2 px-4 border-t mt-4 sticky bottom-0 bg-background z-10">
         <div>
           {rows.length > 0 && (
-            <p className="text-sm text-muted-foreground">Total Count: {rows.length}</p>
+            <p className="text-sm text-muted-foreground">{tg('TOTAL_COUNT')}: {formatNum(rows.length)}</p>
           )}
         </div>
         <div className="flex gap-2">
           <Button type="button" variant="outline" className="rounded-sm" onClick={handleClear}>
-            Clear
+            {t('CLEAR')}
           </Button>
           {rows.length > 0 && !isValid && (
             <Button
@@ -329,7 +336,7 @@ export default function BulkUploadActivities() {
               onClick={handleValidate}
               disabled={isValidating}
             >
-              {isValidating ? 'Validating...' : 'Validate'}
+              {isValidating ? t('VALIDATING') : t('VALIDATE')}
             </Button>
           )}
           {results && !isValid && results.some((r) => !r.error) && (
@@ -340,7 +347,7 @@ export default function BulkUploadActivities() {
               onClick={handleSubmitValid}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Valid Rows'}
+              {isSubmitting ? t('SUBMITTING') : t('SUBMIT_VALID_ROWS')}
             </Button>
           )}
           {isValid && (
@@ -350,7 +357,7 @@ export default function BulkUploadActivities() {
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              {isSubmitting ? t('SUBMITTING') : t('SUBMIT')}
             </Button>
           )}
         </div>

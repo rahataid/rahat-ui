@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 
 type IProps = {
@@ -22,6 +23,7 @@ export default function StakeholdersTable({
   table,
   tableScrollAreaHeight,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <TableComponent>
       <ScrollArea className={tableScrollAreaHeight}>
@@ -63,7 +65,7 @@ export default function StakeholdersTable({
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                {t('NO_RESULTS')}
               </TableCell>
             </TableRow>
           )}

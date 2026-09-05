@@ -10,6 +10,8 @@ import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export const useAAVendorsList = (payload: any) => {
   const q = useProjectAction<any[]>();
@@ -216,6 +218,8 @@ export const useGetVendorTokenRedemptionList = (payload: any) => {
 };
 
 export const useApproveVendorTokenRedemption = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -248,15 +252,22 @@ export const useApproveVendorTokenRedemption = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['aa.vendor.token_redemption.list'] });
       toast.fire({
-        title: 'Vendor token redemption approved successfully',
+        title: t('VENDOR_TOKEN_REDEMPTION_APPROVED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['CASH_TRACKER_VENDOR_TOKEN_REDEMPTION'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while approving vendor token redemption.',
+        title: t('ERROR_WHILE_APPROVING_VENDOR_TOKEN_REDEMPTION'),
         icon: 'error',
         text: errorMessage,
       });
@@ -418,6 +429,8 @@ export const useGetInkindRedemptionLogs = (payload: {
 };
 
 export const useUpdateVendorRedemptionStatus = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const qc = useQueryClient();
@@ -453,15 +466,22 @@ export const useUpdateVendorRedemptionStatus = () => {
       });
 
       toast.fire({
-        title: 'Vendor redemption status updated successfully',
+        title: t('VENDOR_REDEMPTION_STATUS_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while updating inkind redemption status.',
+        title: t('ERROR_WHILE_UPDATING_INKIND_REDEMPTION_STATUS'),
         icon: 'error',
         text: errorMessage,
       });

@@ -6,9 +6,11 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
@@ -27,6 +29,10 @@ type VendorTransactionRow = {
 export const useVendorsTransactionTableColumns = () => {
   const { id } = useParams();
   const projectId = id as string;
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -34,23 +40,23 @@ export const useVendorsTransactionTableColumns = () => {
   const columns: ColumnDef<VendorTransactionRow>[] = [
     {
       accessorKey: 'topic',
-      header: 'Topic',
+      header: tg('TOPIC'),
       cell: ({ row }) => (
         <TruncatedCell
           text={
             row.original?.transactionType
               ? formatEnumString(row.original?.transactionType)
-              : 'N/A'
+              : tg('N_A')
           }
         />
       ),
     },
     {
       accessorKey: 'walletAddress',
-      header: 'Beneficiary Wallet Address',
+      header: t('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => {
         if (!row.original?.beneficiaryWalletAddress) {
-          return <div>N/A</div>;
+          return <div>{t('N_A')}</div>;
         }
         return (
           <div className="flex flex-row">
@@ -69,7 +75,7 @@ export const useVendorsTransactionTableColumns = () => {
     },
     {
       accessorKey: 'amount',
-      header: 'Amount Disbursed',
+      header: t('AMOUNT_DISBURSED'),
       cell: ({ row }) => {
         const amountNum = Number(row.original?.amount) || 0;
         const convertedAmount = amountNum * TOKEN_TO_AMOUNT_MULTIPLIER;
@@ -78,10 +84,10 @@ export const useVendorsTransactionTableColumns = () => {
           <TruncatedCell
             text={
               amountNum > 0
-                ? `Rs. ${Intl.NumberFormat('en-IN').format(
+                ? `${t('RS')} ${formatNum(
                     Math.round(convertedAmount),
                   )}`
-                : 'N/A'
+                : tg('N_A')
             }
           />
         );
@@ -89,10 +95,10 @@ export const useVendorsTransactionTableColumns = () => {
     },
     {
       accessorKey: 'txHash',
-      header: 'TxHash',
+      header: t('TX_HASH'),
       cell: ({ row }) => {
         if (!row.original?.txHash) {
-          return <div>N/A</div>;
+          return <div>{t('N_A')}</div>;
         }
         return (
           <div className="flex flex-row">
@@ -125,7 +131,7 @@ export const useVendorsTransactionTableColumns = () => {
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => (
         <Badge
           className="text-xs font-normal"
@@ -136,17 +142,17 @@ export const useVendorsTransactionTableColumns = () => {
               row.original?.info?.mode === 'OFFLINE' ? '#344054' : '#027A48',
           }}
         >
-          {row.original?.info?.mode === 'OFFLINE' ? 'Offline' : 'Online'}
+          {row.original?.info?.mode === 'OFFLINE' ? t('OFFLINE') : t('ONLINE')}
         </Badge>
       ),
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
+      header: tg('TIMESTAMP'),
       cell: ({ row }) => (
         <TruncatedCell
           text={
-            row?.original?.updatedAt ? dateFormat(row?.original?.updatedAt) : ''
+            row?.original?.updatedAt ? formatDate(row?.original?.updatedAt) : ''
           }
           maxLength={30}
         />

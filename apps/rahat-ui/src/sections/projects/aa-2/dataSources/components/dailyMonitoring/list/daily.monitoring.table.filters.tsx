@@ -15,9 +15,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { cn } from '@rahat-ui/shadcn/src';
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { CalendarIcon } from 'lucide-react';
 import { SearchInput } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   user: string;
@@ -31,6 +32,7 @@ type IProps = {
 
 type ISelectComponent = {
   name: string;
+  label: string;
   options: Array<any>;
   value: string;
   handleFilterChange: (payload: { key: string; value: any }) => void;
@@ -38,21 +40,23 @@ type ISelectComponent = {
 
 const SelectComponent = ({
   name,
+  label,
   options,
   value,
   handleFilterChange,
 }: ISelectComponent) => {
+  const t = useTranslations('GLOBAL');
   return (
     <Select
       value={value}
       onValueChange={(val) => handleFilterChange({ key: name, value: val })}
     >
       <SelectTrigger>
-        <SelectValue placeholder={`Select a ${name}`} />
+        <SelectValue placeholder={t('SELECT_PLACEHOLDER', { name: label })} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="all">{t('ALL')}</SelectItem>
           {options.map((item) => (
             <SelectItem key={item.label} value={item.value}>
               {item.label}
@@ -71,18 +75,22 @@ export default function DailyMonitoringTableFilters({
   handleSearch,
   handleFilterChange,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tGlobal = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">
       <SearchInput
         className="w-full"
-        name="dataEntryBy"
+        name={tGlobal('DATA_ENTRY_BY')}
         value={user}
         onSearch={handleSearch}
       />
       {/* Filter River Basin  */}
       <SelectComponent
         name="riverBasin"
+        label={tGlobal('RIVER_BASIN')}
         value={location}
         options={riverBasins}
         handleFilterChange={handleFilterChange}
@@ -97,7 +105,7 @@ export default function DailyMonitoringTableFilters({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+            {date ? formatDate(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>

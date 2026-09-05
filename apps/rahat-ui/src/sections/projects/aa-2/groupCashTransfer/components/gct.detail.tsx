@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -29,6 +30,7 @@ import {
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 import { Back, DemoTable } from 'apps/rahat-ui/src/common';
 import { useGetOneGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import {
   Tooltip,
   TooltipContent,
@@ -38,10 +40,47 @@ import {
 import GctDeleteDialog from './gct.delete.dialog';
 import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
+import { usePhoneFormat } from '../../../../../utils/i18n/phone';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctDetail() {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+  const tb = useTranslations();
+
+  const statusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      NOT_STARTED: t('NOT_STARTED'),
+      PENDING: tGlobal('PENDING'),
+      STARTED: t('STARTED'),
+      COMPLETED: tGlobal('COMPLETED'),
+      SUCCESS: tGlobal('SUCCESS'),
+      FAILED: tGlobal('FAILED'),
+      REJECTED: t('REJECTED'),
+    };
+    return map[s] ?? s.replace(/_/g, ' ');
+  };
+
+  // Bank validation messages come from CIPS (external), so there's no fixed
+  // English string to key on. CIPS sends a stable `responseCode` alongside
+  // the message (e.g. "001") — prefer that when present, since it won't
+  // drift the way free-text wording can. When the code isn't available
+  // (or isn't keyed yet), fall back to a slug of the message text itself,
+  // then finally to the raw message unchanged.
+  const localiseValidationMessage = (message: string, responseCode?: string) => {
+    if (responseCode) {
+      const codeKey = `CIPS_${responseCode}`;
+      if (t.has(codeKey as never)) return t(codeKey as never);
+    }
+    const textKey = String(message)
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    return t.has(textKey as never) ? t(textKey as never) : message;
+  };
   const { id, uuid } = useParams();
   const projectUUID = id as UUID;
   const gctUUID = uuid as string;
@@ -51,6 +90,7 @@ export default function GctDetail() {
   const [validationResult, setValidationResult] = useState<{
     success: boolean;
     message: string;
+    responseCode?: string;
   } | null>(null);
 
   const { data, isLoading } = useGetOneGroupCashTransfer(projectUUID, gctUUID);
@@ -66,6 +106,9 @@ export default function GctDetail() {
   const records: GctFundRecord[] = item?.groupCashTransferRecords ?? [];
   const hasFund = records.length > 0;
   const totalAssigned: number = item?.totalAssignedAmount ?? 0;
+  const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
+  const formatPhone = usePhoneFormat();
 
   const handleValidateBankAccount = async () => {
     setValidationResult(null);
@@ -81,16 +124,25 @@ export default function GctDetail() {
       const isValid = result?.data?.valid ?? result?.valid ?? false;
       setValidationResult({
         success: isValid,
-        message: result?.data?.message || result?.message || (isValid ? 'Bank account validated successfully.' : 'Validation failed.'),
+        message: result?.data?.message || result?.message || (isValid ? t('BANK_ACCOUNT_VALIDATED_SUCCESSFULLY') : t('DISBURSEMENT_FAILED')),
+        responseCode: result?.data?.result?.cipsData?.responseCode,
       });
     } catch (error: unknown) {
-      const e = error as { response?: { data?: { message?: string } }; message?: string };
+      const e = error as {
+        response?: { data?: { message?: string; code?: string; params?: Record<string, unknown> } };
+        message?: string;
+      };
+      const rawMessage = e?.response?.data?.message || e?.message || t('DISBURSEMENT_FAILED');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       setValidationResult({
         success: false,
-        message:
-          e?.response?.data?.message ||
-          e?.message ||
-          'Validation failed.',
+        message: errorMessage,
       });
     }
   };
@@ -99,35 +151,35 @@ export default function GctDetail() {
     () => [
       {
         accessorKey: 'title',
-        header: 'Title',
+        header: tGlobal('TITLE'),
         cell: ({ row }) => (
           <span className="font-medium">{row.original.title || '—'}</span>
         ),
       },
       {
         accessorKey: 'amount',
-        header: 'Amount',
+        header: t('AMOUNT_COL'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.original.amount.toLocaleString()}
+            {formatNum(row.original.amount)}
           </span>
         ),
       },
       {
         accessorKey: 'createdBy',
-        header: 'Created By',
+        header: t('CREATED_BY_COL'),
         cell: ({ row }) => row.original.createdBy || '—',
       },
       {
         accessorKey: 'status',
-        header: 'Status',
+        header: t('STATUS_COL'),
         cell: ({ row }) => {
           const s = row.original.status;
           return (
             <Badge
               className={`text-xs ${GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'}`}
             >
-              {s.replace('_', ' ')}
+              {statusLabel(s)}
             </Badge>
           );
         },
@@ -159,12 +211,12 @@ export default function GctDetail() {
           <div>
             <h1 className="text-2xl font-semibold">{item?.name ?? '—'}</h1>
             <p className="text-muted-foreground text-sm mt-0.5">
-              GCT Group details and bank information
+              {t('GCT_GROUP_DETAILS_AND_BANK_INFO')}
             </p>
           </div>
           {hasFund && (
             <Badge className="bg-green-100 text-green-700 hover:bg-green-100 ml-2">
-              Fund Reserved
+              {t('FUND_RESERVED')}
             </Badge>
           )}
         </div>
@@ -185,7 +237,7 @@ export default function GctDetail() {
               }
             >
               <Pencil size={14} />
-              Edit
+              {tGlobal('EDIT')}
             </Button>
             <Button
               variant="outline"
@@ -195,7 +247,7 @@ export default function GctDetail() {
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 size={14} />
-              Delete
+              {tGlobal('DELETE')}
             </Button>
           </div>
         </RoleAuth>
@@ -206,24 +258,24 @@ export default function GctDetail() {
         <Card className="rounded-sm">
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Basic Information
+              {t('BASIC_INFORMATION')}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <DetailRow label="Name" value={item?.name} />
+            <DetailRow label={tGlobal('NAME')} value={item?.name} />
             <Separator />
-            <DetailRow label="Phone" value={item?.phone} />
+            <DetailRow label={tGlobal('PHONE')} value={formatPhone(item?.phone)} />
             <Separator />
-            <DetailRow label="Email" value={extras?.email} />
+            <DetailRow label={tGlobal('EMAIL')} value={extras?.email} />
             <Separator />
-            <DetailRow label="District" value={extras?.district} />
+            <DetailRow label={t('DISTRICT')} value={extras?.district} />
             <Separator />
-            <DetailRow label="Municipality" value={extras?.municipality} />
+            <DetailRow label={tGlobal('MUNICIPALITY')} value={extras?.municipality} />
             <Separator />
-            <DetailRow label="Ward (Community)" value={extras?.ward} />
+            <DetailRow label={tGlobal('WARD_COMMUNITY')} value={formatDigits(extras?.ward)} />
             <Separator />
             <div className="flex flex-col gap-1 py-2">
-              <span className="text-xs text-muted-foreground">Support Area</span>
+              <span className="text-xs text-muted-foreground">{tGlobal('SUPPORT_AREA')}</span>
               {supportAreas.length > 0 ? (
                 <div className="flex flex-wrap gap-1 mt-0.5">
                   {supportAreas.map((area) => (
@@ -247,7 +299,7 @@ export default function GctDetail() {
           <CardHeader className="pb-2 pt-4 px-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                Bank Details
+                {t('BANK_DETAILS')}
               </CardTitle>
               <TooltipProvider>
                 <Tooltip>
@@ -260,17 +312,17 @@ export default function GctDetail() {
                         disabled={validateBank.isPending || !bankDetails?.accountNumber || !!extras?.isBankValidated}
                       >
                         {validateBank.isPending ? (
-                          <><Loader2 size={12} className="animate-spin" />Validating…</>
+                          <><Loader2 size={12} className="animate-spin" />{t('VALIDATING')}</>
                         ) : extras?.isBankValidated ? (
-                          <>Bank Validated</>
+                          <>{t('BANK_VALIDATED')}</>
                         ) : (
-                          'Validate Bank Details'
+                          t('VALIDATE_BANK_DETAILS')
                         )}
                       </Button>
                     </span>
                   </TooltipTrigger>
                   {extras?.isBankValidated && (
-                    <TooltipContent>Bank account already validated.</TooltipContent>
+                    <TooltipContent>{t('BANK_ACCOUNT_ALREADY_VALIDATED')}</TooltipContent>
                   )}
                 </Tooltip>
               </TooltipProvider>
@@ -285,20 +337,20 @@ export default function GctDetail() {
                     : 'bg-red-50 text-red-600'
                 }`}
               >
-                {validationResult.message}
+                {localiseValidationMessage(validationResult.message, validationResult.responseCode)}
               </div>
             )}
-            <DetailRow label="Bank Name" value={bankDetails?.bankName} />
+            <DetailRow label={t('BANK_NAME')} value={bankDetails?.bankName} />
             <Separator />
-            <DetailRow label="Bank Branch Name" value={bankDetails?.bankBranchName} />
+            <DetailRow label={t('BANK_BRANCH_NAME')} value={bankDetails?.bankBranchName} />
             <Separator />
-            <DetailRow label="Account Holder Name" value={bankDetails?.accountName} />
+            <DetailRow label={t('ACCOUNT_HOLDER_NAME')} value={bankDetails?.accountName} />
             <Separator />
-            <DetailRow label="Account Number" value={bankDetails?.accountNumber} />
+            <DetailRow label={t('ACCOUNT_NUMBER')} value={formatDigits(bankDetails?.accountNumber)} />
             <Separator />
             <DetailRow
-              label="Total Reserved Amount"
-              value={totalAssigned.toLocaleString()}
+              label={t('TOTAL_RESERVED_AMOUNT')}
+              value={formatNum(totalAssigned)}
             />
           </CardContent>
         </Card>
@@ -308,7 +360,7 @@ export default function GctDetail() {
         <Card className="rounded-sm mt-4">
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Reserved Fund Records
+              {t('RESERVED_FUND_RECORDS')}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">

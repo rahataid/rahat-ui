@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -20,6 +21,7 @@ export function DistrictLayer({
   showRegions = true,
   onRegionHover,
 }: RegionLayerProps) {
+  const t = useTranslations('AA_PROJECT');
   const map = useMap();
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
 
@@ -70,20 +72,19 @@ export function DistrictLayer({
               feature.properties.name ||
               feature.properties.DISTRICT ||
               feature.properties.PR_NAME ||
-              'Unknown';
+              t('UNKNOWN');
 
-            // Create popup
             const popupContent = `
               <div class="p-2">
                 <h3 class="font-bold text-sm">${regionName}</h3>
                 ${
                   feature.properties.PR_NAME
-                    ? `<p class="text-xs text-gray-600">Province: ${feature.properties.PR_NAME}</p>`
+                    ? `<p class="text-xs text-gray-600">${t('PROVINCE')}: ${feature.properties.PR_NAME}</p>`
                     : ''
                 }
                 ${
                   feature.properties.REGION_CODE
-                    ? `<p class="text-xs text-gray-600">Code: ${feature.properties.REGION_CODE}</p>`
+                    ? `<p class="text-xs text-gray-600">${t('CODE')}: ${feature.properties.REGION_CODE}</p>`
                     : ''
                 }
               </div>
@@ -132,12 +133,11 @@ export function DistrictLayer({
 
     loadRegions();
 
-    // Cleanup function
     return () => {
       isActive = false;
       removeCurrentLayer();
     };
-  }, [regionType, showRegions, map, onRegionHover]);
+  }, [regionType, showRegions, map, onRegionHover, t]);
 
   return null;
 }

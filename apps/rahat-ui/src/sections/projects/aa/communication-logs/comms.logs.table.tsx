@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import {
   flexRender,
@@ -22,6 +23,7 @@ import ClientSidePagination from '../../components/client.side.pagination';
 export default function CommsLogsTable({ table }: {
   table: Table<any>
 }) {
+  const t = useTranslations('GLOBAL');
 
   return (
     <>
@@ -69,7 +71,7 @@ export default function CommsLogsTable({ table }: {
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {t('NO_RESULTS')}
                   </TableCell>
                 </TableRow>
               )}

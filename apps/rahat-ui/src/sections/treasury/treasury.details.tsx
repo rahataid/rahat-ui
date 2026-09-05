@@ -9,21 +9,23 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ArrowUp } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import TreasuryCard from './treasury.card';
 import { useProjectList } from '@rahat-ui/query';
 
 const TreasuryDetails = () => {
+  const t = useTranslations('TREASURY');
   const projects = useProjectList();
   return (
     <div className="grid grid-cols-12 gap-2">
       <div className="col-span-8">
         <div className="bg-card h-[calc(100vh-175px)] rounded-md p-4">
           <div className="flex items-center justify-between">
-            <p className="text-gray-700 text-xl font-medium">Projects</p>
+            <p className="text-gray-700 text-xl font-medium">{t('PROJECTS')}</p>
             <Input
               className="w-1/2"
               type="text"
-              placeholder="Search Projects"
+              placeholder={t('SEARCH_PROJECTS')}
             />
           </div>
           <div className="mt-4">
@@ -57,7 +59,7 @@ const TreasuryDetails = () => {
         <Card className="h-full">
           <CardHeader>
             <CardTitle className="text-neutral-800 font-medium">
-              Recent Deposits
+              {t('RECENT_DEPOSITS')}
             </CardTitle>
           </CardHeader>
           <ScrollArea className="h-[700px]">

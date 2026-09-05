@@ -4,10 +4,12 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { useTranslations } from 'next-intl';
 import TemperatureWatchView from './temperature.watch.view';
 import HumidityWatchView from './humidity.watch.view';
 
 export function AWSSection() {
+  const t = useTranslations('AA_PROJECT');
   return (
     <Tabs defaultValue="temperatureWatch">
       <TabsList className="mb-2">
@@ -15,13 +17,13 @@ export function AWSSection() {
           className="w-full data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
           value="temperatureWatch"
         >
-          Temperature Watch
+          {t('TEMPERATURE_WATCH')}
         </TabsTrigger>
         <TabsTrigger
           className="w-full data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
           value="humidityWatch"
         >
-          Relative Humidity
+          {t('RELATIVE_HUMIDITY')}
         </TabsTrigger>
       </TabsList>
 

@@ -6,6 +6,8 @@ import { useSwal } from 'libs/query/src/swal';
 import { TAGS } from 'libs/query/src/config';
 import { useProjectAction } from '../../projects';
 import { useRSQuery } from '@rumsan/react-query';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export enum PayoutType {
   FSP = 'FSP',
@@ -40,6 +42,8 @@ interface CreatePayout {
 }
 
 export const useCreatePayout = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -67,15 +71,22 @@ export const useCreatePayout = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Payout created successfully.',
+        title: t('PAYOUT_CREATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while creating payout.',
+        title: t('ERROR_WHILE_CREATING_PAYOUT'),
         icon: 'error',
         text: errorMessage,
       });
@@ -189,6 +200,8 @@ export const useGetPayoutLog = (projectUUID: UUID, payload: any) => {
 };
 
 export const useUpdatePayout = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -220,15 +233,22 @@ export const useUpdatePayout = () => {
       qc.invalidateQueries({ queryKey: ['payout'] });
       qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
-        title: 'Payout updated successfully',
+        title: t('PAYOUT_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while updating payout.',
+        title: t('ERROR_WHILE_UPDATING_PAYOUT'),
         icon: 'error',
         text: errorMessage,
       });
@@ -237,6 +257,8 @@ export const useUpdatePayout = () => {
 };
 
 export const useTriggerForPayoutFailed = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -270,15 +292,22 @@ export const useTriggerForPayoutFailed = () => {
       qc.invalidateQueries({ queryKey: ['payout'] });
       qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
-        title: 'Payout Triggerd successfully',
+        title: t('PAYOUT_TRIGGERD_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while triggering payout.',
+        title: t('ERROR_WHILE_TRIGGERING_PAYOUT'),
         icon: 'error',
         text: errorMessage,
       });
@@ -287,6 +316,8 @@ export const useTriggerForPayoutFailed = () => {
 };
 
 export const useTriggerForOnePayoutFailed = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -320,15 +351,22 @@ export const useTriggerForOnePayoutFailed = () => {
       qc.invalidateQueries({ queryKey: ['payout'] });
       qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
-        title: 'Payout updated successfully',
+        title: t('PAYOUT_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while updating payout.',
+        title: t('ERROR_WHILE_UPDATING_PAYOUT'),
         icon: 'error',
         text: errorMessage,
       });
@@ -337,6 +375,8 @@ export const useTriggerForOnePayoutFailed = () => {
 };
 
 export const useSendPayoutOtp = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -369,15 +409,22 @@ export const useSendPayoutOtp = () => {
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
       toast.fire({
-        title: `Rahat Pin sent successfully to ${payload.email}`,
+        title: t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email: payload.email }),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || tb('GLOBAL.ERROR' as never);
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT', 'GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while sending OTP.',
+        title: t('ERROR_WHILE_SENDING_OTP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -386,6 +433,8 @@ export const useSendPayoutOtp = () => {
 };
 
 export const useTriggerPayout = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -419,15 +468,22 @@ export const useTriggerPayout = () => {
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
       toast.fire({
-        title: 'Payout updated successfully',
+        title: t('PAYOUT_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT', 'GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while updating payout.',
+        title: t('ERROR_WHILE_UPDATING_PAYOUT'),
         icon: 'error',
         text: errorMessage,
       });
@@ -486,6 +542,9 @@ export const usePayoutExportLogs = ({
 };
 
 export const useVerifyManualPayout = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tRoot = useTranslations();
+  const tb = useTranslations();
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
   const alert = useSwal();
@@ -529,17 +588,27 @@ export const useVerifyManualPayout = () => {
       queryClient.invalidateQueries({ queryKey: [TAGS.VERFIY_MANUAL_PAYOUT] });
       toast.fire({
         icon: 'success',
-        title: 'Manual payout verified',
+        title: t('MANUAL_PAYOUT_VERIFIED'),
       });
     },
     onError: (error: any) => {
       console.error('Upload error', error);
-      const message: string =
+      const rawMessage: string =
         error?.response?.data?.message || error?.message || '';
+      const message = resolveBackendErrorMessage(
+        tRoot,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        [
+          'PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS',
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+        ],
+        rawMessage,
+      );
 
       toast.fire({
         icon: 'error',
-        title: 'Verification Failed',
+        title: t('VERIFICATION_FAILED'),
         text: message,
       });
     },

@@ -34,6 +34,8 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export type TextDetail = {
   _id: string;
@@ -95,6 +97,8 @@ type IProps = {
   type: string;
 };
 export default function TextDetailTableView({ data, type }: IProps) {
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -182,7 +186,7 @@ export default function TextDetailTableView({ data, type }: IProps) {
                         colSpan={columns.length}
                         className="h-24 text-center"
                       >
-                        No results.
+                        {tg('NO_RESULTS')}
                       </TableCell>
                     </TableRow>
                   )}
@@ -193,10 +197,10 @@ export default function TextDetailTableView({ data, type }: IProps) {
           <div className="flex items-center justify-end space-x-8 py-4">
             <div className="flex-1 text-sm text-muted-foreground">
               {table.getFilteredSelectedRowModel().rows.length} of{' '}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
+              {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
             </div>
             <div className="flex items-center gap-2">
-              <div className="text-sm font-medium">Rows per page</div>
+              <div className="text-sm font-medium">{tg('ROWS_PER_PAGE')}</div>
               <Select
                 defaultValue="10"
                 onValueChange={(value) => table.setPageSize(Number(value))}
@@ -206,19 +210,21 @@ export default function TextDetailTableView({ data, type }: IProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="5">5</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="30">30</SelectItem>
-                    <SelectItem value="40">40</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="5">{formatNum(5)}</SelectItem>
+                    <SelectItem value="10">{formatNum(10)}</SelectItem>
+                    <SelectItem value="20">{formatNum(20)}</SelectItem>
+                    <SelectItem value="30">{formatNum(30)}</SelectItem>
+                    <SelectItem value="40">{formatNum(40)}</SelectItem>
+                    <SelectItem value="50">{formatNum(50)}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              Page {table.getState().pagination.pageIndex + 1} of{' '}
-              {table.getPageCount()}
+              {tg('PAGE_CURRENT_OF_TOTAL', {
+                current: formatNum(table.getState().pagination.pageIndex + 1),
+                total: formatNum(table.getPageCount()),
+              })}
             </div>
             <div className="space-x-4">
               <Button
@@ -227,7 +233,7 @@ export default function TextDetailTableView({ data, type }: IProps) {
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                Previous
+                {tg('PREVIOUS')}
               </Button>
               <Button
                 variant="outline"
@@ -235,7 +241,7 @@ export default function TextDetailTableView({ data, type }: IProps) {
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                Next
+                {tg('NEXT')}
               </Button>
             </div>
           </div>

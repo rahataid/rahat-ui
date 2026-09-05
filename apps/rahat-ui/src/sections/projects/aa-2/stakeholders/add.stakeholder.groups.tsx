@@ -9,7 +9,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { useProjectSelectStakeholdersTableColumns } from './columns';
-import { stakeholderGroupSchema } from './schemas/stakeholder-group.validation';
+import { buildStakeholderGroupSchema } from './schemas/stakeholder-group.validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,6 +30,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import {
   useCreateStakeholdersGroups,
@@ -43,13 +44,21 @@ import {
 } from '@rahat-ui/query';
 import StakeholdersTableFilters from './component/stakeholders.table.filters';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const UpdateOrAddStakeholdersGroup = () => {
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.editId as UUID;
   const router = useRouter();
   const isEditing = Boolean(groupId);
+  const t = useTranslations('AA_PROJECT');
+
+  const stakeholderGroupSchema = React.useMemo(
+    () => buildStakeholderGroupSchema(t),
+    [t],
+  );
 
   const form = useForm<z.infer<typeof stakeholderGroupSchema>>({
     resolver: zodResolver(stakeholderGroupSchema),
@@ -147,7 +156,7 @@ const UpdateOrAddStakeholdersGroup = () => {
     if (groupExists) {
       setError('name', {
         type: 'manual',
-        message: 'A group with this name already exists',
+        message: t('GROUP_WITH_THIS_NAME_ALREADY_EXISTS'),
       });
       return;
     }
@@ -239,8 +248,8 @@ const UpdateOrAddStakeholdersGroup = () => {
               <div className="flex items-center justify-between">
                 <h1 className="font-semibold text-[clamp(16px,2vw,28px)]">
                   {isEditing
-                    ? 'Update Stakeholder Group Details'
-                    : 'Create Stakeholder Group'}
+                    ? t('UPDATE_STAKEHOLDER_GROUP')
+                    : t('CREATE_STAKEHOLDER_GROUP')}
                 </h1>
                 <div className="flex gap-2 items-center">
                   <Button
@@ -252,16 +261,16 @@ const UpdateOrAddStakeholdersGroup = () => {
                     }}
                     variant="outline"
                   >
-                    Clear
+                    {t('CLEAR')}
                   </Button>
                   <Button
                     type="submit"
                     className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
                     onClick={handleButtonClick}
                   >
-                    {isEditing ? 'Update' : 'Add'}
+                    {isEditing ? t('UPDATE') : t('ADD')}
                     {Object.keys(selectedListItems).length > 0 &&
-                      ` (${Object.keys(selectedListItems).length} stakeholders)`}
+                      ` (${formatNum(Object.keys(selectedListItems).length)} ${t('STAKEHOLDERS').toLowerCase()})`}
                   </Button>
                 </div>
               </div>
@@ -275,10 +284,10 @@ const UpdateOrAddStakeholdersGroup = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Stakeholder Group Name</Label>
+                    <Label>{t('STAKEHOLDER_GROUP_NAME')}</Label>
                     <FormControl>
                       <Input
-                        placeholder="Write stakeholder group name"
+                        placeholder={t('WRITE_STAKEHOLDER_GROUP_NAME')}
                         className="w-full rounded-md text-[clamp(11px,1vw,14px)]"
                         {...field}
                       />
@@ -293,9 +302,11 @@ const UpdateOrAddStakeholdersGroup = () => {
           <div className="rounded-md border p-3">
               <Heading
                 title=" "
-                description={`Select stakeholders from the list below to ${
-                  isEditing ? 'update' : 'create'
-                } group`}
+                description={
+                  isEditing
+                    ? t('SELECT_STAKEHOLDERS_TO_UPDATE_GROUP')
+                    : t('SELECT_STAKEHOLDERS_TO_CREATE_GROUP')
+                }
                 titleStyle="text-xl"
               />
 

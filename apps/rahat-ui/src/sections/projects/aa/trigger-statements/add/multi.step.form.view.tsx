@@ -8,18 +8,21 @@ import { z } from 'zod';
 import { useAddTriggerStatementToPhase, useSinglePhase } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   useCreateTriggerStatement,
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 const steps = [
-  { label: 'Add Trigger Statement' },
-  { label: 'Configure Phase' },
+  { key: 'ADD_TRIGGER_STATEMENT' },
+  { key: 'CONFIGURE_PHASE' },
 ];
 
 const MultiStepForm = () => {
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const { id } = useParams();
   const projectId = id as UUID;
@@ -56,7 +59,7 @@ const MultiStepForm = () => {
   const riverBasin = dataSources?.glofas?.location;
 
   const ManualFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid title' }),
+    title: z.string().min(2, { message: t('PLEASE_ENTER_VALID_TITLE') }),
     isMandatory: z.boolean().optional(),
   });
 
@@ -69,18 +72,21 @@ const MultiStepForm = () => {
   });
 
   const AutomatedFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid name' }),
-    dataSource: z.string().min(1, { message: 'Please select data source' }),
+    title: z.string().min(2, { message: t('PLEASE_ENTER_VALID_NAME') }),
+    dataSource: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
     isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter minimum lead time days' }),
-    maxLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter maximum lead time days' }),
-    probability: z
-      .string()
-      .min(1, { message: 'Please enter forecast probability' }),
+    minLeadTimeDays: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, { message: t('PLEASE_ENTER_MINIMUM_LEAD_TIME_DAYS') }),
+    ),
+    maxLeadTimeDays: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, { message: t('PLEASE_ENTER_MAXIMUM_LEAD_TIME_DAYS') }),
+    ),
+    probability: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(1, { message: t('PLEASE_ENTER_FORECAST_PROBABILITY') }),
+    ),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
@@ -220,7 +226,7 @@ const MultiStepForm = () => {
           }}
         >
           {steps.map((step, index) => (
-            <Step key={index} label={step.label} />
+            <Step key={index} label={t(step.key)} />
           ))}
         </Stepper>
         {activeStep === 0 && (

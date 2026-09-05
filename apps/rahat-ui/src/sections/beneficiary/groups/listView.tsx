@@ -26,6 +26,8 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 // import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 // import CreateGroupModal from './components/createGroupModal';
 
@@ -52,6 +54,7 @@ export default function ListView({
     string,
     any
   >>(null);
+  const t = useTranslations('GLOBAL');
 
   const handleSelectProject = (project: Record<string, any>) => {
     setSelectedProject(project);
@@ -60,11 +63,11 @@ export default function ListView({
 
   const selectFilterProjectItems = [
     {
-      name: 'All',
+      name: t('ALL') || 'All',
       value: undefined,
     },
     {
-      name: 'Not Assigned',
+      name: t('NOT_ASSIGNED'),
       value: 'NOT_ASSGNED',
     },
     ...projects.map((p: any) => ({
@@ -94,7 +97,7 @@ export default function ListView({
       <div className="border rounded shadow p-3">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter beneficiary groups..."
+            placeholder={t('FILTER_BENEFICIARY_GROUPS')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -105,7 +108,7 @@ export default function ListView({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                {selectedProject ? selectedProject.name : 'Select Project'}
+                {selectedProject ? selectedProject.name : t('SELECT_PROJECT')}
                 <ChevronDown className="mr-2 h-4 w-5" />
               </Button>
             </DropdownMenuTrigger>
@@ -126,11 +129,11 @@ export default function ListView({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 <Settings2 className="mr-2 h-4 w-5" />
-                View
+                {t('VIEW')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('TOGGLE_COLUMNS')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {table
                 .getAllColumns()
@@ -145,7 +148,7 @@ export default function ListView({
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {getColumnLabel(column)}
                     </DropdownMenuCheckboxItem>
                   );
                 })}
@@ -222,10 +225,10 @@ export default function ListView({
                         alt="no data"
                       />
                       <p className="text-medium text-base mb-1">
-                        No Data Available
+                        {t('NO_DATA_AVAILABLE')}
                       </p>
                       <p className="text-sm mb-4 text-gray-500">
-                        There are no groups to display at the moment
+                        {t('THERE_ARE_NO_GROUPS_TO_DISPLAY')}
                       </p>
                     </div>
                   </TableCell>

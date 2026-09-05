@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -33,47 +34,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-
-export const columns: ColumnDef<any>[] = [
-  {
-    accessorKey: 'topic',
-    header: 'Topic',
-    cell: ({ row }) => <div>{row?.original?.__typename}</div>,
-  },
-  {
-    accessorKey: 'timeStamp',
-    header: 'Time Stamp',
-    cell: ({ row }) => (
-      <div>
-        {' '}
-        {new Date(row?.original?.blockTimestamp * 1000).toDateString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'transactionHash',
-    header: 'Transaction Hash',
-    cell: ({ row }) => (
-      <div>
-        {' '}
-        {`${row
-          .getValue('transactionHash')
-          ?.toString()
-          .substring(0, 4)}....${row
-          .getValue('transactionHash')
-          ?.toString()
-          ?.slice(-3)}`}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Amount',
-    cell: ({ row }) => {
-      return <div> {row.getValue('amount')}</div>;
-    },
-  },
-];
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function BeneficiaryDetailTableView({
   transactionData,
@@ -82,6 +43,51 @@ export default function BeneficiaryDetailTableView({
   transactionData: any;
   isFetching: boolean;
 }) {
+  const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const columns: ColumnDef<any>[] = React.useMemo(
+    () => [
+      {
+        accessorKey: 'topic',
+        header: t('TOPIC'),
+        cell: ({ row }) => <div>{row?.original?.__typename}</div>,
+      },
+      {
+        accessorKey: 'timeStamp',
+        header: t('TIME_STAMP'),
+        cell: ({ row }) => (
+          <div>
+            {' '}
+            {new Date(row?.original?.blockTimestamp * 1000).toDateString()}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'transactionHash',
+        header: t('TRANSACTION_HASH'),
+        cell: ({ row }) => (
+          <div>
+            {' '}
+            {`${row
+              .getValue('transactionHash')
+              ?.toString()
+              .substring(0, 4)}....${row
+              .getValue('transactionHash')
+              ?.toString()
+              ?.slice(-3)}`}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'amount',
+        header: t('AMOUNT'),
+        cell: ({ row }) => {
+          return <div> {formatNum(row.getValue('amount'))}</div>;
+        },
+      },
+    ],
+    [formatNum],
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -156,7 +162,7 @@ export default function BeneficiaryDetailTableView({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? <TableLoader /> : 'No data available.'}
+                    {isFetching ? <TableLoader /> : t('NO_DATA_AVAILABLE')}
                   </TableCell>
                 </TableRow>
               )}
@@ -166,11 +172,11 @@ export default function BeneficiaryDetailTableView({
       </div>
       <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 mt-2 bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {formatNum(table.getFilteredSelectedRowModel().rows.length)} of{' '}
+          {formatNum(table.getFilteredRowModel().rows.length)} row(s) selected.
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
+          <div className="text-sm font-medium">{t('ROWS_PER_PAGE')}</div>
           <Select
             defaultValue="10"
             onValueChange={(value) => table.setPageSize(Number(value))}
@@ -180,19 +186,21 @@ export default function BeneficiaryDetailTableView({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="5">{formatNum(5)}</SelectItem>
+                <SelectItem value="10">{formatNum(10)}</SelectItem>
+                <SelectItem value="20">{formatNum(20)}</SelectItem>
+                <SelectItem value="30">{formatNum(30)}</SelectItem>
+                <SelectItem value="40">{formatNum(40)}</SelectItem>
+                <SelectItem value="50">{formatNum(50)}</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
         <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+          {t('PAGE_CURRENT_OF_TOTAL', {
+                current: formatNum(table.getState().pagination.pageIndex + 1),
+                total: formatNum(table.getPageCount()),
+              })}
         </div>
         <div className="space-x-4">
           <Button

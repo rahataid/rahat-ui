@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
@@ -8,30 +9,37 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { TriangleAlertIcon } from 'lucide-react';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 export default function useCommsLogsTableColumns(transportName: string) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
+  const renderDateTime = (dateTime: string) => formatDate(dateTime);
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
-      header: 'Audience',
+      header: t('AUDIENCE'),
       cell: ({ row }) => <div className="">{row?.original?.address}</div>,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('STATUS'),
       cell: ({ row }) => {
         return (
           <Badge className={renderBadgeBg(row?.original?.status)}>
-            {row?.original?.status}
+            {translateValue(tg, row?.original?.status)}
           </Badge>
         );
       },
     },
     {
       accessorKey: 'attempts',
-      header: 'Attempts',
+      header: t('ATTEMPTS'),
       cell: ({ row }) => {
-        return <div className="ml-8">{row?.original?.attempts}</div>;
+        return <div className="ml-8">{formatNum(row?.original?.attempts ?? 0)}</div>;
       },
     },
     // hide duration column for EMAIL and SMS transports
@@ -39,42 +47,43 @@ export default function useCommsLogsTableColumns(transportName: string) {
       ? [
           {
             accessorKey: 'duration',
-            header: 'Duration',
+            header: t('DURATION'),
             cell: ({ row }) => (
               <div>
-                {row?.original?.disposition?.cdr?.billableseconds || 'N/A'}
+                {row?.original?.disposition?.cdr?.billableseconds != null ? formatNum(row?.original?.disposition?.cdr?.billableseconds) : 'N/A'}
               </div>
             ),
           },
         ]
       : []),
     {
-      header: 'Timestamp',
+      accessorKey: 'timeStamp',
+      header: t('TIMESTAMP'),
       meta: { className: 'w-[250px]' },
       cell: ({ row }) => {
         return (
           <div className="flex text-[10px] items-center space-x-2 gap-2 ">
             {transportName === 'SMS' || transportName === 'EMAIL' ? (
               <div>
-                <span>{dateFormat(row?.original?.updatedAt)}</span>
+                <span>{formatDate(row?.original?.updatedAt)}</span>
               </div>
             ) : (
               <>
                 {row?.original?.status === 'SUCCESS' ? (
                   <div className="flex flex-col">
                     <span>
-                      {dateFormat(row?.original?.disposition?.cdr?.starttime) ??
-                        'N/A'}
+                      {formatDate(row?.original?.disposition?.cdr?.starttime) ??
+                        tg('N_A')}
                     </span>
-                    <span className="text-muted-foreground">to</span>
+                    <span className="text-muted-foreground">{tg('TO')}</span>
                     <span>
-                      {dateFormat(row?.original?.disposition?.cdr?.endtime) ??
-                        'NA'}
+                      {formatDate(row?.original?.disposition?.cdr?.endtime) ??
+                        tg('N_A')}
                     </span>
                   </div>
                 ) : (
                   <div className="flex">
-                    <span>{dateFormat(row?.original?.updatedAt)}</span>
+                    <span>{formatDate(row?.original?.updatedAt)}</span>
                   </div>
                 )}
               </>
@@ -99,7 +108,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
                         strokeWidth={1.5}
                         color="red"
                       />
-                      <span className="font-semibold text-sm/6">Fail</span>
+                      <span className="font-semibold text-sm/6">{t('FAIL')}</span>
                     </div>
                     <p className="text-gray-500 text-sm mt-1 break-words">
                       {row.original?.disposition?.disposition}
@@ -114,16 +123,6 @@ export default function useCommsLogsTableColumns(transportName: string) {
     },
   ];
   return columns;
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
 }
 
 function renderBadgeBg(status: string) {

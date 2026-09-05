@@ -10,6 +10,7 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   Card,
@@ -29,7 +30,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
@@ -58,8 +59,15 @@ import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function CommsLogsDetailPage() {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
 
   const [communicationId, activityId, sessionId] = (
@@ -167,14 +175,14 @@ export default function CommsLogsDetailPage() {
   const logsGroupName = useMemo(() => {
     const groupName = logs?.group?.name || logs?.groupName || '';
 
-    if (!groupName) return 'N/A';
+    if (!groupName) return tg('N_A');
 
     if (groupName.length > 20) {
       return `${groupName.slice(0, 20)}...`;
     }
 
     return groupName;
-  }, [logs]);
+  }, [logs, tg]);
 
   const table = useReactTable({
     manualPagination: true,
@@ -211,21 +219,23 @@ export default function CommsLogsDetailPage() {
     try {
       if (!downloadUrl) {
         return toast.error(
-          'Failed to load communication data. Please refresh and try again.',
+          t('FAILED_LOAD_COMMUNICATION_DATA'),
         );
       }
-      if (hasNoLogsForExport) {
-        return toast.error('No communication logs available to export.');
+      if (!count?.data?.data) {
+        return toast.error(
+          t('COMMUNICATION_STATS_NOT_AVAILABLE'),
+        );
       }
       const fileName = `${logs?.group?.name || 'group'}_${
         activityDetail?.title || 'activity'
       }_${new Date().toISOString().slice(0, 10)}.csv`;
       await downloadLogsCsv(downloadUrl, fileName);
-      toast.success('Communication logs exported successfully!');
+      toast.success(t('LOGS_EXPORTED_SUCCESSFULLY'));
     } catch (error) {
       console.error('Error exporting all logs:', error);
       toast.error(
-        'Failed to export logs. Please try again or contact support.',
+        t('FAILED_EXPORT_LOGS'),
       );
     }
   };
@@ -266,21 +276,21 @@ export default function CommsLogsDetailPage() {
         <div className="mt-1 flex flex-col pb-1 gap-2">
           <div className="flex justify-between">
             <Heading
-              title={`Communication Details`}
-              description="Here is the detailed view of selected communication"
+              title={t('COMMUNICATION_DETAILS')}
+              description={t('DETAILED_VIEW_OF_COMMUNICATION')}
             />
           </div>
           <div className="flex justify-between items-center">
             {latestBroadcastUpdatedAt ? (
               <p className="text-sm text-muted-foreground">
-                Updated At: {dateFormat(latestBroadcastUpdatedAt)}
+                {t('UPDATED_AT')}: {formatDate(latestBroadcastUpdatedAt)}
               </p>
             ) : (
               <div />
             )}
             <div className="flex gap-2 flex-col md:flex-row">
               <TooltipWrapper
-                tip="No communication logs available to export"
+                tip={t('NO_LOGS_TO_EXPORT')}
                 disable={!hasNoLogsForExport}
               >
                 <Button
@@ -296,12 +306,12 @@ export default function CommsLogsDetailPage() {
                 >
                   <CloudDownload className="h-3.5 w-3.5" />
                   {isLoading || isLoadingActivity || isLoadingSessionLogs
-                    ? 'Loading...'
-                    : 'Export All Logs'}
+                    ? t('LOADING')
+                    : t('EXPORT_ALL_LOGS')}
                 </Button>
               </TooltipWrapper>
               <TooltipWrapper
-                tip="No failed deliveries to export"
+                tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
                 disable={!hasNoFailedDeliveries}
               >
                 <Button
@@ -311,7 +321,7 @@ export default function CommsLogsDetailPage() {
                   disabled={hasNoFailedDeliveries}
                 >
                   <CloudDownload className="h-3.5 w-3.5" />
-                  Failed Exports Attempts
+                  {t('FAILED_EXPORTS_ATTEMPTS')}
                 </Button>
               </TooltipWrapper>
               {count?.data?.data &&
@@ -335,7 +345,7 @@ export default function CommsLogsDetailPage() {
                       className=" gap-2 h-7"
                     >
                       <RefreshCcw className="h-3.5 w-3.5" />
-                      Retry Failed Requests
+                      {t('RETRY_FAILED_REQUESTS')}
                     </Button>
                   </RoleAuth>
                 )}
@@ -350,7 +360,7 @@ export default function CommsLogsDetailPage() {
                 <Card className="p-4 rounded-sm bg-white h-full">
                   <CardTitle className="flex gap-2 pb-2">
                     <TooltipWrapper
-                      tip={`Activity Phase: ${activityDetail?.phase?.name}`}
+                      tip={`${t('ACTIVITY_PHASE')}: ${activityDetail?.phase?.name}`}
                     >
                       <Badge
                         className={`${getPhaseColor(
@@ -361,30 +371,23 @@ export default function CommsLogsDetailPage() {
                       </Badge>
                     </TooltipWrapper>
                     <TooltipWrapper
-                      tip={`Activity Status: ${activityDetail?.status}`}
+                      tip={`${t('ACTIVITY_STATUS')}: ${activityDetail?.status ? tGlobal(activityDetail.status) : ''}`}
                     >
                       <Badge
                         className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
                           activityDetail?.status,
                         )}`}
                       >
-                        {activityDetail?.status
-                          .toLowerCase()
-                          .split('_')
-                          .map(
-                            (word: string) =>
-                              word.charAt(0).toUpperCase() + word.slice(1),
-                          )
-                          .join(' ')}
+                        {activityDetail?.status ? tGlobal(activityDetail.status) : ''}
                       </Badge>
                     </TooltipWrapper>
                   </CardTitle>
                   <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
                     <Label className="text-muted-foreground text-xs">
-                      Activity Title:
+                      {t('ACTIVITY_TITLE')}:
                     </Label>
                     <TooltipWrapper
-                      tip={`Activity Title: ${activityDetail?.title}`}
+                      tip={`${t('ACTIVITY_TITLE')}: ${activityDetail?.title}`}
                     >
                       <Label className="text-base space-y-1 font-semibold">
                         {activityDetail?.title}
@@ -392,7 +395,7 @@ export default function CommsLogsDetailPage() {
                     </TooltipWrapper>
                   </CardContent>
                   <TooltipWrapper
-                    tip={`Activity Description: ${activityDetail?.description}`}
+                    tip={`${t('ACTIVITY_DESCRIPTION')}: ${activityDetail?.description}`}
                   >
                     <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
                       {activityDetail?.description}
@@ -404,23 +407,23 @@ export default function CommsLogsDetailPage() {
               {/* Right Section (Data Cards) — 2/3 on large screens */}
               <div className="flex-1 grid grid-cols-2 gap-4">
                 <DataCard
-                  title="Successfully Delivered"
-                  smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
+                  title={t('SUCCESSFULLY_DELIVERED')}
+                  smallNumber={formatNum(count?.data?.data?.SUCCESS ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
-                  title="Failed Delivered"
-                  smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
+                  title={t('FAILED_DELIVERED')}
+                  smallNumber={formatNum(count?.data?.data?.FAIL ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
-                  title="Scheduled"
-                  smallNumber={(count?.data?.data?.SCHEDULED ?? 0).toString()}
+                  title={tg('SCHEDULED')}
+                  smallNumber={formatNum(count?.data?.data?.SCHEDULED ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
-                  title="Pending"
-                  smallNumber={(count?.data?.data?.PENDING ?? 0).toString()}
+                  title={tg('PENDING')}
+                  smallNumber={formatNum(count?.data?.data?.PENDING ?? 0)}
                   className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
               </div>
@@ -438,14 +441,14 @@ export default function CommsLogsDetailPage() {
                         className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] "
                         value="details"
                       >
-                        Details
+                        {tg('DETAILS')}
                       </TabsTrigger>
                       <TabsTrigger
                         id="logs"
                         className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] ]"
                         value="logs"
                       >
-                        Logs
+                        {t('LOGS_TAB')}
                       </TabsTrigger>
                     </TabsList>
                     <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
@@ -457,10 +460,12 @@ export default function CommsLogsDetailPage() {
                         <div>
                           <p className="text-sm text-gray-500">
                             {logs?.communicationDetail?.groupType
-                              ? logs?.communicationDetail?.groupType +
+                              ? translateValue(tg, logs.communicationDetail.groupType, {
+                                  fallbackStyle: 'raw',
+                                }) +
                                 ' ' +
-                                'GROUP'
-                              : 'N/A'}
+                                t('GROUP')
+                              : tg('N_A')}
                           </p>
                           <p className="font-medium">{logsGroupName}</p>
                         </div>
@@ -468,45 +473,35 @@ export default function CommsLogsDetailPage() {
                         {/* Triggered Date */}
                         <div>
                           <p className="text-sm text-gray-500">
-                            Triggered Date
+                            {t('TRIGGERED_DATE')}
                           </p>
                           <p className="font-medium">
-                            {dateFormat(logs?.sessionDetails?.updatedAt)}
+                            {formatDate(logs?.sessionDetails?.updatedAt)}
                           </p>
                         </div>
 
                         {/* Total Audience */}
                         <div>
                           <p className="text-sm text-gray-500">
-                            Total Audience
+                            {t('TOTAL_AUDIENCE')}
                           </p>
-                          <p className="font-medium">{logsMeta?.total}</p>
+                          <p className="font-medium">{formatNum(logsMeta?.total ?? 0)}</p>
                         </div>
 
-                        {/* {logs?.sessionDetails?.status === 'COMPLETED' && (
-                          <div>
-                            <p className="text-sm text-gray-500">
-                              Completed At
-                            </p>
-                            <p className="font-medium">
-                              {dateFormat(logs?.sessionDetails?.updatedAt)}
-                            </p>
-                          </div>
-                        )} */}
                         {logs?.sessionDetails?.startedAt && (
                           <div>
-                            <p className="text-sm text-gray-500">Started At</p>
+                            <p className="text-sm text-gray-500">{t('STARTED_AT')}</p>
                             <p className="font-medium">
-                              {dateFormat(logs?.sessionDetails?.startedAt)}
+                              {formatDate(logs?.sessionDetails?.startedAt)}
                             </p>
                           </div>
                         )}
 
                         {logs?.sessionDetails?.endedAt && (
                           <div>
-                            <p className="text-sm text-gray-500">Ended At</p>
+                            <p className="text-sm text-gray-500">{t('ENDED_AT')}</p>
                             <p className="font-medium">
-                              {dateFormat(logs?.sessionDetails?.endedAt)}
+                              {formatDate(logs?.sessionDetails?.endedAt)}
                             </p>
                           </div>
                         )}
@@ -537,14 +532,14 @@ export default function CommsLogsDetailPage() {
                                 : 'bg-red-100 text-red-600 hover:bg-red-100'
                             } rounded-full px-3`}
                           >
-                            {logs?.sessionDetails?.status}
+                            {translateValue(tg, logs?.sessionDetails?.status)}
                           </Badge>
                         </div>
 
                         {/* Communication */}
                         <div className="space-y-3">
                           <TooltipWrapper
-                            tip={`Communication Title: ${communicationTitle}`}
+                            tip={`${t('COMMUNICATION_TITLE')}: ${communicationTitle}`}
                           >
                             <p className="text-sm text-gray-500">
                               {communicationTitle}
@@ -552,7 +547,7 @@ export default function CommsLogsDetailPage() {
                           </TooltipWrapper>
                           {logs?.communicationDetail?.subject && (
                             <TooltipWrapper
-                              tip={`Communication Subject: ${logs?.communicationDetail?.subject}`}
+                              tip={`${t('COMMUNICATION_SUBJECT')}: ${logs?.communicationDetail?.subject}`}
                             >
                               <div>
                                 <p className="font-medium">
@@ -562,8 +557,9 @@ export default function CommsLogsDetailPage() {
                             </TooltipWrapper>
                           )}
                           <TooltipWrapper
-                            tip={`Communication Message: ${getCommunicationMessage(
+                            tip={`${t('COMMUNICATION_MESSAGE')}: ${getCommunicationMessage(
                               logs?.communicationDetail?.message,
+                              tg('N_A'),
                             )}`}
                           >
                             <div>
@@ -587,7 +583,7 @@ export default function CommsLogsDetailPage() {
                                     <div className="flex items-center gap-2">
                                       <Clock className="h-4 w-4 text-muted-foreground" />
                                       <span className="text-sm font-medium">
-                                        Run {index + 1}
+                                        {t('RUN_NUMBER', { number: index + 1 })}
                                       </span>
                                     </div>
                                     <Badge
@@ -601,15 +597,15 @@ export default function CommsLogsDetailPage() {
                                     </Badge>
                                   </div>
                                   <div className="text-xs text-muted-foreground space-y-1">
-                                    <p>Started: {dateFormat(run.startedAt)}</p>
-                                    <p>Ended: {dateFormat(run.endedAt)}</p>
+                                    <p>{t('STARTED')}: {formatDate(run.startedAt)}</p>
+                                    <p>{t('ENDED')}: {formatDate(run.endedAt)}</p>
                                   </div>
                                 </CardContent>
                               </Card>
                             ),
                           )
                         ) : (
-                          <NoResult message="No Logs Available" />
+                          <NoResult message={t('NO_LOGS_AVAILABLE')} />
                         )}
                       </TabsContent>
                     </div>
@@ -622,12 +618,18 @@ export default function CommsLogsDetailPage() {
                 <SearchInput
                   className="w-full"
                   value={filters.address}
-                  name="Audience"
+                  name={tGlobal('AUDIENCE')}
                   onSearch={(e) => handleSearch(e, 'address')}
                 />
                 <SelectComponent
-                  name="Status"
+                  name={t('STATUS')}
                   options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                  labels={{
+                    ALL: tGlobal('ALL'),
+                    SUCCESS: tGlobal('SUCCESS'),
+                    PENDING: tGlobal('PENDING'),
+                    FAIL: tGlobal('FAIL'),
+                  }}
                   onChange={(value) =>
                     handleFilterChange({
                       target: { name: 'status', value },
@@ -670,11 +672,11 @@ export default function CommsLogsDetailPage() {
   );
 }
 
-function getCommunicationMessage(message: any): string {
+function getCommunicationMessage(message: any, naLabel: string): string {
   if (typeof message === 'string') {
     return message;
   }
-  return message?.fileName || 'N/A';
+  return message?.fileName || naLabel;
 }
 
 function renderMessage(message: any) {

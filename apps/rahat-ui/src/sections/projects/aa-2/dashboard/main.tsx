@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   useBackFill,
   useProjectDashboardReporting,
@@ -16,6 +17,7 @@ import DashboardTabs from './component/dashboard.tabs';
 const Main = () => {
   const { id } = useParams();
   const projectId = id as UUID;
+  const t = useTranslations('AA_PROJECT');
 
   useStellarSettings(projectId);
   const { data: projectInfo, isPending: isProjectInfoLoading } =
@@ -31,8 +33,8 @@ const Main = () => {
     <div className="space-y-3 sm:space-y-4 p-3 sm:p-5">
       <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
         <Heading
-          title="Project Dashboard"
-          description="Overview of your system"
+          title={t('PROJECT_DASHBOARD')}
+          description={t('OVERVIEW_OF_YOUR_SYSTEM')}
           titleStyle="text-lg sm:text-xl xl:text-3xl"
         />
         <IconLabelBtn

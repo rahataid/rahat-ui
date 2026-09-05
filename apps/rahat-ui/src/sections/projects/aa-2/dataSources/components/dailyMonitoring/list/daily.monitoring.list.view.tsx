@@ -29,17 +29,21 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { useTranslations } from 'next-intl';
 // TODO: This component will be removed if not used anywhere
 // import DailyMonitoringTable from './daily.monitoring.table';
 
 export default function DailyMonitoringListView() {
+  const t = useTranslations('AA_PROJECT');
+  const tGlobal = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -53,6 +57,7 @@ export default function DailyMonitoringListView() {
   const { data: projectInfo } = useProjectInfo(projectId as UUID);
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
   const [paginationState, setPaginationState] = React.useState({
     pageIndex: 0,
@@ -84,7 +89,7 @@ export default function DailyMonitoringListView() {
       <div className="flex gap-2 items-center mb-2">
         <SearchInput
           className="w-full"
-          name=" Created By"
+          name={tGlobal('CREATED_BY')}
           value={
             (table.getColumn('dataEntryBy')?.getFilterValue() as string) ?? ''
           }
@@ -114,7 +119,7 @@ export default function DailyMonitoringListView() {
                 !date && 'text-muted-foreground',
               )}
             >
-              {date ? format(date, 'PPP') : <span>Pick a date</span>}
+              {date ? formatDate(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
               <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -142,7 +147,7 @@ export default function DailyMonitoringListView() {
             }}
           >
             <Trash2 className="w-4 h-4 mr-2" />
-            Clear Date
+            {tGlobal('CLEAR_DATE') ? tGlobal('CLEAR_DATE') : 'Clear Date'}
           </Button>
         )}
         <RoleAuth
@@ -155,7 +160,7 @@ export default function DailyMonitoringListView() {
                 `/projects/aa/${projectId}/data-sources/daily-monitoring/add`,
               )
             }
-            name="Add"
+            name={tGlobal('ADD')}
             Icon={Plus}
           />
         </RoleAuth>

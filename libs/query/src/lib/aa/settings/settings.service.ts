@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import { useProjectAction } from '../../projects';
 import { useSwal } from '../../../swal';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export enum SettingDataType {
   STRING = 'STRING',
@@ -44,6 +46,7 @@ export const useAAProjectSettingsUpdateValues = () => {
     showConfirmButton: false,
     timer: 3000,
   });
+  const tb = useTranslations();
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -68,13 +71,26 @@ export const useAAProjectSettingsUpdateValues = () => {
       queryClient.invalidateQueries({
         predicate: (query) => query.queryKey.includes(projectUUID),
       });
-      toast.fire({ title: 'Settings updated successfully', icon: 'success' });
+      toast.fire({
+        title: tb('AA_PROJECT.SETTINGS_UPDATED_SUCCESSFULLY' as never),
+        icon: 'success',
+      });
     },
     onError: (error: any) => {
+      const rawMessage =
+        error?.response?.data?.message ||
+        tb('AA_PROJECT.FAILED_TO_UPDATE_SETTINGS' as never);
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['SETTINGS'],
+        rawMessage,
+      );
       toast.fire({
-        title: 'Failed to update settings',
+        title: tb('AA_PROJECT.FAILED_TO_UPDATE_SETTINGS' as never),
         icon: 'error',
-        text: error?.response?.data?.message,
+        text: errorMessage,
       });
     },
   });
@@ -90,6 +106,7 @@ export const useAAProjectSettingsAdd = () => {
     showConfirmButton: false,
     timer: 3000,
   });
+  const tb = useTranslations();
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -107,13 +124,26 @@ export const useAAProjectSettingsAdd = () => {
       queryClient.invalidateQueries({
         predicate: (query) => query.queryKey.includes(projectUUID),
       });
-      toast.fire({ title: 'Setting added successfully', icon: 'success' });
+      toast.fire({
+        title: tb('AA_PROJECT.SETTING_ADDED_SUCCESSFULLY' as never),
+        icon: 'success',
+      });
     },
     onError: (error: any) => {
+      // This throw comes from the shared @rumsan/settings package, which we
+      // don't control, so there's no `code` field to key on -- match the
+      // known fixed wording directly instead.
+      const rawMessage: string =
+        error?.response?.data?.message ||
+        tb('AA_PROJECT.FAILED_TO_ADD_SETTING' as never);
+      const errorMessage =
+        rawMessage === 'Setting with this name already exists'
+          ? tb('BACKEND.SETTINGS.SETTING_NAME_ALREADY_EXISTS' as never)
+          : rawMessage;
       toast.fire({
-        title: 'Failed to add setting',
+        title: tb('AA_PROJECT.FAILED_TO_ADD_SETTING' as never),
         icon: 'error',
-        text: error?.response?.data?.message,
+        text: errorMessage,
       });
     },
   });

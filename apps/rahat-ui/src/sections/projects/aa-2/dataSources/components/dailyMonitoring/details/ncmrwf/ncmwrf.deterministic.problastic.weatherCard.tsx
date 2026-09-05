@@ -6,31 +6,35 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { BarChart2, Cloud } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+
 import React from 'react';
 
 interface IProps {
   data: any;
 }
 export default function WeatherDashboard({ data }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   console.log(data?.[0].data?.extremeWeatherOutlook);
   const sanitizedData = React.useMemo(() => {
     return [
       {
-        label: 'Extreme Weather Outlook',
-        subLabel:
-          'Severe Weather Event -Extreme Rainfall >95 Percentile purple dots over Karnali Watershed',
+        label: t('EXTREME_WEATHER_OUTLOOK'),
+        subLabel: t('EXTREME_WEATHER_SUBLABEL'),
         value: data?.[0].data?.extremeWeatherOutlook,
       },
       {
-        label: 'Deterministics Prediction System',
+        label: t('DETERMINISTICS_PREDICTION_SYSTEM'),
         subLabel:
-          'Predicts commulative rainfall more than 300 MM in next 3 to 5 Days',
+          t('DETERMINISTICS_SUBLABEL'),
         value: data?.[0].data?.deterministicsPredictionSystem,
       },
       {
-        label: 'Probabilistic Prediction System',
+        label: t('PROBABILISTIC_PREDICTION_SYSTEM'),
         subLabel:
-          'Heavy Rainfall 115 MM per day 80 percent probablity in next 3 to 5 days',
+          t('PROBABILISTIC_SUBLABEL'),
         value: data?.[0].data?.probabilisticPredictionSystem,
       },
     ];
@@ -57,7 +61,7 @@ export default function WeatherDashboard({ data }: IProps) {
             </CardHeader>
 
             <CardContent className="pt-4  ">
-              <div className="text-md font-normal break-words">{d.value}</div>
+              <div className="text-md font-normal break-words">{formatNum(d.value)}</div>
             </CardContent>
           </Card>
         ))}

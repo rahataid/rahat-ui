@@ -14,6 +14,8 @@ import ConfirmDeleteDialog from '../../components/confirm.delete.dialog';
 import { FilePenLine, Trash2 } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { IBeneficiaryItem } from '../../types/beneficiary';
+import { useTranslations } from 'next-intl';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 interface IAdditionalBeneficiaryItem extends IBeneficiaryItem {
   handleClick: VoidFunction;
@@ -25,12 +27,9 @@ export default function Card({
   verified,
   handleClick,
 }: IAdditionalBeneficiaryItem) {
-  const changedDate = new Date(updatedAt);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const t = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
+  const formattedDate = formatDate(updatedAt, 'MMMM dd, yyyy');
 
   return (
     <div className="p-5 border rounded-md cursor-pointer" onClick={handleClick}>
@@ -38,8 +37,8 @@ export default function Card({
         <div>
           <h1 className="font-semibold mb-2">{walletAddress}</h1>
           <p className="text-slate-500">
-            Total transaction made : {Math.floor(Math.random() * 10)}{' '}
-            transactions
+            {t('TOTAL_TRANSACTION_MADE') || 'Total transaction made : '}{' '}
+            {Math.floor(Math.random() * 10)} {t('TRANSACTIONS')}
           </p>
         </div>
         <div className="flex gap-4">
@@ -49,7 +48,7 @@ export default function Card({
                 <FilePenLine size={20} stroke-width={1.5} />
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Edit</p>
+                <p className="text-xs font-medium">{t('EDIT')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -64,17 +63,19 @@ export default function Card({
                 </Dialog>
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Delete</p>
+                <p className="text-xs font-medium">{t('DELETE')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
       </div>
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <p className="text-slate-400">Last updated: {formattedDate}</p>
+        <p className="text-slate-400">
+          {t('LAST_UPDATED') || 'Last updated:'} {formattedDate}
+        </p>
         <div className="cursor-auto ">
           <Badge className="px-2 py-1 rounded-md">
-            {verified ? 'Verified' : 'Unverified'}
+            {verified ? t('VERIFIED') : t('UNVERIFIED') || 'Unverified'}
           </Badge>
           {/* <Badge
             className="px-4 py-1.5 rounded-md"

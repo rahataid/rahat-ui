@@ -6,10 +6,13 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { UUID } from 'crypto';
 import { LandmarkIcon, Phone, Users, Banknote } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useCallback } from 'react';
 
 const BeneficiaryGroups = () => {
@@ -17,6 +20,9 @@ const BeneficiaryGroups = () => {
   const searchParams = useSearchParams();
   const [filters, setFilters] = React.useState({ search: '' });
   const router = useRouter();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
 
   const { isLoading } = useBeneficiariesGroups(id as UUID, {
     sort: 'updatedAt',
@@ -47,7 +53,7 @@ const BeneficiaryGroups = () => {
         <div className="flex justify-between space-x-2 items-center mb-4">
           <SearchInput
             className="w-full"
-            name="beneficary group"
+            name={tg('BENEFICIARY_GROUP')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
@@ -58,7 +64,11 @@ const BeneficiaryGroups = () => {
           ) : beneficiariesGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {beneficiariesGroups.map((i: any, index: number) => {
-                const groupPurposeName = i?.groupPurpose?.split('_')[0];
+                const groupPurposeName = i?.groupPurpose
+                  ? translateValue(tg, i.groupPurpose, {
+                      fallback: i.groupPurpose.split('_')[0],
+                    })
+                  : undefined;
                 return (
                   <div
                     key={index}
@@ -80,7 +90,7 @@ const BeneficiaryGroups = () => {
 
                       <div className="flex justify-between items-center gap-2">
                         <p className="text-base capitalize">
-                          {i?.name ?? 'N/A'}
+                          {i?.name ?? tg('N_A')}
                         </p>
                         {(i?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
                           i?.groupPurpose === GroupPurpose.MOBILE_MONEY) && (
@@ -98,13 +108,13 @@ const BeneficiaryGroups = () => {
                       <div className="flex text-sm text-gray-500 justify-between items-center">
                         <div className="flex items-center gap-1">
                           <Users size={18} strokeWidth={2} />
-                          {i?._count?.beneficiaries || 0} beneficiaries
+                          {formatNum(i?._count?.beneficiaries || 0)} {t('BENEFICIARIES')}
                         </div>
 
                         {i?.tokensReserved?.numberOfTokens && (
                           <div className="flex justify-center items-center gap-1">
                             <Banknote className="h-4 w-4" />
-                            {i?.tokensReserved?.numberOfTokens}
+                            {formatNum(i?.tokensReserved?.numberOfTokens ?? 0)}
                           </div>
                         )}
                       </div>
@@ -119,7 +129,7 @@ const BeneficiaryGroups = () => {
               })}
             </div>
           ) : (
-            <NoResult message="No Beneficiary Group Available" />
+            <NoResult message={t('NO_BENEFICIARY_GROUP_AVAILABLE')} />
           )}
         </ScrollArea>
       </div>

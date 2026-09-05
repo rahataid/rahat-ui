@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Tabs,
   TabsContent,
@@ -23,14 +24,16 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 // ─── Tab registry ─────────────────────────────────────────────────────────────
 
 const GCT_TABS = [
-  { value: 'overview', label: 'Overview' },
-  { value: 'gctGroupList', label: 'GCT Group List' },
-  { value: 'gctManagementList', label: 'GCT Management' },
+  { value: 'overview', labelKey: 'OVERVIEW' },
+  { value: 'gctGroupList', labelKey: 'GCT_GROUP_LIST' },
+  { value: 'gctManagementList', labelKey: 'GCT_MANAGEMENT' },
 ] as const;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GctTabs() {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
   const { activeTab, setActiveTab } = useActiveTab('overview');
   const { id } = useParams();
   const [startDate, setStartDate] = useState<string | undefined>();
@@ -76,26 +79,26 @@ export default function GctTabs() {
                   value={tab.value}
                   className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </TabsTrigger>
               ))}
             </TabsList>
             {activeTab === 'overview' && (
               <div className="flex gap-2 items-center mb-2">
                 <TooltipWrapper
-                  tip={hasData ? '' : 'No GCT data available to export'}
+                  tip={hasData ? '' : tg('NO_GCT_DATA_TO_EXPORT')}
                 >
                   <IconLabelBtn
                     Icon={CloudDownloadIcon}
                     handleClick={() => exportGctData(stats)}
-                    name={'Export Report'}
+                    name={tg('EXPORT_REPORT')}
                     variant="outline"
                     disabled={!hasData}
                     className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
                   />
                 </TooltipWrapper>
                 <DateRangePicker
-                  placeholder="Pick date range"
+                  placeholder={tg('PICK_DATE_RANGE')}
                   handleDateChange={handleDateChange}
                   handleClearDate={handleClearDate}
                   type="range"

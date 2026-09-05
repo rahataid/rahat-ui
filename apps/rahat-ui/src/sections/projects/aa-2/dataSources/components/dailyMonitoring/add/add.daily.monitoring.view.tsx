@@ -19,9 +19,16 @@ import SelectFormField from '../select.form.field';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import AddAnotherDataSource from './add.another.data.source';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
+import { useTranslations } from 'next-intl';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
+const numeralString = () =>
+  z.preprocess(normalizeNumeralsPreprocessor, z.string().optional());
+
 export default function AddDailyMonitoring() {
+  const t = useTranslations('AA_PROJECT');
+  const g = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -47,54 +54,52 @@ export default function AddDailyMonitoring() {
   };
 
   const FormSchema = z.object({
-    riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
+    riverBasin: z.string().min(1, { message: t('PLEASE_SELECT_RIVER_BASIN') }),
     dataSource: z.array(
       z
         .object({
-          source: z.string().min(1, { message: 'Please select a source.' }),
+          source: z.string().min(1, { message: t('PLEASE_SELECT_A_SOURCE') }),
           //DHM
           forecast: z.string().optional(),
           //DHM - 3 Days Flood Forecast Bulletin
-          today: z.string().optional(),
-          tomorrow: z.string().optional(),
-          dayAfterTomorrow: z.string().optional(),
+          today: numeralString(),
+          tomorrow: numeralString(),
+          dayAfterTomorrow: numeralString(),
           //DHM - 3 Days Rainfall Forecast Bulletin
-          todayAfternoon: z.string().optional(),
-          todayNight: z.string().optional(),
-          tomorrowAfternoon: z.string().optional(),
-          tomorrowNight: z.string().optional(),
-          dayAfterTomorrowAfternoon: z.string().optional(),
-          dayAfterTomorrowNight: z.string().optional(),
+          todayAfternoon: numeralString(),
+          todayNight: numeralString(),
+          tomorrowAfternoon: numeralString(),
+          tomorrowNight: numeralString(),
+          dayAfterTomorrowAfternoon: numeralString(),
+          dayAfterTomorrowNight: numeralString(),
           //DHM - Realtime Monitoring (River Watch)
-          waterLevel: z.string().optional(),
+          waterLevel: numeralString(),
 
           //DHM - NWP
-          hours24NWP: z.string().optional(),
-          hours48: z.string().optional(),
-          hours72NWP: z.string().optional(),
+          hours24NWP: numeralString(),
+          hours48: numeralString(),
+          hours72NWP: numeralString(),
           // NCMRWF Accumulated
-          heavyRainfallForecastInKarnaliBasin: z.string().optional(),
-          hours24: z.string().optional(),
-          hours72: z.string().optional(),
-          hours168: z.string().optional(),
+          heavyRainfallForecastInKarnaliBasin: numeralString(),
+          hours24: numeralString(),
+          hours72: numeralString(),
+          hours168: numeralString(),
           // NCMRWF Deterministic & Probabilistic
-          extremeWeatherOutlook: z.string().optional(),
-          deterministicsPredictionSystem: z.string().optional(),
-          probabilisticPredictionSystem: z.string().optional(),
+          extremeWeatherOutlook: numeralString(),
+          deterministicsPredictionSystem: numeralString(),
+          probabilisticPredictionSystem: numeralString(),
           // GLOFAS
-          todayGLOFAS: z.string().optional(),
-          days3: z.string().optional(),
-          days5: z.string().optional(),
-          inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: z
-            .string()
-            .optional(),
+          todayGLOFAS: numeralString(),
+          days3: numeralString(),
+          days5: numeralString(),
+          inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: numeralString(),
           //Flash Flood Risk Monitoring
           status: z.string().optional(),
 
           //gauge Reading
-          gaugeReading: z.string().optional(),
+          gaugeReading: numeralString(),
           station: z.string().optional(),
-          gaugeForecast: z.string().optional(),
+          gaugeForecast: numeralString(),
         })
         .superRefine((data, ctx) => {
           const validateFields = (fields: (keyof typeof data)[]) => {
@@ -104,7 +109,9 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: [field],
-                  message: `${fieldLabels[field] ?? field} is required.`,
+                  message: t('FIELD_IS_REQUIRED', {
+                    field: fieldLabels[field] ? t(fieldLabels[field]) : field,
+                  }),
                 });
               }
             }
@@ -116,7 +123,7 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['forecast'],
-                  message: 'Please select a forecast type.',
+                  message: t('PLEASE_SELECT_A_FORECAST_TYPE'),
                 });
                 return;
               }
@@ -148,13 +155,13 @@ export default function AddDailyMonitoring() {
                     ctx.addIssue({
                       code: z.ZodIssueCode.custom,
                       path: ['waterLevel'],
-                      message: 'Water level must be a positive number .',
+                      message: t('WATER_LEVEL_MUST_BE_POSITIVE'),
                     });
                   } else if (!/^\d+(\.\d+)?$/.test(String(data.waterLevel))) {
                     ctx.addIssue({
                       code: z.ZodIssueCode.custom,
                       path: ['waterLevel'],
-                      message: 'Water level must be a valid decimal number.',
+                      message: t('WATER_LEVEL_MUST_BE_VALID_DECIMAL'),
                     });
                   }
 
@@ -205,13 +212,17 @@ export default function AddDailyMonitoring() {
                   ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: [field],
-                    message: `${fieldLabels[field]} must be a positive number.`,
+                    message: t('FIELD_MUST_BE_POSITIVE_NUMBER', {
+                      field: fieldLabels[field] ? t(fieldLabels[field]) : field,
+                    }),
                   });
                 } else if (!/^\d+(\.\d+)?$/.test(String(value))) {
                   ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: [field],
-                    message: `${fieldLabels[field]} must be a valid decimal number.`,
+                    message: t('FIELD_MUST_BE_VALID_DECIMAL_NUMBER', {
+                      field: fieldLabels[field] ? t(fieldLabels[field]) : field,
+                    }),
                   });
                 }
               });
@@ -234,13 +245,13 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauge Reading  must be a positive number.',
+                  message: t('GAUGE_READING_MUST_BE_POSITIVE'),
                 });
               } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauge Reading level must be number.',
+                  message: t('GAUGE_READING_LEVEL_MUST_BE_NUMBER'),
                 });
               }
               break;
@@ -253,7 +264,11 @@ export default function AddDailyMonitoring() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       riverBasin: '',
-      dataSource: [],
+      // Pre-seed one row so `dataSource.0.source` defaults to '' instead of
+      // undefined — otherwise Zod's base type check fails before the custom
+      // PLEASE_SELECT_A_SOURCE message runs, surfacing its untranslated
+      // built-in "Required" fallback on first submit.
+      dataSource: [anotherDataSourceSchema],
     },
   });
 
@@ -384,8 +399,8 @@ export default function AddDailyMonitoring() {
   return (
     <div className="px-4 py-2">
       <HeaderWithBack
-        title={'Add Daily Monitoring'}
-        subtitle="Fill the form below to add daily monitoring"
+        title={t('ADD_DAILY_MONITORING')}
+        subtitle={t('FILL_THE_FORM_BELOW_TO_ADD')}
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>
@@ -395,10 +410,10 @@ export default function AddDailyMonitoring() {
               <SelectFormField
                 form={form}
                 name="riverBasin"
-                label={getStationTitle(projectInfo?.value?.project_type) || ''}
-                placeholder={`Select ${getStationTitle(
-                  projectInfo?.value?.project_type,
-                ).toLowerCase()}`}
+                label={getStationTitle(projectInfo?.value?.project_type, g) || ''}
+                placeholder={g('SELECT_PLACEHOLDER', {
+                  field: getStationTitle(projectInfo?.value?.project_type, g),
+                })}
                 selectItems={riverBasins}
                 className="mx-2"
               />
@@ -429,7 +444,7 @@ export default function AddDailyMonitoring() {
               className="border-dashed border-primary text-primary text-sm w-full mt-2"
               onClick={() => anotherDataSourceAppend(anotherDataSourceSchema)}
             >
-              Add Data Source
+              {t('ADD_DATA_SOURCE')}
               <Plus className="ml-2" size={16} strokeWidth={3} />
             </Button>
           </ScrollArea>
@@ -444,10 +459,10 @@ export default function AddDailyMonitoring() {
                 // router.push(dailyMonitoringListPath);
               }}
             >
-              Clear
+              {t('CLEAR')}
             </Button>
             <Button type="submit" className="w-32">
-              Add
+              {t('ADD')}
             </Button>
           </div>
         </form>

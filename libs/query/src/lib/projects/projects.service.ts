@@ -15,10 +15,12 @@ import {
 } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 import Swal from 'sweetalert2';
 
@@ -79,6 +81,7 @@ export const useGeneralAction = <T = any>() => {
 export const useAssignBenToProject = () => {
   const q = useProjectAction();
   const { queryClient, rumsanService } = useRSQuery();
+  const tg = useTranslations('GLOBAL');
 
   const alert = useSwal();
   const toast = alert.mixin({
@@ -108,16 +111,16 @@ export const useAssignBenToProject = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Beneficiary Assigned Successfully',
+        title: tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARY] });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while updating Beneficiary',
+        title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -128,6 +131,7 @@ export const useAssignBenToProject = () => {
 export const useAssignBenGroupToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -168,15 +172,15 @@ export const useAssignBenGroupToProject = () => {
       ]);
 
       toast.fire({
-        title: 'Beneficiary group assigned Successfully',
+        title: tg('BENEFICIARY_GROUP_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while assigning beneficiary group',
+        title: tg('ERROR_WHILE_ASSIGNING_BENEFICIARY_GROUP'),
         icon: 'error',
         text: errorMessage,
       });
@@ -186,6 +190,7 @@ export const useAssignBenGroupToProject = () => {
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
+  const tg = useTranslations('GLOBAL');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -217,15 +222,15 @@ export const useBulkAssignBenToProject = () => {
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Beneficiary Assigned Successfully',
+        title: tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
       toast.fire({
-        title: 'Error while updating Beneficiary',
+        title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
         icon: 'error',
         text: errorMessage,
       });
@@ -236,6 +241,8 @@ export const useBulkAssignBenToProject = () => {
 export const useAssignVendorToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
+  const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -250,6 +257,8 @@ export const useAssignVendorToProject = () => {
     }: {
       projectUUID: UUID;
       vendorUUID: UUID;
+      successMessage?: string;
+      errorMessage?: string;
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
@@ -261,19 +270,26 @@ export const useAssignVendorToProject = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables: any) => {
       q.reset();
       toast.fire({
-        title: 'Vendor Assigned Successfully',
+        title: variables?.successMessage || tg('VENDOR_ASSIGNED_SUCCESSFULLY'),
         icon: 'success',
       });
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: any, variables: any) => {
+      const rawMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['VENDORS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while updating Vendor',
+        title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_VENDOR'),
         icon: 'error',
         text: errorMessage,
       });
@@ -874,6 +890,7 @@ export const useUpdateElRedemption = () => {
 export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
+  const tp = useTranslations('PROJECTS_LIST');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -885,7 +902,7 @@ export const useProjectEdit = () => {
     {
       onSuccess: () => {
         toast.fire({
-          title: 'Project edited successfully',
+          title: tp('PROJECT_EDITED_SUCCESSFULLY'),
           icon: 'success',
         });
         queryClient.invalidateQueries({
@@ -897,7 +914,7 @@ export const useProjectEdit = () => {
       },
       onError: () => {
         toast.fire({
-          title: 'Error while editing project.',
+          title: tp('ERROR_WHILE_EDITING_PROJECT'),
           icon: 'error',
         });
       },
@@ -912,6 +929,7 @@ export const useProjectEdit = () => {
 };
 export const useProjectClose = () => {
   const { queryClient, rumsanService } = useRSQuery();
+  const tp = useTranslations('PROJECTS_LIST');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -923,14 +941,14 @@ export const useProjectClose = () => {
     {
       onSuccess: () => {
         toast.fire({
-          title: 'Project closed successfully',
+          title: tp('PROJECT_CLOSED_SUCCESSFULLY'),
           icon: 'success',
         });
         queryClient.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
       },
       onError: () => {
         toast.fire({
-          title: 'Error while closing project.',
+          title: tp('ERROR_WHILE_CLOSING_PROJECT'),
           icon: 'error',
         });
       },

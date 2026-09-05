@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,8 +31,12 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import StakeholdersTableFilters from '../../../stakeholders/stakeholders.table.filters';
 import Back from '../../../../components/back';
 import { toast } from 'react-toastify';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function StakeholdersGroupEdit() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
@@ -104,7 +109,7 @@ export default function StakeholdersGroupEdit() {
   const updateStakeholdersGroup = useUpdateStakeholdersGroups();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Please enter group name.' }),
+    name: z.string().min(2, { message: t('PLEASE_ENTER_GROUP_NAME') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -121,7 +126,7 @@ export default function StakeholdersGroupEdit() {
       (key) => selectedListItems[key],
     );
     if (!stakeholders.length) {
-      return toast.error('Please select members to update group');
+      return toast.error(t('PLEASE_SELECT_MEMBERS_TO_UPDATE_GROUP'));
     }
     const stakeholdersList = stakeholders?.map((stakeholder) => ({
       uuid: stakeholder,
@@ -148,7 +153,7 @@ export default function StakeholdersGroupEdit() {
         <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
           <div className="flex gap-4 mb-6 items-center">
             <Back path={groupDetailPath} />
-            <h1 className="text-lg font-semibold">Edit : Stakeholders Group</h1>
+            <h1 className="text-lg font-semibold">{t('EDIT_STAKEHOLDERS_GROUP')}</h1>
           </div>
           <div className="shadow-md p-4 rounded-sm bg-card">
             <div className="grid gap-4">
@@ -158,11 +163,11 @@ export default function StakeholdersGroupEdit() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Group Name</FormLabel>
+                      <FormLabel>{t('GROUP_NAME')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Group name"
+                          placeholder={t('GROUP_NAME')}
                           {...field}
                         />
                       </FormControl>
@@ -175,16 +180,16 @@ export default function StakeholdersGroupEdit() {
                 <div className="flex gap-4 items-end">
                   {selected ? (
                     <Badge className="rounded h-10 px-4 py-2 w-max">
-                      {selected} - member selected
+                      {t('MEMBER_SELECTED', { selected: formatDigits(selected) })}
                     </Badge>
                   ) : null}
                   <Button
                     type="button"
                     onClick={() => setShowMembers(!showMembers)}
                   >
-                    {showMembers ? 'Hide Members' : 'Show Members'}
+                    {showMembers ? t('HIDE_MEMBERS') : t('SHOW_MEMBERS')}
                   </Button>
-                  <Button type="submit">Update Stakeholders Groups</Button>
+                  <Button type="submit">{t('UPDATE_STAKEHOLDERS_GROUPS')}</Button>
                 </div>
               </div>
             </div>

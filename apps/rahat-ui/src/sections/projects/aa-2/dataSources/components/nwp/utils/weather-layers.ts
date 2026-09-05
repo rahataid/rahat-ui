@@ -92,6 +92,26 @@ const layerDisplayInfo: Record<
     description: 'Data assimilation wind gust',
     icon: 'wind',
   },
+  'NWP:mfd_uems_wind_speed_coverage': {
+    name: 'Wind Speed',
+    description: 'Wind speed coverage forecast',
+    icon: 'wind',
+  },
+  'NWP:mfd_uems_wind_gust_coverage': {
+    name: 'Wind Gust',
+    description: 'Wind gust coverage forecast',
+    icon: 'wind',
+  },
+  'NWP:gfs_wind_speed_coverage': {
+    name: 'Wind Speed',
+    description: 'Wind speed coverage forecast',
+    icon: 'wind',
+  },
+  'NWP:gfs_wind_gust_coverage': {
+    name: 'Wind Gust',
+    description: 'Wind gust coverage forecast',
+    icon: 'wind',
+  },
   'NWP:gidc_wrfda_relative_humidity': {
     name: 'Relative Humidity',
     description: 'Data assimilation relative humidity',
@@ -129,7 +149,18 @@ function getFallbackDisplayInfo(layerName: string): {
   icon: string;
 } {
   const afterNamespace = layerName.split(':')[1] || layerName;
-  const base = afterNamespace;
+
+  // Strip a leading model-code prefix (e.g. "gfs_", "gidc_wrf_") so a layer
+  // this map doesn't have an explicit entry for still renders as a plain
+  // "Air Temperature" instead of "Gfs Air Temperature" -- the prefix is
+  // already shown separately via the category tab.
+  const modelPrefixes = Object.keys(categoryMap).sort((a, b) => b.length - a.length);
+  const matchedPrefix = modelPrefixes.find((prefix) =>
+    afterNamespace.toLowerCase().startsWith(`${prefix}_`),
+  );
+  const base = matchedPrefix
+    ? afterNamespace.slice(matchedPrefix.length + 1)
+    : afterNamespace;
 
   const readable = base.replace(/_/g, ' ');
   const capitalized = readable.replace(/\b\w/g, (c) => c.toUpperCase());

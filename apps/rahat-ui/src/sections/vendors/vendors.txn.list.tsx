@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Table,
   TableBody,
@@ -46,44 +47,45 @@ import Pagination from '../../components/pagination';
 //   walletAddress: `0x${string}`;
 // };
 
-const columns: ColumnDef<any>[] = [
-  {
-    accessorKey: 'topic',
-    header: 'Topic',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('topic')}</div>
-    ),
-  },
-  {
-    accessorKey: 'txHash',
-    header: 'Txn Hash',
-    cell: ({ row }) => (
-      <a href={`https://sepolia.basescan.org/tx/${row.getValue('txHash')}`}>
-        {' '}
-        {truncateEthAddress(row.getValue('txHash'))}
-      </a>
-      // <div>{`https://sepolia.arbiscan.io/tx/${truncateEthAddress(row.getValue('transactionHash'))}`}</div>
-    ),
-  },
-  {
-    accessorKey: 'timeStamp',
-    header: () => <div className="text-right">Timestamp</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">
-          {row.getValue('timeStamp')}
-        </div>
-      );
-    },
-  },
-];
-
 interface VendorTxnListProps {
   walletAddress: string;
 }
 
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
+  const t = useTranslations('VENDORS_TRANSACTION_LIST');
+  const g = useTranslations('GLOBAL');
   const { data: txns, isFetching } = useRPVendorTransactions(walletAddress);
+
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: 'topic',
+      header: g('TOPIC'),
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('topic')}</div>
+      ),
+    },
+    {
+      accessorKey: 'txHash',
+      header: t('TXN_HASH'),
+      cell: ({ row }) => (
+        <a href={`https://sepolia.basescan.org/tx/${row.getValue('txHash')}`}>
+          {' '}
+          {truncateEthAddress(row.getValue('txHash'))}
+        </a>
+      ),
+    },
+    {
+      accessorKey: 'timeStamp',
+      header: () => <div className="text-right">{g('TIMESTAMP')}</div>,
+      cell: ({ row }) => {
+        return (
+          <div className="text-right font-medium">
+            {row.getValue('timeStamp')}
+          </div>
+        );
+      },
+    },
+  ];
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -159,7 +161,7 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? <TableLoader /> : 'No data available.'}
+                    {isFetching ? <TableLoader /> : g('NO_DATA_AVAILABLE2')}
                   </TableCell>
                 </TableRow>
               )}

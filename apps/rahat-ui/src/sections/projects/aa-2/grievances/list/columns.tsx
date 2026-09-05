@@ -13,9 +13,11 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { StatusChip, PriorityChip, TypeChip } from '../components';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
-import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 interface GrievanceTableRow {
   id: string;
   uuid: string;
@@ -30,6 +32,10 @@ interface GrievanceTableRow {
   status: string;
 }
 export const useGrievancesTableColumns = () => {
+  const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id: projectId } = useParams() as { id: UUID };
   const searchParams = useSearchParams();
@@ -38,22 +44,22 @@ export const useGrievancesTableColumns = () => {
   const columns: ColumnDef<GrievanceTableRow>[] = [
     {
       accessorKey: 'id',
-      header: 'ID',
-      cell: ({ row }) => <div> {row.getValue('id')}</div>,
+      header: t('ID'),
+      cell: ({ row }) => <div> {formatDigits(row.getValue('id'))}</div>,
     },
     {
       accessorKey: 'title',
-      header: 'Title',
+      header: t('TITLE'),
       cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'reportedBy',
-      header: 'Reported By',
+      header: t('REPORTED_BY'),
       cell: ({ row }) => <TruncatedCell text={row.getValue('reportedBy')} />,
     },
     {
       accessorKey: 'type',
-      header: 'Grievance Type',
+      header: t('GRIEVANCE_TYPE'),
       cell: ({ row }) => (
         <div>
           <TypeChip type={row.getValue('type')} showIcon={false} />
@@ -62,7 +68,7 @@ export const useGrievancesTableColumns = () => {
     },
     {
       accessorKey: 'createdBy',
-      header: 'Created By',
+      header: t('CREATED_BY'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.original?.createdByUser?.name}
@@ -72,14 +78,14 @@ export const useGrievancesTableColumns = () => {
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created On',
+      header: t('CREATED_ON'),
       cell: ({ row }) => (
-        <TruncatedCell text={formatDateFull(row.getValue('createdAt'))} />
+        <TruncatedCell text={formatDate(row.getValue('createdAt'), 'MMM d, yyyy, h:mm a')} />
       ),
     },
     {
       accessorKey: 'priority',
-      header: 'Priority',
+      header: t('PRIORITY'),
       cell: ({ row }) => (
         <div>
           <PriorityChip
@@ -92,7 +98,7 @@ export const useGrievancesTableColumns = () => {
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => (
         <div>
           <StatusChip
@@ -105,14 +111,14 @@ export const useGrievancesTableColumns = () => {
     },
     {
       id: 'action',
-      header: 'Action',
+      header: tg('ACTION'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() =>
                 router.push(
@@ -130,6 +136,7 @@ export const useGrievancesTableColumns = () => {
 };
 
 export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { id, groupId } = useParams();
 
@@ -138,7 +145,7 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet',
+      header: tg('WALLET_ADDRESS'),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -158,8 +165,8 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
                 {copyAction === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
+                  ? tg('COPIED')
+                  : tg('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -169,14 +176,14 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
 
     {
       id: 'actions',
-      header: 'Action',
+      header: tg('ACTION'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() =>
                 router.push(

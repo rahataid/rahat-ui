@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   useCommuicationStatsforBeneficiaryandStakeHolders,
   usePhases,
@@ -26,6 +27,8 @@ import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 export default function CommunicationMainLogsView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: ProjectId } = useParams();
   const [startDate, setStartDate] = useState<string | undefined>();
   const [endDate, setEndDate] = useState<string | undefined>();
@@ -60,8 +63,8 @@ export default function CommunicationMainLogsView() {
   return (
     <div className="flex flex-col p-4">
       <Heading
-        title="Communications Logs"
-        description="Track all the activity based logs here"
+        title={t('COMMUNICATIONS_LOGS')}
+        description={t('TRACK_ALL_THE_ACTIVITY_BASED_LOGS')}
       />
       <Tabs
         defaultValue={activeTab}
@@ -78,7 +81,7 @@ export default function CommunicationMainLogsView() {
                   : 'text-black'
               } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
             >
-              Overview
+              {t('OVERVIEW')}
             </TabsTrigger>
             <TabsTrigger
               value="communicationLog"
@@ -88,7 +91,7 @@ export default function CommunicationMainLogsView() {
                   : 'text-black'
               } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
             >
-              Activity Based Log
+              {t('ACTIVITY_BASED_LOG')}
             </TabsTrigger>
             <TabsTrigger
               value="individualLog"
@@ -98,18 +101,18 @@ export default function CommunicationMainLogsView() {
                   : 'text-black'
               } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
             >
-              Individual Logs
+              {t('INDIVIDUAL_LOGS')}
             </TabsTrigger>
           </TabsList>
           {activeTab === 'overview' && (
             <div className="flex gap-2 items-center">
               <TooltipWrapper
-                tip={hasData ? '' : 'No communication data available to export'}
+                tip={hasData ? '' : tg('NO_COMMUNICATION_DATA_TO_EXPORT')}
               >
                 <IconLabelBtn
                   Icon={CloudDownloadIcon}
                   handleClick={() => exportCommsStats(data)}
-                  name={'Export Report'}
+                  name={tg('EXPORT_REPORT')}
                   variant="outline"
                   disabled={!hasData}
                   className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
@@ -122,7 +125,7 @@ export default function CommunicationMainLogsView() {
                 value={phase || ''}
               />
               <DateRangePicker
-                placeholder="Pick date range"
+                placeholder={tg('PICK_DATE_RANGE')}
                 handleDateChange={handleDateChange}
                 handleClearDate={handleClearDate}
                 type="range"

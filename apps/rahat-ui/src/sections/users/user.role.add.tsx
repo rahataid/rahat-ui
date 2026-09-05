@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Form,
   FormControl,
@@ -33,6 +34,8 @@ import Swal from 'sweetalert2';
 import { useUserRoleCreate } from '@rumsan/react-query';
 
 export default function UserAddRoleView() {
+  const t = useTranslations('USERS_ADD_ROLE');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
 
   const [selectedSubjectActions, setSeletedSubjectActions] =
@@ -73,7 +76,7 @@ export default function UserAddRoleView() {
   const createRole = useUserRoleCreate();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST4') }),
     isSystem: z.boolean(),
   });
 
@@ -146,8 +149,8 @@ export default function UserAddRoleView() {
     const hasPerms = Object.keys(sanitizedPerms).length > 0;
     if (!hasPerms)
       return Swal.fire(
-        'Error',
-        'Please select at least one permission',
+        t('ERROR'),
+        t('PLEASE_SELECT_AT_LEAST_ONE_PERMISSION'),
         'error',
       );
     const k = {
@@ -158,15 +161,16 @@ export default function UserAddRoleView() {
     try {
       await createRole.mutateAsync(k);
       router.push('/users/roles');
-      Swal.fire('Role Created Successfully', '', 'success');
+      Swal.fire(t('ROLE_CREATED_SUCCESSFULLY'), '', 'success');
       form.reset();
       setSeletedSubjectActions(null);
       setSelectedProjectSubjectActions(null);
       setRoleSearch('');
       setProjectRoleSearch('');
-    } catch (e) {
-      const errorMsg = e instanceof Error ? e.message : 'Something went wrong';
-      Swal.fire('Error', errorMsg, 'error');
+    } catch (e: any) {
+      const errorMsg =
+        e?.response?.data?.message || t('SOMETHING_WENT_WRONG');
+      Swal.fire(t('ERROR'), errorMsg, 'error');
     }
   };
 
@@ -176,8 +180,8 @@ export default function UserAddRoleView() {
         <form onSubmit={form.handleSubmit(handleAddRole)}>
           <div className="p-4">
             <HeaderWithBack
-              title="Add Role"
-              subtitle="Create a new role detail"
+              title={tg('ADD_ROLE')}
+              subtitle={t('CREATE_A_NEW_ROLE_DETAIL')}
               path="/users/roles"
             />
             <div className="grid grid-cols-2 gap-4 mt-4">
@@ -188,9 +192,9 @@ export default function UserAddRoleView() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Role Name</FormLabel>
+                        <FormLabel>{t('ROLE_NAME')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter role name" {...field} />
+                          <Input placeholder={t('ENTER_ROLE_NAME')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -203,7 +207,7 @@ export default function UserAddRoleView() {
                     name="isSystem"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Is System</FormLabel>
+                        <FormLabel>{t('IS_SYSTEM')}</FormLabel>
                         <FormControl>
                           <div className="flex items-center space-x-2">
                             <Checkbox
@@ -211,7 +215,7 @@ export default function UserAddRoleView() {
                               onCheckedChange={field.onChange}
                             />
                             <p className="text-sm text-muted-foreground">
-                              This role is part of the system
+                              {t('THIS_ROLE_IS_PART_OF_THE')}
                             </p>
                           </div>
                         </FormControl>
@@ -232,17 +236,17 @@ export default function UserAddRoleView() {
                       <div className="flex items-center justify-between mb-4 mr-2">
                         <div>
                           <h1 className="font-medium text-lg">
-                            Select Roles
+                            {t('SELECT_ROLES')}
                           </h1>
                           <p className="text-muted-foreground text-sm">
-                            Select roles below to assign to the user
+                            {t('SELECT_ROLES_BELOW_TO_ASSIGN_TO')}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => toggleSection('roles')}
                           className="shrink-0 p-1"
-                          aria-label="Toggle select roles section"
+                          aria-label={t('TOGGLE_SELECT_ROLES_SECTION')}
                         >
                           <ChevronDown
                             className={`h-4 w-4 transition-transform duration-200 ${
@@ -255,7 +259,7 @@ export default function UserAddRoleView() {
                       </div>
                       <AccordionContent className="pb-0">
                         <Input
-                          placeholder="Search roles"
+                          placeholder={t('SEARCH_ROLES')}
                           value={roleSearch}
                           onChange={(e) => setRoleSearch(e.target.value)}
                           className="mb-4"
@@ -300,18 +304,17 @@ export default function UserAddRoleView() {
                       <div className="flex items-center justify-between mb-4 mr-2">
                         <div>
                           <h1 className="font-medium text-lg">
-                            Select Project Roles
+                            {t('SELECT_PROJECT_ROLES')}
                           </h1>
                           <p className="text-muted-foreground text-sm">
-                            Select project-level roles below to assign to the
-                            user
+                            {t('SELECT_PROJECT_ROLES_BELOW_TO_ASSIGN_TO')}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => toggleSection('project-roles')}
                           className="shrink-0 p-1"
-                          aria-label="Toggle select project roles section"
+                          aria-label={t('TOGGLE_SELECT_PROJECT_ROLES_SECTION')}
                         >
                           <ChevronDown
                             className={`h-4 w-4 transition-transform duration-200 ${
@@ -324,7 +327,7 @@ export default function UserAddRoleView() {
                       </div>
                       <AccordionContent className="pb-0">
                         <Input
-                          placeholder="Search project roles"
+                          placeholder={t('SEARCH_PROJECT_ROLES')}
                           value={projectRoleSearch}
                           onChange={(e) =>
                             setProjectRoleSearch(e.target.value)
@@ -380,10 +383,10 @@ export default function UserAddRoleView() {
                 setProjectRoleSearch('');
               }}
             >
-              Clear
+              {tg('CLEAR')}
             </Button>
             <Button type="submit" className="px-10">
-              Add
+              {tg('ADD')}
             </Button>
           </div>
         </form>

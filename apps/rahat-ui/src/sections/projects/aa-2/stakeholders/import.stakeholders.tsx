@@ -14,6 +14,8 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -75,6 +77,7 @@ import {
   FileExtension,
   REQUIRED_HEADERS,
 } from './stakeholders.consts';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 interface ValidationError {
   phone?: string;
   email?: string;
@@ -101,6 +104,10 @@ export default function ImportStakeholder() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
+  const formatNum = useNumberFormat();
 
   // Query goes here
   const queryClient = useQueryClient();
@@ -113,7 +120,7 @@ export default function ImportStakeholder() {
 
   // File State goes here
   const [data, setData] = useState<string[][]>([]);
-  const [fileName, setFileName] = useState('No File Choosen');
+  const [fileName, setFileName] = useState(tg('NO_FILE_CHOSEN'));
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Modal State goes here
@@ -231,43 +238,42 @@ export default function ImportStakeholder() {
       if (isMissing) {
         return {
           className: CELL_STYLES.missing,
-          tooltipMessage: 'Required field is missing',
+          tooltipMessage: t('REQUIRED_FIELD_IS_MISSING'),
         };
       }
       if (isDuplicatePhoneInFile) {
         return {
           className: CELL_STYLES.duplicatePhone,
-          tooltipMessage: 'Duplicate phone number in file',
+          tooltipMessage: t('DUPLICATE_PHONE_NUMBER_FOUND_IN_FILE'),
         };
       }
       if (isDuplicateEmailInFile) {
         return {
           className: CELL_STYLES.duplicateEmail,
-          tooltipMessage: 'Duplicate email in file',
+          tooltipMessage: t('DUPLICATE_EMAIL_FOUND_IN_FILE'),
         };
       }
       if (isErrorPhone || isErrorEmail) {
         return {
           className: CELL_STYLES.error,
-          tooltipMessage: errorMessage || 'Validation error',
+          tooltipMessage: errorMessage || t('VALIDATION_ERROR'),
         };
       }
       if (isUpdateStakeholder) {
         return {
           className: CELL_STYLES.update,
-          tooltipMessage:
-            'This data will overwrite existing stakeholder record',
+          tooltipMessage: t('THIS_DATA_WILL_OVERWRITE_EXISTING_STAKEHOLDER_RECORD'),
         };
       }
       if (isNewStakeholder) {
         return {
           className: CELL_STYLES.new,
-          tooltipMessage: 'New stakeholder',
+          tooltipMessage: t('NEW_STAKEHOLDER'),
         };
       }
       return { className: '', tooltipMessage: '' };
     },
-    [],
+    [t],
   );
 
   // Table goes here
@@ -354,7 +360,7 @@ export default function ImportStakeholder() {
       const file = e.target.files?.[0];
       resetValidationState();
       setData([]);
-      setFileName(file?.name ?? 'No File Choosen');
+      setFileName(file?.name ?? tg('NO_FILE_CHOSEN'));
       setSelectedFile(file ?? null);
 
       if (!file) return;
@@ -362,7 +368,7 @@ export default function ImportStakeholder() {
       const extension = file.name.split('.').pop()?.toLowerCase();
       if (!extension || !isValidExtension(extension)) {
         toast.error(
-          'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+          t('UNSUPPORTED_FILE_FORMAT_LONG'),
         );
         return;
       }
@@ -383,7 +389,7 @@ export default function ImportStakeholder() {
         );
 
         if (filteredData.length === 0) {
-          toast.error('No data found in the file');
+          toast.error(t('NO_DATA_FOUND_IN_FILE'));
           return;
         }
 
@@ -397,7 +403,7 @@ export default function ImportStakeholder() {
         for (const required of REQUIRED_HEADERS) {
           if (!normalizedHeaders.includes(required)) {
             toast.error(
-              `File is missing the required field: "${required}". Download the sample file for reference.`,
+              t('FILE_IS_MISSING_REQUIRED_FIELD', { fieldName: required }),
               { autoClose: 5000 },
             );
             return;
@@ -446,12 +452,12 @@ export default function ImportStakeholder() {
 
         // Validate row count
         if (normalizedData.length === 1) {
-          toast.error('No stakeholders found in the file');
+          toast.error(t('NO_STAKEHOLDERS_FOUND_IN_FILE'));
           return;
         }
         if (normalizedData.length > MAX_STAKEHOLDERS_PER_UPLOAD + 1) {
           toast.error(
-            `Maximum ${MAX_STAKEHOLDERS_PER_UPLOAD} stakeholders can be uploaded at a time`,
+            t('MAX_STAKEHOLDERS_UPLOAD_LIMIT', { max: formatNum(MAX_STAKEHOLDERS_PER_UPLOAD) }),
           );
           return;
         }
@@ -462,13 +468,17 @@ export default function ImportStakeholder() {
 
         if (duplicatePhones.size > 0) {
           toast.warn(
-            `${duplicatePhones.size} duplicate phone number(s) found in file`,
+            t('DUPLICATE_PHONE_NUMBERS_FOUND_IN_FILE_COUNT', {
+              count: formatNum(duplicatePhones.size),
+            }),
             { autoClose: 5000 },
           );
         }
         if (duplicateEmails.size > 0) {
           toast.warn(
-            `${duplicateEmails.size} duplicate email(s) found in file`,
+            t('DUPLICATE_EMAILS_FOUND_IN_FILE_COUNT', {
+              count: formatNum(duplicateEmails.size),
+            }),
             { autoClose: 5000 },
           );
         }
@@ -481,25 +491,25 @@ export default function ImportStakeholder() {
 
   const handleValidate = useCallback(async () => {
     if (!selectedFile) {
-      toast.error('Please select a file to upload');
+      toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
       return;
     }
 
     if (hasEmptyRequiredFields()) {
-      toast.error('Fill all required fields first');
+      toast.error(t('FILL_ALL_REQUIRED_FIELDS_FIRST'));
       return;
     }
 
     if (hasFrontendErrors) {
       toast.error(
-        'Fix the duplicate phone/email errors highlighted in the sheet',
+        t('FIX_DUPLICATE_PHONE_EMAIL_ERRORS'),
       );
       return;
     }
 
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     if (!extension || !isValidExtension(extension)) {
-      toast.error('Unsupported file format');
+      toast.error(tg('UNSUPPORTED_FILE_FORMAT'));
       return;
     }
 
@@ -539,18 +549,32 @@ export default function ImportStakeholder() {
 
       if (validationData.errors?.length > 0) {
         toast.error(
-          `${validationData.errors.length} validation error(s) found. Fix the errors highlighted in the sheet.`,
+          t('VALIDATION_ERRORS_FOUND', { errorCount: formatNum(validationData.errors.length) }),
         );
         setValidationCooldown(VALIDATION_COOLDOWN_SECONDS);
       } else {
         toast.success(
-          'Validation successful! You can now import the stakeholders.',
+          t('VALIDATION_SUCCESSFUL_IMPORT'),
         );
       }
     } catch (error: unknown) {
-      const errMsg =
-        (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message ?? 'Validation failed';
+      const e = error as {
+        response?: {
+          data?: {
+            code?: string;
+            params?: Record<string, string | number | Date>;
+            message?: string;
+          };
+        };
+      };
+      const rawMessage = e?.response?.data?.message ?? t('VALIDATION_FAILED');
+      const errMsg = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       toast.error(errMsg);
       setValidationCooldown(VALIDATION_COOLDOWN_SECONDS);
     } finally {
@@ -566,19 +590,19 @@ export default function ImportStakeholder() {
 
   const handleUpload = useCallback(() => {
     if (!selectedFile) {
-      toast.error('Please select a file to upload');
+      toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
       return;
     }
 
     if (hasValidationErrors) {
-      toast.error('Fix the errors highlighted in the sheet before importing');
+      toast.error(t('FIX_ERRORS_BEFORE_IMPORTING'));
       return;
     }
 
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     if (!extension || !isValidExtension(extension)) {
       toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+        t('UNSUPPORTED_FILE_FORMAT_LONG'),
       );
       return;
     }
@@ -610,12 +634,10 @@ export default function ImportStakeholder() {
 
         const groupMsg =
           isGroupCreate && groupNameValue
-            ? ` Group "${groupNameValue}" created.`
+            ? t('GROUP_CREATED_WITH_NAME', { name: groupNameValue })
             : '';
         toast.success(
-          `${successCount == 0 ? '' : successCount} ${
-            successCount <= 1 ? 'Stakeholder' : 'Stakeholders'
-          } imported successfully!${groupMsg}`,
+          t('STAKEHOLDERS_IMPORTED_SUCCESSFULLY', { count: formatNum(successCount) }) + groupMsg,
         );
 
         resetValidationState();
@@ -635,9 +657,23 @@ export default function ImportStakeholder() {
             : 'stakeholders';
         router.push(`/projects/aa/${id}/stakeholders?tab=${tab}`);
       } catch (error: unknown) {
-        const errMsg =
-          (error as { response?: { data?: { message?: string } } })?.response
-            ?.data?.message ?? 'Import failed';
+        const e = error as {
+          response?: {
+            data?: {
+              code?: string;
+              params?: Record<string, string | number | Date>;
+              message?: string;
+            };
+          };
+        };
+        const rawMessage = e?.response?.data?.message ?? t('IMPORT_FAILED');
+        const errMsg = resolveBackendErrorMessage(
+          tb,
+          e?.response?.data?.code,
+          e?.response?.data?.params,
+          ['STAKEHOLDERS_GROUPS'],
+          rawMessage,
+        );
         toast.error(errMsg);
       }
     },
@@ -668,7 +704,7 @@ export default function ImportStakeholder() {
         window.URL.revokeObjectURL(url);
       })
       .catch((error) => {
-        toast.error(`Error downloading file: ${error}`);
+        toast.error(tg('ERROR_DOWNLOADING_FILE') + ': ' + (error instanceof Error ? error.message : error));
       });
   }, []);
 
@@ -711,7 +747,7 @@ export default function ImportStakeholder() {
 
   const handleClear = useCallback(() => {
     setData([]);
-    setFileName('No File Choosen');
+    setFileName(tg('NO_FILE_CHOSEN'));
     setSelectedFile(null);
     resetValidationState();
     if (inputRef.current) {
@@ -725,7 +761,7 @@ export default function ImportStakeholder() {
 
       const trimmedName = groupName.trim();
       if (!trimmedName) {
-        setGroupError('Group name is required');
+          setGroupError(t('GROUP_NAME_REQUIRED'));
         return;
       }
 
@@ -736,7 +772,7 @@ export default function ImportStakeholder() {
       );
 
       if (groupExists) {
-        setGroupError('A group with this name already exists');
+        setGroupError(t('GROUP_NAME_ALREADY_EXISTS'));
         return;
       }
 
@@ -746,9 +782,9 @@ export default function ImportStakeholder() {
   );
 
   const validateButtonText = useMemo(() => {
-    if (isValidating) return 'Validating...';
-    if (validationCooldown > 0) return `Validate (${validationCooldown}s)`;
-    return 'Validate';
+    if (isValidating) return t('VALIDATING');
+    if (validationCooldown > 0) return `${t('VALIDATE')} (${validationCooldown}s)`;
+    return t('VALIDATE');
   }, [isValidating, validationCooldown]);
 
   const isValidateDisabled =
@@ -761,8 +797,8 @@ export default function ImportStakeholder() {
         <div className="p-4 flex flex-col flex-1 min-w-0">
           <div className="flex justify-between items-start mb-2">
             <HeaderWithBack
-              title="Import Stakeholders"
-              subtitle="List of all stakeholders you can import"
+              title={t('IMPORT_STAKEHOLDERS')}
+              subtitle={t('LIST_OF_ALL_STAKEHOLDERS_YOU_CAN')}
               path={`/projects/aa/${id}/stakeholders`}
             />
             <div className="flex flex-col items-end gap-2 mt-4">
@@ -775,7 +811,7 @@ export default function ImportStakeholder() {
                     className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
                   >
                     <FileWarning className="mr-1" />
-                    Download Errors
+                    {t('DOWNLOAD_ERRORS')}
                   </Button>
                 )}
                 <Button
@@ -785,7 +821,7 @@ export default function ImportStakeholder() {
                   className="rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
                 >
                   <CloudDownload className="mr-1" />
-                  Download Sample
+                  {t('DOWNLOAD_SAMPLE')}
                 </Button>
               </div>
               {(hasFrontendErrors || validationResponse !== null) &&
@@ -796,13 +832,13 @@ export default function ImportStakeholder() {
                         {duplicatePhonesInFile.size > 0 && (
                           <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
-                            <span>Duplicate phone number found in file</span>
+                            <span>{t('DUPLICATE_PHONE_NUMBER_FOUND_IN_FILE')}</span>
                           </div>
                         )}
                         {duplicateEmailsInFile.size > 0 && (
                           <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
-                            <span>Duplicate email found in file</span>
+                            <span>{t('DUPLICATE_EMAIL_FOUND_IN_FILE')}</span>
                           </div>
                         )}
                       </>
@@ -811,7 +847,7 @@ export default function ImportStakeholder() {
                       <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
                         <span>
-                          Validation error - invalid or duplicate data
+                          {t('VALIDATION_ERROR_INVALID_OR_DUPLICATE_DATA')}
                         </span>
                       </div>
                     )}
@@ -819,14 +855,14 @@ export default function ImportStakeholder() {
                       newStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-sm bg-green-200 border border-green-400" />
-                          <span>New stakeholder will be created</span>
+                          <span>{t('NEW_STAKEHOLDER_WILL_BE_CREATED')}</span>
                         </div>
                       )}
                     {validationResponse !== null &&
                       updateStakeholderPhones.size > 0 && (
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
-                          <span>Existing stakeholder will be updated</span>
+                          <span>{t('EXISTING_STAKEHOLDER_WILL_BE_UPDATED')}</span>
                         </div>
                       )}
                   </div>
@@ -852,12 +888,12 @@ export default function ImportStakeholder() {
                   <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-[clamp(8px,1vw,12px)] h-[clamp(28px,3vw,36px)] font-semibold text-[clamp(11px,1vw,14px)] hover:bg-gray-200 transition-colors whitespace-nowrap [&_svg]:size-[clamp(14px,1.4vw,18px)]">
                     {selectedFile ? (
                       <>
-                        <Repeat2 className="mr-1" /> Replace
+                        <Repeat2 className="mr-1" /> {t('REPLACE')}
                       </>
                     ) : (
                       <>
                         <Share className="mr-1" />
-                        Choose File
+                        {tg('CHOOSE_FILE')}
                       </>
                     )}
                   </span>
@@ -928,7 +964,7 @@ export default function ImportStakeholder() {
           <div>
             {data?.length > 0 && (
               <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
-                Total Count: {data.length - 1}
+                {tg('TOTAL_COUNT')}: {formatNum(data.length - 1)}
               </p>
             )}
           </div>
@@ -939,7 +975,7 @@ export default function ImportStakeholder() {
               variant="outline"
               onClick={handleClear}
             >
-              Clear
+              {t('CLEAR')}
             </Button>
 
             {isValidated ? (
@@ -948,7 +984,7 @@ export default function ImportStakeholder() {
                 onClick={handleUpload}
                 disabled={isImportDisabled}
               >
-                {uploadStakeholders.isPending ? 'Importing...' : 'Import'}
+                {uploadStakeholders.isPending ? t('IMPORTING') : t('IMPORT')}
               </Button>
             ) : (
               <Button
@@ -979,10 +1015,10 @@ export default function ImportStakeholder() {
             <>
               <DialogHeader>
                 <DialogTitle className="text-center text-primary">
-                  Create a Group?
+                  {t('CREATE_A_GROUP')}?
                 </DialogTitle>
                 <DialogDescription className="text-center">
-                  Would you like to organize the imported stakeholders into a
+                  {t('WOULD_YOU_LIKE_TO_ORGANIZE_THE')}
                   group?
                 </DialogDescription>
               </DialogHeader>
@@ -1003,10 +1039,10 @@ export default function ImportStakeholder() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-gray-800">
-                            Create a Group
+                            {t('CREATE_A_GROUP')}
                           </span>
                           <span className="text-xs px-2 py-0.5 rounded-sm bg-gray-100 font-semibold text-blue-600">
-                            RECOMMENDED
+                            {t('RECOMMENDED')}
                           </span>
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
@@ -1029,7 +1065,7 @@ export default function ImportStakeholder() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="font-semibold text-gray-800">
-                            Skip for Now
+                            {t('SKIP_FOR_NOW')}
                           </span>
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
@@ -1049,29 +1085,28 @@ export default function ImportStakeholder() {
                   disabled={uploadStakeholders.isPending}
                   onClick={() => handleActualUpload(false)}
                 >
-                  {uploadStakeholders.isPending ? 'Importing...' : 'Skip'}
+                  {uploadStakeholders.isPending ? t('IMPORTING') : t('SKIP')}
                 </Button>
                 <Button
                   className="flex-1"
                   disabled={uploadStakeholders.isPending}
                   onClick={() => showGroupForm.onTrue()}
                 >
-                  Create Group
+                  {t('CREATE_GROUP')}
                 </Button>
               </div>
             </>
           ) : (
             <form onSubmit={handleGroupImport}>
               <DialogHeader>
-                <DialogTitle>Create Stakeholder Group</DialogTitle>
+                <DialogTitle>{t('CREATE_STAKEHOLDER_GROUP')}</DialogTitle>
                 <DialogDescription>
-                  Enter a name for the group to organize the imported
-                  stakeholders.
+                  {t('ENTER_A_NAME_FOR_THE_GROUP')}
                 </DialogDescription>
               </DialogHeader>
               <div className="mt-4 mb-4">
                 <label className="block text-sm font-medium mb-2">
-                  Group Name <span className="text-red-500">*</span>
+                  {t('GROUP_NAME')} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"
@@ -1080,7 +1115,7 @@ export default function ImportStakeholder() {
                     setGroupName(e.target.value);
                     setGroupError('');
                   }}
-                  placeholder="Enter group name"
+                  placeholder={t('ENTER_GROUP_NAME')}
                   className="w-full"
                   autoFocus
                   disabled={uploadStakeholders.isPending}
@@ -1101,7 +1136,7 @@ export default function ImportStakeholder() {
                     setGroupError('');
                   }}
                 >
-                  Back
+                  {t('BACK')}
                 </Button>
                 <Button
                   type="submit"
@@ -1109,8 +1144,8 @@ export default function ImportStakeholder() {
                   disabled={uploadStakeholders.isPending}
                 >
                   {uploadStakeholders.isPending
-                    ? 'Importing...'
-                    : 'Import with Group'}
+                    ? t('IMPORTING')
+                    : t('IMPORT_WITH_GROUP')}
                 </Button>
               </div>
             </form>

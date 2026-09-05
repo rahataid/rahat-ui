@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import AddButton from '../../components/add.btn';
 import SearchInput from '../../components/search.input';
 
@@ -19,6 +20,8 @@ export default function StakeholdersTableFilters({
   filters,
   setFilters,
 }: IProps) {
+  const tAdd = useTranslations('GLOBAL');
+  const tGlobal = useTranslations('GLOBAL');
   const [stakeholderSearchText, setStakeholderSearchText] = React.useState('');
   const [organizationSearchText, setOrganizationSearchText] =
     React.useState('');
@@ -42,7 +45,7 @@ export default function StakeholdersTableFilters({
       {/* Search Stakeholder */}
       <SearchInput
         className="w-full"
-        name="name"
+        name={tGlobal('NAME')}
         value={stakeholderSearchText}
         onSearch={(e) => handleSearch(e, 'name')}
       />
@@ -50,7 +53,7 @@ export default function StakeholdersTableFilters({
       {/* Search Organization */}
       <SearchInput
         className="w-full"
-        name="organization"
+        name={tGlobal('ORGANIZATION')}
         value={organizationSearchText}
         onSearch={(e) => handleSearch(e, 'organization')}
       />
@@ -58,7 +61,7 @@ export default function StakeholdersTableFilters({
       {/* Search Municipality */}
       <SearchInput
         className="w-full"
-        name="municipality"
+        name={tGlobal('MUNICIPALITY')}
         value={municipalitySearchText}
         onSearch={(e) => handleSearch(e, 'municipality')}
       />
@@ -66,7 +69,7 @@ export default function StakeholdersTableFilters({
       {/* Add Stakeholders Btn */}
       <AddButton
         path={`/projects/aa/${projectID}/stakeholders/add?fromGroup=${fromGroup}`}
-        name="Stakeholder"
+        name={tAdd('STAKEHOLDER')}
       />
     </div>
   );

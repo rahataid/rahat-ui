@@ -5,8 +5,11 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { humanizeString } from '../../utils';
+import { useTranslations } from 'next-intl';
 
 export const useCommunityBeneficiaryTableColumns = () => {
+  const t = useTranslations('COMMUNITY_BENEFICIARY_DETAIL');
+  const tg = useTranslations('GLOBAL');
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
       id: 'select',
@@ -17,7 +20,7 @@ export const useCommunityBeneficiaryTableColumns = () => {
             (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={tg('SELECT_ALL')}
         />
       ),
       cell: ({ row, table }) => (
@@ -27,14 +30,14 @@ export const useCommunityBeneficiaryTableColumns = () => {
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
           }}
-          aria-label="Select row"
+          aria-label={tg('SELECT_ROW')}
         />
       ),
       enableSorting: false,
       enableHiding: false,
     },
     {
-      header: 'Beneficiary Name',
+      header: tg('BENEFICIARY_NAME'),
       cell: ({ row }) => {
         return (
           <div>
@@ -46,19 +49,19 @@ export const useCommunityBeneficiaryTableColumns = () => {
 
     {
       accessorKey: 'groupName',
-      header: 'Group Name',
+      header: tg('GROUP_NAME'),
       cell: ({ row }) => <div>{humanizeString(row.getValue('groupName'))}</div>,
     },
 
     {
       accessorKey: 'phone',
-      header: 'Phone',
+      header: tg('PHONE'),
       cell: ({ row }) => <div>{humanizeString(row.getValue('phone'))}</div>,
     },
 
     {
       accessorKey: 'govtIDNumber',
-      header: 'Govt. ID Number',
+      header: t('GOVT_ID_NUMBER'),
       cell: ({ row }) => (
         <div>{humanizeString(row.getValue('govtIDNumber')) || '-'}</div>
       ),

@@ -1,7 +1,10 @@
 'use client';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -68,6 +71,8 @@ import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export default function EditActivity() {
+  const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
   // State goes here
   const [open, setOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
@@ -77,6 +82,10 @@ export default function EditActivity() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
+  const [editBackup, setEditBackup] = useState<{
+    index: number;
+    data: CommunicationData;
+  } | null>(null);
 
   // Ref goes here
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -149,11 +158,11 @@ export default function EditActivity() {
           (f) => f.fileName === file.name,
         );
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -189,7 +198,7 @@ export default function EditActivity() {
             (f) => !(f.fileName === file.name && f.mediaURL === ''),
           );
           form.setValue('activityDocuments', filteredFiles);
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         } finally {
           setUploadingFileName(null);
         }
@@ -271,7 +280,15 @@ export default function EditActivity() {
       sessionId: communicationFormData?.sessionId || '',
       communicationId: communicationFormData?.communicationId || '',
     };
-    setCommunicationData([...communicationData, newCommunication]);
+
+    if (editBackup) {
+      const updated = [...communicationData];
+      updated.splice(editBackup.index, 0, newCommunication);
+      setCommunicationData(updated);
+      setEditBackup(null);
+    } else {
+      setCommunicationData([...communicationData, newCommunication]);
+    }
 
     communicationForm.reset(defaultCommunicationValues);
   };
@@ -283,11 +300,26 @@ export default function EditActivity() {
     setCommunicationData(updatedCommunications);
   };
 
+  const handleEdit = (index: number) => {
+    setEditBackup({ index, data: communicationData[index] });
+    handleRemove(index);
+  };
+
+  const handleCancelEdit = () => {
+    if (editBackup) {
+      const restored = [...communicationData];
+      restored.splice(editBackup.index, 0, editBackup.data);
+      setCommunicationData(restored);
+      setEditBackup(null);
+    }
+  };
+
   const handleReset = () => {
     form.reset();
     communicationForm.reset(defaultCommunicationValues);
     setOpen(false);
     editCommunicationForm.onFalse();
+    setEditBackup(null);
 
     if (
       activityDetail?.activityCommunication &&
@@ -323,6 +355,20 @@ export default function EditActivity() {
       }
     }
   }, [isActivityLoading, open, editCommunicationForm.value]);
+
+  // Handle #comm hash to auto-open communication form
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isActivityLoading) return;
+    if (window.location.hash === '#comm') {
+      setOpen(true);
+      window.history.replaceState(
+        null,
+        '',
+        window.location.pathname + window.location.search,
+      );
+    }
+  }, [isActivityLoading]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -399,7 +445,7 @@ export default function EditActivity() {
       <div className="p-4 h-full">
         <Back path={redirectUpdatePath} />
         <div className="flex justify-center items-center h-full">
-          <NoResult message="Error while loading activity details" />
+          <NoResult message={t('ERROR_WHILE_LOADING_ACTIVITY_DETAILS')} />
         </div>
       </div>
     );
@@ -418,8 +464,8 @@ export default function EditActivity() {
               <div className="flex justify-between items-center">
                 <div>
                   <Heading
-                    title={`Edit Activity `}
-                    description="Edit the form below to update  activity"
+                    title={t('EDIT_ACTIVITY')}
+                    description={t('EDIT_THE_FORM_BELOW_TO_UPDATE2')}
                   />
                 </div>
 
@@ -431,14 +477,14 @@ export default function EditActivity() {
                       className="w-36"
                       onClick={handleReset}
                     >
-                      Reset
+                      {t('RESET')}
                     </Button>
                     <Button
                       className="  w-36"
                       type="submit"
                       disabled={isSubmitButtonDisabled}
                     >
-                      Update
+                      {t('UPDATE_ACTIVITY')}
                     </Button>
                   </div>
                 </div>
@@ -453,11 +499,11 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel required>Activity title</FormLabel>
+                          <FormLabel required>{t('ACTIVITY_TITLE2')}</FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
-                              placeholder="Enter activity title"
+                              placeholder={t('ENTER_ACTIVITY_TITLE')}
                               {...field}
                             />
                           </FormControl>
@@ -472,15 +518,15 @@ export default function EditActivity() {
                     name="responsibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Responsibility</FormLabel>
+                        <FormLabel required>{t('RESPONSIBILITY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             users?.data?.find((u) => u.uuid === field.value)
                               ?.name
                           }
-                          placeholder="Select responsibility"
-                          searchPlaceholder="Search users..."
-                          emptyMessage="No user found."
+                          placeholder={t('SELECT_RESPONSIBILITY')}
+                          searchPlaceholder={t('SEARCH_USERS')}
+                          emptyMessage={t('NO_USER_FOUND')}
                           options={
                             users?.data?.map((u: any) => ({
                               label: u.name,
@@ -503,11 +549,11 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel required>Responsible Station</FormLabel>
+                          <FormLabel required>{t('RESPONSIBLE_STATION')}</FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
-                              placeholder="Enter responsible station"
+                              placeholder={t('ENTER_RESPONSIBLE_STATION')}
                               {...field}
                             />
                           </FormControl>
@@ -521,14 +567,14 @@ export default function EditActivity() {
                     name="phaseId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Phase</FormLabel>
+                        <FormLabel required>{t('PHASE')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             phases?.find((p) => p.uuid === field.value)?.name
                           }
-                          placeholder="Select phase"
-                          searchPlaceholder="Search phases..."
-                          emptyMessage="No phase found."
+                          placeholder={t('SELECT_PHASE')}
+                          searchPlaceholder={t('SEARCH_PHASES')}
+                          emptyMessage={t('NO_PHASE_FOUND')}
                           disabled
                           options={
                             phases?.map((p) => ({
@@ -550,15 +596,15 @@ export default function EditActivity() {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Category</FormLabel>
+                        <FormLabel required>{t('CATEGORY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             categories?.find((c) => c.uuid === field.value)
                               ?.name
                           }
-                          placeholder="Select category"
-                          searchPlaceholder="Search categories..."
-                          emptyMessage="No category found."
+                          placeholder={t('SELECT_CATEGORY')}
+                          searchPlaceholder={t('SEARCH_CATEGORIES')}
+                          emptyMessage={t('NO_CATEGORY_FOUND')}
                           options={
                             categories?.map((c: any) => ({
                               label: c.name,
@@ -591,7 +637,7 @@ export default function EditActivity() {
                               />
                             </FormControl>
                             <FormLabel className="text-sm font-normal ml-2">
-                              Is Automated Activity?
+                              {t('IS_AUTOMATED_ACTIVITY')}?
                             </FormLabel>
                             <FormMessage />
                           </FormItem>
@@ -613,15 +659,17 @@ export default function EditActivity() {
                         const unit = !unitValue ? 'days' : unitValue;
                         return (
                           <FormItem>
-                            <FormLabel>Lead Time</FormLabel>
+                            <FormLabel>{t('LEAD_TIME')}</FormLabel>
                             <div className="grid grid-cols-4">
                               <FormInput
                                 type="text"
-                                placeholder="Enter lead time"
+                                placeholder={t('ENTER_LEAD_TIME')}
                                 className="col-span-3 rounded-r-none "
-                                value={lead}
+                                value={formatDigits(lead)}
                                 onChange={(e) => {
-                                  const newLead = e.target.value;
+                                  const newLead = toAsciiDigits(
+                                    e.target.value,
+                                  );
                                   field.onChange(
                                     newLead ? `${newLead} ${unit}` : '',
                                   );
@@ -646,7 +694,9 @@ export default function EditActivity() {
                                       key={item.value}
                                       value={item.value}
                                     >
-                                      {item.label}
+                                      {item.value === 'hours'
+                                        ? t('HOURS')
+                                        : t('DAYS')}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -665,10 +715,10 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel>{t('DESCRIPTION')}</FormLabel>
                           <FormControl>
                             <FormTextarea
-                              placeholder="Enter description"
+                              placeholder={t('ENTER_DESCRIPTION')}
                               className=" rounded"
                               {...field}
                             />
@@ -695,8 +745,8 @@ export default function EditActivity() {
                                 className="text-primary"
                               />
                               <p className="text-sm font-medium">
-                                Drop files to upload, or{' '}
-                                <span className="text-primary">browse</span>
+                                {t('DROP_FILES_TO_UPLOAD')}, {t('OR')}{' '}
+                                <span className="text-primary">{t('BROWSE')}</span>
                               </p>
                             </div>
                             <Input
@@ -709,8 +759,7 @@ export default function EditActivity() {
                         </FormControl>
                         <FormMessage />
                         <p className="text-xs text-end text-orange-500">
-                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                          CSV under 5 MB.
+                          {t('FILES_MUST_BE_JPEG_PNG_BMP')}
                         </p>
                         <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
                           {activityDocuments?.map((file) => (
@@ -754,7 +803,7 @@ export default function EditActivity() {
                   setOpen(!open);
                 }}
               >
-                Add Communication
+                {t('ADD_COMMUNICATION')}
                 {!open ? (
                   <Plus className="ml-2" size={16} strokeWidth={3} />
                 ) : (
@@ -772,6 +821,7 @@ export default function EditActivity() {
                     appTransports={appTransports}
                     isMultiSelect={open}
                     editMode={editCommunicationForm}
+                    onCancelEdit={handleCancelEdit}
                   />
                 )}
               </div>
@@ -781,6 +831,7 @@ export default function EditActivity() {
                 communicationData={communicationData}
                 appTransports={appTransports}
                 onRemove={handleRemove}
+                onEdit={handleEdit}
                 setOpen={editCommunicationForm.setValue}
                 open={editCommunicationForm.value}
               />

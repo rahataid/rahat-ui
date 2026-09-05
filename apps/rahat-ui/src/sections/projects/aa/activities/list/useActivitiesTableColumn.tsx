@@ -1,10 +1,12 @@
 import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import UpdateActivityStatusDialog from '../details/update.activity.status.dialog';
 import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {
@@ -43,8 +45,11 @@ function getStatusBg(status: string) {
 }
 
 export default function useActivitiesTableColumn() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams();
   const router = useRouter();
+  const formatDate = useDateFormat();
 
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
@@ -54,12 +59,12 @@ export default function useActivitiesTableColumn() {
   const columns: ColumnDef<IActivitiesItem>[] = [
     {
       accessorKey: 'title',
-      header: 'Title',
+      header: t('TITLE'),
       cell: ({ row }) => <div className="w-80">{row.getValue('title')}</div>,
     },
     {
       accessorKey: 'category',
-      header: 'Category',
+      header: t('CATEGORY'),
       cell: ({ row }) => (
         <Badge className="rounded-md capitalize w-max text-muted-foreground">
           {row.getValue('category')}
@@ -68,7 +73,7 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'phase',
-      header: 'Phase',
+      header: t('PHASE'),
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const bgColor = getPhaseBg(phase);
@@ -79,26 +84,26 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'isAutomated',
-      header: 'Type',
+      header: tg('TYPE'),
       cell: ({ row }) => (
         <Badge className="rounded-md capitalize text-muted-foreground">
-          {row.getValue('isAutomated') ? 'Automated' : 'Manual'}
+          {row.getValue('isAutomated') ? t('AUTOMATED') : t('MANUAL')}
         </Badge>
       ),
     },
     {
       accessorKey: 'responsibility',
-      header: 'Responsibility',
+      header: t('RESPONSIBILITY'),
       cell: ({ row }) => <div>{row.getValue('responsibility')}</div>,
     },
     {
       accessorKey: 'source',
-      header: 'Responsible Station',
+      header: t('RESPONSIBLE_STATION'),
       cell: ({ row }) => <div>{row.getValue('source')}</div>,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
         const bgColor = getStatusBg(status);
@@ -109,24 +114,21 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'completedBy',
-      header: 'Completed By',
+      header: t('COMPLETED_BY'),
       cell: ({ row }) => {
         const completedBy = row.getValue('completedBy') as string;
-        return <div className="flex gap-1">{completedBy || 'N/A'}</div>;
+        return <div className="flex gap-1">{completedBy || t('NA')}</div>;
       },
     },
     {
       accessorKey: 'completedAt',
-      header: 'Completed At',
+      header: t('COMPLETED_AT'),
       cell: ({ row }) => {
         const completedAt = row.getValue('completedAt') as string;
         if (completedAt) {
-          const d = new Date(completedAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return `${localeDate} ${localeTime}`;
+          return formatDate(completedAt);
         }
-        return 'N/A';
+        return t('NA');
       },
     },
     {

@@ -16,8 +16,10 @@ import { ListBeneficiary } from '@rahat-ui/types';
 import { useSearchParams } from 'next/navigation';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { GroupPurpose } from '../../constants/beneficiary.const';
+import { useTranslations } from 'next-intl';
 
 export const useBeneficiaryTableColumns = () => {
+  const t = useTranslations('GLOBAL');
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
@@ -67,7 +69,7 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => {
         // const piiData = row.getValue('piiData') as any;
         return (
@@ -82,7 +84,7 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: t('WALLET_ADDRESS'),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -106,8 +108,8 @@ export const useBeneficiaryTableColumns = () => {
               <p className="text-xs font-medium">
                 {walletAddressCopied &&
                 walletAddressCopied === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
+                  ? t('COPIED')
+                  : t('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -116,27 +118,39 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'gender',
-      header: 'Gender',
-      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+      header: t('GENDER'),
+      cell: ({ row }) => {
+        const gender = row.getValue('gender') as string;
+        return <div>{gender ? t(gender) : ''}</div>;
+      },
     },
     {
       accessorKey: 'internetStatus',
-      header: 'Internet Access',
-      cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
+      header: t('INTERNET_ACCESS'),
+      cell: ({ row }) => {
+        const internetStatus = row.getValue('internetStatus') as string;
+        return <div>{internetStatus ? t(internetStatus) : ''}</div>;
+      },
     },
     {
       accessorKey: 'phoneStatus',
-      header: 'Phone Type',
-      cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
+      header: t('PHONE_TYPE'),
+      cell: ({ row }) => {
+        const phoneStatus = row.getValue('phoneStatus') as string;
+        return <div>{phoneStatus ? t(phoneStatus) : ''}</div>;
+      },
     },
     {
       accessorKey: 'bankedStatus',
-      header: 'Banking Status',
-      cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
+      header: t('BANKING_STATUS'),
+      cell: ({ row }) => {
+        const bankedStatus = row.getValue('bankedStatus') as string;
+        return <div>{bankedStatus ? t(bankedStatus) : ''}</div>;
+      },
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
@@ -174,14 +188,14 @@ export const useBeneficiaryTableColumns = () => {
                       <span className="font-semibold text-sm/6">
                         {row?.original?.groupPurpose ===
                           GroupPurpose.BANK_TRANSFER &&
-                          'Bank Account Validation Failed'}
+                          t('BANK_ACCOUNT_VALIDATION_FAILED')}
                         {row?.original?.groupPurpose ===
                           GroupPurpose.MOBILE_MONEY &&
-                          'Phone Number Validation Failed'}
+                          t('PHONE_NUMBER_VALIDATION_FAILED')}
                       </span>
                     </div>
                     <p className="text-gray-500 text-sm mt-1 break-words">
-                      {row.original.error ?? 'Something went wrong!!'}
+                      {row.original.error ?? t('SOMETHING_WENT_WRONG')}
                     </p>
                   </TooltipContent>
                 </Tooltip>

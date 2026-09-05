@@ -10,6 +10,8 @@ import TimeSeriesChart from '../../dhm/chart';
 import WaterLevelTable from '../../dhm/table';
 import { roundValue } from '../utils/color.utils';
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface TemperatureHistorySectionProps {
   activeTab: 'hourly' | 'daily';
@@ -34,10 +36,15 @@ export function TemperatureHistorySection({
   history,
   columns,
   unit = '°C',
-  title = 'Temperature History',
-  yaxisLabel = 'Temperature',
-  noDataLabel = 'temperature',
+  title,
+  yaxisLabel,
+  noDataLabel,
 }: TemperatureHistorySectionProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+  const resolvedTitle = title ?? t('TEMPERATURE_HISTORY');
+  const resolvedYaxisLabel = yaxisLabel ?? t('TEMPERATURE_LABEL');
+  const resolvedNoDataLabel = noDataLabel ?? t('TEMPERATURE_LABEL');
   const renderContent = (timeFormat: 'h:mm a' | 'MMM d', period: string) => {
     if (isLoading) {
       return <TableLoader />;
@@ -48,10 +55,10 @@ export function TemperatureHistorySection({
         <>
           <TimeSeriesChart
             data={history}
-            yaxisTitle={`${yaxisLabel} (${unit})`}
+            yaxisTitle={`${resolvedYaxisLabel} (${unit})`}
             unit={unit}
             xDateFormat={timeFormat}
-            yAxisFormatter={(value) => roundValue(value)}
+            yAxisFormatter={(value) => formatNum(roundValue(value))}
           />
           <div className='h-[200px] overflow-auto '>
             <WaterLevelTable tableData={history} columns={columns} />
@@ -63,7 +70,7 @@ export function TemperatureHistorySection({
     return (
       <div className="flex items-center justify-center p-8">
         <NoResult
-          message={`No ${period} ${noDataLabel} data available for this period`}
+          message={`No ${period} ${resolvedNoDataLabel} data available for this period`}
         />
       </div>
     );
@@ -72,14 +79,14 @@ export function TemperatureHistorySection({
   return (
     <div className="p-4 rounded-sm border shadow">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-lg/7 font-semibold">{title}</p>
+        <p className="text-lg/7 font-semibold">{resolvedTitle}</p>
         <Tabs
           value={activeTab}
           onValueChange={(v) => onTabChange(v as 'hourly' | 'daily')}
         >
           <TabsList>
-            <TabsTrigger value="hourly">Hourly</TabsTrigger>
-            <TabsTrigger value="daily">Daily</TabsTrigger>
+            <TabsTrigger value={t('HOURLY')}>{t('HOURLY')}</TabsTrigger>
+            <TabsTrigger value={t('DAILY')}>{t('DAILY')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -88,11 +95,11 @@ export function TemperatureHistorySection({
         value={activeTab}
         onValueChange={(v) => onTabChange(v as 'hourly' | 'daily')}
       >
-        <TabsContent value="hourly">
+        <TabsContent value={t('HOURLY')}>
           {renderContent('h:mm a', 'hourly')}
         </TabsContent>
 
-        <TabsContent value="daily">
+        <TabsContent value={t('DAILY')}>
           {renderContent('MMM d', 'daily')}
         </TabsContent>
       </Tabs>

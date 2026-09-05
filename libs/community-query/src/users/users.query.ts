@@ -4,6 +4,7 @@ import { ListRole, User } from '@rumsan/sdk/types';
 import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import Swal from 'sweetalert2';
+import { getTranslate } from '../translate';
 import { TAGS } from '../config';
 
 export const useCommunityUsersList = (
@@ -30,7 +31,8 @@ export const useCommunityUserCreate = () => {
       mutationKey: [TAGS.CREATE_USER],
       mutationFn: userClient.createUser,
       onSuccess: () => {
-        Swal.fire('Users Added Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('USERS_ADDED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_ALL_USER,
@@ -41,8 +43,9 @@ export const useCommunityUserCreate = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
+          t('ERROR'),
           Array.isArray(error?.response?.data?.message)
             ? error.response.data.message[0]
             : error.response.data.message,
@@ -64,7 +67,8 @@ export const useCommunityUserUpdate = () => {
       mutationFn: ({ uuid, payload }: { uuid: UUID; payload: User }) =>
         userClient.updateUser(uuid, payload),
       onSuccess: () => {
-        Swal.fire('Users Updated Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('USERS_UPDATED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_ALL_USER,
@@ -75,9 +79,10 @@ export const useCommunityUserUpdate = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -108,7 +113,8 @@ export const useCreateRole = () => {
       mutationKey: [TAGS.CREATE_ROLE],
       mutationFn: roleClient.createRole,
       onSuccess: () => {
-        Swal.fire('Roles Added Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('ROLES_ADDED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_ALL_ROLES,
@@ -119,9 +125,10 @@ export const useCreateRole = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -141,7 +148,8 @@ export const useEditRole = () => {
       mutationFn: ({ name, data }: { name: string; data: any }) =>
         roleClient.updateRole(name, data),
       onSuccess: () => {
-        Swal.fire('Role Updated Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('ROLE_UPDATED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_ALL_ROLES,
@@ -152,9 +160,10 @@ export const useEditRole = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -186,7 +195,8 @@ export const useDeleteRole = () => {
 
       mutationFn: ({ name }: { name: string }) => roleClient.deleteRole(name),
       onSuccess: () => {
-        Swal.fire('Role Deleted Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('ROLE_DELETED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_ALL_ROLES,
@@ -197,9 +207,10 @@ export const useDeleteRole = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Deleting Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_DELETING_DATA'),
           'error',
         );
       },
@@ -231,7 +242,8 @@ export const useUpdateMe = () => {
       mutationFn: ({ payload }: { payload: User }) =>
         userClient.updateMe(payload),
       onSuccess: () => {
-        Swal.fire('Profile Updated Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('PROFILE_UPDATED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_ME,
@@ -242,9 +254,10 @@ export const useUpdateMe = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },

@@ -1,3 +1,6 @@
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -49,6 +52,9 @@ const ViewTemplate = ({
   onSelectTemplate,
   selectedTemplateId,
 }: ViewTemplateProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id }: { id: UUID } = useParams();
   const { pagination, filters, setNextPage, setPrevPage, setFilters } =
     usePagination();
@@ -77,9 +83,9 @@ const ViewTemplate = ({
       <div className="border-l bg-background h-[calc(100vh-65px)] flex flex-col">
         <div className="flex items-start justify-between p-3 border-b">
           <div>
-            <h2 className="text-lg font-semibold">Activity Templates</h2>
+            <h2 className="text-lg font-semibold">{t('ACTIVITY_TEMPLATES')}</h2>
             <p className="text-sm text-muted-foreground">
-              Discover the filter activity templates for your workflow
+              {t('DISCOVER_TEMPLATES')}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -99,7 +105,7 @@ const ViewTemplate = ({
                     <div className="flex items-center gap-2 mb-2">
                       <Filter className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm font-semibold text-foreground">
-                        Filters
+                        {tg('FILTERS')}
                       </span>
                     </div>
                   </AccordionTrigger>
@@ -107,7 +113,7 @@ const ViewTemplate = ({
                     <div className="grid grid-cols-1 gap-3">
                       {/* Phase */}
                       <div className="space-y-2 px-2">
-                        <label className="text-sm font-medium">Phase</label>
+                        <label className="text-sm font-medium">{t('PHASE')}</label>
                         <Select
                           value={filters.phase === '' ? 'all' : filters.phase}
                           onValueChange={(value) =>
@@ -119,15 +125,15 @@ const ViewTemplate = ({
                           }
                         >
                           <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
-                            <SelectValue placeholder="Select phase" />
+                            <SelectValue placeholder={t('SELECT_PHASE')} />
                           </SelectTrigger>
 
                           <SelectContent>
                             <SelectGroup>
-                              <SelectLabel>Phase</SelectLabel>
+                              <SelectLabel>{t('PHASE')}</SelectLabel>
                               {PHASE.map((s) => (
                                 <SelectItem key={s.value} value={s.value}>
-                                  {s.label}
+                                  {translateValue(tg, s.label, { fallbackStyle: 'raw' })}
                                 </SelectItem>
                               ))}
                             </SelectGroup>
@@ -137,7 +143,7 @@ const ViewTemplate = ({
 
                       {/* Category */}
                       <div className="space-y-2 px-2">
-                        <label className="text-sm font-medium">Category</label>
+                        <label className="text-sm font-medium">{t('CATEGORY')}</label>
                         <Select
                           value={
                             filters.category === '' ? 'all' : filters.category
@@ -151,12 +157,12 @@ const ViewTemplate = ({
                           }
                         >
                           <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
-                            <SelectValue placeholder="Select category" />
+                            <SelectValue placeholder={t('SELECT_CATEGORY')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
-                              <SelectLabel>Category</SelectLabel>
-                              <SelectItem value="all">All</SelectItem>
+                              <SelectLabel>{t('CATEGORY')}</SelectLabel>
+                              <SelectItem value="all">{tg('ALL')}</SelectItem>
                               {categories.map((cat) => (
                                 <SelectItem key={cat.uuid} value={cat.name}>
                                   {cat.name}
@@ -169,9 +175,9 @@ const ViewTemplate = ({
 
                       {/* Title */}
                       <div className="space-y-2 px-2">
-                        <label className="text-sm font-medium">Title</label>
+                        <label className="text-sm font-medium">{t('TITLE')}</label>
                         <Input
-                          placeholder="Search by title..."
+                          placeholder={t('SEARCH_BY_TITLE')}
                           value={filters.title}
                           onChange={(e) =>
                             setFilters((prev: Template) => ({
@@ -186,7 +192,7 @@ const ViewTemplate = ({
 
                       {/* Automated */}
                       <div className="space-y-2 px-2">
-                        <label className="text-sm font-medium">Type</label>
+                        <label className="text-sm font-medium">{tg('TYPE')}</label>
                         <Select
                           value={
                             filters.isAutomated === ''
@@ -207,15 +213,19 @@ const ViewTemplate = ({
                           }
                         >
                           <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
-                            <SelectValue placeholder="Select type" />
+                            <SelectValue placeholder={t('SELECT_TYPE')} />
                           </SelectTrigger>
 
                           <SelectContent>
                             <SelectGroup>
-                              <SelectLabel>Type</SelectLabel>
+                              <SelectLabel>{tg('TYPE')}</SelectLabel>
                               {AUTOMATION_TYPE.map((type) => (
                                 <SelectItem key={type.value} value={type.value}>
-                                  {type.label}
+                                  {type.value === 'all'
+                                    ? tg('ALL')
+                                    : type.value === 'true'
+                                      ? t('AUTOMATED')
+                                      : t('MANUAL')}
                                 </SelectItem>
                               ))}
                             </SelectGroup>
@@ -225,10 +235,10 @@ const ViewTemplate = ({
                       {/* Has Communication  switch*/}
                       <div className=" flex justify-between items-center space-y-2">
                         <label className="text-sm font-medium ">
-                          Has Communication
+                          {t('HAS_COMMUNICATION')}
                         </label>
                         <div className="flex items-center gap-2">
-                          <label>No</label>
+                          <label>{tg('NO')}</label>
                           <Switch
                             checked={filters.hasCommunication === 'true'}
                             onCheckedChange={(value) =>
@@ -239,7 +249,7 @@ const ViewTemplate = ({
                               }))
                             }
                           />
-                          <label>Yes</label>
+                          <label>{tg('YES')}</label>
                         </div>
                       </div>
                     </div>
@@ -264,10 +274,10 @@ const ViewTemplate = ({
                     <Filter className="w-6 h-6 text-muted-foreground" />
                   </div>
                   <p className="font-medium text-foreground">
-                    No templates found
+                    {t('NO_TEMPLATES_FOUND')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Try adjusting your filters
+                    {t('TRY_ADJUSTING_YOUR_FILTERS')}
                   </p>
                 </div>
               )}
@@ -319,12 +329,12 @@ const ViewTemplate = ({
                             {item.isAutomated ? (
                               <>
                                 <Zap className="w-3 h-3" />
-                                Automated
+                                {t('AUTOMATED')}
                               </>
                             ) : (
                               <>
                                 <Wrench className="w-3 h-3" />
-                                Manual
+                                {t('MANUAL')}
                               </>
                             )}
                           </Badge>
@@ -340,7 +350,7 @@ const ViewTemplate = ({
                         }}
                       >
                         <Eye className="w-4 h-4" />
-                        Apply Template
+                        {t('APPLY_TEMPLATE')}
                       </Button>
                     </div>
                   </div>
@@ -358,13 +368,12 @@ const ViewTemplate = ({
                   onClick={() => setPrevPage()}
                   className="flex-1"
                 >
-                  ← Previous
+                  ← {tg('PREVIOUS')}
                 </Button>
 
                 <div className="px-4 py-2 rounded-md bg-muted text-center flex-1">
                   <span className="text-sm font-medium">
-                    Page {templates.meta.currentPage} of{' '}
-                    {templates.meta.lastPage}
+                    {tg('PAGE_CURRENT_OF_TOTAL', { current: formatNum(templates.meta.currentPage), total: formatNum(templates.meta.lastPage) })}
                   </span>
                 </div>
 
@@ -376,7 +385,7 @@ const ViewTemplate = ({
                   onClick={() => setNextPage()}
                   className="flex-1"
                 >
-                  Next →
+                  {tg('NEXT')} →
                 </Button>
               </div>
             )}

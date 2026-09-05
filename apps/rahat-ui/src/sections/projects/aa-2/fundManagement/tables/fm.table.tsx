@@ -18,12 +18,15 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useFundManagementTableColumns } from '../columns/useFMColumns';
+import { useTranslations } from 'next-intl';
 import DisburseButton from '../components/disburse.button';
 
 export default function FundManagementList() {
+  const tGlobal = useTranslations('GLOBAL');
   const params = useParams();
   const searchParams = useSearchParams();
   const projectId = params.id as UUID;
+  const t = useTranslations('AA_PROJECT');
 
   const {
     pagination,
@@ -83,15 +86,15 @@ export default function FundManagementList() {
     <div className="">
       <div className="flex items-start justify-between">
         <Heading
-          title="Fund Management List"
+          title={t('FUND_MANAGEMENT_LIST')}
           titleStyle="text-lg"
-          description="List of all the funds created"
+          description={t('LIST_OF_ALL_THE_FUNDS_CREATED')}
         />
         <DisburseButton />
       </div>
       <SearchInput
         className="w-full mb-2"
-        name="title"
+        name={tGlobal('TITLE')}
         value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
         onSearch={(event) =>
           table.getColumn('title')?.setFilterValue(event.target.value)
@@ -102,7 +105,7 @@ export default function FundManagementList() {
         table={table}
         tableHeight="h-[calc(100vh-420px)]"
         loading={isLoading}
-        message="No Fund Management List Available"
+        message={t('NO_FUND_MANAGEMENT_LIST_AVAILABLE')}
       />
       <CustomPagination
         meta={metaData}

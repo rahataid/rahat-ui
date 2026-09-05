@@ -20,6 +20,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 type ProjectModalType = {
   value: boolean;
@@ -37,13 +38,15 @@ export default function BulkAssignToProjectModal({
   handleSubmit,
   selectedBeneficiaries,
 }: IProps) {
+  const t = useTranslations('BENEFICIARY_LIST');
+  const tg = useTranslations('GLOBAL');
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const projectsList = useProjectList({});
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
+    if (!selectedProject) return alert(tg('PLEASE_SELECT_PROJECT'));
     handleSubmit(selectedProject);
   };
 
@@ -51,16 +54,17 @@ export default function BulkAssignToProjectModal({
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Assign Project</DialogTitle>
+          <DialogTitle>{tg('ASSIGN_PROJECT')}</DialogTitle>
           <DialogDescription>
-            Select the project to be assigned to the{' '}
-            {selectedBeneficiaries.length > 1 ? 'beneficiaries' : 'beneficiary'}
+            {selectedBeneficiaries.length > 1
+              ? t('SELECT_THE_PROJECT_TO_BE_ASSIGNED')
+              : t('SELECT_THE_PROJECT_TO_BE_ASSIGNED2')}
           </DialogDescription>
         </DialogHeader>
         <div>
           <Select onValueChange={handleProjectChange}>
             <SelectTrigger>
-              <SelectValue placeholder="Projects" />
+              <SelectValue placeholder={tg('PROJECTS')} />
             </SelectTrigger>
             <SelectContent>
               {projectsList.data?.data.length &&
@@ -81,7 +85,7 @@ export default function BulkAssignToProjectModal({
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
-              Close
+              {tg('CLOSE')}
             </Button>
           </DialogClose>
           <DialogClose asChild>
@@ -91,7 +95,7 @@ export default function BulkAssignToProjectModal({
               variant="ghost"
               className="text-primary"
             >
-              Assign
+              {tg('ASSIGN')}
             </Button>
           </DialogClose>
         </DialogFooter>

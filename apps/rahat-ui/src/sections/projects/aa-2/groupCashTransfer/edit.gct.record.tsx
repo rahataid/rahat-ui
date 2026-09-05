@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,21 +31,30 @@ import {
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useGetOneGctRecord, useUpdateGctRecord } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { SectionCard } from './components/gct.form-sections';
 
-const EditGctRecordSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  amount: z
-    .string()
-    .min(1, 'Amount is required')
-    .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
-      message: 'Amount must be a positive number',
-    }),
-});
+type EditGctRecordValues = z.infer<ReturnType<typeof buildEditGctRecordSchema>>;
 
-type EditGctRecordValues = z.infer<typeof EditGctRecordSchema>;
+function buildEditGctRecordSchema(t: (key: string) => string) {
+  return z.object({
+    title: z.string().min(1, t('TITLE_IS_REQUIRED')),
+    amount: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z
+        .string()
+        .min(1, t('AMOUNT_IS_REQUIRED'))
+        .refine((v) => !isNaN(Number(v)) && Number(v) > 0, {
+          message: t('AMOUNT_MUST_BE_POSITIVE_NUMBER'),
+        }),
+    ),
+  });
+}
 
 export default function EditGctRecord() {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const EditGctRecordSchema = buildEditGctRecordSchema(t);
+  const tGlobal = useTranslations('GLOBAL');
   const { id, recordUuid } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -97,14 +107,14 @@ export default function EditGctRecord() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Edit Fund Record"
-        subtitle="Update the details for this fund record"
+        title={t('EDIT_FUND_RECORD')}
+        subtitle={t('UPDATE_THE_DETAILS_FOR_THIS_FUND')}
         path={backPath}
       />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <SectionCard title="Record Details">
+          <SectionCard titleKey="RECORD_DETAILS">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -112,10 +122,10 @@ export default function EditGctRecord() {
                 render={({ field }) => (
                   <FormItem>
                     <Label>
-                      Fund Title <span className="text-destructive">*</span>
+                      {t('FUND_TITLE')} <span className="text-destructive">*</span>
                     </Label>
                     <FormControl>
-                      <Input placeholder="Enter fund title" {...field} />
+                      <Input placeholder={t('ENTER_FUND_TITLE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -127,10 +137,10 @@ export default function EditGctRecord() {
                 render={({ field }) => (
                   <FormItem>
                     <Label>
-                      Amount <span className="text-destructive">*</span>
+                      {t('AMOUNT')} <span className="text-destructive">*</span>
                     </Label>
                     <FormControl>
-                      <Input type="number" min={1} placeholder="Enter amount" {...field} />
+                      <Input type="number" min={1} placeholder={t('ENTER_AMOUNT')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -146,7 +156,7 @@ export default function EditGctRecord() {
                 onClick={() => form.reset({ title: record?.title ?? '', amount: String(record?.amount ?? '') })}
                 disabled={updateRecord.isPending}
               >
-                Clear
+                {t('CLEAR')}
               </Button>
               <Button
                 type="submit"
@@ -156,10 +166,10 @@ export default function EditGctRecord() {
                 {updateRecord.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
+                    {t('SAVING')}
                   </>
                 ) : (
-                  'Confirm'
+                  tGlobal('CONFIRM')
                 )}
               </Button>
             </div>
@@ -170,17 +180,13 @@ export default function EditGctRecord() {
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Update</AlertDialogTitle>
+            <AlertDialogTitle>{t('CONFIRM_UPDATE')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to update{' '}
-              <span className="font-semibold text-foreground">
-                "{record?.title}"
-              </span>
-              ?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_UPDATE', { title: record?.title })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={updateRecord.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={updateRecord.isPending}>{tGlobal('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmedUpdate}
               disabled={updateRecord.isPending}
@@ -188,10 +194,10 @@ export default function EditGctRecord() {
               {updateRecord.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t('SAVING')}
                 </>
               ) : (
-                'Confirm'
+                tGlobal('CONFIRM')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import RecentPaymentCard from './recent.payment.card';
@@ -9,12 +10,14 @@ interface RecentPayoutProps {
 }
 
 const RecentPayout = ({ payouts }: RecentPayoutProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const { id } = useParams();
   const route = useRouter();
   return (
     <>
       <div className="flex justify-between mb-2">
-        <h1 className="text-lg font-medium">Recent Payout</h1>
+        <h1 className="text-lg font-medium">{tv('RECENT_PAYOUT')}</h1>
       </div>
 
       <div className="h-[calc(100vh-400px)] overflow-y-scroll overflow-x-hidden scrollbar-hidden">
@@ -50,7 +53,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
             </div>
           ))
         ) : (
-          <NoResult message="No Payout Available" />
+          <NoResult message={t('NO_PAYOUT_AVAILABLE')} />
         )}
       </div>
     </>

@@ -3,6 +3,10 @@ import { ChevronDown, ChevronUp, Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { useInkindDetails, useTokenDetails } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import InkindDetails from './beneficiary.inkind.details';
@@ -22,6 +26,11 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const params = useParams();
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
+  const formatPhone = usePhoneFormat();
   const { clickToCopy, copyAction } = useCopy();
   const [viewMore, setViewMore] = useState(false);
 
@@ -49,6 +58,9 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
 
   const hasTokenData = !!(tokenData?.assignedToken || tokenData?.redemmedToken);
   const showBorder = filteredInkinds.length > 0;
+  const formatEnumValue = (value?: string) =>
+    translateValue(tg, value, { fallbackStyle: 'raw' });
+
   return (
     <>
       <div className="flex items-center">
@@ -59,7 +71,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         <div className="flex flex-col ml-6">
           <div className="flex items-center">
             <div className="text-lg text-muted-foreground truncate w-48 overflow-hidden mr-2">
-              {beneficiary?.walletAddress || 'N/A'}
+              {beneficiary?.walletAddress || tg('N_A')}
             </div>
             <button
               onClick={() => clickToCopy(beneficiary?.walletAddress || '', 1)}
@@ -72,56 +84,63 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
 
       <div className="grid grid-cols-3 gap-6 py-4">
-        <DataItem label="Age" value={beneficiary?.projectData?.age || 'N/A'} />
         <DataItem
-          label="Gender"
-          value={beneficiary?.projectData?.gender || 'N/A'}
+          label={tg('ESTIMATED_AGE')}
+          value={
+            beneficiary?.projectData?.age
+              ? formatNum(beneficiary.projectData.age)
+              : tg('N_A')
+          }
         />
         <DataItem
-          label="Phone Number"
-          value={beneficiary?.extras?.phone || 'N/A'}
+          label={tg('GENDER')}
+          value={formatEnumValue(beneficiary?.projectData?.gender) || tg('N_A')}
+        />
+        <DataItem
+          label={tg('PHONE_NUMBER')}
+          value={formatPhone(beneficiary?.extras?.phone) || tg('N_A')}
         />
         <div>
-          <h1 className="text-lg text-black">Address</h1>
+          <h1 className="text-lg text-black">{tg('ADDRESS')}</h1>
           <div className=" text-sm text-muted-foreground font-medium flex gap-1 capitalize">
             <p>{beneficiary?.projectData?.location || ''}</p>
             {beneficiary?.extras?.ward_no && (
-              <p>ward no - {beneficiary?.extras?.ward_no}</p>
+              <p>{t('WARD')} {t('NO')} - {formatDigits(beneficiary.extras.ward_no)}</p>
             )}
             <p>
               {!beneficiary?.extras?.location &&
                 !beneficiary?.projectData?.location &&
                 !beneficiary?.extras?.ward_no &&
-                'N/A'}
+                tg('N_A')}
             </p>
           </div>
         </div>
         <DataItem
-          label="Banking Status"
-          value={beneficiary?.projectData?.bankedStatus?.split('_').join(' ')}
+          label={tg('BANKING_STATUS')}
+          value={formatEnumValue(beneficiary?.projectData?.bankedStatus)}
           isBadge
         />
         <DataItem
-          label="Phone Type"
-          value={beneficiary?.projectData?.phoneStatus?.split('_').join(' ')}
+          label={t('PHONE_TYPE')}
+          value={formatEnumValue(beneficiary?.projectData?.phoneStatus)}
           isBadge
         />
         <DataItem
-          label="Internet Type"
-          value={beneficiary?.projectData?.internetStatus?.split('_').join(' ')}
+          label={t('INTERNET_TYPE')}
+          value={formatEnumValue(beneficiary?.projectData?.internetStatus)}
           isBadge
         />
       </div>
       {bankAccount && (
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Bank Account Details</h2>
+          <h2 className="text-lg font-semibold">{tg('BANK_ACCOUNT_DETAILS')}</h2>
 
           <button
             type="button"
             onClick={() => setViewMore((prev) => !prev)}
             className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
           >
-            {viewMore ? 'View less' : 'View more'}
+            {viewMore ? tg('VIEW_LESS') : tg('VIEW_MORE')}
             {viewMore ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
         </div>
@@ -129,14 +148,18 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
 
       {viewMore && bankAccount && (
         <div className="grid grid-cols-3 gap-6 mb-6">
-          <DataItem label="Bank Name" value={bankAccount?.bankName || 'N/A'} />
+          <DataItem label={tg('BANK_NAME')} value={bankAccount?.bankName || tg('N_A')} />
           <DataItem
-            label="Account Name"
-            value={bankAccount?.accountName || 'N/A'}
+            label={tg('ACCOUNT_NAME')}
+            value={bankAccount?.accountName || tg('N_A')}
           />
           <DataItem
-            label="Account Number"
-            value={bankAccount?.accountNumber || 'N/A'}
+            label={tg('ACCOUNT_NUMBER')}
+            value={
+              bankAccount?.accountNumber
+                ? formatDigits(bankAccount.accountNumber)
+                : tg('N_A')
+            }
           />
         </div>
       )}
@@ -166,18 +189,18 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         ) : hasTokenData ? (
           <div className="flex gap-4 mb-6">
             <div className="flex-1 bg-gray-100 rounded-xl p-2 text-center">
-              <p className="text-sm text-gray-500">Assigned</p>
+              <p className="text-sm text-gray-500">{t('ASSIGNED')}</p>
               <h3 className="text-xl font-bold">
-                {tokenData?.assignedToken} Tokens
+                {formatNum(tokenData?.assignedToken)} {t('TOKENS')}
               </h3>
-              <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
+              <p className="text-gray-600">{t('CURRENCY_NPR')} {formatNum(tokenData?.assignedToken)}</p>
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl p-2 text-center">
-              <p className="text-sm text-gray-500">Redeemed</p>
+              <p className="text-sm text-gray-500">{t('REDEEMED')}</p>
               <h3 className="text-xl font-bold">
-                {tokenData?.redemmedToken} Tokens
+                {formatNum(tokenData?.redemmedToken)} {t('TOKENS')}
               </h3>
-              <p className="text-gray-600">NPR {tokenData?.redemmedToken}</p>
+              <p className="text-gray-600">{t('CURRENCY_NPR')} {formatNum(tokenData?.redemmedToken)}</p>
             </div>
           </div>
         ) : null}

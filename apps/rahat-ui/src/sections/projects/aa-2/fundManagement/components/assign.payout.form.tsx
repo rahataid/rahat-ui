@@ -6,6 +6,9 @@ import { UUID } from 'crypto';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, CheckCircle2, ChevronDown, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -46,7 +49,7 @@ import BeneficiariesGroupTable from 'apps/rahat-ui/src/sections/projects/aa-2/pa
 import { PayoutSkeleton } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/pauoutSkeleton';
 import {
   PaymentSchema,
-  payoutFundSchema,
+  buildPayoutFundSchema,
   FundWithPayoutSchema,
 } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
 import useBeneficiariesGroupTableColumn from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/useBeneficiariesGroupTablecolumn';
@@ -75,6 +78,9 @@ export default function PayoutFundManagementForm({
   wantsPayout,
   onWantsPayoutChange,
 }: PayoutFundManagementFormProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+  const payoutFundSchema = useMemo(() => buildPayoutFundSchema(t), [t]);
   // Router goes here
   const params = useParams();
   const projectID = params.id as UUID;
@@ -200,8 +206,7 @@ export default function PayoutFundManagementForm({
     return (
       <div className="border rounded-sm p-10 bg-white flex flex-col items-center space-y-6">
         <p className="text-2xl font-bold text-center">
-          Do you want to create a payout for the group{' '}
-          <span className="text-primary">{groupName}</span> now?
+          {t('DO_YOU_WANT_TO_CREATE_PAYOUT', { groupName })}
         </p>
 
         <div className="w-full max-w-xl flex flex-col gap-4 mt-2">
@@ -214,10 +219,9 @@ export default function PayoutFundManagementForm({
               <CheckCircle2 className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <p className="font-bold text-base">Create Payout</p>
+              <p className="font-bold text-base">{t('CREATE_PAYOUT2')}</p>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Proceed to configure payout details, review beneficiary
-                information, and set up fund distribution.
+                {t('CONFIGURE_PAYOUT_DETAILS_DESC')}
               </p>
             </div>
           </div>
@@ -231,11 +235,9 @@ export default function PayoutFundManagementForm({
               <X className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <p className="font-bold text-base">Skip for Now</p>
+              <p className="font-bold text-base">{t('SKIP_FOR_NOW2')}</p>
               <p className="text-sm text-muted-foreground mt-0.5">
-                You can create a payout later from the{' '}
-                <span className="text-primary font-semibold">Payout</span>{' '}
-                section anytime.
+                {t('YOU_CAN_CREATE_PAYOUT_LATER')}
               </p>
             </div>
           </div>
@@ -248,14 +250,14 @@ export default function PayoutFundManagementForm({
               className="flex-1 rounded-sm"
               onClick={handleSkip}
             >
-              Skip for Now
+              {t('SKIP_FOR_NOW2')}
             </Button>
             <Button
               type="button"
               className="flex-1 rounded-sm"
               onClick={() => onWantsPayoutChange(true)}
             >
-              Create Payout
+              {t('CREATE_PAYOUT2')}
             </Button>
           </div>
         </div>
@@ -274,13 +276,12 @@ export default function PayoutFundManagementForm({
         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-3">
           <AlertCircle className="text-red-500 w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold text-red-600 mb-3">Attention</h2>
+        <h2 className="text-2xl font-bold text-red-600 mb-3">{t('ATTENTION')}</h2>
         <p className="text-center text-gray-600 max-w-2xl mb-6 leading-relaxed">
-          No payout type configured. Please configure payout types in Settings
-          before creating a payout.
+          {t('NO_PAYOUT_TYPE_CONFIGURED')}
         </p>
         <Button variant="outline" onClick={() => onWantsPayoutChange(null)}>
-          Go back
+          {t('GO_BACK')}
         </Button>
       </div>
     );
@@ -310,7 +311,9 @@ export default function PayoutFundManagementForm({
                     value={type.key}
                     id={`method-${type.key.toLowerCase()}`}
                   />
-                  <span>{type.label}</span>
+                  <span>
+                    {translateValue(t, type.key, { fallback: type.label })}
+                  </span>
                 </Label>
               ))}
             </RadioGroup>
@@ -334,8 +337,8 @@ export default function PayoutFundManagementForm({
                   />
                   <Label htmlFor="mode-switch">
                     {formState.mode === PayoutMode.ONLINE
-                      ? 'Online'
-                      : 'Offline'}
+                      ? t('ONLINE')
+                      : t('OFFLINE')}
                   </Label>
                 </div>
               )}
@@ -343,7 +346,7 @@ export default function PayoutFundManagementForm({
 
           <div className="grid grid-cols-2 gap-4">
             <FormItem className="flex flex-col space-y-3 w-full">
-              <FormLabel className="mt-1">Beneficiary Group</FormLabel>
+              <FormLabel className="mt-1">{t('BENEFICIARY_GROUP')}</FormLabel>
               <Button
                 type="button"
                 variant="outline"
@@ -361,12 +364,12 @@ export default function PayoutFundManagementForm({
                 name="vendor"
                 render={({ field }) => (
                   <FormItem className="flex flex-col space-y-3 w-full">
-                    <FormLabel className="mt-1">Vendor</FormLabel>
+                    <FormLabel className="mt-1">{t('VENDOR_LABEL')}</FormLabel>
                     <DropdownSearch
                       selectedLabel={field.value?.name}
-                      placeholder="Select Vendor"
-                      searchPlaceholder="Search vendor..."
-                      emptyMessage="No vendor found."
+                      placeholder={t('SELECT_VENDOR')}
+                      searchPlaceholder={t('SEARCH_VENDOR')}
+                      emptyMessage={t('NO_VENDOR_FOUND')}
                       isLoading={isVendorsLoading}
                       options={vendorOptions}
                       onSelect={field.onChange}
@@ -386,12 +389,12 @@ export default function PayoutFundManagementForm({
                   name="paymentProvider"
                   render={({ field }) => (
                     <FormItem className="flex flex-col space-y-3 w-full">
-                      <FormLabel className="mt-1">Payout Method</FormLabel>
+                      <FormLabel className="mt-1">{t('PAYOUT_METHOD_LABEL')}</FormLabel>
                       <DropdownSearch
                         selectedLabel={field.value?.name}
-                        placeholder="Select Payment Provider"
-                        searchPlaceholder="Search provider..."
-                        emptyMessage="No provider found."
+                        placeholder={t('SELECT_PAYMENT_PROVIDER')}
+                        searchPlaceholder={t('SEARCH_PROVIDER')}
+                        emptyMessage={t('NO_PROVIDER_FOUND')}
                         isLoading={isPaymentProvidersLoading}
                         options={paymentProviderOptions}
                         onSelect={field.onChange}
@@ -410,10 +413,10 @@ export default function PayoutFundManagementForm({
                 className="rounded-sm w-32"
                 onClick={() => reset(initialFormState)}
               >
-                Clear
+                {t('CLEAR')}
               </Button>
               <Button type="submit" className="rounded-sm w-40">
-                Continue
+                {t('CONTINUE')}
               </Button>
             </div>
           </div>
@@ -429,7 +432,7 @@ export default function PayoutFundManagementForm({
           )}
           {isGroupError && (
             <p className="text-sm text-destructive">
-              Failed to load beneficiaries.
+              {t('FAILED_TO_LOAD_BENEFICIARIES')}
             </p>
           )}
           {!isGroupLoading && !isGroupError && tableData.length > 0 && (
@@ -438,7 +441,7 @@ export default function PayoutFundManagementForm({
                 <div>
                   <p className="text-sm font-semibold">{groupName}</p>
                   <p className="text-xs text-muted-foreground">
-                    {tableData.length} beneficiaries
+                    {t('BENEFICIARIES_COUNT', { count: formatNum(tableData.length) })}
                   </p>
                 </div>
                 <SearchInput

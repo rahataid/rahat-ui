@@ -11,8 +11,13 @@ import React, { useCallback } from 'react';
 import { useStakeholdersGroups } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const StakeGoldersGroups = () => {
+  const formatNum = useNumberFormat();
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,7 +53,7 @@ const StakeGoldersGroups = () => {
             className="flex-1 min-w-[180px]"
             // inputClassName="h-7 md:h-7 lg:h-9 "
             inputClassName="h-[clamp(28px,3vw,36px)]"
-            name="stakeholders group"
+            name={tGlobal('STAKEHOLDER_GROUP')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
@@ -58,7 +63,7 @@ const StakeGoldersGroups = () => {
           >
             <AddButton
               path={`/projects/aa/${id}/stakeholders/groups/add`}
-              name="Stakeholder Group"
+              name={t('STAKEHOLDER_GROUP')}
               // className="text-xs sm:text-sm h-9"
               className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             />
@@ -91,7 +96,7 @@ const StakeGoldersGroups = () => {
                       <p className="text-[clamp(11px,1vw,14px)] mb-1">{i?.name ?? 'N/A'}</p>
                       <div className="flex gap-2 items-center text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(12px,1.4vw,18px)]">
                         <Users size={18} strokeWidth={2} />
-                        {i?._count?.stakeholders || 0}
+                        {formatNum(i?._count?.stakeholders || 0)}
                       </div>
                     </div>
                   </div>
@@ -99,7 +104,7 @@ const StakeGoldersGroups = () => {
               })}
             </div>
           ) : (
-            <NoResult message="No Stakeholder Groups Available" />
+            <NoResult message={t('NO_STAKEHOLDER_GROUPS_AVAILABLE')} />
           )}
         </ScrollArea>
       </div>

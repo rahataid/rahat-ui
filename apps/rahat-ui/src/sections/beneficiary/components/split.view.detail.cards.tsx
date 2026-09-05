@@ -7,10 +7,18 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useTranslations } from 'next-intl';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
+  const t = useTranslations('BENEFICIARY_DETAIL');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
+  const formatPhone = usePhoneFormat();
+
+  const formatEnumValue = (value?: string) =>
+    translateValue(tg, value, { fallbackStyle: 'raw' });
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -36,39 +44,39 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div> */}
             <div>
-              <p>{beneficiaryDetail?.gender ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.gender) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Gender
+                {tg('GENDER')}
               </p>
             </div>
             <div>
               <p>{beneficiaryDetail?.location ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Location
+                {tg('LOCATION')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.piiData?.phone ?? '-'}</p>
+              <p>{formatPhone(beneficiaryDetail?.piiData?.phone) || '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Phone Number
+                {tg('PHONE_NUMBER')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.phoneStatus ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.phoneStatus) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Phone Status
+                {tg('PHONE_STATUS')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.bankedStatus ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.bankedStatus) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Bank Status
+                {t('BANK_STATUS')}
               </p>
             </div>
             <div>
-              <p>{beneficiaryDetail?.internetStatus ?? '-'}</p>
+              <p>{formatEnumValue(beneficiaryDetail?.internetStatus) ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
-                Internet Status
+                {tg('INTERNET_STATUS')}
               </p>
             </div>
           </div>
@@ -76,7 +84,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
       </Card>
       <Card className="shadow rounded">
         <CardHeader>
-          <p className="font-mediun text-md">Projects Involved</p>
+          <p className="font-mediun text-md">{t('PROJECTS_INVOLVED')}</p>
         </CardHeader>
         <CardContent>
           {beneficiaryDetail?.BeneficiaryProject?.length ? (
@@ -99,7 +107,7 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
             })
           ) : (
             <p className="text-sm text-muted-foreground">
-              No projects involved
+              {t('NO_PROJECTS_INVOLVED')}
             </p>
           )}
         </CardContent>

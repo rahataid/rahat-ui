@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type InfoItemProps = {
   label: string;
@@ -13,6 +14,7 @@ export default function InfoItem({
   children,
   fullWidth = false,
 }: InfoItemProps) {
+  const formatNum = useNumberFormat();
   return (
     <div className={`space-y-1 break-words ${fullWidth ? 'col-span-3' : ''}`}>
       <p className="text-sm text-muted-foreground">{label}</p>
@@ -24,7 +26,7 @@ export default function InfoItem({
             }
           >
             {value !== undefined && value !== null && value !== ''
-              ? String(value)
+              ? formatNum(value)
               : '—'}
           </span>
         )}

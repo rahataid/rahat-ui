@@ -38,6 +38,7 @@ import {
 import RemoveBenfGroupModal from './removeGroupModal';
 import EditBeneficiaryGroups from './edit.beneficiary.groups';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
@@ -48,6 +49,8 @@ export default function BeneficiaryGroupDetail({
   beneficiaryGroupDetail,
   closeSecondPanel,
 }: IProps) {
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const projectModal = useBoolean();
   const removeModal = useBoolean();
@@ -123,7 +126,7 @@ export default function BeneficiaryGroupDetail({
                 <Minus size={20} strokeWidth={1.5} />
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Close</p>
+                <p className="text-xs font-medium">{tg('CLOSE')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -141,7 +144,7 @@ export default function BeneficiaryGroupDetail({
                 />
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Edit</p>
+                <p className="text-xs font-medium">{tg('EDIT')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -160,8 +163,8 @@ export default function BeneficiaryGroupDetail({
               <TooltipContent className="bg-secondary ">
                 <p className="text-xs font-medium">
                   {isAssignedToProject
-                    ? 'Cannot archive a group assigned to project.'
-                    : 'Archive'}
+                    ? t('CANNOT_ARCHIVE_A_GROUP_ASSIGNED_TO')
+                    : t('ARCHIVE')}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -176,7 +179,7 @@ export default function BeneficiaryGroupDetail({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={handleAssignModalClick}>
-                Assign to project
+                {t('ASSIGN_TO_PROJECT2')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -189,7 +192,7 @@ export default function BeneficiaryGroupDetail({
           </p>
           <Card className="shadow rounded my-2">
             <CardHeader>
-              <p className="font-mediun text-md">Projects Involved</p>
+              <p className="font-mediun text-md">{t('PROJECT_INVOLVED')}</p>
             </CardHeader>
             <CardContent>
               {beneficiaryGroupDetail?.beneficiaryGroupProject?.length ? (
@@ -214,7 +217,7 @@ export default function BeneficiaryGroupDetail({
                 )
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  No projects involved
+                  {t('NO_PROJECTS_INVOLVED')}
                 </p>
               )}
             </CardContent>
@@ -224,7 +227,7 @@ export default function BeneficiaryGroupDetail({
           <>
             <div className="flex justify-between gap-2">
               <SearchInput
-                name="Beneficiary"
+                name={tg('BENEFICIARY')}
                 className="mb-2 w-full"
                 value={
                   (table.getColumn('name')?.getFilterValue() as string) ?? ''
@@ -234,7 +237,7 @@ export default function BeneficiaryGroupDetail({
                 }
               />
               <SearchInput
-                name="Location"
+                name={tg('LOCATION')}
                 className="mb-2 w-full"
                 value={
                   (table.getColumn('location')?.getFilterValue() as string) ??

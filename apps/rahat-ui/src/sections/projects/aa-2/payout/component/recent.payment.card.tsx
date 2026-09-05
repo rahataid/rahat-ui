@@ -1,4 +1,7 @@
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Eye, ArrowLeftRight, Dot } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
@@ -30,6 +33,10 @@ export default function RecentPaymentCard({
   vendorName,
   status,
 }: GroupCardProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   return (
     <div
       className={`flex items-center justify-between p-1  bg-white ${
@@ -62,12 +69,14 @@ export default function RecentPaymentCard({
                 status as string,
               )}`}
             >
-              {status?.toUpperCase().replace(/_/g, ' ')}
+              {translateValue(tg, status, {
+                fallback: status?.toUpperCase()?.replace(/_/g, ' '),
+              })}
             </Badge>
           </div>
 
           <div className=" flex text-sm text-muted-foreground mt-2">
-            {actions}
+            {translateValue(tg, actions, { fallbackStyle: 'raw' })}
             {actions === 'CVA' && merchentName === 'OFFLINE' && (
               <>
                 <Dot />
@@ -75,25 +84,27 @@ export default function RecentPaymentCard({
               </>
             )}
             <Dot />
-            {merchentName
-              .toUpperCase()
-              .replace(/_/g, ' ')
-              .replace(/^./, (char) => char.toUpperCase())}
+            {translateValue(tg, merchentName, {
+              fallback: merchentName
+                .toUpperCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char) => char.toUpperCase()),
+            })}
           </div>
           <div className="text-sm text-muted-foreground">
-            {beneficiariesCount} beneficiaries
+            {formatNum(beneficiariesCount)} {t('BENEFICIARIES')}
           </div>
         </div>
       </div>
 
       {/* Date and Time */}
       <div className="text-sm text-muted-foreground whitespace-nowrap">
-        {dateFormat(dateTime)}
+        {formatDate(dateTime)}
       </div>
       {/* View Icon */}
       <TooltipComponent
         Icon={Eye}
-        tip="View Details"
+        tip={tg('VIEW_DETAILS')}
         iconStyle="w-5 h-5 text-muted-foreground"
         handleOnClick={onView}
       />

@@ -2,7 +2,9 @@
 
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { WeatherLayer } from '../utils/weather-layers';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 interface MapLegendProps {
   selectedLayerId: string;
@@ -10,6 +12,7 @@ interface MapLegendProps {
 }
 
 export function MapLegend({ selectedLayerId, layers }: MapLegendProps) {
+  const tg = useTranslations('GLOBAL');
   const selectedLayer = layers.find((layer) => layer.id === selectedLayerId);
 
   if (!selectedLayer) return null;
@@ -20,13 +23,13 @@ export function MapLegend({ selectedLayerId, layers }: MapLegendProps) {
         <Info className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
         <div>
           <h3 className="font-semibold mb-1 text-balance">
-            {selectedLayer.name}
+            {translateValue(tg, selectedLayer.name)}
           </h3>
           <p className="text-sm text-muted-foreground text-balance">
             {selectedLayer.description}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            Data source: DHM Nepal GeoServer WMS
+            {tg('DATA_SOURCE')}: DHM Nepal GeoServer WMS
           </p>
         </div>
       </div>

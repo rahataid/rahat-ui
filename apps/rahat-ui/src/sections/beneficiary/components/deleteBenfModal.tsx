@@ -1,6 +1,6 @@
 'use client';
 
-import { useAssignBenToProject, useProjectList, useRemoveBeneficiary } from '@rahat-ui/query';
+import { useRemoveBeneficiary } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -10,16 +10,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/components/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 type DeleteModalType = {
   value: boolean;
@@ -38,12 +32,16 @@ export default function DeleteBeneficiaryModal({
   deleteModal,
   closeSecondPanel
 }: IProps) {
+  const t = useTranslations('BENEFICIARY_DETAIL');
+  const tg = useTranslations('GLOBAL');
   const deleteBeneficiary = useRemoveBeneficiary();
 
   const removeBeneficiary = async (id: string | undefined) => {
     try {
       await deleteBeneficiary.mutateAsync({
         uuid: id as UUID,
+        successMessage: tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
+        errorMessage: tg('ERROR_WHILE_REMOVING_BENEFICIARY'),
       });
       closeSecondPanel()
     } catch (e) {
@@ -59,15 +57,15 @@ export default function DeleteBeneficiaryModal({
     <Dialog open={deleteModal.value} onOpenChange={deleteModal.onToggle}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Beneficiary</DialogTitle>
+          <DialogTitle>{t('DELETE_BENEFICIARY')}</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. Are you sure?
+            {t('THIS_ACTION_CANNOT_BE_UNDONE_ARE')}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
-              Cancel
+              {tg('CANCEL')}
             </Button>
           </DialogClose>
           <Button
@@ -76,7 +74,7 @@ export default function DeleteBeneficiaryModal({
             variant="ghost"
             className="text-primary"
           >
-            Confirm
+            {tg('CONFIRM')}
           </Button>
         </DialogFooter>
       </DialogContent>

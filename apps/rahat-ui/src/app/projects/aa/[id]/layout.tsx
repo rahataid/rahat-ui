@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsContract,
@@ -24,6 +25,7 @@ export default function ProjectLayoutRoot({
 }: {
   children: React.ReactNode;
 }) {
+  const t = useTranslations('AA_PROJECT');
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;
@@ -52,7 +54,7 @@ export default function ProjectLayoutRoot({
         <div className="flex flex-col items-center justify-center h-[calc(100vh-65px)] gap-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           <p className="text-sm text-muted-foreground">
-            Loading project settings...
+            {t('LOADING_PROJECT_SETTINGS')}
           </p>
         </div>
       </ProjectLayout>

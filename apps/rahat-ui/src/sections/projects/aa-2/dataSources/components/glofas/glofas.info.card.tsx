@@ -52,6 +52,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
       {
         icon: ChartNoAxesColumn,
         label: t('DISCHARGE_TENDENCY'),
+        isImage: true,
         value: glofas?.info?.pointForecastData?.dischargeTendencyImage?.data,
       },
       {
@@ -95,7 +96,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
                   </div>
                   <div>
                     <p className="text-sm/6 font-medium mb-1">{d.label}</p>
-                    {d.label === 'Discharge Tendency' ? (
+                    {d.isImage ? (
                       <img
                         src={d.value}
                         alt={t('DISCHARGE_TENDENCY')}

@@ -136,7 +136,12 @@ function TriggerTooltip({
   const formatNum = useNumberFormat();
   const triggered = detail.isTriggered ?? detail.status;
 
-  const rows: { label: string; value: string; highlight?: boolean }[] = [];
+  const rows: {
+    label: string;
+    value: string;
+    highlight?: boolean;
+    isExpression?: boolean;
+  }[] = [];
 
   rows.push({
     label: t('TRIGGERED'),
@@ -161,7 +166,11 @@ function TriggerTooltip({
     rows.push({ label: t('CONDITION'), value: `${detail.operator} ${detail.value}` });
   }
   if (detail.expression) {
-    rows.push({ label: t('TRIGGER_STATEMENT'), value: detail.expression });
+    rows.push({
+      label: t('TRIGGER_STATEMENT'),
+      value: detail.expression,
+      isExpression: true,
+    });
   }
   if (detail.logicKey || detail.uuid) {
     rows.push({ label: t('KEY'), value: detail.logicKey || detail.uuid || '' });
@@ -307,8 +316,8 @@ function TriggerTooltip({
                         fontWeight: 500,
                         flex: 1,
                         wordBreak: 'break-all',
-                        fontSize: row.label === 'Trigger Statement' ? 10 : 11,
-                        fontFamily: row.label === 'Trigger Statement' ? 'monospace' : undefined,
+                        fontSize: row.isExpression ? 10 : 11,
+                        fontFamily: row.isExpression ? 'monospace' : undefined,
                       }}
                     >
                       {formatNum(row.value)}

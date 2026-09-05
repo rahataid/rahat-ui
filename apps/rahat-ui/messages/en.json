@@ -2869,6 +2869,7 @@
     "FAILED_TO_APPROVE_REDEMPTION_REQUEST": "Failed to approve redemption request",
     "REDEMPTION_STATUS_ALREADY_APPROVED": "Status is already Approved",
     "FORECAST_DATE": "Forecast Date",
+    "FORECAST_DAY": "Forecast Day",
     "FORECAST_IS_REQUIRED": "Forecast is required",
     "FORECAST_PROBABILITY_IS_REQUIRED": "Forecast probability is required",
     "FORECAST_PROBABILITY_MUST_BE_POSITIVE": "Forecast probability must be a positive number",

@@ -61,6 +61,7 @@ export default function ExcelUploader() {
         const ws = wb.Sheets[wsname];
         const parsedData = XLSX.utils.sheet_to_json(ws, {
           header: 1,
+          defval: '',
         }) as string[][];
         setData(parsedData);
       };

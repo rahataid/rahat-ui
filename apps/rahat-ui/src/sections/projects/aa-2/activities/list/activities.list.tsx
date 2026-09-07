@@ -28,7 +28,11 @@ import {
 import { CloudDownloadIcon, Plus, Upload } from 'lucide-react';
 
 import FiltersTags from 'apps/rahat-ui/src/common/filtersTags';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 // TODO:Remove this table if used nowhere
 // import ActivitiesTable from './activities.table';
@@ -192,10 +196,7 @@ export default function ActivitiesList() {
           />
         </div>
         <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.READ} subject={SUBJECTS.ACTIVITY}>
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={handleDownloadReport}
@@ -203,11 +204,8 @@ export default function ActivitiesList() {
               variant="outline"
               className="rounded w-full"
             />
-          </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          </Can>
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
             <IconLabelBtn
               Icon={Upload}
               handleClick={() => {
@@ -226,11 +224,8 @@ export default function ActivitiesList() {
               variant="outline"
               className="rounded w-full"
             />
-          </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          </Can>
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
             <IconLabelBtn
               Icon={Plus}
               handleClick={() =>
@@ -247,7 +242,7 @@ export default function ActivitiesList() {
               name="Add Activity"
               className="rounded w-full"
             />
-          </RoleAuth>
+          </Can>
         </div>
       </div>
       <ActivitiesTableFilters
@@ -263,7 +258,7 @@ export default function ActivitiesList() {
       {Object.keys(filters).length > 1 && (
         <FiltersTags
           filters={formattedFilters}
-          setFilters={(newFilters) =>
+          setFilters={(newFilters: any) =>
             setFilters({ phase: filters.phase, ...newFilters })
           }
           total={table.getRowModel().rows?.length}

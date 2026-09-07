@@ -41,16 +41,20 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('title')} truncateByWidth />
+      ),
     },
     {
       accessorKey: 'updatedAt',
       header: 'Date',
+      meta: { className: 'w-[250px]' },
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
           <TruncatedCell
             text={dateFormat(row.original?.updatedAt)}
             maxLength={30}
+            truncateByWidth
           />
         </div>
       ),
@@ -58,6 +62,7 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'phase',
       header: 'Phase',
+      meta: { className: 'w-[200px]' },
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const className = getPhaseColor(phase);
@@ -67,6 +72,7 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'status',
       header: 'Status',
+      meta: { className: 'w-[200px]' },
       cell: ({ row }) => {
         const className = getStatusBg(row.original?.commStatus);
         return <Badge className={className}>{row.original?.commStatus}</Badge>;
@@ -76,6 +82,7 @@ export default function useCommsActivitiesTableColumns() {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

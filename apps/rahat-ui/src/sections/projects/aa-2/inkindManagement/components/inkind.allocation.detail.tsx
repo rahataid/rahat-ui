@@ -262,16 +262,6 @@ export default function InkindAllocationDetail() {
 
   const columns: ColumnDef<LogRow>[] = [
     {
-      accessorKey: 'beneficiaryName',
-      header: 'Beneficiary Name',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={row.original.beneficiaryName ?? 'N/A'}
-          maxLength={20}
-        />
-      ),
-    },
-    {
       accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet',
       cell: ({ row }) => (

@@ -48,7 +48,7 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'updatedAt',
       header: 'Date',
-      meta: { className: 'w-[250px]' },
+      meta: { className: 'w-[20%]' },
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
           <TruncatedCell
@@ -62,7 +62,7 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'phase',
       header: 'Phase',
-      meta: { className: 'w-[200px]' },
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const className = getPhaseColor(phase);
@@ -72,7 +72,7 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'status',
       header: 'Status',
-      meta: { className: 'w-[200px]' },
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const className = getStatusBg(row.original?.commStatus);
         return <Badge className={className}>{row.original?.commStatus}</Badge>;

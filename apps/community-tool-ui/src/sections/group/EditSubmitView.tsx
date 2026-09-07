@@ -17,7 +17,7 @@ import {
 import { ArrowLeft, Columns, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PaginatedResult } from '@rumsan/sdk/types';
-import CustomPagination from '../../components/customPagination';
+import InlinePagination from '../../components/inlinePagination';
 
 const READ_ONLY_FIELDS = new Set([
   'uuid',
@@ -248,7 +248,7 @@ export default function EditSubmitView({
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col">
+    <div ref={containerRef} className="flex flex-col w-full min-w-0">
       {/* Top bar */}
       <div className="flex items-center gap-2 px-4 py-2 border-b bg-background flex-wrap">
         <Button
@@ -474,15 +474,13 @@ export default function EditSubmitView({
         <div style={{ width: tableScrollWidth, height: 1 }} />
       </div>
 
-      {/* Pagination */}
-      <CustomPagination
-        currentPage={page}
-        handleNextPage={() => onPageChange(page + 1)}
-        handlePrevPage={() => onPageChange(page - 1)}
-        handlePageSizeChange={onPerPageChange}
-        meta={meta}
+      <InlinePagination
+        page={page}
         perPage={perPage}
         total={total}
+        meta={meta}
+        onPageChange={onPageChange}
+        onPerPageChange={onPerPageChange}
       />
     </div>
   );

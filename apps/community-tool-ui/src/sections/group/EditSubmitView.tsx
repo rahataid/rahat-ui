@@ -182,6 +182,7 @@ export default function EditSubmitView({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const topScrollRef = useRef<HTMLDivElement>(null);
+  const bottomScrollRef = useRef<HTMLDivElement>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);
   const [tableScrollWidth, setTableScrollWidth] = useState(0);
 
@@ -223,17 +224,16 @@ export default function EditSubmitView({
     return () => ro.disconnect();
   }, [visibleColumns.length]);
 
-  const onTopScroll = () => {
-    if (tableScrollRef.current && topScrollRef.current) {
-      tableScrollRef.current.scrollLeft = topScrollRef.current.scrollLeft;
-    }
+  const syncScroll = (source: HTMLDivElement) => {
+    const left = source.scrollLeft;
+    if (topScrollRef.current && topScrollRef.current !== source) topScrollRef.current.scrollLeft = left;
+    if (bottomScrollRef.current && bottomScrollRef.current !== source) bottomScrollRef.current.scrollLeft = left;
+    if (tableScrollRef.current && tableScrollRef.current !== source) tableScrollRef.current.scrollLeft = left;
   };
 
-  const onTableScroll = () => {
-    if (topScrollRef.current && tableScrollRef.current) {
-      topScrollRef.current.scrollLeft = tableScrollRef.current.scrollLeft;
-    }
-  };
+  const onTopScroll = () => { if (topScrollRef.current) syncScroll(topScrollRef.current); };
+  const onBottomScroll = () => { if (bottomScrollRef.current) syncScroll(bottomScrollRef.current); };
+  const onTableScroll = () => { if (tableScrollRef.current) syncScroll(tableScrollRef.current); };
 
   const getRowUuid = (row: BeneficiaryRow): string => {
     const bene = row.beneficiary as Record<string, unknown> | undefined;
@@ -484,6 +484,15 @@ export default function EditSubmitView({
             </tbody>
           </table>
         )}
+      </div>
+
+      {/* Bottom scrollbar — same width as table, lets mouse users scroll horizontally */}
+      <div
+        ref={bottomScrollRef}
+        onScroll={onBottomScroll}
+        style={{ overflowX: 'scroll', overflowY: 'hidden', height: 12, width: '100%' }}
+      >
+        <div style={{ width: tableScrollWidth, height: 1 }} />
       </div>
 
       {/* Pagination */}

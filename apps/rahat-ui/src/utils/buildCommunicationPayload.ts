@@ -5,6 +5,30 @@ import {
 } from '@rumsan/connect/src/types';
 import { CommunicationData } from '../types/communication';
 
+const GSM_7_CHARS =
+  '@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞ' +
+  'ÆæßÉ !\\"#¤%&\'()*+,-./' +
+  '0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§' +
+  '¿abcdefghijklmnopqrstuvwxyzäöñüà';
+
+export const isUnicode = (message: string): boolean => {
+  return [...message].some((char) => !GSM_7_CHARS.includes(char));
+};
+
+export const getSmsInfo = (message: string) => {
+  const unicode = isUnicode(message);
+  const characterCount = [...message].length;
+  const smsCredits = unicode
+    ? Math.ceil(characterCount / 70)
+    : Math.ceil(characterCount / 160);
+
+  return {
+    characterCount,
+    encoding: unicode ? 'UNICODE' : 'NON-UNICODE',
+    smsCredits,
+  };
+};
+
 export interface CommunicationPayload {
   communicationTitle?: string;
   groupType: string;
@@ -14,6 +38,11 @@ export interface CommunicationPayload {
   subject?: string;
   sessionId?: string;
   communicationId?: string;
+  extras?: {
+    characterCount: number;
+    encoding: string;
+    smsCredits: number;
+  };
 }
 
 export const buildCommunicationPayload = (
@@ -35,7 +64,7 @@ export const buildCommunicationPayload = (
 
   // Build message payload based on transport type
   const messagePayload: Partial<CommunicationPayload> = {};
-  
+
   if (selectedTransport.validationContent === ValidationContent.URL) {
     // For URL-based transports (e.g., VOICE), use audioURL as message
     messagePayload.message = communication.audioURL;
@@ -65,6 +94,14 @@ export const buildCommunicationPayload = (
 
     if (communication.communicationId) {
       payload.communicationId = communication.communicationId;
+    }
+
+    if (
+      selectedTransport.name === 'SMS' &&
+      typeof communication.message === 'string'
+    ) {
+      console.log('inside SMS');
+      payload.extras = getSmsInfo(communication.message);
     }
 
     return payload;

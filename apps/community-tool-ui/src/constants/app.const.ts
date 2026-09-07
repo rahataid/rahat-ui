@@ -122,9 +122,9 @@ export const PERMISSIONS = [
     id: 'delete',
     label: 'Delete',
   },
-  {
+{
     id: 'manage',
-    label: 'Manage',
+    label: 'Access All',
   },
 ] as const;
 

@@ -17,6 +17,8 @@ import { UUID } from 'crypto';
 import {
   useGenerateQrPdf,
   useGetBeneficiariesQr,
+  useGetSponsorshipStatusForGroup,
+  useRetrySponsorshipForGroup,
   useSingleBeneficiaryGroup,
 } from '@rahat-ui/query';
 import {
@@ -44,6 +46,13 @@ const BeneficiaryGroupsDetails = () => {
   });
 
   const { mutate: generateQr } = useGenerateQrPdf(projectId);
+
+  const { data: sponsorshipStatus } = useGetSponsorshipStatusForGroup({
+    projectUuid: projectId,
+    groupUuid: groupId,
+  });
+  const { mutate: retrySponsorship, isPending: isRetrying } =
+    useRetrySponsorshipForGroup(projectId);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -100,30 +109,57 @@ const BeneficiaryGroupsDetails = () => {
           subtitle="Detailed view of the selected beneficiary groups"
           path={`/projects/aa/${projectId}/beneficiary?tab=beneficiaryGroups`}
         />
-        {/* <div className="flex items-end justify-end"> */}
-        {qrDetails?.status === 'completed' ? (
-          <Button
-            variant="outline"
-            onClick={() => window.open(qrDetails.fileUrl, '_blank')}
-            className="cursor-pointer"
-          >
-            <CloudDownload className="mr-1" />
-            Download QR
-          </Button>
-        ) : (
-          <Button
-            variant="outline"
-            onClick={() => generateQr(groupId)}
-            className="cursor-pointer"
-            disabled={isQrLoading}
-          >
-            <CloudDownload className="mr-1" />
-            Generate QR
-          </Button>
-        )}
-
-        {/* </div> */}
+        <div className="flex items-center gap-2">
+          {qrDetails?.status === 'completed' ? (
+            <Button
+              variant="outline"
+              onClick={() => window.open(qrDetails.fileUrl, '_blank')}
+              className="cursor-pointer"
+            >
+              <CloudDownload className="mr-1" />
+              Download QR
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => generateQr(groupId)}
+              className="cursor-pointer"
+              disabled={isQrLoading}
+            >
+              <CloudDownload className="mr-1" />
+              Generate QR
+            </Button>
+          )}
+          {sponsorshipStatus?.isStellarChain &&
+            sponsorshipStatus.failed > 0 && (
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                disabled={isRetrying}
+                onClick={() => retrySponsorship(groupId)}
+              >
+                Retry Sponsorship
+              </Button>
+            )}
+        </div>
       </div>
+      {sponsorshipStatus?.isStellarChain ? (
+        <div className="flex items-center gap-4 mb-3 text-sm">
+          <span className="px-2 py-1 rounded bg-secondary text-secondary-foreground">
+            Sponsored {sponsorshipStatus.sponsored}/{sponsorshipStatus.total}
+          </span>
+          {sponsorshipStatus.pending === 0 && (
+            <>
+              <span className="text-green-600">
+                Success: {sponsorshipStatus.sponsored}
+              </span>
+              <span className="text-red-600">
+                Failed: {sponsorshipStatus.failed}
+              </span>
+            </>
+          )}
+        </div>
+      ) : null}
       <div className="flex gap-6 mb-5">
         <DataCard
           className="border-solid w-1/4 rounded-xl"

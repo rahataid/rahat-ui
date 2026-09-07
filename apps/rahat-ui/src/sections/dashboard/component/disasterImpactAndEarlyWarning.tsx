@@ -1,4 +1,4 @@
-import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
@@ -39,7 +39,7 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
                   label: item.id,
                   value: item.count,
                 }))}
-                colors={['#00796B', '#CFD8DC']}
+                colors={['#00796B', '#4A90E2']}
               />
             </div>
           </div>

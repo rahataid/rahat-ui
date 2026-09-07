@@ -57,7 +57,7 @@ type Props = {
   groupName?: string;
   pageRows: BeneficiaryRow[];
   dirtyRows: DirtyMap;
-  allowedKeys: Set<string>;
+  presentColumns: string[];
   addedColumns: Set<string>;
   availableColumns: string[];
   isLoading?: boolean;
@@ -79,7 +79,7 @@ export default function EditSubmitView({
   groupName,
   pageRows,
   dirtyRows,
-  allowedKeys,
+  presentColumns,
   addedColumns,
   availableColumns,
   isLoading = false,
@@ -96,33 +96,12 @@ export default function EditSubmitView({
   onCancel,
   isSubmitting = false,
 }: Props) {
-  // These fields exist on the beneficiary top-level but are never editable or
-  // shown (system fields not exposed in field-definitions).
-  const SYSTEM_ONLY = new Set(['id', 'archived', 'isVerified', 'extras']);
-
-  // Build ordered column list from the first page row: uuid first, then every
-  // key on beneficiary top-level + extras that appears in allowedKeys, then any
-  // user-added columns not already present.
-  const firstBene = pageRows[0]
-    ? (pageRows[0].beneficiary as Record<string, unknown> | undefined) ?? {}
-    : {};
-  const extrasKeys = Object.keys(
-    (firstBene.extras as Record<string, unknown> | undefined) ?? {},
-  );
-  const topLevelKeys = Object.keys(firstBene).filter(
-    (k) =>
-      !SYSTEM_ONLY.has(k) &&
-      k !== 'uuid' &&
-      (allowedKeys.size === 0 || allowedKeys.has(k)),
-  );
-  const extrasFiltered = extrasKeys.filter(
-    (k) => allowedKeys.size === 0 || allowedKeys.has(k),
-  );
-  const presentSet = new Set(['uuid', ...topLevelKeys, ...extrasFiltered]);
+  // presentColumns is fixed for the whole edit session (computed on open).
+  // addedColumns are appended at the end in insertion order.
+  // This keeps column order stable across page changes.
+  const presentSet = new Set(presentColumns);
   const allColumns = [
-    'uuid',
-    ...topLevelKeys,
-    ...extrasFiltered,
+    ...presentColumns,
     ...Array.from(addedColumns).filter((c) => !presentSet.has(c)),
   ];
 

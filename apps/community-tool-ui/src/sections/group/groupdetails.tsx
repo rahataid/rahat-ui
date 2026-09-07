@@ -128,9 +128,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const [dirtyRows, setDirtyRows] = React.useState<
     Map<string, Record<string, unknown>>
   >(new Map());
-  const [allowedEditKeys, setAllowedEditKeys] = React.useState<Set<string>>(
-    new Set(),
-  );
+  const [presentColumns, setPresentColumns] = React.useState<string[]>([]);
   const [availableColumns, setAvailableColumns] = React.useState<string[]>([]);
   const [addedColumns, setAddedColumns] = React.useState<Set<string>>(
     new Set(),
@@ -287,12 +285,26 @@ export default function GroupDetail({ uuid }: IProps) {
       });
     });
 
+    // Build a stable ordered column list: top-level fields first (in API key
+    // order), then extras fields — both filtered by allowedKeys. This order is
+    // fixed for the entire edit session so added columns always appear at the end.
+    const SYSTEM_ONLY = new Set(['id', 'archived', 'isVerified', 'extras', 'uuid']);
+    const firstBene = sampleBg[0]?.beneficiary ?? {};
+    const stableTopLevel = Object.keys(firstBene).filter(
+      (k) => !SYSTEM_ONLY.has(k) && allowedKeys.has(k),
+    );
+    const stableExtras = Object.keys(firstBene.extras ?? {}).filter((k) =>
+      allowedKeys.has(k),
+    );
+    const stablePresent = ['uuid', ...stableTopLevel, ...stableExtras];
+    const presentSet = new Set(stablePresent);
+
     const remaining = [...allowedKeys].filter(
-      (k) => k !== 'uuid' && !presentInData.has(k),
+      (k) => k !== 'uuid' && !presentSet.has(k),
     );
 
     setDirtyRows(new Map());
-    setAllowedEditKeys(allowedKeys);
+    setPresentColumns(stablePresent);
     setAvailableColumns(remaining);
     setAddedColumns(new Set());
     setEditPage(1);
@@ -484,9 +496,9 @@ export default function GroupDetail({ uuid }: IProps) {
         groupName={responseByUUID?.data?.name}
         pageRows={editPageData?.data?.beneficiariesGroup ?? []}
         dirtyRows={dirtyRows}
-        allowedKeys={allowedEditKeys}
-        availableColumns={availableColumns}
+        presentColumns={presentColumns}
         addedColumns={addedColumns}
+        availableColumns={availableColumns}
         isLoading={editPageLoading}
         page={editPage}
         perPage={editPerPage}
@@ -513,6 +525,7 @@ export default function GroupDetail({ uuid }: IProps) {
         onCancel={() => {
           setEditSubmitMode(false);
           setDirtyRows(new Map());
+          setPresentColumns([]);
           setAvailableColumns([]);
           setAddedColumns(new Set());
         }}

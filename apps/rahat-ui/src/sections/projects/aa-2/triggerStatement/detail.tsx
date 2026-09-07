@@ -27,7 +27,6 @@ import {
   ForecastDataSection,
 } from './components';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
@@ -157,10 +156,7 @@ export default function TriggerStatementDetail() {
               />
             </TooltipWrapper>
           </Can>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.TRIGGER}>
             <TooltipWrapper
               tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
               disable={!isEditDeleteDisabled}
@@ -178,11 +174,8 @@ export default function TriggerStatementDetail() {
                 disabled={isEditDeleteDisabled}
               />
             </TooltipWrapper>
-          </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          </Can>
+          <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.TRIGGER}>
             {source === 'MANUAL' &&
               !trigger?.phase?.isActive &&
               !trigger?.isTriggered && (
@@ -193,7 +186,7 @@ export default function TriggerStatementDetail() {
                   notes={trigger?.notes}
                 />
               )}
-          </RoleAuth>
+          </Can>
         </div>
       </div>
       <div

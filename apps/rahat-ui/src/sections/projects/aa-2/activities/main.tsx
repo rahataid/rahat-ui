@@ -1,6 +1,11 @@
 'use client';
 import { useActivities, usePhases } from '@rahat-ui/query';
-import { Heading, IconLabelBtn, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import {
+  Heading,
+  IconLabelBtn,
+  NoResult,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { UUID } from 'crypto';
@@ -8,12 +13,16 @@ import { CloudDownloadIcon, Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
@@ -76,8 +85,8 @@ export default function ActivitiesView() {
     [projectID, pinnedPhases],
   );
 
-  const uniquePhaseNames = Array.from(
-    new Set(phases.map((phase: any) => phase.name)),
+  const uniquePhaseNames: string[] = Array.from(
+    new Set<string>(phases.map((phase: any) => phase.name)),
   );
 
   const PHASE_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
@@ -99,7 +108,6 @@ export default function ActivitiesView() {
     }
     return Array.from(phaseSet);
   }, [activitiesData]);
-
 
   const sortedPhases = useMemo(() => {
     const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
@@ -180,10 +188,7 @@ export default function ActivitiesView() {
             />
           </div>
           <div className="fixed top-[72px] right-6 z-40 flex gap-2">
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.READ} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper
                 tip={
                   !hasActivities
@@ -199,11 +204,8 @@ export default function ActivitiesView() {
                   disabled={!hasActivities}
                 />
               </TooltipWrapper>
-            </RoleAuth>
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            </Can>
+            <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper
                 tip={
                   !hasPhases ? 'Create a phase before adding activities.' : ''
@@ -221,7 +223,7 @@ export default function ActivitiesView() {
                   disabled={!hasPhases}
                 />
               </TooltipWrapper>
-            </RoleAuth>
+            </Can>
           </div>
         </div>
         {!hasPhases ? (
@@ -253,10 +255,7 @@ export default function ActivitiesView() {
               </div>
             ))}
             {sortedPhases.length === 2 && (
-              <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.Municipality]}
-                hasContent={false}
-              >
+              <Can action={ACTIONS.CREATE} subject={SUBJECTS.PHASE}>
                 <div className="min-w-[320px]">
                   <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                     <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
@@ -282,7 +281,7 @@ export default function ActivitiesView() {
                     </CardContent>
                   </Card>
                 </div>
-              </RoleAuth>
+              </Can>
             )}
           </div>
         )}

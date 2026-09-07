@@ -136,7 +136,7 @@ export default function RiverWatchView() {
         >
           <p className="text-primary w-full font-semibold text-3xl/10">
             {truncateValue(primaryRiverWatchInfo?.waterLevel?.value, 2)}
-            {primaryRiverWatchInfo?.unit}
+            {primaryRiverWatchInfo?.unit ?? 'm'}
           </p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">

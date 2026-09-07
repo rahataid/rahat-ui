@@ -27,6 +27,8 @@ import { CloudDownloadIcon } from 'lucide-react';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportTokenStats, hasTokenData } from '../utils/token.utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
@@ -92,25 +94,27 @@ export default function TokensOverview() {
   const hasData = hasTokenData(data);
   return (
     <>
-      <div className="flex items-center justify-between">
-        <Heading
-          title="Tokens Overview"
-          titleStyle="text-lg"
-          description="Overview of your tokens"
-        />
-        <div className="flex gap-2 items-center">
-          <TooltipWrapper
-            tip={hasData ? '' : 'No token data available to export'}
-          >
-            <IconLabelBtn
-              Icon={CloudDownloadIcon}
-              handleClick={() => exportTokenStats(data)}
-              name={'Export Report'}
-              variant="outline"
-              disabled={!hasData}
-              className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-            />
-          </TooltipWrapper>
+<div className="flex items-center justify-between">
+          <Heading
+            title="Tokens Overview"
+            titleStyle="text-lg"
+            description="Overview of your tokens"
+          />
+          <div className="flex gap-2 items-center">
+            <TooltipWrapper
+              tip={hasData ? '' : 'No token data available to export'}
+            >
+              <Can action={ACTIONS.READ} subject={SUBJECTS.FUND_MANAGEMENT}>
+                <IconLabelBtn
+                  Icon={CloudDownloadIcon}
+                  handleClick={() => exportTokenStats(data)}
+                  name={'Export Report'}
+                  variant="outline"
+                  disabled={!hasData}
+                  className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+                />
+              </Can>
+            </TooltipWrapper>
           <DateRangePicker
             placeholder="Pick date range"
             handleDateChange={handleDateChange}

@@ -5,9 +5,9 @@ import {
   SearchInput,
   SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
-import { Users } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useStakeholdersGroups } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
@@ -17,15 +17,53 @@ const StakeGoldersGroups = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filters, setFilters] = React.useState({ search: '' });
+  const [limit, setLimit] = React.useState(20);
+  const [visibleLimit, setVisibleLimit] = React.useState(20);
+  const [allGroups, setAllGroups] = React.useState<any[]>([]);
+  const [total, setTotal] = React.useState(0);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { isLoading, data } = useStakeholdersGroups(id as UUID, {
+  const data = useStakeholdersGroups(id as UUID, {
+    page: 1,
+    perPage: limit,
     sort: 'createdAt',
     order: 'desc',
-    perPage: 1000,
     ...filters,
   });
 
-  const stakeholdersGroups = data?.data ?? [];
+  const isLoading =
+    allGroups.length === 0 && (data?.isLoading || data?.isFetching);
+  const hasMore = visibleLimit < total;
+
+  React.useEffect(() => {
+    if (!data?.data?.data) return;
+    setAllGroups(data.data.data);
+    if (data?.data?.meta?.total != null) setTotal(data.data.meta.total);
+  }, [data.dataUpdatedAt]);
+
+  React.useEffect(() => {
+    if (data.isFetching) return;
+    if (allGroups.length < limit) return;
+    if (limit >= total) return;
+    if (limit >= visibleLimit + 9) return;
+    setLimit((l) => l + 9);
+  }, [data.isFetching, allGroups, limit, visibleLimit, total]);
+
+  React.useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      setVisibleLimit((v) => Math.min(v + 12, Math.max(allGroups.length, v)));
+    });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, allGroups.length]);
+
+  const visibleGroups = React.useMemo(
+    () => allGroups.slice(0, visibleLimit),
+    [allGroups, visibleLimit],
+  );
 
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
@@ -69,9 +107,9 @@ const StakeGoldersGroups = () => {
 
           {isLoading ? (
             <SpinnerLoader />
-          ) : stakeholdersGroups.length > 0 ? (
+          ) : visibleGroups.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {stakeholdersGroups?.map((i: any, index: number) => {
+              {visibleGroups?.map((i: any, index: number) => {
                 return (
                   <div key={index} className="rounded-sm border shadow p-[clamp(8px,1.5vw,16px)]">
                     <div className="flex flex-col space-y-2">
@@ -100,6 +138,12 @@ const StakeGoldersGroups = () => {
             </div>
           ) : (
             <NoResult message="No Stakeholder Groups Available" />
+          )}
+          {hasMore && <div ref={sentinelRef} className="h-1" />}
+          {hasMore && (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
           )}
         </ScrollArea>
       </div>

@@ -22,6 +22,7 @@ import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useUserCurrentUser, useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { useNavData } from '../app/config-nav';
+import { useAppVersion } from '@rahat-ui/community-query';
 import ConnectWallet from '../components/wallet/connect-wallet';
 import { paths } from '../routes/paths';
 import ThemeSwitch from './themeToggleSwitch';
@@ -43,6 +44,8 @@ export function Nav() {
     window.location.reload();
   };
   const { data: currentUser } = useUserCurrentUser();
+  const { data: appVersionData } = useAppVersion();
+  const apiVersion = appVersionData?.data?.version;
 
   return (
     <div className="flex justify-between pl-2 pr-6 py-2 sticky top-0 z-50 bg-blur backdrop-blur">
@@ -170,6 +173,20 @@ export function Nav() {
               >
                 Logout
               </Badge>
+              {(process.env.NEXT_PUBLIC_APP_VERSION || apiVersion) && (
+                <div className="mt-2 pt-2 border-t flex gap-1.5 flex-wrap">
+                  {process.env.NEXT_PUBLIC_APP_VERSION && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      <span className="text-primary font-semibold">App</span>
+                      {process.env.NEXT_PUBLIC_APP_VERSION}
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    <span className="text-primary font-semibold">API</span>
+                    {apiVersion}
+                  </span>
+                </div>
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

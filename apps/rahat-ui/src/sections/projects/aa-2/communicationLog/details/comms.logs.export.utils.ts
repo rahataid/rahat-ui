@@ -1,116 +1,126 @@
 import { BroadcastStatus } from '@rumsan/connect/src/types';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import * as XLSX from 'xlsx';
-
-const formatDate = (date: Date | string | undefined | null, pattern?: string) => {
-  if (!date) return 'N/A';
-  try {
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat('ne-NP', {
-      year: 'numeric', month: 'long', day: 'numeric',
-      hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true,
-    }).format(d);
-  } catch { return 'N/A'; }
-};
 
 type SessionLog = {
   address: string;
   status: string;
-  disposition?: {
-    duration?: string | number;
-    answerTime?: string;
-    endTime?: string;
-    disposition?: string;
-  };
-  message?: string;
-  error?: string;
   attempts: number;
   maxAttempts: number;
   createdAt: string;
   updatedAt: string;
 };
 
-type LogsData = {
-  group?: { name?: string };
-  communicationDetail?: {
-    groupType?: string;
-    communicationTitle?: string;
-    subject?: string;
-    message?: any;
-  };
-  sessionDetails?: {
-    Transport?: { name?: string };
-    createdAt?: string;
-    status?: string;
-    updatedAt?: string;
-  };
+type ExportMeta = {
+  groupName: string;
+  groupType: string;
+  transportName: string;
+  communicationTitle: string;
+  message?: string;
+  subject?: string;
+  sessionStartedAt?: string;
+  sessionEndedAt?: string;
 };
 
-type ActivityDetail = {
-  title?: string;
-  description?: string;
-  phase?: { name?: string };
-  status?: string;
-};
+const UNWANTED_COLUMNS = new Set([
+  'id',
+  'cuid',
+  'app',
+  'session',
+  'transport',
+  'xref',
+  'ivrSequence',
+  'trunk',
+  'fullDisposition',
+]);
 
-type CountData = {
-  SUCCESS?: number;
-  FAIL?: number;
-};
+function parseCsv(csvText: string): Record<string, string>[] {
+  const workbook = XLSX.read(csvText, { type: 'string' });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const allRows: Record<string, string>[] = XLSX.utils.sheet_to_json(sheet);
 
-const TYPE_SPECIFIC_FIELDS: Record<
-  string,
-  (log: SessionLog, logs: LogsData) => Record<string, any>
-> = {
-  EMAIL: (log, logs) => ({
-    Subject: logs?.communicationDetail?.subject || 'N/A',
-    Message: resolveMessageText(logs?.communicationDetail?.message),
-    'Audience Email': log.address || 'N/A',
-    Status: log.status || 'N/A',
-  }),
-  VOICE: (log) => ({
-    'Audience Number': log.address || 'N/A',
-    Status: log.status || 'N/A',
-    Duration:
-      log.status === 'FAIL'
-        ? log.disposition?.disposition || log.message || log.error || 'N/A'
-        : log.disposition?.duration !== null &&
-          log.disposition?.duration !== undefined
-          ? log.disposition.duration
-          : 'N/A',
-    Attempts: log.attempts || 0,
-    'Max Attempts': log.maxAttempts || 0,
-  }),
-  SMS: (log, logs) => ({
-    Message: resolveMessageText(logs?.communicationDetail?.message),
-    'Audience Number': log.address || 'N/A',
-    Status: log.status || 'N/A',
-  }),
-};
-
-function resolveMessageText(message: any): string {
-  if (!message) return 'N/A';
-  if (typeof message === 'string') return message;
-  return message?.fileName ?? 'N/A';
+  return allRows.map((row) => {
+    const filtered: Record<string, string> = {};
+    for (const key of Object.keys(row)) {
+      if (!UNWANTED_COLUMNS.has(key)) {
+        filtered[key] = row[key];
+      }
+    }
+    return filtered;
+  });
 }
 
-function buildRowMapper(logs: LogsData) {
-  const communicationType = logs?.sessionDetails?.Transport?.name || 'SMS';
-  const getTypeFields =
-    TYPE_SPECIFIC_FIELDS[communicationType] || TYPE_SPECIFIC_FIELDS.SMS;
+function buildVoiceRow(raw: Record<string, string>, meta: ExportMeta) {
+  return {
+    'Group Name': meta.groupName,
+    'Group Type': meta.groupType,
+    'Communication Type': meta.transportName,
+    'Communication Title': meta.communicationTitle,
+    'Audience Number': raw.address ?? '',
+    Status: raw.status ?? '',
+    Disposition: raw.disposition ?? '',
+    Duration: raw.duration ?? '',
+    Attempts: raw.attempts ?? '',
+    'Max Attempts': raw.maxAttempts ?? '',
+    'Is Complete': raw.isComplete ?? '',
+    'Triggered Date': formatDateFull(raw.createdAt),
+    'Created Date': formatDateFull(raw.createdAt),
+    'Updated Date': formatDateFull(raw.updatedAt),
+    'Session Start Date': formatDateFull(meta.sessionStartedAt ?? ''),
+    'Session End Date': formatDateFull(meta.sessionEndedAt ?? ''),
+    'Last Attempt': raw.lastAttempt ?? '',
+  };
+}
 
-  return (log: SessionLog) => ({
-    'Group Name': logs?.group?.name || 'N/A',
-    'Group Type': logs?.communicationDetail?.groupType || 'N/A',
-    'Communication Type': communicationType,
-    'Communication Title':
-      logs?.communicationDetail?.communicationTitle || 'N/A',
-    ...getTypeFields(log, logs),
-    'Triggered Date': logs?.sessionDetails?.updatedAt
-      ? formatDate(logs.sessionDetails.updatedAt)
-      : 'N/A',
-    'Created Date': log.createdAt ? formatDate(log.createdAt) : 'N/A',
-    'Updated Date': log.updatedAt ? formatDate(log.updatedAt) : 'N/A',
+function buildSmsRow(raw: Record<string, string>, meta: ExportMeta) {
+  return {
+    'Group Name': meta.groupName,
+    'Group Type': meta.groupType,
+    'Communication Type': meta.transportName,
+    'Communication Title': meta.communicationTitle,
+    Message: meta.message ?? '',
+    'Audience Number': raw.address ?? '',
+    Status: raw.status ?? '',
+    Attempts: raw.attempts ?? '',
+    'Max Attempts': raw.maxAttempts ?? '',
+    'Is Complete': raw.isComplete ?? '',
+    'Triggered Date': formatDateFull(raw.createdAt),
+    'Created Date': formatDateFull(raw.createdAt),
+    'Updated Date': formatDateFull(raw.updatedAt),
+    'Last Attempt': raw.lastAttempt ?? '',
+  };
+}
+
+function buildEmailRow(raw: Record<string, string>, meta: ExportMeta) {
+  return {
+    'Group Name': meta.groupName,
+    'Group Type': meta.groupType,
+    'Communication Type': meta.transportName,
+    'Communication Title': meta.communicationTitle,
+    Subject: meta.subject ?? '',
+    Message: meta.message ?? '',
+    'Audience Email': raw.address ?? '',
+    Status: raw.status ?? '',
+    Attempts: raw.attempts ?? '',
+    'Max Attempts': raw.maxAttempts ?? '',
+    'Is Complete': raw.isComplete ?? '',
+    'Triggered Date': formatDateFull(raw.createdAt),
+    'Created Date': formatDateFull(raw.createdAt),
+    'Updated Date': formatDateFull(raw.updatedAt),
+    'Last Attempt': raw.lastAttempt ?? '',
+  };
+}
+
+function buildExportRows(
+  rows: Record<string, string>[],
+  meta: ExportMeta,
+): Record<string, any>[] {
+  const transport = meta.transportName?.toUpperCase();
+
+  return rows.map((raw) => {
+    if (transport === 'VOICE') return buildVoiceRow(raw, meta);
+    if (transport === 'EMAIL') return buildEmailRow(raw, meta);
+    return buildSmsRow(raw, meta);
   });
 }
 
@@ -137,16 +147,17 @@ export function exportFailedLogs(logsData: SessionLog[]): void {
 export async function downloadLogsCsv(
   url: string,
   fileName: string,
+  meta: ExportMeta,
 ): Promise<void> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Download failed: ${res.status}`);
-  const blob = await res.blob();
-  const objectUrl = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = objectUrl;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(objectUrl);
+
+  const csvText = await res.text();
+  const rows = parseCsv(csvText);
+  const exportRows = buildExportRows(rows, meta);
+
+  const workbook = XLSX.utils.book_new();
+  const sheet = XLSX.utils.json_to_sheet(exportRows);
+  XLSX.utils.book_append_sheet(workbook, sheet, meta.transportName);
+  XLSX.writeFile(workbook, `${fileName}.xlsx`);
 }

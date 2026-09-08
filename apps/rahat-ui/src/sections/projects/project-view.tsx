@@ -120,6 +120,7 @@ export default function ProjectListView() {
                   subTitle={project.description as string}
                   badge={project.type}
                   status={project.status}
+                  extras={project.extras}
                   isPinned={pinnedIds.includes(project.uuid)}
                   onTogglePin={() => togglePin(project.uuid)}
                 />

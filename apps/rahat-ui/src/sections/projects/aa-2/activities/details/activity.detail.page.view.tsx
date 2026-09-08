@@ -14,7 +14,11 @@ import ActivityDetailCards from './activity.detail.cards';
 import { useDeleteActivities, useSingleActivity } from '@rahat-ui/query';
 import React from 'react';
 import { DialogComponent } from './dialog.reuse';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 export default function ActivitiesDetailView() {
@@ -93,10 +97,7 @@ export default function ActivitiesDetailView() {
         {activityDetail && (
           <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
             <div className="flex space-x-2">
-              <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-                hasContent={false}
-              >
+              <Can action={ACTIONS.DELETE} subject={SUBJECTS.ACTIVITY}>
                 <TooltipWrapper tip="Delete Activity">
                   <DialogComponent
                     buttonIcon={Trash}
@@ -110,12 +111,9 @@ export default function ActivitiesDetailView() {
                     variant="outline"
                   />
                 </TooltipWrapper>
-              </RoleAuth>
+              </Can>
 
-              <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-                hasContent={false}
-              >
+              <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
                 <TooltipWrapper tip="Edit Activity">
                   <DialogComponent
                     buttonIcon={Pencil}
@@ -129,12 +127,9 @@ export default function ActivitiesDetailView() {
                     variant="outline"
                   />
                 </TooltipWrapper>
-              </RoleAuth>
+              </Can>
             </div>
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper tip="Update Activity Status">
                 <IconLabelBtn
                   Icon={RefreshCcw}
@@ -149,7 +144,7 @@ export default function ActivitiesDetailView() {
                   className="rounded-sm w-full "
                 />
               </TooltipWrapper>
-            </RoleAuth>
+            </Can>
           </div>
         )}
       </div>

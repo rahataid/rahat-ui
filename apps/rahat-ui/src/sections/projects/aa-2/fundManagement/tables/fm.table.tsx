@@ -18,6 +18,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useFundManagementTableColumns } from '../columns/useFMColumns';
+import DisburseButton from '../components/disburse.button';
 
 export default function FundManagementList() {
   const params = useParams();
@@ -80,11 +81,14 @@ export default function FundManagementList() {
 
   return (
     <div className="">
-      <Heading
-        title="Fund Management List"
-        titleStyle="text-lg"
-        description="List of all the funds created"
-      />
+      <div className="flex items-start justify-between">
+        <Heading
+          title="Fund Management List"
+          titleStyle="text-lg"
+          description="List of all the funds created"
+        />
+        <DisburseButton />
+      </div>
       <SearchInput
         className="w-full mb-2"
         name="title"

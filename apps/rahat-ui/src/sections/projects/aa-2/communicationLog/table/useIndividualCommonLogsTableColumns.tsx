@@ -78,7 +78,7 @@ export default function useIndividualCommonLogsTableColumns(
           {
             accessorKey: 'message',
             header: 'Message',
-            meta: { className: 'w-[200px] ' },
+            meta: { className: 'w-[15%] ' },
             cell: ({ row }: { row: CommonLogRow }) => (
               <TruncatedCell text={row.getValue('message')} truncateByWidth />
             ),

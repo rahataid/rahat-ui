@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -46,16 +47,19 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'title',
       header: t('TITLE'),
-      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('title')} truncateByWidth />
+      ),
     },
     {
       accessorKey: 'updatedAt',
       header: t('DATE'),
+      meta: { className: 'w-[20%]' },
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
           <TruncatedCell
             text={formatDate(row.original?.updatedAt)}
-            maxLength={30}
+            truncateByWidth
           />
         </div>
       ),
@@ -63,21 +67,27 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'phase',
       header: t('PHASE'),
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const className = getPhaseColor(phase);
         // Phase names come from the API and admins can create new ones, so an
         // unmapped phase must render as-is rather than throwing MISSING_MESSAGE.
         return (
-          <Badge className={className}>
+          (
+          <Badge className={cn(className, 'max-w-full overflow-hidden')}>
+            <TruncatedCell text=
             {translateValue(tg, phase, { fallbackStyle: 'raw' })}
+           truncateByWidth={true} />
           </Badge>
+        )
         );
       },
     },
     {
       accessorKey: 'status',
       header: t('STATUS'),
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const commStatus = row.original?.commStatus as string | undefined;
         const className = getStatusBg(commStatus);
@@ -103,6 +113,7 @@ export default function useCommsActivitiesTableColumns() {
       id: 'actions',
       header: t('ACTIONS'),
       enableHiding: false,
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

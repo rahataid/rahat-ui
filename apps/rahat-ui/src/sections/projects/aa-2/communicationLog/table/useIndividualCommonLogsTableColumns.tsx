@@ -40,17 +40,21 @@ export default function useIndividualCommonLogsTableColumns(
       accessorKey: 'title',
       header: t('COMMUNICATION_TITLE'),
       cell: ({ row }: { row: CommonLogRow }) => (
-        <TruncatedCell text={row.getValue('title')} />
+        <TruncatedCell text={row.getValue('title')} truncateByWidth />
       ),
     },
     {
       accessorKey: 'groupName',
       header: t('GROUP_NAME'),
-      cell: ({ row }) => <TruncatedCell text={row.getValue('groupName')} />,
+      meta: { className: 'w-[12%]' },
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('groupName')} truncateByWidth />
+      ),
     },
     {
       accessorKey: 'group_type',
       header: t('GROUP_TYPE'),
+      meta: { className: 'w-[12%]' },
       cell: ({ row }) => <TruncatedCell text={row.getValue('group_type')} />,
     },
     ...(type === 'voice'
@@ -58,9 +62,10 @@ export default function useIndividualCommonLogsTableColumns(
           {
             accessorKey: 'media_url',
             header: t('MESSAGE'),
+            meta: { className: 'w-[15%] ' },
             cell: ({ row }: { row: CommonLogRow }) => {
               return (
-                <div className="relative w-auto lg:w-[150px] h-[40px] overflow-hidden">
+                <div className="relative w-full lg:w-[150px] h-[40px] overflow-hidden">
                   <div className="w-full h-full overflow-hidden">
                     <audio
                       src={row.getValue('media_url')}
@@ -79,8 +84,9 @@ export default function useIndividualCommonLogsTableColumns(
           {
             accessorKey: 'message',
             header: t('MESSAGE'),
+            meta: { className: 'w-[15%] ' },
             cell: ({ row }: { row: CommonLogRow }) => (
-              <TruncatedCell text={row.getValue('message')} />
+              <TruncatedCell text={row.getValue('message')} truncateByWidth />
             ),
           },
         ]),
@@ -88,14 +94,16 @@ export default function useIndividualCommonLogsTableColumns(
     {
       accessorKey: 'timestamp',
       header: t('TIMESTAMP'),
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const timestamp = formatDate(row.original.timestamp);
-        return <TruncatedCell text={timestamp} maxLength={25} />;
+        return <TruncatedCell text={timestamp} truncateByWidth />;
       },
     },
     {
       accessorKey: 'sessionStatus',
       header: t('STATUS'),
+      meta: { className: 'w-[12%]' },
       cell: ({ row }) => {
         const status = row.getValue('sessionStatus') as string;
         const className = getSessionColor(status as string);
@@ -111,6 +119,7 @@ export default function useIndividualCommonLogsTableColumns(
       id: 'actions',
       header: t('ACTIONS'),
       enableHiding: false,
+      meta: { className: 'w-[80px]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

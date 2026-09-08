@@ -1,7 +1,8 @@
 'use client';
 
-// Import statements
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useRoleList, useSettingsStore } from '@rahat-ui/query';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -40,22 +42,26 @@ import { Gender } from '@rahataid/sdk/enums';
 import { useUserCreate } from '@rumsan/react-query';
 import Swal from 'sweetalert2';
 
-const FormSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-  email: z.string().email(),
-  gender: z.string().min(1, { message: 'Please select gender' }),
-  roles: z.array(z.string()).length(1, { message: 'Please select role' }),
-  phone: z.string(),
-  wallet: z
-    .string()
-    .optional()
-    .refine((val) => val === undefined || val === '' || val.length === 42, {
-      message: 'The Ethereum address must be empty or 42 characters long',
-    }),
-});
-
-// Component
 export default function AddUser() {
+  const t = useTranslations('USERS_ADD');
+  const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
+
+  const FormSchema = z.object({
+    name: z.string().min(2, { message: t('NAME_MUST_BE_AT_LEAST4') }),
+    email: z.string().email({ message: t('INVALID_EMAIL_ADDRESS') }),
+    gender: z.string().min(1, { message: t('PLEASE_SELECT_GENDER') }),
+    roles: z.array(z.string()).length(1, { message: t('PLEASE_SELECT_ROLE') }),
+    phone: z.string(),
+    wallet: z
+      .string()
+      .optional()
+      .refine((val) => val === undefined || val === '' || val.length === 42, {
+        message: t('ETH_ADDRESS_MUST_BE_EMPTY_OR42'),
+      }),
+  });
+
   const router = useRouter();
 
   const form = useForm({
@@ -100,18 +106,40 @@ export default function AddUser() {
       } else {
         await userCreate.mutateAsync(data);
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'An unexpected error occurred.';
-      Swal.fire('User Creation Failed', errorMessage, 'error');
+    } catch (error: unknown) {
+      // error.message on an Axios error is a generic HTTP status string
+      // (e.g. "Request failed with status code 400"), not the backend's
+      // actual message -- read it from the response body instead. The
+      // user-service backend sends a stable `name` (RSError), not `code`.
+      const e = error as {
+        response?: {
+          data?: {
+            code?: string;
+            name?: string;
+            params?: Record<string, string | number | Date>;
+            message?: string;
+          };
+        };
+        message?: string;
+      };
+      const rawMessage: string =
+        e?.response?.data?.message ||
+        e?.message ||
+        t('AN_UNEXPECTED_ERROR_OCCURRED');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['USERS'],
+        rawMessage,
+      );
+      Swal.fire(t('USER_CREATION_FAILED'), errorMessage, 'error');
     }
   };
 
   useEffect(() => {
     if (userCreate.isSuccess) {
-      Swal.fire('User Created Successfully', '', 'success');
+      Swal.fire(t('USER_CREATED_SUCCESSFULLY'), '', 'success');
       form.reset({
         name: '',
         gender: '',
@@ -129,8 +157,8 @@ export default function AddUser() {
       <form onSubmit={form.handleSubmit(handleAddUser)}>
         <div className="p-4 h-[calc(100vh-130px)]">
           <HeaderWithBack
-            title="Create User"
-            subtitle="Create a new user detail"
+            title={t('CREATE_USER')}
+            subtitle={t('CREATE_A_NEW_USER_DETAIL')}
             path="/users"
           />
 
@@ -141,11 +169,11 @@ export default function AddUser() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>User Name</FormLabel>
+                    <FormLabel>{t('USER_NAME')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter user name"
+                        placeholder={t('ENTER_USER_NAME')}
                         {...field}
                       />
                     </FormControl>
@@ -158,7 +186,7 @@ export default function AddUser() {
                 name="gender"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Gender</FormLabel>
+                    <FormLabel>{tg('GENDER')}</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -174,8 +202,7 @@ export default function AddUser() {
                               <RadioGroupItem value={gender} />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {gender.charAt(0).toUpperCase() +
-                                gender.slice(1).toLowerCase()}
+                              {tg(gender.toUpperCase())}
                             </FormLabel>
                           </FormItem>
                         ))}
@@ -191,11 +218,12 @@ export default function AddUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>{tg('PHONE_NUMBER')}</FormLabel>
                       <FormControl>
                         <PhoneInput
-                          placeholder="Enter phone number"
+                          placeholder={tg('ENTER_PHONE_NUMBER')}
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />
@@ -209,11 +237,11 @@ export default function AddUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{tg('EMAIL')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter email address"
+                          placeholder={tg('ENTER_EMAIL_ADDRESS')}
                           {...field}
                         />
                       </FormControl>
@@ -234,10 +262,10 @@ export default function AddUser() {
                         }}
                         value={field.value[0] ?? ''}
                       >
-                        <FormLabel>User Role</FormLabel>
+                        <FormLabel>{t('USER_ROLE')}</FormLabel>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select user role" />
+                            <SelectValue placeholder={t('SELECT_USER_ROLE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -262,18 +290,17 @@ export default function AddUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Wallet Address</FormLabel>
+                      <FormLabel>{tg('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
-                            placeholder="Enter wallet address"
+                            placeholder={tg('ENTER_WALLET_ADDRESS')}
                             {...field}
                           />
                           <p className="text-xs text-amber-500 mt-2">
-                            * Wallet address is required. If not entered, it
-                            will be automatically filled.
+                            {tg('WALLET_ADDRESS_IS_REQUIRED_IF_NOT')}
                           </p>
                         </div>
                       </FormControl>
@@ -295,10 +322,10 @@ export default function AddUser() {
               // router.push('/users')
             }}
           >
-            Clear
+            {tg('CLEAR')}
           </Button>
           <Button type="submit" className="px-10">
-            Create
+            {tg('CREATE')}
           </Button>
         </div>
       </form>

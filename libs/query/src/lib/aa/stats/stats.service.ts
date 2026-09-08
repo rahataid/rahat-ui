@@ -5,6 +5,8 @@ import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useStatsStore } from './stats.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 function useToast() {
@@ -206,6 +208,8 @@ export const useBackFill = (projectUuid: UUID) => {
 };
 
 export const useTransportSessionStats = (uuid: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -230,10 +234,17 @@ export const useTransportSessionStats = (uuid: UUID) => {
         });
         return mutate.data;
       } catch (error: any) {
-        const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch transport stats';
+        const rawMessage =
+          error?.response?.data?.message || t('FAILED_TO_FETCH_TRANSPORT_STATS');
+        const errorMessage = resolveBackendErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['ACTIVITIES'],
+          rawMessage,
+        );
         toast.fire({
-          title: 'Error loading transport stats',
+          title: t('ERROR_LOADING_TRANSPORT_STATS'),
           text: errorMessage,
           icon: 'error',
         });

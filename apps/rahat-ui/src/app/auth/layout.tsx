@@ -3,12 +3,15 @@
 import Image from 'next/image';
 import * as React from 'react';
 import GuestGuard from '../../guards/guest-guard';
+import { useTranslations } from 'next-intl';
+import { LanguageToggle } from '../../components/language-toggle';
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = useTranslations('LOGIN');
   return (
     <GuestGuard>
       <div className="h-screen flex">
@@ -22,16 +25,19 @@ export default function AuthLayout({
             />
             <div>
               <p className="text-white w-4/5">
-                Rahat, an open-source blockchain-based financial access platform
-                to support vulnerable communities. Our mission is to break the
-                poverty cycle by providing immediate financial access, building
-                resilience, and fostering financial literacy among the last
-                billion.
+                {t('RAHAT_AN_OPEN_SOURCE_BLOCKCHAIN_BASED')}
               </p>
             </div>
           </div>
         </div>
-        <div className="w-1/2">{children}</div>
+        <div className="w-1/2 relative">
+          {/* The page below is itself `relative`, so with both at `z-index: auto`
+              it would paint over this toggle and swallow its clicks. */}
+          <div className="absolute top-4 right-4 z-20">
+            <LanguageToggle />
+          </div>
+          {children}
+        </div>
       </div>
     </GuestGuard>
   );

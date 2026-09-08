@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -11,7 +12,12 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useSendPayoutOtp } from '@rahat-ui/query/lib/aa/payout/payout.service';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useEffect, useState } from 'react';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -36,11 +42,17 @@ export default function PayoutConfirmationDialog({
   onConfirm,
   projectId,
 }: IProps) {
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
+  const formatNum = useNumberFormat();
+
   // Store goes here
   const { data: currentUser } = useUserCurrentUser();
 
   // Mutations goes here
   const sendPayoutOtp = useSendPayoutOtp();
+  const formatDigits = useLabelDigits();
 
   // State goes here
   const [open, setOpen] = useState(false);
@@ -79,7 +91,15 @@ export default function PayoutConfirmationDialog({
       setTriggered(true);
       setOpen(false);
     } catch (e: any) {
-      setOtpError(e?.response?.data?.message || 'Invalid pin.');
+      const rawMessage = e?.response?.data?.message || tv('INVALID_PIN_FALLBACK');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT', 'GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
+      setOtpError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -92,7 +112,7 @@ export default function PayoutConfirmationDialog({
           (payoutData?.extras?.paymentProviderName === 'NCHL' ||
             payoutData?.extras?.paymentProviderName === 'Namaste Pay') && (
             <TooltipWrapper
-              tip="Payout cannot be triggered because funds have not been disbursed to the beneficiary group."
+              tip={tv('PAYOUT_CANNOT_BE_TRIGGERED')}
               disable={payoutData?.beneficiaryGroupToken?.isDisbursed}
             >
               <AlertDialogTrigger asChild>
@@ -106,7 +126,7 @@ export default function PayoutConfirmationDialog({
                     submitting
                   }
                 >
-                  Trigger Payout
+                  {tv('TRIGGER_PAYOUT')}
                 </Button>
               </AlertDialogTrigger>
             </TooltipWrapper>
@@ -117,71 +137,77 @@ export default function PayoutConfirmationDialog({
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-white/80 backdrop-blur-sm">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground animate-pulse">
-              Sending Rahat Pin to your email…
+              {tv('SENDING_RAHAT_PIN_TO_EMAIL')}
             </p>
           </div>
         )}
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center text-lg font-semibold">
-            Trigger Payout
+            {tv('TRIGGER_PAYOUT')}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center">
-            Are you sure you want to trigger this payout?
+            {tv('TRIGGER_PAYOUT_CONFIRMATION')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <div className="bg-gray-50 rounded-sm p-4 mt-2 text-sm space-y-2">
           <div className="flex justify-between">
-            <span className="font-medium">Payout Type</span>
-            <span>{payoutData?.type}</span>
+            <span className="font-medium">{tv('PAYOUT_TYPE')}</span>
+            <span>{translateValue(tg, payoutData?.type)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Payout Method</span>
+            <span className="font-medium">{tv('PAYOUT_METHOD')}</span>
             <span>
-              {payoutData?.type === 'FSP'
-                ? payoutData?.extras?.paymentProviderName
-                : payoutData?.mode}
+              {translateValue(
+                tg,
+                payoutData?.type === 'FSP'
+                  ? payoutData?.extras?.paymentProviderName
+                  : payoutData?.mode,
+                { fallbackStyle: 'raw' },
+              )}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Beneficiary Group Name</span>
+            <span className="font-medium">{tv('BENEFICIARY_GROUP')}</span>
             <span>
               {payoutData?.beneficiaryGroupToken?.beneficiaryGroup?.name}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Total Beneficiaries</span>
+            <span className="font-medium">{tg('TOTAL_BENEFICIARIES')}</span>
             <span>
-              {
+              {formatNum(
                 payoutData?.beneficiaryGroupToken?.beneficiaryGroup?._count
-                  ?.beneficiaries
-              }
+                  ?.beneficiaries ?? 0,
+              )}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium">Total Tokens</span>
-            <span>{payoutData?.beneficiaryGroupToken?.numberOfTokens}</span>
+            <span className="font-medium">{tv('TOTAL_TOKENS')}</span>
+            <span>
+              {formatNum(payoutData?.beneficiaryGroupToken?.numberOfTokens ?? 0)}
+            </span>
           </div>
         </div>
 
         <div className="border-t pt-4">
           <p className="text-base text-foreground">
-            A Rahat Pin has been sent to{' '}
+            {tv('RAHAT_PIN_SENT_TO')}{' '}
             <span className="font-semibold">
-              {email || 'the registered email'}
+              {email || tv('REGISTERED_EMAIL_FALLBACK')}
             </span>
-            . Please enter it below to verify and start disbursement.
+            {tv('RAHAT_PIN_SENT_SUFFIX')}
           </p>
           <div className="flex items-center gap-3 mt-3">
             <Input
-              placeholder={`${OTP_LENGTH} digit pin`}
+              placeholder={tv('DIGIT_PIN_PLACEHOLDER', { length: formatDigits(OTP_LENGTH) })}
               maxLength={OTP_LENGTH}
               inputMode="numeric"
               autoFocus
               className="h-11 text-lg"
-              value={otp}
+              value={formatDigits(otp)}
               onChange={(e) => {
-                setOtp(e.target.value.replace(/\D/g, ''));
+                setOtp(toAsciiDigits(e.target.value).replace(/\D/g, ''));
                 setOtpError('');
               }}
             />
@@ -190,7 +216,7 @@ export default function PayoutConfirmationDialog({
               disabled={!email || sendPayoutOtp.isPending}
               onClick={handleSendOtp}
             >
-              Resend
+              {tg('RESEND')}
             </Button>
           </div>
           {otpError && (
@@ -203,14 +229,14 @@ export default function PayoutConfirmationDialog({
             className="border border-gray- w-full"
             disabled={submitting}
           >
-            Cancel
+            {tg('CANCEL')}
           </AlertDialogCancel>
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white w-full"
             onClick={handleConfirm}
             disabled={isButtonDisabled}
           >
-            {submitting ? 'Triggering…' : 'Confirm'}
+            {submitting ? tv('TRIGGERING') : tg('CONFIRM')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

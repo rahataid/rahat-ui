@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+
 import dynamic from 'next/dynamic';
 import {
   fetchWeatherLayers,
@@ -26,18 +28,22 @@ const WeatherMap = dynamic(
   () => import('./components/weather-map').then((mod) => mod.WeatherMap),
   {
     ssr: false,
-    loading: () => (
-      <div className="h-full w-full flex items-center justify-center bg-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-          <p className="text-sm text-muted-foreground">Loading map...</p>
+    loading: function LoadingMap() {
+      const loadingT = useTranslations('AA_PROJECT');
+      return (
+        <div className="h-full w-full flex items-center justify-center bg-muted">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+            <p className="text-sm text-muted-foreground">{loadingT('LOADING_MAP')}</p>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
 );
 
 export function NWPSection() {
+  const t = useTranslations('AA_PROJECT');
   const [groupedLayers, setGroupedLayers] = useState<GroupedLayers>({});
   const [availableTimes, setAvailableTimes] = useState<Date[]>([]);
   const [isLoadingLayers, setIsLoadingLayers] = useState(true);
@@ -215,12 +221,12 @@ export function NWPSection() {
                   {isWeatherLayerVisible ? (
                     <>
                       <Eye className="w-5 h-5 text-gray-700" />
-                      <span>Hide Weather Layer</span>
+                      <span>{t('HIDE_WEATHER_LAYER')}</span>
                     </>
                   ) : (
                     <>
                       <EyeOff className="w-5 h-5 text-gray-700" />
-                      <span>Show Weather Layer</span>
+                      <span>{t('SHOW_WEATHER_LAYER')}</span>
                     </>
                   )}
                 </button>

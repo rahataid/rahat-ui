@@ -1,3 +1,6 @@
+import { useTranslations } from 'next-intl';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   useActivitiesCategories,
   useActivitiesStore,
@@ -89,6 +92,9 @@ export const DurationData = [
 ];
 
 export default function AddActivities() {
+  const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
+  const tg = useTranslations('GLOBAL');
   const addCommunicationOpen = useBoolean(false);
   const editCommunicationOpen = useBoolean();
   const templateConfirmDialog = useBoolean(false);
@@ -173,11 +179,11 @@ export default function AddActivities() {
         const isDuplicateFile = isDuplicateInFiles || isDuplicateInOriginals;
 
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -225,7 +231,7 @@ export default function AddActivities() {
             (f) => !(f.fileName === file.name && f.mediaURL === ''),
           );
           form.setValue('activityDocuments', filteredFiles);
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         } finally {
           setUploadingFileName(null);
         }
@@ -380,7 +386,7 @@ export default function AddActivities() {
     if (selectedUser && !selectedUser.email) {
       form.setError('responsibility', {
         type: 'manual',
-        message: 'Selected user has no email',
+        message: t('SELECTED_USER_HAS_NO_EMAIL'),
       });
     } else {
       form.clearErrors('responsibility');
@@ -486,15 +492,15 @@ export default function AddActivities() {
               <div className="mt-4 flex justify-between items-center">
                 <div>
                   <Heading
-                    title={`Add Activity `}
-                    description="Fill the form below to create new activity"
+                    title={t('CREATE_ACTIVITY')}
+                    description={t('FILL_THE_FORM_BELOW_TO_CREATE2')}
                   />
                 </div>
 
                 <div className="flex justify-end mt-8 ">
                   <div className="flex gap-2  items-center">
                     <TooltipWrapper
-                      tip={'View templates to reuse for this activity'}
+                      tip={t('VIEW_TEMPLATES_TO_REUSE')}
                     >
                       <LayoutTemplate
                         type="button"
@@ -508,7 +514,7 @@ export default function AddActivities() {
                       className="w-36"
                       onClick={resetForm}
                     >
-                      Clear
+                      {tg('CLEAR')}
                     </Button>
 
                     <Button
@@ -523,7 +529,7 @@ export default function AddActivities() {
                         !!form.formState.errors.responsibility
                       }
                     >
-                      Add
+                      {tg('ADD')}
                     </Button>
                   </div>
                 </div>
@@ -538,11 +544,11 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
-                          <FormLabel required>Activity title</FormLabel>
+                          <FormLabel required>{t('ACTIVITY_TITLE2')}</FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
-                              placeholder="Enter activity title"
+                              placeholder={t('ENTER_ACTIVITY_TITLE')}
                               {...field}
                             />
                           </FormControl>
@@ -557,16 +563,16 @@ export default function AddActivities() {
                     name="responsibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Responsibility</FormLabel>
+                        <FormLabel required>{t('RESPONSIBILITY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             users?.data?.find(
                               (item) => item.uuid === field.value,
                             )?.name
                           }
-                          placeholder="Select responsibility"
-                          searchPlaceholder="Search users..."
-                          emptyMessage="No user found."
+                          placeholder={t('SELECT_RESPONSIBILITY')}
+                          searchPlaceholder={t('SEARCH_USERS')}
+                          emptyMessage={t('NO_USER_FOUND')}
                           options={
                             users?.data.map((item) => ({
                               label: item.name,
@@ -589,11 +595,11 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel required>Responsible Station</FormLabel>
+                          <FormLabel required>{t('RESPONSIBLE_STATION')}</FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
-                              placeholder="Enter responsible station"
+                              placeholder={t('ENTER_RESPONSIBLE_STATION')}
                               {...field}
                             />
                           </FormControl>
@@ -607,16 +613,16 @@ export default function AddActivities() {
                     name="phaseId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Phase</FormLabel>
+                        <FormLabel required>{t('PHASE')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             phases?.find(
                               (p) => p.uuid === (phaseId || field.value),
                             )?.name
                           }
-                          placeholder="Select phase"
-                          searchPlaceholder="Search phases..."
-                          emptyMessage="No phase found."
+                          placeholder={t('SELECT_PHASE')}
+                          searchPlaceholder={t('SEARCH_PHASES')}
+                          emptyMessage={t('NO_PHASE_FOUND')}
                           disabled={!!phaseId}
                           options={
                             phases?.map((p) => ({
@@ -638,15 +644,15 @@ export default function AddActivities() {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Category</FormLabel>
+                        <FormLabel required>{t('CATEGORY')}</FormLabel>
                         <DropdownSearch
                           selectedLabel={
                             categories?.find((c) => c.uuid === field.value)
                               ?.name
                           }
-                          placeholder="Select category"
-                          searchPlaceholder="Search categories..."
-                          emptyMessage="No category found."
+                          placeholder={t('SELECT_CATEGORY')}
+                          searchPlaceholder={t('SEARCH_CATEGORIES')}
+                          emptyMessage={t('NO_CATEGORY_FOUND')}
                           options={
                             categories?.map((c: any) => ({
                               label: c.name,
@@ -670,7 +676,7 @@ export default function AddActivities() {
                         return (
                           <FormItem className=" w-[200px]">
                             <div className="flex items-center justify-between w-full">
-                              <FormLabel>Save as Template</FormLabel>{' '}
+                              <FormLabel>{t('SAVE_AS_TEMPLATE')}</FormLabel>{' '}
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild className="-ml-4">
@@ -680,11 +686,7 @@ export default function AddActivities() {
                                     />
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>
-                                      This will save the activity as a template
-                                      for future use. If disabled, this will not
-                                      be saved as template
-                                    </p>
+                                    <p>{t('TEMPLATE_SAVE_TOOLTIP')}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -716,7 +718,7 @@ export default function AddActivities() {
                               />
                             </FormControl>
                             <FormLabel className="text-sm font-normal ml-2">
-                              Is Automated Activity?
+                              {t('IS_AUTOMATED_ACTIVITY')}
                             </FormLabel>
                             <FormMessage />
                           </FormItem>
@@ -737,15 +739,17 @@ export default function AddActivities() {
                         const unit = !unitValue ? 'days' : unitValue;
                         return (
                           <FormItem>
-                            <FormLabel>Lead Time</FormLabel>
+                            <FormLabel>{t('LEAD_TIME')}</FormLabel>
                             <div className="grid grid-cols-4">
                               <FormInput
                                 type="text"
-                                placeholder="Enter lead time"
+                                placeholder={t('ENTER_LEAD_TIME')}
                                 className="col-span-3 rounded-r-none"
-                                value={lead}
+                                value={formatDigits(lead)}
                                 onChange={(e) => {
-                                  const newLead = e.target.value;
+                                  const newLead = toAsciiDigits(
+                                    e.target.value,
+                                  );
                                   field.onChange(
                                     newLead ? `${newLead} ${unit}` : ` ${unit}`,
                                   );
@@ -770,7 +774,7 @@ export default function AddActivities() {
                                       key={item.value}
                                       value={item.value}
                                     >
-                                      {item.label}
+                                      {item.value === 'hours' ? t('HOURS') : t('DAYS')}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -789,10 +793,10 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2 ">
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel>{tg('DESCRIPTION')}</FormLabel>
                           <FormControl>
                             <FormTextarea
-                              placeholder="Enter description "
+                              placeholder={t('ENTER_DESCRIPTION')}
                               className=" rounded"
                               {...field}
                             />
@@ -819,8 +823,8 @@ export default function AddActivities() {
                                 className="text-primary"
                               />
                               <p className="text-sm font-medium">
-                                Drop files to upload, or{' '}
-                                <span className="text-primary">browse</span>
+                                {t('DROP_FILES_TO_UPLOAD')}{' '}
+                                <span className="text-primary">{t('BROWSE')}</span>
                               </p>
                             </div>
                             <FormInput
@@ -833,8 +837,7 @@ export default function AddActivities() {
                         </FormControl>
                         <FormMessage />
                         <p className="text-xs text-end text-orange-500">
-                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                          CSV under 5 MB.
+                          {t('FILE_VALIDATION_TEXT')}
                         </p>
                         <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
                           {activityDocuments?.map((file) => (
@@ -893,7 +896,7 @@ export default function AddActivities() {
                   }
                 }}
               >
-                Add Communication
+                {t('ADD_COMMUNICATION')}
                 {!addCommunicationOpen.value ? (
                   <Plus className="ml-2" size={16} strokeWidth={3} />
                 ) : (
@@ -919,6 +922,7 @@ export default function AddActivities() {
                 communicationData={communicationData}
                 appTransports={appTransports}
                 onRemove={handleRemove}
+                onEdit={handleRemove}
                 setOpen={editCommunicationOpen.setValue}
                 open={editCommunicationOpen.value}
               />
@@ -940,8 +944,8 @@ export default function AddActivities() {
         isConfirmationDialogOpen={templateConfirmDialog.value}
         onCancel={cancelTemplateToggle}
         onConfirm={confirmTemplateToggle}
-        dialogTitle="Confirm Template"
-        dialogMessage="Are you sure you want to save this activity as a template?"
+        dialogTitle={t('CONFIRM_TEMPLATE')}
+        dialogMessage={t('SAVE_AS_TEMPLATE_CONFIRM')}
       />
     </Form>
   );

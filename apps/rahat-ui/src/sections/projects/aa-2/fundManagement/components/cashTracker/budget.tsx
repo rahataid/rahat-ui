@@ -21,8 +21,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function Budget({}: {}) {
+  const t = useTranslations('AA_PROJECT');
   const [formData, setFormData] = useState({
     amount: '',
     currency: 'NPR',
@@ -33,6 +37,7 @@ export default function Budget({}: {}) {
   const id = useParams().id as UUID;
   const router = useRouter();
   const createBudget = useCreateBudget(id);
+  const formatNum = useNumberFormat();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,9 +62,9 @@ export default function Budget({}: {}) {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount)) return '';
 
-    const formatted = numAmount.toLocaleString('en-IN', {});
+    const formatted = formatNum(numAmount);
 
-    return currency === 'NPR' ? `Rs.${formatted}` : `$${formatted}`;
+    return currency === 'NPR' ? `${t('RS')}${formatted}` : `$${formatted}`;
   };
 
   return (
@@ -70,18 +75,18 @@ export default function Budget({}: {}) {
           className="text-sm text-gray-500 mb-2"
           onClick={() => router.back()}
         >
-          &larr; Back
+          &larr; {t('BACK')}
         </button>
-        <h1 className="text-2xl font-bold">Create Budget</h1>
+        <h1 className="text-2xl font-bold">{t('CREATE_BUDGET')}</h1>
         <p className="text-sm text-gray-500">
-          Fill the form below to create budget
+          {t('FILL_THE_FORM_BELOW_TO_CREATE_BUDGET')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Amount */}
         <div>
-          <Label>Amount</Label>
+          <Label>{t('AMOUNT')}</Label>
           <div className="flex gap-2 w-full">
             <Select
               value={formData.currency}
@@ -93,19 +98,19 @@ export default function Budget({}: {}) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="NPR">NPR</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="NPR">{t('CURRENCY_NPR')}</SelectItem>
+                <SelectItem value="USD">{t('CURRENCY_USD')}</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex flex-col gap-1">
               <Input
                 type="number"
-                placeholder="Enter amount"
+                placeholder={t('ENTER_AMOUNT')}
                 value={formData.amount}
                 onChange={(e) => {
-                  const value = parseFloat(e.target.value);
+                  const value = parseFloat(toAsciiDigits(e.target.value));
                   if (value <= 0) {
-                    setError('Amount must be greater than 0');
+                    setError(t('AMOUNT_MUST_BE_GREATER_THAN_0'));
                     return;
                   }
                   setError('');
@@ -126,13 +131,13 @@ export default function Budget({}: {}) {
             variant="outline"
             onClick={() => setFormData({ amount: '', currency: 'NPR' })}
           >
-            Clear
+            {t('CLEAR')}
           </Button>
           <Button
             type="submit"
             disabled={createBudget.isPending || !formData.amount}
           >
-            {createBudget.isPending ? <span>Submitting...</span> : 'Confirm'}
+            {createBudget.isPending ? <span>{t('SUBMITTING')}</span> : t('CONFIRM')}
           </Button>
         </div>
       </form>
@@ -141,9 +146,9 @@ export default function Budget({}: {}) {
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle className="text-center">Create Budget</DialogTitle>
+            <DialogTitle className="text-center">{t('CREATE_BUDGET')}</DialogTitle>
             <DialogDescription className="text-center text-base text-gray-700 mt-2">
-              Are you sure you want to create this budget?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_CREATE_BUDGET')}
             </DialogDescription>
           </DialogHeader>
 
@@ -153,7 +158,7 @@ export default function Budget({}: {}) {
               <div className="text-2xl font-bold text-gray-900">
                 {formatAmount(formData.amount, formData.currency)}
               </div>
-              <div className="text-sm text-gray-700 mt-1">Budget Created</div>
+              <div className="text-sm text-gray-700 mt-1">{t('BUDGET_CREATED')}</div>
             </div>
           </div>
 
@@ -164,7 +169,7 @@ export default function Budget({}: {}) {
               className="flex-1 border-blue-500 text-blue-600 hover:bg-blue-50"
               onClick={() => setShowConfirmDialog(false)}
             >
-              Cancel
+              {t('CANCEL')}
             </Button>
             <Button
               type="button"
@@ -172,7 +177,7 @@ export default function Budget({}: {}) {
               onClick={handleConfirm}
               disabled={createBudget.isPending}
             >
-              {createBudget.isPending ? 'Creating...' : 'Confirm'}
+              {createBudget.isPending ? t('CREATING') : t('CONFIRM')}
             </Button>
           </DialogFooter>
         </DialogContent>

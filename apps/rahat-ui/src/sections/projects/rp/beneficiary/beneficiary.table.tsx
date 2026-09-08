@@ -171,7 +171,7 @@ export default function BeneficiaryTable() {
             <SelectContent>
               <SelectGroup>
                 {genderOptions.map(({ value, label }: any) => (
-                  <SelectItem value={value}>{label}</SelectItem>
+                  <SelectItem key={value} value={value}>{label}</SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>

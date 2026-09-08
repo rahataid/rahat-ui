@@ -61,8 +61,11 @@ export function ProjectNav({
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
     const projectPin = localStorage.getItem('PROJECT_PIN');
+    const { preserveFormData, restoreFormData } = require('apps/rahat-ui/src/utils/formStorage');
+    const formData = preserveFormData();
     clearUser();
     clearAuth();
+    restoreFormData(formData);
     if (pinnedPhases) localStorage.setItem('aa_pinned_phases', pinnedPhases);
     if (triggerPinPhase)
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);

@@ -87,7 +87,13 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['payouts', projectUUID, payload.startDate, payload.endDate],
+    queryKey: [
+      'payouts',
+      projectUUID,
+      payload.startDate,
+      payload.endDate,
+      payload,
+    ],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,

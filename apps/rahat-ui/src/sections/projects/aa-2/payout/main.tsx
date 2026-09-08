@@ -39,7 +39,7 @@ export default function PayoutView() {
     ...(startDate && { startDate }),
     ...(endDate && { endDate }),
   });
-  const { data: statsPayout } = usePayoutStats(projectID, {
+  const { data: statsPayout, isPending } = usePayoutStats(projectID, {
     startDate,
     endDate,
   });
@@ -63,14 +63,15 @@ export default function PayoutView() {
     return [
       {
         label: 'No. of Beneficiaries Recieving Cash',
-        value: statsPayout?.payoutStats?.beneficiaries || 'N/A',
+        value: statsPayout?.payoutStats?.beneficiaries ?? 'N/A',
         infoIcon: true,
         infoTooltip: 'Total number of beneficiaries recieving cash',
       },
       {
         label: 'Total Cash Distribution',
-        value:
-          `Rs. ${statsPayout?.payoutStats?.totalCashDistribution}` || 'N/A',
+        value: `Rs. ${
+          statsPayout?.payoutStats?.totalCashDistribution ?? 'N/A'
+        }`,
         infoIcon: true,
         infoTooltip: 'Total amount of cash distributed to the beneficiaries',
       },
@@ -123,6 +124,7 @@ export default function PayoutView() {
           <TabsContent value="payoutOverview">
             <PayoutOverview
               payoutStats={payoutStats}
+              isPending={isPending}
               statsPayout={statsPayout}
               payouts={payouts || { data: [] }}
               handleDateChange={handleDateChange}

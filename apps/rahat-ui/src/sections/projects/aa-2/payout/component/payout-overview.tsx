@@ -7,11 +7,13 @@ import { CloudDownloadIcon } from 'lucide-react';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportPayoutStats, hasPayoutData } from '../utils/payout.utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 export default function PayoutOverview({
   payoutStats,
   payouts,
   statsPayout,
+  isPending,
   handleDateChange,
   handleClearDate,
 }: PayoutOverviewProps) {
@@ -36,6 +38,10 @@ export default function PayoutOverview({
     },
   ];
   const hasData = hasPayoutData(statsPayout);
+
+  if (isPending) {
+    return <Loader />;
+  }
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between">

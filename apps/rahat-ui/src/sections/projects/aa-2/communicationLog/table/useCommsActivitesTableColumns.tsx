@@ -53,7 +53,6 @@ export default function useCommsActivitiesTableColumns() {
         <div className="capitalize min-w-32">
           <TruncatedCell
             text={dateFormat(row.original?.updatedAt)}
-            maxLength={30}
             truncateByWidth
           />
         </div>

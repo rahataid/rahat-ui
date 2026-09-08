@@ -19,7 +19,7 @@ jobs:
   context:
     name: Resolve PR Context
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event.action == 'closed'
     outputs:
       action: ${{ steps.ctx.outputs.action }}
       slug: ${{ steps.ctx.outputs.slug }}

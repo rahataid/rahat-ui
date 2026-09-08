@@ -15,6 +15,9 @@ interface IProps {
   badgeClassName?: string;
   backBtn?: boolean;
   path?: string;
+  isShowStats?: boolean;
+  totalBeneficiaries?: number;
+  totalSuccessAmount?: number;
 }
 
 export function Heading({
@@ -26,6 +29,9 @@ export function Heading({
   badgeClassName,
   backBtn = false,
   path,
+  isShowStats = false,
+  totalBeneficiaries,
+  totalSuccessAmount,
 }: IProps) {
   const router = useRouter();
 
@@ -55,6 +61,13 @@ export function Heading({
         )}
         {title}
         {status && <Badge className={badgeClassName}>{status}</Badge>}
+        {isShowStats &&
+          totalSuccessAmount != null &&
+          totalBeneficiaries != null && (
+            <span className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
+              {totalSuccessAmount}/{totalBeneficiaries} Beneficiaries
+            </span>
+          )}
       </div>
       <p className="text-[clamp(11px,1vw,14px)] leading-4 text-muted-foreground">
         {description}

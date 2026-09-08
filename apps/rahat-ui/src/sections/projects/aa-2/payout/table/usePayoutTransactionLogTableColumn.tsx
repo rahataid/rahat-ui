@@ -13,6 +13,13 @@ interface PayoutTransactionLogRow {
   totalBeneficiaries: number;
   totalTokenAssigned: number;
   totalSuccessAmount: number;
+  beneficiaryGroupToken: {
+    beneficiaryGroup: {
+      _count: {
+        beneficiaries: number;
+      };
+    };
+  };
   payoutType: string;
   payoutMode: string;
   status: string;
@@ -97,21 +104,32 @@ export default function usePayoutTransactionLogTableColumn() {
       ),
     },
     {
-      accessorKey: 'status',
+      // accessorKey: 'status',
       header: 'Status',
+      meta: { className: 'w-[150px]' },
       cell: ({ row }) => {
         const status = row?.original?.status;
+        const totalBeneficiaries = row.original.totalBeneficiaries;
+        const totalSuccess = row?.original?.totalSuccessAmount;
         return (
-          <Badge
-            className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
-              status,
-            )}`}
-          >
-            {status
-              .toLowerCase()
-              .replace(/_/g, ' ')
-              .replace(/^./, (char) => char.toUpperCase())}
-          </Badge>
+          <div className="flex gap-2 w-full">
+            <Badge
+              className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
+                status,
+              )}`}
+            >
+              {status
+                .toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char) => char.toUpperCase())}
+            </Badge>
+
+            {totalBeneficiaries != null && totalSuccess != null && (
+              <span className="text-[12px]">
+                {totalSuccess} / {totalBeneficiaries}
+              </span>
+            )}
+          </div>
         );
       },
     },

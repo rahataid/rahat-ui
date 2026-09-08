@@ -1,4 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -65,7 +66,11 @@ export default function useCommsActivitiesTableColumns() {
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
         const className = getPhaseColor(phase);
-        return <Badge className={className}>{phase}</Badge>;
+        return (
+          <Badge className={cn(className, 'max-w-full overflow-hidden')}>
+            <TruncatedCell text={phase} truncateByWidth={true} />
+          </Badge>
+        );
       },
     },
     {

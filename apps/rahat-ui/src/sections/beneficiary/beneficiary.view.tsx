@@ -216,7 +216,7 @@ function BeneficiaryView() {
               Import from Community Tool
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => router.push('/beneficiary-import')}
+              onClick={() => router.push('/beneficiary/import')}
             >
               Import from Excel Sheet
             </DropdownMenuItem>

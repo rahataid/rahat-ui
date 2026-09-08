@@ -12,6 +12,9 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { flexRender, Table } from '@tanstack/react-table';
 import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 
+type ColumnMeta = {
+  className?: string;
+};
 export default function CommsLogsTable({
   table,
   isLoading,
@@ -29,7 +32,16 @@ export default function CommsLogsTable({
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id}>
+                      <TableHead
+                        key={header.id}
+                        className={
+                          (
+                            header.column.columnDef.meta as
+                              | ColumnMeta
+                              | undefined
+                          )?.className
+                        }
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -50,7 +62,13 @@ export default function CommsLogsTable({
                     data-state={row.getIsSelected() && 'selected'}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className={
+                          (cell.column.columnDef.meta as ColumnMeta | undefined)
+                            ?.className
+                        }
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),

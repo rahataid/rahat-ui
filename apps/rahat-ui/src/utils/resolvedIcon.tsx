@@ -1,5 +1,6 @@
 import { AARoles } from '@rahat-ui/auth';
 import * as LucideIcons from 'lucide-react';
+import { SUBJECTS } from '../constants/ability.constants';
 
 export type LucideIcon = React.ForwardRefExoticComponent<
   Omit<LucideIcons.LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
@@ -10,6 +11,7 @@ export type NavItemDB = {
   path: string; // relative path
   icon: string; // icon name as string
   roles?: AARoles[] | string[]; // optional array of roles
+  subject?: string; // CASL subject used for ability-based visibility
 };
 
 // DB nav config type
@@ -42,6 +44,7 @@ export const defaultNavConfig: NavConfigDB = {
         'UNICEF_FIELD_OFFICE',
         'UNICEF_HEAD_OFFICE',
       ],
+      subject: SUBJECTS.ALL,
     },
     {
       title: 'Project Beneficiaries',
@@ -69,27 +72,49 @@ export const defaultNavConfig: NavConfigDB = {
       icon: 'CloudAlert',
     },
     {
+      title: 'Inkind Management',
+      icon: 'Box',
+      path: 'inkind-management',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      subject: SUBJECTS.INKIND,
+    },
+    {
       title: 'Fund Management',
       path: 'fund-management',
       icon: 'Coins',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      subject: SUBJECTS.FUND_MANAGEMENT,
     },
     {
       title: 'Payout',
       path: 'payout',
       icon: 'HandCoinsIcon',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      subject: SUBJECTS.PAYOUT,
+    },
+    {
+      title: 'Group Cash Transfer',
+      path: 'group-cash-transfer',
+      icon: 'Banknote',
     },
     {
       title: 'Communication Logs',
       path: 'communication-logs',
       icon: 'SmartphoneNfc',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      subject: SUBJECTS.COMMUNICATION_LOG,
     },
     {
       title: 'Grievances',
       path: 'grievances',
       icon: 'Coins',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      subject: SUBJECTS.GRIEVANCE,
+    },
+    {
+      title: 'IVR',
+      path: 'ivr',
+      icon: 'PhoneCall',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
   ],

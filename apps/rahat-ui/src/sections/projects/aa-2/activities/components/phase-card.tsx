@@ -1,6 +1,5 @@
 'use client';
 
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -12,6 +11,11 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 interface PhaseCardProps {
   id: string;
@@ -59,10 +63,7 @@ export default function PhaseCard({
                 .join(' ')}
             </Badge>
           </TooltipWrapper>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
             <TooltipWrapper tip="Update Activity Status">
               <div
                 className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
@@ -74,7 +75,7 @@ export default function PhaseCard({
                 Update Status <RefreshCw className="w-4 h-4" />
               </div>
             </TooltipWrapper>
-          </RoleAuth>
+          </Can>
         </div>
         <TooltipWrapper tip={`Activity Title: ${title}`}>
           <h3 className="text-sm font-medium text-gray-900 truncate max-w-full">

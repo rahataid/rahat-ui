@@ -4,9 +4,11 @@ import { useState } from 'react';
 import {
   ArrowRight,
   CloudDownload,
+  LoaderCircle,
   Mail,
   MessageSquare,
   Mic,
+  RefreshCcw,
 } from 'lucide-react';
 import {
   Card,
@@ -20,6 +22,7 @@ import {
   useListSessionLogs,
   usePagination,
   useSessionBroadCastCount,
+  useSessionRetryFailed,
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
@@ -76,7 +79,6 @@ export function CommunicationDetailCard({
   const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
   const [isPlaying, setIsPlaying] = useState(false);
-
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case 'PENDING':
@@ -128,6 +130,16 @@ export function CommunicationDetailCard({
   };
 
   const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
+
+  const retryFailed = useSessionRetryFailed();
+
+  const handleRetryFailed = async () => {
+    if (!activityCommunication?.sessionId) return;
+    await retryFailed.mutateAsync({
+      cuid: activityCommunication.sessionId,
+      includeFailed: true,
+    });
+  };
 
   return (
     <Card className="mb-4 rounded-sm">
@@ -248,13 +260,14 @@ export function CommunicationDetailCard({
 
         <CardFooter className="pt-4 px-0 pb-0 flex justify-between items-center">
           {(() => {
-            const latestUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
-              (latest: string | null, row: any) =>
-                !latest || new Date(row?.updatedAt) > new Date(latest)
-                  ? row?.updatedAt
-                  : latest,
-              null,
-            );
+            const latestUpdatedAt =
+              sessionLogs?.httpReponse?.data?.data?.reduce(
+                (latest: string | null, row: any) =>
+                  !latest || new Date(row?.updatedAt) > new Date(latest)
+                    ? row?.updatedAt
+                    : latest,
+                null,
+              );
             return latestUpdatedAt ? (
               <p className="text-sm text-gray-500">
                 Updated At: {dateFormat(latestUpdatedAt)}
@@ -264,6 +277,24 @@ export function CommunicationDetailCard({
             );
           })()}
           <div className="flex gap-3">
+            {activityCommunication?.sessionStatus === 'FAILED' &&
+              activityCommunication?.transportName === 'VOICE' && (
+              <TooltipWrapper tip="Retry Failed Voice Communication">
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={handleRetryFailed}
+                  disabled={retryFailed.isPending}
+                >
+                  {retryFailed.isPending ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCcw className="h-4 w-4" />
+                  )}
+                  Retry
+                </Button>
+              </TooltipWrapper>
+            )}
             <TooltipWrapper
               tip="No failed deliveries to export"
               disable={!hasNoFailedDeliveries}

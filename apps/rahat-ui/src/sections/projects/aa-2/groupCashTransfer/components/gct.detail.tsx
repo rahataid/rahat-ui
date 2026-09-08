@@ -42,6 +42,7 @@ import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
 import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
 import { usePhoneFormat } from '../../../../../utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -72,14 +73,23 @@ export default function GctDetail() {
   const localiseValidationMessage = (message: string, responseCode?: string) => {
     if (responseCode) {
       const codeKey = `CIPS_${responseCode}`;
-      if (t.has(codeKey as never)) return t(codeKey as never);
+      const translated = translateValue(t, codeKey, {
+        fallback: message,
+        silent: true,
+      });
+      // If codeKey was translated, translateValue returns different from message
+      if (translated !== message) return translated;
     }
     const textKey = String(message)
       .trim()
       .toUpperCase()
       .replace(/[^A-Z0-9]+/g, '_')
       .replace(/^_+|_+$/g, '');
-    return t.has(textKey as never) ? t(textKey as never) : message;
+    return translateValue(t, textKey, {
+      fallback: message,
+      fallbackStyle: 'raw',
+      silent: true,
+    });
   };
   const { id, uuid } = useParams();
   const projectUUID = id as UUID;

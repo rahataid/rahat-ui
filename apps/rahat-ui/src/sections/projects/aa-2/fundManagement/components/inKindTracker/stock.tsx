@@ -29,6 +29,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function Stock({}: {}) {
   const t = useTranslations('AA_PROJECT');
@@ -144,7 +145,11 @@ export default function Stock({}: {}) {
           <div className="flex flex-col items-center justify-center py-4">
             <div className="bg-gray-100 rounded-lg px-6 py-4 w-full text-center">
               <div className="text-2xl font-bold text-gray-900">
-                {formatNum(formData.amount)} {formData.currency}
+                {formatNum(formData.amount)}{' '}
+                {translateValue(tg, formData.currency, {
+                  fallbackStyle: 'raw',
+                  silent: true,
+                })}
               </div>
               <div className="text-sm text-gray-700 mt-1">{tg('STOCK_CREATED')}</div>
             </div>

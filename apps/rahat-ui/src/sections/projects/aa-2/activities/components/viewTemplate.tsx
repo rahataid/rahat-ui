@@ -165,7 +165,10 @@ const ViewTemplate = ({
                               <SelectItem value="all">{tg('ALL')}</SelectItem>
                               {categories.map((cat) => (
                                 <SelectItem key={cat.uuid} value={cat.name}>
-                                  {cat.name}
+                                  {translateValue(t, cat.name, {
+                                    fallbackStyle: 'raw',
+                                    silent: true,
+                                  })}
                                 </SelectItem>
                               ))}
                             </SelectGroup>
@@ -314,12 +317,18 @@ const ViewTemplate = ({
                         <div className="flex flex-wrap gap-2 mt-3">
                           {item.phase?.name && (
                             <Badge variant="secondary" className="text-xs">
-                              {item.phase.name}
+                              {translateValue(tg, item.phase.name, {
+                                fallbackStyle: 'raw',
+                                silent: true,
+                              })}
                             </Badge>
                           )}
                           {item.category?.name && (
                             <Badge variant="outline" className="text-xs">
-                              {item.category.name}
+                              {translateValue(t, item.category.name, {
+                                fallbackStyle: 'raw',
+                                silent: true,
+                              })}
                             </Badge>
                           )}
                           <Badge

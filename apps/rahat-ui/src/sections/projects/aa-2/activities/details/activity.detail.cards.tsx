@@ -49,9 +49,11 @@ export default function ActivityDetailCards({
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <TooltipWrapper tip={`${t('PHASE')}: ${activityDetail?.phase?.name || tg('N_A')}`}>
+            <TooltipWrapper
+              tip={`${t('PHASE')}: ${translateValue(tg, activityDetail?.phase?.name, { fallback: tg('N_A') })}`}
+            >
               <span className="bg-green-100 text-green-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
-                {activityDetail?.phase?.name || tg('N_A')}
+                {translateValue(tg, activityDetail?.phase?.name, { fallback: tg('N_A') })}
               </span>
             </TooltipWrapper>
 
@@ -65,9 +67,11 @@ export default function ActivityDetailCards({
               </span>
             </TooltipWrapper>
 
-            <TooltipWrapper tip={`${t('CATEGORY')}: ${activityDetail?.category?.name || tg('N_A')}`}>
+            <TooltipWrapper
+              tip={`${t('CATEGORY')}: ${translateValue(t, activityDetail?.category?.name, { fallback: tg('N_A') })}`}
+            >
               <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
-                {activityDetail?.category?.name || tg('N_A')}
+                {translateValue(t, activityDetail?.category?.name, { fallback: tg('N_A') })}
               </span>
             </TooltipWrapper>
 

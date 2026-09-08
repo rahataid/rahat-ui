@@ -823,9 +823,9 @@ export default function AddCommunicationForm({
                       {smsInfo && (
                         <p className="text-xs text-muted-foreground">
                           <span className="font-medium text-foreground">
-                            {smsInfo.smsCredits}
+                            {formatNum(smsInfo.smsCredits)}
                           </span>{' '}
-                          SMS credit{smsInfo.smsCredits !== 1 ? 's' : ''}
+                          {smsInfo.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
                         </p>
                       )}
                       <p>

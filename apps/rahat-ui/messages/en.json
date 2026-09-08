@@ -3028,6 +3028,8 @@
     "SKIP_FOR_NOW2": "Skip for Now",
     "SMS": "SMS",
     "SMS_AND_AVC_DELIVERY_FAILURES": "SMS & AVC Delivery Failures",
+    "SMS_CREDIT": "SMS credit",
+    "SMS_CREDITS": "SMS credits",
     "SMS_DELIVERY_FAILURES": "SMS Delivery Failures",
     "SMS_RECIPIENTS": "SMS Recipients",
     "SMS_SUCCESSFULLY_DELIVERED": "SMS Successfully Delivered",

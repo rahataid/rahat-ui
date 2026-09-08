@@ -377,14 +377,17 @@ export default function CommsLogsDetailPage() {
                 <Card className="p-4 rounded-sm bg-white h-full">
                   <CardTitle className="flex gap-2 pb-2">
                     <TooltipWrapper
-                      tip={`${t('ACTIVITY_PHASE')}: ${activityDetail?.phase?.name}`}
+                      tip={`${t('ACTIVITY_PHASE')}: ${translateValue(tg, activityDetail?.phase?.name, { fallbackStyle: 'raw', silent: true })}`}
                     >
                       <Badge
                         className={`${getPhaseColor(
                           activityDetail?.phase?.name,
                         )}`}
                       >
-                        {activityDetail?.phase?.name}
+                        {translateValue(tg, activityDetail?.phase?.name, {
+                          fallbackStyle: 'raw',
+                          silent: true,
+                        })}
                       </Badge>
                     </TooltipWrapper>
                     <TooltipWrapper

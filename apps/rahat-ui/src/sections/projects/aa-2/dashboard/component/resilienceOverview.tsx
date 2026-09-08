@@ -13,6 +13,7 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import Image from 'next/image';
 import React from 'react';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { PHASE_COLORS } from '../utils/dashbord-constants';
 
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
@@ -32,7 +33,9 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
       const palette = PHASE_COLORS[idx % PHASE_COLORS.length];
 
       return {
-        title: phaseName,
+        title: translateValue(tg, phaseName, {
+          fallback: tg('UNKNOWN'),
+        }),
         percentage,
         ...palette,
       };

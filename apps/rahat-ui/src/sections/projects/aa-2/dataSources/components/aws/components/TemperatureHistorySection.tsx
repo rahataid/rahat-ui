@@ -85,8 +85,8 @@ export function TemperatureHistorySection({
           onValueChange={(v) => onTabChange(v as 'hourly' | 'daily')}
         >
           <TabsList>
-            <TabsTrigger value={t('HOURLY')}>{t('HOURLY')}</TabsTrigger>
-            <TabsTrigger value={t('DAILY')}>{t('DAILY')}</TabsTrigger>
+            <TabsTrigger value="hourly">{t('HOURLY')}</TabsTrigger>
+            <TabsTrigger value="daily">{t('DAILY')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -95,11 +95,11 @@ export function TemperatureHistorySection({
         value={activeTab}
         onValueChange={(v) => onTabChange(v as 'hourly' | 'daily')}
       >
-        <TabsContent value={t('HOURLY')}>
+        <TabsContent value="hourly">
           {renderContent('h:mm a', 'hourly')}
         </TabsContent>
 
-        <TabsContent value={t('DAILY')}>
+        <TabsContent value="daily">
           {renderContent('MMM d', 'daily')}
         </TabsContent>
       </Tabs>

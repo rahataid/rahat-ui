@@ -20,6 +20,7 @@ import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Can } from 'apps/rahat-ui/src/components/can';
 import {
   ACTIONS,
@@ -68,6 +69,7 @@ export function CommunicationCard({
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();
   const router = useRouter();
@@ -212,9 +214,12 @@ export function CommunicationCard({
                 <>
                   <span>•</span>
                   <TooltipWrapper
-                    tip={`SMS credit: ${activityCommunication?.extras.smsCredits}`}
+                    tip={`${activityCommunication?.extras.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}: ${formatNum(activityCommunication?.extras.smsCredits)}`}
                   >
-                    <span>{activityCommunication?.extras.smsCredits}</span>
+                    <span>
+                      {formatNum(activityCommunication?.extras.smsCredits)}{' '}
+                      {activityCommunication?.extras.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
+                    </span>
                   </TooltipWrapper>
                 </>
               )}

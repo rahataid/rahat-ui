@@ -15,6 +15,8 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useRSQuery } from '@rumsan/react-query';
 import { TAGS } from 'libs/query/src/config';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 interface IStakeholdersUpdatePayload {
   uuid: string;
@@ -32,6 +34,7 @@ type StakeholderArgs = {
   stakeholderPayload: any;
 };
 export const useStakeholders = (uuid: UUID, payload: any) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const { setStakeholders, setStakeholdersMeta } = useStakeholdersStore(
     (state) => ({
@@ -75,6 +78,8 @@ export const useCreateStakeholders = <
     'mutationFn'
   >,
 ): UseMutationResult<TData, TError, StakeholderArgs, TContext> => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
   const alert = useSwal();
@@ -102,16 +107,24 @@ export const useCreateStakeholders = <
         options?.onSuccess?.(data, variables, ctx);
         qc.invalidateQueries({ queryKey: ['stakeholders'] });
         toast.fire({
-          title: 'Stakeholder added successfully',
+          title: t('STAKEHOLDER_ADDED_SUCCESSFULLY'),
           icon: 'success',
         });
       },
       onError: (error, variables, ctx) => {
         q.reset();
         options?.onError?.(error, variables, ctx);
-        const errorMessage = (error as any)?.response?.data?.message || 'Error';
+        const rawMessage =
+          (error as any)?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBackendErrorMessage(
+          tb,
+          (error as any)?.response?.data?.code,
+          (error as any)?.response?.data?.params,
+          ['STAKEHOLDERS_GROUPS'],
+          rawMessage,
+        );
         toast.fire({
-          title: 'Error while adding stakeholder.',
+          title: t('ERROR_WHILE_ADDING_STAKEHOLDER'),
           icon: 'error',
           text: errorMessage,
         });
@@ -131,6 +144,8 @@ export const useCreateStakeholders = <
 };
 
 export const useUpdateStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -160,15 +175,22 @@ export const useUpdateStakeholders = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['stakeholders'] });
       toast.fire({
-        title: 'Stakeholder updated successfully',
+        title: t('STAKEHOLDER_UPDATED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while updating stakeholder.',
+        title: t('ERROR_WHILE_UPDATING_STAKEHOLDER'),
         icon: 'error',
         text: errorMessage,
       });
@@ -177,6 +199,8 @@ export const useUpdateStakeholders = () => {
 };
 
 export const useDeleteStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
@@ -213,15 +237,22 @@ export const useDeleteStakeholders = () => {
       // Only show success toast and invalidate queries if truly successful
       qc.invalidateQueries({ queryKey: ['stakeholders'] });
       toast.fire({
-        title: 'Stakeholder removed successfully',
+        title: t('STAKEHOLDER_REMOVED_SUCCESSFULLY'),
         icon: 'success',
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
       toast.fire({
-        title: 'Error while removing stakeholder.',
+        title: t('ERROR_WHILE_REMOVING_STAKEHOLDER'),
         icon: 'error',
         text: errorMessage,
       });
@@ -253,6 +284,7 @@ export const useStakeholderDetails = (
 };
 
 export const useValidateStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
   const { rumsanService } = useRSQuery();
 
   return useMutation({
@@ -283,6 +315,8 @@ export const useValidateStakeholders = () => {
 };
 
 export const useUploadStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tRoot = useTranslations();
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
   const alert = useSwal();
@@ -331,8 +365,15 @@ export const useUploadStakeholders = () => {
     },
     onError: (error: any) => {
       console.error('Upload error', error);
-      const message: string =
+      const rawMessage: string =
         error?.response?.data?.message || error?.message || '';
+      const message: string = resolveBackendErrorMessage(
+        tRoot,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
 
       const phoneMatch =
         message.match(/Phone\(s\):\s*([^|]+)/i) ||
@@ -342,23 +383,23 @@ export const useUploadStakeholders = () => {
       const errorLines: string[] = [];
 
       if (phoneMatch) {
-        errorLines.push('• Duplicate phone numbers found.');
+        errorLines.push(t('DUPLICATE_PHONE_NUMBERS_FOUND_BULLET'));
       }
 
       if (emailMatch) {
-        errorLines.push('• Duplicate emails found.');
+        errorLines.push(t('DUPLICATE_EMAILS_FOUND_BULLET'));
       }
 
       if (errorLines.length > 0) {
         toast.fire({
           icon: 'error',
-          title: 'Unique constraint violation',
+          title: t('UNIQUE_CONSTRAINT_VIOLATION'),
           text: errorLines.join('\n'),
         });
       } else {
         toast.fire({
           icon: 'error',
-          title: 'Something went wrong',
+          title: t('SOMETHING_WENT_WRONG'),
           text: message,
         });
       }

@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { FC } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface ProjectAssignModal {
   handleModal: () => void;
@@ -32,6 +33,7 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
   open,
 }) => {
   const projectsList = useProjectList({});
+  const t = useTranslations('GLOBAL');
 
   const handleProjectChange = (id: string) => {
     setId(id);
@@ -41,15 +43,15 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
     <Dialog open={open} onOpenChange={handleModal}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Assign Project</DialogTitle>
+          <DialogTitle>{t('ASSIGN_PROJECT')}</DialogTitle>
           <DialogDescription>
-            Select the project to be assigned to the beneficiary
+            {t('SELECT_THE_PROJECT_TO_BE_ASSIGNED')}
           </DialogDescription>
         </DialogHeader>
         <div>
           <Select onValueChange={handleProjectChange}>
             <SelectTrigger>
-              <SelectValue placeholder="Projects" />
+              <SelectValue placeholder={t('PROJECTS')} />
             </SelectTrigger>
             <SelectContent>
               {projectsList.data?.data.length &&
@@ -66,7 +68,7 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
-              Close
+              {t('CLOSE')}
             </Button>
           </DialogClose>
           <Button
@@ -74,7 +76,7 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
             variant="ghost"
             className="text-primary"
           >
-            Assign
+            {t('ASSIGN')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -2,6 +2,7 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Audience } from '@rahat-ui/types';
 import { TPIIData } from '@rahataid/sdk';
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { SelectedRowType } from './add-campaign-view';
 
 export const useAudienceColumns = (
@@ -11,6 +12,7 @@ export const useAudienceColumns = (
   createAudience: any,
   setSelectedRows: any,
 ) => {
+  const tg = useTranslations('GLOBAL');
   const handleCreateAudience = (item: TPIIData & { url: string }) => {
     const checkAudienceExist = audienceData?.data.some(
       (audience: Audience) => audience?.details?.phone === item.phone,
@@ -41,7 +43,6 @@ export const useAudienceColumns = (
               filteredRowModel?.map((item) => {
                 handleCreateAudience({
                   ...item.original,
-                  // url: item?.Beneficiary?.qrUrl,
                 });
                 setSelectedRows((prevSelectedRows: SelectedRowType[]) => [
                   ...prevSelectedRows,
@@ -56,7 +57,7 @@ export const useAudienceColumns = (
               setSelectedRows([]);
             }
           }}
-          aria-label="Select all"
+          aria-label={tg('SELECT_ALL')}
         />
       ),
       cell: ({ row }) => {
@@ -66,7 +67,7 @@ export const useAudienceColumns = (
               selectedRows &&
               selectedRows.some((data) => data.phone === row?.original.phone)
             }
-            aria-label="Select row"
+            aria-label={tg('SELECT_ROW')}
             onCheckedChange={(checked) => {
               const item = row.original;
 
@@ -87,17 +88,17 @@ export const useAudienceColumns = (
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'phone',
-      header: 'Phone',
+      header: tg('PHONE'),
       cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: tg('EMAIL'),
       cell: ({ row }) => <div>{row.getValue('email')}</div>,
     },
   ];

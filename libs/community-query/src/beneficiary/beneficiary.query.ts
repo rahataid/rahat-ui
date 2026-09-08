@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import { useEffect } from 'react';
 import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { useCommunityBeneficiaryStore } from './beneficiary.store';
+import { getTranslate } from '../translate';
 
 export const useCommunityBeneficaryList = (
   payload: Pagination & { [key: string]: string },
@@ -51,7 +52,8 @@ export const useCommunityBeneficiaryCreate = () => {
       mutationKey: [TAGS.CREATE_COMMUNITY_BENEFICARY],
       mutationFn: benClient.create,
       onSuccess: () => {
-        Swal.fire('Beneficiary Created Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('BENEFICIARY_CREATED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.LIST_COMMUNITY_BENFICIARIES,
@@ -62,9 +64,10 @@ export const useCommunityBeneficiaryCreate = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -84,14 +87,16 @@ export const useCommunityBeneficiaryUpdate = () => {
       mutationKey: [TAGS.UPDATE_COMMUNITY_BENEFICARY, 'uuid'],
       mutationFn: benClient.update,
       onSuccess: () => {
-        Swal.fire('Beneficiary Updated Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('BENEFICIARY_UPDATED_SUCCESSFULLY'), '', 'success');
         qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES] });
       },
       onError: (error: any) => {
         console.log(error);
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error?.response?.data?.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error?.response?.data?.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -126,15 +131,17 @@ export const useCommunityBeneficiaryRemove = () => {
       mutationKey: [TAGS.REMOVE_COMMUNITY_BENEFICARY],
       mutationFn: benClient.remove,
       onSuccess: () => {
-        Swal.fire('Beneficiary Removed Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('BENEFICIARY_REMOVED_SUCCESSFULLY'), '', 'success');
         qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES] });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire({
           icon: 'error',
           title:
             error?.response?.data?.message ||
-            'Encounter error on Removing Data',
+            t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -151,7 +158,8 @@ export const useCommunityBeneficiaryCreateBulk = () => {
       mutationKey: [TAGS.CREATE_COMMUNITY_BENEFICARY],
       mutationFn: benClient.createBulk,
       onSuccess: () => {
-        Swal.fire('Beneficiary Created Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('BENEFICIARY_CREATED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.LIST_COMMUNITY_BENFICIARIES,
@@ -162,11 +170,12 @@ export const useCommunityBeneficiaryCreateBulk = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire({
           icon: 'error',
           title:
             error?.response?.data?.message ||
-            'Encounter error on Creating Data',
+            t('ERROR_ON_CREATING_DATA'),
         });
       },
     },
@@ -207,9 +216,10 @@ export const useGenerateVerificationLink = () => {
       mutationKey: [TAGS.VERIFY_BENEFICIARY],
       mutationFn: benClient.verifyBeneficiary,
       onSuccess: () => {
+        const t = getTranslate();
         Swal.fire({
-          title: 'Link Generated Successfully',
-          text: 'Check your email to Verify',
+          title: t('LINK_GENERATED_SUCCESSFULLY'),
+          text: t('VERIFY_EMAIL_TEXT'),
           icon: 'success',
         });
         queryClient.invalidateQueries({
@@ -222,9 +232,10 @@ export const useGenerateVerificationLink = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },

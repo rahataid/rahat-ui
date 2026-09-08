@@ -1,5 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import {
+  useNumberFormat,
+  useLabelDigits,
+} from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   MessageSquare,
   Mail,
@@ -51,11 +56,14 @@ export default function TransportDetailCards({
   byTransport,
   loading,
 }: TransportDetailCardsProps) {
+  const t = useTranslations('USAGE');
+  const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
   if (!byTransport || byTransport.length === 0) return null;
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Transport Details</h3>
+      <h3 className="text-lg font-semibold">{t('TRANSPORT_DETAILS')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {byTransport.map((transport) => {
           const Icon = getTransportIcon(transport.transportType);
@@ -83,39 +91,39 @@ export default function TransportDetailCards({
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex items-center gap-1.5">
                   <Hash size={14} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">
-                    Broadcasts
+                    <span className="text-xs text-muted-foreground">
+                      {t('BROADCASTS')}
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {transport.broadcasts}
+                    {formatNum(transport.broadcasts)}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <CheckCircle size={14} className="text-green-600" />
-                  <span className="text-xs text-muted-foreground">
-                    Success
+                    <span className="text-xs text-muted-foreground">
+                      {t('SUCCESS')}
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {successRate}%
+                    {formatNum(successRate)}%
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <CreditCard size={14} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">
-                    Credits
+                    <span className="text-xs text-muted-foreground">
+                      {t('CREDITS')}
                   </span>
                   <span className="text-sm font-medium ml-auto">
-                    {transport.credits}
+                    {formatNum(transport.credits)}
                   </span>
                 </div>
                 {transport.transportType === 'VOICE' && (
                   <div className="flex items-center gap-1.5">
                     <Clock size={14} className="text-muted-foreground" />
                     <span className="text-xs text-muted-foreground">
-                      Duration
+                      {t('DURATION')}
                     </span>
                     <span className="text-sm font-medium ml-auto">
-                      {formatDuration(transport.duration)}
+                      {formatDigits(formatDuration(transport.duration))}
                     </span>
                   </div>
                 )}
@@ -126,10 +134,10 @@ export default function TransportDetailCards({
                       className="text-muted-foreground"
                     />
                     <span className="text-xs text-muted-foreground">
-                      Segments
+                      {t('SEGMENTS')}
                     </span>
                     <span className="text-sm font-medium ml-auto">
-                      {transport.segments}
+                      {formatNum(transport.segments)}
                     </span>
                   </div>
                 )}

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import {
   Tabs,
@@ -10,6 +11,7 @@ import GrievancesTable from './grievances.table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 
 export default function GrievancesTabs() {
+  const t = useTranslations('AA_PROJECT');
   const { closeSecondPanel } = useSecondPanel();
   const { activeTab, setActiveTab } = useActiveTab('overview');
 
@@ -32,13 +34,13 @@ export default function GrievancesTabs() {
             className="w-full data-[state=active]:bg-white"
             value="overview"
           >
-            Overview
+            {t('OVERVIEW')}
           </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="list"
           >
-            Grievance List
+            {t('GRIEVANCE_LIST')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Table, flexRender } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -18,6 +19,7 @@ type IProps = {
 };
 
 export default function DemoTable({ table, tableHeight, loading }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
       {loading ? (
@@ -65,7 +67,7 @@ export default function DemoTable({ table, tableHeight, loading }: IProps) {
                   colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('NO_RESULTS')}
                 </TableCell>
               </TableRow>
             )}

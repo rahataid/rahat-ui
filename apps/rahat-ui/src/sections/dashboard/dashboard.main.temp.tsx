@@ -9,15 +9,18 @@ import DisasterImpactAndEarlyWarning from './component/disasterImpactAndEarlyWar
 import AccessAndInclusion from './component/accessAndInclusion';
 import VulnerableAndSocialProtectionOverview from './component/vulnerableAndSocialProtectionOverview';
 import CommunicationsAndOutreach from './component/communicationsAndOutreach';
+import { useTranslations } from 'next-intl';
 
 const DashboardMain = () => {
   const { data, isLoading } = useGetStatsCore();
+  const t = useTranslations('DASHBOARD');
+  const g = useTranslations('GLOBAL');
 
   if (isLoading) return <DashboardSkeleton />;
   return (
     <div className=" p-2">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-4 mx-4">
-        <Heading title="Dashboard" description="Overview of your system" />
+        <Heading title={g('DASHBOARD')} description={t('OVERVIEW_OF_YOUR_SYSTEM')} />
       </div>
 
       <ScrollArea className="p-4 h-[calc(100vh-150px)]">

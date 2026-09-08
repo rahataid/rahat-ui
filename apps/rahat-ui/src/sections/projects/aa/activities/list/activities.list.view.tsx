@@ -16,8 +16,11 @@ import ActivitiesTableFilters from './activities.table.filters';
 import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
 import { generateExcel } from '../../generate.excel';
 import { toast } from 'react-toastify';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useTranslations } from 'next-intl';
 
 export default function ActivitiesList() {
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const searchParams = useSearchParams();
   const [activitySearchText, setActivitySearchText] =
@@ -92,16 +95,12 @@ export default function ActivitiesList() {
     setStatusFilterItem(filters?.status ?? '');
   }, [filters]);
 
+  const formatDate = useDateFormat();
+
   const handleDownloadReport = () => {
-    if (allData.length < 1) return toast.error('No data to download.');
+    if (allData.length < 1) return toast.error(t('NO_DATA_TO_DOWNLOAD'));
     const mappedData = allData?.map((item: Record<string, any>) => {
-      let timeStamp;
-      if (item?.completedAt) {
-        const d = new Date(item.completedAt);
-        const localeDate = d.toLocaleDateString();
-        const localeTime = d.toLocaleTimeString();
-        timeStamp = `${localeDate} ${localeTime}`;
-      }
+      const timeStamp = item?.completedAt ? formatDate(item.completedAt) : undefined;
       return {
         'Activity Title': item.title || 'N/A',
         Category: item.category || 'N/A',

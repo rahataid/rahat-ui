@@ -536,7 +536,7 @@ export default function CommsLogsDetailPage() {
                               )}
                             </div>
                             <span className="font-medium">
-                              {resolvedTransportName}
+                              {translateValue(tg, resolvedTransportName)}
                             </span>
                           </div>
 
@@ -600,7 +600,7 @@ export default function CommsLogsDetailPage() {
                                     <div className="flex items-center gap-2">
                                       <Clock className="h-4 w-4 text-muted-foreground" />
                                       <span className="text-sm font-medium">
-                                        {t('RUN_NUMBER', { number: index + 1 })}
+                                        {t('RUN_NUMBER', { number: formatNum(index + 1) })}
                                       </span>
                                     </div>
                                     <Badge
@@ -610,7 +610,7 @@ export default function CommsLogsDetailPage() {
                                           : 'bg-orange-100 text-orange-600'
                                       }`}
                                     >
-                                      {run.trigger}
+                                      {translateValue(tg, run.trigger)}
                                     </Badge>
                                   </div>
                                   <div className="text-xs text-muted-foreground space-y-1">

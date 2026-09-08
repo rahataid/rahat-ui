@@ -11,18 +11,20 @@ import {
 import { TriangleAlertIcon } from 'lucide-react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 export default function useCommsLogsTableColumns(transportName: string) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
+  const formatPhone = usePhoneFormat();
   const renderDateTime = (dateTime: string) => formatDate(dateTime);
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
       header: t('AUDIENCE'),
-      cell: ({ row }) => <div className="">{row?.original?.address}</div>,
+      cell: ({ row }) => <div className="">{formatPhone(row?.original?.address)}</div>,
     },
     {
       accessorKey: 'status',
@@ -50,7 +52,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
             header: t('DURATION'),
             cell: ({ row }) => (
               <div>
-                {row?.original?.disposition?.cdr?.billableseconds != null ? formatNum(row?.original?.disposition?.cdr?.billableseconds) : 'N/A'}
+                {row?.original?.disposition?.cdr?.billableseconds != null ? formatNum(row?.original?.disposition?.cdr?.billableseconds) : tg('N_A')}
               </div>
             ),
           },

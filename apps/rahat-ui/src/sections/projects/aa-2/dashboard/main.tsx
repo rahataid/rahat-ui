@@ -38,7 +38,7 @@ const Main = () => {
           titleStyle="text-lg sm:text-xl xl:text-3xl"
         />
         <IconLabelBtn
-          name={isSyncing ? 'Updating' : 'Sync Stats'}
+          name={isSyncing ? t('UPDATING') : t('SYNC_STATS')}
           Icon={RefreshCcw}
           disabled={isSyncing}
           handleClick={() => syncStats()}

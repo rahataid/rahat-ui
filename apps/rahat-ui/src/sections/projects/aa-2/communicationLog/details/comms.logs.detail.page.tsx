@@ -34,6 +34,7 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import {
+  ArrowUpRightSquare,
   CloudDownload,
   Mail,
   RefreshCcw,
@@ -48,7 +49,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { toast } from 'react-toastify';
 
@@ -58,9 +59,11 @@ import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
+  const router = useRouter();
 
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
@@ -383,13 +386,27 @@ export default function CommsLogsDetailPage() {
                     <Label className="text-muted-foreground text-xs">
                       Activity Title:
                     </Label>
-                    <TooltipWrapper
-                      tip={`Activity Title: ${activityDetail?.title}`}
-                    >
-                      <Label className="text-base space-y-1 font-semibold">
-                        {activityDetail?.title}
-                      </Label>
-                    </TooltipWrapper>
+                    <div className="flex items-center gap-2">
+                      <TooltipWrapper
+                        tip={`Activity Title: ${activityDetail?.title}`}
+                      >
+                        <Label className="text-base space-y-1 font-semibold">
+                          {activityDetail?.title}
+                        </Label>
+                      </TooltipWrapper>
+                      {activityId && (
+                        <TooltipComponent
+                          Icon={ArrowUpRightSquare}
+                          tip="View Activity Details"
+                          handleOnClick={() =>
+                            router.push(
+                              `/projects/aa/${projectID}/activities/${activityId}`,
+                            )
+                          }
+                          iconStyle="text-primary cursor-pointer hover:text-primary/80"
+                        />
+                      )}
+                    </div>
                   </CardContent>
                   <TooltipWrapper
                     tip={`Activity Description: ${activityDetail?.description}`}

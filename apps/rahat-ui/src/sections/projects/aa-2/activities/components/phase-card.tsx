@@ -8,7 +8,7 @@ import {
   CardFooter,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { RefreshCw, User } from 'lucide-react';
+import { RefreshCw, User, MessageSquare } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { Can } from 'apps/rahat-ui/src/components/can';
@@ -26,6 +26,7 @@ interface PhaseCardProps {
   responsibility: string;
   onUpdateStatus: () => void;
   className?: string;
+  hasCommunication?: boolean;
 }
 
 export default function PhaseCard({
@@ -37,10 +38,10 @@ export default function PhaseCard({
   responsibility,
   onUpdateStatus,
   className,
+  hasCommunication,
 }: PhaseCardProps) {
   const router = useRouter();
   const { id: ProjectId } = useParams();
-
   return (
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
@@ -48,21 +49,28 @@ export default function PhaseCard({
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <TooltipWrapper
-            tip={`Activity Status: ${status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}`}
-          >
-            <Badge className={getStatusBg(status)}>
-              {status
+          <div className="flex items-center gap-2">
+            <TooltipWrapper
+              tip={`Activity Status: ${status
                 .toLowerCase()
                 .split('_')
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
-            </Badge>
-          </TooltipWrapper>
+                .join(' ')}`}
+            >
+              <Badge className={getStatusBg(status)}>
+                {status
+                  .toLowerCase()
+                  .split('_')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ')}
+              </Badge>
+            </TooltipWrapper>
+            {hasCommunication && (
+              <TooltipWrapper tip="Communications Available">
+                <MessageSquare className="w-4 h-4 text-blue-500" />
+              </TooltipWrapper>
+            )}
+          </div>
           <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
             <TooltipWrapper tip="Update Activity Status">
               <div

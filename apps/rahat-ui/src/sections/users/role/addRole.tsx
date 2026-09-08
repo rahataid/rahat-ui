@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -23,6 +24,7 @@ import {
 } from 'apps/rahat-ui/src/providers/service.provider';
 
 export default function AddRole() {
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const [roleName, setRoleName] = useState('');
   const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
 
@@ -55,10 +57,10 @@ export default function AddRole() {
     permissions: z
       .array(z.string())
       .refine((value) => value.some((item) => item), {
-        message: 'You have to select at least one permission.',
+        message: t('YOU_HAVE_TO_SELECT_AT_LEAST_ONE_PERMISSION'),
       }),
     roleName: z.string().min(2, {
-      message: 'Role Name must be at least 2 characters.',
+      message: t('ROLE_NAME_MUST_BE_AT_LEAST2'),
     }),
   });
 
@@ -78,7 +80,7 @@ export default function AddRole() {
       })
       .then((data) => {
         if (data) {
-          toast.success('Role Created Success.');
+          toast.success(t('ROLE_CREATED_SUCCESS'));
         }
       })
       .catch((e) => {
@@ -93,16 +95,16 @@ export default function AddRole() {
         className="space-y-8"
       >
         <div className="max-w-md mx-auto mt-8 p-6 bg-white ">
-          <h2 className="text-2xl font-bold mb-4">Create New Role</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('CREATE_NEW_ROLE')}</h2>
           <div className="mb-4">
             <FormField
               control={form.control}
               name="roleName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role Name</FormLabel>
+                  <FormLabel>{t('ROLE_NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Role Name" {...field} />
+                    <Input placeholder={t('ROLE_NAME')} {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -117,7 +119,7 @@ export default function AddRole() {
             render={() => (
               <FormItem>
                 <div className="mb-4">
-                  <FormLabel className="text-base">Permission</FormLabel>
+                  <FormLabel className="text-base">{t('PERMISSION')}</FormLabel>
                 </div>
                 {permissions.map((item) => (
                   <FormField
@@ -157,7 +159,7 @@ export default function AddRole() {
             )}
           />
           <Button className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-            Create Role
+            {t('CREATE_ROLE')}
           </Button>
         </div>
       </form>

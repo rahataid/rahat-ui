@@ -23,14 +23,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-
-const FormSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Group name is required')
-    .max(50, 'Group name must be 50 characters or less')
-    .trim(),
-});
+import { useTranslations } from 'next-intl';
 
 type EditDialogProps = {
   open: boolean;
@@ -44,6 +37,15 @@ export default function GroupNameEditModal({
   beneficiaryGroupDetail,
 }: EditDialogProps) {
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
+  const t = useTranslations('GLOBAL');
+
+  const FormSchema = z.object({
+    name: z
+      .string()
+      .min(1, t('GROUP_NAME_REQUIRED'))
+      .max(50, t('GROUP_NAME_MAX_LENGTH'))
+      .trim(),
+  });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -67,6 +69,8 @@ export default function GroupNameEditModal({
     const payload = {
       uuid: beneficiaryGroupDetail.uuid,
       ...data,
+      successMessage: t('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
+      errorMessage: t('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
     };
     await updateBeneficiaryGroup.mutateAsync(payload, {
       onSuccess: () => {
@@ -84,7 +88,7 @@ export default function GroupNameEditModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Edit Beneficiary Group Name</DialogTitle>
+          <DialogTitle>{t('EDIT_BENEFICIARY_GROUP_NAME')}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -96,11 +100,11 @@ export default function GroupNameEditModal({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="group-name">Beneficiary Group Name</Label>
+                  <Label htmlFor="group-name">{t('BENEFICIARY_GROUP_NAME')}</Label>
                   <FormControl>
                     <Input
                       id="group-name"
-                      placeholder="Enter beneficiary group name"
+                      placeholder={t('ENTER_BENEFICIARY_GROUP_NAME')}
                       {...field}
                     />
                   </FormControl>
@@ -111,10 +115,10 @@ export default function GroupNameEditModal({
 
             <DialogFooter className="sm:justify-end">
               <Button type="button" variant="outline" onClick={() => reset()}>
-                Reset
+                {t('RESET')}
               </Button>
               <Button type="submit" disabled={updateBeneficiaryGroup.isPending}>
-                {updateBeneficiaryGroup.isPending ? 'Saving...' : 'Confirm'}
+                {updateBeneficiaryGroup.isPending ? t('SAVING') : t('CONFIRM')}
               </Button>
             </DialogFooter>
           </form>

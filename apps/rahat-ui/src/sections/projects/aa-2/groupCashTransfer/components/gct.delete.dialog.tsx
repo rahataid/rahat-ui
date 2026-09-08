@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import { UUID } from 'crypto';
 import {
@@ -32,6 +33,8 @@ export default function GctDeleteDialog({
   onOpenChange,
   onDeleted,
 }: GctDeleteDialogProps) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
   const deleteGct = useDeleteGroupCashTransfer(projectUUID);
 
   const handleConfirm = async () => {
@@ -45,11 +48,9 @@ export default function GctDeleteDialog({
     <Dialog open={open} onOpenChange={(o) => !deleteGct.isPending && onOpenChange(o)}>
       <DialogContent className="w-[460px] max-w-[95vw]">
         <DialogHeader>
-          <DialogTitle>Delete GCT Group</DialogTitle>
+          <DialogTitle>{t('DELETE_GCT_GROUP')}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete{' '}
-            <span className="font-semibold text-foreground">"{item?.name}"</span>?
-            This action cannot be undone.
+            {t('ARE_YOU_SURE_YOU_WANT_TO_DELETE', { name: item?.name ?? '' })}
           </DialogDescription>
         </DialogHeader>
 
@@ -59,7 +60,7 @@ export default function GctDeleteDialog({
             onClick={() => onOpenChange(false)}
             disabled={deleteGct.isPending}
           >
-            Cancel
+            {tGlobal('CANCEL')}
           </Button>
           <Button
             variant="destructive"
@@ -69,10 +70,10 @@ export default function GctDeleteDialog({
             {deleteGct.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                {t('DELETING')}
               </>
             ) : (
-              'Delete'
+              tGlobal('DELETE')
             )}
           </Button>
         </DialogFooter>

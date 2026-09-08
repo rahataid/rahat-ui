@@ -44,6 +44,9 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export type VoiceDetail = {
   _id: string;
@@ -115,6 +118,8 @@ export const columns: ColumnDef<VoiceDetail>[] = [
 ];
 
 export default function VoiceDetailTableView({ data }: IProps) {
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -158,11 +163,11 @@ export default function VoiceDetailTableView({ data }: IProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               <Settings2 className="mr-2 h-4 w-5" />
-              View
+              {tg('VIEW')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+            <DropdownMenuLabel>{tg('TOGGLE_COLUMNS')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table
               .getAllColumns()
@@ -177,7 +182,7 @@ export default function VoiceDetailTableView({ data }: IProps) {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {getColumnLabel(column)}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -227,7 +232,7 @@ export default function VoiceDetailTableView({ data }: IProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {tg('NO_RESULTS')}
                 </TableCell>
               </TableRow>
             )}
@@ -237,10 +242,10 @@ export default function VoiceDetailTableView({ data }: IProps) {
       <div className="flex items-center justify-end space-x-8 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
+          <div className="text-sm font-medium">{tg('ROWS_PER_PAGE')}</div>
           <Select
             defaultValue="10"
             onValueChange={(value) => table.setPageSize(Number(value))}
@@ -250,19 +255,21 @@ export default function VoiceDetailTableView({ data }: IProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="5">{formatNum(5)}</SelectItem>
+                <SelectItem value="10">{formatNum(10)}</SelectItem>
+                <SelectItem value="20">{formatNum(20)}</SelectItem>
+                <SelectItem value="30">{formatNum(30)}</SelectItem>
+                <SelectItem value="40">{formatNum(40)}</SelectItem>
+                <SelectItem value="50">{formatNum(50)}</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
         <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+          {tg('PAGE_CURRENT_OF_TOTAL', {
+                current: formatNum(table.getState().pagination.pageIndex + 1),
+                total: formatNum(table.getPageCount()),
+              })}
         </div>
         <div className="space-x-4">
           <Button
@@ -271,7 +278,7 @@ export default function VoiceDetailTableView({ data }: IProps) {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            {tg('PREVIOUS')}
           </Button>
           <Button
             variant="outline"
@@ -279,7 +286,7 @@ export default function VoiceDetailTableView({ data }: IProps) {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            {tg('NEXT')}
           </Button>
         </div>
       </div>

@@ -29,11 +29,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { Transaction, useTableColumns } from './useTableColumns';
 import { useTreasuryTokenTransaction } from '@rahat-ui/query';
 
 export function TransactionsTable() {
+  const t = useTranslations('TREASURY_TRANSACTIONS');
+  const tg = useTranslations('GLOBAL');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -68,7 +71,7 @@ export function TransactionsTable() {
     <div className="w-full p-2 bg-secondary">
       <div className="flex items-center justify-between mb-2">
         <Input
-          placeholder="Filter transactions..."
+          placeholder={t('FILTER_TRANSACTIONS')}
           value={(table.getColumn('from')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('from')?.setFilterValue(event.target.value)
@@ -120,7 +123,7 @@ export function TransactionsTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {tg('NO_RESULTS')}
                   </TableCell>
                 </TableRow>
               )}
@@ -131,7 +134,7 @@ export function TransactionsTable() {
       <div className="flex items-center justify-end space-x-2 py-4 bg-card rounded-sm p-2 mt-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} {tg('ROW_S_SELECTED')}
         </div>
         <div className="space-x-2">
           <Button
@@ -140,7 +143,7 @@ export function TransactionsTable() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            {tg('PREVIOUS')}
           </Button>
           <Button
             variant="outline"
@@ -148,7 +151,7 @@ export function TransactionsTable() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            {tg('NEXT')}
           </Button>
         </div>
       </div>

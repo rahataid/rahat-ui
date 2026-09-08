@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';
 
@@ -22,6 +23,7 @@ export default function AddButton({
   className = '',
 }: IProps) {
   const router = useRouter();
+  const t = useTranslations('GLOBAL');
   return (
     <Button
       variant={variant}
@@ -29,7 +31,7 @@ export default function AddButton({
       onClick={() => router.push(path)}
       className={className}
     >
-      <Plus size={18} className="mr-1" /> Add {name}
+      <Plus size={18} className="mr-1" /> {t('ADD_PLACEHOLDER', { name })}
     </Button>
   );
 }

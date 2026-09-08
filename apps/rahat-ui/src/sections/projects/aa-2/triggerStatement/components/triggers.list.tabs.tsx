@@ -8,6 +8,7 @@ import DynamicTriggersList from './dynamic.triggers.list';
 import { usePhaseHistory } from '@rahat-ui/query';
 import React from 'react';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   projectId: string;
@@ -22,6 +23,7 @@ export default function TriggersListTabs({
   triggers,
   riverBasin,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const { data: phaseHistory } = usePhaseHistory(projectId as UUID, {
     phaseUuid: phaseId as UUID,
     phase: true,
@@ -43,25 +45,25 @@ export default function TriggersListTabs({
           className="w-full data-[state=active]:bg-white"
           value="All"
         >
-          All
+          {t('ALL')}
         </TabsTrigger>
         <TabsTrigger
           className="w-full data-[state=active]:bg-white"
           value="Not Triggered"
         >
-          Not Triggered
+          {t('NOT_TRIGGERED')}
         </TabsTrigger>
         <TabsTrigger
           className="w-full data-[state=active]:bg-white"
           value="Triggered"
         >
-          Triggered
+          {t('TRIGGERED')}
         </TabsTrigger>
         <TabsTrigger
           className="w-full data-[state=active]:bg-white"
           value="History"
         >
-          History
+          {t('HISTORY')}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All">

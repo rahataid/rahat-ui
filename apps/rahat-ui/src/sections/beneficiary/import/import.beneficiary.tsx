@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import { useUploadBeneficiary } from '@rahat-ui/query';
 import SpinnerLoader from '../../projects/components/spinner.loader';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
 
@@ -18,6 +19,7 @@ export default function ImportBeneficiary() {
   const uploadBeneficiary = useUploadBeneficiary();
 
   const router = useRouter();
+  const t = useTranslations('GLOBAL');
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const allowedExtensions: { [key: string]: string } = {
@@ -35,7 +37,7 @@ export default function ImportBeneficiary() {
     const extension = file.name.split('.').pop()?.toLowerCase();
 
     if (!extension || !allowedExtensions[extension]) {
-      alert('Invalid file format. Please upload Excel, JSON, or CSV files.');
+      alert(t('INVALID_FILE_FORMAT') || 'Invalid file format. Please upload Excel, JSON, or CSV files.');
       event.target.value = ''; // Clear file input
       return;
     }
@@ -44,7 +46,7 @@ export default function ImportBeneficiary() {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return toast.error('Please select a file to upload');
+    if (!selectedFile) return toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
 
     // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
@@ -76,7 +78,7 @@ export default function ImportBeneficiary() {
         link.click();
       })
       .catch((error) => {
-        toast.error('Error downloading file!' + error);
+        toast.error((t('ERROR_DOWNLOADING_FILE') || 'Error downloading file!') + error);
       });
   };
 
@@ -86,7 +88,7 @@ export default function ImportBeneficiary() {
         <div className="h-[calc(100vh-240px)] border-2 border-dashed border-primary grid place-items-center bg-card">
           <div className="">
             <div className="mb-2">
-              Select beneficiary file to update (Excel, JSON or CSV file)
+              {t('SELECT_BENEFICIARY_FILE_TO_UPDATE') || 'Select beneficiary file to update (Excel, JSON or CSV file)'}
             </div>
             <Input
               id="file"
@@ -109,7 +111,7 @@ export default function ImportBeneficiary() {
             >
               <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
             </svg>
-            <span>Download Sample</span>
+            <span>{t('DOWNLOAD_SAMPLE')}</span>
           </button>
           <Button
             className="w-40 mr-2 bg-primary hover:ring-2 ring-primary"
@@ -119,7 +121,7 @@ export default function ImportBeneficiary() {
             }}
             disabled={selectedFile ? false : true}
           >
-            Cancel Upload
+            {t('CANCEL_UPLOAD')}
           </Button>
 
           <Button
@@ -127,7 +129,7 @@ export default function ImportBeneficiary() {
             onClick={handleUpload}
             disabled={uploadBeneficiary?.isPending}
           >
-            {uploadBeneficiary?.isPending ? <>Uploading...</> : 'Upload File'}
+            {uploadBeneficiary?.isPending ? <>{t('UPLOADING')}</> : t('UPLOAD_FILE')}
           </Button>
         </div>
       </div>

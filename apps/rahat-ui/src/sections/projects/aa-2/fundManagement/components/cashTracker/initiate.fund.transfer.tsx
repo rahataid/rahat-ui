@@ -30,8 +30,13 @@ import {
 } from '@radix-ui/react-tooltip';
 import { Info } from 'lucide-react';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function InitiateFundTransfer({}: {}) {
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const t = useTranslations('AA_PROJECT');
   const [formData, setFormData] = useState({
     from: '',
     to: '',
@@ -91,6 +96,7 @@ export default function InitiateFundTransfer({}: {}) {
   }, [transactions]);
 
   const remainingBalance = Number(balance?.data?.formatted || 0);
+  const formatNum = useNumberFormat();
   // Check if a recipient should be disabled based on sender restrictions
   const isRecipientDisabled = (recipient: Entities): boolean => {
     // Don't allow sending to self
@@ -190,32 +196,32 @@ export default function InitiateFundTransfer({}: {}) {
           className="text-sm text-gray-500 mb-2"
           onClick={() => router.back()}
         >
-          &larr; Back
+          &larr; {tv('BACK_BTN')}
         </button>
-        <h1 className="text-2xl font-bold">Initiate Fund Transfer</h1>
+        <h1 className="text-2xl font-bold">{tv('INITIATE_FUND_TRANSFER')}</h1>
         <p className="text-sm text-gray-500">
-          Fill the form below to initiate fund transfer
+          {tv('FILL_THE_FORM_BELOW_TO_INITIATE')}
         </p>
       </div>
 
       {/* Budget & Balance */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-500">Project Budget</p>
+          <p className="text-sm text-gray-500">{tv('PROJECT_BUDGET')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {remainingBalance + Number(balance?.data?.sent) || 0}
+            {formatNum(remainingBalance + Number(balance?.data?.sent ?? 0))}
           </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-500">Remaining Balance</p>
+          <p className="text-sm text-gray-500">{tv('REMAINING_BALANCE')}</p>
           <p className="text-xl text-blue-500 font-bold">
-            {remainingBalance || 0}
+            {formatNum(remainingBalance ?? 0)}
           </p>
         </div>
         {currentEntityAlias === AARoles.UNICEFNepalCO && (
           <div className="bg-gray-50 p-4 rounded-md">
             <div className="flex">
-              <p className="text-sm text-gray-500">Pending Balance</p>
+              <p className="text-sm text-gray-500">{tv('PENDING_BALANCE')}</p>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -225,13 +231,13 @@ export default function InitiateFundTransfer({}: {}) {
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{`Pending transter to ${toAlias}`}</p>
+                    <p>{tv('PENDING_TRANSFER_TO', { toAlias })}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
             <p className="text-xl text-blue-500 font-bold">
-              {pendingTransfers || 0}
+              {formatNum(pendingTransfers || 0)}
             </p>
           </div>
         )}
@@ -241,10 +247,10 @@ export default function InitiateFundTransfer({}: {}) {
         {/* From & To */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>From</Label>
+            <Label>{tv('FROM_LABEL')}</Label>
             <Select value={formData.from} disabled>
               <SelectTrigger>
-                <SelectValue placeholder="Select sender" />
+                <SelectValue placeholder={tv('SELECT_SENDER')} />
               </SelectTrigger>
               <SelectContent>
                 {stakeholders?.map((s: Entities) => (
@@ -257,13 +263,13 @@ export default function InitiateFundTransfer({}: {}) {
           </div>
 
           <div>
-            <Label>To</Label>
+            <Label>{tv('TO_LABEL')}</Label>
             <Select
               value={formData.to}
               onValueChange={(value) => setFormData({ ...formData, to: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select recipient" />
+                <SelectValue placeholder={tv('SELECT_RECIPIENT')} />
               </SelectTrigger>
               <SelectContent>
                 {stakeholders?.map((s: Entities) => (
@@ -282,7 +288,7 @@ export default function InitiateFundTransfer({}: {}) {
 
         {/* Amount */}
         <div>
-          <Label>Amount</Label>
+          <Label>{tv('AMOUNT_LABEL')}</Label>
           <div className="flex gap-2">
             <Select
               value={formData.currency}
@@ -294,26 +300,27 @@ export default function InitiateFundTransfer({}: {}) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="NPR">NPR</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="NPR">{t('CURRENCY_NPR')}</SelectItem>
+                <SelectItem value="USD">{t('CURRENCY_USD')}</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex flex-col gap-1">
               <Input
                 type="number"
-                placeholder="Enter amount"
+                placeholder={tv('ENTER_AMOUNT')}
                 value={formData.amount}
                 onChange={(e) => {
-                  const value = Number(e.target.value);
+                  const asciiValue = toAsciiDigits(e.target.value);
+                  const value = Number(asciiValue);
 
-                  if (e.target.value === '') {
+                  if (asciiValue === '') {
                     setFormData({ ...formData, amount: '' });
                     setError('');
                     return;
                   }
 
                   if (value <= 0) {
-                    setError('Amount must be greater than 0');
+                    setError(t('AMOUNT_MUST_BE_GREATER_THAN_0'));
                     return;
                   }
 
@@ -322,7 +329,7 @@ export default function InitiateFundTransfer({}: {}) {
                     (currentEntityAlias === AARoles.UNICEFNepalCO &&
                       value + pendingTransfers > remainingBalance);
                   if (exceedsBalance) {
-                    setError('Amount exceeds remaining balance');
+                    setError(t('AMOUNT_EXCEEDS_REMAINING_BALANCE'));
                     return;
                   }
 
@@ -338,9 +345,9 @@ export default function InitiateFundTransfer({}: {}) {
 
         {/* Remarks */}
         <div>
-          <Label>Remarks</Label>
+          <Label>{tv('REMARKS')}</Label>
           <Textarea
-            placeholder="Write remarks"
+            placeholder={tv('WRITE_REMARKS')}
             value={formData.comments}
             onChange={(e) =>
               setFormData({ ...formData, comments: e.target.value })
@@ -351,7 +358,7 @@ export default function InitiateFundTransfer({}: {}) {
         {/* Buttons */}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={handleClear}>
-            Clear
+            {tv('CLEAR_BTN')}
           </Button>
           <Button
             type="submit"
@@ -363,9 +370,9 @@ export default function InitiateFundTransfer({}: {}) {
             }
           >
             {initiateFundTransfer.isPending ? (
-              <span>Submitting...</span>
+              <span>{tv('SUBMITTING')}</span>
             ) : (
-              'Submit'
+              tv('SUBMIT_BTN')
             )}
           </Button>
         </div>

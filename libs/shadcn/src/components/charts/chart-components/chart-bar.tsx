@@ -1,5 +1,7 @@
 // components
 
+import { ApexOptions } from 'apexcharts';
+import merge from 'lodash/merge';
 import Chart from '../chart';
 import useChart from '../use-chart';
 
@@ -23,6 +25,7 @@ type Props = {
   xaxisTitle?: string;
   yaxisTitle?: string;
   columnWidth?: string | number | undefined;
+  options?: ApexOptions;
 };
 
 export default function ChartBar({
@@ -43,8 +46,9 @@ export default function ChartBar({
   xaxisTitle = ' ',
   yaxisTitle = ' ',
   columnWidth = '50%',
+  options,
 }: Props) {
-  const chartOptions = useChart({
+  const baseOptions = useChart({
     colors,
     stroke: { show: false },
     chart: {
@@ -125,6 +129,8 @@ export default function ChartBar({
       },
     },
   });
+
+  const chartOptions = merge(baseOptions, options);
 
   return !custom ? (
     <Chart

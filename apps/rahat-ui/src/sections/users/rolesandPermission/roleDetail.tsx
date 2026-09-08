@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useDeleteRole, useGetRole } from '@rahat-ui/community-query';
@@ -20,6 +21,7 @@ import { ROLE_TYPE } from '../role/const';
 import DeleteButton from 'apps/rahat-ui/src/components/delete.btn';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import Swal from 'sweetalert2';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 type IProps = {
   roleData: Role;
@@ -27,6 +29,8 @@ type IProps = {
 };
 
 export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
+  const tg = useTranslations('GLOBAL');
   const { data: roleDetail } = useGetRole(roleData.name);
   const { data: currentUser } = useUserCurrentUser();
   const deleteRole = useDeleteRole();
@@ -39,16 +43,12 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
     setActiveTab(tab);
   };
 
-  const changedDate = new Date(roleDetail?.data?.role?.createdAt as Date);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const formatDate = useDateFormat();
+  const formattedDate = formatDate(roleDetail?.data?.role?.createdAt, 'PPP');
 
   const handleDeleteRole = async () => {
     if (roleDetail?.data?.role?.isSystem)
-      return Swal.fire('System roles cannot be deleted', '', 'warning');
+      return Swal.fire(t('SYSTEM_ROLES_CANNOT_BE_DELETED'), '', 'warning');
     await deleteRole.mutateAsync({
       name: roleDetail?.data?.role?.name as string,
     });
@@ -69,7 +69,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
           <TooltipComponent
             handleOnClick={closeSecondPanel}
             Icon={X}
-            tip="Close"
+            tip={tg('CLOSE')}
           />
           <DeleteButton
             className="border-none p-0 shadow-none"
@@ -84,14 +84,14 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                 onClick={() => handleTabChange('details')}
                 value="details"
               >
-                Details
+                {tg('DETAILS')}
               </TabsTrigger>
               {isAdmin && (
                 <TabsTrigger
                   onClick={() => handleTabChange('edit')}
                   value="edit"
                 >
-                  Edit
+                  {tg('EDIT')}
                 </TabsTrigger>
               )}
             </TabsList>
@@ -104,7 +104,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
           {/* Role Details */}
           <Card className="shadow rounded m-2">
             <CardHeader className="mb-0 pb-0 font-semibold">
-              Role Details
+              {t('ROLE_DETAILS')}
             </CardHeader>
 
             <CardContent className="pt-6">
@@ -114,32 +114,32 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                     {roleDetail?.data?.role?.name}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
-                    Name
+                    {tg('NAME')}
                   </p>
                 </div>
 
                 <div className="text-right">
                   <p className="font-medium text-base">{formattedDate}</p>
                   <p className="text-sm font-normal text-muted-foreground ">
-                    CreatedAt
+                    {t('CREATEDAT')}
                   </p>
                 </div>
 
                 <div>
                   <p className="font-medium text-base">
-                    {roleDetail?.data?.role?.createdBy ?? 'N/A'}
+                    {roleDetail?.data?.role?.createdBy ?? tg('N_A')}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
-                    Created By
+                    {t('CREATED_BY')}
                   </p>
                 </div>
 
                 <div className="text-right">
                   <p className="font-medium text-base">
-                    {roleDetail?.data?.role?.isSystem ? 'Yes' : 'No'}
+                    {roleDetail?.data?.role?.isSystem ? tg('YES') : tg('NO')}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground ">
-                    Is System
+                    {t('IS_SYSTEM')}
                   </p>
                 </div>
               </div>
@@ -148,7 +148,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
 
           <Card className="shadow rounded m-2">
             <CardHeader className="mb-0 pb-0 font-semibold">
-              Assigned Permissions
+              {t('ASSIGNED_PERMISSIONS')}
             </CardHeader>
             <CardContent className="pt-1">
               {permissions &&

@@ -1,17 +1,17 @@
 export const FUND_MANAGEMENT_TABS = [
   {
     id: 0,
-    title: 'Assign Fund',
-    desc: 'Fill the form below to assign funds to beneficiaries',
+    titleKey: 'ASSIGN_FUND',
+    descKey: 'ASSIGN_FUND_DESC',
   },
   {
     id: 1,
-    title: 'Create Payout',
-    desc: 'Review the assigned funds and proceed to payout',
+    titleKey: 'CREATE_PAYOUT',
+    descKey: 'CREATE_PAYOUT_DESC',
   },
   {
     id: 2,
-    title: 'Confirmation',
-    desc: 'Review the assigned funds and confirm the payout',
+    titleKey: 'CONFIRMATION',
+    descKey: 'CONFIRMATION_DESC',
   },
 ];

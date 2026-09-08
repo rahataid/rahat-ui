@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -11,6 +12,8 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Can } from 'apps/rahat-ui/src/components/can';
 import {
   ACTIONS,
@@ -38,8 +41,24 @@ export default function PhaseCard({
   onUpdateStatus,
   className,
 }: PhaseCardProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const router = useRouter();
   const { id: ProjectId } = useParams();
+
+  // leadTime is stored as "<value> <unit>" (e.g. "1 Days"); translate the
+  // unit word and transliterate the digit for display only.
+  const formatLeadTime = (value?: string) => {
+    if (!value) return undefined;
+    const match = value.match(/^(\d+)\s*(hours?|days?)$/i);
+    if (!match) return value;
+    const [, num, unit] = match;
+    const unitKey = unit.toLowerCase().startsWith('hour') ? 'HOURS' : 'DAYS';
+    return `${formatDigits(num)} ${t(unitKey)}`;
+  };
+  const formattedLeadTime = formatLeadTime(leadTime);
+  const translatedStatus = translateValue(tg, status);
 
   return (
     <Card
@@ -48,23 +67,11 @@ export default function PhaseCard({
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <TooltipWrapper
-            tip={`Activity Status: ${status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}`}
-          >
-            <Badge className={getStatusBg(status)}>
-              {status
-                .toLowerCase()
-                .split('_')
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
-            </Badge>
+          <TooltipWrapper tip={`${t('ACTIVITY_STATUS')}: ${translatedStatus}`}>
+            <Badge className={getStatusBg(status)}>{translatedStatus}</Badge>
           </TooltipWrapper>
           <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
-            <TooltipWrapper tip="Update Activity Status">
+            <TooltipWrapper tip={t('UPDATE_ACTIVITY_STATUS')}>
               <div
                 className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
                 onClick={(e) => {
@@ -72,32 +79,32 @@ export default function PhaseCard({
                   onUpdateStatus();
                 }}
               >
-                Update Status <RefreshCw className="w-4 h-4" />
+                {t('UPDATE_STATUS')} <RefreshCw className="w-4 h-4" />
               </div>
             </TooltipWrapper>
           </Can>
         </div>
-        <TooltipWrapper tip={`Activity Title: ${title}`}>
+        <TooltipWrapper tip={`${t('ACTIVITY_TITLE')}: ${title}`}>
           <h3 className="text-sm font-medium text-gray-900 truncate max-w-full">
-            {title ?? 'N/A'}
+            {title ?? tg('N_A')}
           </h3>
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">
           <TooltipWrapper
-            tip={`Responsible Station: ${responsibleStation ?? 'N/A'}`}
+            tip={`${t('RESPONSIBLE_STATION')}: ${responsibleStation ?? tg('N_A')}`}
           >
             {responsibleStation && responsibleStation.length > 20
               ? `${responsibleStation.substring(0, 20)}...`
-              : responsibleStation ?? 'N/A'}
+              : responsibleStation ?? tg('N_A')}
           </TooltipWrapper>
-          <TooltipWrapper tip={`Lead Time: ${leadTime ?? 'N/A'}`}>
+          <TooltipWrapper tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? tg('N_A')}`}>
             {leadTime && <span className="text-gray-400">&bull;</span>}
-            <span>{leadTime ?? 'N/A'}</span>
+            <span>{formattedLeadTime ?? tg('N_A')}</span>
           </TooltipWrapper>
         </div>
       </CardContent>
       <CardFooter className="p-2 pt-0">
-        <TooltipWrapper tip={`Responsibility: ${responsibility ?? ''}`}>
+        <TooltipWrapper tip={`${t('RESPONSIBILITY')}: ${responsibility ?? ''}`}>
           <div className="flex items-center gap-2 p-0">
             <User className="w-4 h-4 text-gray-500" />
             <span className="text-sm text-gray-500">

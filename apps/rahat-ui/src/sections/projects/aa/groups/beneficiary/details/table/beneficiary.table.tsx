@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<any>;
@@ -21,6 +22,7 @@ export default function BeneficiaryTable({
   table,
   tableScrollAreaHeight,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <TableComponent>
       <ScrollArea className={tableScrollAreaHeight}>
@@ -62,7 +64,7 @@ export default function BeneficiaryTable({
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                {t('NO_RESULTS')}
               </TableCell>
             </TableRow>
           )}

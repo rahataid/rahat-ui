@@ -1,3 +1,5 @@
+import { useTranslations } from 'next-intl';
+import * as React from 'react';
 import { DataCard, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import RecentPayout from './recent.payout';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
@@ -8,6 +10,7 @@ import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportPayoutStats, hasPayoutData } from '../utils/payout.utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function PayoutOverview({
   payoutStats,
@@ -17,23 +20,38 @@ export default function PayoutOverview({
   handleDateChange,
   handleClearDate,
 }: PayoutOverviewProps) {
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+
+  const pieOptions = React.useMemo(
+    () => ({
+      tooltip: {
+        y: {
+          formatter: (value: number) => formatNum(value),
+        },
+      },
+    }),
+    [formatNum],
+  );
+
   const pieDataLabel = [
     {
-      label: 'FSP',
+      label: tg('FSP'),
       value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
     },
     {
-      label: 'CVA',
+      label: tg('CVA'),
       value: statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
     },
   ];
   const pieDataStatus = [
     {
-      label: 'Success',
+      label: tv('SUCCESSFUL_TRANSACTIONS'),
       value: statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
     },
     {
-      label: 'Failed',
+      label: tv('FAILED_TRANSACTIONS'),
       value: statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
     },
   ];
@@ -46,18 +64,18 @@ export default function PayoutOverview({
     <div className="mt-4">
       <div className="flex items-center justify-between">
         <Heading
-          title={`Payout Overview`}
-          description="Overview of your payouts"
+          title={tv('PAYOUT_OVERVIEW')}
+          description={tv('OVERVIEW_OF_YOUR_PAYOUTS')}
           titleStyle="font-medium text-lg"
         />
         <div className="flex gap-2 items-center">
           <TooltipWrapper
-            tip={hasData ? '' : 'No payout data available to export'}
+            tip={hasData ? '' : tg('NO_PAYOUT_DATA_TO_EXPORT')}
           >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={() => exportPayoutStats(statsPayout)}
-              name={'Export Report'}
+              name={tg('EXPORT_REPORT')}
               variant="outline"
               disabled={!hasData}
               className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
@@ -65,7 +83,7 @@ export default function PayoutOverview({
           </TooltipWrapper>
 
           <DateRangePicker
-            placeholder="Pick date range"
+            placeholder={tg('PICK_DATE_RANGE')}
             handleDateChange={handleDateChange}
             handleClearDate={handleClearDate}
             type="range"
@@ -79,7 +97,7 @@ export default function PayoutOverview({
             <DataCard
               key={stat.label}
               title={stat.label}
-              number={stat.value as string}
+              number={formatNum(stat.value as unknown as number)}
               className="rounded-sm h-32"
               infoIcon={stat.infoIcon}
               infoTooltip={stat.infoTooltip}
@@ -89,21 +107,23 @@ export default function PayoutOverview({
       </div>
       <div className="flex flex-wrap mt-4 gap-4">
         <div className="flex-1 border rounded-sm p-4">
-          <h1 className="text-lg font-medium mb-4">Payout Type</h1>
+          <h1 className="text-lg font-medium mb-4">{tv('PAYOUT_TYPE')}</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
               pieData={pieDataLabel}
               colors={['#F4A462', '#2A9D90']}
+              options={pieOptions}
             />
           </div>
         </div>
 
         <div className="flex-1 border rounded-sm p-4">
-          <h1 className="text-lg font-medium mb-4">Payout Status</h1>
+          <h1 className="text-lg font-medium mb-4">{tv('PAYOUT_STATUS')}</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
               pieData={pieDataStatus}
               colors={['#2A9D90', '#DC3545']}
+              options={pieOptions}
             />
           </div>
         </div>

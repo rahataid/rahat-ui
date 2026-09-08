@@ -13,6 +13,8 @@ import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
@@ -31,6 +33,9 @@ export const useVendorsBeneficiaryTableColumns = (
   mode: PayoutMode,
   pagination: Pagination,
 ) => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -57,10 +62,10 @@ export const useVendorsBeneficiaryTableColumns = (
   const columns: ColumnDef<VendorBeneficiaryRow>[] = [
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: tg('WALLET_ADDRESS'),
       cell: ({ row }) => {
         if (!row.original?.walletAddress) {
-          return <div>N/A</div>;
+          return <div>{tg('N_A')}</div>;
         }
         return (
           <div className="flex flex-row">
@@ -79,7 +84,7 @@ export const useVendorsBeneficiaryTableColumns = (
     },
     {
       accessorKey: 'benTokens',
-      header: 'Token Amount',
+      header: t('TOKEN_AMOUNT'),
       cell: ({ row }) => {
         return row.getValue('benTokens') ? (
           <TruncatedCell
@@ -90,17 +95,17 @@ export const useVendorsBeneficiaryTableColumns = (
             )}`}
           />
         ) : (
-          'N/A'
+          tg('N_A')
         );
       },
     },
     {
       accessorKey: 'txHash',
-      header: 'TxHash',
+      header: t('TX_HASH'),
       cell: ({ row }) => {
         const txHash = row?.original?.txHash as string;
 
-        if (!txHash) return <div>N/A</div>;
+        if (!txHash) return <div>{tg('N_A')}</div>;
         const txnUrl = getExplorerUrl({
           chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
           target: 'tx',
@@ -128,17 +133,17 @@ export const useVendorsBeneficiaryTableColumns = (
     },
     {
       accessorKey: 'amountDisbursed',
-      header: 'Amount Disbursed',
+      header: t('AMOUNT_DISBURSED'),
       cell: ({ row }) => {
         const status = row.original?.status;
         return status === 'COMPLETED' ? (
           row.getValue('benTokens') ? (
-            <TruncatedCell text={`Rs. ${row.getValue('benTokens')}`} />
+            <TruncatedCell text={`${t('RS')} ${formatNum(row.getValue('benTokens'))}`} />
           ) : (
-            'N/A'
+            tg('N_A')
           )
         ) : (
-          'Rs. 0'
+          `${t('RS')} ${formatNum(0)}`
         );
       },
     },
@@ -146,7 +151,7 @@ export const useVendorsBeneficiaryTableColumns = (
       ? [
           {
             accessorKey: 'syncStatus',
-            header: 'Sync Status',
+            header: t('SYNC_STATUS'),
             cell: ({ row }: { row: Row<VendorBeneficiaryRow> }) => {
               const status = row.original?.status;
               return (
@@ -158,7 +163,7 @@ export const useVendorsBeneficiaryTableColumns = (
                     color: status === 'PENDING' ? '#344054' : '#027A48',
                   }}
                 >
-                  {status === 'PENDING' ? 'Pending' : 'Synced'}
+                  {status === 'PENDING' ? t('PENDING') : t('SYNCED')}
                 </Badge>
               );
             },
@@ -167,7 +172,7 @@ export const useVendorsBeneficiaryTableColumns = (
       : []),
     {
       accessorKey: 'status',
-      header: 'Token Status',
+      header: t('TOKEN_STATUS'),
       cell: ({ row }) => (
         <Badge
           className="text-xs font-normal"
@@ -177,20 +182,20 @@ export const useVendorsBeneficiaryTableColumns = (
             color: row.original?.status === 'COMPLETED' ? '#027A48' : '#344054',
           }}
         >
-          {row.original?.status === 'COMPLETED' ? 'Redeemed' : 'Pending'}
+          {row.original?.status === 'COMPLETED' ? t('REDEEMED') : t('PENDING')}
         </Badge>
       ),
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleViewClick(row.original.uuid)}
             />

@@ -13,6 +13,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Can } from 'apps/rahat-ui/src/components/can';
 import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
@@ -27,6 +28,7 @@ import { UUID } from 'crypto';
 // SidebarTrigger moved into the sidebar header; no top-header trigger needed here.
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
+import { LanguageToggle } from 'apps/rahat-ui/src/components/language-toggle';
 import { CircleAlert } from 'lucide-react';
 
 export function ProjectNav({
@@ -36,6 +38,8 @@ export function ProjectNav({
   component?: React.ReactNode;
   isClosed?: boolean;
 }) {
+  const t = useTranslations('TOP_NAVIGATION_HEADER');
+  const g = useTranslations('GLOBAL');
   const currentPath = usePathname();
   const params = useParams();
   const showNotification = currentPath.split('/').includes('aa');
@@ -67,7 +71,7 @@ export function ProjectNav({
     if (triggerPinPhase)
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
-    toast.success('Logged out successfully.');
+    toast.success(t('LOGGED_OUT_SUCCESSFULLY'));
     // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
@@ -86,6 +90,7 @@ export function ProjectNav({
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
         {!isClosed && !isAAProject && <ConnectWallet />}
         {showNotification && <NotificationButton unreadCount={0} />}
+        {isAAProject && <LanguageToggle />}
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar className="h-10 w-10">
@@ -111,13 +116,13 @@ export function ProjectNav({
                 className="p-1 hover:bg-secondary rounded"
                 href={paths.profile.root}
               >
-                Profile
+                {t('PROFILE')}
               </Link>
               <Link
                 className="p-1 hover:bg-secondary rounded"
                 href={paths.dashboard.root}
               >
-                Home
+                {t('HOME')}
               </Link>
               {settingsPath && (
                 <Can action={ACTIONS.MANAGE} subject={SUBJECTS.ALL}>
@@ -125,7 +130,7 @@ export function ProjectNav({
                     className="p-1 hover:bg-secondary rounded"
                     href={settingsPath}
                   >
-                    Settings
+                    {g('SETTINGS')}
                   </Link>
                 </Can>
               )}
@@ -134,7 +139,7 @@ export function ProjectNav({
                 className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
                 onClick={handleLogout}
               >
-                Logout
+                {t('LOGOUT')}
               </Badge>
             </DropdownMenuGroup>
           </DropdownMenuContent>

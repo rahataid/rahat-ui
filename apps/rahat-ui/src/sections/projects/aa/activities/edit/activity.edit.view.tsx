@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import {
   Form,
   FormControl,
@@ -40,6 +42,7 @@ import { ValidationContent } from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
 
 export default function EditActivity() {
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
@@ -82,19 +85,22 @@ export default function EditActivity() {
   };
 
   const FormSchema = z.object({
-    title: z.string().min(2, { message: 'Title must be at least 4 character' }),
+    title: z.string().min(2, { message: t('TITLE_MUST_BE_AT_LEAST_4_CHARACTER') }),
     responsibility: z
       .string()
-      .min(2, { message: 'Please enter responsibility' }),
-    source: z.string().min(2, { message: 'Please enter source' }),
-    phaseId: z.string().min(1, { message: 'Please select phase' }),
-    categoryId: z.string().min(1, { message: 'Please select category' }),
-    leadTime: z.string().min(2, { message: 'Please enter lead time' }),
+      .min(2, { message: t('PLEASE_ENTER_RESPONSIBILITY') }),
+    source: z.string().min(2, { message: t('PLEASE_ENTER_SOURCE') }),
+    phaseId: z.string().min(1, { message: t('PLEASE_SELECT_PHASE') }),
+    categoryId: z.string().min(1, { message: t('PLEASE_SELECT_CATEGORY') }),
+    leadTime: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().min(2, { message: t('PLEASE_ENTER_LEAD_TIME') }),
+    ),
     description: z
       .string()
       .optional()
       .refine((val) => !val || val.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     isAutomated: z.boolean().optional(),
     activityDocuments: z
@@ -107,11 +113,11 @@ export default function EditActivity() {
       .optional(),
     activityCommunication: z.array(
       z.object({
-        groupType: z.string().min(1, { message: 'Please select group type' }),
-        groupId: z.string().min(1, { message: 'Please select group' }),
+        groupType: z.string().min(1, { message: t('PLEASE_SELECT_GROUP_TYPE') }),
+        groupId: z.string().min(1, { message: t('PLEASE_SELECT_GROUP') }),
         transportId: z
           .string()
-          .min(1, { message: 'Please select communication type' }),
+          .min(1, { message: t('PLEASE_SELECT_COMMUNICATION_TYPE') }),
         message: z.string().or(z.object({})).optional(),
         audioURL: z
           .string()
@@ -160,9 +166,9 @@ export default function EditActivity() {
     if (file) {
       const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
       if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
+        return toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILES'));
       }
-      if (!validateFile(file)) {
+      if (!validateFile(file, t)) {
         return;
       }
 
@@ -271,11 +277,11 @@ export default function EditActivity() {
                   render={({ field }) => {
                     return (
                       <FormItem className="col-span-2">
-                        <FormLabel>Activity title</FormLabel>
+                        <FormLabel>{t('ACTIVITY_TITLE')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter activity title"
+                            placeholder={t('ENTER_ACTIVITY_TITLE')}
                             {...field}
                           />
                         </FormControl>
@@ -290,11 +296,11 @@ export default function EditActivity() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Responsibility</FormLabel>
+                        <FormLabel>{t('RESPONSIBILITY')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter responsibility"
+                            placeholder={t('ENTER_RESPONSIBILITY')}
                             {...field}
                           />
                         </FormControl>
@@ -309,11 +315,11 @@ export default function EditActivity() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Source</FormLabel>
+                        <FormLabel>{t('SOURCE')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter source"
+                            placeholder={t('ENTER_SOURCE')}
                             {...field}
                           />
                         </FormControl>
@@ -327,14 +333,14 @@ export default function EditActivity() {
                   name="phaseId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phase</FormLabel>
+                      <FormLabel>{t('PHASE')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select phase" />
+                            <SelectValue placeholder={t('SELECT_PHASE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -354,14 +360,14 @@ export default function EditActivity() {
                   name="categoryId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>{t('CATEGORY')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
+                            <SelectValue placeholder={t('SELECT_CATEGORY')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -393,7 +399,7 @@ export default function EditActivity() {
                             />
                           </FormControl>
                           <FormLabel className="text-sm font-normal ml-2">
-                            Is Automated Activity?
+                            {t('IS_AUTOMATED_ACTIVITY')}
                           </FormLabel>
                           <FormMessage />
                         </FormItem>
@@ -407,11 +413,11 @@ export default function EditActivity() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Lead Time</FormLabel>
+                        <FormLabel>{t('LEAD_TIME')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter lead time"
+                            placeholder={t('ENTER_LEAD_TIME')}
                             {...field}
                           />
                         </FormControl>
@@ -427,10 +433,10 @@ export default function EditActivity() {
                   render={({ field }) => {
                     return (
                       <FormItem className="col-span-2">
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>{t('DESCRIPTION')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Enter description"
+                            placeholder={t('ENTER_DESCRIPTION')}
                             {...field}
                           />
                         </FormControl>

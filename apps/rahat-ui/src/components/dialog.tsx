@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -27,6 +28,7 @@ export function DialogComponent({
   onSubmit,
 }: IProps) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations('GLOBAL');
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -50,7 +52,7 @@ export function DialogComponent({
               setOpen(false);
             }}
           >
-            Cancel
+            {t('CANCEL')}
           </Button>
           <Button
             className="w-full"
@@ -60,7 +62,7 @@ export function DialogComponent({
               setOpen(false);
             }}
           >
-            Confirm
+            {t('CONFIRM')}
           </Button>
         </DialogFooter>
       </DialogContent>

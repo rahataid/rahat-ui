@@ -41,6 +41,8 @@ interface BaseCommunication {
   sessionStatus: string;
   sessionId: string;
   completedAt: string;
+  startedAt?: string;
+  updatedAt?: string;
   extras?: { smsCredits: number };
   onSend?: () => void;
   onEdit?: () => void;
@@ -67,7 +69,10 @@ export function CommunicationCard({
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();
   const router = useRouter();
-
+  console.log(
+    'activityCommunication.updatedAt',
+    activityCommunication.updatedAt,
+  );
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case SessionStatus.PENDING:
@@ -280,18 +285,42 @@ export function CommunicationCard({
             </TooltipWrapper>
           )}
 
-        {/* Completed At */}
-        {activityCommunication?.sessionStatus === 'COMPLETED' && (
-          <TooltipWrapper
-            tip={`Completed At: ${dateFormat(
-              activityCommunication.completedAt,
-            )}`}
-          >
-            <p className="mt-3 text-sm text-gray-500">
-              Completed at: {dateFormat(activityCommunication.completedAt)}
-            </p>
-          </TooltipWrapper>
-        )}
+        {/* Timestamps */}
+        <div className="mt-3 space-y-1">
+          {activityCommunication?.startedAt && (
+            <TooltipWrapper
+              tip={`Started At: ${dateFormat(activityCommunication.startedAt)}`}
+            >
+              <p className="text-sm text-gray-500">
+                Started At: {dateFormat(activityCommunication.startedAt)}
+              </p>
+            </TooltipWrapper>
+          )}
+          {activityCommunication?.sessionStatus === 'COMPLETED' &&
+            activityCommunication?.completedAt && (
+              <TooltipWrapper
+                tip={`Completed At: ${dateFormat(
+                  activityCommunication.completedAt,
+                )}`}
+              >
+                <p className="text-sm text-gray-500">
+                  Completed At: {dateFormat(activityCommunication.completedAt)}
+                </p>
+              </TooltipWrapper>
+            )}
+          {activityCommunication?.sessionStatus !== 'COMPLETED' &&
+            activityCommunication?.updatedAt && (
+              <TooltipWrapper
+                tip={`Updated At: ${dateFormat(
+                  activityCommunication.updatedAt,
+                )}`}
+              >
+                <p className="text-sm text-gray-500">
+                  Updated At: {dateFormat(activityCommunication.updatedAt)}
+                </p>
+              </TooltipWrapper>
+            )}
+        </div>
       </CardContent>
 
       <ConfirmationDialog

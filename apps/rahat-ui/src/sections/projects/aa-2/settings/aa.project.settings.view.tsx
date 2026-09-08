@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Tabs,
   TabsContent,
@@ -11,6 +12,7 @@ import AAProjectPhasesView from './aa.phases';
 import { useSearchParams } from 'next/navigation';
 
 export default function AAProjectSettingsView() {
+  const t = useTranslations('AA_PROJECT');
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'categories';
 
@@ -22,13 +24,13 @@ export default function AAProjectSettingsView() {
             className="w-full data-[state=active]:bg-white"
             value="categories"
           >
-            Categories
+            {t('CATEGORIES')}
           </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="phases"
           >
-            Phases
+            {t('PHASES')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="categories">

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataSourceCard from '../data.source.card';
 import FieldCard from '../field.card';
@@ -9,29 +10,27 @@ type IProps = {
 };
 
 export default function DeterministicAndProbabilisticCard({ data }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const renderFieldCardContainer = React.useCallback((data: any) => {
     const sanitizedData = React.useMemo(() => {
       return [
         {
-          label: 'Extreme Weather Outlook',
-          subLabel:
-            'Severe Weather Event -Extreme Rainfall >95 Percentile purple dots over Karnali Watershed',
+          label: t('EXTREME_WEATHER_OUTLOOK'),
+          subLabel: t('EXTREME_WEATHER_SUBLABEL'),
           value: data.extremeWeatherOutlook,
         },
         {
-          label: 'Deterministics Prediction System',
-          subLabel:
-            'Predicts commulative rainfall more than 300 MM in next 3 to 5 Days',
+          label: t('DETERMINISTICS_PREDICTION_SYSTEM'),
+          subLabel: t('DETERMINISTICS_SUBLABEL'),
           value: data.deterministicsPredictionSystem,
         },
         {
-          label: 'Probabilistic Prediction System',
-          subLabel:
-            'Heavy Rainfall 115 MM per day 80 percent probablity in next 3 to 5 days',
+          label: t('PROBABILISTIC_PREDICTION_SYSTEM'),
+          subLabel: t('PROBABILISTIC_SUBLABEL'),
           value: data.probabilisticPredictionSystem,
         },
       ];
-    }, [data]);
+    }, [data, t]);
     return (
       <div className="flex gap-2">
         {sanitizedData?.map((d: any) => (

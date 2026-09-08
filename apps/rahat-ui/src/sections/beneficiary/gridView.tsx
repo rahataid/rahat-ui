@@ -11,6 +11,7 @@ import { ListBeneficiary } from '@rahat-ui/types';
 import BeneficiaryCard from '../../sections/beneficiary/card';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import BeneficiaryDetail from './beneficiaryDetail';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   data: ListBeneficiary[];
@@ -18,6 +19,7 @@ type IProps = {
 
 export default function GridView({ data }: IProps) {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const g = useTranslations('GLOBAL');
   return (
     <>
       <ScrollArea className="px-4 pt-2 h-withPage">
@@ -25,7 +27,7 @@ export default function GridView({ data }: IProps) {
           <div className="flex items-center gap-2">
             <div className="relative w-full">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search" className="pl-8 rounded" />
+              <Input placeholder={g('SEARCH')} className="pl-8 rounded" />
             </div>
           </div>
         </div>

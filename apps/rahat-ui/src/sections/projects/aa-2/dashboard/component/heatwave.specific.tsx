@@ -4,12 +4,15 @@ import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 import { SECTIONS } from '../utils/dashbord-constants';
+import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export default function HeatwaveSpecific({
   benefStats,
 }: {
   benefStats: any[];
 }) {
+  const tg = useTranslations('GLOBAL');
   const getStat = (name: string) =>
     benefStats.find((s: any) => s.name === name);
 
@@ -32,7 +35,9 @@ export default function HeatwaveSpecific({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {barSections.map((section) => {
           const stat = getStat(section.name);
-          const categories = stat.data.map((d: any) => d.id);
+          const categories = stat.data.map((d: any) =>
+            translateValue(tg, d.id, { fallbackStyle: 'raw', silent: true }),
+          );
           const series = stat.data.map((d: any) => d.count);
           return (
             <div
@@ -45,7 +50,10 @@ export default function HeatwaveSpecific({
                   <div className="w-full h-full flex items-center justify-center p-2">
                     <DynamicPieChart
                       pieData={stat.data.map((d: any) => ({
-                        label: d.id,
+                        label: translateValue(tg, d.id, {
+                          fallbackStyle: 'raw',
+                          silent: true,
+                        }),
                         value: d.count,
                       }))}
                     />
@@ -74,7 +82,12 @@ export default function HeatwaveSpecific({
           <h1 className="text-sm font-medium mb-2">Activities Status</h1>
           <BarChart
             series={activitiesData.map((d: any) => d.count ?? 0)}
-            categories={activitiesData.map((d: any) => d.id ?? d.name ?? '')}
+            categories={activitiesData.map((d: any) =>
+              translateValue(tg, d.id ?? d.name ?? '', {
+                fallbackStyle: 'raw',
+                silent: true,
+              }),
+            )}
             colors={['#4A90E2']}
             xaxisLabels
             yaxisLabels

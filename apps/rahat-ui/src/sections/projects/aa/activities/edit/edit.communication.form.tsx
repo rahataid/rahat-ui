@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   FormControl,
   FormField,
@@ -41,6 +42,8 @@ export default function EditCommunicationForm({
   appTransports,
   setLoading,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const [audioFile, setAudioFile] = React.useState({});
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
@@ -75,7 +78,7 @@ export default function EditCommunicationForm({
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
-    let groups = <SelectLabel>Please select group type</SelectLabel>;
+    let groups = <SelectLabel>{t('PLEASE_SELECT_GROUP_TYPE')}</SelectLabel>;
     switch (selectedGroupType) {
       case 'STAKEHOLDERS':
         groups = stakeholdersGroups.map((group: any) => (
@@ -137,7 +140,7 @@ export default function EditCommunicationForm({
           name={fieldName('groupType')}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Group Type</FormLabel>
+              <FormLabel>{t('GROUP_TYPE')}</FormLabel>
               <Select
                 disabled={sessionId}
                 onValueChange={field.onChange}
@@ -145,12 +148,12 @@ export default function EditCommunicationForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group type" />
+                    <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="STAKEHOLDERS">Stakeholders</SelectItem>
-                  <SelectItem value="BENEFICIARY">Beneficiary</SelectItem>
+                  <SelectItem value="STAKEHOLDERS">{t('STAKEHOLDERS')}</SelectItem>
+                  <SelectItem value="BENEFICIARY">{t('BENEFICIARY')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -162,7 +165,7 @@ export default function EditCommunicationForm({
           name={fieldName('groupId')}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Group</FormLabel>
+              <FormLabel>{t('GROUP')}</FormLabel>
               <Select
                 disabled={sessionId}
                 onValueChange={field.onChange}
@@ -170,7 +173,7 @@ export default function EditCommunicationForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
+                    <SelectValue placeholder={tg('SELECT_GROUP')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -186,7 +189,7 @@ export default function EditCommunicationForm({
           name={fieldName('transportId')}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Communication Type</FormLabel>
+                        <FormLabel>{t('COMMUNICATION_TYPE')}</FormLabel>
               <Select
                 disabled={sessionId}
                 onValueChange={field.onChange}
@@ -194,7 +197,7 @@ export default function EditCommunicationForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select communication type" />
+                    <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -220,7 +223,7 @@ export default function EditCommunicationForm({
             render={() => {
               return (
                 <FormItem>
-                  <FormLabel>Upload audio</FormLabel>
+                        <FormLabel>{t('UPLOAD_AUDIO')}</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -252,11 +255,11 @@ export default function EditCommunicationForm({
             render={({ field }) => {
               return (
                 <FormItem className="col-span-2">
-                  <FormLabel>Message</FormLabel>
+                        <FormLabel>{t('MESSAGE')}</FormLabel>
                   <FormControl>
                     <Textarea
                       disabled={sessionId}
-                      placeholder="Write message"
+                      placeholder={t('WRITE_MESSAGE')}
                       {...field}
                     />
                   </FormControl>
@@ -275,9 +278,9 @@ export default function EditCommunicationForm({
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>SessionId</FormLabel>
+                        <FormLabel>{t('SESSIONID')}</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="SessionId" {...field} />
+                    <Input type="text" placeholder={t('SESSIONID')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -293,11 +296,11 @@ export default function EditCommunicationForm({
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>CommunicationId</FormLabel>
+                        <FormLabel>{t('COMMUNICATIONID')}</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder="CommunicationId"
+                      placeholder={t('COMMUNICATIONID')}
                       {...field}
                     />
                   </FormControl>

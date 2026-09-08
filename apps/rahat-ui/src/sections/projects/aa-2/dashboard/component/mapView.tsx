@@ -5,8 +5,10 @@ import {
 } from '@rahat-ui/query';
 import * as turf from '@turf/turf';
 import { Heading } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 import SearchDropdownComponent from 'apps/rahat-ui/src/common/searchDropdownComponent';
 import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
+import { useNumberFormat } from '../../../../../utils/i18n/number';
 import { UUID } from 'crypto';
 import { Dot } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -64,10 +66,13 @@ export default function MapView({
   projectId: UUID;
   benefStats: any;
 }) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { filters, setFilters } = usePagination();
   const { data: mapLocation, isLoading: mapLoading } =
     useProjectDashboardBeneficiaryMapLocation(projectId, filters);
 
+  const formatNum = useNumberFormat();
   const project = useProjectStore((p) => p.singleProject);
   const uniueWard =
     benefStats?.find((stat) => stat.name === 'UNIQUE_WARDS')?.data || [];
@@ -75,12 +80,12 @@ export default function MapView({
   const transformedWardNumber =
     (uniueWard &&
       uniueWard.map((item) => ({
-        label: item.ward.toString(),
-        value: item.ward.toString(),
+        label: formatNum(item.ward),
+        value: formatNum(item.ward),
       }))) ||
     [];
 
-  transformedWardNumber.unshift({ label: 'All', value: '' });
+  transformedWardNumber.unshift({ label: tg('ALL'), value: '' });
 
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState<IBENEF | null>(
@@ -127,15 +132,15 @@ export default function MapView({
     <div>
       <div className="flex justify-between">
         <Heading
-          title={`Map View`}
-          description="Track beneficiary locations"
+          title={t('MAP_VIEW')}
+          description={t('TRACK_BENEFICIARY_LOCATIONS')}
           titleStyle={'text-xl'}
         />
 
         <div className="flex flex-row gap-3 lg:gap-4">
           <SearchDropdownComponent
             transformedData={transformedWardNumber}
-            title={'Ward'}
+            title={t('WARD')}
             handleSelect={handleSelect}
           />
         </div>
@@ -158,7 +163,7 @@ export default function MapView({
 
           <div className="absolute top-2 right-2 bg-white p-2 rounded shadow-lg z-10 text-xs flex justify-center items-center gap-2">
             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <div>Beneficiary</div>
+            <div>{t('BENEFICIARY_MARKER')}</div>
           </div>
           {mappedCoordinate?.map((item, index) => (
             <Marker

@@ -20,6 +20,7 @@ import { InkindType } from '../../inkindManagement/schemas/inkind.validation';
 import * as XLSX from 'xlsx';
 import { CloudDownloadIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useTranslations } from 'next-intl';
 
 export type InkindRedemptionData = {
   uuid: UUID;
@@ -64,6 +65,8 @@ export const InkindRedemptionList = ({
     setPagination,
   } = usePagination();
 
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
   const debounceSearch = useDebounce(filters, 500);
 
   const { data, isPending } = useGetInkindRedemptionLogs({
@@ -124,16 +127,16 @@ export const InkindRedemptionList = ({
     const rows = (exportQuery.data as any)?.data || [];
     if (rows.length > 0) {
       const flattened = rows.map((row: InkindRedemptionData) => ({
-        'Vendor Name': row.vendor?.name || '',
-        'Inkind Name': row.inkind?.name || '',
-        'Inkind Type': row.inkind?.type || '',
-        Quantity: row.quantity,
-        'Approved At': row.approvedAt
+        [tGlobal('VENDOR_NAME')]: row.vendor?.name || '',
+        [tGlobal('INKIND_NAME')]: row.inkind?.name || '',
+        [tGlobal('INKIND_TYPE')]: row.inkind?.type || '',
+        [tGlobal('QUANTITY')]: row.quantity,
+        [tGlobal('APPROVED_AT')]: row.approvedAt
           ? new Date(row.approvedAt).toISOString()
           : '',
-        'Approved By': row.approvedBy || '',
-        Status: row.redemptionStatus,
-        'Tx Hash': row.transactionHash || '',
+        [t('APPROVED_BY')]: row.approvedBy || '',
+        [tGlobal('STATUS')]: row.redemptionStatus,
+        [tGlobal('TX_HASH')]: row.transactionHash || '',
       }));
       const ws = XLSX.utils.json_to_sheet(flattened);
       const wb = XLSX.utils.book_new();
@@ -182,19 +185,24 @@ export const InkindRedemptionList = ({
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
           className="w-full flex-[4]"
-          name="vendor name"
+          name={tGlobal('VENDOR_NAME')}
           onSearch={(e) => handleSearch(e, 'vendorName')}
           value={filters?.vendorName || ''}
         />
         <SearchInput
           className="w-full flex-[4]"
-          name="inkind name"
+          name={tGlobal('INKIND_NAME')}
           onSearch={(e) => handleSearch(e, 'inkindName')}
           value={filters?.inkindName || ''}
         />
         <SelectComponent
-          name="Status"
+          name={tGlobal('STATUS')}
           options={['ALL', 'APPROVED', 'REQUESTED']}
+          labels={{
+            ALL: tGlobal('ALL'),
+            APPROVED: tGlobal('APPROVED'),
+            REQUESTED: tGlobal('REQUESTED'),
+          }}
           onChange={(value) => handleFilterChange('status', value)}
           value={
             ['REQUESTED', 'APPROVED'].includes(filters?.status)
@@ -204,8 +212,13 @@ export const InkindRedemptionList = ({
           className="flex-[2]"
         />
         <SelectComponent
-          name="Inkind Type"
+          name={tGlobal('INKIND_TYPE')}
           options={['ALL', 'PRE_DEFINED', 'WALK_IN']}
+          labels={{
+            ALL: tGlobal('ALL'),
+            PRE_DEFINED: tGlobal('PRE_DEFINED'),
+            WALK_IN: tGlobal('WALK_IN'),
+          }}
           onChange={(value) => handleFilterChange('inkindType', value)}
           value={
             ['PRE_DEFINED', 'WALK_IN'].includes(filters?.inkindType)
@@ -218,13 +231,13 @@ export const InkindRedemptionList = ({
           <TooltipWrapper
             tip={
               queryData?.data?.length
-                ? 'Export to CSV'
-                : 'No data available to export'
+                ? tGlobal('EXPORT_TO_CSV')
+                : tGlobal('NO_DATA_EXPORT')
             }
           >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
-              name={exportQuery.isFetching ? 'Exporting...' : 'Export Logs'}
+              name={exportQuery.isFetching ? tGlobal('EXPORTING') : tGlobal('EXPORT_LOGS')}
               handleClick={handleExport}
               disabled={!queryData?.data?.length || exportQuery.isFetching}
               variant="outline"
@@ -237,7 +250,7 @@ export const InkindRedemptionList = ({
       <DemoTable
         table={table}
         tableHeight="h-[500px]"
-        message="No In-kind Redemption Records"
+        message={tGlobal('NO_INKIND_REDEMPTION_RECORDS')}
       />
       <CustomPagination
         currentPage={pagination.page}

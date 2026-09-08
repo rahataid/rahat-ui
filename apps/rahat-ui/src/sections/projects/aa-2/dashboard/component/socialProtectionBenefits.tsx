@@ -1,6 +1,22 @@
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 import React from 'react';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+
+// Backend SSA type ids don't derive cleanly to their AA_PROJECT.SSA_* keys
+// (double underscores, no SSA_ prefix), so map each one explicitly.
+const SSA_TYPE_KEYS: Record<string, string> = {
+  senior_citizen__70: 'SSA_SENIOR_CITIZEN_70',
+  senior_citizen__60__dalit: 'SSA_SENIOR_CITIZEN_60_DALIT',
+  child_nutrition: 'SSA_CHILD_NUTRITION',
+  single_woman: 'SSA_SINGLE_WOMAN',
+  widow: 'SSA_WIDOW',
+  red_class: 'SSA_RED_CLASS',
+  blue_card: 'SSA_BLUE_CARD',
+  indigenous_community: 'SSA_INDIGENOUS_COMMUNITY',
+};
 
 type Props = {
   data: {
@@ -9,69 +25,63 @@ type Props = {
   };
 };
 
-const SSA_LABELS: Record<string, string> = {
-  senior_citizen__70: 'Senior Citizen >70',
-  senior_citizen__60__dalit: 'Senior Citizen Dalit >60',
-  child_nutrition: 'Child Nutrition',
-  single_woman: 'Single Women',
-  widow: 'Widow',
-  red_class: 'Red Card',
-  blue_card: 'Blue Card',
-  indigenous_community: 'Indigenous Community',
-};
 const SocialProtectionBenefits = ({
   benefStats,
   triggeersStats,
   projectId,
 }: any) => {
+  const t = useTranslations('AA_PROJECT');
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   const ssaRaw = benefStats.find((s) => s.name === 'TYPE_OF_SSA')?.data || [];
   const ssaBarData = ssaRaw.map((item: any) => ({
-    label: SSA_LABELS[item.id] || item.id,
+    label: translateValue(t, item.id, {
+      keyMap: SSA_TYPE_KEYS,
+      fallbackStyle: 'raw',
+    }),
     value: item.count,
   }));
 
-  // ✅ Extract special categories
   const fieldMapData =
     benefStats.find((s) => s.name === 'FIELD_MAP_RESULT')?.data || {};
   const pregnantCount = fieldMapData.no_of_pregnant_women || 0;
   const lactatingCount = fieldMapData.no_of_lactating_women || 0;
   const disabilityCount = fieldMapData.no_of_persons_with_disability || 0;
+
   return (
     <div className="flex flex-col gap-4 mt-4">
-      {/* Vulnerable Groups Cards */}
       <div className="flex flex-col">
         <Heading
-          title="Vulnerable Groups"
+          title={t('VULNERABLE_GROUPS')}
           titleStyle="text-lg"
-          description="Household members with specific needs or requiring special support"
+          description={t('HOUSEHOLD_MEMBERS_WITH_SPECIFIC_NEEDS_OR')}
         />
         <div className="flex flex-col gap-4 mt-0 md:flex-row">
           <DataCard
-            title="Pregnant Female"
-            number={pregnantCount.toString()}
+            title={t('PREGNANT_FEMALE')}
+            number={formatNum(pregnantCount)}
             className="rounded-sm  w-full"
           />
           <DataCard
-            title="Lactating Female"
-            number={lactatingCount.toString()}
+            title={t('LACTATING_FEMALE')}
+            number={formatNum(lactatingCount)}
             className="rounded-sm  w-full"
           />
           <DataCard
-            title="People with Disabilities"
-            number={disabilityCount.toString()}
+            title={t('PEOPLE_WITH_DISABILITIES')}
+            number={formatNum(disabilityCount)}
             className="rounded-sm  w-full"
           />
         </div>
       </div>
       <div className="flex flex-col">
         <Heading
-          title="Social Protection Benefits"
+          title={t('SOCIAL_PROTECTION_BENEFITS')}
           titleStyle="text-lg"
-          description="Households receiving government support"
+          description={t('HOUSEHOLDS_RECEIVING_GOVERNMENT_SUPPORT')}
         />
         <div className=" border rounded-sm p-4">
           <h1 className="text-sm font-medium">
-            Household Receiving Social Protection Benefits
+            {t('HOUSEHOLD_RECEIVING_SOCIAL_PROTECTION_BENEFITS')}
           </h1>
           <div className="flex-1 h-full min-h-[300px]">
             {ssaBarData?.length === 0 ? (
@@ -88,9 +98,10 @@ const SocialProtectionBenefits = ({
                 barHeight={20}
                 height="100%"
                 width="100%"
-                xaxisTitle="Type of SSA"
-                yaxisTitle="No. of Household"
+                xaxisTitle={t('TYPE_OF_SSA')}
+                yaxisTitle={t('NO_OF_HOUSEHOLDS')}
                 columnWidth={'20%'}
+                options={chartOpts}
               />
             )}
           </div>

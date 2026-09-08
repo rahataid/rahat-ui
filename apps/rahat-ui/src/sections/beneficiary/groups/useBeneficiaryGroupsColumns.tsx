@@ -7,9 +7,11 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import BeneficiaryGroupDetail from './beneficiaryGroupDetail';
+import { useTranslations } from 'next-intl';
 
 export const useBeneficiaryGroupsTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const t = useTranslations('GLOBAL');
 
   const openSplitDetailView = React.useCallback(
     (rowDetail: ListBeneficiaryGroup) => {
@@ -26,7 +28,7 @@ export const useBeneficiaryGroupsTableColumns = () => {
   const columns: ColumnDef<ListBeneficiaryGroup>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => {
         return (
           <div
@@ -40,7 +42,7 @@ export const useBeneficiaryGroupsTableColumns = () => {
     },
     {
       accessorKey: 'membersCount',
-      header: 'Total Members',
+      header: t('TOTAL_MEMBERS'),
       cell: ({ row }) => <div>{row?.original?.totalMembers}</div>,
     },
     {

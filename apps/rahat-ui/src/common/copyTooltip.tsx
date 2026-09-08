@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Copy, CopyCheck } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipProvider,
@@ -23,6 +24,7 @@ export default function CopyTooltip({
   strokeWidth = 1.5,
   className = '',
 }: CopyTooltipProps) {
+  const tg = useTranslations('GLOBAL');
   const { copyAction, clickToCopy } = useCopy();
   const [open, setOpen] = useState(false);
 
@@ -57,7 +59,7 @@ export default function CopyTooltip({
 
         <TooltipContent side="bottom" className="rounded-sm">
           <p className="text-xs font-medium">
-            {isCopied ? 'copied' : 'click to copy'}
+            {isCopied ? tg('COPIED') : tg('CLICK_TO_COPY')}
           </p>
         </TooltipContent>
       </Tooltip>

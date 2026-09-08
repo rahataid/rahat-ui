@@ -3,6 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
+import { useTranslations } from 'next-intl';
 
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -20,8 +21,13 @@ import AddAnotherDataSource from './add.another.data.source';
 import SelectFormField from '../../../../../../components/select.form.field';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useSelectItems } from '../useSelectItems';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+
+const numeralString = () =>
+  z.preprocess(normalizeNumeralsPreprocessor, z.string().optional());
 
 export default function AddDailyMonitoring() {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
@@ -37,50 +43,48 @@ export default function AddDailyMonitoring() {
   };
 
   const FormSchema = z.object({
-    riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
+    riverBasin: z.string().min(1, { message: t('PLEASE_SELECT_RIVER_BASIN') }),
     dataSource: z.array(
       z.object({
-        source: z.string().min(1, { message: 'Please select a source.' }),
+        source: z.string().min(1, { message: t('PLEASE_SELECT_A_SOURCE') }),
         //DHM
         forecast: z.string().optional(),
         //DHM - 3 Days Flood Forecast Bulletin
-        today: z.string().optional(),
-        tomorrow: z.string().optional(),
-        dayAfterTomorrow: z.string().optional(),
+        today: numeralString(),
+        tomorrow: numeralString(),
+        dayAfterTomorrow: numeralString(),
         //DHM - 3 Days Rainfall Forecast Bulletin
-        todayAfternoon: z.string().optional(),
-        todayNight: z.string().optional(),
-        tomorrowAfternoon: z.string().optional(),
-        tomorrowNight: z.string().optional(),
-        dayAfterTomorrowAfternoon: z.string().optional(),
-        dayAfterTomorrowNight: z.string().optional(),
+        todayAfternoon: numeralString(),
+        todayNight: numeralString(),
+        tomorrowAfternoon: numeralString(),
+        tomorrowNight: numeralString(),
+        dayAfterTomorrowAfternoon: numeralString(),
+        dayAfterTomorrowNight: numeralString(),
         //DHM - Realtime Monitoring (River Watch)
-        waterLevel: z.string().optional(),
+        waterLevel: numeralString(),
         //DHM - Realtime Rainfall
-        chisapaniKarnali: z.string().optional(),
-        daulatpurStation: z.string().optional(),
-        bachilaStation: z.string().optional(),
-        gurbaDurbar: z.string().optional(),
+        chisapaniKarnali: numeralString(),
+        daulatpurStation: numeralString(),
+        bachilaStation: numeralString(),
+        gurbaDurbar: numeralString(),
         //DHM - NWP
-        hours24NWP: z.string().optional(),
-        hours48: z.string().optional(),
-        hours72NWP: z.string().optional(),
+        hours24NWP: numeralString(),
+        hours48: numeralString(),
+        hours72NWP: numeralString(),
         // NCMRWF Accumulated
-        heavyRainfallForecastInKarnaliBasin: z.string().optional(),
-        hours24: z.string().optional(),
-        hours72: z.string().optional(),
-        hours168: z.string().optional(),
+        heavyRainfallForecastInKarnaliBasin: numeralString(),
+        hours24: numeralString(),
+        hours72: numeralString(),
+        hours168: numeralString(),
         // NCMRWF Deterministic & Probabilistic
-        extremeWeatherOutlook: z.string().optional(),
-        deterministicsPredictionSystem: z.string().optional(),
-        probabilisticPredictionSystem: z.string().optional(),
+        extremeWeatherOutlook: numeralString(),
+        deterministicsPredictionSystem: numeralString(),
+        probabilisticPredictionSystem: numeralString(),
         // GLOFAS
-        todayGLOFAS: z.string().optional(),
-        days3: z.string().optional(),
-        days5: z.string().optional(),
-        inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: z
-          .string()
-          .optional(),
+        todayGLOFAS: numeralString(),
+        days3: numeralString(),
+        days5: numeralString(),
+        inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: numeralString(),
         //Flash Flood Risk Monitoring
         status: z.string().optional(),
       }),
@@ -224,7 +228,7 @@ export default function AddDailyMonitoring() {
         <div className="h-add p-4 bg-secondary">
           <Card className="rounded-sm">
             <CardHeader>
-              <CardTitle className="text-lg">Add Daily Monitoring</CardTitle>
+              <CardTitle className="text-lg">{t('ADD_DAILY_MONITORING')}</CardTitle>
             </CardHeader>
             <ScrollArea className="h-[calc(100vh-238px)]">
               <CardContent>
@@ -232,8 +236,8 @@ export default function AddDailyMonitoring() {
                   <SelectFormField
                     form={form}
                     name="riverBasin"
-                    label="River Basin"
-                    placeholder="Select river basin"
+                    label={t('RIVER_BASIN')}
+                    placeholder={t('SELECT_RIVER_BASIN2')}
                     selectItems={riverBasins}
                   />
                 </div>

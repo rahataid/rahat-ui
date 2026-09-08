@@ -2,16 +2,18 @@ import { usePagination } from '@rahat-ui/query';
 import { KanbanSquare } from 'lucide-react';
 import { paths } from '../../routes/paths';
 import { NavItem } from './nav-items.types';
+import { useTranslations } from 'next-intl';
 
 export const useCommunityBeneficiaryNavItems = () => {
+  const tg = useTranslations('GLOBAL');
   const { setFilters } = usePagination();
 
   const menuItems: NavItem[] = [
     {
-      title: 'Beneficiaries',
+      title: tg('BENEFICIARIES'),
       component: (
         <div className="flex justify-between items-center border-6 w-full">
-          <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
+          <h1 className="font-semibold text-xl text-primary">{tg('BENEFICIARIES')}</h1>
         </div>
       ),
       children: [

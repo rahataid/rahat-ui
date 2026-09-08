@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   ArrowRight,
   CloudDownload,
@@ -19,10 +19,12 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
 import {
+  useGetCommunicationLogs,
   useListSessionLogs,
   usePagination,
   useSessionBroadCastCount,
   useSessionRetryFailed,
+  useSettingsStore,
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
@@ -30,6 +32,9 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import MessageWithToggle from '../../activities/components/messageWithToggle';
+import { downloadLogsCsv } from './comms.logs.export.utils';
+import { toast } from 'react-toastify';
+import { UUID } from 'crypto';
 
 interface BaseCommunication {
   groupId: string;
@@ -41,6 +46,8 @@ interface BaseCommunication {
   sessionStatus: string;
   sessionId: string;
   completedAt: string;
+  startedAt: string;
+  updatedAt: string;
 }
 
 interface EmailCommunication extends BaseCommunication {
@@ -68,17 +75,35 @@ export function CommunicationDetailCard({
   projectId,
 }: CommunicationCardProps) {
   const { pagination, filters } = usePagination();
-  const { data: sessionLogs } = useListSessionLogs(
-    activityCommunication?.sessionId,
-    {
+  const { data: logs, isLoading } = useGetCommunicationLogs(
+    projectId as UUID,
+    activityCommunication?.communicationId,
+    activityId,
+  );
+  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
+    useListSessionLogs(activityCommunication?.sessionId, {
       ...pagination,
       ...filters,
-    },
-  );
+    });
   const router = useRouter();
   const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
+  const commsSettings = useSettingsStore((state) => state.commsSettings);
+
+  const downloadUrl = useMemo(
+    () =>
+      commsSettings?.URL
+        ? `${
+            commsSettings.URL
+          }/broadcasts/download?sessionId=${encodeURIComponent(
+            activityCommunication?.sessionId,
+          )}`
+        : null,
+    [commsSettings, activityCommunication?.sessionId],
+  );
+
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case 'PENDING':
@@ -131,6 +156,10 @@ export function CommunicationDetailCard({
 
   const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
 
+  const logsMeta = sessionLogs?.httpReponse?.data?.meta;
+
+  const hasNoLogsForExport = (logsMeta?.total ?? 0) === 0;
+
   const retryFailed = useSessionRetryFailed();
 
   const handleRetryFailed = async () => {
@@ -139,6 +168,50 @@ export function CommunicationDetailCard({
       cuid: activityCommunication.sessionId,
       includeFailed: true,
     });
+  };
+
+  const onExportAllLogs = async () => {
+    if (!downloadUrl) {
+      return toast.error(
+        'Failed to load communication data. Please refresh and try again.',
+      );
+    }
+    setIsExporting(true);
+    try {
+      const meta = {
+        groupName: logs?.group?.name || 'N/A',
+        groupType: logs?.communicationDetail?.groupType || 'N/A',
+        transportName:
+          logs?.sessionDetails?.Transport?.name ||
+          activityCommunication?.transportName ||
+          'N/A',
+        communicationTitle:
+          logs?.communicationDetail?.communicationTitle ||
+          activityCommunication?.communicationTitle ||
+          'N/A',
+        message:
+          typeof logs?.communicationDetail?.message === 'string'
+            ? logs.communicationDetail.message
+            : undefined,
+        subject: logs?.communicationDetail?.subject,
+        sessionStartedAt: logs?.sessionDetails?.startedAt,
+        sessionEndedAt: logs?.sessionDetails?.endedAt,
+      };
+      const fileName = `${
+        activityCommunication?.communicationTitle || 'communication'
+      }_${new Date().toISOString().slice(0, 10)}`;
+      await downloadLogsCsv(downloadUrl, fileName, meta);
+      toast.success('Communication logs exported successfully!');
+    } catch (error) {
+      console.error('Error exporting logs:', error);
+      toast.error(
+        `Failed to export logs: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      );
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -279,22 +352,22 @@ export function CommunicationDetailCard({
           <div className="flex gap-3">
             {activityCommunication?.sessionStatus === 'FAILED' &&
               activityCommunication?.transportName === 'VOICE' && (
-              <TooltipWrapper tip="Retry Failed Voice Communication">
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={handleRetryFailed}
-                  disabled={retryFailed.isPending}
-                >
-                  {retryFailed.isPending ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <RefreshCcw className="h-4 w-4" />
-                  )}
-                  Retry
-                </Button>
-              </TooltipWrapper>
-            )}
+                <TooltipWrapper tip="Retry Failed Voice Communication">
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={handleRetryFailed}
+                    disabled={retryFailed.isPending}
+                  >
+                    {retryFailed.isPending ? (
+                      <LoaderCircle className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCcw className="h-4 w-4" />
+                    )}
+                    Retry
+                  </Button>
+                </TooltipWrapper>
+              )}
             <TooltipWrapper
               tip="No failed deliveries to export"
               disable={!hasNoFailedDeliveries}
@@ -307,6 +380,24 @@ export function CommunicationDetailCard({
               >
                 Failed Exports
                 <CloudDownload className="h-4 w-4" />
+              </Button>
+            </TooltipWrapper>
+            <TooltipWrapper
+              tip="No communication logs available to export"
+              disable={!hasNoLogsForExport}
+            >
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={onExportAllLogs}
+                disabled={isLoading || hasNoLogsForExport || isExporting}
+              >
+                {isExporting ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CloudDownload className="h-4 w-4" />
+                )}
+                {isExporting ? 'Exporting...' : 'Export All Logs'}
               </Button>
             </TooltipWrapper>
             <Button

@@ -41,6 +41,7 @@ import {
   Mic,
   MessageSquare,
   Clock,
+  LoaderCircle,
 } from 'lucide-react';
 import {
   Tabs,
@@ -50,7 +51,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { downloadLogsCsv, exportFailedLogs } from './comms.logs.export.utils';
@@ -127,6 +128,7 @@ export default function CommsLogsDetailPage() {
 
     return 'SMS';
   }, [logs, appTransports]);
+  const [isExporting, setIsExporting] = useState(false);
 
   const columns = useCommsLogsTableColumns(resolvedTransportName);
   const cleanFilters = Object.fromEntries(
@@ -211,6 +213,7 @@ export default function CommsLogsDetailPage() {
   };
 
   const onExportAll = async () => {
+    setIsExporting(true);
     try {
       if (!downloadUrl) {
         return toast.error(
@@ -221,9 +224,9 @@ export default function CommsLogsDetailPage() {
         return toast.error('No communication logs available to export.');
       }
 
-      const fileName = `${logs?.group?.name || 'group'}_${
-        activityDetail?.title || 'activity'
-      }_${new Date().toISOString().slice(0, 10)}`;
+      const fileName = `${communicationTitle || 'communication'}_${new Date()
+        .toISOString()
+        .slice(0, 10)}`;
 
       const message =
         typeof logs?.communicationDetail?.message === 'string'
@@ -247,6 +250,8 @@ export default function CommsLogsDetailPage() {
       toast.error(
         'Failed to export logs. Please try again or contact support.',
       );
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -311,12 +316,19 @@ export default function CommsLogsDetailPage() {
                     isLoading ||
                     isLoadingActivity ||
                     isLoadingSessionLogs ||
-                    hasNoLogsForExport
+                    hasNoLogsForExport ||
+                    isExporting
                   }
                 >
-                  <CloudDownload className="h-3.5 w-3.5" />
+                  {isExporting ? (
+                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <CloudDownload className="h-3.5 w-3.5" />
+                  )}
                   {isLoading || isLoadingActivity || isLoadingSessionLogs
                     ? 'Loading...'
+                    : isExporting
+                    ? 'Exporting...'
                     : 'Export All Logs'}
                 </Button>
               </TooltipWrapper>

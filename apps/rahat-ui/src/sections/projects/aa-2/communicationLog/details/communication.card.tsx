@@ -229,7 +229,9 @@ export function CommunicationDetailCard({
             <div className="flex items-center gap-2 mb-1">
               <div className="flex-1 min-w-0 overflow-hidden">
                 <TooltipWrapper
-                  tip={`${t('COMMUNICATION_TITLE')}: ${activityCommunication?.communicationTitle}`}
+                  tip={`${t('COMMUNICATION_TITLE')}: ${
+                    activityCommunication?.communicationTitle
+                  }`}
                 >
                   <h3 className="font-medium text-gray-900 truncate">
                     {activityCommunication?.communicationTitle}
@@ -257,7 +259,9 @@ export function CommunicationDetailCard({
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_CHANNEL')}: ${activityCommunication?.transportName}`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${
+                  activityCommunication?.transportName
+                }`}
               >
                 <span>
                   {activityCommunication?.transportName
@@ -288,7 +292,9 @@ export function CommunicationDetailCard({
         {'subject' in activityCommunication &&
           activityCommunication?.subject && (
             <TooltipWrapper
-              tip={`${t('COMMUNICATION_SUBJECT')}: ${activityCommunication?.subject}`}
+              tip={`${t('COMMUNICATION_SUBJECT')}: ${
+                activityCommunication?.subject
+              }`}
             >
               <h4 className="font-medium text-sm mt-3 truncate max-w-full">
                 {activityCommunication?.subject}
@@ -299,10 +305,11 @@ export function CommunicationDetailCard({
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <TooltipWrapper
-            tip={`${t('COMMUNICATION_MESSAGE')}: ${activityCommunication?.message?.substring(
-              0,
-              50,
-            )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
+            tip={`${t(
+              'COMMUNICATION_MESSAGE',
+            )}: ${activityCommunication?.message?.substring(0, 50)}${
+              activityCommunication?.message?.length > 50 ? '...' : ''
+            }`}
           >
             <div className="mt-2 overflow-hidden break-words">
               <MessageWithToggle
@@ -315,7 +322,9 @@ export function CommunicationDetailCard({
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
             <TooltipWrapper
-              tip={`${t('VOICE_FILE')}: ${activityCommunication?.message?.fileName}`}
+              tip={`${t('VOICE_FILE')}: ${
+                activityCommunication?.message?.fileName
+              }`}
             >
               <div className="bg-gray-50 p-3 rounded-sm mt-3">
                 <p className="text-center mb-2 text-sm font-medium">
@@ -339,7 +348,8 @@ export function CommunicationDetailCard({
             )}`}
           >
             <p className="mt-3 text-sm text-gray-500">
-              {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
+              {t('COMPLETED_AT')}:{' '}
+              {formatDate(activityCommunication.completedAt)}
             </p>
           </TooltipWrapper>
         )}
@@ -396,7 +406,7 @@ export function CommunicationDetailCard({
               </Button>
             </TooltipWrapper>
             <TooltipWrapper
-              tip="No communication logs available to export"
+              tip={t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT')}
               disable={!hasNoLogsForExport}
             >
               <Button
@@ -410,7 +420,7 @@ export function CommunicationDetailCard({
                 ) : (
                   <CloudDownload className="h-4 w-4" />
                 )}
-                {isExporting ? 'Exporting...' : 'Export All Logs'}
+                {isExporting ? t('EXPORTING') : t('EXPORT_ALL_LOGS')}{' '}
               </Button>
             </TooltipWrapper>
             <Button

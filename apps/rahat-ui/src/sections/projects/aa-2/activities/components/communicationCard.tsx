@@ -242,7 +242,7 @@ export function CommunicationCard({
           <TooltipWrapper
             tip={`Communication Subject: ${activityCommunication?.subject}`}
           >
-            <h4 className="font-medium text-sm mt-3">
+            <h4 className="font-medium text-sm mt-3 break-words">
               {activityCommunication?.subject}
             </h4>
           </TooltipWrapper>
@@ -256,7 +256,7 @@ export function CommunicationCard({
               50,
             )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
           >
-            <div className="mt-2">
+            <div className="mt-2 overflow-hidden break-words">
               <MessageWithToggle
                 message={activityCommunication?.message ?? ''}
               />

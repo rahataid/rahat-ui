@@ -222,15 +222,17 @@ export function CommunicationDetailCard({
             {getIcon()}
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-1">
-              <TooltipWrapper
-                tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
-              >
-                <h3 className="font-medium text-gray-900 truncate">
-                  {activityCommunication?.communicationTitle}
-                </h3>
-              </TooltipWrapper>
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <TooltipWrapper
+                  tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
+                >
+                  <h3 className="font-medium text-gray-900 truncate">
+                    {activityCommunication?.communicationTitle}
+                  </h3>
+                </TooltipWrapper>
+              </div>
               <TooltipWrapper
                 tip={`Communication Status: ${
                   activityCommunication?.sessionStatus
@@ -277,7 +279,7 @@ export function CommunicationDetailCard({
             <TooltipWrapper
               tip={`Communication Subject: ${activityCommunication?.subject}`}
             >
-              <h4 className="font-medium text-sm mt-3">
+              <h4 className="font-medium text-sm mt-3 truncate max-w-full">
                 {activityCommunication?.subject}
               </h4>
             </TooltipWrapper>
@@ -291,7 +293,7 @@ export function CommunicationDetailCard({
               50,
             )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
           >
-            <div className="mt-2">
+            <div className="mt-2 overflow-hidden break-words">
               <MessageWithToggle
                 message={activityCommunication?.message ?? ''}
               />

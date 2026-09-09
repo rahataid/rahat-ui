@@ -11,10 +11,13 @@ import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { useTreasuryTokenDetail } from 'libs/query/src/lib/treasury/treasury.service';
 import { Banknote, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { AssetsModal } from './assets.modal';
 
 const AssetsDetails = () => {
+  const t = useTranslations('TREASURY_ASSETS');
+  const tg = useTranslations('GLOBAL');
   const contractAddress = useParams()?.contractAddress;
   const projects = useProjectList();
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');
@@ -57,25 +60,25 @@ const AssetsDetails = () => {
       <div className="grid grid-cols-4 gap-2">
         <DataCard
           className=""
-          title="Name"
+          title={tg('NAME')}
           number={tokenDetail?.name}
           Icon={Banknote}
         />
         <DataCard
           className=""
-          title="Symbol"
+          title={t('SYMBOL')}
           number={tokenDetail?.symbol}
           Icon={Banknote}
         />
         <DataCard
           className=""
-          title="Initial Supply"
+          title={t('INITIAL_SUPPLY')}
           number={tokenDetail?.initialSupply}
           Icon={Banknote}
         />
         <DataCard
           className=""
-          title="Decimals"
+          title={t('DECIMALS')}
           number={tokenDetail?.decimals}
           Icon={Banknote}
         />

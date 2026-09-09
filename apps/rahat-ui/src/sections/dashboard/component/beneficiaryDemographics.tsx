@@ -3,6 +3,9 @@ import React from 'react';
 import MapView from '../mapComponent/mapView';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
+import { useTranslations } from 'next-intl';
+import { useChartNumberOptions, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 const STATS_CONSTANT = [
   'AGE_GROUPS',
@@ -13,6 +16,10 @@ const STATS_CONSTANT = [
 ];
 
 const BeneficiaryDemographics = ({ benefStats }: any) => {
+  const t = useTranslations('DASHBOARD_BENEFICIARY_DEMOGRAPHICS');
+  const g = useTranslations('GLOBAL');
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
+  const formatLabel = useLabelDigits();
   // Helper to get stat by name
   const getStat = (name: string) =>
     benefStats?.find((s) => s.name === name)?.data ?? [];
@@ -43,46 +50,47 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
   };
   const genderData = (mappedStats['BENEFICIARY_GENDER'] || []).map(
     (item: any) => ({
-      label: item.id,
+      label: translateValue(g, item.id, { fallbackStyle: 'raw' }),
       value: item.count,
     }),
   );
-  const genderColors = genderData.map(
-    (g) => genderColorsMap[g.label] || '#CCCCCC',
+  // Keyed off the raw enum, not the translated label, so colours survive locale changes.
+  const genderColors = (mappedStats['BENEFICIARY_GENDER'] || []).map(
+    (item: any) => genderColorsMap[item.id] || '#CCCCCC',
   );
 
   return (
     <div className="flex flex-col">
       <Heading
-        title="Beneficiary Demographics"
+        title={t('BENEFICIARY_DEMOGRAPHICS')}
         titleStyle="text-lg"
-        description="Summary of household statistics"
+        description={t('SUMMARY_OF_HOUSEHOLD_STATISTICS')}
       />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
         {/* Left Column */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <DataCard
-            title="Total Respondents"
-            smallNumber={String(totalRespondents)}
+            title={t('TOTAL_RESPONDENTS')}
+            smallNumber={formatNum(totalRespondents)}
             className="h-24 rounded-sm"
           />
           <DataCard
-            title="Total number of Family Members"
-            smallNumber={String(totalFamilyMembers)}
+            title={t('TOTAL_NUMBER_OF_FAMILY_MEMBERS')}
+            smallNumber={formatNum(totalFamilyMembers)}
             className="h-24 rounded-sm"
           />
 
           {/* Gender Distribution */}
           <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
-            <h1 className="text-sm font-medium">Gender Distribution</h1>
+            <h1 className="text-sm font-medium">{t('GENDER_DISTRIBUTION')}</h1>
             <div className="w-full flex-1 p-4 pt-0 flex justify-center items-center">
-              <DynamicPieChart pieData={genderData} colors={genderColors} />
+              <DynamicPieChart pieData={genderData} colors={genderColors} options={chartOpts} />
             </div>
           </div>
 
           {/* Age Group */}
           <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
-            <h1 className="text-sm font-medium">Age Group</h1>
+            <h1 className="text-sm font-medium">{t('AGE_GROUP')}</h1>
             <div className="flex-1 p-2">
               {ageGroups.length === 0 ? (
                 <div className="flex justify-center h-[300px] items-center">
@@ -91,16 +99,17 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
               ) : (
                 <BarChart
                   series={ageGroups.map((item) => item.value)}
-                  categories={ageGroups.map((item) => item.label)}
+                  categories={ageGroups.map((item) => formatLabel(item.label))}
                   colors={['#4A90E2']}
                   xaxisLabels
                   yaxisLabels
                   barHeight={20}
                   height="100%"
                   width="100%"
-                  xaxisTitle="Age Group"
-                  yaxisTitle="No. of Beneficiaries"
+                  xaxisTitle={t('AGE_GROUP')}
+                  yaxisTitle={g('NO_OF_BENEFICIARIES')}
                   columnWidth="20%"
+                  options={chartOpts}
                 />
               )}
             </div>

@@ -11,6 +11,7 @@ type Iprops = {
   className?: string;
   name: string;
   options?: Array<string>;
+  labels?: Record<string, string>;
   value?: string;
   onChange?: (value: string) => void;
 };
@@ -19,6 +20,7 @@ export default function SelectComponent({
   className = 'w-full',
   name,
   options,
+  labels,
   value,
   onChange,
 }: Iprops) {
@@ -30,7 +32,9 @@ export default function SelectComponent({
       <SelectContent>
         <SelectGroup>
           {options?.map((o: string) => (
-            <SelectItem value={o}>{o}</SelectItem>
+            <SelectItem key={o} value={o}>
+              {labels?.[o] ?? o}
+            </SelectItem>
           ))}
         </SelectGroup>
       </SelectContent>

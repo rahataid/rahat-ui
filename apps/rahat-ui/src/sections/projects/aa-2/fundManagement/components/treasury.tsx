@@ -25,6 +25,8 @@ import { useState } from 'react';
 import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistory';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Can } from 'apps/rahat-ui/src/components/can';
 import {
   ACTIONS,
@@ -32,6 +34,7 @@ import {
 } from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function Treasury() {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const [addFundOpen, setAddFundOpen] = useState(false);
@@ -51,6 +54,8 @@ export default function Treasury() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const formatNum = useNumberFormat();
+
   return (
     <>
       {isPending ? (
@@ -66,14 +71,14 @@ export default function Treasury() {
           />
           <div className="flex justify-between">
             <Heading
-              title="Treasury"
+              title={t('TREASURY')}
               titleStyle="text-lg"
-              description="Overview of token supply, project balance, and transfer history"
+              description={t('OVERVIEW_OF_TOKEN_SUPPLY')}
             />
             <Can action={ACTIONS.CREATE} subject={SUBJECTS.FUND_MANAGEMENT}>
               <IconLabelBtn
                 Icon={Coins}
-                name="Add Fund"
+                name={t('ADD_FUND')}
                 handleClick={() => setAddFundOpen(true)}
               />
             </Can>
@@ -83,17 +88,17 @@ export default function Treasury() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DataCard
               className="rounded-sm"
-              title="Total Token Supply"
-              smallNumber={`${tokenDetails?.data.totalSupply} ${tokenDetails?.data.symbol}`}
+              title={t('TOTAL_TOKEN_SUPPLY')}
+              smallNumber={`${formatNum(tokenDetails?.data.totalSupply)} ${tokenDetails?.data.symbol}`}
               Icon={Coins}
-              subtitle="Total tokens minted for this project"
+              subtitle={t('TOTAL_TOKENS_MINTED_FOR_THIS_PROJECT')}
             />
             <DataCard
               className="rounded-sm"
-              title="Project Balance"
-              smallNumber={`${tokenDetails?.data.projectBalance} ${tokenDetails?.data.symbol}`}
+              title={t('PROJECT_BALANCE')}
+              smallNumber={`${formatNum(tokenDetails?.data.projectBalance)} ${tokenDetails?.data.symbol}`}
               Icon={Wallet}
-              subtitle="Tokens currently held in project treasury"
+              subtitle={t('TOKENS_CURRENTLY_HELD_IN_PROJECT_TREASURY')}
             />
           </div>
 
@@ -102,25 +107,25 @@ export default function Treasury() {
             <CardHeader className="pb-2 p-4">
               <CardTitle className="text-base font-medium flex items-center gap-2">
                 <Coins size={16} className="text-primary" />
-                Token Details
+                {t('TOKEN_DETAILS')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1 p-3 bg-secondary rounded-sm">
-                  <p className="text-xs text-muted-foreground">Token Name</p>
+                  <p className="text-xs text-muted-foreground">{t('TOKEN_NAME')}</p>
                   <p className="text-sm font-semibold">
                     {tokenDetails?.data.name}
                   </p>
                 </div>
                 <div className="flex flex-col gap-1 p-3 bg-secondary rounded-sm">
-                  <p className="text-xs text-muted-foreground">Symbol</p>
+                  <p className="text-xs text-muted-foreground">{t('SYMBOL')}</p>
                   <p className="text-sm font-semibold">
                     {tokenDetails?.data.symbol}
                   </p>
                 </div>
                 <div className="flex flex-col gap-1 p-3 bg-secondary rounded-sm">
-                  <p className="text-xs text-muted-foreground">Decimals</p>
+                  <p className="text-xs text-muted-foreground">{t('DECIMALS')}</p>
                   <p className="text-sm font-semibold">
                     {tokenDetails?.data.decimal}
                   </p>
@@ -133,7 +138,7 @@ export default function Treasury() {
           <DemoTable
             table={table}
             tableHeight="h-[calc(100vh-420px)]"
-            message="No token transfers have been made yet."
+            message={t('NO_TOKEN_TRANSFERS')}
             loading={isTransferHistoryFetching}
           />
           <CustomPagination

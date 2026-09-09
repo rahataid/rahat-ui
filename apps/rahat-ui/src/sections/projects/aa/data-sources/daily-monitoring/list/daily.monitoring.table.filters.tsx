@@ -16,8 +16,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { cn } from '@rahat-ui/shadcn/src';
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { CalendarIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   user: string;
@@ -40,14 +41,15 @@ const SelectComponent = ({
   value,
   handleFilter,
 }: ISelectComponent) => {
+  const tGlobal = useTranslations('GLOBAL');
   return (
     <Select value={value} onValueChange={(value) => handleFilter(name, value)}>
       <SelectTrigger>
-        <SelectValue placeholder={`Select a ${name}`} />
+        <SelectValue placeholder={`${tGlobal('SELECT')} ${name}`} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="all">{tGlobal('ALL')}</SelectItem>
           {options.map((item) => (
             <SelectItem key={item.label} value={item.value}>
               {item.label}
@@ -66,12 +68,15 @@ export default function DailyMonitoringTableFilters({
   handleSearch,
   handleFilter,
 }: IProps) {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
+  const formatDate = useDateFormat();
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">
       <SearchInput
         className="w-full"
-        name="user"
+        name={tGlobal('USER')}
         value={user}
         onSearch={handleSearch}
       />
@@ -92,7 +97,7 @@ export default function DailyMonitoringTableFilters({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+            {date ? formatDate(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -106,9 +111,9 @@ export default function DailyMonitoringTableFilters({
         </PopoverContent>
       </Popover>
       {date && (
-        <Button type="button" onClick={() => handleFilter('createdAt', '')}>
-          Clear date
-        </Button>
+          <Button type="button" onClick={() => handleFilter('createdAt', '')}>
+            {tGlobal('CLEAR_DATE')}
+          </Button>
       )}
     </div>
   );

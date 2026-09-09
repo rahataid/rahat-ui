@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState, useMemo } from 'react';
 import {
   ArrowRight,
@@ -28,8 +29,7 @@ import {
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import MessageWithToggle from '../../activities/components/messageWithToggle';
 import { downloadLogsCsv } from './comms.logs.export.utils';
@@ -74,6 +74,8 @@ export function CommunicationDetailCard({
   activityId,
   projectId,
 }: CommunicationCardProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { pagination, filters } = usePagination();
   const { data: logs, isLoading } = useGetCommunicationLogs(
     projectId as UUID,
@@ -103,6 +105,7 @@ export function CommunicationDetailCard({
   );
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const formatDate = useDateFormat();
   const [isExporting, setIsExporting] = useState(false);
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
@@ -226,7 +229,7 @@ export function CommunicationDetailCard({
             <div className="flex items-center gap-2 mb-1">
               <div className="flex-1 min-w-0 overflow-hidden">
                 <TooltipWrapper
-                  tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
+                  tip={`${t('COMMUNICATION_TITLE')}: ${activityCommunication?.communicationTitle}`}
                 >
                   <h3 className="font-medium text-gray-900 truncate">
                     {activityCommunication?.communicationTitle}
@@ -234,10 +237,10 @@ export function CommunicationDetailCard({
                 </TooltipWrapper>
               </div>
               <TooltipWrapper
-                tip={`Communication Status: ${
+                tip={`${t('COMMUNICATION_STATUS')}: ${
                   activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'
+                    ? tg(activityCommunication.sessionStatus as any)
+                    : t('UNKNOWN')
                 }`}
               >
                 <Badge
@@ -246,27 +249,35 @@ export function CommunicationDetailCard({
                   )}`}
                 >
                   {activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'}
+                    ? tg(activityCommunication.sessionStatus as any)
+                    : t('UNKNOWN')}
                 </Badge>
               </TooltipWrapper>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`Communication Channel: ${activityCommunication?.transportName}`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${activityCommunication?.transportName}`}
               >
-                <span>{activityCommunication?.transportName}</span>
+                <span>
+                  {activityCommunication?.transportName
+                    ? tg(activityCommunication.transportName as any)
+                    : t('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`Group Type: ${activityCommunication?.groupType}`}
+                tip={`${t('GROUP_TYPE')}: ${activityCommunication?.groupType}`}
               >
-                <span>{activityCommunication?.groupType}</span>
+                <span>
+                  {activityCommunication?.groupType
+                    ? tg(activityCommunication.groupType as any)
+                    : t('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`Group Name: ${activityCommunication?.groupName}`}
+                tip={`${t('GROUP_NAME')}: ${activityCommunication?.groupName}`}
               >
                 <span>{activityCommunication?.groupName}</span>
               </TooltipWrapper>
@@ -277,7 +288,7 @@ export function CommunicationDetailCard({
         {'subject' in activityCommunication &&
           activityCommunication?.subject && (
             <TooltipWrapper
-              tip={`Communication Subject: ${activityCommunication?.subject}`}
+              tip={`${t('COMMUNICATION_SUBJECT')}: ${activityCommunication?.subject}`}
             >
               <h4 className="font-medium text-sm mt-3 truncate max-w-full">
                 {activityCommunication?.subject}
@@ -288,7 +299,7 @@ export function CommunicationDetailCard({
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <TooltipWrapper
-            tip={`Communication Message: ${activityCommunication?.message?.substring(
+            tip={`${t('COMMUNICATION_MESSAGE')}: ${activityCommunication?.message?.substring(
               0,
               50,
             )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
@@ -304,7 +315,7 @@ export function CommunicationDetailCard({
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
             <TooltipWrapper
-              tip={`Voice File: ${activityCommunication?.message?.fileName}`}
+              tip={`${t('VOICE_FILE')}: ${activityCommunication?.message?.fileName}`}
             >
               <div className="bg-gray-50 p-3 rounded-sm mt-3">
                 <p className="text-center mb-2 text-sm font-medium">
@@ -323,12 +334,12 @@ export function CommunicationDetailCard({
 
         {activityCommunication?.sessionStatus === 'COMPLETED' && (
           <TooltipWrapper
-            tip={`Completed At: ${dateFormat(
+            tip={`${t('COMPLETED_AT')}: ${formatDate(
               activityCommunication.completedAt,
             )}`}
           >
             <p className="mt-3 text-sm text-gray-500">
-              Completed at: {dateFormat(activityCommunication.completedAt)}
+              {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
             </p>
           </TooltipWrapper>
         )}
@@ -345,7 +356,7 @@ export function CommunicationDetailCard({
               );
             return latestUpdatedAt ? (
               <p className="text-sm text-gray-500">
-                Updated At: {dateFormat(latestUpdatedAt)}
+                {t('UPDATED_AT')}: {formatDate(latestUpdatedAt)}
               </p>
             ) : (
               <div />
@@ -371,7 +382,7 @@ export function CommunicationDetailCard({
                 </TooltipWrapper>
               )}
             <TooltipWrapper
-              tip="No failed deliveries to export"
+              tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
               disable={!hasNoFailedDeliveries}
             >
               <Button
@@ -380,7 +391,7 @@ export function CommunicationDetailCard({
                 onClick={onFailedExports}
                 disabled={hasNoFailedDeliveries}
               >
-                Failed Exports
+                {t('FAILED_EXPORTS')}
                 <CloudDownload className="h-4 w-4" />
               </Button>
             </TooltipWrapper>
@@ -407,7 +418,7 @@ export function CommunicationDetailCard({
               className="flex-1 gap-2 text-blue-600 border-blue-200"
               onClick={onViewDetails}
             >
-              View Details
+              {t('VIEW_DETAILS')}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

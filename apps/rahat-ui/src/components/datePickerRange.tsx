@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { format } from 'date-fns';
 import { Calendar as CalendarIcon, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -36,6 +37,8 @@ export function DateRangePicker({
   handleClearDate,
   className,
 }: DatePickerType) {
+  const t = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -69,7 +72,7 @@ export function DateRangePicker({
                 <>
                   <div className="flex justify-between items-center w-full">
                     <p className="flex-1">
-                      {format(date.from, 'PPP')} - {format(date.to, 'PPP')}
+                      {formatDate(date.from, 'PPP')} - {formatDate(date.to, 'PPP')}
                     </p>
                     <TooltipProvider>
                       <Tooltip>
@@ -85,7 +88,7 @@ export function DateRangePicker({
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Clear Date</p>
+                          <p>{t('CLEAR_DATE')}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -93,7 +96,7 @@ export function DateRangePicker({
                 </>
               ) : (
                 <div className="flex justify-between items-center w-full">
-                  <p className="flex-1">{format(date.from, 'PPP')}</p>
+                  <p className="flex-1">{formatDate(date.from, 'PPP')}</p>
 
                   <TooltipProvider>
                     <Tooltip>
@@ -109,7 +112,7 @@ export function DateRangePicker({
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Clear Date</p>
+                        <p>{t('CLEAR_DATE')}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

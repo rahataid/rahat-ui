@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';
 import { cn } from '@rahat-ui/shadcn/src';
 import {
@@ -64,6 +65,8 @@ export const AudioRecorder = ({
   resumeRecording,
   fileUploadPending,
 }: Props) => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   useEffect(() => {
     if (!isRecording || !canvasRef.current || !analyserRef.current) return;
 
@@ -141,7 +144,7 @@ export const AudioRecorder = ({
               {' '}
               <Dot color="red" className="w-8 h-8" />
             </span>{' '}
-            {timer} <span className="text-xs ml-1">Recording</span>
+            {timer} <span className="text-xs ml-1">{t('RECORDING')}</span>
           </div>
         )}
       </div>
@@ -162,10 +165,10 @@ export const AudioRecorder = ({
                       className="rounded-sm gap-2"
                       type="button"
                     >
-                      <PlayIcon size={16} /> Resume
+                      <PlayIcon size={16} /> {t('RESUME')}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Resume</TooltipContent>
+                  <TooltipContent>{t('RESUME')}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             ) : (
@@ -178,10 +181,10 @@ export const AudioRecorder = ({
                       className="rounded-sm gap-2"
                       type="button"
                     >
-                      <PauseIcon size={16} /> Pause
+                      <PauseIcon size={16} /> {t('PAUSE')}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Pause</TooltipContent>
+                  <TooltipContent>{t('PAUSE')}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
@@ -195,10 +198,10 @@ export const AudioRecorder = ({
                     type="button"
                     className="rounded-sm gap-2"
                   >
-                    <StopCircle size={16} /> Stop
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Stop</TooltipContent>
+                      <StopCircle size={16} /> {t('STOP')}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t('STOP')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
@@ -211,16 +214,16 @@ export const AudioRecorder = ({
                     type="button"
                     className="rounded-sm gap-2"
                   >
-                    <Trash size={16} /> Delete
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Reset</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </>
-        )}
+              <Trash size={16} /> {tg('DELETE')}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t('RESET')}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
 
-        {!isRecording && (
+          {!isRecording && (
           <div className="flex flex-col">
             <TooltipProvider>
               <Tooltip>
@@ -234,7 +237,7 @@ export const AudioRecorder = ({
                     <Mic size={16} />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Start</TooltipContent>
+                <TooltipContent>{t('START')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -254,10 +257,10 @@ export const AudioRecorder = ({
                     className="rounded-sm gap-2"
                     disabled={fileUploadPending}
                   >
-                    <UploadIcon size={16} /> Upload
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Upload</TooltipContent>
+                      <UploadIcon size={16} /> {t('UPLOAD')}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t('UPLOAD')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
@@ -270,7 +273,7 @@ export const AudioRecorder = ({
                       className="rounded-sm gap-2 opacity-50 cursor-not-allowed"
                       disabled
                     >
-                      <Trash size={16} /> Delete
+                      <Trash size={16} /> {tg('DELETE')}
                     </Button>
                   </div>
                 ) : (
@@ -281,11 +284,11 @@ export const AudioRecorder = ({
                       type="button"
                       className="rounded-sm gap-2"
                     >
-                      <Trash size={16} /> Delete
+                      <Trash size={16} /> {tg('DELETE')}
                     </Button>
                   </TooltipTrigger>
                 )}
-                <TooltipContent>Reset</TooltipContent>
+                <TooltipContent>{t('RESET')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
@@ -313,7 +316,7 @@ export const AudioRecorder = ({
         <div className="flex text  gap-3">
           <MicIcon color="green" />
           <Label className="text-green-500">
-            Recording in Progress. You can stop or pause anytime
+            {t('RECORDING_IN_PROGRESS')}
           </Label>
         </div>
       )}
@@ -321,7 +324,7 @@ export const AudioRecorder = ({
         <div className="flex text  gap-3">
           <PauseIcon color="yellow" />
           <Label className="text-yellow-400">
-            Recording Pause. click Resume to continue or stop to finish
+            {t('RECORDING_PAUSE')}
           </Label>
         </div>
       )}
@@ -329,14 +332,13 @@ export const AudioRecorder = ({
         <div className="flex text  gap-3">
           <CheckCircle color="green" />
           <Label className="text-green-400">
-            Recording Completed. Press Upload to submit or delete to Record
-            again
+            {t('RECORDING_COMPLETED')}
           </Label>
         </div>
       )}
 
       {!isRecording && !recordedFile && (
-        <div className="flex text  gap-3">Record audio and upload</div>
+        <div className="flex text  gap-3">{t('RECORD_AUDIO_AND_UPLOAD')}</div>
       )}
     </div>
   );

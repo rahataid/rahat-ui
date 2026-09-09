@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 import { api } from '../../utils/api';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
 export const useVendorList = (
   payload: any,
@@ -110,6 +112,7 @@ const updateVendor = async (uuid: UUID, payload: any) => {
 export const useUpdateVendor = () => {
   const qc = useQueryClient();
   const alert = useSwal();
+  const t = useTranslations();
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
@@ -119,18 +122,26 @@ export const useUpdateVendor = () => {
   return useMutation({
     mutationFn: ({ uuid, payload }: { uuid: UUID; payload: any }) =>
       updateVendor(uuid, payload),
-    onSuccess: () => {
+    onSuccess: (_data, variables: any) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: 'Vendor updated successfully.',
+        title: variables?.successMessage || t('GLOBAL.VENDOR_UPDATED_SUCCESSFULLY' as never),
         icon: 'success',
       });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: any, variables: any) => {
+      const code = error?.response?.data?.code;
+      const name = error?.response?.data?.name;
+      const errorMessage = resolveBackendErrorMessage(
+        t,
+        code || name,
+        error?.response?.data?.params,
+        ['VENDORS', 'USERS'],
+        error?.response?.data?.message || t('GLOBAL.ERROR' as never),
+      );
       toast.fire({
-        title: 'Error while updating vendor.',
+        title: variables?.errorMessage || t('GLOBAL.ERROR_WHILE_UPDATING_VENDOR' as never),
         icon: 'error',
         text: errorMessage,
       });
@@ -154,6 +165,7 @@ const removeVendor = async ({
 export const useRemoveVendor = () => {
   const qc = useQueryClient();
   const alert = useSwal();
+  const t = useTranslations();
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
@@ -169,18 +181,26 @@ export const useRemoveVendor = () => {
       vendorId: UUID;
       projectId?: UUID;
     }) => removeVendor({ vendorId, projectId }),
-    onSuccess: () => {
+    onSuccess: (_data, variables: any) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: 'Vendor removed successfully.',
+        title: variables?.successMessage || t('GLOBAL.VENDOR_REMOVED_SUCCESSFULLY' as never),
         icon: 'success',
       });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: any, variables: any) => {
+      const code = error?.response?.data?.code;
+      const name = error?.response?.data?.name;
+      const errorMessage = resolveBackendErrorMessage(
+        t,
+        code || name,
+        error?.response?.data?.params,
+        ['VENDORS', 'USERS'],
+        error?.response?.data?.message || t('GLOBAL.ERROR' as never),
+      );
       toast.fire({
-        title: 'Error while removing vendor.',
+        title: variables?.errorMessage || t('GLOBAL.ERROR_WHILE_REMOVING_VENDOR' as never),
         icon: 'error',
         text: errorMessage,
       });

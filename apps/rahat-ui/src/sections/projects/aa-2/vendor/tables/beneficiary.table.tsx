@@ -19,6 +19,8 @@ import { toTitleCase } from 'apps/rahat-ui/src/utils/string';
 import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {
@@ -33,6 +35,8 @@ export default function VendorsBeneficiaryList({
   beneficiaryData,
   loading,
 }: VendorsBeneficiaryListProps) {
+  const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id, vendorId } = useParams();
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
     'subTab',
@@ -150,13 +154,13 @@ export default function VendorsBeneficiaryList({
               : 'text-muted-foreground'
           }`}
         >
-          Online
+          {tGlobal('ONLINE')}
           <Badge
             className={`h-5 min-w-[20px] justify-center text-white px-2 py-0 ${
               activeTab === PayoutMode.ONLINE ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {totalOnlineBeneficiary}
+            {formatNum(totalOnlineBeneficiary)}
           </Badge>
         </button>
         <button
@@ -167,26 +171,24 @@ export default function VendorsBeneficiaryList({
               : 'text-muted-foreground'
           }`}
         >
-          Offline
+          {tGlobal('OFFLINE')}
           <Badge
             className={`h-5 min-w-[20px] justify-center text-white px-2 py-0 ${
               activeTab === PayoutMode.OFFLINE ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {totalOfflineBeneficiary}
+            {formatNum(totalOfflineBeneficiary)}
           </Badge>
         </button>
       </div>
       <Heading
-        title={`${
-          activeTab === PayoutMode.ONLINE ? 'Online' : 'Offline'
-        } Beneficiaries`}
+        title={tGlobal(activeTab === PayoutMode.ONLINE ? 'ONLINE_BENEFICIARIES' : 'OFFLINE_BENEFICIARIES')}
         titleStyle="text-lg"
-        description={`List of all the ${toTitleCase(activeTab)} beneficiaries`}
+        description={tGlobal(activeTab === PayoutMode.ONLINE ? 'ONLINE_BENEFICIARIES_DESC' : 'OFFLINE_BENEFICIARIES_DESC')}
       />
       <SearchInput
         className="w-full flex-[4]"
-        name="walletAddress"
+        name={tGlobal('WALLET_ADDRESS')}
         onSearch={(e) => handleSearch(e, 'walletAddress')}
         value={filters?.walletAddress || ''}
       />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
@@ -18,12 +19,13 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Can } from 'apps/rahat-ui/src/components/can';
 import {
   ACTIONS,
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
@@ -66,6 +68,10 @@ interface CommunicationCardProps {
 export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();
   const router = useRouter();
@@ -151,7 +157,9 @@ export function CommunicationCard({
             {/* Title */}
             <div className="flex items-center gap-2 mb-1">
               <TooltipWrapper
-                tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
+                tip={`${t('COMMUNICATION_TITLE')}: ${
+                  activityCommunication?.communicationTitle
+                }`}
               >
                 <h3 className="font-medium text-gray-900 truncate w-[360px]">
                   {activityCommunication?.communicationTitle}
@@ -160,15 +168,15 @@ export function CommunicationCard({
 
               <TooltipComponent
                 Icon={ArrowUpRightSquare}
-                tip="View Communication Log"
+                tip={t('VIEW_COMMUNICATION_LOG')}
                 handleOnClick={() => router.push(redirectLink)}
                 iconStyle="text-primary"
               />
               <TooltipWrapper
-                tip={`Communication Status: ${
+                tip={`${t('COMMUNICATION_STATUS')}: ${
                   activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'
+                    ? tg(activityCommunication.sessionStatus as any)
+                    : tg('UNKNOWN')
                 }`}
               >
                 <Badge
@@ -177,27 +185,37 @@ export function CommunicationCard({
                   )}`}
                 >
                   {activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'}
+                    ? tg(activityCommunication.sessionStatus as any)
+                    : tg('UNKNOWN')}
                 </Badge>
               </TooltipWrapper>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`Communication Channel: ${activityCommunication?.transportName}`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${
+                  activityCommunication?.transportName
+                }`}
               >
-                <span>{activityCommunication?.transportName}</span>
+                <span>
+                  {activityCommunication?.transportName
+                    ? tg(activityCommunication.transportName as any)
+                    : tg('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`Group Type: ${activityCommunication?.groupType}`}
+                tip={`${t('GROUP_TYPE')}: ${activityCommunication?.groupType}`}
               >
-                <span>{activityCommunication?.groupType}</span>
+                <span>
+                  {activityCommunication?.groupType
+                    ? tg(activityCommunication.groupType as any)
+                    : tg('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`Group Name: ${activityCommunication?.groupName}`}
+                tip={`${tg('GROUP_NAME')}: ${activityCommunication?.groupName}`}
               >
                 <span>{activityCommunication?.groupName}</span>
               </TooltipWrapper>
@@ -205,9 +223,18 @@ export function CommunicationCard({
                 <>
                   <span>•</span>
                   <TooltipWrapper
-                    tip={`SMS credit: ${activityCommunication?.extras.smsCredits}`}
+                    tip={`${
+                      activityCommunication?.extras.smsCredits === 1
+                        ? t('SMS_CREDIT')
+                        : t('SMS_CREDITS')
+                    }: ${formatNum(activityCommunication?.extras.smsCredits)}`}
                   >
-                    <span>{activityCommunication?.extras.smsCredits}</span>
+                    <span>
+                      {formatNum(activityCommunication?.extras.smsCredits)}{' '}
+                      {activityCommunication?.extras.smsCredits === 1
+                        ? t('SMS_CREDIT')
+                        : t('SMS_CREDITS')}
+                    </span>
                   </TooltipWrapper>
                 </>
               )}
@@ -217,7 +244,7 @@ export function CommunicationCard({
           {/* Send Button */}
           {activityCommunication?.sessionStatus === SessionStatus.NEW && (
             <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
-              <TooltipWrapper tip="Send Communication">
+              <TooltipWrapper tip={t('SEND_COMMUNICATION')}>
                 <Button
                   className="h-10 w-10 rounded-full p-0 flex-shrink-0"
                   variant="outline"
@@ -240,7 +267,9 @@ export function CommunicationCard({
         {/* Subject for Email */}
         {activityCommunication?.subject && (
           <TooltipWrapper
-            tip={`Communication Subject: ${activityCommunication?.subject}`}
+            tip={`${t('COMMUNICATION_SUBJECT')}: ${
+              activityCommunication?.subject
+            }`}
           >
             <h4 className="font-medium text-sm mt-3 break-words">
               {activityCommunication?.subject}
@@ -251,10 +280,11 @@ export function CommunicationCard({
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <TooltipWrapper
-            tip={`Communication Message: ${activityCommunication?.message?.substring(
-              0,
-              50,
-            )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
+            tip={`${t(
+              'COMMUNICATION_MESSAGE',
+            )}: ${activityCommunication?.message?.substring(0, 50)}${
+              activityCommunication?.message?.length > 50 ? '...' : ''
+            }`}
           >
             <div className="mt-2 overflow-hidden break-words">
               <MessageWithToggle
@@ -268,7 +298,9 @@ export function CommunicationCard({
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message || {}).length !== 0 && (
             <TooltipWrapper
-              tip={`Voice File: ${activityCommunication?.message?.fileName}`}
+              tip={`${t('VOICE_FILE')}: ${
+                activityCommunication?.message?.fileName
+              }`}
             >
               <div className="bg-gray-50 p-3 rounded-sm mt-3">
                 <p className="text-center mb-2 text-sm font-medium">
@@ -289,34 +321,38 @@ export function CommunicationCard({
         <div className="mt-3 space-y-1">
           {activityCommunication?.startedAt && (
             <TooltipWrapper
-              tip={`Started At: ${dateFormat(activityCommunication.startedAt)}`}
+              tip={`${t('STARTED_AT')}: ${formatDate(
+                activityCommunication.startedAt,
+              )}`}
             >
               <p className="text-sm text-gray-500">
-                Started At: {dateFormat(activityCommunication.startedAt)}
+                {t('STARTED_AT')}: {formatDate(activityCommunication.startedAt)}
               </p>
             </TooltipWrapper>
           )}
           {activityCommunication?.sessionStatus === 'COMPLETED' &&
             activityCommunication?.completedAt && (
               <TooltipWrapper
-                tip={`Completed At: ${dateFormat(
+                tip={`${t('COMPLETED_AT')}: ${formatDate(
                   activityCommunication.completedAt,
                 )}`}
               >
                 <p className="text-sm text-gray-500">
-                  Completed At: {dateFormat(activityCommunication.completedAt)}
+                  {t('COMPLETED_AT')}:{' '}
+                  {formatDate(activityCommunication.completedAt)}
                 </p>
               </TooltipWrapper>
             )}
           {activityCommunication?.sessionStatus !== 'COMPLETED' &&
             activityCommunication?.updatedAt && (
               <TooltipWrapper
-                tip={`Updated At: ${dateFormat(
+                tip={`${t('UPDATED_AT')}: ${formatDate(
                   activityCommunication.updatedAt,
                 )}`}
               >
                 <p className="text-sm text-gray-500">
-                  Updated At: {dateFormat(activityCommunication.updatedAt)}
+                  {t('UPDATED_AT')}:{' '}
+                  {formatDate(activityCommunication.updatedAt)}
                 </p>
               </TooltipWrapper>
             )}
@@ -327,18 +363,18 @@ export function CommunicationCard({
         isConfirmationDialogOpen={confirmationDialog.value}
         onCancel={confirmationDialog.onFalse}
         onConfirm={handleConfirmSend}
-        dialogTitle="Send Communication?"
+        dialogTitle={t('SEND_COMMUNICATION')}
       >
         <div>
-          Are you sure you want to send
+          {t('SEND_COMMUNICATION_CONFIRM')}
           <span className="font-bold mx-1">
             {activityCommunication?.transportName}
           </span>
-          communication to the
+          {t('COMMUNICATION_TO_THE')}
           <span className="font-bold mx-1">
             {activityCommunication?.groupName}
           </span>
-          Group?
+          {t('GROUP_QUESTION')}
         </div>
       </ConfirmationDialog>
     </Card>

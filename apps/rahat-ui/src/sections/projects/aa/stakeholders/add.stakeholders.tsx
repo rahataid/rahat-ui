@@ -13,12 +13,16 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { useCreateStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export default function AddStakeholders() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,29 +40,31 @@ export default function AddStakeholders() {
   const FormSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter name.' }),
-    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
-      message: 'Invalid phone number',
-    }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_NAME') }),
+    phone: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().optional().refine(isValidPhoneNumberRefinement, {
+        message: t('INVALID_PHONE_NUMBER'),
+      }),
+    ),
     email: z.string().optional(),
     designation: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter designation.' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_DESIGNATION') }),
     organization: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter organization.' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_ORGANIZATION') }),
     district: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter district.' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_DISTRICT') }),
     municipality: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-
-      .min(2, { message: 'Please enter municipality' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_MUNICIPALITY') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -107,7 +113,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="Name" {...field} />
+                        <Input type="text" placeholder={tg('NAME')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -121,7 +127,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem>
                       <FormControl>
-                        <PhoneInput placeholder="Phone" {...field} />
+                        <PhoneInput placeholder={tg('PHONE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -137,7 +143,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Email Address"
+                          placeholder={tg('EMAIL_ADDRESS')}
                           {...field}
                         />
                       </FormControl>
@@ -155,7 +161,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Designation"
+                          placeholder={t('DESIGNATION')}
                           {...field}
                         />
                       </FormControl>
@@ -173,7 +179,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Organization"
+                          placeholder={tg('ORGANIZATION')}
                           {...field}
                         />
                       </FormControl>
@@ -189,7 +195,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="District" {...field} />
+                        <Input type="text"                           placeholder={tg('ADDRESS')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -205,7 +211,7 @@ export default function AddStakeholders() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Municipality"
+                          placeholder={t('MUNICIPALITY')}
                           {...field}
                         />
                       </FormControl>
@@ -224,7 +230,7 @@ export default function AddStakeholders() {
               >
                 Cancel
               </Button>
-              <Button>Create Stakeholders</Button>
+              <Button>{t('CREATE_STAKEHOLDERS')}</Button>
             </div>
           </div>
         </div>

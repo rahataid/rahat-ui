@@ -8,7 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 const FiltersTags = ({ filters, setFilters, total }: any) => {
-  const filterArray = Object.entries(filters).map(([key, value]) => {
+  const filterArray = Object.entries(filters ?? {}).map(([key, value]) => {
     return { key, value };
   });
 
@@ -30,11 +30,17 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
                   onClick={() => handleFilterArrayChange(filter.key)}
                   className="cursor-pointer bg-primary/10 text-primary py-1 px-2 rounded-md text-xs flex items-center gap-2 hover:bg-primary/20 transition-colors"
                 >
-                  {typeof filter.value === 'object' ? (
-                    <>{format(filter.value, 'MMM dd yyyy')}</>
-                  ) : (
-                    <>{filter.value}</>
-                  )}
+                  {(() => {
+                    const rawValue = filter.value;
+                    if (rawValue && typeof rawValue === 'object') {
+                      const dateValue =
+                        rawValue instanceof Date
+                          ? rawValue
+                          : new Date(rawValue as any);
+                      return <>{format(dateValue, 'MMM dd yyyy')}</>;
+                    }
+                    return <>{String(rawValue ?? '')}</>;
+                  })()}
                   <RxCrossCircled />
                 </span>
               </div>

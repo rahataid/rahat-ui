@@ -37,6 +37,10 @@ const queueTypes = [
 
 // / Recursive function to render nested data
 export const renderNestedData = (data: any, depth = 0): React.ReactNode => {
+  if (data == null) {
+    return <span>-</span>;
+  }
+
   if (Array.isArray(data)) {
     return (
       <ul className="list-disc pl-5">
@@ -45,10 +49,12 @@ export const renderNestedData = (data: any, depth = 0): React.ReactNode => {
         ))}
       </ul>
     );
-  } else if (typeof data === 'object' && data !== null) {
+  } else if (typeof data === 'object') {
+    const entries = Object.entries(data ?? {});
+
     return (
       <ul className="list-disc pl-5">
-        {Object.entries(data).map(([key, value]) => (
+        {entries.map(([key, value]) => (
           <li key={key}>
             <strong>{key}:</strong> {renderNestedData(value, depth + 1)}
           </li>
@@ -72,7 +78,65 @@ const QueueList: React.FC = () => {
     ...filters,
     status: filters.status ? [filters.status] : undefined,
   });
-  const [selectedJob, setSelectedJob] = useState(null);
+  const jobs: Array<Record<string, any>> = Array.isArray(data)
+    ? (data as Array<Record<string, any>>)
+    : [];
+  const [selectedJob, setSelectedJob] = useState<any>(null);
+
+  const renderJobDetailsDialog = () => {
+    if (!selectedJob) return null;
+
+    const jobDetails = selectedJob as any;
+
+    return (
+      <Dialog open={true} onOpenChange={closeJobDetails}>
+        <DialogContent>
+          <DialogTitle>Job Details</DialogTitle>
+          <DialogDescription className="space-y-4">
+            <p>
+              <strong>Job ID:</strong> {jobDetails.id}
+            </p>
+            <p>
+              <strong>Job Name:</strong> {jobDetails.name}
+            </p>
+            <p>
+              <strong>Status:</strong> {jobDetails.status}
+            </p>
+            <p>
+              <strong>Processed On:</strong>{' '}
+              {new Date(jobDetails.processedOn).toLocaleString()}
+            </p>
+            <p>
+              <strong>Finished On:</strong>{' '}
+              {new Date(jobDetails.finishedOn).toLocaleString()}
+            </p>
+            <p>
+              <strong>Attempts Made:</strong> {jobDetails.attemptsMade}
+            </p>
+            <p>
+              <strong>Failed Reason:</strong> {jobDetails.failedReason}
+            </p>
+            <p>
+              <strong>Batch Details:</strong>
+            </p>
+            <div className="max-h-64 overflow-y-auto">
+              <div className="max-h-64 overflow-y-auto">
+                {renderNestedData(jobDetails.data, 5)}
+              </div>
+            </div>
+          </DialogDescription>
+          <DialogFooter>
+            <Button
+              onClick={closeJobDetails}
+              className="bg-blue-500 text-white"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -185,17 +249,7 @@ const QueueList: React.FC = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data?.map(
-                      (job: {
-                        id: string;
-                        name: string;
-                        status: string;
-                        processedOn: string;
-                        finishedOn: string;
-                        attemptsMade: number;
-                        failedReason: string;
-                        data: any;
-                      }) => (
+                    {jobs.map((job: any) => (
                         <TableRow
                           key={job.id}
                           className="hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-200 dark:border-gray-700 cursor-pointer"
@@ -233,8 +287,7 @@ const QueueList: React.FC = () => {
                             }
                           </TableCell>
                         </TableRow>
-                      ),
-                    )}
+                    ))}
                   </TableBody>
                 </Table>
               )}
@@ -244,54 +297,7 @@ const QueueList: React.FC = () => {
       </Tabs>
 
       {/* Dialog for Job Details */}
-      {selectedJob && (
-        <Dialog open={true} onOpenChange={closeJobDetails}>
-          <DialogContent>
-            <DialogTitle>Job Details</DialogTitle>
-            <DialogDescription className="space-y-4">
-              <p>
-                <strong>Job ID:</strong> {selectedJob.id}
-              </p>
-              <p>
-                <strong>Job Name:</strong> {selectedJob.name}
-              </p>
-              <p>
-                <strong>Status:</strong> {selectedJob.status}
-              </p>
-              <p>
-                <strong>Processed On:</strong>{' '}
-                {new Date(selectedJob.processedOn).toLocaleString()}
-              </p>
-              <p>
-                <strong>Finished On:</strong>{' '}
-                {new Date(selectedJob.finishedOn).toLocaleString()}
-              </p>
-              <p>
-                <strong>Attempts Made:</strong> {selectedJob.attemptsMade}
-              </p>
-              <p>
-                <strong>Failed Reason:</strong> {selectedJob.failedReason}
-              </p>
-              <p>
-                <strong>Batch Details:</strong>
-              </p>
-              <div className="max-h-64 overflow-y-auto">
-                <div className="max-h-64 overflow-y-auto">
-                  {renderNestedData(selectedJob.data, 5)}
-                </div>
-              </div>
-            </DialogDescription>
-            <DialogFooter>
-              <Button
-                onClick={closeJobDetails}
-                className="bg-blue-500 text-white"
-              >
-                Close
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+      {renderJobDetailsDialog()}
     </div>
   );
 };

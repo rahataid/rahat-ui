@@ -251,7 +251,9 @@ export function formatDate(date: Date) {
 
 export const selectNonEmptyFields = (data: any) => {
   const nonEmptyFields: any = {};
-  Object.entries(data).forEach(([key, value]) => {
+  const source = data && typeof data === 'object' ? data : {};
+
+  Object.entries(source).forEach(([key, value]) => {
     if (value !== undefined && value !== '') {
       nonEmptyFields[key] = value;
     }

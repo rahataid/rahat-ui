@@ -7,6 +7,7 @@ import { humanizeString, isURL } from '../../utils';
 
 export default function ExtraInfoCard({ data }: any) {
   function renderExtraField(value: any) {
+    if (value == null) return '—';
     const isUrl = isURL(value);
     if (isUrl)
       return (
@@ -17,6 +18,8 @@ export default function ExtraInfoCard({ data }: any) {
     return value.toString();
   }
 
+  const entries = data && typeof data === 'object' ? Object.entries(data) : [];
+
   return (
     <Card className="shadow-md rounded-sm mb-2">
       <CardHeader>
@@ -26,7 +29,7 @@ export default function ExtraInfoCard({ data }: any) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
-          {Object.entries(data).map(([key, value], index) => (
+          {entries.map(([key, value], index) => (
             <div key={key} className="col-span-1">
               <p>{renderExtraField(value)}</p>
               <p className="text-sm font-normal text-muted-foreground">

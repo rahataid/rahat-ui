@@ -14,7 +14,7 @@ const SmsVoucherFiltersTags = ({
   total,
   labelMapping,
 }: any) => {
-  const filterArray = Object.entries(filters).map(([key, value]) => {
+  const filterArray = Object.entries(filters ?? {}).map(([key, value]) => {
     return { key, value };
   });
 

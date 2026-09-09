@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { UseFormReturn } from 'react-hook-form';
@@ -93,7 +94,7 @@ export default function AddAutomatedTriggerForm({
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const [leadTimeUnit, setLeadTimeUnit] = React.useState<'hours' | 'days'>(
+  const [leadTimeUnit, setLeadTimeUnit] = useState<'hours' | 'days'>(
     () => getLeadTimeParts(form.getValues('leadTime')).unit,
   );
   const leadTimeValue = form.watch('leadTime');
@@ -102,7 +103,7 @@ export default function AddAutomatedTriggerForm({
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
   const triggerOperator = form.watch('triggerStatement.operator');
   const triggerValue = form.watch('triggerStatement.value');
-  const [selectedSource, setSelectedSource] = React.useState<{
+  const [selectedSource, setSelectedSource] = useState<{
     dataSource: string | null;
     type: string | null;
   }>({ dataSource: null, type: null });
@@ -117,7 +118,7 @@ export default function AddAutomatedTriggerForm({
   );
 
   // Filter source options based on project type
-  const filteredSourceOptions = React.useMemo(() => {
+  const filteredSourceOptions = useMemo(() => {
     if (!sourceOptions) return [];
     return filterSourceOptionsByProjectType(sourceOptions, projectType || '');
   }, [sourceOptions, projectType]);
@@ -125,14 +126,17 @@ export default function AddAutomatedTriggerForm({
   const computedStationHeading =
     projectType === 'HEAT_WAVE' ? t('HEATWAVE_STATION') : stationHeading;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const parsed = getLeadTimeParts(leadTimeValue, leadTimeUnit);
-    if (parsed.unit !== leadTimeUnit && /(hours|days)/i.test(leadTimeValue || '')) {
+    if (
+      parsed.unit !== leadTimeUnit &&
+      /(hours|days)/i.test(leadTimeValue || '')
+    ) {
       setLeadTimeUnit(parsed.unit);
     }
   }, [leadTimeValue, leadTimeUnit]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
       // Always update triggerStatement.source to match the selected source
       form.setValue(
@@ -143,7 +147,7 @@ export default function AddAutomatedTriggerForm({
   }, [source, form]);
 
   // Update selectedSource when source changes (handles both initial load and reset)
-  React.useEffect(() => {
+  useEffect(() => {
     if (source && isEditing) {
       const [dataSource, type] = source.includes(':')
         ? source.split(':')
@@ -160,7 +164,7 @@ export default function AddAutomatedTriggerForm({
     }
   }, [source, isEditing]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (triggerSourceSubType && triggerOperator && triggerValue) {
       form.setValue(
         'triggerStatement.expression',

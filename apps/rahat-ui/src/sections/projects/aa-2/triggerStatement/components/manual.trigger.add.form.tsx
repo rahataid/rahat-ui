@@ -21,7 +21,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { DurationData } from '../../activities/add/add.activity.view';
 import { getLeadTimeParts } from '../utils';
-
+import { useState, useEffect } from 'react';
 type IProps = {
   form: UseFormReturn<{
     title: string;
@@ -40,12 +40,12 @@ export default function AddManualTriggerForm({
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const [leadTimeUnit, setLeadTimeUnit] = React.useState<'hours' | 'days'>(
+  const [leadTimeUnit, setLeadTimeUnit] = useState<'hours' | 'days'>(
     () => getLeadTimeParts(form.getValues('leadTime')).unit,
   );
   const leadTimeValue = form.watch('leadTime');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const parsed = getLeadTimeParts(leadTimeValue, leadTimeUnit);
     if (
       parsed.unit !== leadTimeUnit &&

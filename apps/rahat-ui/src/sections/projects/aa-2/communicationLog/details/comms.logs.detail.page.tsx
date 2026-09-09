@@ -497,7 +497,7 @@ export default function CommsLogsDetailPage() {
                     <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
                       <TabsContent
                         value="details"
-                        className="p-4 space-y-6 m-0"
+                        className="p-4 space-y-3 m-0"
                       >
                         {/* Beneficiary Group */}
                         <div>

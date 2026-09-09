@@ -28,15 +28,24 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
     Number(data?.freeVoucherClaimed?.toString()) +
     Number(data?.referredVoucherClaimed?.toString());
 
-  const renderExtras = (extras: JSON | string | Record<string, string>) => {
+  const renderExtras = (
+    extras: JSON | string | Record<string, string> | null | undefined,
+  ) => {
+    if (extras == null) return null;
+
     if (typeof extras === 'string') {
       return <p className="font-light">{extras}</p>;
     }
-    return Object.keys(extras).map((key) => {
+
+    const safeExtras: Record<string, any> =
+      extras && typeof extras === 'object' ? (extras as Record<string, any>) : {};
+
+    return Object.keys(safeExtras).map((key: string) => {
+      const value = safeExtras[key];
       return (
         <div key={key}>
           <p className="font-light text-xs text-muted-foreground">{key}</p>
-          <p className="font-medium text-primary">{extras[key]}</p>
+          <p className="font-medium text-primary">{value}</p>
         </div>
       );
     });

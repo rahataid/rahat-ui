@@ -17,8 +17,10 @@ const formatKey = (key: string) => {
 };
 
 export const renderProjectDetailsExtras = (
-  extras: JSON | string | Record<string, any>,
+  extras: JSON | string | Record<string, any> | null | undefined,
 ) => {
+  if (extras == null) return null;
+
   if (typeof extras === 'string') {
     // If the string is a valid date, format it
     if (!Number.isNaN(Date.parse(extras))) {
@@ -36,8 +38,10 @@ export const renderProjectDetailsExtras = (
     if (extras.trim() === '') return null;
     return <p className="font-light">{extras}</p>;
   }
-  return Object.keys(extras).map((key) => {
-    const value = (extras as Record<string, any>)[key];
+
+  const safeExtras = extras && typeof extras === 'object' ? extras : {};
+  return Object.keys(safeExtras).map((key) => {
+    const value = (safeExtras as Record<string, any>)[key];
 
     if (
       key === 'treasury' ||
@@ -76,13 +80,17 @@ export const renderProjectDetailsExtras = (
 
 // RP PROJECT EXTRAS
 export const renderRowBasedProjectDetailsExtras = (
-  extras: JSON | string | Record<string, any>,
+  extras: JSON | string | Record<string, any> | null | undefined,
 ) => {
+  if (extras == null) return null;
+
   if (typeof extras === 'string') {
     return <p className="font-light">{extras}</p>;
   }
-  return Object.keys(extras).map((key) => {
-    const value = (extras as Record<string, any>)[key];
+
+  const safeExtras = extras && typeof extras === 'object' ? extras : {};
+  return Object.keys(safeExtras).map((key) => {
+    const value = (safeExtras as Record<string, any>)[key];
 
     if (key === 'treasury') {
       return null;

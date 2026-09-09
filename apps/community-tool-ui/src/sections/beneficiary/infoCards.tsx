@@ -140,7 +140,7 @@ export default function InfoCards({ data }: IProps) {
           </CardContent>
         </Card>
 
-        {Object.keys(data?.extras || {}).length > 0 && data?.extras && (
+        {data?.extras && Object.keys(data.extras ?? {}).length > 0 && (
           <ExtraInfoCard data={data?.extras} />
         )}
       </ScrollArea>

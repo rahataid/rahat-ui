@@ -75,10 +75,6 @@ export function CommunicationCard({
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();
   const router = useRouter();
-  console.log(
-    'activityCommunication.updatedAt',
-    activityCommunication.updatedAt,
-  );
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case SessionStatus.PENDING:

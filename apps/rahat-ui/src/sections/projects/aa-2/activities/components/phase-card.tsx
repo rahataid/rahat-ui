@@ -76,7 +76,8 @@ export default function PhaseCard({
               <Badge className={getStatusBg(status)}>{translatedStatus}</Badge>
             </TooltipWrapper>
             {hasCommunication && (
-              <TooltipWrapper tip="Communications Available">
+              <TooltipWrapper tip={t('COMMUNICATIONS_AVAILABLE')}>
+                {' '}
                 <MessageSquare className="w-4 h-4 text-blue-500" />
               </TooltipWrapper>
             )}

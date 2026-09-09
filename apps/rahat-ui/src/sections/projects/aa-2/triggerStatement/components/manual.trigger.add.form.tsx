@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import {
@@ -19,6 +20,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { DurationData } from '../../activities/add/add.activity.view';
+import { getLeadTimeParts } from '../utils';
 
 type IProps = {
   form: UseFormReturn<{
@@ -38,6 +40,21 @@ export default function AddManualTriggerForm({
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [leadTimeUnit, setLeadTimeUnit] = React.useState<'hours' | 'days'>(
+    () => getLeadTimeParts(form.getValues('leadTime')).unit,
+  );
+  const leadTimeValue = form.watch('leadTime');
+
+  React.useEffect(() => {
+    const parsed = getLeadTimeParts(leadTimeValue, leadTimeUnit);
+    if (
+      parsed.unit !== leadTimeUnit &&
+      /(hours|days)/i.test(leadTimeValue || '')
+    ) {
+      setLeadTimeUnit(parsed.unit);
+    }
+  }, [leadTimeValue, leadTimeUnit]);
+
   return (
     <>
       <Form {...form}>
@@ -95,11 +112,10 @@ export default function AddManualTriggerForm({
                 control={form.control}
                 name="leadTime"
                 render={({ field }) => {
-                  const raw = field.value?.trim() ?? '';
-                  const unitMatch = raw.match(/(hours|days)/i);
-                  const unit = unitMatch ? unitMatch[0].toLowerCase() : 'days';
-
-                  const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
+                  const { lead, unit } = getLeadTimeParts(
+                    field.value,
+                    leadTimeUnit,
+                  );
                   return (
                     <FormItem className="w-full">
                       <FormLabel>{tg('LEAD_TIME')}</FormLabel>
@@ -117,6 +133,7 @@ export default function AddManualTriggerForm({
                         <Select
                           value={unit}
                           onValueChange={(val) => {
+                            setLeadTimeUnit(val as 'hours' | 'days');
                             field.onChange(`${lead} ${val}`);
                           }}
                         >

@@ -27,6 +27,7 @@ import {
   Option,
   SOURCE_MAPPING,
   filterSourceOptionsByProjectType,
+  getLeadTimeParts,
 } from '../utils';
 import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
@@ -92,6 +93,10 @@ export default function AddAutomatedTriggerForm({
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [leadTimeUnit, setLeadTimeUnit] = React.useState<'hours' | 'days'>(
+    () => getLeadTimeParts(form.getValues('leadTime')).unit,
+  );
+  const leadTimeValue = form.watch('leadTime');
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
@@ -119,6 +124,13 @@ export default function AddAutomatedTriggerForm({
 
   const computedStationHeading =
     projectType === 'HEAT_WAVE' ? t('HEATWAVE_STATION') : stationHeading;
+
+  React.useEffect(() => {
+    const parsed = getLeadTimeParts(leadTimeValue, leadTimeUnit);
+    if (parsed.unit !== leadTimeUnit && /(hours|days)/i.test(leadTimeValue || '')) {
+      setLeadTimeUnit(parsed.unit);
+    }
+  }, [leadTimeValue, leadTimeUnit]);
 
   React.useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
@@ -265,10 +277,10 @@ export default function AddAutomatedTriggerForm({
               control={form.control}
               name="leadTime"
               render={({ field }) => {
-                const raw = field.value?.trim() ?? '';
-                const unitMatch = raw.match(/(hours|days)/i);
-                const unit = unitMatch ? unitMatch[0].toLowerCase() : 'days';
-                const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
+                const { lead, unit } = getLeadTimeParts(
+                  field.value,
+                  leadTimeUnit,
+                );
                 return (
                   <FormItem>
                     <FormLabel>{tg('LEAD_TIME')}</FormLabel>
@@ -286,6 +298,7 @@ export default function AddAutomatedTriggerForm({
                       <Select
                         value={unit}
                         onValueChange={(val) => {
+                          setLeadTimeUnit(val as 'hours' | 'days');
                           field.onChange(`${lead} ${val}`);
                         }}
                       >

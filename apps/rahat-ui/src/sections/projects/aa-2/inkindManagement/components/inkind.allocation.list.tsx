@@ -150,14 +150,16 @@ export default function InkindAllocationList() {
         accessorKey: 'inkindName',
         header: tv('INKIND_NAME'),
         cell: ({ row }) => (
-          <TruncatedCell text={row.original.inkindName} maxLength={20} />
+          <TruncatedCell text={row.original.inkindName} truncateByWidth />
         ),
       },
       {
         accessorKey: 'groupName',
         header: tv('BENEFICIARY_GROUP'),
+        meta: { className: 'w-[20%]' },
+
         cell: ({ row }) => (
-          <TruncatedCell text={row.original.groupName} maxLength={20} />
+          <TruncatedCell text={row.original.groupName} truncateByWidth />
         ),
       },
       ...(modeTab === 'OFFLINE'
@@ -165,6 +167,7 @@ export default function InkindAllocationList() {
             {
               accessorKey: 'vendor',
               header: tv('VENDOR'),
+              meta: { className: 'w-[15%]' },
               cell: ({ row }: { row: { original: AllocationRow } }) => (
                 <span>{row.original.vendor ?? 'N/A'}</span>
               ),
@@ -174,6 +177,7 @@ export default function InkindAllocationList() {
       {
         accessorKey: 'inkindType',
         header: tv('INKIND_TYPE'),
+        meta: { className: 'w-[12%]' },
         cell: ({ row }) => (
           <Badge className="bg-gray-200 text-gray-600">
             {translateValue(tg, row.original.inkindType)}
@@ -183,6 +187,7 @@ export default function InkindAllocationList() {
       {
         id: 'status',
         header: tg('STATUS'),
+        meta: { className: 'w-[12%]' },
         cell: ({ row }) => {
           const isWalkIn = row.original.inkindType === 'WALK_IN';
           const status = isWalkIn
@@ -195,12 +200,17 @@ export default function InkindAllocationList() {
                 row.original.quantityAllocated,
                 row.original.quantityRedeemed,
               );
-          return <Badge className={STATUS_STYLE[status]}>{tv(status.replace(/\s+/g, '_').toUpperCase())}</Badge>;
+          return (
+            <Badge className={STATUS_STYLE[status]}>
+              {tv(status.replace(/\s+/g, '_').toUpperCase())}
+            </Badge>
+          );
         },
       },
       {
         accessorKey: 'quantityRedeemed',
         header: tv('TOTAL_REDEEMED'),
+        meta: { className: 'w-[15%]' },
         cell: ({ row }) => {
           const isWalkIn = row.original.inkindType === 'WALK_IN';
           return (
@@ -211,7 +221,7 @@ export default function InkindAllocationList() {
                 {formatNum(
                   isWalkIn
                     ? row.original.inkindAvailableStock +
-                      row.original.quantityRedeemed
+                        row.original.quantityRedeemed
                     : row.original.beneficiaryCount,
                 )}
               </span>
@@ -224,6 +234,7 @@ export default function InkindAllocationList() {
         id: 'actions',
         header: tg('ACTIONS'),
         enableHiding: false,
+        meta: { className: 'w-[80px]' },
         cell: ({ row }) => {
           const r = row.original;
           const params = new URLSearchParams({
@@ -315,9 +326,7 @@ export default function InkindAllocationList() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
-              {typeFilter
-                ? tg(typeFilter as InkindType)
-                : tv('ALL_TYPES')}
+              {typeFilter ? tg(typeFilter as InkindType) : tv('ALL_TYPES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

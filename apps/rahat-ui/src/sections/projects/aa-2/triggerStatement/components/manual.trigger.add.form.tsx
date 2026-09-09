@@ -97,9 +97,8 @@ export default function AddManualTriggerForm({
                 render={({ field }) => {
                   const raw = field.value?.trim() ?? '';
                   const unitMatch = raw.match(/(hours|days)/i);
-                  const unit = unitMatch
-                    ? unitMatch[0].toLowerCase()
-                    : 'days';
+                  const unit = unitMatch ? unitMatch[0].toLowerCase() : 'days';
+
                   const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
                   return (
                     <FormItem className="w-full">
@@ -112,17 +111,13 @@ export default function AddManualTriggerForm({
                           value={lead}
                           onChange={(e) => {
                             const newLead = e.target.value;
-                            field.onChange(
-                              newLead ? `${newLead} ${unit}` : '',
-                            );
+                            field.onChange(newLead ? `${newLead} ${unit}` : '');
                           }}
                         />
                         <Select
                           value={unit}
                           onValueChange={(val) => {
-                            field.onChange(
-                              lead ? `${lead} ${val}` : '',
-                            );
+                            field.onChange(`${lead} ${val}`);
                           }}
                         >
                           <FormControl>
@@ -133,7 +128,9 @@ export default function AddManualTriggerForm({
                           <SelectContent>
                             {DurationData.map((item) => (
                               <SelectItem key={item.value} value={item.value}>
-                                {item.value === 'hours' ? t('HOURS') : t('DAYS')}
+                                {item.value === 'hours'
+                                  ? t('HOURS')
+                                  : t('DAYS')}
                               </SelectItem>
                             ))}
                           </SelectContent>

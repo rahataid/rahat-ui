@@ -82,6 +82,7 @@ export const useCommunityGroupList = (
 export const useCommunityGroupListByID = (
   uuid: string,
   query: any,
+  enabled = true,
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const groupClient = getGroupClient(rumsanService.client);
@@ -89,6 +90,7 @@ export const useCommunityGroupListByID = (
     {
       queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, query, uuid],
       queryFn: () => groupClient.listById(uuid, query),
+      enabled,
     },
     queryClient,
   );
@@ -125,9 +127,7 @@ export const useCommunityGroupRemove = () => {
         const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            t('ERROR_ON_REMOVING_DATA'),
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -172,9 +172,7 @@ export const usePurgeGroupedBeneficiary = () => {
         const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            t('ERROR_ON_REMOVING_DATA'),
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -192,7 +190,9 @@ export const useCommunityGroupDelete = () => {
         const t = getTranslate();
         const { isConfirmed } = await Swal.fire({
           title: `${
-            data?.pathName === '/group' ? t('DELETE_GROUP_LABEL') : t('DELETE_IMPORTS_LOGS_LABEL')
+            data?.pathName === '/group'
+              ? t('DELETE_GROUP_LABEL')
+              : t('DELETE_IMPORTS_LOGS_LABEL')
           }`,
           text: t('CONFIRM_DELETE_PERMANENTLY'),
           showCancelButton: true,
@@ -218,9 +218,7 @@ export const useCommunityGroupDelete = () => {
         const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            t('ERROR_ON_REMOVING_DATA'),
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -295,15 +293,16 @@ export const useUploadBulkBeneficiaryUpdate = () => {
       queryClient.invalidateQueries({
         queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
       });
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID],
+      });
     },
 
     onError: (error: any) => {
       const t = getTranslate();
       Swal.fire({
         icon: 'error',
-        title:
-          error?.response?.data?.message ||
-          t('ERROR_WHILE_UPDATING_DATA'),
+        title: error?.response?.data?.message || t('ERROR_WHILE_UPDATING_DATA'),
       });
     },
   });

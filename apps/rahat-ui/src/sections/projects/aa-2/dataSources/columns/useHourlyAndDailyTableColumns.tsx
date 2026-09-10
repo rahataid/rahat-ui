@@ -1,36 +1,46 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useTranslations } from 'next-intl';
 
 export const useHourlyAndDailyTableColumns = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
-      header: 'Date',
+      header: tg('DATE'),
       cell: ({ row }) => {
         const getDateAndTime = row.getValue('datetime') as string;
-        const { formatted } = convertToLocalTimeOrMillisecond(
+        const result = convertToLocalTimeOrMillisecond(
           getDateAndTime,
           'MMMM d, yyyy, h:mm:ss a',
-        ) as { formatted: string; timestamp: number };
+        ) as { formatted: string; timestamp: number } | '';
+        if (!result) return <div></div>;
 
-        return <div>{formatted}</div>;
+        return (
+          <div>{formatDate(result.timestamp, 'MMMM d, yyyy, h:mm:ss a')}</div>
+        );
       },
     },
     {
       accessorKey: 'min',
-      header: 'Min',
-      cell: ({ row }) => <div>{row.getValue('min') || 'N/A'}</div>,
+      header: t('MIN'),
+      cell: ({ row }) => <div>{formatNum(row.getValue('min')) || tg('N_A')}</div>,
     },
     {
       accessorKey: 'max',
-      header: 'Max',
-      cell: ({ row }) => <div>{row.getValue('max') || 'N/A'}</div>,
+      header: t('MAX'),
+      cell: ({ row }) => <div>{formatNum(row.getValue('max')) || tg('N_A')}</div>,
     },
     {
       accessorKey: 'value',
-      header: 'Average',
-      cell: ({ row }) => <div>{row.getValue('value')}</div>,
+      header: t('AVERAGE'),
+      cell: ({ row }) => <div>{formatNum(row.getValue('value'))}</div>,
     },
   ];
   return columns;

@@ -1,56 +1,58 @@
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function useCommsLogsTableColumns() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
-      header: 'Audience',
+      header: t('AUDIENCE'),
       cell: ({ row }) => <div className="">{row?.original?.address}</div>,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('STATUS'),
       cell: ({ row }) => {
         return (
           <Badge className={renderBadgeBg(row?.original?.status)}>
-            {row?.original?.status}
+            {translateValue(tg, row?.original?.status)}
           </Badge>
         );
       },
     },
     {
       accessorKey: 'attempts',
-      header: 'Attempts',
+      header: t('ATTEMPTS'),
       cell: ({ row }) => {
-        return <div className="ml-8">{row?.original?.attempts}</div>;
+        return <div className="ml-8">{formatNum(row?.original?.attempts ?? 0)}</div>;
       },
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
-      cell: ({ row }) => <div>{renderDateTime(row?.original?.createdAt)}</div>,
+      header: t('TIMESTAMP'),
+      cell: ({ row }) => <div>{formatDate(row?.original?.createdAt)}</div>,
     },
     {
       accessorKey: 'duration',
-      header: 'Duration',
+      header: t('DURATION'),
       cell: ({ row }) => (
-        <div>{row?.original?.disposition?.cdr?.billableseconds || 'N/A'}</div>
+        <div>
+          {row?.original?.disposition?.cdr?.billableseconds != null
+            ? formatNum(row?.original?.disposition?.cdr?.billableseconds)
+            : tg('N_A')}
+        </div>
       ),
     },
   ];
   return columns;
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
 }
 
 function renderBadgeBg(status: string) {

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import DemoTable from '../../components/table';
@@ -14,6 +15,7 @@ type IProps = {
 };
 
 export default function UsersRolesTabSplitView({ userDetail }: IProps) {
+  const t = useTranslations('USERS_DETAIL');
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
 
@@ -47,7 +49,7 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
   return (
     <div className="p-4 flex flex-col space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="font-medium">User Roles</h1>
+        <h1 className="font-medium">{t('USER_ROLES')}</h1>
         {(loggedUserRoles?.includes('Admin') ||
           loggedUserRoles?.includes('Manager')) && (
           <AssignRoleDialog userDetails={userDetail} />

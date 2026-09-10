@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
@@ -32,12 +34,13 @@ import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { DurationData } from '../../activities/add/add.activity.view';
 
+// Labels are translation keys; resolved with `t()` where the options render.
 const operatorOptions = [
-  { label: 'Greater than (>)', value: '>' },
-  { label: 'Less than (<)', value: '<' },
-  { label: 'Equal (=)', value: '=' },
-  { label: 'Greater than or equal (>=)', value: '>=' },
-  { label: 'Less than or equal (<=)', value: '<=' },
+  { labelKey: 'GREATER_THAN', value: '>' },
+  { labelKey: 'LESS_THAN', value: '<' },
+  { labelKey: 'EQUAL', value: '=' },
+  { labelKey: 'GREATER_THAN_OR_EQUAL', value: '>=' },
+  { labelKey: 'LESS_THAN_OR_EQUAL', value: '<=' },
 ];
 
 const SOURCE_META = {
@@ -87,6 +90,8 @@ export default function AddAutomatedTriggerForm({
   stationHeading,
   projectType,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
@@ -113,7 +118,7 @@ export default function AddAutomatedTriggerForm({
   }, [sourceOptions, projectType]);
 
   const computedStationHeading =
-    projectType === 'HEAT_WAVE' ? 'Heatwave Station' : stationHeading;
+    projectType === 'HEAT_WAVE' ? t('HEATWAVE_STATION') : stationHeading;
 
   React.useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
@@ -185,18 +190,20 @@ export default function AddAutomatedTriggerForm({
         <FormLabel>{label}</FormLabel>
         <FormControl>
           <SelectTrigger>
-            <SelectValue placeholder="Select type" />
+            <SelectValue placeholder={t('SELECT_TYPE')} />
           </SelectTrigger>
         </FormControl>
         <SelectContent>
           {subTypeOptions?.[source]?.length ? (
             subTypeOptions?.[source]?.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {/* Subtype slugs ("daily") map to AA_PROJECT keys; fall back to
+                    the derived English label for any slug not yet translated. */}
+                {translateValue(t, String(option.value), { fallback: option.label })}
               </SelectItem>
             ))
           ) : (
-            <p className="text-gray-500 text-sm">No type found</p>
+            <p className="text-gray-500 text-sm">{t('NO_TYPE_FOUND')}</p>
           )}
         </SelectContent>
       </>
@@ -208,7 +215,7 @@ export default function AddAutomatedTriggerForm({
       <form>
         <div className="mt-4 grid grid-cols-2 gap-4 ">
           <FormItem>
-            <FormLabel>Phase</FormLabel>
+            <FormLabel>{t('PHASE')}</FormLabel>
             <FormControl>
               <Input
                 className="bg-gray-300"
@@ -238,11 +245,11 @@ export default function AddAutomatedTriggerForm({
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>Trigger Title</FormLabel>
+                  <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder="Enter Trigger Title"
+                      placeholder={t('ENTER_TRIGGER_TITLE')}
                       {...field}
                     />
                   </FormControl>
@@ -264,11 +271,11 @@ export default function AddAutomatedTriggerForm({
                 const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
                 return (
                   <FormItem>
-                    <FormLabel>Lead Time</FormLabel>
+                    <FormLabel>{tg('LEAD_TIME')}</FormLabel>
                       <div className="grid grid-cols-4">
                         <Input
                           type="text"
-                          placeholder="Enter lead time"
+                          placeholder={tg('ENTER_LEAD_TIME')}
                           className="col-span-3 rounded-r-none"
                           value={lead}
                           onChange={(e) => {
@@ -292,7 +299,7 @@ export default function AddAutomatedTriggerForm({
                         <SelectContent>
                           {DurationData.map((item) => (
                             <SelectItem key={item.value} value={item.value}>
-                              {item.label}
+                              {item.value === 'hours' ? t('HOURS') : t('DAYS')}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -318,10 +325,10 @@ export default function AddAutomatedTriggerForm({
                     value={field.value}
                     key={field.value}
                   >
-                    <FormLabel>Source</FormLabel>
+                    <FormLabel>{t('SOURCE')}</FormLabel>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Source" />
+                        <SelectValue placeholder={t('SELECT_SOURCE')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -332,7 +339,7 @@ export default function AddAutomatedTriggerForm({
                           </SelectItem>
                         ))
                       ) : (
-                        <p className="text-gray-500 text-sm">No source found</p>
+                        <p className="text-gray-500 text-sm">{t('NO_SOURCE_FOUND')}</p>
                       )}
                     </SelectContent>
                   </Select>
@@ -360,22 +367,22 @@ export default function AddAutomatedTriggerForm({
                           key={field.value}
                         >
                           {triggerSource === 'water_level_m' && (
-                            <SourceSubTypeField label="Level Type" />
+                            <SourceSubTypeField label={t('LEVEL_TYPE')} />
                           )}
                           {triggerSource === 'discharge_m3s' && (
-                            <SourceSubTypeField label="Discharge Type" />
+                            <SourceSubTypeField label={t('DISCHARGE_TYPE')} />
                           )}
                           {triggerSource === 'rainfall_mm' && (
-                            <SourceSubTypeField label="Measurement Period" />
+                            <SourceSubTypeField label={t('MEASUREMENT_PERIOD')} />
                           )}
                           {triggerSource === 'prob_flood' && (
-                            <SourceSubTypeField label="Probability Period" />
+                            <SourceSubTypeField label={t('PROBABILITY_PERIOD')} />
                           )}
 
                           {/* for heatwave */}
                           {(triggerSource === 'prob_humidity' ||
                             triggerSource === 'temperature_c') && (
-                            <SourceSubTypeField label="Measurement Period" />
+                            <SourceSubTypeField label={t('MEASUREMENT_PERIOD')} />
                           )}
                         </Select>
                         <FormMessage />
@@ -405,10 +412,10 @@ export default function AddAutomatedTriggerForm({
                             key={field.value}
                             // disabled={false}
                           >
-                            <FormLabel>Station</FormLabel>
+                            <FormLabel>{t('STATION')}</FormLabel>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select Station" />
+                                <SelectValue placeholder={t('SELECT_STATION')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -449,10 +456,10 @@ export default function AddAutomatedTriggerForm({
                               value={field.value}
                               key={field.value}
                             >
-                              <FormLabel>Operator</FormLabel>
+                              <FormLabel>{t('OPERATOR')}</FormLabel>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select Operator" />
+                                  <SelectValue placeholder={t('SELECT_OPERATOR')} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -462,7 +469,7 @@ export default function AddAutomatedTriggerForm({
                                       key={option.value}
                                       value={option.value}
                                     >
-                                      {option.label}
+                                      {t(option.labelKey)}
                                     </SelectItem>
                                   ))
                                 ) : isLoading ? (
@@ -551,10 +558,10 @@ export default function AddAutomatedTriggerForm({
             render={({ field }) => {
               return (
                 <FormItem className="col-span-2">
-                  <FormLabel>Trigger description</FormLabel>
+                  <FormLabel>{t('TRIGGER_DESCRIPTION')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Write trigger description here"
+                      placeholder={t('WRITE_TRIGGER_DESCRIPTION_HERE')}
                       {...field}
                     />
                   </FormControl>
@@ -574,7 +581,7 @@ export default function AddAutomatedTriggerForm({
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel className="ml-2">Optional</FormLabel>
+                <FormLabel className="ml-2">{t('OPTIONAL')}</FormLabel>
               </FormItem>
             )}
           />

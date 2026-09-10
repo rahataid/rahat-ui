@@ -5,6 +5,7 @@ import {
 } from '@rahat-ui/query';
 
 import { CircleDollarSign, Folder } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { formatUnits } from 'viem';
 
 type projectIProps = {
@@ -13,6 +14,7 @@ type projectIProps = {
 };
 
 const TreasuryCard = ({ projectAddress, projectName }: projectIProps) => {
+  const t = useTranslations('TREASURY');
   const appContracts = useSettingsStore((state) => state.contracts);
   const { data: projectBalance } = useReadRahatTokenBalanceOf({
     address: appContracts?.RAHATTOKEN?.ADDRESS,
@@ -37,7 +39,7 @@ const TreasuryCard = ({ projectAddress, projectName }: projectIProps) => {
             <CircleDollarSign className="text-primary" />
           </div>
           <div className="flex flex-col ml-2">
-            <p className="font-light text-gray-500 text-sm">Budget</p>
+            <p className="font-light text-gray-500 text-sm">{t('BUDGET')}</p>
             <p className="text-primary font-medium">
               {formatUnits(projectBalance ?? BigInt(0), decimals ?? 18)} RTH
             </p>

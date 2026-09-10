@@ -48,6 +48,7 @@ import ConfirmModal from './confirm.modal';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { AudioRecorder } from '@rahat-ui/shadcn/src/components/ui/audioRecorder';
 import { useUploadFile } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 
 type CampaignFormProps = {
   // Add props here
@@ -79,6 +80,8 @@ const CampaignForm: FC<CampaignFormProps> = ({
   isSubmitting,
   selectedRows,
 }) => {
+  const t = useTranslations('COMMUNICATIONS_ADD_CAMPAIGN');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const { data: messageTemplate } = useGetApprovedTemplate();
   const includeMessage = ['sms', 'whatsapp', 'email'].includes(
@@ -98,7 +101,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
 
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
-  if (!form) return 'loading...';
+  if (!form) return tg('LOADING');
   const campaignConfirmModal = useBoolean();
   const handleOpenModal = (e: any) => {
     e.preventDefault();
@@ -111,7 +114,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
     <>
       <div className="w-full p-2">
         <h2 className="text-lg font-semibold mb-4">
-          Campaign: {data ? 'Edit' : 'Add'}
+          {data ? tg('CAMPAIGN_EDIT') : tg('CAMPAIGN_ADD')}
         </h2>
         <div className="shadow-md p-4 rounded-sm bg-card">
           <div className="mb-4 w-full grid grid-cols-3 gap-2 ">
@@ -123,7 +126,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                   <FormControl>
                     <Input
                       className="rounded"
-                      placeholder="Campaign Name"
+                      placeholder={tg('CAMPAIGN_NAME')}
                       {...field}
                     />
                   </FormControl>
@@ -178,7 +181,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                   >
                     <FormControl>
                       <SelectTrigger className="rounded">
-                        <SelectValue placeholder="Select campaign type" />
+                        <SelectValue placeholder={tg('SELECT_CAMPAIGN_TYPE')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -212,7 +215,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>Send QR Code</FormLabel>
+                      <FormLabel>{t('SEND_QR_CODE')}</FormLabel>
                     </div>
                   </FormItem>
                 )}
@@ -237,7 +240,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                               ? templatemessage.length > 50
                                 ? templatemessage.slice(0, 25) + '...'
                                 : templatemessage
-                              : 'Select from template'}
+                              : tg('SELECT_FROM_TEMPLATE')}
                             <ChevronDown />
                           </Button>
                         </FormControl>
@@ -245,8 +248,8 @@ const CampaignForm: FC<CampaignFormProps> = ({
                       <PopoverContent className="p-2 align-center w-fit">
                         <Command>
                           <CommandList>
-                            <CommandInput placeholder="Search template..." />
-                            <CommandEmpty>Not found.</CommandEmpty>
+                            <CommandInput placeholder={tg('SEARCH_TEMPLATE')} />
+                            <CommandEmpty>{tg('NOT_FOUND')}</CommandEmpty>
                             <CommandGroup>
                               {messageTemplate?.data?.map((option) => {
                                 if (option)
@@ -324,7 +327,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                             ? templatemessage
                             : field.value
                         }
-                        placeholder="Type your message here."
+                        placeholder={tg('TYPE_YOUR_MESSAGE_HERE')}
                         className="rounded"
                       />
                     </FormControl>
@@ -344,7 +347,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                     <Select onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="rounded">
-                          <SelectValue placeholder="Select audio" />
+                          <SelectValue placeholder={tg('SELECT_AUDIO')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -371,7 +374,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
               onClick={() => router.push(paths.dashboard.communication.text)}
               className="mr-2"
             >
-              Cancel
+              {tg('CANCEL')}
             </Button>
             <Button
               variant="outline"
@@ -379,7 +382,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
               className="mr-2"
               type="button"
             >
-              {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
+              {showAddAudience ? tg('HIDE_AUDIENCES') : tg('SHOW_AUDIENCES')}
             </Button>
             <ConfirmModal
               handleSubmit={handleSubmit}

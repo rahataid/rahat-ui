@@ -21,6 +21,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { UUID } from 'crypto';
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 type ValidateModalType = {
   value: boolean;
@@ -39,19 +40,19 @@ type IProps = {
 
 const groupProposeValues = [
   {
-    name: 'Bank Transfer',
+    key: 'BANK_TRANSFER',
     value: 'BANK_TRANSFER',
   },
   {
-    name: 'Mobile Money',
+    key: 'MOBILE_MONEY',
     value: 'MOBILE_MONEY',
   },
   {
-    name: 'Communication',
+    key: 'COMMUNICATION',
     value: 'COMMUNICATION',
   },
   {
-    name: 'General',
+    key: 'GENERAL',
     value: 'GENERAL',
   },
 ];
@@ -60,6 +61,8 @@ export default function UpdateGroupProposeModal({
   validateModal,
   beneficiaryGroupDetail,
 }: IProps) {
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
+  const tg = useTranslations('GLOBAL');
   const [selectedPurpose, setSelectedPurpose] = React.useState<
     string | undefined
   >();
@@ -71,7 +74,7 @@ export default function UpdateGroupProposeModal({
     e.preventDefault();
 
     if (!selectedPurpose) {
-      setError('Please select a group purpose.');
+      setError(t('PLEASE_SELECT_A_GROUP_PURPOSE'));
       return;
     }
 
@@ -79,6 +82,8 @@ export default function UpdateGroupProposeModal({
     const payload = {
       uuid: beneficiaryGroupDetail.uuid as UUID,
       selectedPurpose,
+      successMessage: t('GROUP_PROPOSE_UPDATED_SUCCESSFULLY'),
+      errorMessage: t('ERROR_WHILE_UPDATING_GROUP_PROPOSE'),
     };
     try {
       await updateGroupPropose.mutateAsync(payload, {
@@ -104,16 +109,16 @@ export default function UpdateGroupProposeModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Update Group Purpose</DialogTitle>
+          <DialogTitle>{t('UPDATE_GROUP_PURPOSE')}</DialogTitle>
           <DialogDescription>
-            Select the group purpose below and click update to save.
+            {t('SELECT_THE_GROUP_PURPOSE_BELOW_AND')}
           </DialogDescription>
         </DialogHeader>
 
         <div>
           <Select value={selectedPurpose} onValueChange={setSelectedPurpose}>
             <SelectTrigger>
-              <SelectValue placeholder="Select group purpose" />
+              <SelectValue placeholder={t('SELECT_GROUP_PURPOSE')} />
             </SelectTrigger>
             <SelectContent>
               {groupProposeValues.map((item) => (
@@ -122,7 +127,7 @@ export default function UpdateGroupProposeModal({
                   key={item.value}
                   value={item.value}
                 >
-                  {item.name}
+                  {t(item.key)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -133,7 +138,7 @@ export default function UpdateGroupProposeModal({
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="outline">
-              Cancel
+              {tg('CANCEL')}
             </Button>
           </DialogClose>
           <Button
@@ -141,7 +146,7 @@ export default function UpdateGroupProposeModal({
             type="button"
             variant="default"
           >
-            Update
+            {tg('UPDATE')}
           </Button>
         </DialogFooter>
       </DialogContent>

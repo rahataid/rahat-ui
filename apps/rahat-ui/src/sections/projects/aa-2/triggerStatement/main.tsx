@@ -1,15 +1,20 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
 import { useAATriggerStatements, usePhases } from '@rahat-ui/query';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
@@ -37,6 +42,7 @@ const savePinnedPhases = (projectId: string, ids: string[]) => {
 };
 
 export default function TriggerStatementView() {
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -107,8 +113,8 @@ export default function TriggerStatementView() {
     <div className="p-4 h-[calc(100vh-64px)] flex flex-col overflow-hidden">
       <div className="flex justify-between items-center">
         <Heading
-          title="Trigger Statement"
-          description="Track all the trigger reports here"
+          title={t('TRIGGER_STATEMENT')}
+          description={t('TRACK_ALL_THE_TRIGGER_REPORTS_HERE')}
         />
       </div>
 
@@ -117,7 +123,7 @@ export default function TriggerStatementView() {
         <ScrollArea className="flex-1 ">
           {sortedPhases.length === 0 ? (
             <div className="flex h-full min-h-[400px] items-center justify-center">
-              <NoResult message="No Phases Available" />
+              <NoResult message={t('NO_PHASES_AVAILABLE_SHORT')} />
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 pr-2">
@@ -125,9 +131,9 @@ export default function TriggerStatementView() {
                 <TriggersPhaseCard
                   key={d.id}
                   title={d.name}
-                  subtitle={`Overview of ${d.name.toLowerCase()} phase`}
+                  subtitle={t('OVERVIEW_OF', { name: d.name.toLowerCase() })}
                   handleAddTrigger={() => handleAddTrigger(d)}
-                  chartLabels={['Mandatory', 'Optional']}
+                  chartLabels={[t('MANDATORY'), t('OPTIONAL')]}
                   chartSeries={[
                     d?.phaseStats?.totalMandatoryTriggers || 0,
                     d?.phaseStats?.totalOptionalTriggers || 0,
@@ -154,10 +160,7 @@ export default function TriggerStatementView() {
               ))}
 
               {sortedPhases.length === 3 && (
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.CREATE} subject={SUBJECTS.PHASE}>
                   <div>
                     <Card className="flex flex-col rounded-xl h-full min-h-[calc(100vh-410px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                       <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
@@ -174,16 +177,16 @@ export default function TriggerStatementView() {
                             </div>
                           </Button>
                           <p className="text-base font-medium text-blue-500 ">
-                            Add Phase
+                            {t('ADD_PHASE')}
                           </p>
                           <p className="text-sm text-blue-400">
-                            Click here to add new phase
+                            {t('CLICK_HERE_TO_ADD_NEW_PHASE')}
                           </p>
                         </div>
                       </CardContent>
                     </Card>
                   </div>
-                </RoleAuth>
+                </Can>
               )}
               {/* } */}
             </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 
@@ -8,6 +9,13 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   ScrollArea,
   ScrollBar,
@@ -40,17 +48,21 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useVerifyManualPayout } from '@rahat-ui/query';
 import { normalizeCell } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const DOWNLOAD_FILE_URL = '/files/verify-payout-sample.xlsx';
 
 export default function VerificationPayout() {
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const id = params.id as UUID;
   const payoutId = params.detailID as UUID;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [data, setData] = useState<any[][]>([]);
-  const [fileName, setFileName] = useState<string>('No File Choosen');
+  const [fileName, setFileName] = useState<string>(tg('NO_FILE_CHOSEN'));
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const verifyManualPayout = useVerifyManualPayout();
@@ -59,6 +71,14 @@ export default function VerificationPayout() {
     searchParams.get('matchBy') === 'phoneNumber'
       ? 'phoneNumber'
       : 'bankAccount';
+
+  // matchBy is derived from the URL, so changing it writes the search param
+  // back rather than holding separate state.
+  const setMatchBy = (value: 'bankAccount' | 'phoneNumber') => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('matchBy', value);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
   const columns = React.useMemo<ColumnDef<any>[]>(
     () =>
       data[0]?.map((header: any, index: number) => {
@@ -69,21 +89,23 @@ export default function VerificationPayout() {
         return {
           accessorFn: (row: any) => row[index],
           id: headerId, // 👈 use normalized header as ID
-          header: () => header || `Column ${index + 1}`,
+          header: () => header || `${tv('COLUMN')} ${index + 1}`,
           cell: ({ getValue }) => {
             const value = getValue();
+            const displayValue =
+              value === null || value === undefined || value === ''
+                ? '--'
+                : formatNum(value);
             return (
               <TableCell className={`truncate max-w-[150px] cursor-pointer`}>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="inline-block w-full min-h-[1.5rem]">
-                        {value?.toString() || '--'}
+                        {displayValue}
                       </span>
                     </TooltipTrigger>
-                    <TooltipContent side="top">
-                      {value?.toString()}
-                    </TooltipContent>
+                    <TooltipContent side="top">{displayValue}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </TableCell>
@@ -125,7 +147,7 @@ export default function VerificationPayout() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setData([]);
-    setFileName(file?.name || 'No File Choosen');
+    setFileName(file?.name || tg('NO_FILE_CHOSEN'));
     setSelectedFile(file || null);
 
     const extension = file?.name.split('.').pop()?.toLowerCase();
@@ -133,9 +155,7 @@ export default function VerificationPayout() {
       !extension ||
       !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
     ) {
-      return toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
-      );
+      return toast.error(tg('UNSUPPORTED_FILE_FORMAT'));
     }
 
     if (file) {
@@ -168,10 +188,10 @@ export default function VerificationPayout() {
         });
 
         if (normalizedData.length === 1) {
-          return toast.error('No list found in excel file');
+          return toast.error(tg('NO_LIST_FOUND_IN_EXCEL'));
         }
         if (normalizedData.length > 100) {
-          return toast.error('Maximum 100 list can be uploaded at a time');
+          return toast.error(tg('MAX_100_UPLOAD'));
         }
 
         setData(normalizedData);
@@ -182,7 +202,7 @@ export default function VerificationPayout() {
     }
   };
   const handleUpload = async () => {
-    if (!selectedFile) return toast.error('Please select a file to upload');
+    if (!selectedFile) return toast.error(tg('PLEASE_SELECT_FILE'));
 
     // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
@@ -190,9 +210,7 @@ export default function VerificationPayout() {
       !extension ||
       !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
     ) {
-      return toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
-      );
+      return toast.error(tg('UNSUPPORTED_FILE_FORMAT'));
     }
 
     const doctype = allowedExtensions[extension];
@@ -203,13 +221,11 @@ export default function VerificationPayout() {
       );
       const phoneIdx = headers.indexOf('phone_number');
       if (phoneIdx === -1) {
-        return toast.error(
-          'Phone Number column not found in the uploaded file.',
-        );
+        return toast.error(tg('PHONE_COLUMN_NOT_FOUND'));
       }
       const missingPhone = data.slice(1).some((row) => !row[phoneIdx]);
       if (missingPhone) {
-        return toast.error('Some rows are missing a Phone Number value.');
+        return toast.error(tg('MISSING_PHONE_NUMBER'));
       }
     }
 
@@ -245,7 +261,11 @@ export default function VerificationPayout() {
         link.click();
       })
       .catch((error) => {
-        toast.error('Error downloading file!' + error);
+        toast.error(
+          tg('ERROR_DOWNLOADING_FILE') +
+            ': ' +
+            (error instanceof Error ? error.message : String(error)),
+        );
       });
   };
 
@@ -254,8 +274,8 @@ export default function VerificationPayout() {
       <div className="p-4  h-[calc(100vh-120px)]">
         <div className="flex justify-between items-center mb-2">
           <HeaderWithBack
-            title="Verify Manual Payout"
-            subtitle="Upload excel sheet to manually verify payout"
+            title={tv('VERIFY_MANUAL_PAYOUT')}
+            subtitle={tv('UPLOAD_EXCEL_SHEET_TO_MANUALLY_VERIFY')}
             path={`/projects/aa/${id}/payout/details/${payoutId}`}
           />
           <div className="flex mt-4">
@@ -265,7 +285,7 @@ export default function VerificationPayout() {
               variant="outline"
             >
               <CloudDownload size={22} className="mr-1" />
-              Download Sample
+              {tg('DOWNLOAD_SAMPLE')}
             </Button>
           </div>
         </div>
@@ -287,17 +307,36 @@ export default function VerificationPayout() {
                 <span className="flex items-center bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
                   {selectedFile ? (
                     <>
-                      <Repeat2 size={22} className="px-1" /> Replace
+                      <Repeat2 size={22} className="px-1" /> {tg('REPLACE')}
                     </>
                   ) : (
                     <>
                       <Share size={22} className="px-1" />
-                      Choose File
+                      {tg('CHOOSE_FILE')}
                     </>
                   )}
                 </span>
                 <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
               </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                {tv('MATCH_RECORDS_BY')}
+              </span>
+              <Select
+                value={matchBy}
+                onValueChange={(v) =>
+                  setMatchBy(v as 'bankAccount' | 'phoneNumber')
+                }
+              >
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bankAccount">{tg('BANK_ACCOUNT')}</SelectItem>
+                  <SelectItem value="phoneNumber">{tg('PHONE_NUMBER')}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -308,7 +347,7 @@ export default function VerificationPayout() {
               <div className="border-2 border-dashed border-black mt-2 mx-auto w-full p-4">
                 <div className="flex items-center mb-2">
                   <Input
-                    placeholder="Search..."
+                    placeholder={tg('SEARCH')}
                     value={globalFilter ?? ''}
                     onChange={(e) => setGlobalFilter(e.target.value)}
                     className="rounded mr-2"
@@ -364,7 +403,11 @@ export default function VerificationPayout() {
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
         <div>
-          {data?.length ? <p>Total Count: {data?.length - 1 ?? 0}</p> : null}
+          {data?.length ? (
+            <p>
+              {tg('TOTAL_COUNT')}: {formatNum(data?.length - 1 || 0)}
+            </p>
+          ) : null}
         </div>
         <div className="flex space-x-2">
           <Button
@@ -373,7 +416,7 @@ export default function VerificationPayout() {
             variant="outline"
             onClick={() => {
               setData([]);
-              setFileName('No File Choosen');
+              setFileName(tg('NO_FILE_CHOSEN'));
               setSelectedFile(null);
 
               if (inputRef.current) {
@@ -381,7 +424,7 @@ export default function VerificationPayout() {
               }
             }}
           >
-            Clear
+            {tg('CLEAR')}
           </Button>
 
           <Button
@@ -389,7 +432,7 @@ export default function VerificationPayout() {
             onClick={handleUpload}
             disabled={data?.length === 0}
           >
-            Import
+            {tg('IMPORT')}
           </Button>
         </div>
       </div>

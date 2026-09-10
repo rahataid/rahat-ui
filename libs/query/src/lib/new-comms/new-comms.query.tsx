@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNewCommunicationQuery } from './new-comms.provider';
 import { TAGS } from '../../config';
 import Swal from 'sweetalert2';
+import { useTranslations } from 'next-intl';
 
 type RetryFailedPayload = {
   cuid: string;
@@ -35,6 +36,7 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
 export const useSessionRetryFailed = () => {
   const { newCommunicationService, newQueryClient } =
     useNewCommunicationQuery();
+  const t = useTranslations('AA_PROJECT');
 
   const mutation = useMutation({
     mutationFn: (payload: RetryFailedPayload) =>
@@ -50,16 +52,24 @@ export const useSessionRetryFailed = () => {
       newQueryClient.invalidateQueries({
         queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', { type: sessionId }],
       });
-      Swal.fire('Retry Successfully', '', 'success');
+      Swal.fire(t('RETRY_SUCCESSFUL'), '', 'success');
     },
     onError: (error: any) => {
-      Swal.fire(
-        'You’ve reached the maximum number of retries',
-        error?.response.data.message === 'Session is completed'
-          ? 'No further retries possible'
-          : error?.response.data.message,
-        'error',
-      );
+      // This calls an external, third-party communication service
+      // (@rumsan/connect), not one of our own backends -- there's no
+      // `code` field to key on, so match the one known fixed message and
+      // fall back to a generic translated error for anything else, rather
+      // than always claiming "max retries reached" regardless of cause.
+      const rawMessage: string | undefined = error?.response?.data?.message;
+      if (rawMessage === 'Session is completed') {
+        Swal.fire(
+          t('MAXIMUM_RETRIES_REACHED'),
+          t('NO_FURTHER_RETRIES_POSSIBLE'),
+          'error',
+        );
+        return;
+      }
+      Swal.fire(t('RETRY_FAILED'), rawMessage || t('ERROR'), 'error');
     },
   });
 

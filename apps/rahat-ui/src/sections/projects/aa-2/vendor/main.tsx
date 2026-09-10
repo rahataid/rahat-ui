@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Tabs,
   TabsContent,
@@ -15,6 +16,8 @@ import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { useMemo } from 'react';
 
 export default function VendorsView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams() as { id: UUID };
   const { activeTab, setActiveTab } = useActiveTab('vendorList');
 
@@ -24,14 +27,14 @@ export default function VendorsView() {
   );
 
   const VendorsTabs = [
-    { title: 'Vendor List', value: 'vendorList', module: 'all' },
+    { title: t('VENDOR_LIST'), value: 'vendorList', module: 'all' },
     {
-      title: 'Vendor Redemption List',
+      title: t('VENDOR_REDEMPTION_LIST'),
       value: 'vendorRedemptionList',
       module: 'fund',
     },
     {
-      title: 'Inkind Redemption List',
+      title: t('INKIND_REDEMPTION_LIST'),
       value: 'inkindRedemptionList',
       module: 'inkind',
     },
@@ -62,8 +65,8 @@ export default function VendorsView() {
     <>
       <div className="p-4">
         <Heading
-          title="Vendors"
-          description="Track all the vendor reports here"
+          title={tg('VENDORS')}
+          description={t('TRACK_ALL_THE_VENDOR_REPORTS_HERE')}
         />
 
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>

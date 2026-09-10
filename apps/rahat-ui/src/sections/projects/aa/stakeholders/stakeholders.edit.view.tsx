@@ -4,6 +4,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { useTranslations } from 'next-intl';
 import { Minus } from 'lucide-react';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import EditStakeholders from './edit.stakeholders';
@@ -17,6 +18,7 @@ export default function StakeholdersEditPanel({
   stakeholdersDetail,
   closeSecondPanel,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <>
       <div className="py-4 px-2 bg-secondary">
@@ -26,7 +28,7 @@ export default function StakeholdersEditPanel({
               <Minus size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
-              <p className="text-xs font-medium">Close</p>
+              <p className="text-xs font-medium">{t('CLOSE')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

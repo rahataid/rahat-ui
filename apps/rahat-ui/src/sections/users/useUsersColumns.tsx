@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { User } from '@rumsan/sdk/types';
@@ -16,6 +17,7 @@ import {
 import UsersDetailSplitView from './users.detail.split.view';
 
 export const useUserTableColumns = () => {
+  const tg = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
@@ -36,24 +38,24 @@ export const useUserTableColumns = () => {
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <div
           className="cursor-pointer"
           onClick={() => openSplitDetailView(row.original)}
         >
-          {row.getValue('name') ?? 'N/A'}
+          {row.getValue('name') ?? tg('N_A')}
         </div>
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => <div>{row.getValue('email') ?? 'N/A'}</div>,
+      header: tg('EMAIL'),
+      cell: ({ row }) => <div>{row.getValue('email') ?? tg('N_A')}</div>,
     },
     {
       accessorKey: 'wallet',
-      header: 'Wallet Address',
+      header: tg('WALLET_ADDRESS'),
       cell: ({ row }) => {
         const walletAddress = row.getValue('wallet') as string;
         return (
@@ -75,14 +77,14 @@ export const useUserTableColumns = () => {
                     />
                   )
                 ) : (
-                  'N/A'
+                  tg('N_A')
                 )}
               </TooltipTrigger>
               <TooltipContent className="bg-secondary" side="bottom">
                 <p className="text-xs font-medium">
                   {walletAddressCopied === row.index
-                    ? 'copied'
-                    : 'click to copy'}
+                    ? tg('COPIED')
+                    : tg('CLICK_TO_COPY')}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -92,7 +94,7 @@ export const useUserTableColumns = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (

@@ -1,12 +1,4 @@
-// import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-// import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-// import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-// import { useTriggerCommunication } from '@rahat-ui/query';
-// import { UUID } from 'crypto';
-// import { SessionStatus } from '@rumsan/connect/src/types/index';
-// import SpinnerLoader from '../../../components/spinner.loader';
-// import { Download } from 'lucide-react';
-
+import { useTranslations } from 'next-intl';
 import {
   Tabs,
   TabsContent,
@@ -22,8 +14,12 @@ import { CommunicationCard } from '../components/communicationCard';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useMemo } from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { RoleAuth } from 'libs/auth/src/lib/roleAuth';
-import { AARoles } from 'libs/auth/src/enums/aaRoles';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { PlusIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -50,6 +46,7 @@ export default function CommunicationList({
   const router = useRouter();
   const pathname = usePathname();
 
+  const t = useTranslations('AA_PROJECT');
   const defaultTab = useMemo(() => {
     const active = activityCommunication?.some(
       (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
@@ -70,31 +67,29 @@ export default function CommunicationList({
   }, [activityCommunication]);
 
   const { activeTab, setActiveTab } = useActiveTab(defaultTab);
+  const formatNum = useNumberFormat();
   return (
     <div className="border px-4 pt-2 rounded-xl ">
       <div className="mb-4 flex items-center justify-between">
         <div className=" w-full flex flex-row self-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Communication List
+              {t('COMMUNICATION_LIST')}
             </h1>{' '}
             <p className="text-sm text-gray-500">
-              List of communications in this activity
+              {t('LIST_OF_COMMUNICATIONS_IN_THIS_ACTIVITY')}
             </p>
           </div>
           <div>
             {' '}
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
               <IconLabelBtn
                 Icon={PlusIcon}
                 handleClick={() => router.push(`${pathname}/edit#comm`)}
-                name="Add Communication"
+                name={t('ADD_COMMUNICATION')}
                 className="rounded-sm w-full "
               />
-            </RoleAuth>
+            </Can>
           </div>
         </div>
       </div>
@@ -105,13 +100,13 @@ export default function CommunicationList({
             value="communications"
             className="data-[state=active]:bg-white flex items-center gap-2"
           >
-            Communications
+            {t('COMMUNICATIONS')}
             <Badge
               className={`h-5 w-5 justify-center text-white px-2 py-0 ${
                 activeTab === 'communications' ? 'bg-blue-500 ' : 'bg-gray-500'
               }`}
             >
-              {pendingCommunications?.length}
+              {formatNum(pendingCommunications?.length ?? 0)}
             </Badge>
           </TabsTrigger>
 
@@ -119,13 +114,13 @@ export default function CommunicationList({
             value="history"
             className="data-[state=active]:bg-white flex items-center gap-2"
           >
-            History
+            {t('HISTORY')}
             <Badge
               className={`h-5 w-5 justify-center text-white px-2 py-0 ${
                 activeTab === 'history' ? 'bg-blue-500 ' : 'bg-gray-500'
               }`}
             >
-              {completedCommunications?.length}
+              {formatNum(completedCommunications?.length ?? 0)}
             </Badge>
           </TabsTrigger>
         </TabsList>
@@ -134,7 +129,7 @@ export default function CommunicationList({
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)] h-[calc(100vh-200px)]   ">
             {pendingCommunications?.length === 0 && !loading ? (
-              <NoResult message="No Communication Available" />
+              <NoResult message={t('NO_COMMUNICATION')} />
             ) : (
               pendingCommunications?.map((comm, index) => (
                 <CommunicationCard key={index} activityCommunication={comm} />
@@ -147,7 +142,7 @@ export default function CommunicationList({
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)]  h-[calc(100vh-200px)]  ">
             {completedCommunications?.length === 0 && !loading ? (
-              <NoResult message="No History Available" />
+              <NoResult message={t('NO_HISTORY_AVAILABLE')} />
             ) : (
               completedCommunications?.map((comm, index) => (
                 <CommunicationCard key={index} activityCommunication={comm} />

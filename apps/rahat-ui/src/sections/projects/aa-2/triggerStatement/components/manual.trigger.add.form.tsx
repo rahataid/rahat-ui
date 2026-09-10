@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import {
@@ -19,7 +20,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { DurationData } from '../../activities/add/add.activity.view';
-
+import { getLeadTimeParts } from '../utils';
+import { useState, useEffect } from 'react';
 type IProps = {
   form: UseFormReturn<{
     title: string;
@@ -38,6 +40,21 @@ export default function AddManualTriggerForm({
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [leadTimeUnit, setLeadTimeUnit] = useState<'hours' | 'days'>(
+    () => getLeadTimeParts(form.getValues('leadTime')).unit,
+  );
+  const leadTimeValue = form.watch('leadTime');
+
+  useEffect(() => {
+    const parsed = getLeadTimeParts(leadTimeValue, leadTimeUnit);
+    if (
+      parsed.unit !== leadTimeUnit &&
+      /(hours|days)/i.test(leadTimeValue || '')
+    ) {
+      setLeadTimeUnit(parsed.unit);
+    }
+  }, [leadTimeValue, leadTimeUnit]);
+
   return (
     <>
       <Form {...form}>
@@ -95,12 +112,10 @@ export default function AddManualTriggerForm({
                 control={form.control}
                 name="leadTime"
                 render={({ field }) => {
-                  const raw = field.value?.trim() ?? '';
-                  const unitMatch = raw.match(/(hours|days)/i);
-                  const unit = unitMatch
-                    ? unitMatch[0].toLowerCase()
-                    : 'days';
-                  const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
+                  const { lead, unit } = getLeadTimeParts(
+                    field.value,
+                    leadTimeUnit,
+                  );
                   return (
                     <FormItem className="w-full">
                       <FormLabel>{tg('LEAD_TIME')}</FormLabel>
@@ -112,17 +127,14 @@ export default function AddManualTriggerForm({
                           value={lead}
                           onChange={(e) => {
                             const newLead = e.target.value;
-                            field.onChange(
-                              newLead ? `${newLead} ${unit}` : '',
-                            );
+                            field.onChange(newLead ? `${newLead} ${unit}` : '');
                           }}
                         />
                         <Select
                           value={unit}
                           onValueChange={(val) => {
-                            field.onChange(
-                              lead ? `${lead} ${val}` : '',
-                            );
+                            setLeadTimeUnit(val as 'hours' | 'days');
+                            field.onChange(`${lead} ${val}`);
                           }}
                         >
                           <FormControl>
@@ -133,7 +145,9 @@ export default function AddManualTriggerForm({
                           <SelectContent>
                             {DurationData.map((item) => (
                               <SelectItem key={item.value} value={item.value}>
-                                {item.value === 'hours' ? t('HOURS') : t('DAYS')}
+                                {item.value === 'hours'
+                                  ? t('HOURS')
+                                  : t('DAYS')}
                               </SelectItem>
                             ))}
                           </SelectContent>

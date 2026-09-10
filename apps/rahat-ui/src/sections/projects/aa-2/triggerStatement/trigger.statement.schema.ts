@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { normalizeNumeralsToNumberPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import {
+  normalizeNumeralsPreprocessor,
+  normalizeNumeralsToNumberPreprocessor,
+} from 'apps/rahat-ui/src/utils/i18n/numeral';
 
 export const SOURCE_CONFIG = {
   water_level_m: {
@@ -113,117 +116,285 @@ const valueSchema = z
 
 type Translator = (key: string, values?: Record<string, any>) => string;
 
-export const buildTriggerStatementSchemaBase = (t: Translator) =>
-  z
-  .object({
-    source: sourceSchema,
-    sourceSubType: z.string().optional(),
-    stationId: z.string().optional(),
-    stationName: z.string().optional(),
-    operator: operatorSchema,
-    value: valueSchema,
-    expression: z.string().trim().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (!data.source) return;
+const numeralString = () =>
+  z.preprocess(normalizeNumeralsPreprocessor, z.string().optional());
 
-    if (!data.sourceSubType) {
-      let message = t('SOURCE_SUBTYPE_IS_REQUIRED');
-
-      switch (data.source) {
-        case 'water_level_m':
-          message = t('LEVEL_TYPE_IS_REQUIRED');
-          break;
-        case 'discharge_m3s':
-          message = t('DISCHARGE_TYPE_IS_REQUIRED');
-          break;
-        case 'rainfall_mm':
-          message = t('MEASUREMENT_PERIOD_IS_REQUIRED');
-          break;
-        case 'prob_flood':
-          message = t('PROBABILITY_PERIOD_IS_REQUIRED');
-          break;
-      }
-
-      ctx.addIssue({
-        path: ['sourceSubType'],
-        message,
-        code: z.ZodIssueCode.custom,
-      });
-    }
-
-    if (data.sourceSubType && !data.operator) {
-      ctx.addIssue({
-        path: ['operator'],
-        message: t('OPERATOR_IS_REQUIRED'),
-        code: z.ZodIssueCode.custom,
-      });
-    }
-
-    if (
-      data.sourceSubType &&
-      (data.value === undefined ||
-        data.value === '' ||
-        (typeof data.value === 'number' && isNaN(data.value)))
-    ) {
-      ctx.addIssue({
-        path: ['value'],
-        message: t('VALUE_IS_REQUIRED'),
-        code: z.ZodIssueCode.custom,
-      });
-    }
-
-    if (typeof data.value === 'number' && !isNaN(data.value)) {
-      if (data.value <= 0) {
-        ctx.addIssue({
-          path: ['value'],
-          message: t('VALUE_MUST_BE_A_POSITIVE_NUMBER'),
-          code: z.ZodIssueCode.custom,
-        });
-      }
-
-      if (data.source === 'prob_flood' && data.value > 100) {
-        ctx.addIssue({
-          path: ['value'],
-          message: t('VALUE_CANNOT_EXCEED_100_FLOOD_PROBABILITY'),
-          code: z.ZodIssueCode.custom,
-        });
-      }
-    }
-
-    if (
-      data.sourceSubType &&
-      (!data.expression || data.expression.trim().length < 3)
-    ) {
-      ctx.addIssue({
-        path: ['expression'],
-        message: t('EXPRESSION_MUST_CONTAIN_OPERATOR_AND_VALUE'),
-        code: z.ZodIssueCode.custom,
-      });
-    }
-
-    if (data.source !== 'prob_flood') {
-      if (!data.stationId) {
-        ctx.addIssue({
-          path: ['stationId'],
-          message: t('STATION_IS_REQUIRED'),
-          code: z.ZodIssueCode.custom,
-        });
-      }
-
-      if (!data.stationName) {
-        ctx.addIssue({
-          path: ['stationName'],
-          message: t('STATION_IS_REQUIRED'),
-          code: z.ZodIssueCode.custom,
-        });
-      }
-    }
+export const buildManualFormSchema = (t: Translator) =>
+  z.object({
+    title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
+    isMandatory: z.boolean().optional(),
+    description: z.string().optional(),
+    leadTime: z.string().optional(),
   });
 
+export const buildEditAutomatedFormSchema = (
+  t: Translator,
+  phaseName?: string,
+) =>
+  z
+    .object({
+      title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
+      description: z.string().optional(),
+      source: z.string().min(1, { message: t('PLEASE_SELECT_DATA_SOURCE') }),
+      isMandatory: z.boolean().optional(),
+      leadTime: z.string().optional(),
+      triggerStatement: buildTriggerStatementSchema(t),
+      minLeadTimeDays: numeralString(),
+      maxLeadTimeDays: numeralString(),
+      probability: numeralString(),
+      warningLevel: numeralString(),
+      dangerLevel: numeralString(),
+      forecast: z.string().optional(),
+      daysToConsiderPrior: numeralString(),
+      forecastStatus: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (data.source === 'DHM' && phaseName === 'ACTIVATION') {
+        if (!data.dangerLevel || data.dangerLevel.trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['dangerLevel'],
+            message: t('DANGER_LEVEL_IS_REQUIRED'),
+          });
+        } else if (
+          isNaN(Number(data.dangerLevel)) ||
+          Number(data.dangerLevel) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['dangerLevel'],
+            message: t('DANGER_LEVEL_POSITIVE_NUMBER'),
+          });
+        }
+      }
+
+      if (data.source === 'DHM' && phaseName === 'READINESS') {
+        if (!data.warningLevel || data.warningLevel.trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['warningLevel'],
+            message: t('WARNING_LEVEL_IS_REQUIRED'),
+          });
+        } else if (
+          isNaN(Number(data.warningLevel)) ||
+          Number(data.warningLevel) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['warningLevel'],
+            message: t('WARNING_LEVEL_POSITIVE_NUMBER'),
+          });
+        }
+      }
+
+      if (
+        data.source === 'DAILY_MONITORING' &&
+        (phaseName === 'ACTIVATION' || phaseName === 'READINESS')
+      ) {
+        if (!data.forecast || data.forecast.trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['forecast'],
+            message: t('FORECAST_IS_REQUIRED'),
+          });
+        }
+
+        if (
+          !data.daysToConsiderPrior ||
+          data.daysToConsiderPrior.trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['daysToConsiderPrior'],
+            message: t('DAYS_TO_CONSIDER_PRIOR_IS_REQUIRED'),
+          });
+        } else if (
+          isNaN(Number(data.daysToConsiderPrior)) ||
+          Number(data.daysToConsiderPrior) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['daysToConsiderPrior'],
+            message: t('DAYS_TO_CONSIDER_PRIOR_POSITIVE_NUMBER'),
+          });
+        }
+
+        if (!data.forecastStatus || data.forecastStatus.trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['forecastStatus'],
+            message: t('FORECAST_STATUS_IS_REQUIRED'),
+          });
+        }
+      }
+
+      if (
+        data.source === 'GLOFAS' &&
+        (phaseName === 'ACTIVATION' || phaseName === 'READINESS')
+      ) {
+        if (!data.maxLeadTimeDays || data.maxLeadTimeDays.trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['maxLeadTimeDays'],
+            message: t('MAX_LEAD_TIME_DAYS_IS_REQUIRED'),
+          });
+        } else if (
+          isNaN(Number(data.maxLeadTimeDays)) ||
+          Number(data.maxLeadTimeDays) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['maxLeadTimeDays'],
+            message: t('MAX_LEAD_TIME_DAYS_POSITIVE_NUMBER'),
+          });
+        }
+
+        if (!data.minLeadTimeDays || data.minLeadTimeDays.trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['minLeadTimeDays'],
+            message: t('MIN_LEAD_TIME_DAYS_IS_REQUIRED'),
+          });
+        } else if (
+          isNaN(Number(data.minLeadTimeDays)) ||
+          Number(data.minLeadTimeDays) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['minLeadTimeDays'],
+            message: t('MIN_LEAD_TIME_DAYS_POSITIVE_NUMBER'),
+          });
+        }
+
+        if (!data.probability || data.probability.trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['probability'],
+            message: t('FORECAST_PROBABILITY_IS_REQUIRED'),
+          });
+        } else if (
+          isNaN(Number(data.probability)) ||
+          Number(data.probability) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['probability'],
+            message: t('FORECAST_PROBABILITY_POSITIVE_NUMBER'),
+          });
+        }
+      }
+    });
+
+export const buildTriggerStatementSchemaBase = (t: Translator) =>
+  z
+    .object({
+      source: sourceSchema,
+      sourceSubType: z.string().optional(),
+      stationId: z.string().optional(),
+      stationName: z.string().optional(),
+      operator: operatorSchema,
+      value: valueSchema,
+      expression: z.string().trim().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (!data.source) return;
+
+      if (!data.sourceSubType) {
+        let message = t('SOURCE_SUBTYPE_IS_REQUIRED');
+
+        switch (data.source) {
+          case 'water_level_m':
+            message = t('LEVEL_TYPE_IS_REQUIRED');
+            break;
+          case 'discharge_m3s':
+            message = t('DISCHARGE_TYPE_IS_REQUIRED');
+            break;
+          case 'rainfall_mm':
+            message = t('MEASUREMENT_PERIOD_IS_REQUIRED');
+            break;
+          case 'prob_flood':
+            message = t('PROBABILITY_PERIOD_IS_REQUIRED');
+            break;
+        }
+
+        ctx.addIssue({
+          path: ['sourceSubType'],
+          message,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (data.sourceSubType && !data.operator) {
+        ctx.addIssue({
+          path: ['operator'],
+          message: t('OPERATOR_IS_REQUIRED'),
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (
+        data.sourceSubType &&
+        (data.value === undefined ||
+          data.value === '' ||
+          (typeof data.value === 'number' && isNaN(data.value)))
+      ) {
+        ctx.addIssue({
+          path: ['value'],
+          message: t('VALUE_IS_REQUIRED'),
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (typeof data.value === 'number' && !isNaN(data.value)) {
+        if (data.value <= 0) {
+          ctx.addIssue({
+            path: ['value'],
+            message: t('VALUE_MUST_BE_A_POSITIVE_NUMBER'),
+            code: z.ZodIssueCode.custom,
+          });
+        }
+
+        if (data.source === 'prob_flood' && data.value > 100) {
+          ctx.addIssue({
+            path: ['value'],
+            message: t('VALUE_CANNOT_EXCEED_100_FLOOD_PROBABILITY'),
+            code: z.ZodIssueCode.custom,
+          });
+        }
+      }
+
+      if (
+        data.sourceSubType &&
+        (!data.expression || data.expression.trim().length < 3)
+      ) {
+        ctx.addIssue({
+          path: ['expression'],
+          message: t('EXPRESSION_MUST_CONTAIN_OPERATOR_AND_VALUE'),
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (data.source !== 'prob_flood') {
+        if (!data.stationId) {
+          ctx.addIssue({
+            path: ['stationId'],
+            message: t('STATION_IS_REQUIRED'),
+            code: z.ZodIssueCode.custom,
+          });
+        }
+
+        if (!data.stationName) {
+          ctx.addIssue({
+            path: ['stationName'],
+            message: t('STATION_IS_REQUIRED'),
+            code: z.ZodIssueCode.custom,
+          });
+        }
+      }
+    });
+
 export const buildTriggerStatementSchema = (t: Translator) =>
-  buildTriggerStatementSchemaBase(t).superRefine(
-  (value, ctx) => {
+  buildTriggerStatementSchemaBase(t).superRefine((value, ctx) => {
     if (!value.source) return;
 
     const config = SOURCE_CONFIG[value.source];
@@ -260,5 +431,4 @@ export const buildTriggerStatementSchema = (t: Translator) =>
         path: ['expression'],
       });
     }
-  },
-);
+  });

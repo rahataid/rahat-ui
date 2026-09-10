@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { UseFormReturn } from 'react-hook-form';
@@ -27,6 +28,7 @@ import {
   Option,
   SOURCE_MAPPING,
   filterSourceOptionsByProjectType,
+  getLeadTimeParts,
 } from '../utils';
 import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
@@ -92,12 +94,16 @@ export default function AddAutomatedTriggerForm({
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [leadTimeUnit, setLeadTimeUnit] = useState<'hours' | 'days'>(
+    () => getLeadTimeParts(form.getValues('leadTime')).unit,
+  );
+  const leadTimeValue = form.watch('leadTime');
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
   const triggerOperator = form.watch('triggerStatement.operator');
   const triggerValue = form.watch('triggerStatement.value');
-  const [selectedSource, setSelectedSource] = React.useState<{
+  const [selectedSource, setSelectedSource] = useState<{
     dataSource: string | null;
     type: string | null;
   }>({ dataSource: null, type: null });
@@ -112,7 +118,7 @@ export default function AddAutomatedTriggerForm({
   );
 
   // Filter source options based on project type
-  const filteredSourceOptions = React.useMemo(() => {
+  const filteredSourceOptions = useMemo(() => {
     if (!sourceOptions) return [];
     return filterSourceOptionsByProjectType(sourceOptions, projectType || '');
   }, [sourceOptions, projectType]);
@@ -120,7 +126,17 @@ export default function AddAutomatedTriggerForm({
   const computedStationHeading =
     projectType === 'HEAT_WAVE' ? t('HEATWAVE_STATION') : stationHeading;
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const parsed = getLeadTimeParts(leadTimeValue, leadTimeUnit);
+    if (
+      parsed.unit !== leadTimeUnit &&
+      /(hours|days)/i.test(leadTimeValue || '')
+    ) {
+      setLeadTimeUnit(parsed.unit);
+    }
+  }, [leadTimeValue, leadTimeUnit]);
+
+  useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
       // Always update triggerStatement.source to match the selected source
       form.setValue(
@@ -131,7 +147,7 @@ export default function AddAutomatedTriggerForm({
   }, [source, form]);
 
   // Update selectedSource when source changes (handles both initial load and reset)
-  React.useEffect(() => {
+  useEffect(() => {
     if (source && isEditing) {
       const [dataSource, type] = source.includes(':')
         ? source.split(':')
@@ -148,7 +164,7 @@ export default function AddAutomatedTriggerForm({
     }
   }, [source, isEditing]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (triggerSourceSubType && triggerOperator && triggerValue) {
       form.setValue(
         'triggerStatement.expression',
@@ -199,7 +215,9 @@ export default function AddAutomatedTriggerForm({
               <SelectItem key={option.value} value={option.value}>
                 {/* Subtype slugs ("daily") map to AA_PROJECT keys; fall back to
                     the derived English label for any slug not yet translated. */}
-                {translateValue(t, String(option.value), { fallback: option.label })}
+                {translateValue(t, String(option.value), {
+                  fallback: option.label,
+                })}
               </SelectItem>
             ))
           ) : (
@@ -263,34 +281,31 @@ export default function AddAutomatedTriggerForm({
               control={form.control}
               name="leadTime"
               render={({ field }) => {
-                const raw = field.value?.trim() ?? '';
-                const unitMatch = raw.match(/(hours|days)/i);
-                const unit = unitMatch
-                  ? unitMatch[0].toLowerCase()
-                  : 'days';
-                const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
+                const { lead, unit } = getLeadTimeParts(
+                  field.value,
+                  leadTimeUnit,
+                );
                 return (
                   <FormItem>
                     <FormLabel>{tg('LEAD_TIME')}</FormLabel>
-                      <div className="grid grid-cols-4">
-                        <Input
-                          type="text"
-                          placeholder={tg('ENTER_LEAD_TIME')}
-                          className="col-span-3 rounded-r-none"
-                          value={lead}
-                          onChange={(e) => {
-                            const newLead = e.target.value;
-                            field.onChange(
-                              newLead ? `${newLead} ${unit}` : '',
-                            );
-                          }}
-                        />
-                        <Select
-                          value={unit}
-                          onValueChange={(val) => {
-                            field.onChange(lead ? `${lead} ${val}` : '');
-                          }}
-                        >
+                    <div className="grid grid-cols-4">
+                      <Input
+                        type="text"
+                        placeholder={tg('ENTER_LEAD_TIME')}
+                        className="col-span-3 rounded-r-none"
+                        value={lead}
+                        onChange={(e) => {
+                          const newLead = e.target.value;
+                          field.onChange(newLead ? `${newLead} ${unit}` : '');
+                        }}
+                      />
+                      <Select
+                        value={unit}
+                        onValueChange={(val) => {
+                          setLeadTimeUnit(val as 'hours' | 'days');
+                          field.onChange(`${lead} ${val}`);
+                        }}
+                      >
                         <FormControl>
                           <SelectTrigger className="rounded-l-none">
                             <SelectValue />
@@ -339,7 +354,9 @@ export default function AddAutomatedTriggerForm({
                           </SelectItem>
                         ))
                       ) : (
-                        <p className="text-gray-500 text-sm">{t('NO_SOURCE_FOUND')}</p>
+                        <p className="text-gray-500 text-sm">
+                          {t('NO_SOURCE_FOUND')}
+                        </p>
                       )}
                     </SelectContent>
                   </Select>
@@ -373,16 +390,22 @@ export default function AddAutomatedTriggerForm({
                             <SourceSubTypeField label={t('DISCHARGE_TYPE')} />
                           )}
                           {triggerSource === 'rainfall_mm' && (
-                            <SourceSubTypeField label={t('MEASUREMENT_PERIOD')} />
+                            <SourceSubTypeField
+                              label={t('MEASUREMENT_PERIOD')}
+                            />
                           )}
                           {triggerSource === 'prob_flood' && (
-                            <SourceSubTypeField label={t('PROBABILITY_PERIOD')} />
+                            <SourceSubTypeField
+                              label={t('PROBABILITY_PERIOD')}
+                            />
                           )}
 
                           {/* for heatwave */}
                           {(triggerSource === 'prob_humidity' ||
                             triggerSource === 'temperature_c') && (
-                            <SourceSubTypeField label={t('MEASUREMENT_PERIOD')} />
+                            <SourceSubTypeField
+                              label={t('MEASUREMENT_PERIOD')}
+                            />
                           )}
                         </Select>
                         <FormMessage />
@@ -415,7 +438,9 @@ export default function AddAutomatedTriggerForm({
                             <FormLabel>{t('STATION')}</FormLabel>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder={t('SELECT_STATION')} />
+                                <SelectValue
+                                  placeholder={t('SELECT_STATION')}
+                                />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -459,7 +484,9 @@ export default function AddAutomatedTriggerForm({
                               <FormLabel>{t('OPERATOR')}</FormLabel>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder={t('SELECT_OPERATOR')} />
+                                  <SelectValue
+                                    placeholder={t('SELECT_OPERATOR')}
+                                  />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>

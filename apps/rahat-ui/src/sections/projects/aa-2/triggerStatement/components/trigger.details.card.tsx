@@ -25,7 +25,9 @@ const TriggerDetailsCard = ({
   const formatNum = useNumberFormat();
   return (
     <div className={`${bgColor} rounded-xl p-4 space-y-1`}>
-      <p className="text-sm/4">{title} {t('TRIGGERS')}</p>
+      <p className="text-sm/4">
+        {title} {t('TRIGGERS')}
+      </p>
       <div className="flex items-center gap-1">
         <p className={`text-2xl font-medium text-${color}-500`}>
           {formatNum(totalTriggered)}
@@ -37,7 +39,7 @@ const TriggerDetailsCard = ({
           className={`bg-slate-50 p-2 rounded text-sm/4 text-gray-500 space-y-1`}
         >
           <div className="flex items-center justify-between gap-4">
-            <p className="text-black">{t('STATION')}</p>
+            <p className="text-black">{t('STATUS')}</p>
             <Badge
               className={`bg-${color}-500 text-white font-extralight tracking-wider px-1`}
             >

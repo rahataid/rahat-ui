@@ -28,6 +28,7 @@ import { NotificationButton } from './notification-button';
 import { LanguageToggle } from './language-toggle';
 import { useProjectList } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
+import { SystemUserAuth } from '@rahat-ui/auth';
 
 export function Nav({ hasDefaultHeader = true }) {
   const t = useTranslations('TOP_NAVIGATION_HEADER');
@@ -115,6 +116,14 @@ export function Nav({ hasDefaultHeader = true }) {
                 >
                   {t('USAGE')}
                 </Link>
+                <SystemUserAuth hasContent={false}>
+                  <Link
+                    className="p-1 hover:bg-secondary rounded"
+                    href={paths.logs.root}
+                  >
+                    Log Stream
+                  </Link>
+                </SystemUserAuth>
                 {/* <ThemeSwitch /> */}
                 <Badge
                   className="mt-2 rounded bg-primary text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"

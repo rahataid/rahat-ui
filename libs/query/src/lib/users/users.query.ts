@@ -247,6 +247,7 @@ export const useAssignRoleInProject = () => {
         userClient.assignRoleInProject(uuid, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['get_user_roles'] });
+        queryClient.invalidateQueries({ queryKey: ['get_user_active_roles'] });
       },
     },
     queryClient,
@@ -258,7 +259,7 @@ export const useListActiveRoles = (uuid?: UUID): UseQueryResult<any, Error> => {
   const userClient = getUserClient(rumsanService.client);
   const query = useQuery(
     {
-      queryKey: ['get_user_roles', uuid],
+      queryKey: ['get_user_active_roles', uuid],
       enabled: !!uuid,
       queryFn: () => userClient.listActiveRoles(uuid as UUID),
     },

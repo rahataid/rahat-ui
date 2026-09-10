@@ -68,13 +68,16 @@ export const useFundManagementTableColumns = () => {
       accessorFn: (row) => row?.title,
       header: tv('FUND_TITLE'),
       cell: ({ row }) => (
-        <TruncatedCell text={row?.original?.title || tg('N_A')} truncateByWidth />
+        <TruncatedCell
+          text={row?.original?.title || tg('N_A')}
+          truncateByWidth
+        />
       ),
     },
     {
       accessorKey: 'beneficiaryGroup',
       header: tv('BENEFICIARY_GROUP'),
-      meta: { className: 'w-[200px]' },
+      meta: { className: 'w-[18%]' },
 
       cell: ({ row }) => {
         return (
@@ -95,7 +98,7 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'tokensperBenef',
       header: t('TOKEN_PER_BENEFICIARY'),
-      meta: { className: 'w-[120px]' },
+      meta: { className: 'w-[15%]' },
 
       cell: ({ row }) => (
         <div>
@@ -109,7 +112,7 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: t('CREATED_BY'),
-      meta: { className: 'w-[150px]' },
+      meta: { className: 'w-[12%]' },
 
       cell: ({ row }) => (
         <TruncatedCell
@@ -120,7 +123,7 @@ export const useFundManagementTableColumns = () => {
     },
     {
       header: tg('STATUS'),
-      meta: { className: 'w-[220px]' },
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const status = row?.original?.status as FundStatus;
 
@@ -144,7 +147,7 @@ export const useFundManagementTableColumns = () => {
       id: 'actions',
       header: tg('ACTIONS'),
       enableHiding: false,
-      meta: { className: 'w-[80px]' },
+      meta: { className: 'w-[7%]' },
       cell: ({ row }) => {
         const status = row.getValue('status') as FundStatus;
         return (

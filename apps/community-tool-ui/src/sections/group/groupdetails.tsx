@@ -288,7 +288,13 @@ export default function GroupDetail({ uuid }: IProps) {
     // Build a stable ordered column list: top-level fields first (in API key
     // order), then extras fields — both filtered by allowedKeys. This order is
     // fixed for the entire edit session so added columns always appear at the end.
-    const SYSTEM_ONLY = new Set(['id', 'archived', 'isVerified', 'extras', 'uuid']);
+    const SYSTEM_ONLY = new Set([
+      'id',
+      'archived',
+      'isVerified',
+      'extras',
+      'uuid',
+    ]);
     const firstBene = sampleBg[0]?.beneficiary ?? {};
     const stableTopLevel = Object.keys(firstBene).filter(
       (k) => !SYSTEM_ONLY.has(k) && allowedKeys.has(k),

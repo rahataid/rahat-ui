@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ArrowLeft, Columns, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import InlinePagination from '../../components/inlinePagination';
 
@@ -26,7 +26,6 @@ const READ_ONLY_FIELDS = new Set([
   'createdBy',
 ]);
 
-// Fields that live on beneficiary top-level (not in extras)
 const TOP_LEVEL_FIELDS = new Set([
   'uuid',
   'firstName',
@@ -96,9 +95,6 @@ export default function EditSubmitView({
   onCancel,
   isSubmitting = false,
 }: Props) {
-  // presentColumns is fixed for the whole edit session (computed on open).
-  // addedColumns are appended at the end in insertion order.
-  // This keeps column order stable across page changes.
   const presentSet = new Set(presentColumns);
   const allColumns = [
     ...presentColumns,
@@ -119,7 +115,6 @@ export default function EditSubmitView({
       const filtered = prev.filter((c) => allColumns.includes(c));
       return [...filtered, ...added];
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allColumnsKey]);
 
   const orderedColumns = columnOrder.length ? columnOrder : allColumns;
@@ -159,61 +154,6 @@ export default function EditSubmitView({
     });
   };
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const topScrollRef = useRef<HTMLDivElement>(null);
-  const bottomScrollRef = useRef<HTMLDivElement>(null);
-  const tableScrollRef = useRef<HTMLDivElement>(null);
-  const [tableScrollWidth, setTableScrollWidth] = useState(0);
-
-  // Unlock ancestor overflow:hidden so the table can scroll horizontally
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const patched: { node: HTMLElement; prev: string }[] = [];
-    let node = el.parentElement;
-    while (node && node !== document.body) {
-      const computed = window.getComputedStyle(node).overflow;
-      const inline = node.style.overflow;
-      if (computed === 'hidden' || inline === 'hidden') {
-        patched.push({ node, prev: inline });
-        node.style.overflow = 'auto';
-      }
-      const computedX = window.getComputedStyle(node).overflowX;
-      const inlineX = node.style.overflowX;
-      if (computedX === 'hidden' || inlineX === 'hidden') {
-        patched.push({ node, prev: inlineX });
-        node.style.overflowX = 'auto';
-      }
-      node = node.parentElement;
-    }
-    return () => {
-      patched.forEach(({ node, prev }) => {
-        node.style.overflow = prev;
-      });
-    };
-  }, []);
-
-  useEffect(() => {
-    const el = tableScrollRef.current;
-    if (!el) return;
-    const update = () => setTableScrollWidth(el.scrollWidth);
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [visibleColumns.length]);
-
-  const syncScroll = (source: HTMLDivElement) => {
-    const left = source.scrollLeft;
-    if (topScrollRef.current && topScrollRef.current !== source) topScrollRef.current.scrollLeft = left;
-    if (bottomScrollRef.current && bottomScrollRef.current !== source) bottomScrollRef.current.scrollLeft = left;
-    if (tableScrollRef.current && tableScrollRef.current !== source) tableScrollRef.current.scrollLeft = left;
-  };
-
-  const onTopScroll = () => { if (topScrollRef.current) syncScroll(topScrollRef.current); };
-  const onBottomScroll = () => { if (bottomScrollRef.current) syncScroll(bottomScrollRef.current); };
-  const onTableScroll = () => { if (tableScrollRef.current) syncScroll(tableScrollRef.current); };
-
   const getRowUuid = (row: BeneficiaryRow): string => {
     const bene = row.beneficiary as Record<string, unknown> | undefined;
     return ((bene?.uuid ?? row.uuid) as string | undefined) ?? '';
@@ -221,12 +161,10 @@ export default function EditSubmitView({
 
   const formatCellValue = (raw: unknown): string => {
     const s = String(raw ?? '');
-    // Trim ISO datetime to date-only: "1988-11-03T00:00:00.000Z" → "1988-11-03"
     if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return s.slice(0, 10);
     return s;
   };
 
-  // Prefer dirty edit value; otherwise read from top-level or extras as appropriate.
   const getCellValue = (row: BeneficiaryRow, col: string): string => {
     const rowUuid = getRowUuid(row);
     const dirty = dirtyRows.get(rowUuid);
@@ -248,8 +186,8 @@ export default function EditSubmitView({
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col w-full min-w-0">
-      {/* Top bar */}
+    <div className="flex flex-col w-full">
+      {/* Toolbar */}
       <div className="flex items-center gap-2 px-4 py-2 border-b bg-background flex-wrap">
         <Button
           variant="ghost"
@@ -366,26 +304,8 @@ export default function EditSubmitView({
         )}
       </div>
 
-      {/* Top scrollbar */}
-      <div
-        ref={topScrollRef}
-        onScroll={onTopScroll}
-        style={{
-          overflowX: 'scroll',
-          overflowY: 'hidden',
-          height: 12,
-          width: '100%',
-        }}
-      >
-        <div style={{ width: tableScrollWidth, height: 1 }} />
-      </div>
-
-      {/* Table scroll container */}
-      <div
-        ref={tableScrollRef}
-        onScroll={onTableScroll}
-        style={{ overflowX: 'scroll', width: '100%' }}
-      >
+      {/* Table */}
+      <div className="import-container overflow-x-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
             Loading...
@@ -463,15 +383,6 @@ export default function EditSubmitView({
             </tbody>
           </table>
         )}
-      </div>
-
-      {/* Bottom scrollbar — same width as table, lets mouse users scroll horizontally */}
-      <div
-        ref={bottomScrollRef}
-        onScroll={onBottomScroll}
-        style={{ overflowX: 'scroll', overflowY: 'hidden', height: 12, width: '100%' }}
-      >
-        <div style={{ width: tableScrollWidth, height: 1 }} />
       </div>
 
       <InlinePagination

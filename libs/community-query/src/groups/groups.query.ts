@@ -127,9 +127,7 @@ export const useCommunityGroupRemove = () => {
         const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            t('ERROR_ON_REMOVING_DATA'),
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -174,9 +172,7 @@ export const usePurgeGroupedBeneficiary = () => {
         const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            t('ERROR_ON_REMOVING_DATA'),
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -194,7 +190,9 @@ export const useCommunityGroupDelete = () => {
         const t = getTranslate();
         const { isConfirmed } = await Swal.fire({
           title: `${
-            data?.pathName === '/group' ? t('DELETE_GROUP_LABEL') : t('DELETE_IMPORTS_LOGS_LABEL')
+            data?.pathName === '/group'
+              ? t('DELETE_GROUP_LABEL')
+              : t('DELETE_IMPORTS_LOGS_LABEL')
           }`,
           text: t('CONFIRM_DELETE_PERMANENTLY'),
           showCancelButton: true,
@@ -220,9 +218,7 @@ export const useCommunityGroupDelete = () => {
         const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            t('ERROR_ON_REMOVING_DATA'),
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -306,9 +302,7 @@ export const useUploadBulkBeneficiaryUpdate = () => {
       const t = getTranslate();
       Swal.fire({
         icon: 'error',
-        title:
-          error?.response?.data?.message ||
-          t('ERROR_WHILE_UPDATING_DATA'),
+        title: error?.response?.data?.message || t('ERROR_WHILE_UPDATING_DATA'),
       });
     },
   });

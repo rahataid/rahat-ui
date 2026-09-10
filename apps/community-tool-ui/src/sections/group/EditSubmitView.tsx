@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ArrowLeft, Columns, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import InlinePagination from '../../components/inlinePagination';
 
@@ -51,6 +51,12 @@ const TOP_LEVEL_FIELDS = new Set([
 
 type BeneficiaryRow = Record<string, unknown>;
 type DirtyMap = Map<string, Record<string, unknown>>;
+
+type DragFill = {
+  col: string;
+  value: string;
+  startRowIdx: number;
+};
 
 type Props = {
   groupName?: string;
@@ -105,6 +111,11 @@ export default function EditSubmitView({
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
   const [draggedCol, setDraggedCol] = useState<string | null>(null);
   const [dragOverCol, setDragOverCol] = useState<string | null>(null);
+
+  // Fill-drag state (Excel-style copy down)
+  const [dragFill, setDragFill] = useState<DragFill | null>(null);
+  const [dragFillEndIdx, setDragFillEndIdx] = useState<number | null>(null);
+  const isDraggingFill = useRef(false);
 
   const allColumnsKey = allColumns.join(',');
 
@@ -185,8 +196,58 @@ export default function EditSubmitView({
     return !!dirty && Object.prototype.hasOwnProperty.call(dirty, col);
   };
 
+  // ── Fill-drag handlers ────────────────────────────────────────────────────
+
+  const onFillHandleMouseDown = (
+    e: React.MouseEvent,
+    col: string,
+    rowIdx: number,
+    value: string,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isDraggingFill.current = true;
+    setDragFill({ col, value, startRowIdx: rowIdx });
+    setDragFillEndIdx(rowIdx);
+  };
+
+  const onRowMouseEnter = (rowIdx: number) => {
+    if (!isDraggingFill.current || !dragFill) return;
+    setDragFillEndIdx(rowIdx);
+  };
+
+  const onMouseUp = () => {
+    if (!isDraggingFill.current || !dragFill || dragFillEndIdx === null) {
+      isDraggingFill.current = false;
+      setDragFill(null);
+      setDragFillEndIdx(null);
+      return;
+    }
+    const start = Math.min(dragFill.startRowIdx, dragFillEndIdx);
+    const end = Math.max(dragFill.startRowIdx, dragFillEndIdx);
+    for (let i = start; i <= end; i++) {
+      if (i === dragFill.startRowIdx) continue; // source cell already has value
+      const row = pageRows[i];
+      if (!row) continue;
+      const rowUuid = getRowUuid(row);
+      onCellChange(rowUuid, dragFill.col, dragFill.value);
+    }
+    isDraggingFill.current = false;
+    setDragFill(null);
+    setDragFillEndIdx(null);
+  };
+
+  const isFillHighlighted = (rowIdx: number, col: string): boolean => {
+    if (!dragFill || dragFillEndIdx === null) return false;
+    if (dragFill.col !== col) return false;
+    const start = Math.min(dragFill.startRowIdx, dragFillEndIdx);
+    const end = Math.max(dragFill.startRowIdx, dragFillEndIdx);
+    return rowIdx >= start && rowIdx <= end && rowIdx !== dragFill.startRowIdx;
+  };
+
   return (
-    <div className="flex flex-col w-full">
+    // onMouseUp on the outer div catches mouse-up anywhere in the table area
+    <div className="flex flex-col w-full" onMouseUp={onMouseUp}>
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-4 py-2 border-b bg-background flex-wrap">
         <Button
@@ -312,7 +373,7 @@ export default function EditSubmitView({
           </div>
         ) : (
           <table
-            className="text-sm border-collapse"
+            className="text-sm border-collapse select-none"
             style={{ minWidth: 'max-content' }}
           >
             <thead>
@@ -347,36 +408,57 @@ export default function EditSubmitView({
               </tr>
             </thead>
             <tbody>
-              {pageRows.map((row) => {
+              {pageRows.map((row, rowIdx) => {
                 const rowUuid = getRowUuid(row);
                 return (
-                  <tr key={rowUuid} className="odd:bg-white even:bg-muted/30">
-                    {visibleColumns.map((col) =>
-                      READ_ONLY_FIELDS.has(col) ? (
+                  <tr
+                    key={rowUuid}
+                    className="odd:bg-white even:bg-muted/30"
+                    onMouseEnter={() => onRowMouseEnter(rowIdx)}
+                  >
+                    {visibleColumns.map((col) => {
+                      const fillHighlight = isFillHighlighted(rowIdx, col);
+                      if (READ_ONLY_FIELDS.has(col)) {
+                        return (
+                          <td
+                            key={col}
+                            className="border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap"
+                          >
+                            {getCellValue(row, col)}
+                          </td>
+                        );
+                      }
+                      const cellValue = getCellValue(row, col);
+                      return (
                         <td
                           key={col}
-                          className="border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap"
-                        >
-                          {getCellValue(row, col)}
-                        </td>
-                      ) : (
-                        <td
-                          key={col}
-                          className={`border px-1 py-1 ${
-                            isDirtyCell(row, col) ? 'bg-yellow-50' : ''
+                          className={`border px-1 py-1 relative group ${
+                            fillHighlight
+                              ? 'bg-blue-100'
+                              : isDirtyCell(row, col)
+                              ? 'bg-yellow-50'
+                              : ''
                           }`}
                         >
                           <input
                             className="bg-transparent outline-none text-sm px-1"
                             style={{ minWidth: 100 }}
-                            value={getCellValue(row, col)}
+                            value={cellValue}
                             onChange={(e) =>
                               onCellChange(rowUuid, col, e.target.value)
                             }
                           />
+                          {/* Fill handle — small square at bottom-right, only visible on hover */}
+                          <span
+                            onMouseDown={(e) =>
+                              onFillHandleMouseDown(e, col, rowIdx, cellValue)
+                            }
+                            className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary opacity-0 group-hover:opacity-100 cursor-crosshair hover:opacity-100"
+                            title="Drag to fill down"
+                          />
                         </td>
-                      ),
-                    )}
+                      );
+                    })}
                   </tr>
                 );
               })}

@@ -90,7 +90,11 @@ export const useUserUpdate = () => {
       mutationFn: ({ uuid, payload }: { uuid: UUID; payload: User }) =>
         userClient.updateUser(uuid, payload),
       onSuccess: () => {
-        Swal.fire(t('GLOBAL.USERS_UPDATED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.USERS_UPDATED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
         queryClient.invalidateQueries({
           queryKey: [
             'get_all_user',
@@ -296,7 +300,11 @@ export const useDeleteRole = () => {
 
       mutationFn: ({ name }: { name: string }) => roleClient.deleteRole(name),
       onSuccess: () => {
-        Swal.fire(t('GLOBAL.ROLE_DELETED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.ROLE_DELETED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
         queryClient.invalidateQueries({
           queryKey: ['get_all_roles'],
         });

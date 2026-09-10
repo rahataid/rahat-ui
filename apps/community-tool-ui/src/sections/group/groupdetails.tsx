@@ -137,7 +137,52 @@ export default function GroupDetail({ uuid }: IProps) {
   const [editPerPage, setEditPerPage] = React.useState(20);
 
   const { data: editPageData, isLoading: editPageLoading } =
-    useCommunityGroupListByID(uuid, { page: editPage, perPage: editPerPage });
+    useCommunityGroupListByID(
+      uuid,
+      { page: editPage, perPage: editPerPage },
+      editSubmitMode,
+    );
+
+  // When fresh edit data arrives recompute presentColumns from it so the table
+  // always reflects the latest field structure, not stale cached data.
+  useEffect(() => {
+    if (!editSubmitMode || editPageLoading || !editPageData) return;
+    const allowedKeys = new Set<string>(
+      (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
+        fd.name,
+        deHumanizeString(fd.name),
+      ]),
+    );
+    const sampleBg = (editPageData?.data?.beneficiariesGroup ?? []) as {
+      beneficiary?: { extras?: Record<string, unknown> } & Record<
+        string,
+        unknown
+      >;
+    }[];
+    if (sampleBg.length === 0) return;
+    const SYSTEM_ONLY = new Set([
+      'id',
+      'archived',
+      'isVerified',
+      'extras',
+      'uuid',
+    ]);
+    const firstBene = sampleBg[0]?.beneficiary ?? {};
+    const stableTopLevel = Object.keys(firstBene).filter(
+      (k) => !SYSTEM_ONLY.has(k) && allowedKeys.has(k),
+    );
+    const stableExtras = Object.keys(firstBene.extras ?? {}).filter((k) =>
+      allowedKeys.has(k),
+    );
+    const stablePresent = ['uuid', ...stableTopLevel, ...stableExtras];
+    const presentSet = new Set(stablePresent);
+    const remaining = [...allowedKeys].filter(
+      (k) => k !== 'uuid' && !presentSet.has(k),
+    );
+    setPresentColumns(stablePresent);
+    setAvailableColumns(remaining);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editPageData, editSubmitMode, editPageLoading]);
 
   // ── Download ───────────────────────────────────────────────────────────────
   const selectables =
@@ -256,66 +301,14 @@ export default function GroupDetail({ uuid }: IProps) {
 
   // ── Edit & Submit ──────────────────────────────────────────────────────────
   const openEditSubmit = () => {
-    const allowedKeys = new Set<string>(
-      (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
-        fd.name,
-        deHumanizeString(fd.name),
-      ]),
-    );
-
-    // Build the set of keys present in data: top-level beneficiary fields +
-    // extras keys — both filtered by allowedKeys.
-    const sampleBg = (responseByUUID?.data?.beneficiariesGroup ?? []) as {
-      beneficiary?: { extras?: Record<string, unknown> } & Record<
-        string,
-        unknown
-      >;
-    }[];
-
-    const presentInData = new Set<string>();
-    sampleBg.forEach((bg) => {
-      const bene = bg.beneficiary ?? {};
-      // top-level fields that match allowedKeys
-      Object.keys(bene).forEach((k) => {
-        if (allowedKeys.has(k) && k !== 'uuid') presentInData.add(k);
-      });
-      // extras fields that match allowedKeys
-      Object.keys(bene.extras ?? {}).forEach((k) => {
-        if (allowedKeys.has(k)) presentInData.add(k);
-      });
-    });
-
-    // Build a stable ordered column list: top-level fields first (in API key
-    // order), then extras fields — both filtered by allowedKeys. This order is
-    // fixed for the entire edit session so added columns always appear at the end.
-    const SYSTEM_ONLY = new Set([
-      'id',
-      'archived',
-      'isVerified',
-      'extras',
-      'uuid',
-    ]);
-    const firstBene = sampleBg[0]?.beneficiary ?? {};
-    const stableTopLevel = Object.keys(firstBene).filter(
-      (k) => !SYSTEM_ONLY.has(k) && allowedKeys.has(k),
-    );
-    const stableExtras = Object.keys(firstBene.extras ?? {}).filter((k) =>
-      allowedKeys.has(k),
-    );
-    const stablePresent = ['uuid', ...stableTopLevel, ...stableExtras];
-    const presentSet = new Set(stablePresent);
-
-    const remaining = [...allowedKeys].filter(
-      (k) => k !== 'uuid' && !presentSet.has(k),
-    );
-
     setDirtyRows(new Map());
-    setPresentColumns(stablePresent);
-    setAvailableColumns(remaining);
+    setPresentColumns([]);
+    setAvailableColumns([]);
     setAddedColumns(new Set());
     setEditPage(1);
     setEditPerPage(20);
     setEditSubmitMode(true);
+    // presentColumns are computed in the useEffect once editPageData arrives
   };
 
   const handleAddColumn = (colKey: string) => {

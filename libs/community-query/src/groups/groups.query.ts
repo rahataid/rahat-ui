@@ -77,6 +77,7 @@ export const useCommunityGroupList = (
 export const useCommunityGroupListByID = (
   uuid: string,
   query: any,
+  enabled = true,
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const groupClient = getGroupClient(rumsanService.client);
@@ -84,6 +85,7 @@ export const useCommunityGroupListByID = (
     {
       queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, query, uuid],
       queryFn: () => groupClient.listById(uuid, query),
+      enabled,
     },
     queryClient,
   );

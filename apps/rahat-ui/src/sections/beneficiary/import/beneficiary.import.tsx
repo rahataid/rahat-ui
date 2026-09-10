@@ -82,11 +82,14 @@ export default function ExcelUploader() {
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
 
-    await uploadBeneficiary.mutateAsync({
+    const response = await uploadBeneficiary.mutateAsync({
       selectedFile,
       doctype,
       groupName,
     });
+    if (response?.data?.success) {
+      router.push('/beneficiary');
+    }
   };
 
   const handleAddClick = () => {
@@ -140,13 +143,6 @@ export default function ExcelUploader() {
     XLSX.writeFile(workbook, 'beneficiary_sample.xlsx');
   };
 
-  useEffect(() => {
-    if (uploadBeneficiary?.isSuccess) {
-      // toast.success('File uploaded successfully.'); commented due to overlap
-      router.push('/beneficiary');
-    }
-    // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
-  }, [router, uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError]);
 
   return (
     <>

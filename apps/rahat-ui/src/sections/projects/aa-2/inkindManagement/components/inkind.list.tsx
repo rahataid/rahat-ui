@@ -296,7 +296,9 @@ export default function InkindList() {
     if (!description.trim()) {
       errors.description = tv('DESCRIPTION_IS_REQUIRED');
     } else if (description.length > DESCRIPTION_MAX) {
-      errors.description = tv('DESCRIPTION_MUST_BE_X_CHARS', { max: DESCRIPTION_MAX });
+      errors.description = tv('DESCRIPTION_MUST_BE_X_CHARS', {
+        max: DESCRIPTION_MAX,
+      });
     }
 
     if (errors.name || errors.description) {
@@ -339,34 +341,38 @@ export default function InkindList() {
         accessorKey: 'name',
         header: tv('INKIND_NAME'),
         cell: ({ row }) => (
-          <TruncatedCell text={row.getValue('name')} maxLength={20} />
+          <TruncatedCell text={row.getValue('name')} truncateByWidth />
         ),
       },
       {
         accessorKey: 'description',
         header: tg('DESCRIPTION'),
+        meta: { className: 'w-[18%]' },
+
         cell: ({ row }) => (
           <TruncatedCell
             text={row.getValue('description') || '—'}
-            maxLength={30}
+            truncateByWidth
           />
         ),
       },
       {
         accessorKey: 'type',
         header: tg('TYPE'),
+        meta: { className: 'w-[11%]' },
+
         cell: ({ row }) => {
           const type = row.getValue('type') as InkindType;
           return (
-            <Badge className="bg-gray-200 text-gray-600">
-              {tg(type)}
-            </Badge>
+            <Badge className="bg-gray-200 text-gray-600">{tg(type)}</Badge>
           );
         },
       },
       {
         accessorKey: 'availableStock',
         header: tv('AVAILABLE_STOCK'),
+        meta: { className: 'w-[12%]' },
+
         cell: ({ row }) => (
           <span className="font-semibold">
             {formatNum(row.getValue('availableStock') ?? 0)}
@@ -376,6 +382,8 @@ export default function InkindList() {
       {
         accessorKey: 'totalAssigned',
         header: tv('ASSIGNED_STOCK'),
+        meta: { className: 'w-[12%]' },
+
         cell: ({ row }) => (
           <span className="font-semibold">
             {formatNum(row.getValue('totalAssigned') ?? 0)}
@@ -385,6 +393,7 @@ export default function InkindList() {
       {
         accessorKey: 'totalRedeemed',
         header: tv('REDEEMED_STOCK'),
+        meta: { className: 'w-[13%]' },
         cell: ({ row }) => (
           <span className="font-semibold">
             {formatNum(row.getValue('totalRedeemed') ?? 0)}
@@ -394,6 +403,7 @@ export default function InkindList() {
       {
         id: 'actions',
         header: tg('ACTIONS'),
+        meta: { className: 'w-[13%]' },
         cell: ({ row }) => {
           const item = row.original;
           const isAssigned = isGroupAssigned(item.uuid);
@@ -419,9 +429,7 @@ export default function InkindList() {
                 <Can action={ACTIONS.DELETE} subject={SUBJECTS.INKIND}>
                   <ActionButton
                     label={
-                      isAssigned
-                        ? tv('CANNOT_DELETE_ASSIGNED')
-                        : tg('DELETE')
+                      isAssigned ? tv('CANNOT_DELETE_ASSIGNED') : tg('DELETE')
                     }
                     icon={<Trash2 size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-red-50 text-red-500"
@@ -496,9 +504,7 @@ export default function InkindList() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
-              {typeFilter
-                ? tg(typeFilter as InkindType)
-                : tv('ALL_TYPES')}
+              {typeFilter ? tg(typeFilter as InkindType) : tv('ALL_TYPES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -549,7 +555,9 @@ export default function InkindList() {
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
             <DialogTitle className="text-lg font-medium">
-              {stockDialog.mode === 'add' ? tv('ADD_STOCK') : tv('REMOVE_STOCK')}
+              {stockDialog.mode === 'add'
+                ? tv('ADD_STOCK')
+                : tv('REMOVE_STOCK')}
             </DialogTitle>
           </DialogHeader>
 
@@ -562,7 +570,9 @@ export default function InkindList() {
             </div>
             {stockDialog.mode === 'remove' && (
               <div>
-                <p className="text-sm text-muted-foreground">{tv('AVAILABLE_STOCK')}</p>
+                <p className="text-sm text-muted-foreground">
+                  {tv('AVAILABLE_STOCK')}
+                </p>
                 <p className="text-base font-semibold text-primary">
                   {formatNum(stockDialog.item?.availableStock ?? 0)}
                 </p>

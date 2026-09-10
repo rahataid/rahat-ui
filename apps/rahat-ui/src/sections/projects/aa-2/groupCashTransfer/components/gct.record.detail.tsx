@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -24,8 +25,25 @@ import { fmt, DetailRow } from './gct.ui';
 import { DisburseButton, DisburseModal } from './gct.disburse-modal';
 import { DisbursementInfoCard } from './gct.disbursement-info';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
+import { usePhoneFormat } from '../../../../../utils/i18n/phone';
 
 export default function GctRecordDetail() {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+  const locale = useLocale();
+  const statusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      NOT_STARTED: t('NOT_STARTED'),
+      PENDING: tGlobal('PENDING'),
+      STARTED: t('STARTED'),
+      COMPLETED: tGlobal('COMPLETED'),
+      SUCCESS: tGlobal('SUCCESS'),
+      FAILED: tGlobal('FAILED'),
+      REJECTED: t('REJECTED'),
+    };
+    return map[s] ?? s.replace(/_/g, ' ');
+  };
   const { id, recordUuid } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -41,6 +59,9 @@ export default function GctRecordDetail() {
   }));
 
   const [disburseOpen, setDisburseOpen] = useState(false);
+  const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
+  const formatPhone = usePhoneFormat();
 
   const record = data?.data ?? data ?? null;
   const group = record?.groupCashTransfer ?? null;
@@ -55,9 +76,9 @@ export default function GctRecordDetail() {
 
   const disabledReason =
     status === 'FAILED' || status === 'REJECTED'
-      ? 'Disbursement failed.'
+      ? t('DISBURSEMENT_FAILED')
       : !canDisburse
-      ? 'Already processed.'
+      ? t('ALREADY_PROCESSED')
       : undefined;
 
   const getTxUrl = getExplorerUrl({
@@ -84,10 +105,10 @@ export default function GctRecordDetail() {
         <div>
           <Back path={backPath} />
           <h1 className="text-2xl font-semibold">
-            {record?.title ?? 'Fund Record'}
+            {record?.title ?? t('FUND_RECORD')}
           </h1>
           <p className="text-muted-foreground text-sm mt-0.5">
-            Group Cash Transfer fund record details
+            {t('GROUP_CASH_TRANSFER_FUND_RECORD_DETAILS')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -103,13 +124,13 @@ export default function GctRecordDetail() {
                     onClick={() => router.push(editPath)}
                   >
                     <Pencil className="h-4 w-4" />
-                    Edit
+                    {tGlobal('EDIT')}
                   </Button>
                 </span>
               </TooltipTrigger>
               {!canEdit && (
                 <TooltipContent>
-                  Cannot edit after disbursement has started.
+                  {t('CANNOT_EDIT_AFTER_DISBURSEMENT')}
                 </TooltipContent>
               )}
             </Tooltip>
@@ -128,53 +149,62 @@ export default function GctRecordDetail() {
         <Card className="rounded-sm">
           <CardContent className="px-4 pt-4 pb-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-              Record Information
+              {t('RECORD_INFORMATION')}
             </p>
             <DetailRow
-              label="Amount"
-              value={record?.amount?.toLocaleString()}
+              label={t('AMOUNT_COL')}
+              value={formatNum(record?.amount ?? 0)}
             />
             <div className="flex flex-col gap-0.5 py-2.5 border-b">
-              <span className="text-xs text-muted-foreground">Status</span>
+              <span className="text-xs text-muted-foreground">{t('STATUS_COL')}</span>
               <Badge
                 className={`w-fit text-xs ${
                   GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'
                 }`}
               >
-                {status.replace(/_/g, ' ')}
+                {statusLabel(status)}
               </Badge>
             </div>
-            <DetailRow label="Created By" value={record?.createdBy} />
-            <DetailRow label="Created At" value={fmt(record?.createdAt)} />
-            <DetailRow label="Updated At" value={fmt(record?.updatedAt)} />
-            <DetailRow label="Disbursed At" value={fmt(record?.disbursedAt)} />
+            <DetailRow label={t('CREATED_BY_COL')} value={record?.createdBy} />
+            <DetailRow
+              label={tGlobal('CREATED_AT')}
+              value={fmt(record?.createdAt, locale)}
+            />
+            <DetailRow
+              label={t('UPDATED_AT')}
+              value={fmt(record?.updatedAt, locale)}
+            />
+            <DetailRow
+              label={t('DISBURSED_AT')}
+              value={fmt(record?.disbursedAt, locale)}
+            />
           </CardContent>
         </Card>
 
         <Card className="rounded-sm">
           <CardContent className="px-4 pt-4 pb-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-              GCT Group
+              {t('GCT_GROUP')}
             </p>
-            <DetailRow label="Group Name" value={group?.name} />
-            <DetailRow label="Phone" value={group?.phone} />
+            <DetailRow label={t('GROUP_NAME_COL')} value={group?.name} />
+            <DetailRow label={t('PHONE_COL')} value={formatPhone(group?.phone)} />
             {group?.bankDetails && (
               <>
                 <DetailRow
-                  label="Bank Name"
+                  label={t('BANK_NAME')}
                   value={group.bankDetails?.bankName}
                 />
                 <DetailRow
-                  label="Bank Branch"
+                  label={t('BANK_BRANCH')}
                   value={group.bankDetails?.bankBranchName}
                 />
                 <DetailRow
-                  label="Account Holder Name"
+                  label={t('ACCOUNT_HOLDER_NAME')}
                   value={group.bankDetails?.accountName}
                 />
                 <DetailRow
-                  label="Account Number"
-                  value={group.bankDetails?.accountNumber}
+                  label={t('ACCOUNT_NUMBER')}
+                  value={formatDigits(group.bankDetails?.accountNumber)}
                   mono
                 />
               </>

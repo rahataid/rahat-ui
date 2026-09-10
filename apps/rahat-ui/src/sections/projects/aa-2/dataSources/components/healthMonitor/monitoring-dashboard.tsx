@@ -1,6 +1,8 @@
 'use client';
 
 import { StatusCard } from './status-card';
+import { useTranslations } from 'next-intl';
+
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { SystemHealthCard } from './system-health-card';
@@ -21,6 +23,7 @@ import { ADAPTER_ID_FILTERS } from './utils/getAdapterIds';
 
 
 export default function MonitoringDashboard() {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const { data: apiHealthMonitor, isLoading: loading } =
@@ -70,8 +73,8 @@ export default function MonitoringDashboard() {
       <div className="flex flex-col">
         <Back path={`/projects/aa/${projectId}/data-sources`} />
         <Heading
-          title="Data Health Checker"
-          description="Real-time health monitoring of external data sources"
+          title={t('DATA_HEALTH_CHECKER')}
+          description={t('REAL_TIME_HEALTH_MONITORING_OF_EXTERNAL')}
           titleStyle="sm:text-lg text-foreground font-semibold text-balance"
         />
       </div>
@@ -87,7 +90,7 @@ export default function MonitoringDashboard() {
 
       {!newFilteredSources.length && !loading ? (
         <div className="mt-5 p-6 text-center text-muted-foreground space-y-1">
-          <p className="font-medium text-foreground">No data available right now</p>
+          <p className="font-medium text-foreground">{t('NO_DATA_AVAILABLE_RIGHT_NOW')}</p>
           <p className="text-sm text-muted-foreground">
             Health data for this project type may not have been fetched yet. Data is refreshed
             approximately every hour — please check back later.

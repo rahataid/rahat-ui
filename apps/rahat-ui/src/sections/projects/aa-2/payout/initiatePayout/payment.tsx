@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -40,6 +41,8 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import { PaymentDialog } from './payment.dialog';
@@ -62,10 +65,14 @@ const initialFormState: PaymentState = {
 };
 
 export default function PaymentInitiation() {
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectID = params.id as UUID;
 
   const router = useRouter();
+  const formatNum = useNumberFormat();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const { data: paymentProviders } = usePaymentProviders({
@@ -158,7 +165,7 @@ export default function PaymentInitiation() {
       }`}
     >
       <RadioGroupItem value={value} id={`method-${value.toLowerCase()}`} />
-      <span>{value}</span>
+      <span>{translateValue(t, value, { fallbackStyle: 'raw' })}</span>
     </Label>
   );
 
@@ -221,8 +228,8 @@ export default function PaymentInitiation() {
         <Back path={`/projects/aa/${projectID}/payout`} />
         <div className="mt-4 flex justify-between items-center">
           <Heading
-            title="Create Payout"
-            description="Select beneficiary group to initiate payment"
+            title={tv('CREATE_PAYOUT')}
+            description={tv('SELECT_BENEFICIARY_GROUP_TO_INITIATE_PAYMENT')}
           />
         </div>
       </div>
@@ -255,7 +262,7 @@ export default function PaymentInitiation() {
                 id="offline-switch"
               />
               <Label htmlFor="offline-switch">
-                {formState.mode === PayoutMode.ONLINE ? 'Online' : 'Offline'}
+                {formState.mode === PayoutMode.ONLINE ? t('ONLINE') : t('OFFLINE')}
               </Label>
             </div>
           )}
@@ -270,9 +277,9 @@ export default function PaymentInitiation() {
         >
           {/* Beneficiary Group Select */}
           <div className="flex flex-col space-y-1">
-            <Label className="font-medium text-sm/6">Beneficiary Group</Label>
+            <Label className="font-medium text-sm/6">{tv('BENEFICIARY_GROUP')}</Label>
             <SelectComponent
-              name="Beneficiary Group"
+              name={tv('BENEFICIARY_GROUP')}
               options={beneficiaryGroups?.data?.map(
                 (group: any) => group?.name,
               )}
@@ -288,9 +295,9 @@ export default function PaymentInitiation() {
           {formState.mode === PayoutMode.OFFLINE &&
             formState.method === PayoutType.CVA && (
               <div className="flex flex-col space-y-1">
-                <Label className="font-medium text-sm/6">Vendor</Label>
+                <Label className="font-medium text-sm/6">{tv('VENDOR')}</Label>
                 <SelectComponent
-                  name="Vendor"
+                  name={tv('VENDOR')}
                   options={vendors?.data?.map((vendor: any) => vendor?.name)}
                   value={formState.vendor?.name || ''}
                   onChange={(value) => {
@@ -305,9 +312,9 @@ export default function PaymentInitiation() {
           {/* Select Payment Provider */}
           {formState.method === PayoutType.FSP && (
             <div className="flex flex-col space-y-1">
-              <Label className="font-medium text-sm/6">Payout Method</Label>
+              <Label className="font-medium text-sm/6">{tv('PAYOUT_METHOD')}</Label>
               <SelectComponent
-                name="payout method"
+                name={tv('PAYOUT_METHOD')}
                 options={paymentProviders?.map((p: any) => p?.name)}
                 value={formState.paymentProvider?.name || ''}
                 onChange={(value) => {
@@ -325,11 +332,10 @@ export default function PaymentInitiation() {
           <div className="flex justify-between">
             <div className="flex flex-col">
               <h1 className="text-lg font-semibold">
-                Selected: {formState?.group?.name}
+                {tv('SELECTED')} {formState?.group?.name}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {formState?.group?.groupedBeneficiaries?.length} Total
-                Beneficiaries
+                {formatNum(formState?.group?.groupedBeneficiaries?.length ?? 0)} {tg('TOTAL_BENEFICIARIES')}
               </p>
             </div>
             <div className="flex justify-end space-x-2">
@@ -345,7 +351,7 @@ export default function PaymentInitiation() {
                   }));
                 }}
               >
-                Clear
+                {tg('CLEAR')}
               </Button>
               <PaymentDialog
                 formState={formState}

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useSingleActivity } from "@rahat-ui/query";
 import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
 import { ScrollArea } from "@rahat-ui/shadcn/src/components/ui/scroll-area";
@@ -28,7 +29,7 @@ function renderMessage(message: any) {
 }
 
 const CommunicationDetailCard = ({ comm, activityId }: any) => {
-
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const router = useRouter();
 
@@ -43,29 +44,29 @@ const CommunicationDetailCard = ({ comm, activityId }: any) => {
       </div>
       <div className="grid grid-cols-2 gap-4 mt-4">
         <div>
-          <h1 className="text-muted-foreground text-sm">Group Type</h1>
+          <h1 className="text-muted-foreground text-sm">{t('GROUP_TYPE')}</h1>
           <p>{comm?.groupType}</p>
         </div>
         <div className="text-right">
           <h1 className="text-muted-foreground text-sm">
-            Communication
+            {t('COMMUNICATION')}
           </h1>
           <p>{comm?.transportName}</p>
         </div>
         <div>
-          <h1 className="text-muted-foreground text-sm">Message</h1>
+          <h1 className="text-muted-foreground text-sm">{t('MESSAGE')}</h1>
           <p>{renderMessage(comm?.message)}</p>
         </div>
         <div className="text-right">
-          <h1 className="text-muted-foreground text-sm">Status</h1>
+          <h1 className="text-muted-foreground text-sm">{t('STATUS')}</h1>
           <Badge className="bg-orange-100 text-orange-600">
             {comm?.sessionStatus}
           </Badge>
         </div>
       </div>
       <div className="flex justify-between items-center space-x-2 mt-2">
-        <Button onClick={() => handleDetail({ commId: comm?.communicationId, sessionId: comm?.sessionId })} disabled={comm?.sessionStatus === SessionStatus.NEW} type="button" variant='secondary' className="w-full bg-[#E1ECF9] hover:bg-[#bbd5f4] text-primary"><Eye className="mr-2" size={16} strokeWidth={2} /><span className="font-normal">View</span></Button>
-        <Button disabled={true} type="button" className="w-full"><Download className="mr-2" size={16} strokeWidth={2} /><span className="font-normal">Failed Exports</span></Button>
+        <Button onClick={() => handleDetail({ commId: comm?.communicationId, sessionId: comm?.sessionId })} disabled={comm?.sessionStatus === SessionStatus.NEW} type="button" variant='secondary' className="w-full bg-[#E1ECF9] hover:bg-[#bbd5f4] text-primary"><Eye className="mr-2" size={16} strokeWidth={2} /><span className="font-normal">{t('VIEW')}</span></Button>
+        <Button disabled={true} type="button" className="w-full"><Download className="mr-2" size={16} strokeWidth={2} /><span className="font-normal">{t('FAILED_EXPORTS')}</span></Button>
       </div>
     </div>
   )

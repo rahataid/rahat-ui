@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 
 type Iprops = {
   open: boolean;
@@ -15,17 +16,18 @@ type Iprops = {
 };
 
 const ProjectConfirm = ({ open, handleSubmit, handleClose }: Iprops) => {
+  const t = useTranslations('GLOBAL');
   return (
     <Dialog open={open}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Confirm Project</DialogTitle>
+          <DialogTitle>{t('CONFIRM_PROJECT')}</DialogTitle>
         </DialogHeader>
-        <DialogContent>Are you sure ?</DialogContent>
+        <DialogContent>{t('ARE_YOU_SURE')}</DialogContent>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button onClick={handleClose} type="button" variant="ghost">
-              Close
+              {t('CLOSE')}
             </Button>
           </DialogClose>
           <Button
@@ -34,7 +36,7 @@ const ProjectConfirm = ({ open, handleSubmit, handleClose }: Iprops) => {
             variant="ghost"
             className="text-primary"
           >
-            Confirm
+            {t('CONFIRM')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
@@ -23,6 +24,8 @@ import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 
 export default function CommsActivitiesTable() {
+  const t = useTranslations('AA_PROJECT');
+
   const { id: projectId } = useParams();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
@@ -51,7 +54,7 @@ export default function CommsActivitiesTable() {
       <>
         <div className="flex justify-between gap-2">
           <Input
-            placeholder="Search title"
+            placeholder={t('SEARCH_TITLE')}
             value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('title')?.setFilterValue(event.target.value)
@@ -103,7 +106,7 @@ export default function CommsActivitiesTable() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {t('NO_RESULTS')}
                     </TableCell>
                   </TableRow>
                 )}

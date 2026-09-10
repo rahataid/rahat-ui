@@ -7,6 +7,7 @@ import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types/index';
 import SpinnerLoader from '../../../components/spinner.loader';
 import { Download } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   activityDetail: any;
@@ -17,6 +18,8 @@ export default function ActivityCommunicationListCard({
   activityDetail,
   projectId,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
 
   const activityId = activityDetail.uuid;
@@ -40,7 +43,7 @@ export default function ActivityCommunicationListCard({
 
   return (
     <div className="bg-card p-4 rounded">
-      <h1 className="font-semibold text-lg">Communication List</h1>
+      <h1 className="font-semibold text-lg">{t('COMMUNICATION_LIST')}</h1>
       {activityDetail?.activityCommunication?.length ? (
         <ScrollArea className="h-[calc(100vh-310px)]">
           {activityDetail?.activityCommunication?.map((comm: any) => (
@@ -58,29 +61,29 @@ export default function ActivityCommunicationListCard({
                   {loadingButtons.includes(comm?.communicationId) ? (
                     <SpinnerLoader />
                   ) : comm?.sessionStatus === SessionStatus.NEW ? (
-                    'Send'
+                    tg('SEND')
                   ) : (
-                    'Sent'
+                    t('SENT')
                   )}
                 </Button>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
-                  <h1 className="text-muted-foreground text-sm">Group Type</h1>
+                  <h1 className="text-muted-foreground text-sm">{t('GROUP_TYPE')}</h1>
                   <p>{comm?.groupType}</p>
                 </div>
                 <div className="text-right">
                   <h1 className="text-muted-foreground text-sm">
-                    Communication
+                    {t('COMMUNICATION')}
                   </h1>
                   <p>{comm?.transportName}</p>
                 </div>
                 <div>
-                  <h1 className="text-muted-foreground text-sm">Message</h1>
+                  <h1 className="text-muted-foreground text-sm">{tg('MESSAGE')}</h1>
                   <p>{renderMessage(comm?.message)}</p>
                 </div>
                 <div className="text-right">
-                  <h1 className="text-muted-foreground text-sm">Status</h1>
+                  <h1 className="text-muted-foreground text-sm">{tg('STATUS')}</h1>
                   <Badge className="bg-orange-100 text-orange-600">
                     {comm?.sessionStatus}
                   </Badge>
@@ -90,7 +93,7 @@ export default function ActivityCommunicationListCard({
           ))}
         </ScrollArea>
       ) : (
-        <p className="text-muted-foreground text-sm">No Communication</p>
+        <p className="text-muted-foreground text-sm">{t('NO_COMMUNICATION')}</p>
       )}
     </div>
   );

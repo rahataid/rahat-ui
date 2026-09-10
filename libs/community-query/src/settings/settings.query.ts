@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { TAGS } from '../config';
 import { useEffect } from 'react';
 import { useSettingsStore } from './settings.store';
+import { getTranslate } from '../translate';
 
 export const useCommunitySettingList = (
   payload: Pagination & { any?: string },
@@ -32,6 +33,7 @@ export const useCommunitySettingCreate = () => {
       mutationKey: [TAGS.CREATE_COMMUNITY_SETTINGS],
       mutationFn: settingClient.create,
       onSuccess: () => {
+        const t = getTranslate();
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.LIST_COMMUNITY_SETTINGS,
@@ -40,12 +42,13 @@ export const useCommunitySettingCreate = () => {
             },
           ],
         });
-        Swal.fire('Settings Created Successfully', '', 'success');
+        Swal.fire(t('SETTINGS_CREATED_SUCCESSFULLY'), '', 'success');
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -62,6 +65,7 @@ export const useCommunitySettingUpdate = () => {
       mutationKey: [TAGS.CREATE_COMMUNITY_SETTINGS],
       mutationFn: settingClient.update,
       onSuccess: () => {
+        const t = getTranslate();
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.UPDATE_COMMUNITY_SETTINGS,
@@ -70,12 +74,13 @@ export const useCommunitySettingUpdate = () => {
             },
           ],
         });
-        Swal.fire('Settings Updated Successfully', '', 'success');
+        Swal.fire(t('SETTINGS_UPDATED_SUCCESSFULLY'), '', 'success');
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },

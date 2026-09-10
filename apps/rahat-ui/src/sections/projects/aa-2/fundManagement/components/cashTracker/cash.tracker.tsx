@@ -28,6 +28,8 @@ import { useUserCurrentUser } from '@rumsan/react-query';
 import SpinnerLoader from '../../../../components/spinner.loader';
 import { AARoles } from '@rahat-ui/auth';
 import { User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 // Types for our fund transfer system
 type StakeholderType =
@@ -57,6 +59,9 @@ export interface FundTransfer {
 }
 
 export function CashTracker() {
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const uuid = useParams().id as UUID;
   const router = useRouter();
 
@@ -88,7 +93,7 @@ export function CashTracker() {
         from: payload.from,
         to: contractSettings?.aaproject?.address,
         amount: payload.amount,
-        description: 'Payout to beneficiary',
+        description: tv('PAYOUT_TO_BENEFICIARY'),
         alias: 'Beneficiary',
       },
     });
@@ -119,7 +124,7 @@ export function CashTracker() {
             amount: p.amount,
             timestamp: p.timestamp || now,
             status: 'pending' as const,
-            comments: `Awaiting confirmation by ${entity.alias}`,
+            comments: t('AWAITING_CONFIRMATION_BY', { alias: entity.alias }),
           }),
         );
         // Map successful transactions (flows) and filter duplicates
@@ -150,12 +155,12 @@ export function CashTracker() {
             comments:
               flow.from?.toLowerCase() ===
               contractSettings?.aaproject?.address?.toLowerCase()
-                ? 'Claimed by Beneficiaries'
+                ? t('CLAIMED_BY_BENEFICIARIES')
                 : !resolveAlias(flow.from)
-                ? 'Budget Created'
+                ? tv('BUDGET_CREATED')
                 : flow.type === 'received'
-                ? `Claimed by ${entity.alias}`
-                : `Fund transfer from ${resolveAlias(flow.from) || 'Unknown'}`,
+                ? t('CLAIMED_BY', { alias: entity.alias })
+                : t('FUND_TRANSFER_FROM', { from: resolveAlias(flow.from) || t('UNKNOWN') }),
           }));
 
         // Combine pending and successful transactions
@@ -230,8 +235,8 @@ export function CashTracker() {
       {/* Header Section */}
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900">Cash Tracker</h2>
-          <p className="text-gray-500 mt-1">Track your cash flow here.</p>
+          <h2 className="text-2xl font-semibold text-gray-900">{tv('CASH_TRACKER')}</h2>
+          <p className="text-gray-500 mt-1">{tv('TRACK_YOUR_CASH_FLOW_HERE')}</p>
         </div>
         <div className="flex gap-3">
           {currentEntity?.alias.replace(/\s+/g, '') === AARoles.UNICEFNepalCO &&
@@ -245,7 +250,7 @@ export function CashTracker() {
                 className="text-blue-500 border-blue-500 hover:bg-blue-50"
                 variant="outline"
               >
-                Initiate Fund Transfer
+                {tv('INITIATE_FUND_TRANSFER')}
               </Button>
             )}
           {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
@@ -257,7 +262,7 @@ export function CashTracker() {
               }
               className="bg-blue-500 hover:bg-blue-600"
             >
-              Create Budget
+              {tv('CREATE_BUDGET')}
             </Button>
           )}
         </div>
@@ -271,7 +276,7 @@ export function CashTracker() {
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold">
-                  Active Fund Transfer Tracker
+                  {tv('ACTIVE_FUND_TRANSFER_TRACKER')}
                 </CardTitle>
                 {currentEntity && (
                   <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -279,7 +284,7 @@ export function CashTracker() {
                       <User size={18} color="white" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-gray-400">User:</span>
+                      <span className="text-gray-400">{tv('USER_LABEL')}</span>
                       <span>{currentEntity.alias}</span>
                     </div>
                   </div>
@@ -300,7 +305,7 @@ export function CashTracker() {
           <Card>
             <CardHeader className="pb-4 border-b">
               <CardTitle className="text-lg font-semibold">
-                Transfer History
+                {tv('TRANSFER_HISTORY')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">

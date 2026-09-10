@@ -4,6 +4,8 @@ import { getRoleClient, getUserClient } from '@rumsan/sdk/clients';
 import Swal from 'sweetalert2';
 import { UUID } from 'crypto';
 import { AssignRole, ListRole, User } from '@rumsan/sdk/types';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
 // export const useRoleList = (): any => {
 //   const { queryClient, rumsanService } = useRSQuery();
@@ -20,6 +22,7 @@ import { AssignRole, ListRole, User } from '@rumsan/sdk/types';
 export const useUserCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);
+  const t = useTranslations();
 
   return useMutation(
     {
@@ -37,11 +40,20 @@ export const useUserCreate = () => {
         });
       },
       onError: (error: any) => {
-        const errorMessage = error.response.data.message.includes(
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const rawMessage = error.response.data.message.includes(
           'Unique constraint failed',
         )
           ? 'User already exist'
           : error.response.data.message;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          rawMessage,
+        );
         Swal.fire(
           'Error',
           errorMessage || 'Encounter error on Creating Data',
@@ -70,6 +82,7 @@ export const useUsersList = (payload: any): UseQueryResult<any, Error> => {
 export const useUserUpdate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);
+  const t = useTranslations();
 
   return useMutation(
     {
@@ -77,7 +90,7 @@ export const useUserUpdate = () => {
       mutationFn: ({ uuid, payload }: { uuid: UUID; payload: User }) =>
         userClient.updateUser(uuid, payload),
       onSuccess: () => {
-        Swal.fire('Users Updated Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.USERS_UPDATED_SUCCESSFULLY' as never), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             'get_all_user',
@@ -88,9 +101,19 @@ export const useUserUpdate = () => {
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const rawMessage = error.response.data.message;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          rawMessage,
+        );
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('GLOBAL.ERROR' as never),
+          errorMessage || t('GLOBAL.ERROR_ON_CREATING_DATA' as never),
           'error',
         );
       },
@@ -115,20 +138,30 @@ export const useRoleList = (payload?: ListRole): any => {
 export const useCreateRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);
+  const t = useTranslations();
   const query = useMutation(
     {
       mutationKey: ['create_role'],
       mutationFn: roleClient.createRole,
       onSuccess: () => {
-        Swal.fire('Roles Added Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.ROLES_ADDED_SUCCESSFULLY' as never), '', 'success');
         queryClient.invalidateQueries({
           queryKey: ['get_all_roles'],
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          error.response.data.message,
+        );
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('GLOBAL.ERROR' as never),
+          errorMessage || t('GLOBAL.ERROR_ON_CREATING_DATA' as never),
           'error',
         );
       },
@@ -141,6 +174,7 @@ export const useCreateRole = () => {
 export const useEditRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);
+  const t = useTranslations();
   const query = useMutation(
     {
       mutationKey: ['edit_role'],
@@ -154,9 +188,18 @@ export const useEditRole = () => {
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          error.response.data.message,
+        );
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          errorMessage || 'Encounter error on Creating Data',
           'error',
         );
       },
@@ -245,21 +288,31 @@ export const useUserAbilitiesInProject = (
 export const useDeleteRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);
+  const t = useTranslations();
   const query = useMutation(
     {
       mutationKey: ['delete_role'],
 
       mutationFn: ({ name }: { name: string }) => roleClient.deleteRole(name),
       onSuccess: () => {
-        Swal.fire('Role Deleted Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.ROLE_DELETED_SUCCESSFULLY' as never), '', 'success');
         queryClient.invalidateQueries({
           queryKey: ['get_all_roles'],
         });
       },
       onError: (error: any) => {
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          error.response.data.message,
+        );
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Deleting Data',
+          t('GLOBAL.ERROR' as never),
+          errorMessage || t('GLOBAL.ERROR_ON_DELETING_DATA' as never),
           'error',
         );
       },

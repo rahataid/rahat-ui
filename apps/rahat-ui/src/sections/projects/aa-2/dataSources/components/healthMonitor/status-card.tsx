@@ -1,5 +1,7 @@
 'use client';
 import { SourceHealthData } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -9,7 +11,9 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { formatDurationFromMinutes } from 'apps/rahat-ui/src/utils/formatDurationFromMinutes';
 import {
   Clock,
@@ -30,7 +34,10 @@ interface ApiStatusCardProps {
 }
 
 export function StatusCard({ data, className }: ApiStatusCardProps) {
+  const t = useTranslations('AA_PROJECT');
   const severity = getSeverityFromData(data.currentStatus, data.errors);
+  const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
   const { clickToCopy, copyAction } = useCopy();
 
   return (
@@ -80,7 +87,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               variant="outline"
               className={cn('text-xs font-medium', getDynamicColors(severity))}
             >
-              {severity}
+              {translateValue(t, severity, { fallbackStyle: 'raw' })}
             </Badge>
             <Badge
               variant="outline"
@@ -94,9 +101,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               ) : (
                 <X className="w-3 h-3 mr-1" />
               )}
-              {data.currentStatus === 'HEALTHY'
-                ? 'HEALTHY'
-                : data.currentStatus}
+              {translateValue(t, data.currentStatus, { fallbackStyle: 'raw' })}
             </Badge>
           </div>
         </div>
@@ -106,37 +111,37 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <Clock className="w-4 h-4" />
-              <span>Last Checked</span>
+              <span>{t('LAST_CHECKED')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {dateFormat(data.last_checked) ?? '-'}
+              {formatDate(data.last_checked) ?? '-'}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <Hourglass className="w-4 h-4" />
-              <span>Fetch Interval</span>
+              <span>{t('FETCH_INTERVAL')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {formatDurationFromMinutes(data?.fetch_frequency_minutes)}
+              {formatDurationFromMinutes(data?.fetch_frequency_minutes, t, formatNum)}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <Zap className="w-4 h-4" />
-              <span>Response Time</span>
+              <span>{t('RESPONSE_TIME')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {data.response_time_ms ? `${data.response_time_ms}ms` : '-'}
+              {data.response_time_ms ? `${formatNum(data.response_time_ms)}ms` : '-'}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-metric-text">
               <AlertTriangle className="w-4 h-4" />
-              <span>Data Validity</span>
+              <span>{t('DATA_VALIDITY')}</span>
             </div>
 
             <Badge
@@ -146,7 +151,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                 getDynamicColors(data.validity),
               )}
             >
-              {data.validity ?? '-'}
+              {translateValue(t, data.validity, { fallbackStyle: 'raw' }) || '-'}
             </Badge>
           </div>
         </div>
@@ -166,7 +171,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                     .join(' ')}
                 </span>
                 <span className="text-xs ml-auto text-right">
-                  {dateFormat(data?.errors[0]?.timestamp)}
+                  {formatDate(data?.errors[0]?.timestamp)}
                 </span>
               </div>
               <span className="text-xs">{data?.errors[0]?.message}</span>

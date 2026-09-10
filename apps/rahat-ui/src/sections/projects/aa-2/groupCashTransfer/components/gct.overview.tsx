@@ -1,7 +1,11 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 import { DataCard, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
+import { useChartNumberOptions } from '../../../../../utils/i18n/number';
 
 const TREASURY_COLORS = ['#009688', '#FBCA14', '#B0BEC5'];
 const STATUS_COLORS = [
@@ -20,6 +24,10 @@ export default function GctOverview({
   stats: any;
   isPending: boolean;
 }) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+  const { formatNum, chartOptions } = useChartNumberOptions();
+
   const totalAllocated = stats?.totalAllocatedAmount ?? 0;
   const totalDisbursed = stats?.totalDisbursedAmount ?? 0;
   const treasuryBalance = stats?.treasuryBalance ?? 0;
@@ -33,55 +41,55 @@ export default function GctOverview({
   const totalGroups = stats?.totalGroups ?? 0;
 
   const treasuryData = [
-    { label: 'Balance', value: Math.max(0, treasuryBalance) },
-    { label: 'Allocated', value: totalAllocated },
-    { label: 'Disbursed', value: totalDisbursed },
+    { label: t('BALANCE'), value: Math.max(0, treasuryBalance) },
+    { label: t('ALLOCATED'), value: totalAllocated },
+    { label: t('DISBURSED'), value: totalDisbursed },
   ];
 
   const statusData = [
-    { label: 'Disbursed', value: disbursed },
-    { label: 'Pending', value: pending },
-    { label: 'Not Started', value: notStarted },
-    { label: 'Failed', value: failed },
-    { label: 'Token transferred', value: tokenDisbursed },
-    { label: 'Rejected', value: rejected },
+    { label: t('DISBURSED'), value: disbursed },
+    { label: t('PENDING'), value: pending },
+    { label: t('NOT_STARTED'), value: notStarted },
+    { label: tGlobal('FAILED'), value: failed },
+    { label: t('TOKEN_TRANSFERRED'), value: tokenDisbursed },
+    { label: t('REJECTED'), value: rejected },
   ];
 
   const cards = [
     {
-      title: 'Total Fund Transferred',
-      value: totalDisbursed.toLocaleString(),
-      subtitle: 'Total funds transferred to groups',
+      title: t('TOTAL_FUND_TRANSFERRED'),
+      value: formatNum(totalDisbursed),
+      subtitle: t('TOTAL_FUNDS_TRANSFERRED_TO_GROUPS'),
       show: totalDisbursed !== 0,
     },
     {
-      title: 'Remaining balance',
-      value: treasuryBalance.toLocaleString(),
-      subtitle: 'Total balance remaining in treasury',
+      title: t('REMAINING_BALANCE'),
+      value: formatNum(treasuryBalance),
+      subtitle: t('TOTAL_BALANCE_REMAINING_IN_TREASURY'),
       show: treasuryBalance !== 0,
     },
     {
-      title: 'Total Funds Assigned',
-      value: totalAllocated.toLocaleString(),
-      subtitle: 'Total funds assigned to groups',
+      title: t('TOTAL_FUNDS_ASSIGNED'),
+      value: formatNum(totalAllocated),
+      subtitle: t('TOTAL_FUNDS_ASSIGNED_TO_GROUPS'),
       show: totalAllocated !== 0,
     },
     {
-      title: 'Total GCT Groups',
+      title: t('TOTAL_GCT_GROUPS'),
       value: totalGroups,
-      subtitle: 'Groups registered for GCT',
+      subtitle: t('GROUPS_REGISTERED_FOR_GCT'),
       show: true,
     },
     {
-      title: 'Total Assigned Records',
+      title: t('TOTAL_ASSIGNED_RECORDS'),
       value: totalRecords,
-      subtitle: 'Fund assignment records',
+      subtitle: t('FUND_ASSIGNMENT_RECORDS'),
       show: true,
     },
     {
-      title: 'Total Disbursed Count',
+      title: t('TOTAL_DISBURSED_COUNT'),
       value: disbursed,
-      subtitle: 'Total records transferred to groups',
+      subtitle: t('TOTAL_RECORDS_TRANSFERRED_TO_GROUPS'),
       show: disbursed !== 0,
     },
   ].filter((c) => c.show);
@@ -97,7 +105,7 @@ export default function GctOverview({
             key={card.title}
             className="rounded-sm h-[116px]"
             title={card.title}
-            smallNumber={String(card.value)}
+            smallNumber={formatNum(card.value)}
             subtitle={card.subtitle}
             loading={false}
           />
@@ -110,21 +118,21 @@ export default function GctOverview({
         <div className="border rounded-sm p-4 flex flex-col">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-sm/6 font-semibold text-neutral-800 dark:text-white">
-              Treasury Status
+              {t('TREASURY_STATUS')}
             </h2>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            Balance:{' '}
+            {t('BALANCE')}:{' '}
             <span className="font-medium text-foreground">
-              {treasuryBalance.toLocaleString()}
+              {formatNum(treasuryBalance)}
             </span>
-            &nbsp;·&nbsp; Allocated:{' '}
+            &nbsp;·&nbsp; {t('ALLOCATED')}:{' '}
             <span className="font-medium text-foreground">
-              {totalAllocated.toLocaleString()}
+              {formatNum(totalAllocated)}
             </span>
-            &nbsp;·&nbsp; Disbursed:{' '}
+            &nbsp;·&nbsp; {t('DISBURSED')}:{' '}
             <span className="font-medium text-foreground">
-              {totalDisbursed.toLocaleString()}
+              {formatNum(totalDisbursed)}
             </span>
           </p>
           <div className="w-full aspect-square max-h-[260px]">
@@ -132,6 +140,12 @@ export default function GctOverview({
               pieData={treasuryData}
               colors={TREASURY_COLORS}
               isLoading={false}
+              options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  ...chartOptions.tooltip,
+                },
+              }}
             />
           </div>
         </div>
@@ -140,10 +154,10 @@ export default function GctOverview({
         <div className="border rounded-sm p-4 flex flex-col">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-sm/6 font-semibold text-neutral-800 dark:text-white">
-              Record Status Breakdown
+              {t('RECORD_STATUS_BREAKDOWN')}
             </h2>
             <span
-              title="Distribution of fund records by their current status: Disbursed, Pending, Not Started, or Failed."
+              title={t('DISTRIBUTION_OF_FUND_RECORDS')}
               className="text-muted-foreground cursor-help"
             >
               <svg
@@ -163,14 +177,20 @@ export default function GctOverview({
             </span>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            Total records:{' '}
-            <span className="font-medium text-foreground">{totalRecords}</span>
+            {t('TOTAL_RECORDS')}{' '}
+            <span className="font-medium text-foreground">{formatNum(totalRecords)}</span>
           </p>
           <div className="w-full aspect-square max-h-[260px]">
             <DynamicPieChart
               pieData={statusData}
               colors={STATUS_COLORS}
               isLoading={false}
+              options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  ...chartOptions.tooltip,
+                },
+              }}
             />
           </div>
         </div>

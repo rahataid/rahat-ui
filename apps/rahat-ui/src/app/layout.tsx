@@ -1,12 +1,14 @@
 import { Toaster } from '@rahat-ui/shadcn/components/toaster';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { GeistSans } from 'geist/font/sans';
 import { QueryProvider } from '../providers/query-provider';
 import { SecondPanelProvider } from '../providers/second-panel-provider';
 import { ServiceProvider } from '../providers/service.provider';
 import { ThemeProvider } from '../providers/theme-provider';
+import TranslationBridge from '../providers/translation-bridge';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
@@ -19,39 +21,44 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const t = await getTranslations('APP_SHELL');
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body>
-        <title>Welcome to Rahat</title>
-        <Wagmi>
-          <QueryProvider>
-            <RSQueryProvider>
-              <NewCommunicationQueryProvider>
-                <CommunicationQueryProvider>
-                  <ServiceProvider>
-                    <SecondPanelProvider>
-                      <ThemeProvider
-                        attribute="class"
-                        defaultTheme="light"
-                        // enableSystem
-                        // disableTransitionOnChange
-                      >
-                        <main className={GeistSans.className}>{children}</main>
-                        <ToastContainer />
-                        <Toaster />
-                      </ThemeProvider>
-                    </SecondPanelProvider>
-                  </ServiceProvider>
-                </CommunicationQueryProvider>
-              </NewCommunicationQueryProvider>
-            </RSQueryProvider>
-          </QueryProvider>
-        </Wagmi>
+        <title>{t('WELCOME_TO_RAHAT')}</title>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Wagmi>
+            <QueryProvider>
+              <RSQueryProvider>
+                <NewCommunicationQueryProvider>
+                  <CommunicationQueryProvider>
+                    <ServiceProvider>
+                      <SecondPanelProvider>
+                        <TranslationBridge />
+                        <ThemeProvider
+                          attribute="class"
+                          defaultTheme="light"
+                        >
+                          <main className={GeistSans.className}>{children}</main>
+                          <ToastContainer />
+                          <Toaster />
+                        </ThemeProvider>
+                      </SecondPanelProvider>
+                    </ServiceProvider>
+                  </CommunicationQueryProvider>
+                </NewCommunicationQueryProvider>
+              </RSQueryProvider>
+            </QueryProvider>
+          </Wagmi>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -21,9 +21,12 @@ import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
+import { useTranslations } from 'next-intl';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage,setPagination } =
+  const t = useTranslations('VENDORS_LIST');
+  const g = useTranslations('GLOBAL');
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
    
     usePagination();
 
@@ -71,10 +74,12 @@ function VendorsView() {
     projectModal.onTrue();
   };
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
+    if (!selectedProject) return alert(g('PLEASE_SELECT_A_PROJECT'));
     await addVendor.mutateAsync({
       vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
+      successMessage: g('VENDOR_ASSIGNED_SUCCESSFULLY'),
+      errorMessage: g('ERROR_WHILE_UPDATING_VENDOR'),
     });
     projectModal.onFalse();
     setRefetch(!refetch);
@@ -108,8 +113,8 @@ function VendorsView() {
     <>
       <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl text-label">Vendors</h1>
-          <p className="text-sub-label">Here is the list of all the vendorss</p>
+          <h1 className="font-semibold text-2xl text-label">{t('VENDORS')}</h1>
+          <p className="text-sub-label">{t('HERE_IS_THE_LIST_OF_ALL')}</p>
         </div>
         <VendorsTable
           table={table}

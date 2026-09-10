@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { SearchInput } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { Table } from '@tanstack/react-table';
@@ -18,6 +19,8 @@ export default function SearchAndFilterToolbar({
   setPagination,
   pagination,
 }: SearchAndFilterToolbarProps) {
+  const tGlobal = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -44,7 +47,7 @@ export default function SearchAndFilterToolbar({
   return (
     <div className="flex flex-wrap gap-4 items-center">
       <SearchInput
-        name="Activity Title"
+        name={tGlobal('ACTIVITY_TITLE')}
         className="w-[25%] min-w-[200px]"
         value={
           (table.getColumn('title')?.getFilterValue() as string) ??
@@ -53,7 +56,7 @@ export default function SearchAndFilterToolbar({
         onSearch={(event) => handleFilterChange(event)}
       />
       <SearchInput
-        name="Group Name"
+        name={tGlobal('GROUP_NAME')}
         className="w-[25%] min-w-[200px]"
         value={
           (table.getColumn('groupName')?.getFilterValue() as string) ??
@@ -62,8 +65,12 @@ export default function SearchAndFilterToolbar({
         onSearch={(event) => handleFilterChange(event)}
       />
       <SelectComponent
-        name="Group Type"
+        name={t('GROUP_TYPE')}
         options={['Beneficiary', 'Stakeholder']}
+        labels={{
+          Beneficiary: tGlobal('BENEFICIARY'),
+          Stakeholder: tGlobal('STAKEHOLDER'),
+        }}
         onChange={(value) =>
           handleFilterChange({
             target: { name: 'groupType', value },
@@ -73,8 +80,13 @@ export default function SearchAndFilterToolbar({
         className="w-[20%] min-w-[150px]"
       />
       <SelectComponent
-        name="Status"
-        options={[ 'Work in Progress','Completed', 'Failed']}
+        name={t('STATUS')}
+        options={['Work in Progress', 'Completed', 'Failed']}
+        labels={{
+          'Work in Progress': tGlobal('WORK_IN_PROGRESS'),
+          Completed: tGlobal('COMPLETED'),
+          Failed: tGlobal('FAILED'),
+        }}
         onChange={(value) =>
           handleFilterChange({
             target: { name: 'status', value },

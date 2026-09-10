@@ -5,7 +5,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { useTranslations } from 'next-intl';
 import {
   Calendar,
   Clock,
@@ -25,6 +28,11 @@ type IProps = {
 };
 
 const GrievanceInfo = ({ grievance }: IProps) => {
+  const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
+  const formatPhone = usePhoneFormat();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   return (
     <div className="flex flex-col gap-[16px] w-full">
       {/* Overview Cards Row */}
@@ -38,12 +46,12 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               </div>
               <div>
                 <p className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#667085] uppercase tracking-wide">
-                  Grievance ID
+                  {t('GRIEVANCE_ID')}
                 </p>
                 <p className="mt-1 text-sm font-semibold text-gray-900">
                   <TooltipText
-                    title={grievance?.id || 'N/A'}
-                    content={grievance?.id || 'N/A'}
+                    title={formatDigits(grievance?.id) || tg('N_A')}
+                    content={formatDigits(grievance?.id) || tg('N_A')}
                     contentClassName="w-68"
                   />
                 </p>
@@ -61,7 +69,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               </div>
               <div>
                 <p className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#667085] uppercase tracking-wide">
-                  Grievance Type
+                  {t('GRIEVANCE_TYPE')}
                 </p>
                 <div className="mt-1">
                   <TypeChip type={grievance?.type} showIcon={false} />
@@ -80,7 +88,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               </div>
               <div>
                 <p className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#667085] uppercase tracking-wide">
-                  Priority
+                  {t('PRIORITY')}
                 </p>
                 <div className="mt-1">
                   <PriorityChip
@@ -102,7 +110,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               </div>
               <div>
                 <p className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#667085] uppercase tracking-wide">
-                  Status
+                  {t('STATUS')}
                 </p>
                 <div className="mt-1">
                   <StatusChip status={grievance?.status} showIcon={false} />
@@ -121,7 +129,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               <TriangleAlert className="w-4 h-4 text-[#434956]" />
             </span>
             <div className="flex items-center h-full font-inter font-medium text-[14px] leading-4 tracking-[0.03em] uppercase text-[#434956] text-center">
-              GRIEVANCE DETAILS
+              {t('GRIEVANCE_DETAILS')}
             </div>
           </CardTitle>
         </CardHeader>
@@ -129,12 +137,12 @@ const GrievanceInfo = ({ grievance }: IProps) => {
           <div className="border rounded-[8px] bg-[#FAFAFA] p-[12px] gap-[12px] flex flex-col">
             <div>
               <label className="font-inter font-normal text-[14px] leading-[16px] tracking-normal text-[#505868]">
-                Grievance Title
+                {t('GRIEVANCE_TITLE')}
               </label>
               <div className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#3D3D51]">
                 <TooltipText
-                  title={grievance?.title || 'N/A'}
-                  content={grievance?.title || 'N/A'}
+                  title={grievance?.title || tg('N_A')}
+                  content={grievance?.title || tg('N_A')}
                   contentClassName="w-68"
                   titleClassName="line-clamp-1 !w-auto whitespace-normal break-words"
                 />
@@ -142,17 +150,17 @@ const GrievanceInfo = ({ grievance }: IProps) => {
             </div>
             <div>
               <label className="font-inter font-normal text-[14px] leading-[16px] tracking-normal text-[#505868]">
-                Description
+                {t('DESCRIPTION')}
               </label>
               <p className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#3D3D51]">
-                {grievance?.description || 'N/A'}
+                {grievance?.description || tg('N_A')}
               </p>
             </div>
           </div>
 
           <div>
             <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-              Tags
+              {t('TAGS')}
             </label>
             <div className="mt-2 flex flex-wrap gap-2">
               {grievance?.tags && grievance.tags.length > 0 ? (
@@ -167,7 +175,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 ))
               ) : (
                 <span className="text-sm text-gray-500 italic">
-                  No tags assigned
+                  {t('NO_TAGS_ASSIGNED')}
                 </span>
               )}
             </div>
@@ -183,30 +191,30 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               <User className="w-4 h-4 text-[#434956]" />
             </div>
             <div className="flex items-center h-full font-inter font-medium text-[14px] leading-4 tracking-[0.03em] uppercase text-[#434956]">
-              REPORTER INFORMATION
+              {t('REPORTER_INFORMATION')}
             </div>
           </div>
           <div className="flex gap-[16px]">
             <div className="flex flex-col w-[50%] px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
               <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0em] text-[#3D3D51]">
-                Reported By
+                {t('REPORTED_BY')}
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
                 <TooltipText
-                  title={grievance?.reportedBy || 'N/A'}
-                  content={grievance?.reportedBy || 'N/A'}
+                  title={grievance?.reportedBy || tg('N_A')}
+                  content={grievance?.reportedBy || tg('N_A')}
                   contentClassName="w-68"
                 />
               </div>
             </div>
             <div className="flex flex-col w-[50%] px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
               <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0em] text-[#3D3D51]">
-                Reporter&apos;s Contact
+                {t('REPORTER_CONTACT')}
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
                 <TooltipText
-                  title={grievance?.reporterContact || 'N/A'}
-                  content={grievance?.reporterContact || 'N/A'}
+                  title={formatPhone(grievance?.reporterContact) || tg('N_A')}
+                  content={formatPhone(grievance?.reporterContact) || tg('N_A')}
                   contentClassName="w-68"
                 />
               </div>
@@ -221,7 +229,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               <Clock className="w-4 h-4 text-[#434956]" />
             </div>
             <div className="flex items-center h-full font-inter font-medium text-[14px] leading-4 tracking-[0.03em] uppercase text-[#434956]">
-              Timeline
+              {t('TIMELINE')}
             </div>
           </div>
 
@@ -232,12 +240,12 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               </div>
               <div className="flex flex-col gap-[4px]">
                 <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0em] text-[#3D3D51]">
-                  Created at
+                  {t('CREATED_AT')}
                 </div>
                 <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
                   {grievance?.createdAt
-                    ? formatDateFull(grievance?.createdAt)
-                    : 'N/A'}
+                    ? formatDate(grievance?.createdAt, 'MMM d, yyyy, h:mm a')
+                    : tg('N_A')}
                 </div>
               </div>
             </div>
@@ -248,17 +256,17 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               <div className="flex flex-col gap-[4px]">
                 <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0em] text-[#3D3D51">
                   {grievance?.status === GrievanceStatus.CLOSED
-                    ? 'Closed at'
-                    : 'Updated at'}
+                    ? t('CLOSED_AT')
+                    : t('UPDATED_AT')}
                 </div>
                 <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
                   {grievance?.status === GrievanceStatus.CLOSED
                     ? grievance?.closedAt
-                      ? formatDateFull(grievance?.closedAt)
-                      : 'N/A'
+                      ? formatDate(grievance?.closedAt, 'MMM d, yyyy, h:mm a')
+                      : tg('N_A')
                     : grievance?.updatedAt
-                    ? formatDateFull(grievance?.updatedAt)
-                    : 'N/A'}
+                    ? formatDate(grievance?.updatedAt, 'MMM d, yyyy, h:mm a')
+                    : tg('N_A')}
                 </div>
               </div>
             </div>

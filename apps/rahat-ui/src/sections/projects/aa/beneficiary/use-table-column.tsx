@@ -9,7 +9,9 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useTranslations } from 'next-intl';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 import BeneficiaryDetail from './beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
@@ -17,6 +19,8 @@ import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
 
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
@@ -35,7 +39,7 @@ export const useProjectBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'wallet',
-      header: 'Wallet',
+      header: tg('WALLET'),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -55,8 +59,8 @@ export const useProjectBeneficiaryTableColumns = () => {
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
                 {walletAddressCopied === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
+                  ? tg('COPIED')
+                  : tg('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -65,22 +69,22 @@ export const useProjectBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => <div className="">{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => <div> {row.getValue('email') || 'N/A'}</div>,
+      header: tg('EMAIL'),
+      cell: ({ row }) => <div> {row.getValue('email') || tg('N_A')}</div>,
     },
     {
       accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => <div> {row.getValue('phone')}</div>,
+      header: tg('PHONE'),
+      cell: ({ row }) => <div> {formatPhone(row.getValue('phone'))}</div>,
     },
     {
       accessorKey: 'gender',
-      header: 'Gender',
+      header: tg('GENDER'),
       cell: ({ row }) => <div> {row.getValue('gender')}</div>,
     },
     {

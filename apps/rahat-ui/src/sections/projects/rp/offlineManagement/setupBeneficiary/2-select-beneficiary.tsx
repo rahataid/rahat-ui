@@ -97,6 +97,7 @@ export default function Step2SelectBeneficiary({
                 {benificiaryGroups.map((group: any) => {
                   return (
                     <BeneficiaryCard
+                      key={group.uuid}
                       name={group.name}
                       uuid={group.uuid}
                       totalBeneficiary={group._count.groupedBeneficiaries}

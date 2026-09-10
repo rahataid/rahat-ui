@@ -1,7 +1,11 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { useEffect, useState } from 'react';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Loader2, Send } from 'lucide-react';
@@ -41,6 +45,7 @@ import {
   usePhasePayoutStatus,
   useSendGctOtp,
 } from '@rahat-ui/query';
+import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
@@ -66,6 +71,10 @@ export function DisburseModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+  const tb = useTranslations();
+  const formatPhone = usePhoneFormat();
   const router = useRouter();
   const recordsListPath = `/projects/aa/${projectUUID}/group-cash-transfer?tab=gctManagementList`;
   const confirmDisburse = useConfirmDisburseGroupCashTransfer(projectUUID);
@@ -80,6 +89,8 @@ export function DisburseModal({
   const [otpError, setOtpError] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
   const swal = useSwal();
+  const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
 
   const email = currentUser?.data?.email;
   const isVerifyDisabled = otp.length !== OTP_LENGTH || disburse.isPending;
@@ -103,7 +114,7 @@ export function DisburseModal({
 
   const handleVerify = async () => {
     if (otp.length !== OTP_LENGTH) {
-      setOtpError(`Please enter the ${OTP_LENGTH} digit pin.`);
+      setOtpError(t('PLEASE_ENTER_DIGIT_PIN', { length: formatDigits(OTP_LENGTH) }));
       return;
     }
     setOtpError('');
@@ -111,25 +122,33 @@ export function DisburseModal({
       await disburse.mutateAsync({ uuid: recordUuid, otp });
       setOtpVerified(true);
     } catch (e: any) {
-      setOtpError(e?.response?.data?.message || 'Invalid pin.');
+      const rawMessage = e?.response?.data?.message || t('INVALID_PIN_FALLBACK');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        e?.response?.data?.code,
+        e?.response?.data?.params,
+        ['GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
+      setOtpError(errorMessage);
     }
   };
 
-  const amountFmt = `Nrs. ${record?.amount?.toLocaleString() || '—'}`;
+  const amountFmt = `Nrs. ${formatNum(record?.amount ?? 0)}`;
   const selectedProvider = providers?.find((p: PaymentProvider) => String(p.id) === providerId);
 
   const summaryRows: [string, string][] = [
-    ['Group Name', group?.name || '—'],
-    ['Amount', amountFmt],
-    ['Phone', group?.phone || '—'],
-    ['Account Holder Name', group?.bankDetails?.accountName || '—'],
-    ['Bank Account Number', group?.bankDetails?.accountNumber || '—'],
+    [t('GROUP_NAME_COL'), group?.name || '—'],
+    [t('AMOUNT_COL'), amountFmt],
+    [t('PHONE_COL'), formatPhone(group?.phone) || '—'],
+    [t('ACCOUNT_HOLDER_NAME'), group?.bankDetails?.accountName || '—'],
+    [t('BANK_ACCOUNT_NUMBER'), group?.bankDetails?.accountNumber ? formatDigits(group.bankDetails.accountNumber) : '—'],
   ];
 
   const handleConfirm = () => {
     setConfirmOpen(false);
     confirmDisburse.mutate({ uuid: recordUuid, paymentProviderId: providerId });
-    swal.fire({ title: 'Disbursement initiated.', icon: 'success', timer: 2000, showConfirmButton: false });
+    swal.fire({ title: t('DISBURSEMENT_INITIATED'), icon: 'success', timer: 2000, showConfirmButton: false });
     onOpenChange(false);
     router.push(recordsListPath);
   };
@@ -143,14 +162,14 @@ export function DisburseModal({
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground animate-pulse">
                 {sendOtp.isPending
-                  ? 'Sending Rahat Pin to your email…'
-                  : 'Please wait, disbursement is initiating…'}
+                  ? t('SENDING_RAHAT_PIN_TO_EMAIL')
+                  : t('PLEASE_WAIT_DISBURSEMENT_INITIATING')}
               </p>
             </div>
           )}
           <Card className="rounded-sm border-0 shadow-none">
             <CardContent className="p-5 space-y-4">
-              <h2 className="text-xl font-semibold">Disbursement Details</h2>
+              <h2 className="text-xl font-semibold">{t('DISBURSEMENT_DETAILS')}</h2>
               <div className="text-base divide-y">
                 {summaryRows.map(([label, value]) => (
                   <div key={label} className="flex items-center justify-between py-2.5">
@@ -163,22 +182,22 @@ export function DisburseModal({
               {!otpVerified && (
                 <div className="border-t pt-4">
                   <p className="text-base text-foreground">
-                    A Rahat Pin has been sent to{' '}
+                    {t('RAHAT_PIN_SENT_TO')}{' '}
                     <span className="font-semibold">
-                      {email || 'the registered email'}
+                      {email || t('REGISTERED_EMAIL_FALLBACK')}
                     </span>
-                    . Please enter it below to verify and start disbursement.
+                    {t('RAHAT_PIN_SENT_SUFFIX')}
                   </p>
                   <div className="flex items-center gap-3 mt-3">
                     <Input
-                      placeholder={`${OTP_LENGTH} digit pin`}
+                      placeholder={t('DIGIT_PIN_PLACEHOLDER', { length: formatDigits(OTP_LENGTH) })}
                       maxLength={OTP_LENGTH}
                       inputMode="numeric"
                       autoFocus
                       className="h-11 text-lg"
-                      value={otp}
+                      value={formatDigits(otp)}
                       onChange={(e) => {
-                        setOtp(e.target.value.replace(/\D/g, ''));
+                        setOtp(toAsciiDigits(e.target.value).replace(/\D/g, ''));
                         setOtpError('');
                       }}
                     />
@@ -187,7 +206,7 @@ export function DisburseModal({
                       disabled={!email || sendOtp.isPending || disburse.isPending}
                       onClick={handleSendOtp}
                     >
-                      Resend
+                      {tGlobal('RESEND')}
                     </Button>
                   </div>
                   {otpError && (
@@ -198,16 +217,16 @@ export function DisburseModal({
                     disabled={isVerifyDisabled}
                     onClick={handleVerify}
                   >
-                    {disburse.isPending ? 'Verifying…' : 'Verify'}
+                    {disburse.isPending ? t('VERIFYING') : tGlobal('VERIFY')}
                   </Button>
                 </div>
               )}
 
               <div className={`border-t pt-4 space-y-3 ${otpVerified ? '' : 'hidden'}`}>
-                <p className="text-sm font-medium">Select Payment Provider</p>
+                <p className="text-sm font-medium">{t('SELECT_PAYMENT_PROVIDER')}</p>
                 <Select value={providerId} onValueChange={setProviderId}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={providersLoading ? 'Loading…' : 'Select a provider'} />
+                    <SelectValue placeholder={providersLoading ? t('LOADING') : t('SELECT_A_PROVIDER')} />
                   </SelectTrigger>
                   <SelectContent>
                     {(providers ?? []).map((p: PaymentProvider) => (
@@ -222,7 +241,7 @@ export function DisburseModal({
                   disabled={!providerId || confirmDisburse.isPending}
                   onClick={() => setConfirmOpen(true)}
                 >
-                  Proceed
+                  {t('PROCEED')}
                 </Button>
               </div>
             </CardContent>
@@ -233,23 +252,22 @@ export function DisburseModal({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Disbursement</AlertDialogTitle>
+            <AlertDialogTitle>{t('CONFIRM_DISBURSEMENT')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to disburse{' '}
-              <span className="font-semibold text-foreground">{amountFmt}</span>{' '}
-              to{' '}
-              <span className="font-semibold text-foreground">&quot;{group?.name}&quot;</span>{' '}
-              via{' '}
-              <span className="font-semibold text-foreground">{selectedProvider?.name ?? '—'}</span>?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_DISBURSE', {
+                amount: amountFmt,
+                groupName: group?.name,
+                provider: selectedProvider?.name ?? '—',
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={confirmDisburse.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={confirmDisburse.isPending}>{tGlobal('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirm} disabled={confirmDisburse.isPending}>
               {confirmDisburse.isPending ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Disbursing…</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('DISBURSING')}</>
               ) : (
-                'Yes, Disburse'
+                t('YES_DISBURSE')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -275,10 +293,11 @@ export function DisburseButton({
   disabledReason?: string;
   onClick: () => void;
 }) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const { data: payoutStatus } = usePhasePayoutStatus(projectUUID);
   const canDisburse = !!payoutStatus?.isPayoutMethodPhaseActivated;
   const isDisabled = !canDisburse || loading || disabled;
-  const tip = !canDisburse ? 'Phase not triggered.' : disabledReason;
+  const tip = !canDisburse ? t('PHASE_NOT_TRIGGERED') : disabledReason;
 
   return (
     <TooltipProvider>
@@ -292,7 +311,7 @@ export function DisburseButton({
               onClick={onClick}
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Disburse
+              {t('DISBURSING')}
             </Button>
           </span>
         </TooltipTrigger>

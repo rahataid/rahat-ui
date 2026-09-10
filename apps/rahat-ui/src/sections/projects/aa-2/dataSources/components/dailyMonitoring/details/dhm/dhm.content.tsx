@@ -4,6 +4,9 @@ import React from 'react';
 import MonitoringCard from './monitorig.card';
 import { useForecastData } from './useForcastData';
 import { BarChart2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 interface ForecastData {
   title: string;
@@ -11,7 +14,17 @@ interface ForecastData {
   data: { label: string; value: string | number }[];
 }
 
-const ForecastCard = ({ title, data }: ForecastData) => (
+const ForecastCard = ({ title, data }: ForecastData) => {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+
+  // Flood trend fields (today/tomorrow/day-after) arrive as enum-like
+  // words (Steady/Increase/Decrease), not numbers, so they need a
+  // translation lookup instead of the numeric formatter.
+  const formatValue = (value: string | number) =>
+    translateValue(t, value, { fallback: formatNum(value) });
+
+  return (
   <MonitoringCard title={title} className="">
     <div className="space-y-2">
       {data.map((item, index) => (
@@ -19,15 +32,17 @@ const ForecastCard = ({ title, data }: ForecastData) => (
           <BarChart2 />
           <div>
             <p className="font-medium">{item.label}</p>
-            <p className="text-sm text-slate-500">{item.value}</p>
+            <p className="text-sm text-slate-500">{formatValue(item.value)}</p>
           </div>
         </div>
       ))}
     </div>
   </MonitoringCard>
-);
+  );
+};
 
 export const DhmContent = ({ data }: { data: any }) => {
+  const t = useTranslations('AA_PROJECT');
   const {
     floodForecast,
     rainfallForecast,
@@ -42,23 +57,23 @@ export const DhmContent = ({ data }: { data: any }) => {
   };
   const forecastCards: ForecastData[] = [
     floodForecast.length > 0 && {
-      title: '3 Days Flood Forecast Bulletin',
+      title: t('N3_DAYS_FLOOD_FORECAST_BULLETIN'),
       data: floodForecast,
     },
     rainfallForecast.length > 0 && {
-      title: '3 Days Rainfall Forecast Bulletin',
+      title: t('N3_DAYS_RAINFALL_FORECAST_BULLETIN'),
       data: rainfallForecast,
     },
     realtimeMonitoring.length > 0 && {
-      title: 'Realtime Monitoring (River Watch)',
+      title: t('REALTIME_MONITORING_RIVER_WATCH'),
       data: realtimeMonitoring,
     },
     realtimeRainfall.length > 0 && {
-      title: 'Realtime Rainfall',
+      title: t('REALTIME_RAINFALL'),
       data: realtimeRainfall,
     },
     nwp.length > 0 && {
-      title: 'NWP',
+      title: t('NWP'),
       data: nwp,
     },
   ].filter(isForecastCard);
@@ -74,7 +89,7 @@ export const DhmContent = ({ data }: { data: any }) => {
         </div>
       ) : (
         <div className="text-center text-muted-foreground py-8">
-          No forecast data available.
+          {t('NO_FORECAST_DATA_AVAILABLE')}
         </div>
       )}
     </div>

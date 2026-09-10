@@ -23,17 +23,22 @@ import {
 import { UUID } from 'crypto';
 import { RefreshCw } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const StakeholdersGroupsDetails = () => {
+  const formatNum = useNumberFormat();
+  const tGlobal = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
+  const t = useTranslations('AA_PROJECT');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [conflictActivities, setConflictActivities] = useState<string[]>([]);
   const conflictDialogOpen = useBoolean();
@@ -101,7 +106,7 @@ const StakeholdersGroupsDetails = () => {
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={groupDetails?.name}
-          subtitle="Detailed view of the selected stakeholders group"
+          subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_STAKEHOLDERS')}
           path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
         <div className="flex gap-2">
@@ -110,10 +115,10 @@ const StakeholdersGroupsDetails = () => {
             hasContent={false}
           >
             <DeleteButton
-              name="stakeholders group"
+              name={t('STAKEHOLDER')}
               handleContinueClick={handleDeleteClick}
               className="rounded-sm w-full flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-              label="Delete Group"
+              label={t('DELETE_GROUP')}
               disabled={isDeleting}
             />
           </RoleAuth>
@@ -124,7 +129,7 @@ const StakeholdersGroupsDetails = () => {
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
-            name="stakeholders name"
+            name={tGlobal('STAKEHOLDER_NAME')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -133,7 +138,7 @@ const StakeholdersGroupsDetails = () => {
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
-            name="organization"
+            name={tGlobal('ORGANIZATION')}
             value={
               (table.getColumn('organization')?.getFilterValue() as string) ??
               ''
@@ -146,7 +151,7 @@ const StakeholdersGroupsDetails = () => {
           />
           <SearchInput
             className="w-full hidden xl:block "
-            name="municipality"
+            name={tGlobal('MUNICIPALITY')}
             value={
               (table.getColumn('municipality')?.getFilterValue() as string) ??
               ''
@@ -161,7 +166,7 @@ const StakeholdersGroupsDetails = () => {
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
-            name="supportArea"
+            name={tGlobal('SUPPORT_AREA')}
             value={
               (table.getColumn('supportArea')?.getFilterValue() as string) ?? ''
             }
@@ -184,7 +189,7 @@ const StakeholdersGroupsDetails = () => {
               }
               className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             >
-              <RefreshCw size={18} className="mr-1" /> Update StakeHolder Group
+              <RefreshCw size={18} className="mr-1" /> {t('UPDATE_STAKEHOLDER_GROUP')}
             </Button>
           </RoleAuth>
         </div>
@@ -197,7 +202,7 @@ const StakeholdersGroupsDetails = () => {
 
         <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
           <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
-            Total Stakeholders : {groupDetails?.stakeholders?.length || 0}
+            {t('TOTAL_STAKEHOLDERS')} : {formatNum(groupDetails?.stakeholders?.length ?? 0)}
           </p>
           <ClientSidePagination table={table} />
         </div>

@@ -9,6 +9,7 @@ import Map, {
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Dot } from 'lucide-react';
 import * as turf from '@turf/turf';
+import { useTranslations } from 'next-intl';
 import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
 
 const MARKER_TYPE = {
@@ -49,6 +50,7 @@ export default function MapView({
 }: {
   mapLocation: IBENEF[] | null;
 }) {
+  const tg = useTranslations('GLOBAL');
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState<IBENEF | null>(
     null,
@@ -105,7 +107,7 @@ export default function MapView({
         <GeolocateControl position="bottom-right" />
         <div className="absolute top-2 right-2 bg-white p-2 rounded shadow-lg z-10 text-xs flex justify-center items-center gap-2">
           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-          <div>Beneficiary</div>
+          <div>{tg('BENEFICIARY')}</div>
         </div>
         {selectedMarker ? (
           <MarkerDetails

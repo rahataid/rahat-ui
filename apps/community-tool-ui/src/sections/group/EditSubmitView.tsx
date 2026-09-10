@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { ArrowLeft, Columns, X } from 'lucide-react';
+import { ArrowLeft, Columns, ListFilter, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import InlinePagination from '../../components/inlinePagination';
@@ -117,6 +117,11 @@ export default function EditSubmitView({
   const [dragFillEndIdx, setDragFillEndIdx] = useState<number | null>(null);
   const isDraggingFill = useRef(false);
 
+  // Column filter state
+  const [columnFilters, setColumnFilters] = useState<Map<string, Set<string>>>(new Map());
+  const [filterPopoverCol, setFilterPopoverCol] = useState<string | null>(null);
+  const [filterSearch, setFilterSearch] = useState('');
+
   const allColumnsKey = allColumns.join(',');
 
   useEffect(() => {
@@ -127,6 +132,11 @@ export default function EditSubmitView({
       return [...filtered, ...added];
     });
   }, [allColumnsKey]);
+
+  useEffect(() => {
+    setColumnFilters(new Map());
+    setFilterSearch('');
+  }, [page]);
 
   const orderedColumns = columnOrder.length ? columnOrder : allColumns;
   const visibleColumns = orderedColumns.filter(
@@ -227,7 +237,7 @@ export default function EditSubmitView({
     const end = Math.max(dragFill.startRowIdx, dragFillEndIdx);
     for (let i = start; i <= end; i++) {
       if (i === dragFill.startRowIdx) continue; // source cell already has value
-      const row = pageRows[i];
+      const row = filteredRows[i];
       if (!row) continue;
       const rowUuid = getRowUuid(row);
       onCellChange(rowUuid, dragFill.col, dragFill.value);
@@ -244,6 +254,44 @@ export default function EditSubmitView({
     const end = Math.max(dragFill.startRowIdx, dragFillEndIdx);
     return rowIdx >= start && rowIdx <= end && rowIdx !== dragFill.startRowIdx;
   };
+
+  const isColFiltered = (col: string): boolean => {
+    const s = columnFilters.get(col);
+    return !!s && s.size > 0;
+  };
+
+  const getUniqueColValues = (col: string): string[] => {
+    const seen = new Set<string>();
+    pageRows.forEach((row) => seen.add(getCellValue(row, col)));
+    return Array.from(seen).sort();
+  };
+
+  const toggleFilterValue = (col: string, value: string) => {
+    setColumnFilters((prev) => {
+      const next = new Map(prev);
+      const current = new Set(next.get(col) ?? []);
+      if (current.has(value)) current.delete(value);
+      else current.add(value);
+      next.set(col, current);
+      return next;
+    });
+  };
+
+  const clearColumnFilter = (col: string) => {
+    setColumnFilters((prev) => {
+      const next = new Map(prev);
+      next.delete(col);
+      return next;
+    });
+  };
+
+  const filteredRows = pageRows.filter((row) => {
+    for (const [col, allowed] of columnFilters.entries()) {
+      if (allowed.size === 0) continue;
+      if (!allowed.has(getCellValue(row, col))) return false;
+    }
+    return true;
+  });
 
   return (
     // onMouseUp on the outer div catches mouse-up anywhere in the table area
@@ -365,6 +413,19 @@ export default function EditSubmitView({
         )}
       </div>
 
+      {/* Filter status bar */}
+      {columnFilters.size > 0 && (
+        <div className="px-4 py-1 text-xs text-muted-foreground border-b flex items-center gap-2">
+          Showing {filteredRows.length} of {pageRows.length} rows on this page
+          <button
+            onClick={() => setColumnFilters(new Map())}
+            className="text-primary hover:underline"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
+
       {/* Table */}
       <div className="import-container overflow-x-auto">
         {isLoading ? (
@@ -386,7 +447,7 @@ export default function EditSubmitView({
                     onDragOver={(e) => handleDragOver(e, col)}
                     onDrop={() => handleDrop(col)}
                     onDragEnd={handleDragEnd}
-                    className={`border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap select-none cursor-grab active:cursor-grabbing transition-colors ${
+                    className={`group/th border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap select-none cursor-grab active:cursor-grabbing transition-colors ${
                       dragOverCol === col
                         ? 'border-l-2 border-l-primary bg-primary/10'
                         : ''
@@ -402,13 +463,69 @@ export default function EditSubmitView({
                           <X size={10} strokeWidth={2} />
                         </button>
                       )}
+                      {!READ_ONLY_FIELDS.has(col) && (
+                        <Popover
+                          open={filterPopoverCol === col}
+                          onOpenChange={(open) => {
+                            setFilterPopoverCol(open ? col : null);
+                            setFilterSearch('');
+                          }}
+                        >
+                          <PopoverTrigger asChild>
+                            <button
+                              onClick={(e) => e.stopPropagation()}
+                              className={isColFiltered(col) ? 'text-primary' : 'text-muted-foreground opacity-0 group-hover/th:opacity-100'}
+                              title={`Filter ${col}`}
+                            >
+                              <ListFilter size={10} />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-52 p-2" align="start">
+                            <div className="flex justify-between items-center mb-1">
+                              <span className="text-xs font-medium truncate">{col}</span>
+                              <button
+                                onClick={() => clearColumnFilter(col)}
+                                className="text-xs text-muted-foreground hover:text-destructive shrink-0"
+                              >
+                                Clear
+                              </button>
+                            </div>
+                            <input
+                              autoFocus
+                              placeholder="Search..."
+                              value={filterSearch}
+                              onChange={(e) => setFilterSearch(e.target.value)}
+                              className="w-full border rounded px-2 py-1 text-xs mb-2 outline-none"
+                            />
+                            <div className="max-h-48 overflow-y-auto space-y-1">
+                              {getUniqueColValues(col)
+                                .filter((v) =>
+                                  v.toLowerCase().includes(filterSearch.toLowerCase()),
+                                )
+                                .map((value) => (
+                                  <label
+                                    key={value}
+                                    className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1 rounded"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={columnFilters.get(col)?.has(value) ?? false}
+                                      onChange={() => toggleFilterValue(col, value)}
+                                    />
+                                    <span className="truncate">{value || '(empty)'}</span>
+                                  </label>
+                                ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      )}
                     </div>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {pageRows.map((row, rowIdx) => {
+              {filteredRows.map((row, rowIdx) => {
                 const rowUuid = getRowUuid(row);
                 return (
                   <tr

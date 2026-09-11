@@ -7,12 +7,9 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
+import { TooltipText } from '../../components/tootltip.text';
 import { StatusBadge } from './projectList';
 import { toast } from 'react-toastify';
-
-
-
-
 
 type CardProps = {
   address: UUID;
@@ -58,20 +55,13 @@ export default function CommonCard({
       onClick={handleClick}
       className="rounded-md border shadow  cursor-pointer"
     >
-      <div className="p-4">
-        <div className="rounded-md bg-secondary flex justify-center">
-          <Image
-            className="object-contain"
-            src={image}
-            alt="project"
-            height={200}
-            width={200}
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-3 gap-2">
+          <TooltipText
+            title={title}
+            content={title}
+            titleClassName="font-bold text-l text-primary w-full min-w-0 flex-1"
           />
-        </div>
-      </div>
-      <CardContent>
-        <div className="flex items-start justify-between">
-          <p className="font-bold text-md text-primary mb-1">{title}</p>
           {!hidePin && (
             <Button
               variant="secondary"
@@ -103,6 +93,15 @@ export default function CommonCard({
             </Button>
           )}
         </div>
+        <div className="rounded-md border bg-white flex justify-center items-center mb-3 overflow-hidden h-[180px]">
+          <Image
+            className="object-contain w-full h-full"
+            src={image}
+            alt="project"
+            height={200}
+            width={400}
+          />
+        </div>
         <div className="flex items-center gap-2 mb-2">
           <Badge
             variant="outline"
@@ -116,7 +115,7 @@ export default function CommonCard({
           <TruncatedCell
             text={subTitle}
             maxLength={40}
-            className="text-sm text-gray-500 w-[300px]"
+            className="text-sm text-gray-500 w-full"
           />
         </div>
       </CardContent>

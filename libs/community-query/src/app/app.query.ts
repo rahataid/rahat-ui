@@ -1,6 +1,7 @@
 import { getAppClient } from '@rahataid/community-tool-sdk/clients';
-import { useRSQuery } from '@rumsan/react-query';
-import { useMutation } from '@tanstack/react-query';
+import { useQuery, useRSQuery } from '@rumsan/react-query';
+import { useMutation, UseQueryResult } from '@tanstack/react-query';
+import { FormattedResponse } from '@rumsan/sdk/utils';
 import { TAGS } from '../config';
 
 export const useUploadAudio = () => {
@@ -20,4 +21,19 @@ export const useUploadAudio = () => {
       });
     },
   });
+};
+
+export const useAppVersion = (): UseQueryResult<
+  FormattedResponse<{ version: string }>,
+  Error
+> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const appClient = getAppClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_APP_VERSION],
+      queryFn: () => appClient.getVersion(),
+    },
+    queryClient,
+  );
 };

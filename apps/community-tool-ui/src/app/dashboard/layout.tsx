@@ -8,7 +8,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { useQueryClient } from '@rumsan/react-query';
 import { toast } from 'react-toastify';
 
 export default function DashboardLayout({

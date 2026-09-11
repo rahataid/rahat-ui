@@ -1,8 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState, useMemo } from 'react';
-import { format } from 'date-fns';
 import { Activity, CalendarIcon, Trash2, CloudCheck } from 'lucide-react';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
@@ -68,6 +70,8 @@ function DatePicker({
   date: Date | null;
   setDate: (val: Date | null) => void;
 }) {
+  const t = useTranslations('AA_PROJECT');
+  const formatDate = useDateFormat();
   return (
     <div className="flex items-center">
       <Popover>
@@ -79,7 +83,7 @@ function DatePicker({
               !date && 'text-muted-foreground',
             )}
           >
-            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+            {date ? formatDate(date, 'PPP') : <span>{t('PICK_A_DATE')}</span>}
             <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -99,7 +103,7 @@ function DatePicker({
           className="ml-2 text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
           onClick={() => setDate(null)}
         >
-          <Trash2 className="w-4 h-4 mr-2" /> Clear Date
+          <Trash2 className="w-4 h-4 mr-2" /> {t('CLEAR_DATE')}
         </Button>
       )}
     </div>
@@ -107,6 +111,7 @@ function DatePicker({
 }
 
 export default function DataSources() {
+  const t = useTranslations('AA_PROJECT');
   const { activeTab, setActiveTab } = useActiveTab('');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
@@ -185,15 +190,15 @@ export default function DataSources() {
     <div className="p-4">
       <div className="flex">
         <Heading
-          title="Forecast Data"
-          description="Track all the data sources reports here"
+          title={t('FORECAST_DATA')}
+          description={t('TRACK_ALL_THE_DATA_SOURCES_REPORTS')}
         />
         <div className='flex gap-4 ml-auto '>
           <IconLabelBtn
             Icon={Activity}
             className="px-4 text-xs mt-5"
             variant="outline"
-            name="Data Health Monitor"
+            name={t('DATA_HEALTH_MONITOR')}
             size="xs"
             handleClick={() => {
               router.push(
@@ -205,7 +210,7 @@ export default function DataSources() {
             Icon={CloudCheck}
             className="px-4  cursor-pointer text-xs mt-5 "
             variant="outline"
-            name={syncData.isPending ? "Syncing Data" : "Sync Data"}
+            name={syncData.isPending ? t('SYNCING_DATA') : t('SYNC_DATA')}
             size="xs"
             disabled={syncData.isPending}
             handleClick={() => syncData.mutateAsync({ projectUUID: projectID as UUID })}
@@ -232,7 +237,7 @@ export default function DataSources() {
                   disabled={tab.disabled}
                   className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
                 >
-                  {tab.label}
+                  {translateValue(t, tab.label, { fallbackStyle: 'raw' })}
                 </TabsTrigger>
               ))}
             </TabsList>

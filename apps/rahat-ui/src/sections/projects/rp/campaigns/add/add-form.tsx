@@ -88,8 +88,8 @@ const CampaignForm: FC<CampaignFormProps> = ({
   const [templatemessage, setTemplatemessage] = React.useState('');
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
-  if (!form) return 'loading...';
   const campaignConfirmModal = useBoolean();
+  if (!form) return 'loading...';
   const handleOpenModal = (e: any) => {
     e.preventDefault();
     campaignConfirmModal.onTrue();

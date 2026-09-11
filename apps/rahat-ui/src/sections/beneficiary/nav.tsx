@@ -11,6 +11,7 @@ import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 import { Table } from '@tanstack/react-table';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   meta: Meta | undefined;
@@ -21,6 +22,7 @@ type IProps = {
 
 export default function Nav({ meta, handleNav, active, table }: IProps) {
   const router = useRouter();
+  const t = useTranslations('GLOBAL');
   const handleAddBeneficiaryClick = () => {
     router.push('/beneficiary/add');
   };
@@ -32,7 +34,7 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
             active === PROJECT_DETAIL_NAV_ROUTE.DEFAULT ? 'p-2' : 'py-3.5 px-2'
           }`}
         >
-          <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
+          <h1 className="font-semibold text-xl text-primary">{t('BENEFICIARIES')}</h1>
           {active === PROJECT_DETAIL_NAV_ROUTE.DEFAULT && (
             <TabsList>
               <TabsTrigger value="list">
@@ -54,7 +56,7 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
               >
                 <div className="flex items-center gap-3">
                   <Users size={18} strokeWidth={1.5} />
-                  <p>Beneficiaries</p>
+                  <p>{t('BENEFICIARIES')}</p>
                 </div>
                 <p>{meta?.total}</p>
               </div>
@@ -71,7 +73,7 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
               <Plus size={18} strokeWidth={1.5} />
-              <p>Add beneficiaries</p>
+              <p>{t('ADD_BENEFICIARIES')}</p>
             </div>
             <div
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
@@ -80,7 +82,7 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
               }
             >
               <Import size={18} strokeWidth={1.5} />
-              <p>Import beneficiaries</p>
+              <p>{t('IMPORT_BENEFICIARIES')}</p>
             </div>
           </nav>
         </div>

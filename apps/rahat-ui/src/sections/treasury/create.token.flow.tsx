@@ -2,6 +2,7 @@
 import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTreasuryTokenCreate } from 'libs/query/src/lib/treasury/treasury.service';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { keccak256, stringToBytes } from 'viem';
 import { useWaitForTransactionReceipt } from 'wagmi';
@@ -16,6 +17,8 @@ export const initialStepData = {
 };
 
 const CreateTokenFlow = () => {
+  const t = useTranslations('TREASURY_CREATE_TOKEN');
+  const tg = useTranslations('GLOBAL');
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
@@ -90,24 +93,18 @@ const CreateTokenFlow = () => {
   const steps = [
     {
       id: 'step1',
-      title: 'Disburse Method',
+      title: t('CREATE_TOKEN'),
       component: (
         <CreateToken
           handleStepDataChange={handleStepDataChange}
           stepData={stepData}
         />
       ),
-      // validation: {
-      //   noMethodSelected: {
-      //     condition: () => !stepData.treasurySource,
-      //     message: 'Please select a disburse method',
-      //   },
-      // },
       validation: {},
     },
     {
       id: 'step2',
-      title: 'Disburse Amount',
+      title: t('CONFIRMATION'),
       component: (
         <Confirmation
           handleStepDataChange={handleStepDataChange}
@@ -178,7 +175,7 @@ const CreateTokenFlow = () => {
             onClick={handlePrevious}
             disabled={currentStep === 0}
           >
-            Back
+            {tg('BACK')}
           </Button>
           <Button
             className="w-48 "
@@ -186,7 +183,7 @@ const CreateTokenFlow = () => {
               steps[currentStep].id === 'step2' ? handleConfirm : handleNext
             }
           >
-            {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
+            {currentStep === steps.length - 1 ? tg('CONFIRM') : t('PROCEED')}
           </Button>
         </div>
       }

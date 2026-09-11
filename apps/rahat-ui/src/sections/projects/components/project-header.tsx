@@ -13,17 +13,23 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { useTranslations } from 'next-intl';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
+import { usePhases } from '@rahat-ui/query';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { toast } from 'react-toastify';
+import { UUID } from 'crypto';
 // SidebarTrigger moved into the sidebar header; no top-header trigger needed here.
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
+import { LanguageToggle } from 'apps/rahat-ui/src/components/language-toggle';
+import { CircleAlert } from 'lucide-react';
 
 export function ProjectNav({
   component,
@@ -32,6 +38,8 @@ export function ProjectNav({
   component?: React.ReactNode;
   isClosed?: boolean;
 }) {
+  const t = useTranslations('TOP_NAVIGATION_HEADER');
+  const g = useTranslations('GLOBAL');
   const currentPath = usePathname();
   const params = useParams();
   const showNotification = currentPath.split('/').includes('aa');
@@ -39,6 +47,14 @@ export function ProjectNav({
   const settingsPath = isAAProject
     ? `/projects/aa/${params.id}/update-aa-settings`
     : null;
+
+  const { data: phases, isLoading } = usePhases(params?.id as UUID);
+  const activePhase = phases
+    ?.filter((p: any) => p.isActive)
+    ?.sort(
+      (a: any, b: any) =>
+        new Date(b.activatedAt).getTime() - new Date(a.activatedAt).getTime(),
+    )?.[0];
 
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
@@ -55,17 +71,26 @@ export function ProjectNav({
     if (triggerPinPhase)
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
-    toast.success('Logged out successfully.');
+    toast.success(t('LOGGED_OUT_SUCCESSFULLY'));
     // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
   return (
     <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
-      <div className="flex items-center space-x-4">{component}</div>
+      <div className="flex items-center space-x-4">
+        {component}
+
+        {isAAProject && !isLoading && activePhase && (
+          <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500">
+            <span>{activePhase.name} phase has been triggered</span>
+          </div>
+        )}
+      </div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
-        {!isClosed && <ConnectWallet />}
+        {!isClosed && !isAAProject && <ConnectWallet />}
         {showNotification && <NotificationButton unreadCount={0} />}
+        {isAAProject && <LanguageToggle />}
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar className="h-10 w-10">
@@ -83,9 +108,7 @@ export function ProjectNav({
           >
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
-                <span className="font-medium">
-                  {user?.data?.name}
-                </span>
+                <span className="font-medium">{user?.data?.name}</span>{' '}
                 <span>{user?.data?.email}</span>
               </div>
               <Separator />
@@ -93,30 +116,30 @@ export function ProjectNav({
                 className="p-1 hover:bg-secondary rounded"
                 href={paths.profile.root}
               >
-                Profile
+                {t('PROFILE')}
               </Link>
               <Link
                 className="p-1 hover:bg-secondary rounded"
                 href={paths.dashboard.root}
               >
-                Home
+                {t('HOME')}
               </Link>
               {settingsPath && (
-                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                <Can action={ACTIONS.MANAGE} subject={SUBJECTS.ALL}>
                   <Link
                     className="p-1 hover:bg-secondary rounded"
                     href={settingsPath}
                   >
-                    Settings
+                    {g('SETTINGS')}
                   </Link>
-                </RoleAuth>
+                </Can>
               )}
               {/* <ThemeSwitch /> */}
               <Badge
                 className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
                 onClick={handleLogout}
               >
-                Logout
+                {t('LOGOUT')}
               </Badge>
             </DropdownMenuGroup>
           </DropdownMenuContent>

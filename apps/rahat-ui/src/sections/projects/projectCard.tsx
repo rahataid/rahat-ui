@@ -4,6 +4,7 @@ import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { TruncatedCell } from './aa-2/stakeholders/component/TruncatedCell';
 import { TooltipText } from '../../components/tootltip.text';
@@ -20,6 +21,7 @@ type CardProps = {
   isPinned?: boolean;
   onTogglePin?: () => void;
   hidePin?: boolean;
+  extras?: Record<string, any> | null;
 };
 
 export default function CommonCard({
@@ -32,17 +34,20 @@ export default function CommonCard({
   isPinned = false,
   onTogglePin,
   hidePin = false,
+  extras,
 }: CardProps) {
+  const t = useTranslations('PROJECTS_LIST');
   const router = useRouter();
 
   const isNotReady = status === 'NOT_READY';
 
   const handleClick = () => {
     if (isNotReady) {
-      toast.warn('This project is not ready yet. You cannot enter into it.');
+      toast.warn(t('PROJECT_NOT_READY'));
       return;
     }
-    router.push(`/projects/${badge.toLowerCase()}/${address}`);
+    const type = extras?.REDIRECT_TO ?? badge;
+    router.push(`/projects/${type.toLowerCase()}/${address}`);
   };
 
   return (
@@ -69,8 +74,8 @@ export default function CommonCard({
               {isPinned ? (
                 <Image
                   src="/svg/pin-on.svg"
-                  alt="Unpin project"
-                  title="Unpin project"
+                  alt={t('UNPIN_PROJECT')}
+                  title={t('UNPIN_PROJECT')}
                   className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                   width={25}
                   height={25}
@@ -78,8 +83,8 @@ export default function CommonCard({
               ) : (
                 <Image
                   src="/svg/pin-off.svg"
-                  alt="Pin project"
-                  title="Pin project"
+                  alt={t('PIN_PROJECT')}
+                  title={t('PIN_PROJECT')}
                   className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                   width={25}
                   height={25}

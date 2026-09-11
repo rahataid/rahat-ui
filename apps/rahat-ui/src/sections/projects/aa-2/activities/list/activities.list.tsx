@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
@@ -10,6 +11,8 @@ import {
   usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
@@ -28,12 +31,18 @@ import {
 import { CloudDownloadIcon, Plus, Upload } from 'lucide-react';
 
 import FiltersTags from 'apps/rahat-ui/src/common/filtersTags';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 // TODO:Remove this table if used nowhere
 // import ActivitiesTable from './activities.table';
 
 export default function ActivitiesList() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();
   const [filtersApplied, setFiltersApplied] = React.useState(false);
@@ -92,6 +101,7 @@ export default function ActivitiesList() {
     filtersApplied ? { perPage: activitiesMeta?.total, ...filters } : null,
   );
 
+  const formatDate = useDateFormat();
   const columns = useActivitiesTableColumn();
 
   const table = useReactTable({
@@ -129,14 +139,11 @@ export default function ActivitiesList() {
   }, [filters]);
 
   const handleDownloadReport = () => {
-    if (allData.length < 1) return toast.error('No data to download.');
+    if (!allData || allData.length < 1) return toast.error(t('NO_DATA_TO_DOWNLOAD'));
     const mappedData = allData?.map((item: Record<string, any>) => {
       let timeStamp;
       if (item?.completedAt) {
-        const d = new Date(item.completedAt);
-        const localeDate = d.toLocaleDateString();
-        const localeTime = d.toLocaleTimeString();
-        timeStamp = `${localeDate} ${localeTime}`;
+        timeStamp = formatDate(item.completedAt);
       }
       // leadTime is stored server-side as "<value> <unit>" (e.g. "3 days"),
       // split back into two columns to match the bulk-upload sheet format.
@@ -145,12 +152,12 @@ export default function ActivitiesList() {
         'Activity Title': item.title || 'N/A',
         Category: item.category || 'N/A',
         Phase: item.phase || 'N/A',
-        Type: item.isAutomated ? 'Automated' : 'Manual',
-        Responsibility: item.responsibility,
+        Type: item.isAutomated ? t('AUTOMATED') : t('MANUAL'),
+        Responsibility: item.responsibility || 'N/A',
         'Responsible Station': item.responsibleStation || 'N/A',
         'Lead Time': leadTimeValue || 'N/A',
         'Time Frame': leadTimeUnit || 'N/A',
-        Status: item.status || 'N/A',
+        Status: translateValue(tg, item.status, { fallback: 'N/A' }),
         Timestamp: timeStamp || 'N/A',
         'Completed by': item.completedBy || 'N/A',
         'Difference in trigger and activity completion':
@@ -188,26 +195,20 @@ export default function ActivitiesList() {
             title={decodeURIComponent(
               Array.isArray(title) ? title[0] : title,
             ).toUpperCase()}
-            description="List of all the activities in the selected phase "
+            description={t('LIST_OF_ALL_THE_ACTIVITIES_IN')}
           />
         </div>
         <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.READ} subject={SUBJECTS.ACTIVITY}>
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={handleDownloadReport}
-              name="Download"
+              name={t('DOWNLOAD')}
               variant="outline"
               className="rounded w-full"
             />
-          </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          </Can>
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
             <IconLabelBtn
               Icon={Upload}
               handleClick={() => {
@@ -222,15 +223,12 @@ export default function ActivitiesList() {
                   )}`,
                 );
               }}
-              name="Bulk Upload"
+              name={t('BULK_UPLOAD')}
               variant="outline"
               className="rounded w-full"
             />
-          </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          </Can>
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
             <IconLabelBtn
               Icon={Plus}
               handleClick={() =>
@@ -244,10 +242,10 @@ export default function ActivitiesList() {
                   }`,
                 )
               }
-              name="Add Activity"
+              name={t('ADD_ACTIVITY')}
               className="rounded w-full"
             />
-          </RoleAuth>
+          </Can>
         </div>
       </div>
       <ActivitiesTableFilters
@@ -263,7 +261,7 @@ export default function ActivitiesList() {
       {Object.keys(filters).length > 1 && (
         <FiltersTags
           filters={formattedFilters}
-          setFilters={(newFilters) =>
+          setFilters={(newFilters: any) =>
             setFilters({ phase: filters.phase, ...newFilters })
           }
           total={table.getRowModel().rows?.length}

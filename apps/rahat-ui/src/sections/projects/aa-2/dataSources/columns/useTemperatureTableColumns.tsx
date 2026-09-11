@@ -1,19 +1,25 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { roundValue } from '../components/aws/utils/color.utils';
+import { useTranslations } from 'next-intl';
 
 export const useTemperatureTableColumns = (
   unit = '°C',
-  label = 'Temperature',
+  label?: string,
 ) => {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
+  const resolvedLabel = label ?? t('TEMPERATURE_LABEL');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
-      header: 'Date & Time',
+      header: t('DATE_AND_TIME'),
       cell: ({ row }) => {
         const getDateAndTime = row.getValue('datetime') as string;
-        const formatted = dateFormat(
+        const formatted = formatDate(
           getDateAndTime,
           'eee, MMM d yyyy, hh:mm:ss a',
         );
@@ -23,13 +29,13 @@ export const useTemperatureTableColumns = (
     },
     {
       accessorKey: 'value',
-      header: `${label} (${unit})`,
+      header: `${resolvedLabel} (${unit})`,
       cell: ({ row }) => {
         const val = row.getValue('value') as number;
         return (
           <div>
             {val !== undefined && val !== null
-              ? `${roundValue(val)} ${unit}`
+              ? `${formatNum(roundValue(val))} ${unit}`
               : 'N/A'}
           </div>
         );

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Tabs,
   TabsContent,
@@ -8,6 +9,7 @@ import RiverWatchView from './river.watch.view';
 import RainfallWatchView from './rainfall.watch.view';
 
 export function DHMSection() {
+  const t = useTranslations('AA_PROJECT');
   return (
     <Tabs defaultValue="riverWatch">
       <TabsList className="mb-2">
@@ -15,13 +17,13 @@ export function DHMSection() {
           className="w-full data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
           value="riverWatch"
         >
-          River Watch
+          {t('RIVER_WATCH')}
         </TabsTrigger>
         <TabsTrigger
           className="w-full data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
           value="rainfallWatch"
         >
-          Rainfall Watch
+          {t('RAINFALL_WATCH')}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="riverWatch">

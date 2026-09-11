@@ -81,7 +81,14 @@ import {
   StockDialogState,
   UpdateDialogState,
 } from '../types';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { useTranslations } from 'next-intl';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 function ActionButton({
   label,
@@ -96,10 +103,11 @@ function ActionButton({
         <button
           onClick={onClick}
           disabled={disabled}
-          className={`p-1.5 rounded transition-colors ${disabled
-            ? 'opacity-35 cursor-not-allowed text-muted-foreground'
-            : hoverClass
-            }`}
+          className={`p-1.5 rounded transition-colors ${
+            disabled
+              ? 'opacity-35 cursor-not-allowed text-muted-foreground'
+              : hoverClass
+          }`}
         >
           {icon}
         </button>
@@ -128,6 +136,9 @@ const EMPTY_CONFIRM: ConfirmDialogState = {
 };
 
 export default function InkindList() {
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -179,17 +190,15 @@ export default function InkindList() {
 
   const handleDelete = async (item: InkindItem) => {
     if (isGroupAssigned(item.uuid)) {
-      toast.error(
-        'Inkind is already assigned to a group so cannot be removed.',
-      );
+      toast.error(tv('INKIND_IS_ALREADY_ASSIGNED'));
       return;
     }
     const result = await dialog.fire({
-      title: 'Delete Inkind Item',
-      text: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
+      title: tv('DELETE_INKIND_ITEM'),
+      text: tv('DELETE_ITEM_CONFIRMATION', { name: item.name }),
       showCancelButton: true,
-      cancelButtonText: 'Cancel',
-      confirmButtonText: 'Confirm',
+      cancelButtonText: tg('CANCEL'),
+      confirmButtonText: tg('CONFIRM'),
       confirmButtonColor: '#ef4444',
       reverseButtons: true,
     });
@@ -221,7 +230,7 @@ export default function InkindList() {
     if (!quantity || isNaN(qty) || qty <= 0) {
       setStockDialog((prev) => ({
         ...prev,
-        error: 'Quantity must be greater than 0.',
+        error: tv('QUANTITY_MUST_BE_GREATER_THAN_ZERO'),
       }));
       return;
     }
@@ -231,15 +240,18 @@ export default function InkindList() {
       if (available <= 0) {
         setStockDialog((prev) => ({
           ...prev,
-          error: 'No stock available to remove.',
+          error: tv('NO_STOCK_AVAILABLE_TO_REMOVE'),
         }));
         return;
       }
       if (qty > available) {
         setStockDialog((prev) => ({
           ...prev,
-          error: `Cannot remove ${qty}. Only ${available} unit${available !== 1 ? 's' : ''
-            } available.`,
+          error: tv('CANNOT_REMOVE_QTY_ONLY', {
+            qty,
+            available,
+            s: available !== 1 ? 's' : '',
+          }),
         }));
         return;
       }
@@ -269,22 +281,22 @@ export default function InkindList() {
     const errors: { name?: string; description?: string } = {};
 
     if (!name.trim()) {
-      errors.name = 'Name is required.';
+      errors.name = tv('NAME_IS_REQUIRED');
     } else if (name.length > NAME_MAX) {
-      errors.name = `Name must be ${NAME_MAX} characters or fewer.`;
+      errors.name = tv('NAME_MUST_BE_X_CHARS', { max: NAME_MAX });
     } else {
       const trimmed = name.trim().toLowerCase();
       const duplicate = rows.some(
         (r) => r.uuid !== item?.uuid && r.name.trim().toLowerCase() === trimmed,
       );
       if (duplicate)
-        errors.name = 'An inkind item with this name already exists.';
+        errors.name = tv('AN_INKIND_ITEM_WITH_THIS_NAME_ALREADY_EXISTS');
     }
 
     if (!description.trim()) {
-      errors.description = 'Description is required.';
+      errors.description = tv('DESCRIPTION_IS_REQUIRED');
     } else if (description.length > DESCRIPTION_MAX) {
-      errors.description = `Description must be ${DESCRIPTION_MAX} characters or fewer.`;
+      errors.description = tv('DESCRIPTION_MUST_BE_X_CHARS', { max: DESCRIPTION_MAX });
     }
 
     if (errors.name || errors.description) {
@@ -325,14 +337,14 @@ export default function InkindList() {
     () => [
       {
         accessorKey: 'name',
-        header: 'Inkind Name',
+        header: tv('INKIND_NAME'),
         cell: ({ row }) => (
           <TruncatedCell text={row.getValue('name')} maxLength={20} />
         ),
       },
       {
         accessorKey: 'description',
-        header: 'Description',
+        header: tg('DESCRIPTION'),
         cell: ({ row }) => (
           <TruncatedCell
             text={row.getValue('description') || '—'}
@@ -342,88 +354,91 @@ export default function InkindList() {
       },
       {
         accessorKey: 'type',
-        header: 'Type',
+        header: tg('TYPE'),
         cell: ({ row }) => {
           const type = row.getValue('type') as InkindType;
           return (
             <Badge className="bg-gray-200 text-gray-600">
-              {formatLabel(INKIND_TYPE_LABELS[type])}
+              {tg(type)}
             </Badge>
           );
         },
       },
       {
         accessorKey: 'availableStock',
-        header: 'Available Stock',
+        header: tv('AVAILABLE_STOCK'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('availableStock') ?? 0}
+            {formatNum(row.getValue('availableStock') ?? 0)}
           </span>
         ),
       },
       {
         accessorKey: 'totalAssigned',
-        header: 'Assigned Stock',
+        header: tv('ASSIGNED_STOCK'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('totalAssigned') ?? 0}
+            {formatNum(row.getValue('totalAssigned') ?? 0)}
           </span>
         ),
       },
       {
         accessorKey: 'totalRedeemed',
-        header: 'Redeemed Stock',
+        header: tv('REDEEMED_STOCK'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('totalRedeemed') ?? 0}
+            {formatNum(row.getValue('totalRedeemed') ?? 0)}
           </span>
         ),
       },
       {
         id: 'actions',
-        header: 'Actions',
+        header: tg('ACTIONS'),
         cell: ({ row }) => {
           const item = row.original;
           const isAssigned = isGroupAssigned(item.uuid);
           return (
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.Municipality]}
-              hasContent={false}
-            >
-              <TooltipProvider>
-                <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <div className="flex items-center gap-1">
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.INKIND}>
                   <ActionButton
-                    label="Add Stock"
+                    label={tv('ADD_STOCK')}
                     icon={<PlusCircle size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-green-50 text-green-600"
                     onClick={() => openStockDialog(item, 'add')}
                   />
+                </Can>
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.INKIND}>
                   <ActionButton
-                    label="Remove Stock"
+                    label={tv('REMOVE_STOCK')}
                     icon={<MinusCircle size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-yellow-50 text-yellow-600"
                     onClick={() => openStockDialog(item, 'remove')}
                   />
+                </Can>
+                <Can action={ACTIONS.DELETE} subject={SUBJECTS.INKIND}>
                   <ActionButton
                     label={
                       isAssigned
-                        ? 'Cannot delete — assigned to a group'
-                        : 'Delete'
+                        ? tv('CANNOT_DELETE_ASSIGNED')
+                        : tg('DELETE')
                     }
                     icon={<Trash2 size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-red-50 text-red-500"
                     disabled={isAssigned}
                     onClick={() => handleDelete(item)}
                   />
+                </Can>
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.INKIND}>
                   <ActionButton
-                    label="Update Details"
+                    label={tv('UPDATE_DETAILS')}
                     icon={<Pencil size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-blue-50 text-blue-500"
                     onClick={() => openUpdateDialog(item)}
                   />
-                </div>
-              </TooltipProvider>
-            </RoleAuth>
+                </Can>
+              </div>
+            </TooltipProvider>
           );
         },
       },
@@ -451,14 +466,11 @@ export default function InkindList() {
     <div>
       <div className="flex justify-between items-center">
         <Heading
-          title="Budget Management List"
+          title={tv('BUDGET_MANAGEMENT_LIST')}
           titleStyle="font-medium text-lg"
-          description="List of all budget items"
+          description={tv('LIST_OF_ALL_BUDGET_ITEMS')}
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN,]}
-          hasContent={false}
-        >
+        <Can action={ACTIONS.CREATE} subject={SUBJECTS.INKIND}>
           <Button
             variant="default"
             size="sm"
@@ -467,14 +479,14 @@ export default function InkindList() {
               router.push(`/projects/aa/${id}/inkind-management/add`)
             }
           >
-            Create Inkind
+            {tv('CREATE_INKIND')}
           </Button>
-        </RoleAuth>
+        </Can>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <SearchInput
           className="flex-1"
-          name="Inkind Name"
+          name={tv('INKIND_NAME')}
           value={nameFilter}
           onSearch={(event) => {
             setNameFilter(event.target.value);
@@ -485,8 +497,8 @@ export default function InkindList() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
               {typeFilter
-                ? INKIND_TYPE_LABELS[typeFilter as InkindType]
-                : 'All Types'}
+                ? tg(typeFilter as InkindType)
+                : tv('ALL_TYPES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -497,7 +509,7 @@ export default function InkindList() {
                 setPagination({ ...pagination, page: 1 });
               }}
             >
-              All Types
+              {tv('ALL_TYPES')}
             </DropdownMenuItem>
             {INKIND_TYPES.map((t) => (
               <DropdownMenuItem
@@ -507,7 +519,7 @@ export default function InkindList() {
                   setPagination({ ...pagination, page: 1 });
                 }}
               >
-                {INKIND_TYPE_LABELS[t]}
+                {tg(t)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -537,28 +549,28 @@ export default function InkindList() {
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
             <DialogTitle className="text-lg font-medium">
-              {stockDialog.mode === 'add' ? 'Add Stock' : 'Remove Stock'}
+              {stockDialog.mode === 'add' ? tv('ADD_STOCK') : tv('REMOVE_STOCK')}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div>
-              <p className="text-sm text-muted-foreground">Item</p>
+              <p className="text-sm text-muted-foreground">{tv('ITEM')}</p>
               <p className="text-base font-semibold">
                 {stockDialog.item?.name}
               </p>
             </div>
             {stockDialog.mode === 'remove' && (
               <div>
-                <p className="text-sm text-muted-foreground">Available Stock</p>
+                <p className="text-sm text-muted-foreground">{tv('AVAILABLE_STOCK')}</p>
                 <p className="text-base font-semibold text-primary">
-                  {stockDialog.item?.availableStock ?? 0}
+                  {formatNum(stockDialog.item?.availableStock ?? 0)}
                 </p>
               </div>
             )}
             <div className="space-y-2">
               <Label className="text-sm font-medium" htmlFor="quantity">
-                Quantity
+                {tv('QUANTITY')}
               </Label>
               <Input
                 id="quantity"
@@ -569,13 +581,13 @@ export default function InkindList() {
                     ? stockDialog.item?.availableStock ?? undefined
                     : undefined
                 }
-                placeholder="Enter quantity"
+                placeholder={tv('ENTER_QUANTITY')}
                 className="text-base h-10"
                 value={stockDialog.quantity}
                 onChange={(e) =>
                   setStockDialog((prev) => ({
                     ...prev,
-                    quantity: e.target.value,
+                    quantity: toAsciiDigits(e.target.value),
                     error: '',
                   }))
                 }
@@ -596,18 +608,18 @@ export default function InkindList() {
               onClick={closeStockDialog}
               disabled={isPending}
             >
-              Cancel
+              {tg('CANCEL')}
             </Button>
             <Button onClick={handleStockSubmit} disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {stockDialog.mode === 'add' ? 'Adding...' : 'Removing...'}
+                  {stockDialog.mode === 'add' ? tv('ADDING') : tv('REMOVING')}
                 </>
               ) : stockDialog.mode === 'add' ? (
-                'Add Stock'
+                tv('ADD_STOCK')
               ) : (
-                'Remove Stock'
+                tv('REMOVE_STOCK')
               )}
             </Button>
           </DialogFooter>
@@ -626,10 +638,10 @@ export default function InkindList() {
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
             <DialogTitle className="text-lg font-medium">
-              Update Inkind Item
+              {tv('UPDATE_INKIND_ITEM')}
             </DialogTitle>
             <DialogDescription>
-              Edit the details below, then review before saving.
+              {tv('EDIT_THE_DETAILS_BELOW_THEN_REVIEW')}
             </DialogDescription>
           </DialogHeader>
 
@@ -637,20 +649,21 @@ export default function InkindList() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium" htmlFor="update-name">
-                  Name
+                  {tg('NAME')}
                 </Label>
                 <span
-                  className={`text-xs ${updateDialog.name.length >= NAME_MAX
-                    ? 'text-destructive'
-                    : 'text-muted-foreground'
-                    }`}
+                  className={`text-xs ${
+                    updateDialog.name.length >= NAME_MAX
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                  }`}
                 >
-                  {updateDialog.name.length}/{NAME_MAX}
+                  {formatNum(updateDialog.name.length)}/{formatNum(NAME_MAX)}
                 </span>
               </div>
               <Input
                 id="update-name"
-                placeholder="Item name"
+                placeholder={tv('ITEM_NAME_PLACEHOLDER')}
                 maxLength={NAME_MAX}
                 className="text-base h-10"
                 value={updateDialog.name}
@@ -676,20 +689,22 @@ export default function InkindList() {
                   className="text-sm font-medium"
                   htmlFor="update-description"
                 >
-                  Description
+                  {tg('DESCRIPTION')}
                 </Label>
                 <span
-                  className={`text-xs ${updateDialog.description.length >= DESCRIPTION_MAX
-                    ? 'text-destructive'
-                    : 'text-muted-foreground'
-                    }`}
+                  className={`text-xs ${
+                    updateDialog.description.length >= DESCRIPTION_MAX
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                  }`}
                 >
-                  {updateDialog.description.length}/{DESCRIPTION_MAX}
+                  {formatNum(updateDialog.description.length)}/
+                  {formatNum(DESCRIPTION_MAX)}
                 </span>
               </div>
               <Textarea
                 id="update-description"
-                placeholder="Item description"
+                placeholder={tv('ITEM_DESCRIPTION_PLACEHOLDER')}
                 className="resize-none text-base"
                 rows={4}
                 maxLength={DESCRIPTION_MAX}
@@ -723,7 +738,7 @@ export default function InkindList() {
                 setUpdateErrors({});
               }}
             >
-              Reset
+              {tg('RESET')}
             </Button>
             <Button
               onClick={handleUpdateNext}
@@ -732,12 +747,12 @@ export default function InkindList() {
                 !updateDialog.description.trim() ||
                 (updateDialog.item !== null &&
                   updateDialog.name.trim() ===
-                  (updateDialog.item.name ?? '').trim() &&
+                    (updateDialog.item.name ?? '').trim() &&
                   updateDialog.description.trim() ===
-                  (updateDialog.item.description ?? '').trim())
+                    (updateDialog.item.description ?? '').trim())
               }
             >
-              Continue
+              {tg('CONTINUE')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -751,10 +766,10 @@ export default function InkindList() {
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
             <DialogTitle className="text-lg font-medium flex items-center gap-2">
-              Confirm Changes
+              {tv('CONFIRM_CHANGES')}
             </DialogTitle>
             <DialogDescription>
-              Review the changes below before saving.
+              {tv('REVIEW_THE_CHANGES_BELOW_BEFORE_SAVING')}
             </DialogDescription>
           </DialogHeader>
 
@@ -762,13 +777,13 @@ export default function InkindList() {
             <div className="rounded-sm border bg-muted/40 px-4 py-3 space-y-3">
               <div className="flex justify-between items-start gap-4">
                 <span className="text-sm text-muted-foreground shrink-0">
-                  Name
+                  {tg('NAME')}
                 </span>
                 <TruncatedCell text={confirmDialog.name} maxLength={30} />
               </div>
               <div className="flex justify-between items-start gap-4">
                 <span className="text-sm text-muted-foreground shrink-0">
-                  Description
+                  {tg('DESCRIPTION')}
                 </span>
                 <TruncatedCell
                   text={confirmDialog.description}
@@ -793,7 +808,7 @@ export default function InkindList() {
               }}
               disabled={updateInkind.isPending}
             >
-              Back
+              {tg('BACK')}
             </Button>
             <Button
               onClick={handleUpdateConfirm}
@@ -802,10 +817,10 @@ export default function InkindList() {
               {updateInkind.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {tv('SAVING')}
                 </>
               ) : (
-                'Confirm'
+                tg('CONFIRM')
               )}
             </Button>
           </DialogFooter>

@@ -9,6 +9,8 @@ import { useEffect } from 'react';
 import { useAAGrievancesStore } from './store';
 import { toast } from 'sonner';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export const useGrievancesList = (payload: any) => {
   const { setGrievances } = useAAGrievancesStore((state) => ({
@@ -46,6 +48,7 @@ export const useGrievancesList = (payload: any) => {
 export const useChangeGrievanceStatus = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction<any>();
+  const tb = useTranslations();
 
   return useMutation({
     mutationFn: async (payload: {
@@ -68,7 +71,18 @@ export const useChangeGrievanceStatus = () => {
       toast.success('Grievance status updated successfully');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to update grievance status');
+      const rawMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        'Failed to update grievance status';
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GRIEVANCES'],
+        rawMessage,
+      );
+      toast.error(errorMessage);
     },
   });
 };
@@ -76,6 +90,7 @@ export const useChangeGrievanceStatus = () => {
 export const useUpdateGrievance = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction<any>();
+  const tb = useTranslations();
 
   return useMutation({
     mutationFn: async (payload: {
@@ -98,7 +113,18 @@ export const useUpdateGrievance = () => {
       toast.success('Grievance updated successfully');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to update grievance');
+      const rawMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        'Failed to update grievance';
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['GRIEVANCES'],
+        rawMessage,
+      );
+      toast.error(errorMessage);
     },
   });
 };

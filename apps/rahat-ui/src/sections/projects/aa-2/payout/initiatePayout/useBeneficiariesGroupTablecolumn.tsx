@@ -1,18 +1,23 @@
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { ColumnDef } from '@tanstack/react-table';
 
 export default function useBeneficiariesGroupTableColumn() {
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: tg('WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="w-80">{row?.original?.walletAddress}</div>
       ),
     },
     {
       accessorKey: 'assignedTokens',
-      header: 'Token Assigned',
-      cell: ({ row }) => <div>{row?.original?.assignedTokens}</div>,
+      header: t('TOTAL_TOKEN_ASSIGNED'),
+      cell: ({ row }) => <div>{formatNum(row?.original?.assignedTokens)}</div>,
     },
   ];
 

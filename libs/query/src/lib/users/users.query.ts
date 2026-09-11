@@ -90,7 +90,11 @@ export const useUserUpdate = () => {
       mutationFn: ({ uuid, payload }: { uuid: UUID; payload: User }) =>
         userClient.updateUser(uuid, payload),
       onSuccess: () => {
-        Swal.fire(t('GLOBAL.USERS_UPDATED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.USERS_UPDATED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
         queryClient.invalidateQueries({
           queryKey: [
             'get_all_user',
@@ -247,6 +251,7 @@ export const useAssignRoleInProject = () => {
         userClient.assignRoleInProject(uuid, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['get_user_roles'] });
+        queryClient.invalidateQueries({ queryKey: ['get_user_active_roles'] });
       },
     },
     queryClient,
@@ -258,7 +263,7 @@ export const useListActiveRoles = (uuid?: UUID): UseQueryResult<any, Error> => {
   const userClient = getUserClient(rumsanService.client);
   const query = useQuery(
     {
-      queryKey: ['get_user_roles', uuid],
+      queryKey: ['get_user_active_roles', uuid],
       enabled: !!uuid,
       queryFn: () => userClient.listActiveRoles(uuid as UUID),
     },
@@ -295,7 +300,11 @@ export const useDeleteRole = () => {
 
       mutationFn: ({ name }: { name: string }) => roleClient.deleteRole(name),
       onSuccess: () => {
-        Swal.fire(t('GLOBAL.ROLE_DELETED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.ROLE_DELETED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
         queryClient.invalidateQueries({
           queryKey: ['get_all_roles'],
         });

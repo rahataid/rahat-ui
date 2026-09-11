@@ -13,6 +13,7 @@ const ROOTS = {
   IMPORTBENEFICIARY: '/import-beneficiary',
   SETTINGS: '/settings',
   USAGE: '/usage',
+  LOGS: '/logs',
   APPAUTHENTICATION: '/auth-apps',
 };
 
@@ -57,6 +58,9 @@ export const paths = {
   },
   usage: {
     root: ROOTS.USAGE,
+  },
+  logs: {
+    root: ROOTS.LOGS,
   },
 };
 

@@ -26,15 +26,11 @@ export default function ProjectImageEditor({
   const displayImage = preview || currentImage;
 
   return (
-    <div className="rounded border bg-white p-4 mb-4">
-      <div className="mb-3">
-        <h2 className="text-sm font-semibold">Project Image</h2>
-        <p className="text-xs text-muted-foreground">
-          Upload an image to represent this project.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-4">
+    <div>
+      <label className="text-sm font-medium leading-none">
+        Project Image
+      </label>
+      <div className="flex items-center gap-4 mt-2">
         {displayImage && (
           <Image
             src={displayImage}

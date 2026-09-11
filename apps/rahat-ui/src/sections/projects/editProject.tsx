@@ -151,10 +151,6 @@ function ProjectInfoFormContent() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(setPendingValues)}>
-        <ProjectImageEditor
-          currentImage={(project as any)?.extras?.project_image}
-          onFileSelect={setSelectedImageFile}
-        />
         <div className="pb-3 flex justify-between items-center space-x-4">
           <div>
             <h2 className="text-lg font-semibold">{t('PROJECT_INFO')}</h2>
@@ -231,6 +227,11 @@ function ProjectInfoFormContent() {
               )}
             />
           </div>
+
+          <ProjectImageEditor
+            currentImage={(project as any)?.extras?.project_image}
+            onFileSelect={setSelectedImageFile}
+          />
         </div>
       </form>
 

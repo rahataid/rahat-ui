@@ -81,13 +81,13 @@ function transformCreditsForChart(
   // locale-independent. The display label is derived separately, because a
   // localised label ("जुल ०१") cannot be parsed back into a Date to sort by.
   const dateMap = new Map<string, Map<string, number>>();
+  const bucketDates = new Map<string, Date>();
   const transportNames = new Set<string>();
 
   credits.forEach((item) => {
-    const dateKey = format(
-      bucketStart(new Date(item.date), granularity),
-      'yyyy-MM-dd',
-    );
+    const bucket = bucketStart(new Date(item.date), granularity);
+    const dateKey = format(bucket, 'yyyy-MM-dd');
+    bucketDates.set(dateKey, bucket);
     transportNames.add(item.transportName);
 
     if (!dateMap.has(dateKey)) {
@@ -110,7 +110,7 @@ function transformCreditsForChart(
 
   return {
     categories: sortedDates.map((d) =>
-      formatDate(d, LABEL_PATTERN[granularity]),
+      formatDate(bucketDates.get(d)!, LABEL_PATTERN[granularity]),
     ),
     series,
   };

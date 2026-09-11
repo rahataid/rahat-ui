@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type IProps = {
@@ -13,6 +14,7 @@ export default function ProjectImageEditor({
   currentImage,
   onFileSelect,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -28,13 +30,16 @@ export default function ProjectImageEditor({
   return (
     <div>
       <label className="text-sm font-medium leading-none">
-        Project Image
+        {t('PROJECT_IMAGE')}
       </label>
+      <p className="text-xs text-muted-foreground mt-1">
+        {t('UPLOAD_IMAGE_TO_REPRESENT_THIS_PROJECT')}
+      </p>
       <div className="flex items-center gap-4 mt-2">
         {displayImage && (
           <Image
             src={displayImage}
-            alt="Project"
+            alt={t('PROJECT_IMAGE')}
             width={80}
             height={80}
             className="rounded border object-cover h-20 w-20"
@@ -52,7 +57,7 @@ export default function ProjectImageEditor({
           variant="secondary"
           onClick={() => fileInputRef.current?.click()}
         >
-          {displayImage ? 'Change Image' : 'Choose Image'}
+          {displayImage ? t('CHANGE_IMAGE') : t('CHOOSE_IMAGE')}
         </Button>
       </div>
     </div>

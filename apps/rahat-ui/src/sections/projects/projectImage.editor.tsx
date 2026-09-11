@@ -1,57 +1,28 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
 import Image from 'next/image';
-import { useUploadFile, useProjectImageUpdate } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type IProps = {
   currentImage?: string | null;
+  onFileSelect: (file: File | null) => void;
 };
 
-export default function ProjectImageEditor({ currentImage }: IProps) {
-  const { id } = useParams();
-  const projectUUID = id as UUID;
-
+export default function ProjectImageEditor({
+  currentImage,
+  onFileSelect,
+}: IProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-
-  const uploadFile = useUploadFile();
-  const updateProjectImage = useProjectImageUpdate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
+    onFileSelect(file);
   };
 
-  const handleSubmit = () => {
-    if (!selectedFile) return;
-
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-
-    uploadFile.mutate(formData, {
-      onSuccess: (res) => {
-        const url = res?.data?.mediaURL;
-        if (!url) return;
-        updateProjectImage.mutate(
-          { uuid: projectUUID, url },
-          {
-            onSuccess: () => {
-              setSelectedFile(null);
-            },
-          },
-        );
-      },
-    });
-  };
-
-  const isPending = uploadFile.isPending || updateProjectImage.isPending;
   const displayImage = preview || currentImage;
 
   return (
@@ -83,16 +54,10 @@ export default function ProjectImageEditor({ currentImage }: IProps) {
         <Button
           type="button"
           variant="secondary"
-          disabled={isPending}
           onClick={() => fileInputRef.current?.click()}
         >
-          {currentImage || preview ? 'Change Image' : 'Choose Image'}
+          {displayImage ? 'Change Image' : 'Choose Image'}
         </Button>
-        {selectedFile && (
-          <Button type="button" disabled={isPending} onClick={handleSubmit}>
-            {isPending ? 'Submitting...' : 'Submit'}
-          </Button>
-        )}
       </div>
     </div>
   );

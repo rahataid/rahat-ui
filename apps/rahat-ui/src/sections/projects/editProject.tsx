@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 import { Save } from 'lucide-react';
 import { ProjectStatus } from '@rahataid/sdk/enums';
 import { SystemUserAuth } from '@rahat-ui/auth';
-import { useProject, useProjectEdit } from '@rahat-ui/query';
+import { useProject, useProjectEdit, useUploadFile } from '@rahat-ui/query';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
@@ -76,11 +76,15 @@ function ProjectInfoFormContent() {
 
   const { data, isLoading } = useProject(projectUUID);
   const editProject = useProjectEdit();
+  const uploadFile = useUploadFile();
 
   const project = data?.data;
 
   const [pendingValues, setPendingValues] =
     useState<EditProjectFormValues | null>(null);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(
+    null,
+  );
 
   const EditProjectSchema = buildEditProjectSchema(t);
 
@@ -103,11 +107,27 @@ function ProjectInfoFormContent() {
   const handleConfirmSave = async () => {
     if (!pendingValues) return;
     try {
+      let projectImageUrl = (project as any)?.extras?.project_image;
+
+      if (selectedImageFile) {
+        const formData = new FormData();
+        formData.append('file', selectedImageFile);
+        const uploadRes = await uploadFile.mutateAsync(formData);
+        projectImageUrl = uploadRes?.data?.mediaURL;
+      }
+
       await editProject.mutateAsync({
         uuid: projectUUID,
-        data: pendingValues,
+        data: {
+          ...pendingValues,
+          extras: {
+            ...(project as any)?.extras,
+            project_image: projectImageUrl,
+          },
+        },
       });
       setPendingValues(null);
+      setSelectedImageFile(null);
       router.back();
     } catch {
       // toast is handled by useProjectEdit; keep the dialog open so the
@@ -130,10 +150,11 @@ function ProjectInfoFormContent() {
 
   return (
     <Form {...form}>
-      <ProjectImageEditor
-        currentImage={(project as any)?.extras?.project_image}
-      />
       <form onSubmit={form.handleSubmit(setPendingValues)}>
+        <ProjectImageEditor
+          currentImage={(project as any)?.extras?.project_image}
+          onFileSelect={setSelectedImageFile}
+        />
         <div className="pb-3 flex justify-between items-center space-x-4">
           <div>
             <h2 className="text-lg font-semibold">{t('PROJECT_INFO')}</h2>

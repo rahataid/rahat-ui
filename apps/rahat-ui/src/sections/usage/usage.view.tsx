@@ -1,8 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
-import { format, subDays } from 'date-fns';
+import { useState } from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Card,
@@ -24,18 +23,12 @@ import CreditUsageSection from './credit-usage-section';
 
 type DateRangeQuery = { from?: string; to?: string };
 
-const CREDIT_DEFAULT_FROM = subDays(new Date(), 30);
-const CREDIT_DEFAULT_TO = new Date();
-
 export default function UsageView() {
   const t = useTranslations('USAGE');
   const [usageXref, setUsageXref] = useState<string | null>(null);
   const [usageDateRange, setUsageDateRange] = useState<DateRangeQuery>({});
   const [creditXref, setCreditXref] = useState<string | null>(null);
-  const [creditDateRange, setCreditDateRange] = useState<DateRangeQuery>({
-    from: format(CREDIT_DEFAULT_FROM, 'yyyy-MM-dd'),
-    to: format(CREDIT_DEFAULT_TO, 'yyyy-MM-dd'),
-  });
+  const [creditDateRange, setCreditDateRange] = useState<DateRangeQuery>({});
 
   const { data: usageData, isPending: usageLoading } =
     useCommsUsage(usageXref ? undefined : usageDateRange);
@@ -93,8 +86,6 @@ export default function UsageView() {
           onXrefChange={setCreditXref}
           onDateChange={setCreditDateRange}
           onDateClear={() => setCreditDateRange({})}
-          defaultFrom={CREDIT_DEFAULT_FROM}
-          defaultTo={CREDIT_DEFAULT_TO}
         />
       </div>
     </ScrollArea>

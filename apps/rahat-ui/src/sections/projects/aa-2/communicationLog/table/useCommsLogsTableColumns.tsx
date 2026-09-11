@@ -113,7 +113,11 @@ export default function useCommsLogsTableColumns(transportName: string) {
                       <span className="font-semibold text-sm/6">{t('FAIL')}</span>
                     </div>
                     <p className="text-gray-500 text-sm mt-1 break-words">
-                      {row.original?.disposition?.disposition}
+                      {typeof row.original?.disposition?.disposition ===
+                      'string'
+                        ? row.original.disposition.disposition
+                        : row.original?.disposition?.disposition?.disposition ||
+                          'Unknown error'}
                     </p>
                   </TooltipContent>
                 </Tooltip>

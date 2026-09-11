@@ -25,6 +25,8 @@ import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { exportCommsStats, hasCommsData } from './utils/comms.utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
+import { endOfDay, startOfDay } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 export default function CommunicationMainLogsView() {
   const t = useTranslations('AA_PROJECT');
@@ -45,12 +47,18 @@ export default function CommunicationMainLogsView() {
       phase,
     });
   const { activeTab, setActiveTab } = useActiveTab('overview');
-
-  const handleDateChange = (range: any) => {
-    if (range?.from && range?.to) {
-      setStartDate(range.from.toISOString());
-      setEndDate(range.to.toISOString());
+  const handleDateChange = (range: DateRange | undefined) => {
+    if (!range?.from) {
+      setStartDate(undefined);
+      setEndDate(undefined);
+      return;
     }
+
+    const from = range.from;
+    const to = range.to ?? range.from;
+
+    setStartDate(startOfDay(from).toISOString());
+    setEndDate(endOfDay(to).toISOString());
   };
 
   const handleClearDate = () => {
@@ -121,7 +129,9 @@ export default function CommunicationMainLogsView() {
               <SelectComponent
                 name="Phase"
                 options={['ALL', ...phases.map((p) => p.name)]}
-                onChange={(value) => setPhase(value === 'ALL' ? undefined : value)}
+                onChange={(value) =>
+                  setPhase(value === 'ALL' ? undefined : value)
+                }
                 value={phase || ''}
               />
               <DateRangePicker

@@ -1,13 +1,15 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   ArrowRight,
   CloudDownload,
+  LoaderCircle,
   Mail,
   MessageSquare,
   Mic,
+  RefreshCcw,
 } from 'lucide-react';
 import {
   Card,
@@ -18,15 +20,21 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
 import {
+  useGetCommunicationLogs,
   useListSessionLogs,
   usePagination,
   useSessionBroadCastCount,
+  useSessionRetryFailed,
+  useSettingsStore,
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import MessageWithToggle from '../../activities/components/messageWithToggle';
+import { downloadLogsCsv } from './comms.logs.export.utils';
+import { toast } from 'react-toastify';
+import { UUID } from 'crypto';
 
 interface BaseCommunication {
   groupId: string;
@@ -38,6 +46,8 @@ interface BaseCommunication {
   sessionStatus: string;
   sessionId: string;
   completedAt: string;
+  startedAt: string;
+  updatedAt: string;
 }
 
 interface EmailCommunication extends BaseCommunication {
@@ -67,19 +77,36 @@ export function CommunicationDetailCard({
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { pagination, filters } = usePagination();
-  const { data: sessionLogs } = useListSessionLogs(
-    activityCommunication?.sessionId,
-    {
+  const { data: logs, isLoading } = useGetCommunicationLogs(
+    projectId as UUID,
+    activityCommunication?.communicationId,
+    activityId,
+  );
+  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
+    useListSessionLogs(activityCommunication?.sessionId, {
       ...pagination,
       ...filters,
-    },
-  );
+    });
   const router = useRouter();
   const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
+  const commsSettings = useSettingsStore((state) => state.commsSettings);
+
+  const downloadUrl = useMemo(
+    () =>
+      commsSettings?.URL
+        ? `${
+            commsSettings.URL
+          }/broadcasts/download?sessionId=${encodeURIComponent(
+            activityCommunication?.sessionId,
+          )}`
+        : null,
+    [commsSettings, activityCommunication?.sessionId],
+  );
+
   const [isPlaying, setIsPlaying] = useState(false);
   const formatDate = useDateFormat();
-
+  const [isExporting, setIsExporting] = useState(false);
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case 'PENDING':
@@ -132,6 +159,64 @@ export function CommunicationDetailCard({
 
   const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
 
+  const logsMeta = sessionLogs?.httpReponse?.data?.meta;
+
+  const hasNoLogsForExport = (logsMeta?.total ?? 0) === 0;
+
+  const retryFailed = useSessionRetryFailed();
+
+  const handleRetryFailed = async () => {
+    if (!activityCommunication?.sessionId) return;
+    await retryFailed.mutateAsync({
+      cuid: activityCommunication.sessionId,
+      includeFailed: true,
+    });
+  };
+
+  const onExportAllLogs = async () => {
+    if (!downloadUrl) {
+      return toast.error(
+        'Failed to load communication data. Please refresh and try again.',
+      );
+    }
+    setIsExporting(true);
+    try {
+      const meta = {
+        groupName: logs?.group?.name || 'N/A',
+        groupType: logs?.communicationDetail?.groupType || 'N/A',
+        transportName:
+          logs?.sessionDetails?.Transport?.name ||
+          activityCommunication?.transportName ||
+          'N/A',
+        communicationTitle:
+          logs?.communicationDetail?.communicationTitle ||
+          activityCommunication?.communicationTitle ||
+          'N/A',
+        message:
+          typeof logs?.communicationDetail?.message === 'string'
+            ? logs.communicationDetail.message
+            : undefined,
+        subject: logs?.communicationDetail?.subject,
+        sessionStartedAt: logs?.sessionDetails?.startedAt,
+        sessionEndedAt: logs?.sessionDetails?.endedAt,
+      };
+      const fileName = `${
+        activityCommunication?.communicationTitle || 'communication'
+      }_${new Date().toISOString().slice(0, 10)}`;
+      await downloadLogsCsv(downloadUrl, fileName, meta);
+      toast.success('Communication logs exported successfully!');
+    } catch (error) {
+      console.error('Error exporting logs:', error);
+      toast.error(
+        `Failed to export logs: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <Card className="mb-4 rounded-sm">
       <CardContent className="pt-4 px-4 pb-4">
@@ -140,15 +225,19 @@ export function CommunicationDetailCard({
             {getIcon()}
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-1">
-              <TooltipWrapper
-                tip={`${t('COMMUNICATION_TITLE')}: ${activityCommunication?.communicationTitle}`}
-              >
-                <h3 className="font-medium text-gray-900 truncate">
-                  {activityCommunication?.communicationTitle}
-                </h3>
-              </TooltipWrapper>
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <TooltipWrapper
+                  tip={`${t('COMMUNICATION_TITLE')}: ${
+                    activityCommunication?.communicationTitle
+                  }`}
+                >
+                  <h3 className="font-medium text-gray-900 truncate">
+                    {activityCommunication?.communicationTitle}
+                  </h3>
+                </TooltipWrapper>
+              </div>
               <TooltipWrapper
                 tip={`${t('COMMUNICATION_STATUS')}: ${
                   activityCommunication?.sessionStatus
@@ -170,7 +259,9 @@ export function CommunicationDetailCard({
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_CHANNEL')}: ${activityCommunication?.transportName}`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${
+                  activityCommunication?.transportName
+                }`}
               >
                 <span>
                   {activityCommunication?.transportName
@@ -201,9 +292,11 @@ export function CommunicationDetailCard({
         {'subject' in activityCommunication &&
           activityCommunication?.subject && (
             <TooltipWrapper
-              tip={`${t('COMMUNICATION_SUBJECT')}: ${activityCommunication?.subject}`}
+              tip={`${t('COMMUNICATION_SUBJECT')}: ${
+                activityCommunication?.subject
+              }`}
             >
-              <h4 className="font-medium text-sm mt-3">
+              <h4 className="font-medium text-sm mt-3 truncate max-w-full">
                 {activityCommunication?.subject}
               </h4>
             </TooltipWrapper>
@@ -212,12 +305,13 @@ export function CommunicationDetailCard({
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <TooltipWrapper
-            tip={`${t('COMMUNICATION_MESSAGE')}: ${activityCommunication?.message?.substring(
-              0,
-              50,
-            )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
+            tip={`${t(
+              'COMMUNICATION_MESSAGE',
+            )}: ${activityCommunication?.message?.substring(0, 50)}${
+              activityCommunication?.message?.length > 50 ? '...' : ''
+            }`}
           >
-            <div className="mt-2">
+            <div className="mt-2 overflow-hidden break-words">
               <MessageWithToggle
                 message={activityCommunication?.message ?? ''}
               />
@@ -228,7 +322,9 @@ export function CommunicationDetailCard({
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
             <TooltipWrapper
-              tip={`${t('VOICE_FILE')}: ${activityCommunication?.message?.fileName}`}
+              tip={`${t('VOICE_FILE')}: ${
+                activityCommunication?.message?.fileName
+              }`}
             >
               <div className="bg-gray-50 p-3 rounded-sm mt-3">
                 <p className="text-center mb-2 text-sm font-medium">
@@ -252,20 +348,22 @@ export function CommunicationDetailCard({
             )}`}
           >
             <p className="mt-3 text-sm text-gray-500">
-              {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
+              {t('COMPLETED_AT')}:{' '}
+              {formatDate(activityCommunication.completedAt)}
             </p>
           </TooltipWrapper>
         )}
 
         <CardFooter className="pt-4 px-0 pb-0 flex justify-between items-center">
           {(() => {
-            const latestUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
-              (latest: string | null, row: any) =>
-                !latest || new Date(row?.updatedAt) > new Date(latest)
-                  ? row?.updatedAt
-                  : latest,
-              null,
-            );
+            const latestUpdatedAt =
+              sessionLogs?.httpReponse?.data?.data?.reduce(
+                (latest: string | null, row: any) =>
+                  !latest || new Date(row?.updatedAt) > new Date(latest)
+                    ? row?.updatedAt
+                    : latest,
+                null,
+              );
             return latestUpdatedAt ? (
               <p className="text-sm text-gray-500">
                 {t('UPDATED_AT')}: {formatDate(latestUpdatedAt)}
@@ -275,6 +373,24 @@ export function CommunicationDetailCard({
             );
           })()}
           <div className="flex gap-3">
+            {activityCommunication?.sessionStatus === 'FAILED' &&
+              activityCommunication?.transportName === 'VOICE' && (
+                <TooltipWrapper tip="Retry Failed Voice Communication">
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={handleRetryFailed}
+                    disabled={retryFailed.isPending}
+                  >
+                    {retryFailed.isPending ? (
+                      <LoaderCircle className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCcw className="h-4 w-4" />
+                    )}
+                    Retry
+                  </Button>
+                </TooltipWrapper>
+              )}
             <TooltipWrapper
               tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
               disable={!hasNoFailedDeliveries}
@@ -287,6 +403,24 @@ export function CommunicationDetailCard({
               >
                 {t('FAILED_EXPORTS')}
                 <CloudDownload className="h-4 w-4" />
+              </Button>
+            </TooltipWrapper>
+            <TooltipWrapper
+              tip={t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT')}
+              disable={!hasNoLogsForExport}
+            >
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={onExportAllLogs}
+                disabled={isLoading || hasNoLogsForExport || isExporting}
+              >
+                {isExporting ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CloudDownload className="h-4 w-4" />
+                )}
+                {isExporting ? t('EXPORTING') : t('EXPORT_ALL_LOGS')}{' '}
               </Button>
             </TooltipWrapper>
             <Button

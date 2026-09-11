@@ -110,6 +110,9 @@ export default function PhaseContent({
                 onUpdateStatus={() => handleUpdateStatus(phase.id)}
                 status={phase.status}
                 leadTime={phase.leadTime}
+                hasCommunication={
+                  (phase.activityCommunication?.length ?? 0) > 0
+                }
                 className={`${
                   (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
                   (phase.phase === 'READINESS' && 'border-yellow-500') ||

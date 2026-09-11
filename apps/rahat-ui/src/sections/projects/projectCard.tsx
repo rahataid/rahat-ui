@@ -60,7 +60,7 @@ export default function CommonCard({
           <TooltipText
             title={title}
             content={title}
-            titleClassName="font-bold text-l text-foreground w-full min-w-0 flex-1"
+            titleClassName="font-bold text-l text-primary w-full min-w-0 flex-1"
           />
           {!hidePin && (
             <Button
@@ -93,9 +93,9 @@ export default function CommonCard({
             </Button>
           )}
         </div>
-        <div className="rounded-md border bg-secondary flex justify-center mb-3 overflow-hidden">
+        <div className="rounded-md border bg-white flex justify-center items-center mb-3 overflow-hidden h-[180px]">
           <Image
-            className="object-cover w-full h-[180px]"
+            className="object-contain w-full h-full"
             src={image}
             alt="project"
             height={200}

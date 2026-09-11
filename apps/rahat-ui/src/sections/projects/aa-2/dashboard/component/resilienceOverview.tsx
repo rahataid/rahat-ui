@@ -34,7 +34,7 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
 
       return {
         title: translateValue(tg, phaseName, {
-          fallback: tg('UNKNOWN'),
+          fallback: item.phase?.name ?? 'UNKNOWN',
         }),
         percentage,
         ...palette,
@@ -84,9 +84,10 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
                     </h3>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                    <span className="text-xs sm:text-sm text-gray-600">
-                      {formatNum(metric.percentage)}% {tg('COMPLETED').toLowerCase()}
-                    </span>
+                        <span className="text-xs sm:text-sm text-gray-600">
+                          {formatNum(metric.percentage)}%{' '}
+                          {tg('COMPLETED').toLowerCase()}
+                        </span>
                       </div>
 
                       <Progress

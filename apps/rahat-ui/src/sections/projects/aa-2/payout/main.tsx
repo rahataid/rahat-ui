@@ -44,7 +44,7 @@ export default function PayoutView() {
     ...(startDate && { startDate }),
     ...(endDate && { endDate }),
   });
-  const { data: statsPayout } = usePayoutStats(projectID, {
+  const { data: statsPayout, isPending } = usePayoutStats(projectID, {
     startDate,
     endDate,
   });
@@ -67,15 +67,16 @@ export default function PayoutView() {
   const payoutStats = useMemo(() => {
     return [
       {
-        label: tv('NO_OF_BENEFICIARIES_RECEIVING_CASH'),
-        value: statsPayout?.payoutStats?.beneficiaries || 'N/A',
+        label: 'No. of Beneficiaries Recieving Cash',
+        value: statsPayout?.payoutStats?.beneficiaries ?? 'N/A',
         infoIcon: true,
         infoTooltip: tv('NO_OF_BENEFICIARIES_RECEIVING_CASH_TOOLTIP'),
       },
       {
-        label: tv('TOTAL_CASH_DISTRIBUTION'),
-        value:
-          `${t('RS')} ${formatNum(statsPayout?.payoutStats?.totalCashDistribution)}` || 'N/A',
+        label: 'Total Cash Distribution',
+        value: `Rs. ${
+          statsPayout?.payoutStats?.totalCashDistribution ?? 'N/A'
+        }`,
         infoIcon: true,
         infoTooltip: tv('TOTAL_CASH_DISTRIBUTION_TOOLTIP'),
       },
@@ -128,6 +129,7 @@ export default function PayoutView() {
           <TabsContent value="payoutOverview">
             <PayoutOverview
               payoutStats={payoutStats}
+              isPending={isPending}
               statsPayout={statsPayout}
               payouts={payouts || { data: [] }}
               handleDateChange={handleDateChange}

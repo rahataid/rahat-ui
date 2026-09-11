@@ -93,10 +93,11 @@ export default function PayoutTransactionList() {
   };
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
-      const value = event?.target?.value ?? '';
+      const value = (event?.target?.value ?? '').trim();
       setFilters({ ...filters, [key]: value });
+      setPagination({ ...pagination, page: 1 });
     },
-    [filters],
+    [filters, pagination],
   );
   return (
     <div className="mt-4">

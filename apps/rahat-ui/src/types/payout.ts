@@ -53,4 +53,5 @@ export type PayoutOverviewProps = {
   };
   handleDateChange: (range: any) => void;
   handleClearDate: () => void;
+  isPending: boolean;
 };

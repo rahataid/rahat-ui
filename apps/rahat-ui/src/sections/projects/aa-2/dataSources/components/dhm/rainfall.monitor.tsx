@@ -3,7 +3,6 @@ import { useTranslations } from 'next-intl';
 
 import { Heading } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { MapPin, Radio } from 'lucide-react';
 
 interface RainFallMonitorProps {
@@ -29,7 +28,6 @@ export function RainFallMonitor({
   timeIntervals,
 }: RainFallMonitorProps) {
   const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   return (
     <div className="p-4 rounded-sm border shadow flex justify-between space-x-4 ">
@@ -49,7 +47,7 @@ export function RainFallMonitor({
                   : 'bg-red-100 text-red-500'
               }`}
             >
-              {translateValue(tg, warningStatus, { fallback: t('N_A') })}
+              {warningStatus || t('N_A')}
             </Badge>
           </div>
         </div>

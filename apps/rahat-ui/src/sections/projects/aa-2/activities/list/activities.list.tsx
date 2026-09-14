@@ -157,7 +157,9 @@ export default function ActivitiesList() {
         'Responsible Station': item.responsibleStation || 'N/A',
         'Lead Time': leadTimeValue || 'N/A',
         'Time Frame': leadTimeUnit || 'N/A',
-        Status: translateValue(tg, item.status, { fallback: 'N/A' }),
+        Status: item.status
+          ? translateValue(tg, item.status, { fallbackStyle: 'raw' })
+          : 'N/A',
         Timestamp: timeStamp || 'N/A',
         'Completed by': item.completedBy || 'N/A',
         'Difference in trigger and activity completion':

@@ -373,25 +373,24 @@ export function CommunicationDetailCard({
             );
           })()}
           <div className="flex gap-3">
-            {(activityCommunication?.sessionStatus === 'FAILED' ||
-              activityCommunication?.sessionStatus === 'PENDING') &&
-              activityCommunication?.transportName === 'VOICE' && (
-                <TooltipWrapper tip={t('RETRY_VOICE_COMMUNICATION')}>
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={handleRetryFailed}
-                    disabled={retryFailed.isPending}
-                  >
-                    {retryFailed.isPending ? (
-                      <LoaderCircle className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <RefreshCcw className="h-4 w-4" />
-                    )}
-                    {t('RETRY')}
-                  </Button>
-                </TooltipWrapper>
-              )}
+            {(count?.data?.data?.FAIL ?? 0) > 0 && (
+              <TooltipWrapper tip={tg('RETRY_VOICE_COMMUNICATION')}>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={handleRetryFailed}
+                  disabled={retryFailed.isPending}
+                >
+                  {retryFailed.isPending ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCcw className="h-4 w-4" />
+                  )}
+                  {tg('RETRY')}
+                </Button>
+              </TooltipWrapper>
+            )}
+
             <TooltipWrapper
               tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
               disable={!hasNoFailedDeliveries}

@@ -341,38 +341,29 @@ export function CommunicationDetailCard({
             </TooltipWrapper>
           )}
 
-        {activityCommunication?.sessionStatus === 'COMPLETED' && (
-          <TooltipWrapper
-            tip={`${t('COMPLETED_AT')}: ${formatDate(
-              activityCommunication.completedAt,
-            )}`}
-          >
-            <p className="mt-3 text-sm text-gray-500">
-              {t('COMPLETED_AT')}:{' '}
-              {formatDate(activityCommunication.completedAt)}
-            </p>
-          </TooltipWrapper>
-        )}
-
-        <CardFooter className="pt-4 px-0 pb-0 flex justify-between items-center">
-          {(() => {
-            const latestUpdatedAt =
-              sessionLogs?.httpReponse?.data?.data?.reduce(
+        <CardFooter className="pt-4 px-0 pb-0 flex flex-wrap justify-between items-center gap-2">
+          <div className="flex flex-col gap-1">
+            {activityCommunication?.sessionStatus === 'COMPLETED' && (
+              <p className="text-sm text-gray-500">
+                {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
+              </p>
+            )}
+            {(() => {
+              const latestUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
                 (latest: string | null, row: any) =>
                   !latest || new Date(row?.updatedAt) > new Date(latest)
                     ? row?.updatedAt
                     : latest,
                 null,
               );
-            return latestUpdatedAt ? (
-              <p className="text-sm text-gray-500">
-                {t('UPDATED_AT')}: {formatDate(latestUpdatedAt)}
-              </p>
-            ) : (
-              <div />
-            );
-          })()}
-          <div className="flex gap-3">
+              return latestUpdatedAt ? (
+                <p className="text-sm text-gray-500">
+                  {t('UPDATED_AT')}: {formatDate(latestUpdatedAt)}
+                </p>
+              ) : null;
+            })()}
+          </div>
+          <div className="flex gap-3 ml-auto">
             {(count?.data?.data?.FAIL ?? 0) > 0 && (
               <TooltipWrapper tip={tg('RETRY_VOICE_COMMUNICATION')}>
                 <Button

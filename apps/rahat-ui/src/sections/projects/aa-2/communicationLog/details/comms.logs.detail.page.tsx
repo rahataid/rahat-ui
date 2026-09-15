@@ -556,17 +556,19 @@ export default function CommsLogsDetailPage() {
                             </span>
                           </div>
 
-                          <Badge
-                            className={`${
-                              logs?.sessionDetails?.status === 'COMPLETED'
-                                ? 'bg-green-100 text-green-600 hover:bg-green-100'
-                                : logs?.sessionDetails?.status === 'PENDING'
-                                ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
-                                : 'bg-red-100 text-red-600 hover:bg-red-100'
-                            } rounded-full px-3`}
-                          >
-                            {translateValue(tg, logs?.sessionDetails?.status)}
-                          </Badge>
+                          {logs?.sessionDetails?.status && (
+                            <Badge
+                              className={`${
+                                logs?.sessionDetails?.status === 'COMPLETED'
+                                  ? 'bg-green-100 text-green-600 hover:bg-green-100'
+                                  : logs?.sessionDetails?.status === 'PENDING'
+                                  ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
+                                  : 'bg-red-100 text-red-600 hover:bg-red-100'
+                              } rounded-full px-3`}
+                            >
+                              {translateValue(tg, logs?.sessionDetails?.status)}
+                            </Badge>
+                          )}
                         </div>
 
                         {/* Communication */}

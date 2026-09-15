@@ -53,6 +53,7 @@ export const EVENT_QUERY_MAP: Record<
     [ACTIVITY_QUERY_KEYS.ACTIVITIES, projectUuid],
     [ACTIVITY_QUERY_KEYS.ACTIVITY, projectUuid],
     [ACTIVITY_QUERY_KEYS.ACTIVITIES_HAVING_COMMS, projectUuid],
+    [ACTIVITY_QUERY_KEYS.COMMS_LIST, projectUuid],
   ],
   'fund.event': (projectUuid) => [
     [FUND_MANAGEMENT_QUERY_KEYS.TOKEN_DETAILS, projectUuid],

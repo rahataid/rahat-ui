@@ -218,14 +218,10 @@ export default function CommsLogsDetailPage() {
   const onExportAll = async () => {
     try {
       if (!downloadUrl) {
-        return toast.error(
-          t('FAILED_LOAD_COMMUNICATION_DATA'),
-        );
+        return toast.error(t('FAILED_LOAD_COMMUNICATION_DATA'));
       }
       if (!count?.data?.data) {
-        return toast.error(
-          t('COMMUNICATION_STATS_NOT_AVAILABLE'),
-        );
+        return toast.error(t('COMMUNICATION_STATS_NOT_AVAILABLE'));
       }
 
       const fileName = `${logs?.group?.name || 'group'}_${
@@ -251,9 +247,7 @@ export default function CommsLogsDetailPage() {
       toast.success(t('LOGS_EXPORTED_SUCCESSFULLY'));
     } catch (error) {
       console.error('Error exporting all logs:', error);
-      toast.error(
-        t('FAILED_EXPORT_LOGS'),
-      );
+      toast.error(t('FAILED_EXPORT_LOGS'));
     }
   };
 
@@ -377,7 +371,11 @@ export default function CommsLogsDetailPage() {
                 <Card className="p-4 rounded-sm bg-white h-full">
                   <CardTitle className="flex gap-2 pb-2">
                     <TooltipWrapper
-                      tip={`${t('ACTIVITY_PHASE')}: ${activityDetail?.phase?.name || tg('N_A')}`}
+                      tip={`${t('ACTIVITY_PHASE')}: ${translateValue(
+                        tg,
+                        activityDetail?.phase?.name,
+                        { fallbackStyle: 'raw', silent: true },
+                      )}`}
                     >
                       <Badge
                         className={`${getPhaseColor(
@@ -388,14 +386,20 @@ export default function CommsLogsDetailPage() {
                       </Badge>
                     </TooltipWrapper>
                     <TooltipWrapper
-                      tip={`${t('ACTIVITY_STATUS')}: ${activityDetail?.status ? tGlobal(activityDetail.status) : ''}`}
+                      tip={`${t('ACTIVITY_STATUS')}: ${
+                        activityDetail?.status
+                          ? tGlobal(activityDetail.status)
+                          : ''
+                      }`}
                     >
                       <Badge
                         className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
                           activityDetail?.status,
                         )}`}
                       >
-                        {activityDetail?.status ? tGlobal(activityDetail.status) : ''}
+                        {activityDetail?.status
+                          ? tGlobal(activityDetail.status)
+                          : ''}
                       </Badge>
                     </TooltipWrapper>
                   </CardTitle>
@@ -412,7 +416,9 @@ export default function CommsLogsDetailPage() {
                     </TooltipWrapper>
                   </CardContent>
                   <TooltipWrapper
-                    tip={`${t('ACTIVITY_DESCRIPTION')}: ${activityDetail?.description}`}
+                    tip={`${t('ACTIVITY_DESCRIPTION')}: ${
+                      activityDetail?.description
+                    }`}
                   >
                     <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
                       {activityDetail?.description}
@@ -477,9 +483,13 @@ export default function CommsLogsDetailPage() {
                         <div>
                           <p className="text-sm text-gray-500">
                             {logs?.communicationDetail?.groupType
-                              ? translateValue(tg, logs.communicationDetail.groupType, {
-                                  fallbackStyle: 'raw',
-                                }) +
+                              ? translateValue(
+                                  tg,
+                                  logs.communicationDetail.groupType,
+                                  {
+                                    fallbackStyle: 'raw',
+                                  },
+                                ) +
                                 ' ' +
                                 t('GROUP')
                               : tg('N_A')}
@@ -502,12 +512,16 @@ export default function CommsLogsDetailPage() {
                           <p className="text-sm text-gray-500">
                             {t('TOTAL_AUDIENCE')}
                           </p>
-                          <p className="font-medium">{formatNum(logsMeta?.total ?? 0)}</p>
+                          <p className="font-medium">
+                            {formatNum(logsMeta?.total ?? 0)}
+                          </p>
                         </div>
 
                         {logs?.sessionDetails?.startedAt && (
                           <div>
-                            <p className="text-sm text-gray-500">{t('STARTED_AT')}</p>
+                            <p className="text-sm text-gray-500">
+                              {t('STARTED_AT')}
+                            </p>
                             <p className="font-medium">
                               {formatDate(logs?.sessionDetails?.startedAt)}
                             </p>
@@ -516,7 +530,9 @@ export default function CommsLogsDetailPage() {
 
                         {logs?.sessionDetails?.endedAt && (
                           <div>
-                            <p className="text-sm text-gray-500">{t('ENDED_AT')}</p>
+                            <p className="text-sm text-gray-500">
+                              {t('ENDED_AT')}
+                            </p>
                             <p className="font-medium">
                               {formatDate(logs?.sessionDetails?.endedAt)}
                             </p>
@@ -556,7 +572,9 @@ export default function CommsLogsDetailPage() {
                         {/* Communication */}
                         <div className="space-y-3">
                           <TooltipWrapper
-                            tip={`${t('COMMUNICATION_TITLE')}: ${communicationTitle}`}
+                            tip={`${t(
+                              'COMMUNICATION_TITLE',
+                            )}: ${communicationTitle}`}
                           >
                             <p className="text-sm text-gray-500">
                               {communicationTitle}
@@ -564,7 +582,9 @@ export default function CommsLogsDetailPage() {
                           </TooltipWrapper>
                           {logs?.communicationDetail?.subject && (
                             <TooltipWrapper
-                              tip={`${t('COMMUNICATION_SUBJECT')}: ${logs?.communicationDetail?.subject}`}
+                              tip={`${t('COMMUNICATION_SUBJECT')}: ${
+                                logs?.communicationDetail?.subject
+                              }`}
                             >
                               <div>
                                 <p className="font-medium">
@@ -574,7 +594,9 @@ export default function CommsLogsDetailPage() {
                             </TooltipWrapper>
                           )}
                           <TooltipWrapper
-                            tip={`${t('COMMUNICATION_MESSAGE')}: ${getCommunicationMessage(
+                            tip={`${t(
+                              'COMMUNICATION_MESSAGE',
+                            )}: ${getCommunicationMessage(
                               logs?.communicationDetail?.message,
                               tg('N_A'),
                             )}`}
@@ -600,7 +622,9 @@ export default function CommsLogsDetailPage() {
                                     <div className="flex items-center gap-2">
                                       <Clock className="h-4 w-4 text-muted-foreground" />
                                       <span className="text-sm font-medium">
-                                        {t('RUN_NUMBER', { number: formatNum(index + 1) })}
+                                        {t('RUN_NUMBER', {
+                                          number: formatNum(index + 1),
+                                        })}
                                       </span>
                                     </div>
                                     <Badge
@@ -614,8 +638,13 @@ export default function CommsLogsDetailPage() {
                                     </Badge>
                                   </div>
                                   <div className="text-xs text-muted-foreground space-y-1">
-                                    <p>{t('STARTED')}: {formatDate(run.startedAt)}</p>
-                                    <p>{t('ENDED')}: {formatDate(run.endedAt)}</p>
+                                    <p>
+                                      {t('STARTED')}:{' '}
+                                      {formatDate(run.startedAt)}
+                                    </p>
+                                    <p>
+                                      {t('ENDED')}: {formatDate(run.endedAt)}
+                                    </p>
                                   </div>
                                 </CardContent>
                               </Card>

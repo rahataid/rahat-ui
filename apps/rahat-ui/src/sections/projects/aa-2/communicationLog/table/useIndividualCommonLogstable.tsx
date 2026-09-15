@@ -16,10 +16,10 @@ import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import DemoTable from 'apps/rahat-ui/src/components/table';
 import React from 'react';
 import {
   CustomPagination,
+  DemoTable,
   NoResult,
   SearchInput,
   SpinnerLoader,

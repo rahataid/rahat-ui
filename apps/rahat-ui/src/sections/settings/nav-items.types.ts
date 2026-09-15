@@ -4,7 +4,7 @@ export type NavItem = {
   title: string;
   path?: string;
   icon?: React.ReactNode;
-  subtitle?: string | number;
+  subtitle?: React.ReactNode;
   onClick?: () => void;
   children?: NavItem[];
   style?: React.CSSProperties;

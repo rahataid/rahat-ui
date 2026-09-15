@@ -429,7 +429,7 @@ export default function CommsLogsDetailPage() {
                       <TooltipWrapper
                         tip={`${t('ACTIVITY_TITLE')}: ${activityDetail?.title}`}
                       >
-                        <Label className="text-base space-y-1 font-semibold">
+                        <Label className="text-base space-y-1 font-semibold break-all">
                           {activityDetail?.title}
                         </Label>
                       </TooltipWrapper>

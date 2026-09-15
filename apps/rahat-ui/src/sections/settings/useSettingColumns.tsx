@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -19,31 +20,33 @@ interface SettingData {
   value: any;
 }
 export const useSettingTableColumns = () => {
+  const t = useTranslations('SETTINGS_TABLE_COLUMNS');
+  const g = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const columns: ColumnDef<SettingData>[] = [
     {
-      header: 'Name',
+      header: g('NAME'),
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      header: 'DataType',
+      header: t('DATATYPE'),
       accessorKey: 'dataType',
       cell: ({ row }) => <div>{row.getValue('dataType')}</div>,
     },
     {
-      header: 'IsPrivate',
+      header: t('ISPRIVATE'),
       accessorKey: 'isPrivate',
-      cell: ({ row }) => <div>{row.original.isPrivate ? 'Yes' : 'No'}</div>,
+      cell: ({ row }) => <div>{row.original.isPrivate ? g('YES') : g('NO')}</div>,
     },
     {
-      header: 'IsReadOnly',
+      header: t('ISREADONLY'),
       accessorKey: 'isReadOnly',
-      cell: ({ row }) => <div>{row.original.isReadOnly ? 'Yes' : 'No'}</div>,
+      cell: ({ row }) => <div>{row.original.isReadOnly ? g('YES') : g('NO')}</div>,
     },
     {
-      header: 'RequiredFields',
+      header: t('REQUIREDFIELDS'),
       accessorKey: 'requiredFields',
       cell: ({ row }) => {
         return (
@@ -59,7 +62,7 @@ export const useSettingTableColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
-      header: 'Actions',
+      header: g('ACTIONS'),
 
       cell: ({ row }) => {
         return (
@@ -83,7 +86,7 @@ export const useSettingTableColumns = () => {
                 />
               </TooltipTrigger>
 
-              <TooltipContent>Edit</TooltipContent>
+              <TooltipContent>{g('EDIT')}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         );

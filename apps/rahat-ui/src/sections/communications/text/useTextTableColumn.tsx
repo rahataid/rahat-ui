@@ -7,8 +7,10 @@ import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { ICampaignItemApiResponse } from '@rahat-ui/types';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import TextDetailSplitView from './text.detail.split.view';
+import { useTranslations } from 'next-intl';
 
 export default function useTextTableColumn(refetch : any) {
+  const tg = useTranslations('GLOBAL');
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const openSplitDetailView = (rowDetail: ICampaignItemApiResponse) => {
@@ -24,7 +26,7 @@ export default function useTextTableColumn(refetch : any) {
   const columns: ColumnDef<ICampaignItemApiResponse>[] = [
     {
       accessorKey: 'name',
-      header: 'Campaigns',
+      header: tg('CAMPAIGNS'),
       id: 'name',
       cell: ({ row }) => (
         <div
@@ -46,7 +48,7 @@ export default function useTextTableColumn(refetch : any) {
     // },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => (
         <Badge variant="secondary" className="rounded-md capitalize">
           {row.getValue('status')}
@@ -55,14 +57,14 @@ export default function useTextTableColumn(refetch : any) {
     },
     {
       accessorKey: 'transport',
-      header: 'Transport',
+      header: tg('TRANSPORT'),
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('transport')}</div>
       ),
     },
     {
       accessorKey: 'totalAudiences',
-      header: 'Total Audiences',
+      header: tg('TOTAL_AUDIENCES'),
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('totalAudiences')}</div>
       ),

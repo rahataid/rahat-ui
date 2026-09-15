@@ -3,6 +3,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
+import { getTranslate } from '../translate';
 
 export const useCommunityBeneficiaryGroupCreate = () => {
   const { rumsanService, queryClient } = useRSQuery();
@@ -49,10 +50,11 @@ export const useCommunityBeneficiaryGroupCreate = () => {
       }
     },
     onError: (error: any) => {
+      const t = getTranslate();
       Swal.fire({
         icon: 'error',
         title:
-          error.response.data.message || 'Encounter error on Creating Data',
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
       });
     },
   });

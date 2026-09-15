@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
 import React, { Dispatch, SetStateAction } from 'react';
@@ -23,6 +24,7 @@ interface CommunicationDataCardProps {
   communicationData: CommunicationData[];
   appTransports: Transport[] | undefined;
   onRemove: (index: number) => void;
+  onEdit: (index: number) => void;
   setOpen: Dispatch<SetStateAction<boolean>>;
   open: boolean;
 }
@@ -32,9 +34,12 @@ const CommunicationDataCard = ({
   communicationData,
   appTransports,
   onRemove,
+  onEdit,
   setOpen,
   open = false,
 }: CommunicationDataCardProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -45,11 +50,10 @@ const CommunicationDataCard = ({
 
   // Handle the edit button click
   const handleEditClick = (i: number) => {
-    const itemData = communicationData[i];
-
-    onRemove(i);
+    onEdit(i);
     setOpen(true);
 
+    const itemData = communicationData[i];
     form.reset({
       communicationTitle: itemData.communicationTitle || '',
       sessionId: itemData.sessionId,
@@ -73,18 +77,18 @@ const CommunicationDataCard = ({
   return (
     <>
       <div className="grid grid-cols-1 gap-2 mt-4">
-        {communicationData?.map((t, i) => {
+        {communicationData?.map((comm, i) => {
           return (
             <Card className="p-4 shadow-sm rounded-sm" key={i}>
               <div className="flex items-start gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                  {appTransports?.find((g) => g.cuid === t.transportId)
+                  {appTransports?.find((g) => g.cuid === comm.transportId)
                     ?.name === 'EMAIL' ? (
                     <Mail className="h-5 w-5 text-gray-500" />
-                  ) : appTransports?.find((g) => g.cuid === t.transportId)
+                  ) : appTransports?.find((g) => g.cuid === comm.transportId)
                       ?.name === 'SMS' ? (
                     <MessageSquare className="h-5 w-5 text-gray-500" />
-                  ) : appTransports?.find((g) => g.cuid === t.transportId)
+                  ) : appTransports?.find((g) => g.cuid === comm.transportId)
                       ?.name === 'VOICE' ? (
                     <Phone className="h-5 w-5 text-gray-500" />
                   ) : (
@@ -95,24 +99,25 @@ const CommunicationDataCard = ({
                 <div className="flex-1">
                   <div className="mb-1">
                     <h3 className="text-sm font-medium">
-                      {t?.communicationTitle}
+                      {comm?.communicationTitle}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
                       <span>
-                        {
-                          appTransports?.find((g) => g.cuid === t.transportId)
-                            ?.name
-                        }
+                        {(() => {
+                          const transportName = appTransports?.find(
+                            (g) => g.cuid === comm.transportId,
+                          )?.name;
+                          return transportName
+                            ? tg(transportName as any)
+                            : '';
+                        })()}
                       </span>
                       <span>•</span>
-                      <span>
-                        {t?.groupType.charAt(0).toUpperCase() +
-                          t?.groupType.slice(1).toLowerCase()}
-                      </span>
+                      <span>{tg(comm?.groupType as any)}</span>
 
                       {/* Group names container */}
                       <div className="flex flex-wrap gap-2 w-auto">
-                        {t?.groupId?.map((uuid) => {
+                        {comm?.groupId?.map((uuid) => {
                           const groupName =
                             stakeholdersGroups?.find(
                               (g: StakeholdersGroup) => g.uuid === uuid,
@@ -120,7 +125,7 @@ const CommunicationDataCard = ({
                             beneficiaryGroups?.find(
                               (g: BeneficiariesGroup) => g.uuid === uuid,
                             )?.name ||
-                            'Unknown Group';
+                            t('UNKNOWN_GROUP');
 
                           return (
                             <div key={uuid} className="flex items-center gap-2">
@@ -132,17 +137,17 @@ const CommunicationDataCard = ({
                       </div>
                     </div>
                   </div>
-                  {t?.subject && (
-                    <p className="text-sm text-gray-700 mt-1">{t?.subject}</p>
+                  {comm?.subject && (
+                    <p className="text-sm text-gray-700 mt-1">{comm?.subject}</p>
                   )}
-                  <p className="text-sm text-gray-700 mt-1">{t?.message}</p>
-                  {t?.audioURL?.mediaURL && (
+                  <p className="text-sm text-gray-700 mt-1">{comm?.message}</p>
+                  {comm?.audioURL?.mediaURL && (
                     <div className="pt-2">
                       <h3 className="text-sm font-medium mb-2">
-                        {t?.audioURL?.fileName}
+                          {comm?.audioURL?.fileName}
                       </h3>
                       <audio
-                        src={t?.audioURL?.mediaURL}
+                        src={comm?.audioURL?.mediaURL}
                         controls
                         className="w-full h-10 "
                       />
@@ -160,9 +165,9 @@ const CommunicationDataCard = ({
                   <DialogComponent
                     buttonIcon={Trash2}
                     buttonText=""
-                    dialogTitle="Remove Communication"
-                    dialogDescription="Are you sure you want to remove this communication?"
-                    confirmButtonText="Remove"
+                    dialogTitle={t('REMOVE_COMMUNICATION')}
+                    dialogDescription={t('REMOVE_COMMUNICATION_CONFIRM')}
+                    confirmButtonText={t('REMOVE')}
                     handleClick={() => handleRemoveclick(i)}
                     buttonClassName=" text-red-500 hover:text-red-600 transition-colors w-6 flex justify-center h-6  border-none p-0 hover:none "
                     confirmButtonClassName="rounded-sm w-full bg-red-500"

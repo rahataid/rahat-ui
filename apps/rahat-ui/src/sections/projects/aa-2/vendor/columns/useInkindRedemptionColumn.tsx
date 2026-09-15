@@ -8,10 +8,13 @@ import { InkindRedemptionData } from '../tabs/inkind.redemption.list';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { formatLabel } from '../../inkindManagement/components/inkind.allocation.list';
 import { INKIND_TYPE_LABELS } from '../../inkindManagement/schemas/inkind.validation';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
@@ -20,6 +23,11 @@ export const useInkindRedemptionColumn = (
   id: UUID,
   showActions: boolean = true,
 ) => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const approveRedemptionStatus = useUpdateVendorRedemptionStatus();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
@@ -35,11 +43,11 @@ export const useInkindRedemptionColumn = (
   };
   const columns: ColumnDef<InkindRedemptionData>[] = [
     {
-      header: 'Vendor Name',
+      header: t('VENDOR_NAME'),
       cell: ({ row }) => {
         return (
           <TruncatedCell
-            text={row.original?.vendor?.name || 'N/A'}
+            text={row.original?.vendor?.name || tg('N_A')}
             maxLength={20}
           />
         );
@@ -47,10 +55,10 @@ export const useInkindRedemptionColumn = (
     },
     {
       accessorKey: 'transactionHash',
-      header: 'TxHash',
+      header: t('TX_HASH'),
       cell: ({ row }) => {
         if (!row.original?.transactionHash) {
-          return <div>N/A</div>;
+          return <div>{t('N_A')}</div>;
         }
         const txUrl = getExplorerUrl({
           chainSettings:
@@ -82,22 +90,24 @@ export const useInkindRedemptionColumn = (
       },
     },
     {
-      header: 'In-kind Item',
+      header: t('IN_KIND_ITEM'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.original?.inkind?.name || 'N/A'}
+          text={row.original?.inkind?.name || tg('N_A')}
           maxLength={20}
         />
       ),
     },
     {
       accessorKey: 'type',
-      header: 'Type',
+      header: tg('TYPE'),
       cell: ({ row }) => {
         const type = row.original?.inkind?.type;
         return (
           <Badge className="bg-gray-200 text-gray-600">
-            {formatLabel(INKIND_TYPE_LABELS[type])}
+            {translateValue(tg, type, {
+              fallback: formatLabel(INKIND_TYPE_LABELS[type]),
+            })}
           </Badge>
         );
       },
@@ -105,12 +115,13 @@ export const useInkindRedemptionColumn = (
 
     {
       accessorKey: 'quantity',
-      header: 'Quantity',
+      header: tv('QUANTITY'),
+      cell: ({ row }) => <div>{formatNum(row.original.quantity)}</div>,
     },
 
     {
       accessorKey: 'redemptionStatus',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => (
         <Badge
           className="text-xs font-normal"
@@ -128,9 +139,9 @@ export const useInkindRedemptionColumn = (
           <TruncatedCell
             text={
               row.original?.redemptionStatus === 'APPROVED'
-                ? 'Approved'
+                ? t('APPROVED')
                 : row.original?.redemptionStatus === 'REQUESTED'
-                ? 'Requested ✓'
+                ? `${t('REQUESTED')} ✓`
                 : ''
             }
             maxLength={15}
@@ -140,10 +151,10 @@ export const useInkindRedemptionColumn = (
     },
     {
       accessorKey: 'approvedBy',
-      header: 'Approved By',
+      header: t('APPROVED_BY'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.original?.approvedBy || 'N/A'}
+          text={row.original?.approvedBy || tg('N_A')}
           maxLength={12}
         />
       ),
@@ -152,7 +163,7 @@ export const useInkindRedemptionColumn = (
       ? [
           {
             id: 'actions',
-            header: 'Actions',
+            header: tg('ACTIONS'),
             enableHiding: false,
             cell: ({ row }: { row: Row<InkindRedemptionData> }) => {
               const status = row.original?.redemptionStatus?.toLowerCase();
@@ -161,13 +172,13 @@ export const useInkindRedemptionColumn = (
                   <div className="flex items-center justify-start">
                     {status === 'approved' ? (
                       <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
-                        <div>Approved on:</div>
+                        <div>{t('APPROVED_ON')}</div>
                         <TruncatedCell
                           text={
                             row.original?.redemptionStatus === 'APPROVED' &&
                             row.original?.approvedAt
-                              ? dateFormat(row.original?.approvedAt)
-                              : 'N/A'
+                              ? formatDate(row.original?.approvedAt)
+                              : t('N_A')
                           }
                           maxLength={30}
                         />
@@ -177,11 +188,11 @@ export const useInkindRedemptionColumn = (
                         <DialogComponent
                           onSubmit={() => handleApproveClick(row)}
                           onCancel={() => null}
-                          title="Approve Inkind Redemption Request"
-                          subtitle="Are you sure you want to approve this redemption request?"
+                          title={tv('APPROVE_INKIND_REDEMPTION_REQUEST')}
+                          subtitle={t('CONFIRM_APPROVE_REDEMPTION')}
                           trigger={
                             <div className="cursor-pointer select-none text-[#297AD6]">
-                              Approve
+                              {t('APPROVE')}
                             </div>
                           }
                         />

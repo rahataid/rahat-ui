@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import type { ExtendedTriggerLogicGroup } from '../types/extended-trigger-logic.types';
 
 export interface TriggerDetail {
@@ -71,7 +73,7 @@ function computeRootStatus(
     : (vals as boolean[]).some(Boolean);
 }
 
-function operatorBadge(x: number, y: number, op: 'AND' | 'OR') {
+function operatorBadge(x: number, y: number, op: 'AND' | 'OR', label: string) {
   const color = op === 'AND' ? '#3b82f6' : '#f97316';
   const w = 36;
   const h = 18;
@@ -87,7 +89,7 @@ function operatorBadge(x: number, y: number, op: 'AND' | 'OR') {
         fontWeight="600"
         fill="#fff"
       >
-        {op}
+        {label}
       </text>
     </g>
   );
@@ -130,37 +132,48 @@ function TriggerTooltip({
   y: number;
   containerWidth: number;
 }) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const triggered = detail.isTriggered ?? detail.status;
 
-  const rows: { label: string; value: string; highlight?: boolean }[] = [];
+  const rows: {
+    label: string;
+    value: string;
+    highlight?: boolean;
+    isExpression?: boolean;
+  }[] = [];
 
   rows.push({
-    label: 'Triggered',
-    value: triggered === undefined ? 'Unknown' : triggered ? 'Yes' : 'No',
+    label: t('TRIGGERED'),
+    value: triggered === undefined ? t('UNKNOWN') : triggered ? t('YES') : t('NO'),
     highlight: true,
   });
   if (detail.sourceLabel || detail.source) {
-    rows.push({ label: 'Source', value: detail.sourceLabel || toLabel(detail.source!) });
+    rows.push({ label: t('SOURCE'), value: detail.sourceLabel || toLabel(detail.source!) });
   }
   if (detail.sourceSubType) {
-    rows.push({ label: 'Sub-type', value: toLabel(detail.sourceSubType) });
+    rows.push({ label: t('SUB_TYPE'), value: toLabel(detail.sourceSubType) });
   }
   if (detail.stationName) {
     rows.push({
-      label: 'Station',
+      label: t('STATION'),
       value: detail.stationId
         ? `${detail.stationName} (${detail.stationId})`
         : detail.stationName,
     });
   }
   if (detail.operator !== undefined && detail.value !== undefined) {
-    rows.push({ label: 'Condition', value: `${detail.operator} ${detail.value}` });
+    rows.push({ label: t('CONDITION'), value: `${detail.operator} ${detail.value}` });
   }
   if (detail.expression) {
-    rows.push({ label: 'Trigger Statement', value: detail.expression });
+    rows.push({
+      label: t('TRIGGER_STATEMENT'),
+      value: detail.expression,
+      isExpression: true,
+    });
   }
   if (detail.logicKey || detail.uuid) {
-    rows.push({ label: 'Key', value: detail.logicKey || detail.uuid || '' });
+    rows.push({ label: t('KEY'), value: detail.logicKey || detail.uuid || '' });
   }
 
   const tooltipW = 240;
@@ -226,7 +239,7 @@ function TriggerTooltip({
           }}
         >
           <span style={{ fontWeight: 700, color: '#0f172a', fontSize: 12, display: 'block' }}>
-            {detail.title || detail.logicKey || 'Trigger'}
+            {detail.title || detail.logicKey || t('TRIGGER')}
           </span>
           {detail.description && (
             <span
@@ -294,7 +307,7 @@ function TriggerTooltip({
                               : '#dc2626',
                       }}
                     >
-                      {triggeredVal === undefined ? '— Unknown' : triggeredVal ? '✓ Yes' : '✗ No'}
+                      {triggeredVal === undefined ? '— ' + t('UNKNOWN') : triggeredVal ? '✓ ' + t('YES') : '✗ ' + t('NO')}
                     </span>
                   ) : (
                     <span
@@ -303,11 +316,11 @@ function TriggerTooltip({
                         fontWeight: 500,
                         flex: 1,
                         wordBreak: 'break-all',
-                        fontSize: row.label === 'Trigger Statement' ? 10 : 11,
-                        fontFamily: row.label === 'Trigger Statement' ? 'monospace' : undefined,
+                        fontSize: row.isExpression ? 10 : 11,
+                        fontFamily: row.isExpression ? 'monospace' : undefined,
                       }}
                     >
-                      {row.value}
+                      {formatNum(row.value)}
                     </span>
                   )}
                 </div>
@@ -328,6 +341,8 @@ export function ExtendedLogicTree({
   triggerDetails = {},
   onTriggerClick,
 }: ExtendedLogicTreeProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const hasMultipleGroups = groups.length > 1;
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -416,7 +431,7 @@ export function ExtendedLogicTree({
                   strokeWidth={1.5}
                   strokeDasharray="4 3"
                 />
-                {operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, joinOperator)}
+                {operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, joinOperator, t(joinOperator))}
               </g>
             );
           })}
@@ -445,7 +460,7 @@ export function ExtendedLogicTree({
                   strokeDasharray="4 3"
                 />
                 {localIdx > 0 &&
-                  operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, group.operator)}
+                  operatorBadge((x1 + x2) / 2, (y1 + y2) / 2, group.operator, t(group.operator))}
               </g>
             );
           });
@@ -473,7 +488,7 @@ export function ExtendedLogicTree({
               fontWeight="700"
               fill="#c2410c"
             >
-              ALERT ACTIVATED
+              {t('ALERT_ACTIVATED')}
             </text>
             <text
               x={resultX}
@@ -484,7 +499,7 @@ export function ExtendedLogicTree({
               fontWeight="400"
               fill="#ea580c"
             >
-              all conditions satisfied
+              {t('ALL_CONDITIONS_SATISFIED')}
             </text>
             <StatusDot
               cx={resultX + RESULT_W / 2 - 8}
@@ -521,7 +536,7 @@ export function ExtendedLogicTree({
                 fontWeight="600"
                 fill={color.text}
               >
-                {`Group ${gi + 1}`}
+                {t('GROUP') + ' ' + formatNum(gi + 1)}
               </text>
               <rect
                 x={gp.x + 8}
@@ -540,7 +555,7 @@ export function ExtendedLogicTree({
                 fontWeight="700"
                 fill="#fff"
               >
-                {group.operator}
+                {t(group.operator)}
               </text>
               <StatusDot
                 cx={gp.x + NODE_W / 2 - 8}
@@ -552,19 +567,19 @@ export function ExtendedLogicTree({
         })}
 
         {/* ── Trigger leaf nodes ── */}
-        {allTriggers.map((t, i) => {
+        {allTriggers.map((trigger, i) => {
           const tp = triggerPositions[i];
-          const color = GROUP_COLORS[t.groupIndex % GROUP_COLORS.length];
-          const label = getTriggerLabel(t.key);
+          const color = GROUP_COLORS[trigger.groupIndex % GROUP_COLORS.length];
+          const label = getTriggerLabel(trigger.key);
           const maxChars = 16;
           const displayLabel =
             label.length > maxChars ? label.slice(0, maxChars) + '…' : label;
           const tStatus =
-            triggerStatuses[t.key] !== undefined
-              ? triggerStatuses[t.key]
+            triggerStatuses[trigger.key] !== undefined
+              ? triggerStatuses[trigger.key]
               : undefined;
-          const isHovered = hoveredTrigger?.key === t.key;
-          const isTriggered = triggerDetails[t.key]?.isTriggered === true;
+          const isHovered = hoveredTrigger?.key === trigger.key;
+          const isTriggered = triggerDetails[trigger.key]?.isTriggered === true;
 
           // Node colors: green palette when triggered, group color otherwise
           const nodeFill   = isTriggered ? '#f0fdf4' : color.fill;
@@ -585,10 +600,10 @@ export function ExtendedLogicTree({
             <g
               key={`trigger-${i}`}
               style={{ cursor: onTriggerClick ? 'pointer' : 'default' }}
-              onMouseEnter={(e) => handleTriggerMouseEnter(e, t.key)}
+              onMouseEnter={(e) => handleTriggerMouseEnter(e, trigger.key)}
               onMouseMove={handleTriggerMouseMove}
               onMouseLeave={() => setHoveredTrigger(null)}
-              onClick={() => onTriggerClick?.(t.key)}
+              onClick={() => onTriggerClick?.(trigger.key)}
             >
               {/* Glow ring when triggered */}
               {isTriggered && (
@@ -654,7 +669,7 @@ export function ExtendedLogicTree({
                     fill="#fff"
                     letterSpacing="0.3"
                   >
-                    ✓ TRIGGERED
+                    ✓ {t('TRIGGERED')}
                   </text>
                 </g>
               )}
@@ -678,11 +693,11 @@ export function ExtendedLogicTree({
         <div className="flex items-center justify-center gap-4 mt-2 text-xs text-slate-500">
           <span className="flex items-center gap-1.5">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500" />
-            Condition met
+            {t('CONDITION_MET')}
           </span>
           <span className="flex items-center gap-1.5">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-400" />
-            Not met
+            {t('NOT_MET')}
           </span>
         </div>
       )}

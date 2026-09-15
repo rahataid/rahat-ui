@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataSourceCard from '../data.source.card';
 import FieldCard from '../field.card';
@@ -9,19 +10,19 @@ type IProps = {
 };
 
 export default function GLOFASCard({ data }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const renderFieldCardContainer = React.useCallback((data: any) => {
     const sanitizedData = React.useMemo(() => {
       return [
-        { label: 'Today', value: data.todayGLOFAS },
-        { label: '3 Days', value: data.days3 },
-        { label: '5 Days', value: data.days5 },
+        { label: t('TODAY'), value: data.todayGLOFAS },
+        { label: t('N3_DAYS_FORECAST_GLOFAS'), value: data.days3 },
+        { label: t('N5_DAYS_FORECAST_GLOFAS'), value: data.days5 },
         {
-          label:
-            'In between today until 7 Days is there any possibility of peak',
+          label: t('PEAK_POSSIBILITY_IN_NEXT_7_DAYS'),
           value: data.inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak,
         },
       ];
-    }, [data]);
+    }, [data, t]);
     return (
       <div className="flex gap-2">
         {sanitizedData?.map((d: any) => (

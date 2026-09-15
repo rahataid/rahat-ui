@@ -84,7 +84,7 @@ export default function VendorsDetail() {
       />
       <div className="p-4 pt-0 grid grid-cols-3 gap-4">
         {cardData?.map((d) => (
-          <div className="rounded-sm bg-card p-4 shadow-md border">
+          <div key={d.name} className="rounded-sm bg-card p-4 shadow-md border">
             <div className="flex justify-between items-center">
               <h1 className="text-base font-medium">{d.name}</h1>
               <div className="p-1 rounded-full bg-secondary">

@@ -3,6 +3,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import { SettingDataType, useAAProjectSettingsList } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -13,10 +14,10 @@ const setsAreEqual = (a: Set<string>, b: Set<string>) =>
 const SETTING_NAME = 'DISBURSHMENT_METHODS';
 
 // Known disbursement methods this editor exposes as checkboxes.
-const DISBURSEMENT_METHOD_OPTIONS: { key: string; label: string }[] = [
-  { key: 'GROUP_TOKEN', label: 'Group Cash Token' },
-  { key: 'TOKEN', label: 'Token' },
-  { key: 'INKIND', label: 'Inkind' },
+const DISBURSEMENT_METHOD_OPTIONS: { key: string; labelKey: string }[] = [
+  { key: 'GROUP_TOKEN', labelKey: 'GROUP_CASH_TOKEN' },
+  { key: 'TOKEN', labelKey: 'TOKEN' },
+  { key: 'INKIND', labelKey: 'INKIND' },
 ];
 
 type IProps = {
@@ -26,6 +27,8 @@ type IProps = {
 };
 
 export default function DisbursementMethodsEditor({ submitRef }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const g = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -72,15 +75,15 @@ export default function DisbursementMethodsEditor({ submitRef }: IProps) {
   });
 
   if (isLoading) {
-    return <div className="p-4 text-sm text-muted-foreground">Loading...</div>;
+    return <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>;
   }
 
   return (
     <div className="rounded border bg-white p-4">
       <div className="mb-3">
-        <h2 className="text-sm font-semibold">Disbursement Methods</h2>
+        <h2 className="text-sm font-semibold">{t('DISBURSEMENT_METHODS')}</h2>
         <p className="text-xs text-muted-foreground">
-          Choose which disbursement methods are available for this project.
+          {t('CHOOSE_WHICH_DISBURSEMENT_METHODS_ARE_AVAILABLE')}
         </p>
       </div>
 
@@ -93,7 +96,7 @@ export default function DisbursementMethodsEditor({ submitRef }: IProps) {
               onCheckedChange={(checked) => toggleKey(opt.key, checked === true)}
             />
             <Label htmlFor={`disbursement-method-${opt.key}`}>
-              {opt.label}
+              {t(opt.labelKey)}
             </Label>
           </div>
         ))}

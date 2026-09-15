@@ -1,5 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { cn } from './utils';
+import { useTranslations } from 'next-intl';
 import { Tag } from 'lucide-react';
 import { GrievanceType } from '@rahat-ui/query/lib/grievance/types/grievance';
 
@@ -17,23 +18,26 @@ const typeColors = {
   default: 'bg-gray-100 text-gray-800',
 } as const;
 
-const typeLabels = {
-  [GrievanceType.TECHNICAL]: 'Technical',
-  [GrievanceType.NON_TECHNICAL]: 'Non-Technical',
-  [GrievanceType.OTHER]: 'Other',
-  default: 'N/A',
-} as const;
+const typeLabels: Record<string, string> = {
+  [GrievanceType.TECHNICAL]: 'TECHNICAL',
+  [GrievanceType.NON_TECHNICAL]: 'NON_TECHNICAL',
+  [GrievanceType.OTHER]: 'OTHER',
+  default: 'N_A',
+};
 
 export function TypeChip({ type, className, showIcon = true }: TypeChipProps) {
+  const t = useTranslations('AA_PROJECT');
+
   const colorClass =
     type && type in typeColors
       ? typeColors[type as keyof typeof typeColors]
       : typeColors.default;
 
-  const displayText =
+  const labelKey =
     type && type in typeLabels
       ? typeLabels[type as keyof typeof typeLabels]
       : typeLabels.default;
+  const displayText = t(labelKey);
 
   return (
     <Badge

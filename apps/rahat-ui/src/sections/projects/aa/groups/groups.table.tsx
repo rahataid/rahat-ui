@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
 import {
@@ -17,6 +18,7 @@ type IProps = {
 };
 
 export default function GroupsTable({ table }: IProps) {
+  const tg = useTranslations('GLOBAL');
   return (
     <TableComponent>
       <ScrollArea className="h-[calc(100vh-179px)]">
@@ -58,7 +60,7 @@ export default function GroupsTable({ table }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                {tg('NO_RESULTS')}
               </TableCell>
             </TableRow>
           )}

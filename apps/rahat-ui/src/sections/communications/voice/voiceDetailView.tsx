@@ -30,8 +30,11 @@ import {
 } from '@rahat-ui/shadcn/components/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 
 export default function VoiceDetailView() {
+  const t = useTranslations('COMMUNICATIONS_VOICE');
+  const tg = useTranslations('GLOBAL');
   const triggerCampaign = useTriggerCampaignMutation();
 
   const params = useParams<{ tag: string; id: string }>();
@@ -47,9 +50,9 @@ export default function VoiceDetailView() {
     (log) => log.status === COMMUNICATION_DELIVERY_STATUS.FAILED,
   );
   const logCardData = [
-    { total: data?.communicationLogs?.length, title: 'Total IVR sent' },
-    { total: successIVR?.length || 0, title: 'Successfull IVR' },
-    { total: failedIVR?.length || 0, title: 'Failed IVR' },
+    { total: data?.communicationLogs?.length, title: t('TOTAL_IVR_SENT') },
+    { total: successIVR?.length || 0, title: t('SUCCESSFULL_IVR') },
+    { total: failedIVR?.length || 0, title: t('FAILED_IVR') },
   ];
 
   const handleChange = (e: string) => {
@@ -57,10 +60,10 @@ export default function VoiceDetailView() {
       triggerCampaign
         .mutateAsync(Number(params.id))
         .then(() => {
-          toast.success('Campaign Trigger Success.');
+          toast.success(tg('CAMPAIGN_TRIGGER_SUCCESS'));
         })
         .catch((e) => {
-          toast.error('Failed to Trigger Campaign.');
+          toast.error(tg('FAILED_TO_TRIGGER_CAMPAIGN'));
         });
     }
   };
@@ -68,30 +71,30 @@ export default function VoiceDetailView() {
   return (
     <>
       {isLoading ? (
-        <p>Loading ...</p>
+        <p>{tg('LOADING')}</p>
       ) : (
         <>
           <div className="flex justify-between font-semibold text-lg items-center mt-2">
-            <div>Campaign Name</div>
+            <div>{tg('CAMPAIGN_NAME')}</div>
 
             <Select>
               <SelectTrigger className="w-24">
-                <SelectValue placeholder="Action" />
+                <SelectValue placeholder={tg('ACTION')} />
               </SelectTrigger>
               <SelectContent>
                 <Dialog>
                   <DialogTrigger className="hover:bg-muted p-1 rounded text-sm text-left w-full">
-                    Trigger Campaign
+                    {tg('TRIGGER_CAMPAIGN')}
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Trigger Campaign</DialogTitle>
-                      <DialogDescription>Are you sure??</DialogDescription>
+                      <DialogTitle>{tg('TRIGGER_CAMPAIGN')}</DialogTitle>
+                      <DialogDescription>{t('ARE_YOU_SURE')}</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="sm:justify-end">
                       <DialogClose asChild>
                         <Button type="button" variant="ghost">
-                          Close
+                          {tg('CLOSE')}
                         </Button>
                       </DialogClose>
                       <Button
@@ -100,7 +103,7 @@ export default function VoiceDetailView() {
                         className="text-primary"
                         onClick={() => handleChange('trigger')}
                       >
-                        Trigger
+                        {tg('TRIGGER')}
                       </Button>
                     </DialogFooter>
                   </DialogContent>

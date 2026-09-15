@@ -6,8 +6,10 @@ import { useTreasuryNavItems } from '../../sections/treasury/useNavItems';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { RPSubgraphProvider, useSettingsStore } from '@rahat-ui/query';
 import { Client, cacheExchange, fetchExchange } from '@urql/core';
+import { useTranslations } from 'next-intl';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('TREASURY');
   const menuItems = useTreasuryNavItems();
   const { secondPanel } = useSecondPanel();
   const subGraphURL = useSettingsStore((state) => state.subGraphUrl);
@@ -21,7 +23,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
     >
       <DashboardLayout>
-        <title>Treasury</title>
+        <title>{t('TREASURY')}</title>
         <TreasuryLayout menuItems={menuItems}>
           {secondPanel ? [children, secondPanel] : children}
         </TreasuryLayout>

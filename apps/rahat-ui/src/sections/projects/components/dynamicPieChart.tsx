@@ -1,3 +1,7 @@
+'use client';
+
+import { ApexOptions } from 'apexcharts';
+import { useTranslations } from 'next-intl';
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import React from 'react';
@@ -9,12 +13,15 @@ interface IDynamicPieChartProps {
   }[];
   isLoading?: boolean;
   colors: string[];
+  options?: ApexOptions;
 }
 const DynamicPieChart = ({
   pieData,
   isLoading,
   colors,
+  options,
 }: IDynamicPieChartProps) => {
+  const t = useTranslations('AA_PROJECT');
   const total = pieData?.reduce(
     (s: number, it: { label: string; value: number }) =>
       s + Number(it.value || 0),
@@ -49,7 +56,7 @@ const DynamicPieChart = ({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-sm">No Data</p>
+          <p className="text-sm">{t('NO_DATA')}</p>
         </div>
       </div>
     );
@@ -60,6 +67,7 @@ const DynamicPieChart = ({
       chart={{
         series: pieData,
         colors: colors,
+        options,
       }}
       custom
       projectAA

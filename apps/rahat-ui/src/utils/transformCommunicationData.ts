@@ -13,6 +13,12 @@ export const transformCommunicationData = (
     return [];
   }
 
+  const toGroupIdArray = (groupId: unknown): string[] => {
+    if (!groupId) return [];
+    if (Array.isArray(groupId)) return groupId as string[];
+    return [groupId as string];
+  };
+
   return communications.map((communication) => {
     const selectedTransport = transports?.find(
       (t) => t.cuid === communication?.transportId,
@@ -26,7 +32,7 @@ export const transformCommunicationData = (
       return {
         ...communication,
         message: '',
-        groupId: communication.groupId ? [communication.groupId] : [],
+        groupId: toGroupIdArray(communication.groupId),
         audioURL: messageObj
           ? {
               fileName: messageObj.fileName || '',
@@ -39,7 +45,7 @@ export const transformCommunicationData = (
     // For other transports (SMS/EMAIL), message is a string
     return {
       ...communication,
-      groupId: communication.groupId ? [communication.groupId] : [],
+      groupId: toGroupIdArray(communication.groupId),
       message:
         typeof communication.message === 'string' ? communication.message : '',
       audioURL: undefined, // Clear audioURL for non-URL transports

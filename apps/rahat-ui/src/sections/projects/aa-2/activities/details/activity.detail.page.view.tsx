@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Back,
   Heading,
@@ -22,6 +23,7 @@ import {
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 export default function ActivitiesDetailView() {
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -77,7 +79,7 @@ export default function ActivitiesDetailView() {
         <Back path={activitiesListPath} />
         <NoResult
           className="h-full flex justify-center items-center"
-          message="Error while loading activity details"
+          message={t('ERROR_LOADING_ACTIVITY_DETAILS')}
         />
       </div>
     );
@@ -89,8 +91,8 @@ export default function ActivitiesDetailView() {
         <div className="flex flex-col gap-2">
           <Back path={activitiesListPath} />
           <Heading
-            title={`Activity Details`}
-            description="Detailed view of selected activity"
+            title={t('ACTIVITY_DETAILS')}
+            description={t('DETAILED_VIEW_OF_SELECTED_ACTIVITY')}
             titleStyle="text-xl sm:text-4xl "
           />
         </div>
@@ -98,13 +100,13 @@ export default function ActivitiesDetailView() {
           <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
             <div className="flex space-x-2">
               <Can action={ACTIONS.DELETE} subject={SUBJECTS.ACTIVITY}>
-                <TooltipWrapper tip="Delete Activity">
+                <TooltipWrapper tip={t('DELETE_ACTIVITY')}>
                   <DialogComponent
                     buttonIcon={Trash}
-                    buttonText="Delete"
-                    dialogTitle="Delete Activity"
-                    dialogDescription="Are you sure you want to delete this activity?"
-                    confirmButtonText="Remove"
+                    buttonText={t('DELETE')}
+                    dialogTitle={t('DELETE_ACTIVITY')}
+                    dialogDescription={t('DELETE_ACTIVITY_CONFIRM')}
+                    confirmButtonText={t('REMOVE')}
                     handleClick={() => removeActivity()}
                     buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
                     confirmButtonClassName="rounded-sm w-full bg-red-500"
@@ -114,13 +116,13 @@ export default function ActivitiesDetailView() {
               </Can>
 
               <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
-                <TooltipWrapper tip="Edit Activity">
+                <TooltipWrapper tip={t('EDIT_ACTIVITY')}>
                   <DialogComponent
                     buttonIcon={Pencil}
-                    buttonText="Edit"
-                    dialogTitle="Edit Activity"
-                    dialogDescription="Are you sure you want to edit this activity?"
-                    confirmButtonText="Edit"
+                    buttonText={t('EDIT')}
+                    dialogTitle={t('EDIT_ACTIVITY')}
+                    dialogDescription={t('EDIT_ACTIVITY_CONFIRM')}
+                    confirmButtonText={t('EDIT')}
                     handleClick={() => router.push(redirectUpdatePath)}
                     buttonClassName="rounded-sm w-full"
                     confirmButtonClassName="rounded-sm w-full bg-primary"
@@ -130,7 +132,7 @@ export default function ActivitiesDetailView() {
               </Can>
             </div>
             <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
-              <TooltipWrapper tip="Update Activity Status">
+              <TooltipWrapper tip={t('UPDATE_ACTIVITY_STATUS')}>
                 <IconLabelBtn
                   Icon={RefreshCcw}
                   handleClick={() =>
@@ -140,7 +142,7 @@ export default function ActivitiesDetailView() {
                       }`,
                     )
                   }
-                  name="Update Status"
+                  name={t('UPDATE_STATUS')}
                   className="rounded-sm w-full "
                 />
               </TooltipWrapper>

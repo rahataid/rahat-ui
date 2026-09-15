@@ -1,6 +1,9 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Settings2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type {
   ExtendedTriggerLogic,
   ExtendedTriggerLogicGroup,
@@ -56,10 +59,12 @@ function GroupCard({
   index: number;
   triggers: TriggerItem[];
 }) {
+  const formatNum = useNumberFormat();
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="bg-gray-50 rounded-lg p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-700">Group {index + 1}</p>
+        <p className="text-sm font-medium text-gray-700">{t('GROUP')} {formatNum(index + 1)}</p>
         <Badge
           variant="outline"
           className={`text-xs ${
@@ -68,7 +73,7 @@ function GroupCard({
               : 'border-orange-400 text-orange-600'
           }`}
         >
-          {group.operator}
+          {t(group.operator)}
         </Badge>
       </div>
       <div className="flex flex-wrap gap-1.5">
@@ -90,6 +95,7 @@ export default function ExtendedTriggerLogicCard({
   triggers = [],
   onConfigure,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const hasConfig =
     extendedTriggerLogic &&
     extendedTriggerLogic.groups &&
@@ -99,9 +105,9 @@ export default function ExtendedTriggerLogicCard({
     <div className="mt-4 p-4 rounded-xl border shadow-md">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-base font-semibold">Extended Trigger Logic</p>
+          <p className="text-base font-semibold">{t('EXTENDED_TRIGGER_LOGIC')}</p>
           <p className="text-xs text-muted-foreground">
-            Additional grouped AND/OR conditions
+            {t('ADDITIONAL_GROUPED_AND_OR_CONDITIONS')}
           </p>
         </div>
         <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PHASE}>
@@ -112,7 +118,7 @@ export default function ExtendedTriggerLogicCard({
             onClick={onConfigure}
           >
             <Settings2 className="h-4 w-4" />
-            View / Configure
+            {t('VIEW_CONFIGURE')}
           </Button>
         </Can>
       </div>
@@ -132,7 +138,9 @@ export default function ExtendedTriggerLogicCard({
                           : 'bg-orange-100 text-orange-700'
                       }`}
                     >
-                      {extendedTriggerLogic.joinOperator}
+                      {translateValue(t, extendedTriggerLogic.joinOperator, {
+                        fallbackStyle: 'raw',
+                      })}
                     </Badge>
                   </div>
                 )}
@@ -142,7 +150,7 @@ export default function ExtendedTriggerLogicCard({
         </div>
       ) : (
         <div className="text-center py-6 text-sm text-gray-400">
-          No extended trigger logic configured
+          {t('NO_EXTENDED_TRIGGER_LOGIC_CONFIGURED')}
         </div>
       )}
     </div>

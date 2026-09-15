@@ -16,6 +16,7 @@ import AccessAndResilienceOverview from './accessPieAndBar';
 import SocialProtectionBenefits from './socialProtectionBenefits';
 import TokenStatsCard from './tokenStats.card';
 import ResilienceOverview from './resilienceOverview';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 
 type TabConfig = {
@@ -39,10 +40,11 @@ export default function DashboardTabs({
   projectId,
   projectType,
 }: Props) {
+  const t = useTranslations('AA_PROJECT');
   const commonTabs: TabConfig[] = [
     {
       value: 'beneficiary',
-      label: 'Beneficiary Demographics',
+      label: t('BENEFICIARY_DEMOGRAPHICS'),
       content: (
         <div className="space-y-4">
           <BeneficiaryDemographics
@@ -60,17 +62,17 @@ export default function DashboardTabs({
     },
     {
       value: 'tokens',
-      label: 'Token Stats',
+      label: t('TOKEN_STATS'),
       content: <TokenStatsCard tokenStats={tokenStats} />,
     },
     {
       value: 'access',
-      label: 'Access & Inclusion',
+      label: t('ACCESS_INCLUSION'),
       content: <DigitalAccessOverview stats={benefStats} />,
     },
     {
       value: 'communication',
-      label: 'Communication & Outreach',
+      label: t('COMMUNICATION_OUTREACH'),
       content: (
         <CommunicationAnalytics
           benefStats={benefStats}
@@ -84,12 +86,12 @@ export default function DashboardTabs({
   const projectTabs: Record<string, TabConfig> = {
     HEAT_WAVE: {
       value: 'heatwave',
-      label: 'Heatwave Survey Data',
+      label: t('HEATWAVE_SURVEY_DATA'),
       content: <HeatwaveSpecific benefStats={benefStats} />,
     },
     FLOOD: {
       value: 'flood',
-      label: 'Flood Survey Data',
+      label: t('FLOOD_SURVEY_DATA'),
       content: <AccessAndResilienceOverview data={benefStats} />,
     },
   };
@@ -101,7 +103,7 @@ export default function DashboardTabs({
   const allTabs: TabConfig[] = [
     {
       value: 'main',
-      label: 'Main',
+      label: t('MAIN'),
       content: (
         <div className="space-y-4">
           <ResilienceOverview

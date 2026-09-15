@@ -41,6 +41,8 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const data: Transaction[] = [];
 
@@ -152,6 +154,8 @@ export default function BeneficiaryDetailTableView({
   tableScrollAreaHeight,
   tableSpacing,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -230,7 +234,7 @@ export default function BeneficiaryDetailTableView({
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {t('NO_RESULTS')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -241,10 +245,10 @@ export default function BeneficiaryDetailTableView({
         <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
           <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {table.getFilteredRowModel().rows.length} {t('ROW_S_SELECTED')}
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-sm font-medium">Rows per page</div>
+            <div className="text-sm font-medium">{t('ROWS_PER_PAGE')}</div>
             <Select
               defaultValue="10"
               onValueChange={(value) => table.setPageSize(Number(value))}
@@ -254,19 +258,21 @@ export default function BeneficiaryDetailTableView({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="40">40</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="5">{formatNum(5)}</SelectItem>
+                  <SelectItem value="10">{formatNum(10)}</SelectItem>
+                  <SelectItem value="20">{formatNum(20)}</SelectItem>
+                  <SelectItem value="30">{formatNum(30)}</SelectItem>
+                  <SelectItem value="40">{formatNum(40)}</SelectItem>
+                  <SelectItem value="50">{formatNum(50)}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
           <div>
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            {t('PAGE_CURRENT_OF_TOTAL', {
+                current: formatNum(table.getState().pagination.pageIndex + 1),
+                total: formatNum(table.getPageCount()),
+              })}
           </div>
           <div className="space-x-4">
             <Button
@@ -275,7 +281,7 @@ export default function BeneficiaryDetailTableView({
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              Previous
+              {t('PREVIOUS')}
             </Button>
             <Button
               variant="outline"
@@ -283,7 +289,7 @@ export default function BeneficiaryDetailTableView({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Next
+              {t('NEXT')}
             </Button>
           </div>
         </div>

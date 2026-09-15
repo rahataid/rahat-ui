@@ -2,18 +2,24 @@ import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { InKindLog } from '../types';
 import { ColumnDef } from '@tanstack/react-table';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { UUID } from 'crypto';
 
 export const useInkindLogsColumn = () => {
   const params = useParams();
   const projectId = params.id as UUID;
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -29,7 +35,7 @@ export const useInkindLogsColumn = () => {
   const columns: ColumnDef<InKindLog>[] = [
     {
       accessorKey: 'groupName',
-      header: 'Group Name',
+      header: tg('GROUP_NAME'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.original.groupInkind.group.name}
@@ -40,7 +46,7 @@ export const useInkindLogsColumn = () => {
 
     {
       accessorKey: 'beneficiaryWallet',
-      header: 'Beneficiary Wallet Address',
+      header: t('BENEFICIARY_WALLET_ADDRESS'),
       cell: ({ row }) => (
         <div className="flex gap-2 items-center">
           <TruncatedCell text={row.original.beneficiaryWallet} maxLength={10} />
@@ -53,7 +59,7 @@ export const useInkindLogsColumn = () => {
     },
     {
       accessorKey: 'inKindName',
-      header: 'In-kind Name',
+      header: t('IN_KIND_NAME'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.original.groupInkind.inkind.name}
@@ -63,11 +69,12 @@ export const useInkindLogsColumn = () => {
     },
     {
       accessorKey: 'quantity',
-      header: 'In-kind Quantity',
+      header: t('IN_KIND_QUANTITY'),
+      cell: ({ row }) => <div>{formatNum(row.original.quantity)}</div>,
     },
     {
       accessorKey: 'txHash',
-      header: 'TxHash',
+      header: t('TX_HASH'),
       cell: ({ row }) => {
         const txHash = row.original.txHash;
         const txnUrl = getTxUrl(txHash);
@@ -84,7 +91,7 @@ export const useInkindLogsColumn = () => {
                 <TruncatedCell text={txHash} maxLength={10} />
               </a>
             ) : (
-              <TruncatedCell text="N/A" maxLength={10} />
+              <TruncatedCell text={tg('N_A')} maxLength={10} />
             )}
             <CopyTooltip
               value={row.getValue('txHash')}
@@ -96,12 +103,12 @@ export const useInkindLogsColumn = () => {
     },
     {
       accessorKey: 'redeemedAt',
-      header: 'Timestamp',
+      header: tg('TIMESTAMP'),
       cell: ({ row }) => (
         <TruncatedCell
           text={
             row?.original?.redeemedAt
-              ? dateFormat(row?.original?.redeemedAt)
+              ? formatDate(row?.original?.redeemedAt)
               : ''
           }
           maxLength={10}

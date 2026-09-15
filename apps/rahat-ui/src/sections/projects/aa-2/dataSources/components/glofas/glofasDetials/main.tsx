@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
+
 import GlofasInfoCard from '../glofas.info.card';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -11,6 +13,7 @@ import GlofasHydrographChart from '../glofas.hydrograph.chart';
 import { Back, Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const GlofasDetails = () => {
   const params = useParams();
@@ -32,6 +35,20 @@ const GlofasDetails = () => {
     perPage: 9999,
   });
 
+  const t = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
+
+  // Backend sends this as an opaque "<number> years" string via the route
+  // param (e.g. "5 years") rather than a numeric value, so the unit word is
+  // localized by pattern-matching rather than via a structured value — same
+  // approach as glofas.info.card.tsx's formatReturnPeriod.
+  const formatReturnPeriod = (value: string) => {
+    const match = value.match(/^(\d+)\s*years?$/i);
+    if (!match) return value;
+    return `${formatDigits(match[1])} ${t('YEARS')}`;
+  };
+  const returnPeriodDisplay = formatReturnPeriod(returnPeriod);
+
   if (error) {
     return (
       <div className="p-4">
@@ -48,8 +65,8 @@ const GlofasDetails = () => {
     <div className="p-4">
       <Back />
       <Heading
-        title={`GLOFAS ${returnPeriod}`}
-        description="Details view of the selected station"
+        title={`GLOFAS ${returnPeriodDisplay}`}
+        description={t('DETAILS_VIEW_OF_THE_SELECTED_STATION')}
       />
 
       <ScrollArea className="h-[calc(100vh-200px)]">
@@ -58,7 +75,7 @@ const GlofasDetails = () => {
         <GlofasPeriodDataTable
           headerData={data?.info?.returnPeriodTable?.returnPeriodHeaders}
           bodyData={data?.info?.returnPeriodTable?.returnPeriodData}
-          title={`ECMWF-ENS > ${returnPeriod} RP`}
+          title={`ECMWF-ENS > ${returnPeriodDisplay} RP`}
         />
 
         <GlofasHydrographChart series={data?.info?.dischargeSeries} />

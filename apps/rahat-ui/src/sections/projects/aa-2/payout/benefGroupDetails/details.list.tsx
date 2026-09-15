@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import {
   useGetPayoutLogs,
   usePagination,
@@ -46,7 +47,9 @@ import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLo
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   ACTIONS,
   SUBJECTS,
@@ -56,6 +59,11 @@ import { Can } from 'apps/rahat-ui/src/components/can';
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const payoutId = params.detailID as UUID;
@@ -101,7 +109,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       (row: Record<string, unknown>) => {
         return {
           ...row,
-          'Updated At': dateFormat(row['Updated At'] as string),
+          'Updated At': formatDate(row['Updated At'] as string),
         };
       },
     );
@@ -158,34 +166,41 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const payoutStats = [
     {
-      label: 'Actual Budget',
-      smallNumber: `Rs. ${
-        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
-      }`,
+      label: tv('ACTUAL_BUDGET'),
+      smallNumber: `${t('RS')} ${formatNum(
+        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE,
+      )}`,
       infoIcon: true,
-      infoToolTip: `Total allocated budget for this beneficiary ${"group's"} payout`,
+      infoToolTip: tv('ACTUAL_BUDGET_TOOLTIP'),
     },
     {
-      label: 'Amount Disbursed',
-      smallNumber: `Rs. ${payout?.totalSuccessAmount}`,
+      label: tv('AMOUNT_DISBURSED'),
+      smallNumber: `${t('RS')} ${formatNum(payout?.totalSuccessAmount ?? 0)}`,
       infoIcon: true,
-      infoToolTip: 'Total amount disbursed in this payout',
+      infoToolTip: tv('AMOUNT_DISBURSED_TOOLTIP'),
     },
     {
-      label: 'Payout Type',
+      label: tv('PAYOUT_TYPE'),
       infoIcon: true,
-      infoToolTip: 'Type of Payout',
-      smallNumber: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+      infoToolTip: tv('PAYOUT_TYPE_TOOLTIP'),
+      smallNumber: translateValue(
+        tg,
+        payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+        { fallbackStyle: 'raw' },
+      ),
       badge: true,
     },
     {
-      label: 'Payout Method',
+      label: tv('PAYOUT_METHOD'),
       infoIcon: true,
-      infoToolTip: 'Payment Method',
-      smallNumber:
+      infoToolTip: tv('PAYOUT_METHOD_TOOLTIP'),
+      smallNumber: translateValue(
+        tg,
         payout?.type === 'VENDOR'
           ? payout?.mode
           : payout?.extras?.paymentProviderName,
+        { fallbackStyle: 'raw' },
+      ),
       badge: true,
     },
   ];
@@ -214,11 +229,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           <div>
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
-              description="List of all the payout transaction logs of selected group"
-              status={payout?.status
-                .toLowerCase()
-                .replace(/_/g, ' ')
-                .replace(/^./, (char: string) => char.toUpperCase())}
+              description={tv('LIST_OF_ALL_THE_PAYOUT_TRANSACTION')}
+              status={
+                translateValue(tg, payout?.status, { fallbackStyle: 'raw' })
+                      ?.toLowerCase()
+                      .replace(/_/g, ' ')
+                      .replace(/^./, (char: string) => char.toUpperCase())
+              }
               badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>
@@ -243,7 +260,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                         triggerForPayoutFailed.isPending ? 'animate-spin' : ''
                       } w-4 h-4`}
                     />
-                    Retry Failed Requests
+                    {tv('RETRY_FAILED_REQUESTS')}
                   </Button>
                 </Can>
               )}
@@ -254,7 +271,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   payout?.extras?.paymentProviderName === 'Manual') && (
                   <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
                     <TooltipWrapper
-                      tip="Payout cannot be verified because funds have not been disbursed to the beneficiary group."
+                      tip={tv('PAYOUT_CANNOT_BE_VERIFIED')}
                       disable={payout?.beneficiaryGroupToken?.isDisbursed}
                     >
                       <DropdownMenu>
@@ -270,7 +287,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                           >
                             <span className="flex items-center gap-2">
                               <CloudUpload className="w-4 h-4" />
-                              Verify Manual Payout
+                              {tv('VERIFY_MANUAL_PAYOUT')}
                             </span>
                             <ChevronDown className="w-4 h-4" />
                           </Button>
@@ -285,7 +302,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                             }
                           >
                             <Landmark className="w-4 h-4" />
-                            Bank Account
+                            {tv('BANK_ACCOUNT')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="gap-2"
@@ -296,7 +313,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                             }
                           >
                             <Smartphone className="w-4 h-4" />
-                            Phone Number
+                            {tg('PHONE_NUMBER')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -311,7 +328,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 variant={'outline'}
               >
                 <CloudDownload className={`w-4 h-4`} />
-                Download Payout Logs
+                {tv('DOWNLOAD_PAYOUT_LOGS')}
               </Button>
             </div>
           }
@@ -338,9 +355,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
-              title="Vendor"
+              title={tv('VENDOR')}
               infoIcon={true}
-              infoTooltip="This shows the vendor name"
+              infoTooltip={tv('VENDOR_TOOLTIP')}
               smallNumber={payout?.extras?.vendorName}
               className="rounded-sm h-[80px] pt-10 pb-8"
               badge
@@ -354,43 +371,40 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           } gap-4 pt-2`}
         >
           <DataCard
-            title="Total no. of Beneficiaries"
-            smallNumber={
-              payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
-                ?.beneficiaries ?? 0
-            }
+            title={tv('TOTAL_NO_OF_BENEFICIARIES')}
+            smallNumber={formatNum(payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of beneficiaries in the group"
+            infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}
           />
           <DataCard
-            title="Successful Transactions"
-            smallNumber={payout?.totalSuccessRequests}
+            title={tv('SUCCESSFUL_TRANSACTIONS')}
+            smallNumber={formatNum(payout?.totalSuccessRequests ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of Successful Transactions"
+            infoTooltip={tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
-            title="Failed Transactions"
-            smallNumber={payout?.totalFailedPayoutRequests}
+            title={tv('FAILED_TRANSACTIONS')}
+            smallNumber={formatNum(payout?.totalFailedPayoutRequests ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of Failed Transactions"
+            infoTooltip={tv('FAILED_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
-            title="Payout Gap"
-            smallNumber={payout?.payoutGap}
+            title={tv('PAYOUT_GAP')}
+            smallNumber={formatNum(payout?.payoutGap ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Gap between Activation phase triggered and payout disbursed"
+            infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
           />
           {payout?.extras?.group_gap && (
             <DataCard
-              title="Group Gap"
-              smallNumber={payout?.extras?.group_gap}
+              title={tv('GROUP_GAP')}
+              smallNumber={formatNum(payout?.extras?.group_gap ?? 0)}
               className="rounded-sm h-[80px] pt-10 pb-8 "
               infoIcon={true}
-              infoTooltip="Gap between group creation and payout disbursed"
+              infoTooltip={tv('GROUP_GAP_TOOLTIP')}
             />
           )}
         </div>
@@ -400,7 +414,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         <div className="flex gap-2">
           <SearchInput
             className="w-full flex-[4]"
-            name="beneficiary wallet address"
+            name={tv('SEARCH_BENEFICIARY_WALLET')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
@@ -408,13 +422,19 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           {payout?.type === 'FSP' &&
             payout?.extras?.paymentProviderType !== 'manual_bank_transfer' && (
               <SelectComponent
-                name="Transaction Type"
+                name={tv('TRANSACTION_TYPE')}
                 options={[
                   'ALL',
                   'TOKEN_TRANSFER',
                   'FIAT_TRANSFER',
                   'VENDOR_REIMBURSEMENT',
                 ]}
+                labels={{
+                  ALL: tg('ALL'),
+                  TOKEN_TRANSFER: tg('TOKEN_TRANSFER'),
+                  FIAT_TRANSFER: tg('FIAT_TRANSFER'),
+                  VENDOR_REIMBURSEMENT: tg('VENDOR_REIMBURSEMENT'),
+                }}
                 onChange={(value) =>
                   handleFilterChange({
                     target: { name: 'transactionType', value },
@@ -426,13 +446,25 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             )}
 
           <SelectComponent
-            name="Status"
+            name={tg('STATUS')}
             options={
               getPayoutTransactionStatusOptions(
                 payout?.type,
                 payout?.extras?.paymentProviderType,
               ) as string[]
             }
+            labels={{
+              ALL: tg('ALL'),
+              PENDING: tg('PENDING'),
+              COMPLETED: tg('COMPLETED'),
+              FAILED: tg('FAILED'),
+              FIAT_TRANSACTION_INITIATED: tg('FIAT_TRANSACTION_INITIATED'),
+              FIAT_TRANSACTION_COMPLETED: tg('FIAT_TRANSACTION_COMPLETED'),
+              FIAT_TRANSACTION_FAILED: tg('FIAT_TRANSACTION_FAILED'),
+              TOKEN_TRANSACTION_INITIATED: tg('TOKEN_TRANSACTION_INITIATED'),
+              TOKEN_TRANSACTION_COMPLETED: tg('TOKEN_TRANSACTION_COMPLETED'),
+              TOKEN_TRANSACTION_FAILED: tg('TOKEN_TRANSACTION_FAILED'),
+            }}
             onChange={(value) =>
               handleFilterChange({
                 target: { name: 'transactionStatus', value },

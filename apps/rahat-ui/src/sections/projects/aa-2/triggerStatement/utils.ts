@@ -1,3 +1,5 @@
+import { getSourceLabel } from './trigger.statement.schema';
+
 //*** Types ***//
 export interface TriggerStatement {
   value: number;
@@ -56,8 +58,23 @@ export const GLOFAS_LEGACY_MAPPING: Record<string, string> = {
 export const toLabel = (str: string): string =>
   str?.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-// Format the main label
-export const formatMainLabel = (key: string, type: string) => {
+// Format the main label. When a translator is supplied, resolves the
+// station+variable label via SOURCE_MAPPING -> SOURCE_CONFIG so it renders
+// fully translated (e.g. "डीएचएम पानीको सतह"); otherwise falls back to the
+// raw English "KEY - Variable (unit)" construction.
+export const formatMainLabel = (
+  key: string,
+  type: string,
+  t?: (k: string) => string,
+) => {
+  if (t) {
+    const sourceConfigKey = (SOURCE_MAPPING as Record<string, string>)[
+      key.toLowerCase()
+    ];
+    const translated = getSourceLabel(sourceConfigKey, t);
+    if (translated) return translated;
+  }
+
   const rawLabel = `${key.replace(/[:]/, ' ').toUpperCase()} - ${toLabel(
     type,
   )}`;
@@ -73,9 +90,12 @@ export const formatMainLabel = (key: string, type: string) => {
 
 //*** Builders ***//
 // Generate source options
-export const buildSourceOptions = (SOURCES: SourcesRecord): Option[] => {
+export const buildSourceOptions = (
+  SOURCES: SourcesRecord,
+  t?: (k: string) => string,
+): Option[] => {
   return Object.entries(SOURCES)?.map(([key, value]) => ({
-    label: formatMainLabel(key, value.type),
+    label: formatMainLabel(key, value.type, t),
     value: key,
   }));
 };

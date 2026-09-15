@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -5,7 +6,9 @@ import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 interface PayoutTransactionLogRow {
@@ -21,6 +24,11 @@ interface PayoutTransactionLogRow {
 }
 
 export default function usePayoutTransactionLogTableColumn() {
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id: projectID } = useParams();
   const router = useRouter();
 
@@ -33,17 +41,17 @@ export default function usePayoutTransactionLogTableColumn() {
   const columns: ColumnDef<PayoutTransactionLogRow>[] = [
     {
       accessorKey: 'groupName',
-      header: 'Group Name',
+      header: t('GROUP'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('groupName')} maxLength={15} />
       ),
     },
     {
       accessorKey: 'totalBeneficiaries',
-      header: 'Total Beneficiaries',
+      header: tg('TOTAL_BENEFICIARIES'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.getValue('totalBeneficiaries')}
+          text={formatNum(row.getValue('totalBeneficiaries'))}
           maxLength={15}
         />
       ),
@@ -51,43 +59,45 @@ export default function usePayoutTransactionLogTableColumn() {
 
     {
       accessorKey: 'totalTokenAssigned',
-      header: 'Total Amount Disbursed',
+      header: tv('AMOUNT_DISBURSED'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={`Rs. ${row.original.totalSuccessAmount}`}
+          text={`${t('RS')} ${formatNum(row.original.totalSuccessAmount)}`}
           maxLength={10}
         />
       ),
     },
     {
       accessorKey: 'amountperBenef',
-      header: 'Amount per beneficiary',
+      header: tv('AMOUNT_PER_BENEFICIARY'),
       cell: ({ row }) => {
         const amountPerBeneficiary =
           (row.original.totalTokenAssigned * 1) /
           row.original.totalBeneficiaries;
         return (
-          <TruncatedCell text={`Rs. ${amountPerBeneficiary}`} maxLength={10} />
+          <TruncatedCell text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`} maxLength={10} />
         );
       },
     },
     {
       accessorKey: 'payoutType',
-      header: 'Payout Type',
+      header: tv('PAYOUT_TYPE'),
       cell: ({ row }) => (
         <TruncatedCell
-          text={
+          text={translateValue(
+            tg,
             row.getValue('payoutType') === 'VENDOR'
               ? 'CVA'
-              : row.getValue('payoutType')
-          }
+              : (row.getValue('payoutType') as string),
+            { fallbackStyle: 'raw' },
+          )}
           maxLength={10}
         />
       ),
     },
     {
       accessorKey: 'payoutMode',
-      header: 'Payout Method',
+      header: tv('PAYOUT_METHOD'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('payoutMode')}
@@ -98,7 +108,7 @@ export default function usePayoutTransactionLogTableColumn() {
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tg('STATUS'),
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (
@@ -107,22 +117,24 @@ export default function usePayoutTransactionLogTableColumn() {
               status,
             )}`}
           >
-            {status
-              .toLowerCase()
-              .replace(/_/g, ' ')
-              .replace(/^./, (char) => char.toUpperCase())}
+            {translateValue(tg, status, {
+              fallback: status
+                ?.toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char: string) => char.toUpperCase()),
+            })}
           </Badge>
         );
       },
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
+      header: tg('TIMESTAMP'),
       cell: ({ row }) => {
         const time = row.getValue('timeStamp') as string;
         return (
           <div className="flex gap-1 text-[10px]">
-            <TruncatedCell text={dateFormat(time)} maxLength={15} />
+            <TruncatedCell text={formatDate(time)} maxLength={15} />
           </div>
         );
       },
@@ -130,14 +142,14 @@ export default function usePayoutTransactionLogTableColumn() {
 
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />

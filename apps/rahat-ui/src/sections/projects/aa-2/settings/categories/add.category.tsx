@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,16 +23,17 @@ type IProps = {
   onClose: () => void;
 };
 
-const FormSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required' }),
-});
-
-type FormValues = z.infer<typeof FormSchema>;
-
 export default function AddCategoryDialog({ open, onClose }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const projectUUID = id as UUID;
   const { mutateAsync: addCategory, isPending } = useAddActivityCategory();
+
+  const FormSchema = z.object({
+    name: z.string().min(1, { message: t('NAME_IS_REQUIRED') }),
+  });
+
+  type FormValues = z.infer<typeof FormSchema>;
 
   const {
     register,
@@ -56,14 +58,14 @@ export default function AddCategoryDialog({ open, onClose }: IProps) {
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Category</DialogTitle>
+          <DialogTitle>{t('ADD_CATEGORY')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t('NAME')}</Label>
             <Input
               id="name"
-              placeholder="Category name"
+              placeholder={t('CATEGORY_NAME')}
               {...register('name')}
             />
             {errors.name && (
@@ -72,10 +74,10 @@ export default function AddCategoryDialog({ open, onClose }: IProps) {
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleClose}>
-              Cancel
+              {t('CANCEL')}
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? 'Adding...' : 'Submit'}
+              {isPending ? t('ADDING') : t('SUBMIT')}
             </Button>
           </DialogFooter>
         </form>

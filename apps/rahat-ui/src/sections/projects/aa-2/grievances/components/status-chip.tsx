@@ -1,5 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { cn } from './utils';
+import { useTranslations } from 'next-intl';
 import {
   AlertCircle,
   Clock,
@@ -41,29 +42,32 @@ const statusIcons = {
   default: AlertCircle,
 } as const;
 
-const statusLabels = {
-  [GrievanceStatus.NEW]: 'New',
-  [GrievanceStatus.IN_PROGRESS]: 'In Progress',
-  [GrievanceStatus.RESOLVED]: 'Resolved',
-  [GrievanceStatus.CLOSED]: 'Closed',
-  [GrievanceStatus.UNDER_REVIEW]: 'Under Review',
-  default: 'N/A',
-} as const;
+const statusLabels: Record<string, string> = {
+  [GrievanceStatus.NEW]: 'NEW',
+  [GrievanceStatus.IN_PROGRESS]: 'IN_PROGRESS',
+  [GrievanceStatus.RESOLVED]: 'RESOLVED',
+  [GrievanceStatus.CLOSED]: 'CLOSED',
+  [GrievanceStatus.UNDER_REVIEW]: 'UNDER_REVIEW',
+  default: 'N_A',
+};
 
 export function StatusChip({
   status,
   className,
   showIcon = true,
 }: StatusChipProps) {
+  const t = useTranslations('AA_PROJECT');
+
   const colorClass =
     status && status in statusColors
       ? statusColors[status as keyof typeof statusColors]
       : statusColors.default;
 
-  const displayText =
+  const labelKey =
     status && status in statusLabels
       ? statusLabels[status as keyof typeof statusLabels]
       : statusLabels.default;
+  const displayText = t(labelKey);
 
   const IconComponent =
     status && status in statusIcons

@@ -9,6 +9,7 @@ import { getFieldDefinitionClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
 import Swal from 'sweetalert2';
+import { getTranslate } from '../translate';
 
 export const useFieldDefinitionsList = (
   payload: Pagination & { isTargeting?: boolean },
@@ -53,7 +54,8 @@ export const useFieldDefinitionsCreate = () => {
       mutationKey: [TAGS.CREATE_COMMUNITY_FIELD_DEFINITIONS],
       mutationFn: fieldDefClient.create,
       onSuccess: () => {
-        Swal.fire('Field Definition Created Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('FIELD_DEFINITION_CREATED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS,
@@ -64,9 +66,10 @@ export const useFieldDefinitionsCreate = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -85,15 +88,17 @@ export const useFieldDefinitionsUpdate = () => {
       mutationKey: [TAGS.UPDATE_COMMUNITY_FIELD_DEFINITIONS, 'id'],
       mutationFn: fieldDefClient.update,
       onSuccess: () => {
-        Swal.fire('Field Definition Updated Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('FIELD_DEFINITION_UPDATED_SUCCESSFULLY'), '', 'success');
         qc.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS],
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -111,8 +116,9 @@ export const useFieldDefinitionsStatusUpdate = () => {
       mutationKey: [TAGS.UPDATE_COMMUNITY_FIELD_DEFINITIONS_STATUS, 'id'],
       mutationFn: fieldDefClient.toggleStatus,
       onSuccess: () => {
+        const t = getTranslate();
         Swal.fire(
-          'Field Definition Status Updated Successfully',
+          t('FIELD_DEFINITION_STATUS_UPDATED_SUCCESSFULLY'),
           '',
           'success',
         );
@@ -126,9 +132,10 @@ export const useFieldDefinitionsStatusUpdate = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -178,7 +185,8 @@ export const useAddBulkFile = () => {
       mutationKey: [TAGS.ADD_BULK_FIELD_DEFINITIONS],
       mutationFn: fieldDefClient.addBulk,
       onSuccess: () => {
-        Swal.fire('Field Definition Imported Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('FIELD_DEFINITION_IMPORTED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS,
@@ -189,9 +197,10 @@ export const useAddBulkFile = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error?.response?.data?.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error?.response?.data?.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },

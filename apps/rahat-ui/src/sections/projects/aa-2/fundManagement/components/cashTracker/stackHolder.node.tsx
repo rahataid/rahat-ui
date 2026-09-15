@@ -1,4 +1,7 @@
 import { AlertCircle, Check, Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 function StakeholderNode({
   name,
@@ -19,17 +22,9 @@ function StakeholderNode({
   index?: number;
   isFirst?: boolean;
 }) {
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   return (
     <div className="flex flex-col items-center">
@@ -62,23 +57,23 @@ function StakeholderNode({
           {isFirst ? (
             <div className="text-xs text-gray-600">
               <p>
-                Project Budget:{' '}
+                {t('PROJECT_BUDGET_LABEL')}{' '}
                 <span className="font-medium text-gray-900">
-                  Rs. {Number(balance + sent).toFixed(2)}
+                  {t('RS')} {formatNum(Number(balance + sent))}
                 </span>
               </p>
               <p>
-                Remaining Balance:{' '}
-                <span className="font-medium text-gray-900">Rs. {balance}</span>
+{t('REMAINING_BALANCE_LABEL')}{' '}
+                  <span className="font-medium text-gray-900">{t('RS')} {formatNum(balance)}</span>
               </p>
             </div>
           ) : name === 'Beneficiary' ? (
             <>
               <div className="text-xs text-gray-600">
                 <p>
-                  Claimed:{' '}
+                  {t('CLAIMED')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {received?.toLocaleString()}
+                    {t('RS')} {formatNum(received ?? 0)}
                   </span>
                 </p>
               </div>
@@ -87,15 +82,15 @@ function StakeholderNode({
             <>
               <div className="text-xs text-gray-600">
                 <p>
-                  Received Balance:{' '}
+                  {t('RECEIVED_BALANCE')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {received?.toLocaleString()}
+                    {t('RS')} {formatNum(received ?? 0)}
                   </span>
                 </p>
                 <p>
-                  Remaining Balance:{' '}
+{t('REMAINING_BALANCE_LABEL')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {balance?.toLocaleString()}
+                    {t('RS')} {formatNum(balance ?? 0)}
                   </span>
                 </p>
               </div>
@@ -106,7 +101,7 @@ function StakeholderNode({
         {/* Timestamp */}
         {(sent !== 0 || balance !== 0 || received !== 0) && (
           <div className="mt-2 text-xs text-gray-500">
-            {formatDate(new Date(date))}
+            {formatDate(date, 'dd MMMM, yyyy')}
           </div>
         )}
       </div>

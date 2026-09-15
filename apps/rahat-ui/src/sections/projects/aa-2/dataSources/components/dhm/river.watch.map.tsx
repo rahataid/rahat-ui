@@ -1,4 +1,6 @@
 import React, { memo } from 'react';
+import { useTranslations } from 'next-intl';
+
 import Map, { MapRef, Marker, NavigationControl, Popup } from 'react-map-gl';
 import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -19,6 +21,7 @@ const Mark = styled.button`
 `;
 
 function RiverWatchMap({ coordinates }: any) {
+  const t = useTranslations('AA_PROJECT');
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState(null) as any;
 
@@ -34,16 +37,16 @@ function RiverWatchMap({ coordinates }: any) {
   return (
     <div className="p-4 rounded-sm shadow border">
       <Heading
-        title="Map"
+        title={t('MAP')}
         titleStyle="text-lg/7 font-semibold"
-        description="River Watch Map"
+        description={t('RIVER_WATCH_MAP')}
       />
       <StyledMapWrapper className="relative overflow-hidden rounded-md h-[400px]">
         {/* Map Indicators  */}
         <div className="absolute top-2 right-2 bg-white p-4 rounded shadow-lg z-10 text-xs">
           <div className="flex space-x-2 items-center">
             <MapPin color="red" size={18} fill="red" fillOpacity={0.3} />
-            <p>River</p>
+            <p>{t('RIVER')}</p>
           </div>
         </div>
 

@@ -19,6 +19,7 @@ import {
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export type IconDialogProps = {
   handleClick?: () => void;
@@ -47,6 +48,7 @@ export function IconDialogComponent({
   tip,
 }: IconDialogProps) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations('GLOBAL');
 
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
@@ -100,7 +102,7 @@ export function IconDialogComponent({
             className="w-full rounded-sm h-[clamp(26px,2.6vw,36px)] px-[clamp(10px,1.2vw,14px)] text-[clamp(11px,0.9vw,13px)]"
             variant="outline"
           >
-            Cancel
+            {t('CANCEL')}
           </Button>
           <Button
             type="submit"

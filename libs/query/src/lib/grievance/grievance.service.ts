@@ -2,10 +2,12 @@
 import { useRSQuery } from '@rumsan/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useProjectAction } from '../projects';
 import { GetGrievanceList, GrievanceFormData } from './types/grievance';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
+import { resolveBeneficiaryErrorMessage } from '../../utils/i18n/backend-error';
 
 const MS_ACTIONS = {
   GRIEVANCES: {
@@ -97,6 +99,8 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
 };
 
 export const useGrievanceAdd = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -139,15 +143,21 @@ export const useGrievanceAdd = () => {
         });
         console.log('Download cache invalidated and refetched after add');
         toast.fire({
-          title: 'Grievance added successfully.',
+          title: t('GRIEVANCE_ADDED_SUCCESSFULLY'),
           icon: 'success',
         });
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBeneficiaryErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
         toast.fire({
-          title: 'Error while adding grievance.',
+          title: t('ERROR_WHILE_ADDING_GRIEVANCE'),
           icon: 'error',
           text: errorMessage,
         });
@@ -189,6 +199,8 @@ export const useGrievanceDetails = ({
 };
 
 export const useGrievanceEdit = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -230,15 +242,21 @@ export const useGrievanceEdit = () => {
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
         });
         toast.fire({
-          title: 'Grievance updated successfully.',
+          title: t('GRIEVANCE_UPDATED_SUCCESSFULLY'),
           icon: 'success',
         });
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBeneficiaryErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
         toast.fire({
-          title: 'Error while updating grievance.',
+          title: t('ERROR_WHILE_UPDATING_GRIEVANCE'),
           icon: 'error',
           text: errorMessage,
         });
@@ -251,6 +269,8 @@ export const useGrievanceEdit = () => {
 };
 
 export const useGrievanceEditStatus = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -292,15 +312,21 @@ export const useGrievanceEditStatus = () => {
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
         });
         toast.fire({
-          title: 'Grievance status updated successfully.',
+          title: t('GRIEVANCE_STATUS_UPDATED_SUCCESSFULLY'),
           icon: 'success',
         });
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBeneficiaryErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
         toast.fire({
-          title: 'Error while updating grievance status.',
+          title: t('ERROR_WHILE_UPDATING_GRIEVANCE_STATUS'),
           icon: 'error',
           text: errorMessage,
         });
@@ -374,6 +400,7 @@ export const useGrievanceListForDownload = (projectUUID: UUID) => {
 };
 
 export const useGetOverviewStats = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -410,9 +437,9 @@ export const useGetOverviewStats = (projectUUID: UUID) => {
         });
       } catch (error: any) {
         console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
+        const errorMessage = error?.response?.data?.message || t('ERROR');
         toast.fire({
-          title: 'Error while fetching overview stats.',
+          title: t('ERROR_WHILE_FETCHING_OVERVIEW_STATS'),
           icon: 'error',
           text: errorMessage,
         });

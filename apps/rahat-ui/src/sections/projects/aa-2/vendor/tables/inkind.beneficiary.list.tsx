@@ -15,6 +15,8 @@ import { UUID } from 'crypto';
 import { useInkindLogsColumn } from '../columns/useInkindlogsColumn';
 import { BeneficiaryType, InKindLog } from '../types';
 import { PaginatedResult } from '@rumsan/sdk/types';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const INKIND_TYPE_MAP: Record<BeneficiaryType, string> = {
   predefined: 'PRE_DEFINED',
@@ -22,6 +24,8 @@ const INKIND_TYPE_MAP: Record<BeneficiaryType, string> = {
 };
 
 export default function InKindBeneficiaryList() {
+  const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
 
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
@@ -87,12 +91,12 @@ export default function InKindBeneficiaryList() {
 
   const actionColumn = {
     id: 'action',
-    header: 'Action',
+    header: tGlobal('ACTION'),
     cell: ({ row }: { row: Row<InKindLog> }) => (
       <div className="flex items-center gap-2">
         <TooltipComponent
           Icon={Eye}
-          tip="View Details"
+          tip={tGlobal('VIEW_DETAILS')}
           iconStyle="hover:text-primary cursor-pointer"
           handleOnClick={() => {
             router.push(
@@ -129,13 +133,13 @@ export default function InKindBeneficiaryList() {
               : 'text-muted-foreground'
           }`}
         >
-          Pre-defined Beneficiary List
+          {tGlobal('PRE_DEFINED_BENEFICIARY_LIST')}
           <Badge
             className={`h-5 min-w-[20px] justify-center text-white px-2 py-0 ${
               activeTab === 'predefined' ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {predefinedData?.meta?.total ?? 0}
+            {formatNum(predefinedData?.meta?.total ?? 0)}
           </Badge>
         </button>
         <button
@@ -146,30 +150,26 @@ export default function InKindBeneficiaryList() {
               : 'text-muted-foreground'
           }`}
         >
-          Walk-in Beneficiary List
+          {tGlobal('WALK_IN_BENEFICIARY_LIST')}
           <Badge
             className={`h-5 min-w-[20px] justify-center text-white px-2 py-0 ${
               activeTab === 'walkin' ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {walkinData?.meta?.total ?? 0}
+            {formatNum(walkinData?.meta?.total ?? 0)}
           </Badge>
         </button>
       </div>
       <Heading
-        title={`${
-          activeTab === 'predefined' ? 'Pre-defined' : 'Walk-in'
-        } Beneficiary List`}
+        title={tGlobal(activeTab === 'predefined' ? 'PRE_DEFINED_BENEFICIARY_LIST' : 'WALK_IN_BENEFICIARY_LIST')}
         titleStyle="text-lg"
-        description={`List of all the ${
-          activeTab === 'predefined' ? 'Pre-defined' : 'Walk-in'
-        } beneficiaries`}
+        description={tGlobal(activeTab === 'predefined' ? 'PRE_DEFINED_BENEFICIARIES_DESC' : 'WALK_IN_BENEFICIARIES_DESC')}
       />
       <SearchInput
-        name="walletAddress"
+        name={tGlobal('WALLET_ADDRESS')}
         value={filters?.walletAddress || ''}
         onSearch={(e) => handleSearch(e, 'walletAddress')}
-        placeholder="Search wallet"
+        
       />
       <DemoTable
         table={table}

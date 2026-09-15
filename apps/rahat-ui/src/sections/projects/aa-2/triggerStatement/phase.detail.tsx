@@ -21,9 +21,10 @@ import {
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { Can } from 'apps/rahat-ui/src/components/can';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 import {
   ACTIONS,
   SUBJECTS,
@@ -31,6 +32,8 @@ import {
 import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 
 export default function PhaseDetail() {
+  const formatDate = useDateFormat();
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -78,7 +81,7 @@ export default function PhaseDetail() {
         <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
           <AlertCircleIcon size={70} />
           <p className="text-xl">
-            Data not available at the moment. Please try again later.
+            {t('PHASE_DETAILS_NOT_AVAILABLE')}
           </p>
         </div>
       </div>
@@ -90,13 +93,13 @@ export default function PhaseDetail() {
       <Back path={`/projects/aa/${projectId}/trigger-statements`} />
       <div className="flex justify-between items-center">
         <Heading
-          title={phase?.name || 'N/A'}
-          description={`Detailed view of the ${phase?.name?.toLowerCase()} phase`}
+          title={phase?.name || t('N_A')}
+          description={phase?.name ? t('DETAILED_VIEW_OF_PHASE', { phase: phase?.name?.toLowerCase() }) : ''}
         />
         <div className="flex space-x-2">
           <Can action={ACTIONS.CREATE} subject={SUBJECTS.TRIGGER}>
             <TooltipWrapper
-              tip="Cannot add triggers for an active phase"
+              tip={t('CANNOT_ADD_TRIGGERS_ACTIVE_PHASE')}
               disable={!phase?.isActive}
             >
               <IconLabelBtn
@@ -104,7 +107,7 @@ export default function PhaseDetail() {
                 className="text-primary border-primary"
                 Icon={Plus}
                 disabled={phase?.isActive}
-                name="Add Trigger"
+                name={t('ADD_TRIGGER')}
                 handleClick={handleAddTriggerClick}
               />
             </TooltipWrapper>
@@ -119,20 +122,20 @@ export default function PhaseDetail() {
                 <TooltipWrapper
                   tip={`${
                     !phase?.isActive
-                      ? 'Cannot revert an inactive phase'
+                      ? t('CANNOT_REVERT_INACTIVE_PHASE')
                       : !phase?.canRevert
-                      ? 'The revert feature was not included for this phase during its creation.'
+                      ? t('REVERT_NOT_INCLUDED_FOR_PHASE')
                       : ''
                   }`}
                 >
-                  <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+                  <IconLabelBtn Icon={Undo2} name={t('REVERT')} disabled />
                 </TooltipWrapper>
               ) : (
-                <TooltipWrapper tip="Revert this phase to untriggered state">
+                <TooltipWrapper tip={t('REVERT_PHASE_TOOLTIP')}>
                   <CustomAlertDialog
-                    dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}
-                    title="Revert Phase"
-                    description="Are you sure you want to revert this phase?"
+                    dialogTrigger={<IconLabelBtn Icon={Undo2} name={t('REVERT')} />}
+                    title={t('REVERT_PHASE')}
+                    description={t('REVERT_PHASE_CONFIRM')}
                     handleContinueClick={handleRevertPhase}
                   />
                 </TooltipWrapper>
@@ -152,10 +155,10 @@ export default function PhaseDetail() {
             </div>
             <div>
               <AlertTitle className="text-sm mb-0">
-                This phase has been triggered
+                {t('PHASE_HAS_BEEN_TRIGGERED')}
               </AlertTitle>
               <AlertDescription className="text-xs text-gray-700">
-                <p>{dateFormat(phase?.activatedAt)}</p>
+                <p>{formatDate(phase?.activatedAt)}</p>
               </AlertDescription>
             </div>
           </Alert>
@@ -165,9 +168,9 @@ export default function PhaseDetail() {
         <div className="flex gap-4">
           <div className="flex-shrink-0 w-1/3">
             <TriggersPhaseCard
-              title="Phase Overview"
-              subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
-              chartLabels={['Mandatory', 'Optional']}
+              title={t('PHASE_OVERVIEW')}
+              subtitle={t('OVERVIEW_OF_PHASE', { phase: phase?.name?.toLowerCase() })}
+              chartLabels={[t('MANDATORY'), t('OPTIONAL')]}
               chartSeries={[
                 phase?.totalMandatoryTriggers,
                 phase?.totalOptionalTriggers,
@@ -200,9 +203,9 @@ export default function PhaseDetail() {
 
           <div className="p-4 border rounded-sm shadow flex-grow">
             <Heading
-              title="Triggers"
+              title={t('TRIGGERS')}
               titleStyle="text-xl/6"
-              description={`List of all triggers in the ${phase?.name?.toLowerCase()} phase`}
+              description={t('LIST_OF_ALL_TRIGGERS', { phase: phase?.name?.toLowerCase() })}
             />
             <TriggersListTabs
               projectId={projectId}

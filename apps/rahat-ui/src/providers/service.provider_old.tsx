@@ -11,7 +11,7 @@ import { RumsanService } from '@rumsan/sdk';
 import { CommunicationService } from '@rumsan/communication';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext } from 'react';
-import { useError } from '../utils/useErrors';
+import { useError } from '../utils/i18n/useErrors';
 
 export type ServiceContextType = {
   rumsanService: RumsanService;

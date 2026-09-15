@@ -12,6 +12,14 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
  **/
 const nextConfig = {
   output: 'standalone',
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.s3.*.amazonaws.com',
+      },
+    ],
+  },
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr

@@ -373,9 +373,10 @@ export function CommunicationDetailCard({
             );
           })()}
           <div className="flex gap-3">
-            {activityCommunication?.sessionStatus === 'FAILED' &&
+            {(activityCommunication?.sessionStatus === 'FAILED' ||
+              activityCommunication?.sessionStatus === 'PENDING') &&
               activityCommunication?.transportName === 'VOICE' && (
-                <TooltipWrapper tip="Retry Failed Voice Communication">
+                <TooltipWrapper tip={t('RETRY_VOICE_COMMUNICATION')}>
                   <Button
                     variant="outline"
                     className="gap-2"
@@ -387,7 +388,7 @@ export function CommunicationDetailCard({
                     ) : (
                       <RefreshCcw className="h-4 w-4" />
                     )}
-                    Retry
+                    {t('RETRY')}
                   </Button>
                 </TooltipWrapper>
               )}

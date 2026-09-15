@@ -110,6 +110,52 @@ export default function GctManagementList() {
     return map[s] ?? s.replace(/_/g, ' ');
   };
 
+  const buildDownloadRows = (records: GctFundRecord[]) => {
+    return records.map((r) => {
+      const offrampRequest = r.disbursementInfo?.result?.offrampRequest;
+      const paymentDetails = offrampRequest?.paymentDetails;
+      const cipsBatch =
+        r.disbursementInfo?.result?.transaction?.cipsBatchResponse;
+      const cipsTxn =
+        r.disbursementInfo?.result?.transaction?.cipsTxnResponseList?.[0];
+      const agentId = paymentDetails?.creditorAgent;
+
+      const row: Record<string, string | number> = {
+        [t('GCT_RECORD_TITLE')]: r.title ?? '',
+        [t('GROUP_CASH_TRANSFER_NAME')]: r.groupCashTransfer?.name ?? '',
+        [t('BANK_NAME')]:
+          CIPS_BANKS.find((b) => b.bankId === agentId)?.bankName ??
+          agentId ??
+          '',
+        [t('BANK_BRANCH_ID')]: paymentDetails?.creditorBranch ?? '',
+        [t('ACCOUNT_HOLDER_NAME')]: paymentDetails?.creditorName ?? '',
+        [t('BANK_ACCOUNT_NUMBER')]: paymentDetails?.creditorAccount ?? '',
+        [t('ASSIGNED_AMOUNT')]: r.amount ?? '',
+        [t('DISBURSED_AMOUNT')]: paymentDetails?.amount ?? r.amount ?? '',
+        [t('NCHL_STATUS')]: cipsBatch?.responseMessage ?? r.status ?? '',
+        [t('DISBURSED_AT')]: r.disbursedAt ?? '',
+        [t('BATCH_ID')]: cipsBatch?.batchId ?? '',
+      };
+
+      if (paymentDetails?.debtorAccount) {
+        row[t('DEBTOR_ACCOUNT')] = paymentDetails.debtorAccount;
+      }
+      if (paymentDetails?.debtorName) {
+        row[t('DEBTOR_NAME')] = paymentDetails.debtorName;
+      }
+      if (offrampRequest?.settlementDate) {
+        row[t('NCHL_SETTLEMENT_DATE')] = offrampRequest.settlementDate;
+      }
+
+      row[t('BATCH_REQUEST_DATE')] = offrampRequest?.createdAt ?? '';
+      row[t('TRANSACTION_HASH')] = offrampRequest?.transactionHash ?? '';
+      row[t('REMARKS')] =
+        r.disbursementInfo?.error ?? cipsTxn?.responseMessage ?? '';
+
+      return row;
+    });
+  };
+
   const handleDownload = async () => {
     setDownloading(true);
     try {
@@ -126,36 +172,7 @@ export default function GctManagementList() {
         },
       });
       const records: GctFundRecord[] = result?.data ?? [];
-      const rows = records.map((r) => ({
-        [t('GCT_RECORD_TITLE')]: r.title ?? '',
-        [t('AMOUNT_COL')]: r.amount ?? '',
-        [t('GROUP_CASH_TRANSFER_NAME')]: r.groupCashTransfer?.name ?? '',
-        [t('STATUS_COL')]: r.status ?? '',
-        [t('PAYOUT_PROCESSOR_ID')]: (r as any).payoutProcessorId ?? '',
-        [t('DISBURSED_AT')]: (r as any).disbursedAt ?? '',
-        [t('BATCH_ID')]:
-          (r as any).disbursementInfo?.result?.transaction?.cipsBatchResponse
-            .batchId ?? '',
-        [t('BANK_ACCOUNT_NUMBER')]:
-          r.disbursementInfo?.result?.offrampRequest?.paymentDetails
-            ?.creditorAccount ?? '',
-
-        [t('ACCOUNT_HOLDER_NAME')]:
-          r.disbursementInfo?.result?.offrampRequest?.paymentDetails
-            ?.creditorName ?? '',
-
-        [t('BANK_NAME')]: (() => {
-            const agentId = r.disbursementInfo?.result?.offrampRequest?.paymentDetails?.creditorAgent;
-            return CIPS_BANKS.find((b) => b.bankId === agentId)?.bankName ?? agentId ?? '';
-          })(),
-        [t('TRANSACTION_HASH')]:
-          (r as any).disbursementInfo.result?.offrampRequest?.transactionHash ??
-          '',
-        [t('REMARKS')]:
-          (r as any).disbursementInfo?.error ??
-          (r as any).disbursementInfo?.result?.transaction?.cipsTxnResponseList?.[0]
-            ?.responseMessage ?? '',
-      }));
+      const rows = buildDownloadRows(records);
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Logs');
@@ -183,8 +200,6 @@ export default function GctManagementList() {
 
   const rows = useMemo<GctFundRecord[]>(() => data?.data ?? [], [data]);
   const meta = data?.meta ?? data?.response?.meta;
-
-  const filtered = rows;
 
   const columns: ColumnDef<GctFundRecord>[] = useMemo(
     () => [
@@ -303,7 +318,7 @@ export default function GctManagementList() {
   );
 
   const table = useReactTable({
-    data: filtered,
+    data: rows,
     columns,
     manualPagination: true,
     onColumnVisibilityChange: setColumnVisibility,
@@ -391,7 +406,11 @@ export default function GctManagementList() {
         </DropdownMenu>
       </div>
 
-      <DemoTable table={table} loading={isLoading} message={tGlobal('NO_RESULTS')} />
+      <DemoTable
+        table={table}
+        loading={isLoading}
+        message={tGlobal('NO_RESULTS')}
+      />
 
       <CustomPagination
         currentPage={pagination.page}

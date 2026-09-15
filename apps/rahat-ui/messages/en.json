@@ -1137,7 +1137,10 @@
   "SETTINGS_NAVIGATION": {
     "LIST": "List",
     "AUTH_APPS": "Auth Apps",
-    "PROJECT_INFO": "Project Info"
+    "PROJECT_INFO": "Project Info",
+    "VERSION": "Version",
+    "UNREACHABLE": "Unreachable",
+    "WEB_VERSION": "Web Version"
   },
   "VENDORS_LIST": {
     "VENDORS": "Vendors",

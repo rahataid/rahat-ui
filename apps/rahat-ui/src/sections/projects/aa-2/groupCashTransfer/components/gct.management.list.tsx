@@ -131,7 +131,7 @@ export default function GctManagementList() {
         [t('ACCOUNT_HOLDER_NAME')]: paymentDetails?.creditorName ?? '',
         [t('BANK_ACCOUNT_NUMBER')]: paymentDetails?.creditorAccount ?? '',
         [t('ASSIGNED_AMOUNT')]: r.amount ?? '',
-        [t('DISBURSED_AMOUNT')]: paymentDetails?.amount ?? r.amount ?? '',
+        [t('DISBURSED_AMOUNT')]: paymentDetails?.amount ?? '',
         [t('NCHL_STATUS')]: cipsBatch?.responseMessage ?? r.status ?? '',
         [t('DISBURSED_AT')]: r.disbursedAt ?? '',
         [t('BATCH_ID')]: cipsBatch?.batchId ?? '',

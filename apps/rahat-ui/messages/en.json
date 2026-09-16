@@ -1133,6 +1133,14 @@
     "FILTERS": "Filters",
     "PUBLIC": "Public"
   },
+  "SITE_INFO": {
+    "NO_SITE_INFO_FOUND": "No site info found",
+    "BRAND_LOGO": "Brand Logo",
+    "SITE_INFO": "Site Info",
+    "BRAND_NAME": "Site Name",
+    "BRAND_DESCRIPTION": "Brand Description",
+    "SITE_BACKGROUND_IMAGE": "Site Background Image"
+  },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "DataType",
     "ISPRIVATE": "IsPrivate",

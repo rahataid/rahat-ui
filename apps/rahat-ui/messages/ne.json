@@ -3695,6 +3695,15 @@
     "PUBLIC": "सार्वजनिक",
     "SEARCH_BY_NAME": "नामबाट खोज्नुहोस्..."
   },
+  "SITE_INFO": {
+    "NO_SITE_INFO_FOUND": "कुनै साइट जानकारी फेला परेन",
+    "BRAND_LOGO": "ब्रान्ड लोगो",
+    "SITE_INFO": "साइट जानकारी",
+    "BRAND_NAME": "साइट नाम",
+    "BRAND_DESCRIPTION": "ब्रान्ड वर्णन",
+    "SITE_BACKGROUND_IMAGE": "साइट पृष्ठभूमि छवि"
+  },
+
   "SETTINGS_NAVIGATION": {
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",

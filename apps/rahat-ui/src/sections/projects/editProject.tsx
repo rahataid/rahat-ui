@@ -6,11 +6,13 @@ import { UUID } from 'crypto';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 import { Save } from 'lucide-react';
 import { ProjectStatus } from '@rahataid/sdk/enums';
 import { SystemUserAuth } from '@rahat-ui/auth';
 import { useProject, useProjectEdit } from '@rahat-ui/query';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,17 +44,20 @@ import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 const STATUS_OPTIONS = Object.values(ProjectStatus);
 
-const EditProjectSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-  description: z
-    .string()
-    .min(4, { message: 'Description must be at least 4 characters' }),
-  status: z.nativeEnum(ProjectStatus, {
-    required_error: 'Please select a status.',
-  }),
-});
+type Translator = (key: string, values?: Record<string, any>) => string;
 
-type EditProjectFormValues = z.infer<typeof EditProjectSchema>;
+const buildEditProjectSchema = (t: Translator) =>
+  z.object({
+    name: z.string().min(2, { message: t('EDIT_PROJECT_NAME_MIN_LENGTH') }),
+    description: z
+      .string()
+      .min(4, { message: t('EDIT_PROJECT_DESCRIPTION_MIN_LENGTH') }),
+    status: z.nativeEnum(ProjectStatus, {
+      required_error: t('PLEASE_SELECT_A_STATUS'),
+    }),
+  });
+
+type EditProjectFormValues = z.infer<ReturnType<typeof buildEditProjectSchema>>;
 
 export default function ProjectInfoForm() {
   return (
@@ -63,6 +68,7 @@ export default function ProjectInfoForm() {
 }
 
 function ProjectInfoFormContent() {
+  const t = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
@@ -74,6 +80,8 @@ function ProjectInfoFormContent() {
 
   const [pendingValues, setPendingValues] =
     useState<EditProjectFormValues | null>(null);
+
+  const EditProjectSchema = buildEditProjectSchema(t);
 
   const form = useForm<EditProjectFormValues>({
     resolver: zodResolver(EditProjectSchema),
@@ -124,15 +132,15 @@ function ProjectInfoFormContent() {
       <form onSubmit={form.handleSubmit(setPendingValues)}>
         <div className="pb-3 flex justify-between items-center space-x-4">
           <div>
-            <h2 className="text-lg font-semibold">Project Info</h2>
+            <h2 className="text-lg font-semibold">{t('PROJECT_INFO')}</h2>
             <p className="text-xs text-muted-foreground">
-              Manage basic project details
+              {t('MANAGE_BASIC_PROJECT_DETAILS')}
             </p>
           </div>
           <IconLabelBtn
             Icon={Save}
             type="submit"
-            name={editProject.isPending ? 'Saving...' : 'Save Changes'}
+            name={editProject.isPending ? t('SAVING') : t('SAVE_CHANGES')}
             className="px-3 py-2"
             disabled={editProject.isPending}
           />
@@ -145,9 +153,9 @@ function ProjectInfoFormContent() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('NAME')}</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="Name" {...field} />
+                    <Input type="text" placeholder={t('NAME')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,7 +167,7 @@ function ProjectInfoFormContent() {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{t('STATUS')}</FormLabel>
                   <Select
                     key={field.value}
                     onValueChange={field.onChange}
@@ -168,13 +176,13 @@ function ProjectInfoFormContent() {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder={t('SELECT_STATUS')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {STATUS_OPTIONS.map((status) => (
                         <SelectItem key={status} value={status}>
-                          {status}
+                          {translateValue(t, status)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -189,9 +197,9 @@ function ProjectInfoFormContent() {
               name="description"
               render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('DESCRIPTION')}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Description" {...field} />
+                    <Textarea placeholder={t('DESCRIPTION')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -207,18 +215,18 @@ function ProjectInfoFormContent() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Save changes?</AlertDialogTitle>
+            <AlertDialogTitle>{t('SAVE_CHANGES_QUESTION')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to update this project&apos;s info?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_UPDATE_THIS_PROJECTS_INFO')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmSave}
               disabled={editProject.isPending}
             >
-              {editProject.isPending ? 'Saving...' : 'Confirm'}
+              {editProject.isPending ? t('SAVING') : t('CONFIRM')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

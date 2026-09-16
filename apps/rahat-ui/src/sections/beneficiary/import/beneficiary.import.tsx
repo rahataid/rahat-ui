@@ -38,16 +38,19 @@ const SAMPLE_BENEFICIARY_HEADERS = [
   'Government ID',
 ];
 
+import { useTranslations } from 'next-intl';
+
 export default function ExcelUploader() {
   const router = useRouter();
   const [data, setData] = useState<string[][]>([]);
-  const [fileName, setFileName] = useState<string>('No File Choosen');
+  const [fileName, setFileName] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showGroupDialog, setShowGroupDialog] = useState(false);
   const [showGroupNameForm, setShowGroupNameForm] = useState(false);
   const [groupNameInput, setGroupNameInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadBeneficiary = useUploadBeneficiary();
+  const t = useTranslations('GLOBAL');
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,7 +80,7 @@ export default function ExcelUploader() {
   };
 
   const handleUpload = async (groupName?: string) => {
-    if (!selectedFile) return toast.error('Please select a file to upload');
+    if (!selectedFile) return toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
 
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
@@ -91,7 +94,7 @@ export default function ExcelUploader() {
 
   const handleAddClick = () => {
     if (!selectedFile) {
-      toast.error('Please select a file to upload');
+      toast.error(t('PLEASE_SELECT_A_FILE_TO_UPLOAD'));
       return;
     }
 
@@ -110,7 +113,7 @@ export default function ExcelUploader() {
     const trimmedName = groupNameInput.trim();
 
     if (!trimmedName) {
-      toast.error('Please enter a group name');
+      toast.error(t('PLEASE_ENTER_A_GROUP_NAME'));
       return;
     }
 
@@ -154,8 +157,8 @@ export default function ExcelUploader() {
         <div className="flex items-center justify-between gap-4 mb-4">
           <div className="flex-1">
             <HeaderWithBack
-              title="Import Beneficiaries"
-              subtitle="Select beneficiary file to update (Excel file)"
+              title={t('IMPORT_BENEFICIARIES')}
+              subtitle={t('SELECT_BENEFICIARY_FILE_TO_UPDATE')}
               path="/beneficiary"
             />
           </div>
@@ -167,7 +170,7 @@ export default function ExcelUploader() {
             onClick={handleDownloadSample}
           >
             <Download size={16} />
-            Download Sample
+            {t('DOWNLOAD_SAMPLE')}
           </Button>
         </div>
 
@@ -186,9 +189,11 @@ export default function ExcelUploader() {
               >
                 <span className="flex items-center bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
                   <Share size={22} className="px-1" />
-                  Choose File
+                  {t('CHOOSE_FILE')}
                 </span>
-                <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
+                <span className="px-4 py-2 flex-grow truncate">
+                  {fileName || t('NO_FILE_CHOSEN')}
+                </span>
               </div>
             </div>
           </div>
@@ -237,7 +242,7 @@ export default function ExcelUploader() {
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
         <div>
-          {data?.length ? <p>Total Count: {data?.length ?? 0}</p> : null}
+          {data?.length ? <p>{t('TOTAL_COUNT')} {data?.length ?? 0}</p> : null}
         </div>
         <div className="flex space-x-2">
           <Button
@@ -245,13 +250,13 @@ export default function ExcelUploader() {
             variant="secondary"
             onClick={() => {
               setData([]);
-              setFileName('No File Choosen');
+              setFileName('');
               setSelectedFile(null);
 
               // router.push('/beneficiary')
             }}
           >
-            Clear
+            {t('CLEAR')}
           </Button>
           {/* {addBeneficiary.isPending ? (
         <Button disabled>
@@ -264,7 +269,7 @@ export default function ExcelUploader() {
             onClick={handleAddClick}
             disabled={uploadBeneficiary?.isPending || !data?.length}
           >
-            {uploadBeneficiary?.isPending ? <>Uploading...</> : 'Add'}
+            {uploadBeneficiary?.isPending ? <>{t('UPLOADING')}</> : t('ADD')}
           </Button>
           {/* )} */}
         </div>
@@ -278,11 +283,11 @@ export default function ExcelUploader() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Beneficiary Group</DialogTitle>
+            <DialogTitle>{t('CREATE_BENEFICIARY_GROUP')}</DialogTitle>
             <DialogDescription>
               {showGroupNameForm
-                ? 'Enter a name for the new group to create with these beneficiaries.'
-                : 'Do you want to create a group for these beneficiaries or skip for now?'}
+                ? t('ENTER_A_NAME_FOR_THE_NEW_GROUP')
+                : t('DO_YOU_WANT_TO_CREATE_A_GROUP_OR_SKIP')}
             </DialogDescription>
           </DialogHeader>
 
@@ -295,7 +300,7 @@ export default function ExcelUploader() {
                 onClick={handleSkipForNow}
                 disabled={uploadBeneficiary?.isPending}
               >
-                Skip for now
+                {t('SKIP_FOR_NOW')}
               </Button>
               <Button
                 type="button"
@@ -303,7 +308,7 @@ export default function ExcelUploader() {
                 onClick={() => setShowGroupNameForm(true)}
                 disabled={uploadBeneficiary?.isPending}
               >
-                Create Group
+                {t('CREATE_GROUP')}
               </Button>
             </div>
           ) : (
@@ -312,7 +317,7 @@ export default function ExcelUploader() {
                 type="text"
                 value={groupNameInput}
                 onChange={(e) => setGroupNameInput(e.target.value)}
-                placeholder="Enter group name"
+                placeholder={t('ENTER_GROUP_NAME')}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -327,7 +332,7 @@ export default function ExcelUploader() {
                   className="flex-1"
                   onClick={() => setShowGroupNameForm(false)}
                 >
-                  Back
+                  {t('BACK')}
                 </Button>
                 <Button
                   type="button"
@@ -335,7 +340,7 @@ export default function ExcelUploader() {
                   onClick={handleCreateGroupSubmit}
                   disabled={uploadBeneficiary?.isPending}
                 >
-                  Submit
+                  {t('SUBMIT')}
                 </Button>
               </div>
             </div>

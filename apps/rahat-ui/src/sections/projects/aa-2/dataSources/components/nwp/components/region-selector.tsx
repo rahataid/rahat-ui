@@ -1,6 +1,8 @@
 'use client';
 
 import { RegionType } from '../utils/districts';
+import { useTranslations } from 'next-intl';
+
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
 interface RegionSelectorProps {
@@ -12,16 +14,17 @@ export function RegionSelector({
   selectedRegion,
   onRegionChange,
 }: RegionSelectorProps) {
+  const t = useTranslations('AA_PROJECT');
   const regions: { value: RegionType; label: string }[] = [
-    { value: 'province', label: 'Province' },
-    { value: 'district', label: 'District' },
-    { value: 'municipality', label: 'Municipality' },
+    { value: 'province', label: t('PROVINCE') },
+    { value: 'district', label: t('DISTRICT') },
+    { value: 'municipality', label: t('MUNICIPALITY') },
   ];
 
   return (
     <Card className="p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-50 rounded-sm">
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Region Type
+        {t('REGION_TYPE')}
       </label>
       <select
         value={selectedRegion}

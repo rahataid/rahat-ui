@@ -1,3 +1,5 @@
+import { useTranslations } from 'next-intl';
+
 type IProps = {
   series: number[];
   labels: string[];
@@ -11,6 +13,7 @@ export default function TriggerHorizontalBar({
   labels,
   colors = DEFAULT_COLORS,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const total = series.reduce((a, b) => a + b, 0);
 
   return (
@@ -37,7 +40,7 @@ export default function TriggerHorizontalBar({
       {/* Legend */}
       <div className="flex items-center justify-between">
         {total === 0 ? (
-          <p className="text-sm text-gray-400 w-full text-center">No Data</p>
+          <p className="text-sm text-gray-400 w-full text-center">{t('NO_DATA')}</p>
         ) : (
           series.map((value, i) => (
             <div key={labels[i]} className="flex items-center gap-1.5">

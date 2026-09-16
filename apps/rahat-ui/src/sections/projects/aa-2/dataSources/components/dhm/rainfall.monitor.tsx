@@ -1,5 +1,9 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 import { Heading } from 'apps/rahat-ui/src/common';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { MapPin, Radio } from 'lucide-react';
 
 interface RainFallMonitorProps {
@@ -24,6 +28,9 @@ export function RainFallMonitor({
   updatedAt,
   timeIntervals,
 }: RainFallMonitorProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   return (
     <div className="p-4 rounded-sm border shadow flex justify-between space-x-4 ">
       <div className="flex-[1]">
@@ -42,8 +49,7 @@ export function RainFallMonitor({
                   : 'bg-red-100 text-red-500'
               }`}
             >
-              {warningStatus?.charAt(0).toUpperCase() +
-                warningStatus?.slice(1).toLowerCase() || 'N/A'}
+              {translateValue(tg, warningStatus, { fallback: t('N_A') })}
             </Badge>
           </div>
         </div>
@@ -51,14 +57,14 @@ export function RainFallMonitor({
           <div className="flex items-center mr-8">
             <Radio className="w-4 h-4 mr-2 text-gray-500" />
             <div>
-              <div className="text-gray-600">Station Index</div>
-              <div>{stationIndex || 'N/A'}</div>
+              <div className="text-gray-600">{t('STATION_INDEX')}</div>
+              <div>{formatNum(stationIndex) || 'N/A'}</div>
             </div>
           </div>
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-2 text-gray-500" />
             <div>
-              <div className="text-gray-600">District</div>
+              <div className="text-gray-600">{t('DISTRICT')}</div>
               <div>{district || 'N/A'}</div>
             </div>
           </div>
@@ -71,23 +77,24 @@ export function RainFallMonitor({
             <div key={index} className="p-4   text-center">
               <div className="text-primary font-medium text-sm">
                 {interval.warningLevel !== undefined
-                  ? `${interval.warningLevel}mm`
+                  ? `${formatNum(interval.warningLevel)}mm`
                   : 'N/A'}
               </div>
               <div className="text-sm mt-1">
-                {interval.hours} {interval.hours === 1 ? 'hour' : 'hours'}
+                {formatNum(interval.hours)}{' '}
+                {interval.hours === 1 ? t('HOUR_LABEL') : t('HOURS_LABEL')}
               </div>
               <div className="text-xs text-gray-600 mt-2">
-                Warning Level:{' '}
+                {t('WARNING_LEVEL')}:{' '}
                 {interval?.hours === 1
-                  ? '60'
+                  ? `${formatNum(60)}`
                   : interval?.hours === 3
-                  ? '80'
+                  ? `${formatNum(80)}`
                   : interval?.hours === 6
-                  ? '100'
+                  ? `${formatNum(100)}`
                   : interval?.hours === 12
-                  ? '120'
-                  : '140'}
+                  ? `${formatNum(120)}`
+                  : `${formatNum(140)}`}
                 mm
               </div>
             </div>

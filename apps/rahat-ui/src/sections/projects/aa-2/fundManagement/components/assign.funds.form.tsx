@@ -24,10 +24,13 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 import {
-  FundAssignmentFormSchema,
+  buildFundAssignmentFormSchema,
   FundAssignmentFormValues,
 } from './schemas/funds.validation';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
@@ -45,6 +48,8 @@ export default function AssignFundsForm({
 }: {
   handleStepChange: (step: number) => void;
 }) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
 
@@ -53,6 +58,7 @@ export default function AssignFundsForm({
 
   const validateTokenAction = useValidateTokenAssignment();
 
+  const FundAssignmentFormSchema = buildFundAssignmentFormSchema(t);
   const form = useForm<FundAssignmentFormValues>({
     resolver: zodResolver(FundAssignmentFormSchema),
     defaultValues: DEFAULT_VALUES,
@@ -99,12 +105,12 @@ export default function AssignFundsForm({
       projectBalance < 0 ||
       isNaN(projectBalance)
     ) {
-      toast.error('Insufficient project balance');
+      toast.error(t('INSUFFICIENT_PROJECT_BALANCE'));
       return;
     }
 
     if (projectBalance < data.totalTokenAmount) {
-      toast.error('Insufficient project balance to assign funds');
+      toast.error(t('INSUFFICIENT_PROJECT_BALANCE_TO_ASSIGN'));
       return;
     }
 
@@ -170,11 +176,11 @@ export default function AssignFundsForm({
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t('TITLE')}</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder="Write token title"
+                      placeholder={t('WRITE_TOKEN_TITLE')}
                       {...field}
                     />
                   </FormControl>
@@ -189,15 +195,15 @@ export default function AssignFundsForm({
               name="beneficiaryGroupId"
               render={({ field }) => (
                 <FormItem className="flex flex-col space-y-3 w-full">
-                  <FormLabel className="mt-1">Beneficiary Group</FormLabel>
+                  <FormLabel className="mt-1">{t('BENEFICIARY_GROUP')}</FormLabel>
                   <DropdownSearch
                     selectedLabel={
-                      benGroups.data.find((group) => group.uuid === field.value)
+                      benGroups.data?.find((group) => group.uuid === field.value)
                         ?.name
                     }
-                    placeholder="Select Beneficiary Group"
-                    searchPlaceholder="Search beneficiary group..."
-                    emptyMessage="No beneficiary group found."
+                    placeholder={t('SELECT_BENEFICIARY_GROUP')}
+                    searchPlaceholder={t('SEARCH_BENEFICIARY_GROUP')}
+                    emptyMessage={t('NO_BENEFICIARY_GROUP_FOUND')}
                     options={
                       benGroups?.data?.map((g: BeneficiaryGroupListItem) => ({
                         label: g.name,
@@ -221,15 +227,21 @@ export default function AssignFundsForm({
               name="tokenAmountPerBenef"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Token Amount Per Beneficiary</FormLabel>
+                  <FormLabel>{t('TOKEN_AMOUNT_PER_BENEFICIARY_LABEL')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Write token amount"
+                      placeholder={t('WRITE_TOKEN_AMOUNT')}
                       {...field}
                       value={field.value === 0 ? '' : field.value}
                       onChange={(e) => {
-                        field.onChange(e.target.valueAsNumber);
+                        // Normalize Devanagari digits before reading the
+                        // value as a number — e.target.valueAsNumber alone
+                        // can't recover from non-ASCII digits that slip
+                        // past the browser's number-input filtering (e.g.
+                        // via paste or a mobile Devanagari keyboard).
+                        const ascii = toAsciiDigits(e.target.value);
+                        field.onChange(ascii === '' ? NaN : Number(ascii));
                         trigger('tokenAmountPerBenef');
                       }}
                     />
@@ -244,12 +256,13 @@ export default function AssignFundsForm({
               name="totalTokenAmount"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Total Token Amount</FormLabel>
+                  <FormLabel>{t('TOTAL_TOKEN_AMOUNT_LABEL')}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
                       className="bg-gray-500 text-white"
-                      {...field}
+                      name={field.name}
+                      value={formatNum(field.value)}
                       readOnly
                       disabled
                     />
@@ -267,7 +280,7 @@ export default function AssignFundsForm({
                 onClick={() => reset(DEFAULT_VALUES)}
                 className="px-10 rounded-sm w-40"
               >
-                Clear
+                {t('CLEAR')}
               </Button>
 
               <Button
@@ -275,7 +288,7 @@ export default function AssignFundsForm({
                 className="px-10 rounded-sm w-40"
                 disabled={validateTokenAction.isPending}
               >
-                {validateTokenAction.isPending ? 'Validating...' : 'Confirm'}
+                {validateTokenAction.isPending ? t('VALIDATING') : t('CONFIRM')}
               </Button>
             </div>
           </div>

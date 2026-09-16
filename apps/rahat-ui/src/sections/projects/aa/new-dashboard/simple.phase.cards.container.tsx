@@ -1,5 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   phasesStats: any;
@@ -20,6 +21,7 @@ const renderProgressBarColor = (phase: string) => {
 };
 
 export default function SimplePhaseCardContainer({ phasesStats }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const sortedPhaseStats = phasesStats?.sort((d1: any, d2: any) => {
     var c = new Date(d1?.phase?.createdAt).getTime();
     var d = new Date(d2?.phase?.createdAt).getTime();
@@ -40,7 +42,7 @@ export default function SimplePhaseCardContainer({ phasesStats }: IProps) {
                       phase?.phase?.isActive ? 'bg-red-300' : 'bg-green-300'
                     }
                   >
-                    {phase?.phase?.isActive ? 'Triggered' : 'Not Triggered'}
+                    {phase?.phase?.isActive ? t('TRIGGERED') : t('NOT_TRIGGERED')}
                   </Badge>
                 )}
               </div>

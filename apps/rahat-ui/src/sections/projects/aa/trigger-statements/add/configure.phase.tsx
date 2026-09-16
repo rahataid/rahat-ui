@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardContent,
@@ -47,6 +48,8 @@ export default function ConfigurePhase({
   prevStep,
   handleAddTrigger,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams();
   const mandatoryTriggers = phaseDetail?.triggers?.filter(
     (d: any) => d?.isMandatory,
@@ -98,14 +101,14 @@ export default function ConfigurePhase({
 
   return (
     <>
-      <h1 className="text-lg font-semibold mb-6">Configure Phase</h1>
+      <h1 className="text-lg font-semibold mb-6">{t('CONFIGURE_PHASE')}</h1>
       <div className="bg-secondary p-2 pr-0 rounded">
         <ScrollArea className="h-[calc(100vh-385px)] pr-2">
           <div className="grid gap-4">
             <Card>
               <CardHeader className="pb-1">
                 <CardTitle className="text-md font-medium">
-                  Mandatory Triggers
+                  {t('MANDATORY_TRIGGERS')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -127,14 +130,14 @@ export default function ConfigurePhase({
                           )}
                         </>
                       ))
-                    : 'No data'}
+                    : t('NO_DATA')}
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-1">
                 <CardTitle className="text-md font-medium">
-                  Optional Triggers
+                  {t('OPTIONAL_TRIGGERS')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -153,7 +156,7 @@ export default function ConfigurePhase({
                           )}
                         </>
                       ))
-                    : 'No data'}
+                    : t('NO_DATA')}
                 </div>
               </CardContent>
             </Card>
@@ -211,10 +214,10 @@ export default function ConfigurePhase({
               variant="secondary"
               className="bg-red-100 text-red-600 w-36 hover:bg-red-200"
             >
-              Cancel
+              {t('CANCEL')}
             </Button>
           </Link>
-          <Button onClick={prevStep}>Previous</Button>
+          <Button onClick={prevStep}>{tg('PREVIOUS')}</Button>
           <Button
             onClick={() =>
               handleAddTrigger({
@@ -226,7 +229,7 @@ export default function ConfigurePhase({
             }
             type="submit"
           >
-            Add Trigger Statement
+            {t('ADD_TRIGGER_STATEMENT')}
           </Button>
         </div>
       </div>

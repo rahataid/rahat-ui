@@ -17,12 +17,16 @@ import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function SelectBeneficiaryView() {
   const { Id } = useParams() as { Id: UUID };
   const router = useRouter();
+  const t = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
 
   const {
     pagination,
@@ -72,6 +76,8 @@ export default function SelectBeneficiaryView() {
     const payload = {
       uuid: Id,
       beneficiaries: members,
+      successMessage: t('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
+      errorMessage: t('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
     };
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);
@@ -88,14 +94,14 @@ export default function SelectBeneficiaryView() {
     <>
       <div className="p-4">
         <HeaderWithBack
-          title="Select Beneficiary"
-          subtitle="Select beneficiaries from the list below to them assign to the selected group"
+          title={t('SELECT_BENEFICIARY')}
+          subtitle={t('SELECT_BENEFICIARIES_FROM_THE_LIST_BELOW')}
           path={`/beneficiary/groups/${Id}`}
         />
         <div className="border rounded shadow p-3">
           <div className="flex space-x-2 items-center mb-2">
             <SearchInput
-              name="beneficiary"
+              name={t('BENEFICIARY')}
               value={filters?.name ?? ''}
               onSearch={(event) =>
                 setFilters({ ...filters, name: event.target.value })
@@ -104,12 +110,12 @@ export default function SelectBeneficiaryView() {
             />
             <ViewColumns table={table} />
             {/* <DatePicker
-            placeholder="Pick Start Date"
+            placeholder={t('PICK_START_DATE')}
             handleDateChange={handleDateChange}
             type="start"
           />
           <DatePicker
-            placeholder="Pick End Date"
+            placeholder={t('PICK_END_DATE')}
             handleDateChange={handleDateChange}
             type="end"
           /> */}
@@ -127,14 +133,16 @@ export default function SelectBeneficiaryView() {
         </div>
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
-        <p>Selected: {Object.keys(selectedListItems).length ?? 0}</p>
+        <p>
+          {t('SELECTED')} {formatDigits(Object.keys(selectedListItems).length ?? 0)}
+        </p>
         <div className="flex space-x-2">
           <Button
             type="button"
             variant="secondary"
             onClick={() => router.push(`/beneficiary/groups/${Id}`)}
           >
-            Cancel
+            {t('CANCEL')}
           </Button>
           {/* {addBeneficiary.isPending ? (
         <Button disabled>
@@ -144,7 +152,9 @@ export default function SelectBeneficiaryView() {
         ) : ( */}
 
           <Button className="px-10" onClick={handleUpdateBeneficiaryGroup}>
-            Add ({Object.keys(selectedListItems).length ?? 0} Beneficiaries )
+            {t('ADD_BENEFICIARIES2')} (
+            {formatDigits(Object.keys(selectedListItems).length ?? 0)}{' '}
+            {t('BENEFICIARIES')} )
           </Button>
           {/* )} */}
         </div>

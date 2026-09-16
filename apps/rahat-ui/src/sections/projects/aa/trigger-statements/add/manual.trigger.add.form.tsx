@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
@@ -22,6 +23,7 @@ type IProps = {
 };
 
 export default function AddManualTriggerForm({ form }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
   );
@@ -32,7 +34,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
         <form>
           <div className="mt-4 grid gap-4">
             <FormItem className="w-full">
-              <FormLabel>Selected Phase</FormLabel>
+              <FormLabel>{t('SELECTED_PHASE')}</FormLabel>
               <FormControl>
                 <Input type="text" value={selectedPhase.name} disabled />
               </FormControl>
@@ -45,11 +47,11 @@ export default function AddManualTriggerForm({ form }: IProps) {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Trigger Title</FormLabel>
+                    <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter Trigger Title"
+                        placeholder={t('ENTER_TRIGGER_TITLE')}
                         {...field}
                       />
                     </FormControl>
@@ -73,7 +75,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
                         />
                       </FormControl>
                       <FormLabel className="text-sm font-normal">
-                        Is Mandatory Trigger?
+                        {t('IS_MANDATORY_TRIGGER')}
                       </FormLabel>
                       <FormMessage />
                     </FormItem>

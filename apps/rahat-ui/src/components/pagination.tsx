@@ -1,3 +1,5 @@
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Select,
@@ -27,10 +29,12 @@ const Pagination = ({
   canNextPage,
   nextPage,
 }: IPagination) => {
+  const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   return (
     <div className="flex items-center justify-end space-x-2 py-4">
       <div className="flex items-center gap-2">
-        <div className="text-sm font-medium">Rows per page</div>
+        <div className="text-sm font-medium">{t('ROWS_PER_PAGE')}</div>
         <Select
           defaultValue="10"
           onValueChange={(value) => setPageSize(Number(value))}
@@ -40,18 +44,20 @@ const Pagination = ({
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="5">5</SelectItem>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="30">30</SelectItem>
-              <SelectItem value="40">40</SelectItem>
-              <SelectItem value="50">50</SelectItem>
+              {['5', '10', '20', '30', '40', '50'].map((s) => (
+                <SelectItem key={s} value={s}>
+                  {formatNum(s)}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
       <div className="text-sm ">
-        Page {pageIndex + 1} of {pageCount}
+        {t('PAGE_CURRENT_OF_TOTAL', {
+          current: formatNum(pageIndex + 1),
+          total: formatNum(pageCount),
+        })}
       </div>
       <div className="space-x-2">
         <Button
@@ -60,7 +66,7 @@ const Pagination = ({
           onClick={previousPage}
           disabled={!canPreviousPage}
         >
-          Previous
+          {t('PREVIOUS')}
         </Button>
         <Button
           variant="outline"
@@ -68,7 +74,7 @@ const Pagination = ({
           onClick={nextPage}
           disabled={!canNextPage}
         >
-          Next
+          {t('NEXT')}
         </Button>
       </div>
     </div>

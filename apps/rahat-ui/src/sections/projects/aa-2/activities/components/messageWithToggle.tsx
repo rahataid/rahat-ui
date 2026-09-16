@@ -1,8 +1,10 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useState } from 'react';
 
 const MessageWithToggle = ({ message }: { message: string }) => {
+  const t = useTranslations('AA_PROJECT');
   const [showFull, setShowFull] = useState(false);
   const maxLength = 150;
 
@@ -23,12 +25,12 @@ const MessageWithToggle = ({ message }: { message: string }) => {
           {showFull ? (
             <>
               <ChevronUp className="w-4 h-4" />
-              <span>Hide Message</span>
+              <span>{t('HIDE_MESSAGE')}</span>
             </>
           ) : (
             <>
               <ChevronDown className="w-4 h-4" />
-              <span>View Full Message</span>
+              <span>{t('VIEW_FULL_MESSAGE')}</span>
             </>
           )}
         </div>

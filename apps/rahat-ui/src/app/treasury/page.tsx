@@ -1,7 +1,9 @@
+import { getTranslations } from 'next-intl/server';
 import TreasuryView from '../../sections/treasury/treasury.view';
-export const metadata = {
-  title: 'Treasury',
-};
+export async function generateMetadata() {
+  const t = await getTranslations('TREASURY');
+  return { title: t('TREASURY') };
+}
 
 export default function TreasuryPage() {
   return (

@@ -25,6 +25,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { TAGS } from '@rumsan/react-query/utils/tags';
 import { toast } from 'react-toastify';
 import { useTriggerCampaign } from '@rumsan/communication-query';
@@ -48,6 +49,7 @@ const InfoCard: React.FC<IProps> = ({
   totalAudience,
   refetch,
 }) => {
+  const tg = useTranslations('GLOBAL');
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const triggerCampaign = useTriggerCampaign();
@@ -57,12 +59,12 @@ const InfoCard: React.FC<IProps> = ({
         .mutateAsync(Number(id))
         .then(() => {
           refetch();
-          toast.success('Campaign Trigger Success.');
+          toast.success(tg('CAMPAIGN_TRIGGER_SUCCESS'));
           queryClient.invalidateQueries([TAGS.GET_CAMPAIGNS]);
           setOpen(false);
         })
         .catch((e) => {
-          toast.error('Failed to Trigger Campaign.');
+          toast.error(tg('FAILED_TO_TRIGGER_CAMPAIGN'));
           setOpen(false);
         });
     }
@@ -74,22 +76,22 @@ const InfoCard: React.FC<IProps> = ({
         {status === 'ONGOING' && (
           <Select value={''} onValueChange={() => setOpen(true)}>
             <SelectTrigger className="w-24">
-              <SelectValue placeholder="Action" />
+              <SelectValue placeholder={tg('ACTION')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="trigger-campaign">Trigger Campaign</SelectItem>
+              <SelectItem value="trigger-campaign">{tg('TRIGGER_CAMPAIGN')}</SelectItem>
             </SelectContent>
 
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Trigger Campaign</DialogTitle>
-                  <DialogDescription>Are you sure?</DialogDescription>
+                  <DialogTitle>{tg('TRIGGER_CAMPAIGN')}</DialogTitle>
+                  <DialogDescription>{tg('ARE_YOU_SURE')}</DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="sm:justify-end">
                   <DialogClose asChild>
                     <Button type="button" variant="ghost">
-                      Close
+                      {tg('CLOSE')}
                     </Button>
                   </DialogClose>
                   <Button
@@ -98,7 +100,7 @@ const InfoCard: React.FC<IProps> = ({
                     className="text-primary"
                     onClick={() => handleChange('trigger')}
                   >
-                    Trigger
+                    {tg('TRIGGER')}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -110,19 +112,15 @@ const InfoCard: React.FC<IProps> = ({
         <div className="flex justify-between gap-4 flex-wrap">
           <div>
             <p>{type}</p>
-            <p className="text-sm font-light">Type</p>
+            <p className="text-sm font-light">{tg('TYPE')}</p>
           </div>
-          {/* <div>
-            <p>{startTime}</p>
-            <p className="text-sm font-light">Start Time</p>
-          </div> */}
           <div>
             <p>{status}</p>
-            <p className="text-sm font-light">Status</p>
+            <p className="text-sm font-light">{tg('STATUS')}</p>
           </div>
           <div>
             <p>{totalAudience}</p>
-            <p className="text-sm font-light">Total Audiences</p>
+            <p className="text-sm font-light">{tg('TOTAL_AUDIENCES')}</p>
           </div>
         </div>
       </CardContent>

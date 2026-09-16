@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateStakeholders } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -19,8 +20,13 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 export default function AddStakeholders() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -39,27 +45,36 @@ export default function AddStakeholders() {
   const FormSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter name.' }),
-    phone: z.string().refine(isValidPhoneNumberRefinement, {
-      message: 'Invalid phone number',
-    }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_NAME') }),
+    phone: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().refine(isValidPhoneNumberRefinement, {
+        message: t('INVALID_PHONE_NUMBER'),
+      }),
+    ),
     email: z
       .string()
       .optional()
       .refine((email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
-        message: 'Invalid email address',
+        message: t('INVALID_EMAIL_ADDRESS'),
       }),
     designation: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter designation.' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_DESIGNATION') }),
     organization: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter organization.' }),
-    district: z.string().min(2, { message: 'Please enter district.' }),
-    municipality: z.string().min(2, { message: 'Please enter municipality' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_ORGANIZATION') }),
+    district: z
+      .string()
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_DISTRICT') }),
+    municipality: z
+      .string()
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_MUNICIPALITY') }),
     supportArea: z
       .array(
         z.object({
@@ -121,8 +136,8 @@ export default function AddStakeholders() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title={'Create Stakeholder'}
-        subtitle="Fill the form below  to create a new stakeholder"
+        title={t('CREATE_STAKEHOLDER')}
+        subtitle={t('FILL_THE_FORM_BELOW_TO_CREATE')}
         path={`/projects/aa/${id}/stakeholders`}
       />
       <Form {...form}>
@@ -136,12 +151,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Stakeholders Name
+                        {t('STAKEHOLDERS_NAME')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a Stakeholder Name"
+                          placeholder={t('ENTER_A_STAKEHOLDER_NAME')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -159,7 +174,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Support Area
+                        {t('SUPPORT_AREA')}
                       </Label>
                       <FormControl>
                         <>
@@ -173,7 +188,7 @@ export default function AddStakeholders() {
                                 newTags as [Tag, ...Tag[]],
                               );
                             }}
-                            placeholder={'Enter a Support Area'}
+                            placeholder={t('ENTER_A_SUPPORT_AREA')}
                             className="min-h-[23px]"
                             styleClasses={{
                               inlineTagsContainer:
@@ -199,7 +214,7 @@ export default function AddStakeholders() {
                           />
                           {unsavedSupportAreaInput && (
                             <span className="text-[clamp(11px,1vw,14px)] text-red-400 ml-1">
-                              Press Enter to add.
+                              {t('PRESS_ENTER_TO_ADD')}
                             </span>
                           )}
                         </>
@@ -219,14 +234,15 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Phone Number
+                        {tg('PHONE_NUMBER')}
                       </Label>
                       <FormControl>
                         <PhoneInput
                           defaultCountry="NP"
-                          placeholder="Enter a Phone Number"
+                          placeholder={t('ENTER_A_PHONE_NUMBER')}
                           className="[&_input]:h-[clamp(28px,3vw,36px)] [&_input]:text-[clamp(11px,1vw,14px)] [&_button]:h-[clamp(28px,3vw,36px)]"
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />
@@ -241,12 +257,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Email
+                        {tg('EMAIL')}
                       </Label>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Enter a Email Address"
+                          placeholder={t('ENTER_A_EMAIL_ADDRESS')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -263,12 +279,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Designation
+                        {t('DESIGNATION')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a Designation"
+                          placeholder={t('ENTER_A_DESIGNATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -285,12 +301,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Organization
+                        {t('ORGANIZATION')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter an Organization"
+                          placeholder={t('ENTER_AN_ORGANIZATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -308,12 +324,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        District
+                        {t('DISTRICT')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a District"
+                          placeholder={t('ENTER_A_DISTRICT')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -331,12 +347,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Municipality
+                        {t('MUNICIPALITY')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a Municipality"
+                          placeholder={t('ENTER_A_MUNICIPALITY')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -358,7 +374,7 @@ export default function AddStakeholders() {
                   setUnsavedSupportAreaInput('');
                 }}
               >
-                Clear
+                {tg('CLEAR')}
               </Button>
               <Button
                 className="h-[clamp(28px,3vw,36px)] min-w-[clamp(80px,8vw,128px)] text-[clamp(11px,1vw,14px)]"
@@ -367,7 +383,7 @@ export default function AddStakeholders() {
                   unsavedSupportAreaInput.trim() !== ''
                 }
               >
-                Create
+                {tg('CREATE')}
               </Button>
             </div>
           </div>

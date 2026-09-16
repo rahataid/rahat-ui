@@ -24,6 +24,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import { useGrievancesTableColumns } from './columns';
 import {
   Select,
@@ -38,6 +39,8 @@ import {
   grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 function GrievancesTable() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
   const uuid = id as UUID;
 
@@ -125,24 +128,46 @@ function GrievancesTable() {
     setFilters(newFilters);
   };
 
+  const labelMap: Record<string, string> = {
+    'Technical': t('TECHNICAL'),
+    'Non-Technical': t('NON_TECHNICAL'),
+    'Other': t('OTHER'),
+    'New': t('NEW'),
+    'Under Review': t('UNDER_REVIEW'),
+    'Resolved': t('RESOLVED'),
+    'Closed': t('CLOSED'),
+    'Low': t('LOW'),
+    'Medium': t('MEDIUM'),
+    'High': t('HIGH'),
+  };
+
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  // Get display name for filter values
   const getFilterDisplayName = (key: string, value: string) => {
     if (key === 'status') {
-      return grievanceStatus.find((s) => s.value === value)?.label || value;
+      const label = grievanceStatus.find((s) => s.value === value)?.label;
+      return labelMap[label || ''] || value;
     }
     if (key === 'priority') {
-      return grievancePriority.find((p) => p.value === value)?.label || value;
+      const label = grievancePriority.find((p) => p.value === value)?.label;
+      return labelMap[label || ''] || value;
     }
     if (key === 'type') {
-      return grievanceType.find((t) => t.value === value)?.label || value;
+      const label = grievanceType.find((t) => t.value === value)?.label;
+      return labelMap[label || ''] || value;
     }
     return value;
   };
 
   // Define filter display order
   const filterOrder = ['title', 'status', 'priority', 'type'];
+
+  const filterKeyLabels: Record<string, string> = {
+    title: t('TITLE'),
+    status: t('STATUS'),
+    priority: t('PRIORITY'),
+    type: t('TYPE'),
+  };
 
   // Sort filters according to the defined order
   const getOrderedFilters = () => {
@@ -168,7 +193,9 @@ function GrievancesTable() {
                 key={key}
                 className="inline-flex items-center px-3 py-1 text-sm rounded-full bg-accent/80 hover:bg-accent text-accent-foreground transition-colors"
               >
-                <span className="font-medium capitalize">{key}:</span>
+                <span className="font-medium capitalize">
+                  {filterKeyLabels[key] ?? key}:
+                </span>
                 <span className="ml-1">{getFilterDisplayName(key, value)}</span>
                 <button
                   onClick={() => clearFilter(key)}
@@ -182,14 +209,14 @@ function GrievancesTable() {
               onClick={clearFilters}
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Clear all
+              {t('CLEAR_ALL')}
             </button>
           </div>
         )}
         <div className="flex items-center gap-2">
           <SearchInput
             className="flex-1"
-            name="Title"
+            name={t('TITLE')}
             onSearch={(e) => handleSearch(e, 'title')}
             value={filters?.title || ''}
           />
@@ -198,13 +225,13 @@ function GrievancesTable() {
             onValueChange={(value) => handleFilterChange('status', value)}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={tg('STATUS')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="all">{t('ALL_STATUS')}</SelectItem>
               {grievanceStatus.map((status) => (
                 <SelectItem key={status.value} value={status.value}>
-                  {status.label}
+                  {labelMap[status.label] || status.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -214,13 +241,13 @@ function GrievancesTable() {
             onValueChange={(value) => handleFilterChange('type', value)}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Grievance Type" />
+              <SelectValue placeholder={t('GRIEVANCE_TYPE')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Grievance Type</SelectItem>
+              <SelectItem value="all">{t('ALL_GRIEVANCE_TYPE')}</SelectItem>
               {grievanceType.map((type) => (
                 <SelectItem key={type.value} value={type.value}>
-                  {type.label}
+                  {labelMap[type.label] || type.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -230,13 +257,13 @@ function GrievancesTable() {
             onValueChange={(value) => handleFilterChange('priority', value)}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Priority" />
+              <SelectValue placeholder={t('PRIORITY')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Priority</SelectItem>
+              <SelectItem value="all">{t('ALL_PRIORITY')}</SelectItem>
               {grievancePriority.map((priority) => (
                 <SelectItem key={priority.value} value={priority.value}>
-                  {priority.label}
+                  {labelMap[priority.label] || priority.label}
                 </SelectItem>
               ))}
             </SelectContent>

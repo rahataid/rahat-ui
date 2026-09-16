@@ -1,10 +1,11 @@
+import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { useRouter } from 'next/navigation';
-
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { SEP, toLabel, TriggerStatement } from '../utils';
-import { SOURCE_CONFIG } from '../trigger.statement.schema';
+import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 type IProps = {
   projectId: string;
@@ -52,6 +53,9 @@ export default function TriggerCard({
   triggerStatement: tgSt,
   leadTime,
 }: IProps) {
+  const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
 
   const handleRoute = () => {
@@ -64,8 +68,7 @@ export default function TriggerCard({
     }
   };
 
-  const sourceSubTypeLabel =
-    SOURCE_CONFIG[tgSt?.source as keyof typeof SOURCE_CONFIG]?.sourceSubType;
+  const sourceSubTypeLabel = getSourceSubTypeLabel(tgSt?.source, t);
   const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
   const formattedSourceSubType = toLabel(tgSt?.sourceSubType);
 
@@ -92,7 +95,7 @@ export default function TriggerCard({
             isTriggered ? 'bg-red-50 text-red-500' : ''
           }`}
         >
-          {isTriggered ? 'Triggered' : 'Not Triggered'}
+          {isTriggered ? t('TRIGGERED') : t('NOT_TRIGGERED')}
         </Badge>
       </div>
 
@@ -123,17 +126,18 @@ export default function TriggerCard({
 
       {createdAt && (
         <p className="text-muted-foreground text-sm/4 mb-1">
-          Created at : {dateFormat(createdAt)}
+          {t('CREATED_AT_COLON')} {formatDate(createdAt)}
         </p>
       )}
       {triggeredAt && (
         <p className="text-muted-foreground text-sm/4">
-          Triggered at : {dateFormat(triggeredAt)}
+          {t('TRIGGERED_AT_COLON')} {formatDate(triggeredAt)}
         </p>
       )}
       {leadTime && (
         <p className="text-muted-foreground text-sm/4">
-          Lead Time : {leadTime ?? 'N/A'}
+          {t('LEAD_TIME')} : {formatNum(parseFloat(leadTime) || 0)}{' '}
+          {/hours/i.test(leadTime) ? t('HOURS') : t('DAYS')}
         </p>
       )}
     </div>

@@ -109,7 +109,7 @@ export default function Confirmation({
               <ScrollArea className="h-[calc(100vh-580px)]">
                 {isGroupSelected
                   ? stepData?.groups?.map((group: any) => (
-                      <div className="flex justify-between items-center space-x-4">
+                      <div key={group.uuid} className="flex justify-between items-center space-x-4">
                         <div className="flex space-x-2 mt-2 items-center">
                           <div className="p-2 rounded-full bg-secondary">
                             <User size={18} strokeWidth={1.5} />
@@ -125,7 +125,7 @@ export default function Confirmation({
                       </div>
                     ))
                   : data.map((beneficiary) => (
-                      <div className="flex space-x-2 mt-2 items-center">
+                      <div key={beneficiary.uuid || beneficiary.phone} className="flex space-x-2 mt-2 items-center">
                         <div className="p-2 rounded-full bg-secondary">
                           <User size={18} strokeWidth={1.5} />
                         </div>

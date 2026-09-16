@@ -17,6 +17,7 @@ import InfoCard from '../infoCard';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useDeleteCampaign } from '@rumsan/communication-query';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 type IProps = {
   details: ICampaignItemApiResponse;
   closeSecondPanel: VoidFunction;
@@ -28,6 +29,8 @@ export default function TextDetailSplitView({
   closeSecondPanel,
   refetch,
 }: IProps) {
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('COMMUNICATIONS_TEXT_SMS');
   const deleteCampaign = useDeleteCampaign();
 
   const router = useRouter();
@@ -40,7 +43,7 @@ export default function TextDetailSplitView({
               <Minus size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
-              <p className="text-xs font-medium">Close</p>
+              <p className="text-xs font-medium">{tg('CLOSE')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -58,7 +61,7 @@ export default function TextDetailSplitView({
               />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary">
-              <p className="text-xs font-medium">Expand</p>
+              <p className="text-xs font-medium">{tg('EXPAND')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -80,7 +83,7 @@ export default function TextDetailSplitView({
                   />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Edit</p>
+                  <p className="text-xs font-medium">{tg('EDIT')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -92,14 +95,14 @@ export default function TextDetailSplitView({
                     strokeWidth={1.5}
                     onClick={() => {
                       deleteCampaign.mutateAsync(details.id).then(() => {
-                        toast.success('Successfully Deleted Campaign');
+                        toast.success(t('SUCCESSFULLY_DELETED_CAMPAIGN'));
                         closeSecondPanel();
                       });
                     }}
                   />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Delete</p>
+                  <p className="text-xs font-medium">{tg('DELETE')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -120,7 +123,7 @@ export default function TextDetailSplitView({
         />
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle>Message</CardTitle>
+            <CardTitle>{tg('MESSAGE')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
@@ -128,7 +131,7 @@ export default function TextDetailSplitView({
                 ? details?.details?.body
                 : details?.details?.message
                 ? details?.details?.message
-                : 'No message'}
+                : tg('NO_MESSAGE')}
             </p>
           </CardContent>
         </Card>

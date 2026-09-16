@@ -16,6 +16,7 @@ import {
 
 import { useParams, useSearchParams } from 'next/navigation';
 
+import { useTranslations } from 'next-intl';
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   CustomPagination,
@@ -25,8 +26,10 @@ import {
 import { UUID } from 'crypto';
 import { useProjectBeneficiaryTableColumns } from './columns';
 function BeneficiaryTable() {
+  const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const uuid = id as UUID;
+  const t = useTranslations('AA_PROJECT');
 
   const {
     pagination,
@@ -91,7 +94,7 @@ function BeneficiaryTable() {
       <div className="flex mb-2 gap-2">
         <SearchInput
           className="w-full"
-          name="walletAddress"
+          name={tGlobal('WALLET_ADDRESS')}
           onSearch={(e) => handleSearch(e, 'search')}
           value={filters?.search || ''}
         />
@@ -99,7 +102,7 @@ function BeneficiaryTable() {
       <DemoTable
         table={table}
         loading={projectBeneficiaries.isLoading}
-        message="No Beneficiaries Available"
+        message={t('NO_BENEFICIARIES_AVAILABLE')}
       />
 
       <CustomPagination

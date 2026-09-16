@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   PROJECT_SETTINGS_KEYS,
   useAllGlofasProbFlood,
@@ -12,6 +13,7 @@ import { NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import Link from 'next/link';
 
 export function GlofasSection() {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
 
@@ -35,7 +37,7 @@ export function GlofasSection() {
   if (!data || error) {
     return (
       <div className="p-4">
-        <NoResult message="No GLOFAS Data" />
+        <NoResult message={t('NO_GLOFAS_DATA')} />
       </div>
     );
   }

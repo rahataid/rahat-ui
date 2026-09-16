@@ -15,8 +15,10 @@ import Loader from 'apps/rahat-ui/src/components/table.loader';
 import SearchInput from '../../../../components/search.input';
 import useDetailsBeneficiaryTableColumn from './table/useDetailsBeneficiaryTableColumn';
 import BeneficiaryTable from './table/beneficiary.table';
+import { useTranslations } from 'next-intl';
 
 export default function BeneficiaryGroupDetailView() {
+  const tGlobal = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
@@ -72,7 +74,7 @@ export default function BeneficiaryGroupDetailView() {
           {/* Table Starts  */}
           <div className="flex justify-between gap-2">
             <SearchInput
-              name="Beneficiary"
+              name={tGlobal('BENEFICIARY')}
               className="mb-2 w-full"
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
@@ -82,7 +84,7 @@ export default function BeneficiaryGroupDetailView() {
               }
             />
             <SearchInput
-              name="Location"
+              name={tGlobal('LOCATION')}
               className="mb-2 w-full"
               value={
                 (table.getColumn('location')?.getFilterValue() as string) ?? ''

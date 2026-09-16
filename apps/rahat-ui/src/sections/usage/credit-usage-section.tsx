@@ -1,7 +1,11 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,7 +18,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { DemoTable } from '../../common/table';
-import { creditColumns, CreditRow } from './useCreditColumns';
+import { useCreditColumns, CreditRow } from './useCreditColumns';
 import UsageFilters from './usage-filters';
 
 type CreditData = {
@@ -39,12 +43,19 @@ type CreditUsageSectionProps = {
   defaultTo?: Date;
 };
 
-function transformCreditsForChart(credits: CreditData[]) {
+function transformCreditsForChart(
+  credits: CreditData[],
+  formatDate: (date: string | Date, pattern?: string) => string,
+  g: Parameters<typeof translateValue>[0],
+) {
+  // Bucket by ISO date: it sorts chronologically as a plain string and stays
+  // locale-independent. The display label is derived separately, because a
+  // localised label ("जुल ०१") cannot be parsed back into a Date to sort by.
   const dateMap = new Map<string, Map<string, number>>();
   const transportNames = new Set<string>();
 
   credits.forEach((item) => {
-    const dateKey = format(new Date(item.date), 'MMM dd');
+    const dateKey = format(new Date(item.date), 'yyyy-MM-dd');
     transportNames.add(item.transportName);
 
     if (!dateMap.has(dateKey)) {
@@ -57,17 +68,18 @@ function transformCreditsForChart(credits: CreditData[]) {
     );
   });
 
-  const sortedDates = Array.from(dateMap.keys()).sort(
-    (a, b) => new Date(a).getTime() - new Date(b).getTime(),
-  );
+  const sortedDates = Array.from(dateMap.keys()).sort();
   const transports = Array.from(transportNames);
 
   const series = transports.map((name) => ({
-    name,
+    name: translateValue(g, name),
     data: sortedDates.map((date) => dateMap.get(date)?.get(name) ?? 0),
   }));
 
-  return { categories: sortedDates, series };
+  return {
+    categories: sortedDates.map((d) => formatDate(d, 'MMM dd')),
+    series,
+  };
 }
 
 export default function CreditUsageSection({
@@ -80,9 +92,14 @@ export default function CreditUsageSection({
   defaultFrom,
   defaultTo,
 }: CreditUsageSectionProps) {
+  const t = useTranslations('USAGE');
+  const g = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
+  const creditColumns = useCreditColumns();
   const chartData = useMemo(
-    () => transformCreditsForChart(credits ?? []),
-    [credits],
+    () => transformCreditsForChart(credits ?? [], formatDate, g),
+    [credits, formatDate, g],
   );
 
   const tableData: CreditRow[] = useMemo(
@@ -108,7 +125,7 @@ export default function CreditUsageSection({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="text-lg font-semibold">
-          Credit Consumption
+          {t('CREDIT_CONSUMPTION')}
         </CardTitle>
         <UsageFilters
           selectedXref={xref}
@@ -124,13 +141,30 @@ export default function CreditUsageSection({
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Credits Over Time
+                {t('CREDITS_OVER_TIME')}
               </CardTitle>
             </CardHeader>
             <CardContent className="h-[350px]">
               <ChartLine
                 series={chartData.series}
                 categories={chartData.categories}
+                lineChartOptions={{
+                  // Supplying this replaces ChartLine's own defaults, so they
+                  // are restated here alongside the localised formatters.
+                  xaxis: { categories: chartData.categories },
+                  tooltip: {
+                    x: { show: false },
+                    marker: { show: false },
+                    y: { formatter: (val: number) => formatNum(val) },
+                  },
+                  dataLabels: {
+                    enabled: true,
+                    formatter: (val: number | string) => formatNum(val),
+                  },
+                  yaxis: {
+                    labels: { formatter: (val: number) => formatNum(val) },
+                  },
+                }}
               />
             </CardContent>
           </Card>
@@ -139,7 +173,7 @@ export default function CreditUsageSection({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Daily Credit Breakdown
+              {t('DAILY_CREDIT_BREAKDOWN')}
             </CardTitle>
           </CardHeader>
           <CardContent>

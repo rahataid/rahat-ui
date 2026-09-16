@@ -16,6 +16,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 type IProps = {
   handleNextPage: () => void;
 
@@ -48,6 +50,8 @@ export function CustomPagination({
   showChevrons,
   isShowTotalCount = true,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const lastPage = meta?.lastPage || 1;
   if (showChevrons === undefined) {
     showChevrons = true;
@@ -76,12 +80,12 @@ export function CustomPagination({
       </div> */}
       {isShowTotalCount && (
         <div className="flex-1 text-sm text-muted-foreground">
-          Total Count : {meta?.total || total}
+          {t('TOTAL_COUNT')} : {formatNum(meta?.total || total || 0)}
         </div>
       )}
       {handlePageSizeChange && (
         <div className="flex items-center gap-[clamp(4px,0.6vw,8px)]">
-          <div className="font-medium">Rows per page</div>
+          <div className="font-medium">{t('ROWS_PER_PAGE')}</div>
           <Select
             defaultValue={String(perPage)}
             onValueChange={handlePageSizeChange}
@@ -97,7 +101,7 @@ export function CustomPagination({
                     value={size}
                     className="text-[clamp(11px,1vw,14px)]"
                   >
-                    {size}
+                    {formatNum(size)}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -108,10 +112,13 @@ export function CustomPagination({
       <div>
         {meta?.total && meta.total > 0 ? (
           <>
-            Page {currentPage} of {lastPage}
+            {t('PAGE_CURRENT_OF_TOTAL', {
+              current: formatNum(currentPage),
+              total: formatNum(lastPage),
+            })}
           </>
         ) : (
-          <>Page {currentPage}</>
+          <>{t('PAGE')} {formatNum(currentPage)}</>
         )}
       </div>
       <div className="flex gap-[clamp(4px,0.6vw,8px)] items-center justify-center">

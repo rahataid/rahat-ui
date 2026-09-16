@@ -15,6 +15,7 @@ export * from './beneficiaryImport/beneficiary.import.query';
 export * from './beneficiaryImport/beneficiary.import.store';
 export * from './constants';
 export * from './comms';
+export { setTranslate, getTranslate } from './translate';
 export * from './settings/settings.store';
 export * from './app/app.query';
 export * from './fieldSuggestionApi/fieldSuggestion.query';

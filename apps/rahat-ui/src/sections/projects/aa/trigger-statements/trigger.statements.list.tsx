@@ -19,8 +19,10 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useAATriggerStatements, usePagination } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 
 export default function TriggerStatementsList() {
+  const t = useTranslations('GLOBAL');
   const columns = useTriggerStatementTableColumns();
 
   const { id } = useParams();
@@ -101,7 +103,7 @@ export default function TriggerStatementsList() {
                   colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('NO_RESULTS')}
                 </TableCell>
               </TableRow>
             )}

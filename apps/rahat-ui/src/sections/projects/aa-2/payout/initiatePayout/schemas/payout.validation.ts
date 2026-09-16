@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-export const paymentSchema = z
+type Translator = (key: string, values?: Record<string, any>) => string;
+
+export const buildPaymentSchema = (t: Translator) =>
+  z
   .object({
     method: z.string(),
     mode: z.enum(['ONLINE', 'OFFLINE']),
@@ -12,7 +15,7 @@ export const paymentSchema = z
     if (!data.group || Object.keys(data.group).length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Please select a beneficiary group',
+        message: t('PLEASE_SELECT_A_BENEFICIARY_GROUP'),
         path: ['group'],
       });
     }
@@ -23,7 +26,7 @@ export const paymentSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Please select a payment provider',
+        message: t('PLEASE_SELECT_A_PAYMENT_PROVIDER'),
         path: ['paymentProvider'],
       });
     }
@@ -35,16 +38,17 @@ export const paymentSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Please select a vendor',
+        message: t('PLEASE_SELECT_A_VENDOR'),
         path: ['vendor'],
       });
     }
   });
 
-export type PaymentSchema = z.infer<typeof paymentSchema>;
+export type PaymentSchema = z.infer<ReturnType<typeof buildPaymentSchema>>;
 
 // This is for the integrated payout form as group would be passed directly from the backend
-export const payoutFundSchema = z
+export const buildPayoutFundSchema = (t: Translator) =>
+  z
   .object({
     method: z.string(),
     mode: z.enum(['ONLINE', 'OFFLINE']),
@@ -59,7 +63,7 @@ export const payoutFundSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Please select a payment provider',
+        message: t('PLEASE_SELECT_A_PAYMENT_PROVIDER'),
         path: ['paymentProvider'],
       });
     }
@@ -71,10 +75,12 @@ export const payoutFundSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Please select a vendor',
+        message: t('PLEASE_SELECT_A_VENDOR'),
         path: ['vendor'],
       });
     }
   });
 
-export type FundWithPayoutSchema = z.infer<typeof payoutFundSchema>;
+export type FundWithPayoutSchema = z.infer<
+  ReturnType<typeof buildPayoutFundSchema>
+>;

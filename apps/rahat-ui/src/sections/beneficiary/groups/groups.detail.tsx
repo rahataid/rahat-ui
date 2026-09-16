@@ -46,8 +46,10 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type BenProjectType = {
   Project: {
@@ -59,6 +61,8 @@ type BenProjectType = {
 
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
+  const t = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const validateModal = useBoolean();
   const removeModal = useBoolean();
   const groupProposeModal = useBoolean();
@@ -164,6 +168,21 @@ export default function GroupDetailView() {
       : '';
   }, [group?.data?.groupPurpose]);
 
+  const groupPurposeLabel = React.useMemo(() => {
+    switch (group?.data?.groupPurpose) {
+      case GroupPurpose.BANK_TRANSFER:
+        return t('BANK_TRANSFER');
+      case GroupPurpose.MOBILE_MONEY:
+        return t('MOBILE_MONEY');
+      case GroupPurpose.COMMUNICATION:
+        return t('COMMUNICATION');
+      case GroupPurpose.GENERAL:
+        return t('GENERAL');
+      default:
+        return capitalizeFirstLetter(groupPurposeName || '');
+    }
+  }, [group?.data?.groupPurpose, groupPurposeName, t]);
+
   const isAssignToAA = React.useMemo(() => {
     return group?.data?.beneficiaryGroupProject?.some(
       (benProject: BenProjectType) =>
@@ -237,10 +256,8 @@ export default function GroupDetailView() {
             <Back path="/beneficiary?tab=beneficiaryGroups" />
             <Heading
               title={group?.data?.name}
-              description={
-                'Here is a detailed view of the selected beneficiary groups'
-              }
-              status={capitalizeFirstLetter(groupPurposeName || '')}
+              description={t('HERE_IS_A_DETAILED_VIEW_OF')}
+              status={groupPurposeLabel}
             />
           </div>
           {/* {Number(isAssignedToProject) === 0 && (
@@ -259,13 +276,13 @@ export default function GroupDetailView() {
                   {group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER && (
                     <>
                       <LandmarkIcon className="h-4 w-4 text-green-600" />
-                      Bank Account Verified
+                      {t('BANK_ACCOUNT_VERIFIED')}
                     </>
                   )}
                   {group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY && (
                     <>
                       <Phone className="h-4 w-4 text-green-600" />
-                      Phone Number Verified
+                      {t('PHONE_NUMBER_VERIFIED')}
                     </>
                   )}
                 </Badge>
@@ -277,7 +294,7 @@ export default function GroupDetailView() {
                 onClick={() => editGroupNameModal.onTrue()}
               >
                 <Pencil className="w-4 h-4" />
-                Edit
+                {t('EDIT')}
               </Button>
             )}
             <Button
@@ -289,8 +306,7 @@ export default function GroupDetailView() {
               }`}
               onClick={handleGroupPurposeClick}
             >
-              {groupPurposeName ? 'Change ' : 'Assign '}
-              Group Purpose
+              {groupPurposeName ? t('CHANGE_GROUP_PURPOSE') : t('ASSIGN_GROUP_PURPOSE')}
             </Button>
 
             {!group?.data?.isGroupValidForAA &&
@@ -306,12 +322,12 @@ export default function GroupDetailView() {
                   {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
                     <>
                       <Phone className="w-4 h-4" />
-                      Validate Phone Number
+                      {t('VALIDATE_PHONE_NUMBER')}
                     </>
                   ) : (
                     <>
                       <LandmarkIcon className="w-4 h-4" />
-                      Validate Bank Account
+                      {t('VALIDATE_BANK_ACCOUNT')}
                     </>
                   )}
                 </Button>
@@ -322,7 +338,7 @@ export default function GroupDetailView() {
                 className={` gap-2 text-gray-700 rounded-sm`}
                 onClick={onFailedExports}
               >
-                <CloudDownloadIcon className="w-4 h-4" /> Export Failed
+                <CloudDownloadIcon className="w-4 h-4" /> {t('EXPORT_FAILED')}
               </Button>
             )}
 
@@ -334,7 +350,7 @@ export default function GroupDetailView() {
               onClick={handleRemoveClick}
             >
               <Trash2Icon className="w-4 h-4" />
-              Delete Group
+              {t('DELETE_GROUP')}
             </Button>
             {(group?.data?.isGroupValidForAA || !groupPurposeName) &&
               group?.data?.groupedBeneficiaries?.length !== 0 && (
@@ -344,7 +360,7 @@ export default function GroupDetailView() {
                   onClick={handleProjectAssignModalClick}
                 >
                   <FolderDot className="w-4 h-4" />
-                  Assign To Project
+                  {t('ASSIGN_TO_PROJECT')}
                 </Button>
               )}
           </div>
@@ -353,17 +369,23 @@ export default function GroupDetailView() {
           <DataCard
             className="border-solid w-1/3 rounded-xl"
             iconStyle="bg-white text-secondary-muted"
-            title="Total Beneficiaries"
+            title={t('TOTAL_BENEFICIARIES')}
             Icon={UsersRound}
-            number={group?.meta?.total}
+            number={formatDigits(group?.meta?.total)}
           />
           {group?.data?.beneficiaryGroupProject?.length > 0 && (
             <DataCard
               className="border-solid w-1/3 rounded-xl"
               iconStyle="bg-white text-secondary-muted"
-              title="Project Involved"
+              title={t('PROJECT_INVOLVED')}
               Icon={FolderDot}
-              refresh={() => syncBeneficiaryGroup.mutate(Id)}
+              refresh={() =>
+                syncBeneficiaryGroup.mutate({
+                  uuid: Id,
+                  successMessage: t('BENEFICIARY_SYNC_STARTED_FOR_PROJECTS'),
+                  errorMessage: t('ERROR_WHILE_SYNCING_BENEFICIARY_GROUP'),
+                })
+              }
             >
               <div className="flex gap-2 flex-wrap">
                 {group?.data?.beneficiaryGroupProject?.map(
@@ -387,25 +409,25 @@ export default function GroupDetailView() {
                   <>
                     <p className="text-muted-foreground font-medium mb-1 flex items-center gap-1">
                       <Loader2 className="w-3 h-3 animate-spin" />
-                      Bank validation in progress
+                      {t('BANK_VALIDATION_IN_PROGRESS')}
                     </p>
                     <p>
-                      Current status:
+                      {t('CURRENT_STATUS')}:
                       <span className="font-medium">
-                        {bankCheckStatus.total - bankCheckStatus.pending}/
-                        {bankCheckStatus.total}
+                        {formatDigits(bankCheckStatus.total - bankCheckStatus.pending)}/
+                        {formatDigits(bankCheckStatus.total)}
                       </span>
                     </p>
                   </>
                 ) : (
                   <p className="text-muted-foreground font-medium mb-1">
-                    Bank validation completed
+                    {t('BANK_VALIDATION_COMPLETED')}
                   </p>
                 )}
                 <p className="text-green-600">
-                  Success: {bankCheckStatus.success}
+                  {t('SUCCESS')}: {formatDigits(bankCheckStatus.success)}
                 </p>
-                <p className="text-red-500">Failed: {bankCheckStatus.failed}</p>
+                <p className="text-red-500">{t('FAILED')}: {formatDigits(bankCheckStatus.failed)}</p>
               </div>
             )}
         </div>

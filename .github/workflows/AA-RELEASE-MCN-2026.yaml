@@ -2,10 +2,10 @@ name: AA MCN RELEASE 2026 CI/CD
 on:
   push:
     branches:
-      - 'release/v5.0.0.-mcn'
+      - 'release/v5.1.0.-mcn'
   pull_request:
     branches:
-      - 'release/v5.0.0.-mcn'
+      - 'release/v5.1.0.-mcn'
   workflow_dispatch:
 
 env:

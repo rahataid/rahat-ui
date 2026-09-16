@@ -3,6 +3,7 @@
 import { SiteInfo } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { NepalFlag } from 'apps/rahat-ui/src/components/language-toggle';
 import { ChevronDown, Languages } from 'lucide-react';
 
 type IProps = {
@@ -53,9 +54,8 @@ export default function SiteInfoPreview({ data }: IProps) {
       <div className="relative flex flex-col items-center justify-center px-6 py-10 sm:px-12">
         {/* Language selector mock */}
         <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs text-muted-foreground">
-          <Languages size={14} />
-          <span>EN</span>
-          <ChevronDown size={14} />
+          <NepalFlag className="h-4 w-[22px] shrink-0 rounded-[2px] object-cover" />
+          <ChevronDown size={16} />
         </div>
 
         {brandLogo ? (

@@ -116,14 +116,24 @@ export default function ListSiteInfo() {
   const siteInfo = data?.data?.value;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <h1 className="text-2xl font-bold">Site Info</h1>
       <p>Configure your site information here.</p>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="border bg-secondary rounded mb-2">
-          <TabsTrigger value="configuration">Configuration</TabsTrigger>
-          <TabsTrigger value="preview">Preview</TabsTrigger>
+        <TabsList className="border bg-secondary rounded">
+          <TabsTrigger
+            value="configuration"
+            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white "
+          >
+            Configuration
+          </TabsTrigger>
+          <TabsTrigger
+            value="preview"
+            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white"
+          >
+            Preview
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="configuration">
           <DemoTable

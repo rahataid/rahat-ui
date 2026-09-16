@@ -35,6 +35,10 @@
     "NO_RESULT": "No result.",
     "ADDRESS": "Address",
     "DESCRIPTION": "Description",
+    "BACKGROUND": "Background",
+    "BRAND": "Brand",
+    "BRAND_NAME": "Brand Name",
+    "LOGO": "Logo",
     "NAME": "Name",
     "SAVE": "Save",
     "DASHBOARD": "Dashboard",
@@ -1138,7 +1142,8 @@
   "SETTINGS_NAVIGATION": {
     "LIST": "List",
     "AUTH_APPS": "Auth Apps",
-    "PROJECT_INFO": "Project Info"
+    "PROJECT_INFO": "Project Info",
+    "SITE_INFO": "Site Info"
   },
   "VENDORS_LIST": {
     "VENDORS": "Vendors",

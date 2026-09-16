@@ -3698,7 +3698,8 @@
   "SETTINGS_NAVIGATION": {
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",
-    "PROJECT_INFO": "परियोजनाको जानकारी"
+    "PROJECT_INFO": "परियोजनाको जानकारी",
+    "SITE_INFO": "साइटको जानकारी"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "तथ्यांकको प्रकार",

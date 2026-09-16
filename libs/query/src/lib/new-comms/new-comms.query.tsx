@@ -29,6 +29,17 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
 
     queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', payload, sessionId],
     staleTime: 60 * 60 * 1000, // 1 hour
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data?.data?.length) return false;
+      const hasActive = data.data.some(
+        (p: any) =>
+          p.status === 'SCHEDULED' ||
+          p.status === 'PENDING' ||
+          p.status === 'IN_PROGRESS',
+      );
+      return hasActive ? 3000 : false;
+    },
   });
   return query;
 };

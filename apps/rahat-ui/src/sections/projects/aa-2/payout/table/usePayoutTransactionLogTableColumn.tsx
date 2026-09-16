@@ -16,6 +16,13 @@ interface PayoutTransactionLogRow {
   totalBeneficiaries: number;
   totalTokenAssigned: number;
   totalSuccessAmount: number;
+  beneficiaryGroupToken: {
+    beneficiaryGroup: {
+      _count: {
+        beneficiaries: number;
+      };
+    };
+  };
   payoutType: string;
   payoutMode: string;
   status: string;
@@ -107,23 +114,30 @@ export default function usePayoutTransactionLogTableColumn() {
       ),
     },
     {
-      accessorKey: 'status',
-      header: tg('STATUS'),
+      // accessorKey: 'status',
+      header: 'Status',
+      meta: { className: 'w-[150px]' },
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (
-          <Badge
-            className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
-              status,
-            )}`}
-          >
-            {translateValue(tg, status, {
+          <div className="flex gap-2 w-full">
+            <Badge
+              className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
+                status,
+              )}`}
+            >
+              {translateValue(tg, status, {
               fallback: status
                 ?.toLowerCase()
                 .replace(/_/g, ' ')
                 .replace(/^./, (char: string) => char.toUpperCase()),
             })}
-          </Badge>
+            </Badge>
+            <span className="text-[12px]">
+              {row?.original.totalSuccessAmount} /{' '}
+              {row.getValue('totalBeneficiaries')}
+            </span>
+          </div>
         );
       },
     },

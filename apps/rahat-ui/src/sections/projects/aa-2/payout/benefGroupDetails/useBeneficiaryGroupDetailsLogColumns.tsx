@@ -132,24 +132,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       ),
     },
     {
-      accessorKey: 'transactionWalletId',
-      header: tv('TRANSACTION_WALLET_ID'),
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center gap-2">
-            <TruncatedCell
-              text={row?.original?.info?.offrampWalletAddress || tg('N_A')}
-              maxLength={10}
-            />
-            <CopyTooltip
-              value={row?.original?.info?.offrampWalletAddress || ''}
-              uniqueKey={row?.original?.uuid}
-            />
-          </div>
-        );
-      },
-    },
-    {
       accessorKey: 'txHash',
       header: tv('TRANSACTION_HASH'),
       cell: ({ row }) => {
@@ -190,7 +172,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         if (payoutType === 'FSP')
           return (
             <div>
-              <TruncatedCell text={`${t('RS')} ${formatNum(amount)}`} maxLength={15} />
+              <TruncatedCell
+                text={`${t('RS')} ${formatNum(amount)}`}
+                maxLength={15}
+              />
             </div>
           );
         else {
@@ -199,7 +184,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
 
           return status === 'COMPLETED' ? (
             row.original?.amount ? (
-              <TruncatedCell text={`${t('RS')} ${formatNum(amount)}`} maxLength={15} />
+              <TruncatedCell
+                text={`${t('RS')} ${formatNum(amount)}`}
+                maxLength={15}
+              />
             ) : (
               `${t('RS')} ${formatNum(0)}`
             )
@@ -225,10 +213,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
               type,
             )}`}
           >
-            <TruncatedCell
-              text={prettified}
-              maxLength={15}
-            />
+            <TruncatedCell text={prettified} maxLength={15} />
           </Badge>
         );
       },
@@ -361,7 +346,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
 
             <TooltipComponent
               Icon={Eye}
-                    tip={tg('VIEW_DETAILS')}
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />

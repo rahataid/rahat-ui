@@ -43,12 +43,18 @@ export default async function RootLayout({
                     <ServiceProvider>
                       <SecondPanelProvider>
                         <TranslationBridge />
-                        <ThemeProvider
-                          attribute="class"
-                          defaultTheme="light"
-                        >
-                          <main className={GeistSans.className}>{children}</main>
-                          <ToastContainer />
+                        <ThemeProvider attribute="class" defaultTheme="light">
+                          <main className={GeistSans.className}>
+                            {children}
+                          </main>
+                          <ToastContainer
+                            autoClose={3000}
+                            closeButton={true}
+                            hideProgressBar={false}
+                            newestOnTop={true}
+                            position="top-right"
+                            toastStyle={{ maxWidth: '400px' }}
+                          />
                           <Toaster />
                         </ThemeProvider>
                       </SecondPanelProvider>

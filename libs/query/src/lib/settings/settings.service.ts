@@ -9,17 +9,12 @@ import Swal from 'sweetalert2';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 import { FormattedResponse } from '@rumsan/sdk/utils';
+import { SiteInfo } from '../site-info/siteInfo.service';
 
 // const convertKeysToCamelCase = (obj:Record<string,any>):Record<string ,any>=> {
 //   return mapKeys(obj, (value, key) => camelCase(key));
 // };
 
-export interface SiteInfo {
-  BRAND_LOGO: string;
-  BRAND_NAME: string;
-  BRAND_DESCRIPTION: string;
-  SITE_BACKGROUND_IMAGE: string;
-}
 interface SiteInfoResponse {
   name: string;
   value: SiteInfo;

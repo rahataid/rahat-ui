@@ -144,7 +144,7 @@ export default function ListSiteInfo() {
           />
         </TabsContent>
         <TabsContent value="preview">
-          <SiteInfoPreview data={siteInfo ? siteInfo : {}} />
+          <SiteInfoPreview data={siteInfo} />
         </TabsContent>
       </Tabs>
     </div>

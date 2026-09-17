@@ -10,6 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { Pencil } from 'lucide-react';
 import { DemoTable } from 'apps/rahat-ui/src/common';
@@ -25,6 +26,7 @@ export default function ListSiteInfo() {
   const g = useTranslations('GLOBAL');
   const t = useTranslations('SITE_INFO');
   const [activeTab, setActiveTab] = useState('configuration');
+  const router = useRouter();
   const { data, isPending } = useSiteInfoList();
   console.log('data', data);
   const columns = useMemo<ColumnDef<SiteInfo>[]>(
@@ -84,7 +86,7 @@ export default function ListSiteInfo() {
             <SystemUserAuth hasContent={false}>
               <TooltipWrapper tip="Edit Site Info">
                 <button
-                  onClick={() => console.log('Edit Site Info')}
+                  onClick={() => router.push('/site-info/edit')}
                   className="cursor-pointer"
                 >
                   <Pencil size={18} />
@@ -95,7 +97,7 @@ export default function ListSiteInfo() {
         ),
       },
     ],
-    [g],
+    [g, router],
   );
 
   const tableData = useMemo(

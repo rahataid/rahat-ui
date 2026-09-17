@@ -6,7 +6,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { TAGS, useAppSettingsCreate, useUploadFile } from '@rahat-ui/query';
+import {
+  SiteInfo,
+  TAGS,
+  useRahatSettingUpdate,
+  useSiteInfoList,
+  useUploadFile,
+} from '@rahat-ui/query';
 import { Back } from 'apps/rahat-ui/src/common';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -19,7 +25,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { ImagePlus, X } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const SiteInfoFormSchema = z.object({
   BRAND_NAME: z.string().min(2, { message: 'Please enter brand name' }),
@@ -35,16 +42,9 @@ type ImagePickerProps = {
   hint: string;
   previewUrl: string | null;
   onSelect: (file: File) => void;
-  onRemove: () => void;
 };
 
-function ImagePicker({
-  label,
-  hint,
-  previewUrl,
-  onSelect,
-  onRemove,
-}: ImagePickerProps) {
+function ImagePicker({ label, hint, previewUrl, onSelect }: ImagePickerProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -56,28 +56,18 @@ function ImagePicker({
     <div>
       <FormLabel>{label}</FormLabel>
       <p className="text-xs text-muted-foreground mt-1">{hint}</p>
-      {previewUrl ? (
-        <div className="relative mt-2 w-fit">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+      <div className="mt-2 flex items-center gap-4">
+        {previewUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={previewUrl}
             alt={label}
             className="h-32 w-auto max-w-full rounded border object-contain bg-muted"
           />
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon"
-            className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
-            onClick={onRemove}
-          >
-            <X size={14} />
-          </Button>
-        </div>
-      ) : (
-        <label className="mt-2 flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded border border-dashed text-muted-foreground hover:bg-muted/50">
-          <ImagePlus size={24} />
-          <span className="text-xs">Click to upload image</span>
+        )}
+        <label className="flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-sm hover:bg-muted/50">
+          <ImagePlus size={16} />
+          <span>{previewUrl ? 'Change image' : 'Upload image'}</span>
           <input
             type="file"
             accept="image/*"
@@ -85,16 +75,20 @@ function ImagePicker({
             onChange={handleFileChange}
           />
         </label>
-      )}
+      </div>
     </div>
   );
 }
 
-export default function AddSiteInfo() {
+export default function EditSiteInfo() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const createSetting = useAppSettingsCreate();
+  const { data, isPending } = useSiteInfoList();
+  const updateSetting = useRahatSettingUpdate();
   const uploadFile = useUploadFile();
+
+  const record = data?.data;
+  const original: SiteInfo | undefined = record?.value;
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -102,11 +96,16 @@ export default function AddSiteInfo() {
   const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
     null,
   );
-  const [imageError, setImageError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<SiteInfoFormValues>({
     resolver: zodResolver(SiteInfoFormSchema),
+    values: original
+      ? {
+          BRAND_NAME: original.BRAND_NAME || '',
+          BRAND_DESCRIPTION: original.BRAND_DESCRIPTION || '',
+        }
+      : undefined,
     defaultValues: {
       BRAND_NAME: '',
       BRAND_DESCRIPTION: '',
@@ -117,26 +116,12 @@ export default function AddSiteInfo() {
     if (logoPreview) URL.revokeObjectURL(logoPreview);
     setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
-    setImageError(null);
-  };
-
-  const handleRemoveLogo = () => {
-    if (logoPreview) URL.revokeObjectURL(logoPreview);
-    setLogoFile(null);
-    setLogoPreview(null);
   };
 
   const handleSelectBackground = (file: File) => {
     if (backgroundPreview) URL.revokeObjectURL(backgroundPreview);
     setBackgroundFile(file);
     setBackgroundPreview(URL.createObjectURL(file));
-    setImageError(null);
-  };
-
-  const handleRemoveBackground = () => {
-    if (backgroundPreview) URL.revokeObjectURL(backgroundPreview);
-    setBackgroundFile(null);
-    setBackgroundPreview(null);
   };
 
   const uploadImage = async (file: File) => {
@@ -147,44 +132,76 @@ export default function AddSiteInfo() {
   };
 
   const onSubmit = async (values: SiteInfoFormValues) => {
-    if (!logoFile || !backgroundFile) {
-      setImageError('Please upload both brand logo and background image.');
+    if (!original) return;
+
+    // Upload only the images the user replaced
+    let logoUrl = original.BRAND_LOGO;
+    let backgroundUrl = original.SITE_BACKGROUND_IMAGE;
+    if (logoFile || backgroundFile) {
+      setIsUploading(true);
+      try {
+        if (logoFile) logoUrl = await uploadImage(logoFile);
+        if (backgroundFile) backgroundUrl = await uploadImage(backgroundFile);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
+    const mergedValue: SiteInfo = {
+      BRAND_NAME: values.BRAND_NAME,
+      BRAND_DESCRIPTION: values.BRAND_DESCRIPTION,
+      BRAND_LOGO: logoUrl,
+      SITE_BACKGROUND_IMAGE: backgroundUrl,
+    };
+
+    const hasEdits = (Object.keys(mergedValue) as (keyof SiteInfo)[]).some(
+      (key) => mergedValue[key] !== original[key],
+    );
+    if (!hasEdits) {
+      Swal.fire('No changes', 'Nothing to update.', 'info');
       return;
     }
-    setIsUploading(true);
-    try {
-      const [logoUrl, backgroundUrl] = await Promise.all([
-        uploadImage(logoFile),
-        uploadImage(backgroundFile),
-      ]);
-      await createSetting.mutateAsync({
-        name: 'SITE_SETTINGS',
-        value: {
-          BRAND_NAME: values.BRAND_NAME,
-          BRAND_DESCRIPTION: values.BRAND_DESCRIPTION,
-          BRAND_LOGO: logoUrl,
-          SITE_BACKGROUND_IMAGE: backgroundUrl,
-        },
-        requiredFields: [],
-        isReadOnly: false,
-        isPrivate: false,
-      });
-      queryClient.invalidateQueries({ queryKey: [TAGS.GET_SITE_INFO] });
-      router.push('/site-info');
-    } finally {
-      setIsUploading(false);
-    }
+
+    // Send the whole setting back, with only the edited values replaced
+    await updateSetting.mutateAsync({
+      ...record,
+      name: 'SITE_SETTINGS',
+      value: mergedValue,
+    });
+    queryClient.invalidateQueries({ queryKey: [TAGS.GET_SITE_INFO] });
+    setLogoFile(null);
+    setBackgroundFile(null);
+    router.push('/site-info');
   };
 
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (!original) {
+    return (
+      <div className="p-4">
+        <Back />
+        <h1 className="text-2xl font-bold">Edit Site Info</h1>
+        <p className="text-muted-foreground">No site info found.</p>
+        <Button className="mt-4" onClick={() => router.push('/site-info/add')}>
+          Add Site Info
+        </Button>
+      </div>
+    );
+  }
+
+  const hasChanges =
+    form.formState.isDirty || logoFile !== null || backgroundFile !== null;
   const isSubmitting =
-    isUploading || uploadFile.isPending || createSetting.isPending;
+    isUploading || uploadFile.isPending || updateSetting.isPending;
 
   return (
     <div className="p-4">
       <Back />
-      <h1 className="text-2xl font-bold">Add Site Info</h1>
+      <h1 className="text-2xl font-bold">Edit Site Info</h1>
       <p className="text-muted-foreground">
-        Configure your site branding shown on the login page.
+        Update your site branding shown on the login page.
       </p>
 
       <div className="mt-4 w-full rounded border p-4 shadow">
@@ -222,22 +239,15 @@ export default function AddSiteInfo() {
             <ImagePicker
               label="Brand Logo"
               hint="Logo shown on the top-left and center of the login page."
-              previewUrl={logoPreview}
+              previewUrl={logoPreview || original.BRAND_LOGO}
               onSelect={handleSelectLogo}
-              onRemove={handleRemoveLogo}
             />
             <ImagePicker
               label="Background Image"
               hint="Full-bleed image shown on the left side of the login page."
-              previewUrl={backgroundPreview}
+              previewUrl={backgroundPreview || original.SITE_BACKGROUND_IMAGE}
               onSelect={handleSelectBackground}
-              onRemove={handleRemoveBackground}
             />
-            {imageError && (
-              <p className="text-sm font-medium text-destructive">
-                {imageError}
-              </p>
-            )}
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
@@ -247,12 +257,12 @@ export default function AddSiteInfo() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !hasChanges}>
                 {isUploading
                   ? 'Uploading images...'
-                  : createSetting.isPending
+                  : updateSetting.isPending
                   ? 'Saving...'
-                  : 'Save'}
+                  : 'Update'}
               </Button>
             </div>
           </form>

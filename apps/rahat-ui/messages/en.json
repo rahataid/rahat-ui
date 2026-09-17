@@ -559,7 +559,8 @@
     "PLEASE_SELECT_A_STATUS": "Please select a status.",
     "ACTIVITY": "Activity",
     "PAYOUT": "Payout",
-    "INKIND": "Inkind"
+    "INKIND": "Inkind",
+    "ENVIRONMENT": "Environment"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -1139,8 +1140,7 @@
     "AUTH_APPS": "Auth Apps",
     "PROJECT_INFO": "Project Info",
     "VERSION": "Version",
-    "UNREACHABLE": "Unreachable",
-    "WEB_VERSION": "Web Version"
+    "UNREACHABLE": "Unreachable"
   },
   "VENDORS_LIST": {
     "VENDORS": "Vendors",

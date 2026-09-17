@@ -3487,7 +3487,8 @@
     "PLEASE_SELECT_A_STATUS": "कृपया स्थिति छान्नुहोस्।",
     "ACTIVITY": "गतिविधि",
     "PAYOUT": "भुक्तानी",
-    "INKIND": "इन्काइन्ड"
+    "INKIND": "इन्काइन्ड",
+    "ENVIRONMENT": "वातावरण"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -3697,8 +3698,7 @@
     "LIST": "सूची",
     "PROJECT_INFO": "परियोजनाको जानकारी",
     "VERSION": "संस्करण",
-    "UNREACHABLE": "पहुँच नभएको",
-    "WEB_VERSION": "वेब संस्करण"
+    "UNREACHABLE": "पहुँच नभएको"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "तथ्यांकको प्रकार",

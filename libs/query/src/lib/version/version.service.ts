@@ -3,11 +3,15 @@ import { useRSQuery } from '@rumsan/react-query';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { TAGS } from '../../config';
 
+export type ServiceVersion = {
+  version: string;
+  env: string | null;
+};
+
 export type AppVersions = {
-  platform: string;
-  rahatAa: string;
-  triggers: string;
-  env: string;
+  platform: ServiceVersion;
+  rahatAa: ServiceVersion;
+  triggers: ServiceVersion;
   fetchedAt: string;
 };
 
@@ -19,10 +23,3 @@ export const useAppVersions = (): UseQueryResult<AppVersions, Error> => {
   }, queryClient);
 };
 
-export const useWebVersion = (): UseQueryResult<{ url: string; env: string }, Error> => {
-  const { rumsanService, queryClient } = useRSQuery();
-  return useQuery({
-    queryKey: [TAGS.GET_WEB_VERSION],
-    queryFn: async () => (await rumsanService.client.get('/app/web-version')).data.data,
-  }, queryClient);
-};

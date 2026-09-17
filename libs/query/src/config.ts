@@ -41,7 +41,6 @@ export const TAGS = {
   GET_IMPORT_FILE: 'get_import_file',
   START_IMPORT: 'start_import',
   GET_APP_VERSIONS: 'get_app_versions',
-  GET_WEB_VERSION: 'get_web_version',
   NEW_COMMS: {
     LIST_TRANSPORTS: 'new_comms.list_transports',
     RETRY_FAILED: 'new_comms.retry_failed',

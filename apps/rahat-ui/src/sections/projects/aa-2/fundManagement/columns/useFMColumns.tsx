@@ -68,17 +68,22 @@ export const useFundManagementTableColumns = () => {
       accessorFn: (row) => row?.title,
       header: tv('FUND_TITLE'),
       cell: ({ row }) => (
-        <TruncatedCell text={row?.original?.title || tg('N_A')} maxLength={10} />
+        <TruncatedCell
+          text={row?.original?.title || tg('N_A')}
+          truncateByWidth
+        />
       ),
     },
     {
       accessorKey: 'beneficiaryGroup',
       header: tv('BENEFICIARY_GROUP'),
+      meta: { className: 'w-[18%]' },
+
       cell: ({ row }) => {
         return (
           <TruncatedCell
             text={row.original?.group?.name || tg('N_A')}
-            maxLength={15}
+            truncateByWidth
           />
         );
       },
@@ -86,11 +91,15 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'tokens',
       header: tv('TOTAL_TOKENS'),
+      meta: { className: 'w-[120px]' },
+
       cell: ({ row }) => <div>{formatNum(row?.original?.numberOfTokens)}</div>,
     },
     {
       accessorKey: 'tokensperBenef',
       header: t('TOKEN_PER_BENEFICIARY'),
+      meta: { className: 'w-[15%]' },
+
       cell: ({ row }) => (
         <div>
           {formatNum(
@@ -103,23 +112,34 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: t('CREATED_BY'),
+      meta: { className: 'w-[12%]' },
+
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('createdBy') || tg('N_A')}
-          maxLength={15}
+          truncateByWidth
         />
       ),
     },
     {
-      accessorKey: 'status',
       header: tg('STATUS'),
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
-        const status = row.getValue('status') as FundStatus;
+        const status = row?.original?.status as FundStatus;
 
         return (
-          <Badge className={renderBadgeStyle(status)}>
-            {fundStatusLabel(status) || tg('N_A')}
-          </Badge>
+          <div className="flex gap-2 w-full">
+            <Badge className={renderBadgeStyle(status)}>
+              {fundStatusLabel(status) || tg('N_A')}
+            </Badge>
+            {row?.original?.totalSuccess != null &&
+              row?.original?.totalBeneficiaries != null && (
+                <span className="text-[12px]">
+                  {row?.original.totalSuccess} /{' '}
+                  {row?.original.totalBeneficiaries}
+                </span>
+              )}
+          </div>
         );
       },
     },
@@ -127,6 +147,7 @@ export const useFundManagementTableColumns = () => {
       id: 'actions',
       header: tg('ACTIONS'),
       enableHiding: false,
+      meta: { className: 'w-[7%]' },
       cell: ({ row }) => {
         const status = row.getValue('status') as FundStatus;
         return (

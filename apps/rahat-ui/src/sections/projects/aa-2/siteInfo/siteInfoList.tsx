@@ -23,10 +23,10 @@ import SiteInfoPreview from './siteInfo.preview';
 
 export default function ListSiteInfo() {
   const g = useTranslations('GLOBAL');
-  const t = useTranslations('NO_PROJECTS_FOUND');
+  const t = useTranslations('SITE_INFO');
   const [activeTab, setActiveTab] = useState('configuration');
-
   const { data, isPending } = useSiteInfoList();
+  console.log('data', data);
   const columns = useMemo<ColumnDef<SiteInfo>[]>(
     () => [
       {
@@ -100,7 +100,7 @@ export default function ListSiteInfo() {
 
   const tableData = useMemo(
     () => (data?.data?.value ? [data.data.value] : []),
-    [data?.data?.value],
+    [data],
   );
 
   const table = useReactTable({
@@ -140,11 +140,11 @@ export default function ListSiteInfo() {
             table={table}
             tableHeight="h-[calc(100vh-230px)]"
             loading={isPending}
-            message={t('NO_PROJECTS_FOUND')}
+            message={t('NO_SITE_INFO_FOUND')}
           />
         </TabsContent>
         <TabsContent value="preview">
-          <SiteInfoPreview data={siteInfo} />
+          <SiteInfoPreview data={siteInfo ? siteInfo : {}} />
         </TabsContent>
       </Tabs>
     </div>

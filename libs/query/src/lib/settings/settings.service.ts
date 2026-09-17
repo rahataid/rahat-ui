@@ -8,11 +8,26 @@ import { getSettingsClient } from '@rahataid/sdk/clients';
 import Swal from 'sweetalert2';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
+import { FormattedResponse } from '@rumsan/sdk/utils';
 
 // const convertKeysToCamelCase = (obj:Record<string,any>):Record<string ,any>=> {
 //   return mapKeys(obj, (value, key) => camelCase(key));
 // };
 
+export interface SiteInfo {
+  BRAND_LOGO: string;
+  BRAND_NAME: string;
+  BRAND_DESCRIPTION: string;
+  SITE_BACKGROUND_IMAGE: string;
+}
+interface SiteInfoResponse {
+  name: string;
+  value: SiteInfo;
+  dataType: string;
+  requiredFields: string[];
+  isReadOnly: boolean;
+  isPrivate: boolean;
+}
 //Never call this function directly, always use useAppSettings or useChainSettings
 export const useAppSettingsMutate = (settingsName?: string) => {
   const { queryClient, rumsanService } = useRSQuery();
@@ -243,11 +258,16 @@ export const useAppSettingsCreate = () => {
             },
           ],
         });
-        Swal.fire(t('GLOBAL.SETTINGS_CREATED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.SETTINGS_CREATED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
       },
       onError: (error: any) => {
         const rawMessage =
-          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
+          error?.response?.data?.message ||
+          t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
         const errorMessage = resolveBackendErrorMessage(
           t,
           error?.response?.data?.code,
@@ -295,11 +315,16 @@ export const useRahatSettingUpdate = () => {
             },
           ],
         });
-        Swal.fire(t('GLOBAL.SETTINGS_UPDATED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.SETTINGS_UPDATED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
       },
       onError: (error: any) => {
         const rawMessage =
-          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
+          error?.response?.data?.message ||
+          t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
         const errorMessage = resolveBackendErrorMessage(
           t,
           error?.response?.data?.code,
@@ -326,4 +351,25 @@ export const useGetRahatSettingByName = (
     },
     queryClient,
   );
+};
+
+export const useGetSiteInfoList = (
+  payload?: any,
+): UseQueryResult<FormattedResponse<SiteInfoResponse>, Error> => {
+  const { queryClient } = useRSQuery();
+  const appSettings = useAppSettingsMutate('SITE_SETTINGS');
+
+  const query = useQuery(
+    {
+      queryKey: ['SITE_SETTINGS', payload],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value || {};
+      },
+      staleTime: 60 * 60 * 1000, // 1 hour
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+  return query;
 };

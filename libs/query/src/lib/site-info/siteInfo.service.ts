@@ -19,7 +19,9 @@ interface SiteInfoResponse {
   isPrivate: boolean;
 }
 const BASE_URL = process.env['NEXT_PUBLIC_API_HOST_URL'] || '';
-const fetchSiteInfo = async (): Promise<FormattedResponse<SiteInfoResponse>> => {
+const fetchSiteInfo = async (): Promise<
+  FormattedResponse<SiteInfoResponse>
+> => {
   const response = await fetch(`${BASE_URL}/v1/app/settings/site-info`, {
     method: 'GET',
     headers: {
@@ -33,6 +35,7 @@ const fetchSiteInfo = async (): Promise<FormattedResponse<SiteInfoResponse>> => 
   const data = await response.json();
   return data;
 };
+
 export const useSiteInfoList = (
   payload?: any,
 ): UseQueryResult<FormattedResponse<SiteInfoResponse>, Error> => {

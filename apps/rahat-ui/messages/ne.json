@@ -3701,7 +3701,7 @@
     "SITE_INFO": "साइट जानकारी",
     "BRAND_NAME": "साइट नाम",
     "BRAND_DESCRIPTION": "ब्रान्ड वर्णन",
-    "SITE_BACKGROUND_IMAGE": "साइट पृष्ठभूमि छवि"
+    "BACKGROUND_IMAGE": "पृष्ठभूमि छवि"
   },
 
   "SETTINGS_NAVIGATION": {

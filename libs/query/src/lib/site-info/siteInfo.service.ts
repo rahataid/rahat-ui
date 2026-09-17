@@ -1,5 +1,3 @@
-import { getProjectClient } from '@rahataid/sdk/clients';
-import { useRSQuery } from '@rumsan/react-query';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { TAGS } from '../../config';
 import { FormattedResponse } from '@rumsan/sdk/utils';
@@ -36,13 +34,14 @@ const fetchSiteInfo = async (): Promise<
   return data;
 };
 
-export const useSiteInfoList = (
-  payload?: any,
-): UseQueryResult<FormattedResponse<SiteInfoResponse>, Error> => {
+export const useSiteInfoList = (): UseQueryResult<
+  FormattedResponse<SiteInfoResponse>,
+  Error
+> => {
   return useQuery({
-    queryKey: [TAGS.GET_SITE_INFO, payload],
+    queryKey: [TAGS.GET_SITE_INFO],
     queryFn: () => fetchSiteInfo(),
-    staleTime: 5 * 60 * 60 * 1000, // 5 hours
+    staleTime: 60 * 60 * 1000, // 1 hour
     retryOnMount: true,
   });
 };

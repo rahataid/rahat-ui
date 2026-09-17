@@ -35,7 +35,7 @@
     "NO_RESULT": "No result.",
     "ADDRESS": "Address",
     "DESCRIPTION": "Description",
-    "BACKGROUND": "Background",
+    "BACKGROUND_IMAGE": "Background Image",
     "BRAND": "Brand",
     "BRAND_NAME": "Brand Name",
     "LOGO": "Logo",
@@ -1139,7 +1139,7 @@
     "SITE_INFO": "Site Info",
     "BRAND_NAME": "Site Name",
     "BRAND_DESCRIPTION": "Brand Description",
-    "SITE_BACKGROUND_IMAGE": "Site Background Image"
+    "BACKGROUND_IMAGE": "Background Image"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "DataType",

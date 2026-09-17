@@ -8,21 +8,11 @@ import { getSettingsClient } from '@rahataid/sdk/clients';
 import Swal from 'sweetalert2';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
-import { FormattedResponse } from '@rumsan/sdk/utils';
-import { SiteInfo } from '../site-info/siteInfo.service';
 
 // const convertKeysToCamelCase = (obj:Record<string,any>):Record<string ,any>=> {
 //   return mapKeys(obj, (value, key) => camelCase(key));
 // };
 
-interface SiteInfoResponse {
-  name: string;
-  value: SiteInfo;
-  dataType: string;
-  requiredFields: string[];
-  isReadOnly: boolean;
-  isPrivate: boolean;
-}
 //Never call this function directly, always use useAppSettings or useChainSettings
 export const useAppSettingsMutate = (settingsName?: string) => {
   const { queryClient, rumsanService } = useRSQuery();
@@ -346,25 +336,4 @@ export const useGetRahatSettingByName = (
     },
     queryClient,
   );
-};
-
-export const useGetSiteInfoList = (
-  payload?: any,
-): UseQueryResult<FormattedResponse<SiteInfoResponse>, Error> => {
-  const { queryClient } = useRSQuery();
-  const appSettings = useAppSettingsMutate('SITE_SETTINGS');
-
-  const query = useQuery(
-    {
-      queryKey: ['SITE_SETTINGS', payload],
-      queryFn: async () => {
-        const d = await appSettings.mutateAsync();
-        return d.data.data?.value || {};
-      },
-      staleTime: 60 * 60 * 1000, // 1 hour
-      enabled: !!queryClient,
-    },
-    queryClient,
-  );
-  return query;
 };

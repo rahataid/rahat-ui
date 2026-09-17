@@ -66,16 +66,16 @@ export const useSiteInfoColumns = () => {
         header: g('ACTIONS'),
         cell: () => (
           <div className="flex items-center space-x-3">
-            <SystemUserAuth hasContent={false}>
-              <TooltipWrapper tip="Edit Site Info">
-                <button
-                  onClick={() => router.push('/site-info/edit')}
-                  className="cursor-pointer"
-                >
-                  <Edit size={18} />
-                </button>
-              </TooltipWrapper>
-            </SystemUserAuth>
+            {/* <SystemUserAuth hasContent={false}> */}
+            <TooltipWrapper tip="Edit Site Info">
+              <button
+                onClick={() => router.push('/site-info/edit')}
+                className="cursor-pointer"
+              >
+                <Edit size={18} />
+              </button>
+            </TooltipWrapper>
+            {/* </SystemUserAuth> */}
           </div>
         ),
       },

@@ -17,7 +17,9 @@ export const useSiteInfoColumns = () => {
       {
         header: g('NAME'),
         accessorKey: 'BRAND_NAME',
-        cell: ({ row }) => <div>{row.getValue('BRAND_NAME')}</div>,
+        cell: ({ row }) => (
+          <div>{(row.getValue('BRAND_NAME') as string) || 'N/A'}</div>
+        ),
         filterFn: 'includesString',
       },
       {
@@ -26,7 +28,7 @@ export const useSiteInfoColumns = () => {
         cell: ({ row }) => (
           <div>
             <TruncatedCell
-              text={row.getValue('BRAND_DESCRIPTION')}
+              text={(row.getValue('BRAND_DESCRIPTION') as string) || 'N/A'}
               truncateByWidth
             />
           </div>
@@ -35,31 +37,30 @@ export const useSiteInfoColumns = () => {
       {
         header: t('BACKGROUND_IMAGE'),
         accessorKey: 'SITE_BACKGROUND_IMAGE',
-        cell: ({ row }) => (
-          <a
-            href={row.original.SITE_BACKGROUND_IMAGE}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <TruncatedCell
-              text={row.getValue('SITE_BACKGROUND_IMAGE')}
-              truncateByWidth
-            />
-          </a>
-        ),
+        cell: ({ row }) => {
+          const url = row.getValue('SITE_BACKGROUND_IMAGE') as string;
+          if (!url)
+            return <span className="text-muted-foreground">N/A</span>;
+          return (
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              <TruncatedCell text={url} truncateByWidth />
+            </a>
+          );
+        },
       },
       {
         header: t('BRAND_LOGO'),
         accessorKey: 'BRAND_LOGO',
-        cell: ({ row }) => (
-          <a
-            href={row.original.BRAND_LOGO}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <TruncatedCell text={row.getValue('BRAND_LOGO')} truncateByWidth />
-          </a>
-        ),
+        cell: ({ row }) => {
+          const url = row.getValue('BRAND_LOGO') as string;
+          if (!url)
+            return <span className="text-muted-foreground">N/A</span>;
+          return (
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              <TruncatedCell text={url} truncateByWidth />
+            </a>
+          );
+        },
       },
       {
         id: 'actions',

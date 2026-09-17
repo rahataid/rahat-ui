@@ -102,7 +102,6 @@ export default function AddSiteInfo() {
   const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
     null,
   );
-  const [imageError, setImageError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<SiteInfoFormValues>({
@@ -117,7 +116,6 @@ export default function AddSiteInfo() {
     if (logoPreview) URL.revokeObjectURL(logoPreview);
     setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
-    setImageError(null);
   };
 
   const handleRemoveLogo = () => {
@@ -130,7 +128,6 @@ export default function AddSiteInfo() {
     if (backgroundPreview) URL.revokeObjectURL(backgroundPreview);
     setBackgroundFile(file);
     setBackgroundPreview(URL.createObjectURL(file));
-    setImageError(null);
   };
 
   const handleRemoveBackground = () => {
@@ -147,24 +144,23 @@ export default function AddSiteInfo() {
   };
 
   const onSubmit = async (values: SiteInfoFormValues) => {
-    if (!logoFile || !backgroundFile) {
-      setImageError('Please upload both brand logo and background image.');
-      return;
-    }
     setIsUploading(true);
     try {
       const [logoUrl, backgroundUrl] = await Promise.all([
-        uploadImage(logoFile),
-        uploadImage(backgroundFile),
+        logoFile ? uploadImage(logoFile) : Promise.resolve(undefined),
+        backgroundFile
+          ? uploadImage(backgroundFile)
+          : Promise.resolve(undefined),
       ]);
+      const value: Record<string, string> = {
+        BRAND_NAME: values.BRAND_NAME,
+        BRAND_DESCRIPTION: values.BRAND_DESCRIPTION,
+      };
+      if (logoUrl) value.BRAND_LOGO = logoUrl;
+      if (backgroundUrl) value.SITE_BACKGROUND_IMAGE = backgroundUrl;
       await createSetting.mutateAsync({
         name: 'SITE_SETTINGS',
-        value: {
-          BRAND_NAME: values.BRAND_NAME,
-          BRAND_DESCRIPTION: values.BRAND_DESCRIPTION,
-          BRAND_LOGO: logoUrl,
-          SITE_BACKGROUND_IMAGE: backgroundUrl,
-        },
+        value,
         requiredFields: [],
         isReadOnly: false,
         isPrivate: false,
@@ -233,11 +229,6 @@ export default function AddSiteInfo() {
               onSelect={handleSelectBackground}
               onRemove={handleRemoveBackground}
             />
-            {imageError && (
-              <p className="text-sm font-medium text-destructive">
-                {imageError}
-              </p>
-            )}
             <div className="flex justify-end gap-2">
               <Button
                 type="button"

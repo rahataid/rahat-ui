@@ -25,7 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { ImagePlus } from 'lucide-react';
+import { ImagePlus, X } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 const SiteInfoFormSchema = z.object({
@@ -42,9 +42,16 @@ type ImagePickerProps = {
   hint: string;
   previewUrl: string | null;
   onSelect: (file: File) => void;
+  onRemove: () => void;
 };
 
-function ImagePicker({ label, hint, previewUrl, onSelect }: ImagePickerProps) {
+function ImagePicker({
+  label,
+  hint,
+  previewUrl,
+  onSelect,
+  onRemove,
+}: ImagePickerProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -58,12 +65,23 @@ function ImagePicker({ label, hint, previewUrl, onSelect }: ImagePickerProps) {
       <p className="text-xs text-muted-foreground mt-1">{hint}</p>
       <div className="mt-2 flex items-center gap-4">
         {previewUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={previewUrl}
-            alt={label}
-            className="h-32 w-auto max-w-full rounded border object-contain bg-muted"
-          />
+          <div className="relative w-fit">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewUrl}
+              alt={label}
+              className="h-32 w-auto max-w-full rounded border object-contain bg-muted"
+            />
+            <Button
+              type="button"
+              variant="destructive"
+              size="icon"
+              className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+              onClick={onRemove}
+            >
+              <X size={14} />
+            </Button>
+          </div>
         )}
         <label className="flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-sm hover:bg-muted/50">
           <ImagePlus size={16} />
@@ -92,10 +110,12 @@ export default function EditSiteInfo() {
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoRemoved, setLogoRemoved] = useState(false);
   const [backgroundFile, setBackgroundFile] = useState<File | null>(null);
   const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
     null,
   );
+  const [backgroundRemoved, setBackgroundRemoved] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<SiteInfoFormValues>({
@@ -116,12 +136,28 @@ export default function EditSiteInfo() {
     if (logoPreview) URL.revokeObjectURL(logoPreview);
     setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
+    setLogoRemoved(false);
+  };
+
+  const handleRemoveLogo = () => {
+    if (logoPreview) URL.revokeObjectURL(logoPreview);
+    setLogoFile(null);
+    setLogoPreview(null);
+    setLogoRemoved(true);
   };
 
   const handleSelectBackground = (file: File) => {
     if (backgroundPreview) URL.revokeObjectURL(backgroundPreview);
     setBackgroundFile(file);
     setBackgroundPreview(URL.createObjectURL(file));
+    setBackgroundRemoved(false);
+  };
+
+  const handleRemoveBackground = () => {
+    if (backgroundPreview) URL.revokeObjectURL(backgroundPreview);
+    setBackgroundFile(null);
+    setBackgroundPreview(null);
+    setBackgroundRemoved(true);
   };
 
   const uploadImage = async (file: File) => {
@@ -134,9 +170,9 @@ export default function EditSiteInfo() {
   const onSubmit = async (values: SiteInfoFormValues) => {
     if (!original) return;
 
-    // Upload only the images the user replaced
-    let logoUrl = original.BRAND_LOGO;
-    let backgroundUrl = original.SITE_BACKGROUND_IMAGE;
+    // Upload only the images the user replaced; removed images are cleared
+    let logoUrl = logoRemoved ? '' : original.BRAND_LOGO;
+    let backgroundUrl = backgroundRemoved ? '' : original.SITE_BACKGROUND_IMAGE;
     if (logoFile || backgroundFile) {
       setIsUploading(true);
       try {
@@ -192,7 +228,11 @@ export default function EditSiteInfo() {
   }
 
   const hasChanges =
-    form.formState.isDirty || logoFile !== null || backgroundFile !== null;
+    form.formState.isDirty ||
+    logoFile !== null ||
+    backgroundFile !== null ||
+    logoRemoved ||
+    backgroundRemoved;
   const isSubmitting =
     isUploading || uploadFile.isPending || updateSetting.isPending;
 
@@ -239,14 +279,22 @@ export default function EditSiteInfo() {
             <ImagePicker
               label="Brand Logo"
               hint="Logo shown on the top-left and center of the login page."
-              previewUrl={logoPreview || original.BRAND_LOGO}
+              previewUrl={
+                logoRemoved ? logoPreview : logoPreview || original.BRAND_LOGO
+              }
               onSelect={handleSelectLogo}
+              onRemove={handleRemoveLogo}
             />
             <ImagePicker
               label="Background Image"
               hint="Full-bleed image shown on the left side of the login page."
-              previewUrl={backgroundPreview || original.SITE_BACKGROUND_IMAGE}
+              previewUrl={
+                backgroundRemoved
+                  ? backgroundPreview
+                  : backgroundPreview || original.SITE_BACKGROUND_IMAGE
+              }
               onSelect={handleSelectBackground}
+              onRemove={handleRemoveBackground}
             />
             <div className="flex justify-end gap-2">
               <Button

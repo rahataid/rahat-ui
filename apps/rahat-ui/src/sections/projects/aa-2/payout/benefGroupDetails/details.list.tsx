@@ -367,7 +367,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
         <div
           className={`grid ${
-            payout?.extras?.group_gap ? 'lg:grid-cols-5' : 'lg:grid-cols-4'
+            payout?.extras?.group_gap || payout?.type === 'VENDOR'
+              ? 'lg:grid-cols-5'
+              : 'lg:grid-cols-4'
           } gap-4 pt-2`}
         >
           <DataCard

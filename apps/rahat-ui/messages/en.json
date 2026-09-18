@@ -560,7 +560,9 @@
     "PLEASE_SELECT_A_STATUS": "Please select a status.",
     "ACTIVITY": "Activity",
     "PAYOUT": "Payout",
-    "INKIND": "Inkind"
+    "INKIND": "Inkind",
+    "CHECKING": "Checking...",
+    "RUN_HEALTH_CHECK": "Run Health Check"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -1138,7 +1140,8 @@
   "SETTINGS_NAVIGATION": {
     "LIST": "List",
     "AUTH_APPS": "Auth Apps",
-    "PROJECT_INFO": "Project Info"
+    "PROJECT_INFO": "Project Info",
+    "HEALTH": "Health"
   },
   "VENDORS_LIST": {
     "VENDORS": "Vendors",
@@ -1843,6 +1846,11 @@
     "DATA_AVAILABLE_FOR_THE_SELECTED_TIME": "data available for the selected time period.",
     "DATA_HEALTH_CHECKER": "Data Health Checker",
     "DATA_HEALTH_MONITOR": "Data Health Monitor",
+    "DATABASE": "Database",
+    "REDIS": "Redis",
+    "BLOCKCHAIN_RPC": "Blockchain RPC",
+    "CLOUDFLARE_STORAGE": "Cloudflare Storage",
+    "OFFRAMP_SERVICE": "Offramp Service",
     "DATA_NOT_AVAILABLE_AT_THE_MOMENT": "Data not available at the moment. Please try again later.",
     "DATA_NOT_AVAILABLE_DHM": "Data not available for DHM.",
     "DATA_NOT_AVAILABLE_FOR_DHM": "Data not available for DHM.",
@@ -3465,7 +3473,10 @@
     "single_woman": "Single Woman",
     "steady": "Steady",
     "warning": "Warning",
-    "widow": "Widow"
+    "widow": "Widow",
+    "HEALTH": "Health",
+    "PROJECT_HEALTH": "Project Health",
+    "PROJECT_HEALTH_DESCRIPTION": "Monitor project dependencies and service status"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",

@@ -1,0 +1,129 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { cn } from '@rahat-ui/shadcn/src';
+import { useLabelDigits } from '../utils/i18n/number';
+import type { SystemHealthStatus } from './system-health-banner';
+
+/** One service row, shared by the core-platform and per-project health views. */
+export interface HealthRow {
+  key: string;
+  name: string;
+  status: SystemHealthStatus;
+  lastChecked?: string;
+  responseTime?: string;
+  message?: string;
+}
+
+/** Status badge colours, shared so both health pages stay visually identical. */
+export const healthBadgeStyles: Record<SystemHealthStatus, string> = {
+  HEALTHY: 'bg-green-50 text-green-700 border-green-300',
+  UNHEALTHY: 'bg-red-50 text-red-700 border-red-300',
+  NA: 'bg-gray-50 text-gray-600 border-gray-300',
+};
+
+/** Backend ServiceStatus is 'up' | 'down' only — per-service is never 'degraded'. */
+export const toHealthRowStatus = (
+  status: 'up' | 'down' | undefined,
+): SystemHealthStatus =>
+  status === 'up' ? 'HEALTHY' : status === 'down' ? 'UNHEALTHY' : 'NA';
+
+/** Service key → i18n key; unmapped services fall back to their raw key rather than vanishing. */
+export const SERVICE_LABEL_KEYS: Record<string, string> = {
+  database: 'DATABASE',
+  redis: 'REDIS',
+  rpcUrl: 'BLOCKCHAIN_RPC',
+  cloudflare: 'CLOUDFLARE_STORAGE',
+  communication: 'COMMUNICATION',
+  offRamp: 'OFFRAMP_SERVICE',
+};
+
+/** Translated service and status labels; unknown keys fall back since t() throws on missing messages. */
+export function useHealthLabels() {
+  const tg = useTranslations('GLOBAL');
+  const ta = useTranslations('AA_PROJECT');
+
+  const labelFor = (key: string) => {
+    const labelKey = SERVICE_LABEL_KEYS[key];
+    return labelKey ? ta(labelKey) : key;
+  };
+
+  const statusLabel = (status: SystemHealthStatus) =>
+    status === 'HEALTHY'
+      ? ta('HEALTHY')
+      : status === 'UNHEALTHY'
+        ? ta('UNHEALTHY')
+        : tg('NA');
+
+  return { labelFor, statusLabel };
+}
+
+/** Shared table columns; only latency digits are localised, timestamps stay raw ISO. */
+export function useHealthColumns(): ColumnDef<HealthRow>[] {
+  const tg = useTranslations('GLOBAL');
+  const ta = useTranslations('AA_PROJECT');
+  const { statusLabel } = useHealthLabels();
+  const formatDigits = useLabelDigits();
+
+  return [
+    {
+      header: tg('NAME'),
+      accessorKey: 'name',
+      cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
+    },
+    {
+      header: tg('STATUS'),
+      accessorKey: 'status',
+      cell: ({ row }) => (
+        <div className="flex flex-col gap-1">
+          <Badge
+            variant="outline"
+            className={cn(
+              'text-xs font-medium w-fit border',
+              healthBadgeStyles[row.original.status],
+            )}
+          >
+            {statusLabel(row.original.status)}
+          </Badge>
+          {row.original.message && row.original.status !== 'HEALTHY' && (
+            <span className="text-xs text-red-600">{row.original.message}</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      header: ta('LAST_CHECKED'),
+      accessorKey: 'lastChecked',
+      cell: ({ row }) => (
+        <span className="font-mono text-sm text-muted-foreground">
+          {row.original.lastChecked ?? '-'}
+        </span>
+      ),
+    },
+    {
+      header: ta('RESPONSE_TIME'),
+      accessorKey: 'responseTime',
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">
+          {row.original.responseTime ? formatDigits(row.original.responseTime) : '-'}
+        </span>
+      ),
+    },
+  ];
+}
+
+/** Derived from rows, not the backend aggregate (which only checks DB+Redis), so badge and counts always agree. */
+export const deriveOverallStatus = (rows: HealthRow[]): SystemHealthStatus => {
+  if (!rows.length) return 'NA';
+  return rows.some((r) => r.status === 'UNHEALTHY') ? 'UNHEALTHY' : 'HEALTHY';
+};
+
+/** Most recent probe across all services, without assuming any specific service key exists. */
+export const latestCheckedAt = (rows: HealthRow[]): string | undefined =>
+  rows
+    .map((r) => r.lastChecked)
+    .filter(Boolean)
+    .sort()
+    .at(-1);

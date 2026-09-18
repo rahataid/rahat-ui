@@ -61,7 +61,6 @@ function ImagePicker({
       <p className="text-xs text-muted-foreground mt-1">{hint}</p>
       {previewUrl ? (
         <div className="relative mt-2 w-fit">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={previewUrl}
             alt={label}

@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSettingsStore } from '@rahat-ui/query';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export type LogEntry = {
   timestamp: string;
@@ -11,10 +12,15 @@ export type LogEntry = {
 
 export type ConnectionState = 'connecting' | 'live' | 'offline';
 
-/** Connect exposes its logs as SSE under its own `api/v1` global prefix. */
-export const STREAM_URL =
-  process.env.NEXT_PUBLIC_CONNECT_LOG_STREAM_URL ||
-  `${process.env.NEXT_PUBLIC_API_COMMUNICATION_URL}/api/v1/logs/stream`;
+export function useLogStreamUrl(): string | null {
+  const commsUrl = useSettingsStore((state) => state.commsSettings)?.URL;
+
+  return useMemo(
+    () =>
+      commsUrl ? `${String(commsUrl).replace(/\/+$/, '')}/logs/stream` : null,
+    [commsUrl],
+  );
+}
 
 const FLUSH_MS = 250;
 
@@ -35,6 +41,7 @@ export function useLogStream({
   paused: boolean;
   limit: number;
 }) {
+  const streamUrl = useLogStreamUrl();
   const [entries, setEntries] = useState<LogEntry[]>([]);
   const [status, setStatus] = useState<ConnectionState>('connecting');
 
@@ -52,7 +59,10 @@ export function useLogStream({
   }, []);
 
   useEffect(() => {
-    const source = new EventSource(STREAM_URL);
+    if (!streamUrl) return;
+
+    setStatus('connecting');
+    const source = new EventSource(streamUrl);
 
     source.onopen = () => {
       setStatus('live');
@@ -97,7 +107,7 @@ export function useLogStream({
       clearInterval(timer);
       source.close();
     };
-  }, [limit]);
+  }, [limit, streamUrl]);
 
   useEffect(() => {
     // Keys only guard the replay window, so the set can be dropped once past it.
@@ -107,5 +117,5 @@ export function useLogStream({
     return () => clearInterval(timer);
   }, []);
 
-  return { entries, status, clear };
+  return { entries, status, clear, streamUrl };
 }

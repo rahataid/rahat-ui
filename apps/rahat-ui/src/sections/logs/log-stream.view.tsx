@@ -15,7 +15,6 @@ import { cn } from '@rahat-ui/shadcn/src/utils';
 import { Pause, Play, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  STREAM_URL,
   useLogStream,
   type ConnectionState,
   type LogEntry,
@@ -78,7 +77,10 @@ export default function LogStreamView() {
   const [level, setLevel] = useState<'all' | LogEntry['level']>('all');
   const [search, setSearch] = useState('');
 
-  const { entries, status, clear } = useLogStream({ paused, limit: LIMIT });
+  const { entries, status, clear, streamUrl } = useLogStream({
+    paused,
+    limit: LIMIT,
+  });
 
   const visible = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -195,10 +197,11 @@ export default function LogStreamView() {
                   : 'Lines appear here as the Connect API logs them.'}
               </p>
               {!entries.length && (
-                // The endpoint is a build-time env var, so naming it here is
-                // the difference between "it is broken" and "it is misconfigured".
+                // The endpoint comes from the COMMUNICATION setting, so naming it
+                // here is the difference between "it is broken" and "it is
+                // misconfigured".
                 <p className="mt-1 break-all font-mono text-[11px] text-muted-foreground">
-                  {STREAM_URL}
+                  {streamUrl ?? 'No communication URL configured'}
                 </p>
               )}
             </div>

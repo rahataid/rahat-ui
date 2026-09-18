@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useTranslations } from 'next-intl';
@@ -56,13 +57,6 @@ export const useCreateDailyMonitoring = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -81,10 +75,7 @@ export const useCreateDailyMonitoring = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('ADDED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -96,10 +87,10 @@ export const useCreateDailyMonitoring = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_ADDING'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -206,13 +197,6 @@ export const useUpdateMonitoring = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -234,10 +218,7 @@ export const useUpdateMonitoring = () => {
       qc.invalidateQueries({
         queryKey: ['dailyMonitorings', 'dailyMonitoring'],
       });
-      toast.fire({
-        title: t('UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -249,10 +230,10 @@ export const useUpdateMonitoring = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -263,13 +244,6 @@ export const useRemoveMonitoring = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -291,10 +265,7 @@ export const useRemoveMonitoring = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['dailyMonitorings'] });
-      toast.fire({
-        title: t('REMOVED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('REMOVED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -306,10 +277,10 @@ export const useRemoveMonitoring = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_REMOVING'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

@@ -4,20 +4,12 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useStatsStore } from './stats.store';
 import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
-function useToast() {
-  const alert = useSwal();
-  return alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-}
 export const usePhasesStats = (uuid: UUID) => {
   const q = useProjectAction();
   const { setPhasesStats } = useStatsStore((state) => ({
@@ -172,9 +164,9 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
 };
 
 export const useBackFill = (projectUuid: UUID) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: async () => {
@@ -193,16 +185,10 @@ export const useBackFill = (projectUuid: UUID) => {
       queryClient.invalidateQueries({
         queryKey: ['allStats', projectUuid],
       });
-      toast.fire({
-        title: 'Stats Data Synced successfully',
-        icon: 'success',
-      });
+      toast.success(t('STATS_DATA_SYNCED_SUCCESSFULLY'));
     },
     onError: (error) => {
-      toast.fire({
-        title: error?.message || 'Failed to Back Fill',
-        icon: 'error',
-      });
+      toast.error(error?.message || t('FAILED_TO_BACK_FILL'));
     },
   });
 };
@@ -211,14 +197,6 @@ export const useTransportSessionStats = (uuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-
   const query = useQuery({
     queryKey: ['transportSessionStats', uuid],
     queryFn: async () => {
@@ -243,10 +221,10 @@ export const useTransportSessionStats = (uuid: UUID) => {
           ['ACTIVITIES'],
           rawMessage,
         );
-        toast.fire({
+        showToast({
+          type: 'error',
           title: t('ERROR_LOADING_TRANSPORT_STATS'),
-          text: errorMessage,
-          icon: 'error',
+          description: errorMessage,
         });
         throw error;
       }

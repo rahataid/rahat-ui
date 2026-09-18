@@ -14,11 +14,12 @@ import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { TAGS } from '../../config';
-import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';
 import { useBeneficiaryStore } from './beneficiary.store';
 import { resolveBeneficiaryErrorMessage } from '../../utils/i18n/backend-error';
+import { showToast } from '../../utils/custom-toast';
+import { toast } from 'react-toastify';
 
 const GET_BENEFICIARY_GROUP = 'GET_BENEFICIARY_GROUP';
 const GET_FAILED_BANK_ACCOUNT_BENEFICIARY =
@@ -149,13 +150,7 @@ export const useUpdateBeneficiaryGroup = () => {
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
     onSuccess: (_data, variables) => {
@@ -167,12 +162,10 @@ export const useUpdateBeneficiaryGroup = () => {
         queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
       });
 
-      toast.fire({
-        title:
-          variables?.successMessage ||
+      toast.success(
+        variables?.successMessage ||
           tg('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      );
     },
     onError: (error: any, variables) => {
       const code = error?.response?.data?.code;
@@ -182,15 +175,18 @@ export const useUpdateBeneficiaryGroup = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage ||
           tg('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -272,22 +268,14 @@ export const useUpdateBeneficiary = () => {
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiary(payload),
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-      toast.fire({
-        title:
-          variables?.successMessage || tg('BENEFICIARY_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(
+        variables?.successMessage || tg('BENEFICIARY_UPDATED_SUCCESSFULLY'),
+      );
     },
     onError: (error: any, variables) => {
       const code = error?.response?.data?.code;
@@ -297,14 +285,17 @@ export const useUpdateBeneficiary = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage || tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -319,22 +310,14 @@ export const useRemoveBeneficiaryFromProject = () => {
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: any) => removeBeneficiary(payload),
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-      toast.fire({
-        title:
-          variables?.successMessage || tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(
+        variables?.successMessage || tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
+      );
     },
     onError: (error: any, variables) => {
       const code = error?.response?.data?.code;
@@ -344,14 +327,17 @@ export const useRemoveBeneficiaryFromProject = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage || tg('ERROR_WHILE_REMOVING_BENEFICIARY'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -361,13 +347,7 @@ export const useValidateBeneficaryBankAccount = () => {
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: any) =>
       validateBeneficiaryBankAccount(payload?.uuid ?? payload),
@@ -375,10 +355,9 @@ export const useValidateBeneficaryBankAccount = () => {
       const uuid = variables?.uuid ?? variables;
       await qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
       qc.removeQueries({ queryKey: ['BANK_CHECK_STATUS', uuid] });
-      toast.fire({
-        title: variables?.successMessage || tg('ACCOUNTS_CHECK_IN_PROGRESS'),
-        icon: 'success',
-      });
+      toast.success(
+        variables?.successMessage || tg('ACCOUNTS_CHECK_IN_PROGRESS'),
+      );
     },
     onError: (error: any, variables: any) => {
       const code = error?.response?.data?.code;
@@ -388,14 +367,17 @@ export const useValidateBeneficaryBankAccount = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage || tg('ERROR_WHILE_VALIDATING_BENEFICIARY'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -405,13 +387,7 @@ export const useUpdateGroupPropose = () => {
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
@@ -425,11 +401,9 @@ export const useUpdateGroupPropose = () => {
         queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
         exact: false,
       });
-      toast.fire({
-        title:
-          variables?.successMessage || tg('GROUP_PROPOSE_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(
+        variables?.successMessage || tg('GROUP_PROPOSE_UPDATED_SUCCESSFULLY'),
+      );
     },
     onError: (error: any, variables) => {
       const code = error?.response?.data?.code;
@@ -439,14 +413,17 @@ export const useUpdateGroupPropose = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage || tg('ERROR_WHILE_UPDATING_GROUP_PROPOSE'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -456,22 +433,14 @@ export const useRemoveBeneficiary = () => {
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: any) => removeBeneficiary(payload),
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-      toast.fire({
-        title:
-          variables?.successMessage || tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(
+        variables?.successMessage || tg('BENEFICIARY_REMOVED_SUCCESSFULLY'),
+      );
     },
     onError: (error: any, variables) => {
       const code = error?.response?.data?.code;
@@ -481,14 +450,17 @@ export const useRemoveBeneficiary = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage || tg('ERROR_WHILE_REMOVING_BENEFICIARY'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -498,13 +470,7 @@ export const useRemoveBeneficiaryGroup = () => {
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: UUID | { uuid: UUID; [key: string]: any }) =>
       removeBeneficiaryGroup(
@@ -512,12 +478,10 @@ export const useRemoveBeneficiaryGroup = () => {
       ),
     onSuccess: (_data, variables: any) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
-      toast.fire({
-        title:
-          variables?.successMessage ||
+      toast.success(
+        variables?.successMessage ||
           tg('BENEFICIARY_GROUP_REMOVED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      );
     },
     onError: (error: any, variables: any) => {
       const code = error?.response?.data?.code;
@@ -527,15 +491,18 @@ export const useRemoveBeneficiaryGroup = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage ||
           tg('ERROR_WHILE_REMOVING_BENEFICIARY_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -577,13 +544,7 @@ export const useUploadBeneficiary = () => {
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
   const { rumsanService, queryClient } = useRSQuery();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-right',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation(
     {
       mutationFn: ({
@@ -606,10 +567,10 @@ export const useUploadBeneficiary = () => {
         ),
       onSuccess: (data) => {
         if (data?.data?.success === false) {
-          toast.fire({
-            icon: 'error',
+          showToast({
+            type: 'error',
             title: tg('SOMETHING_WENT_WRONG'),
-            text: data?.data?.message || '',
+            description: data?.data?.message || '',
           });
           return;
         }
@@ -619,21 +580,16 @@ export const useUploadBeneficiary = () => {
               return d?.phoneNumber;
             },
           );
-          toast.fire({
-            icon: 'success',
-            title: tg('SOME_BENEFICIARIES_DISCARDED_XCAPIT_WALLET_ERROR', {
+          toast.success(
+            tg('SOME_BENEFICIARIES_DISCARDED_XCAPIT_WALLET_ERROR', {
               phoneNumber: phoneNumber?.join(', ') ?? '',
             }),
-            timer: 5000,
-          });
+          );
           return;
         }
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
 
-        toast.fire({
-          icon: 'success',
-          title: tg('BENEFICIARY_UPLOADED_SUCCESSFULLY'),
-        });
+        toast.success(tg('BENEFICIARY_UPLOADED_SUCCESSFULLY'));
       },
       onError: (error: any) => {
         console.log('error', error);
@@ -644,13 +600,16 @@ export const useUploadBeneficiary = () => {
           t,
           code,
           params,
-          ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+          [
+            'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+            'COMMUNICATIONS_CAMPAIGNS',
+          ],
           rawMessage,
         );
-        toast.fire({
-          icon: 'error',
+        showToast({
+          type: 'error',
           title: tg('SOMETHING_WENT_WRONG'),
-          text: message,
+          description: message,
         });
       },
     },
@@ -690,13 +649,7 @@ export const useUploadBeneficiaryBulkQueue = () => {
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
   const { rumsanService, queryClient } = useRSQuery();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-right',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation(
     {
       mutationFn: ({
@@ -722,10 +675,7 @@ export const useUploadBeneficiaryBulkQueue = () => {
         ),
       onSuccess: (data) => {
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-        toast.fire({
-          icon: 'success',
-          title: data?.data?.message,
-        });
+        toast.success(data?.data?.message);
       },
       onError: (error: any) => {
         console.log('error', error);
@@ -736,13 +686,16 @@ export const useUploadBeneficiaryBulkQueue = () => {
           t,
           code,
           params,
-          ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+          [
+            'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+            'COMMUNICATIONS_CAMPAIGNS',
+          ],
           rawMessage,
         );
-        toast.fire({
-          icon: 'error',
+        showToast({
+          type: 'error',
           title: tg('SOMETHING_WENT_WRONG'),
-          text: message,
+          description: message,
         });
       },
     },
@@ -843,7 +796,9 @@ export const useTempBeneficiaryImport = () => {
     },
     onSuccess: (d) => {
       if (!d) return;
-      Swal.fire(t('GLOBAL.BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY' as never), '', 'success');
+      toast.success(
+        t('GLOBAL.BENEFICIARIES_WILL_BE_IMPORTED_SHORTLY' as never),
+      );
       queryClient.invalidateQueries({
         queryKey: [
           TAGS.GET_TEMP_BENEFICIARIES,
@@ -857,15 +812,23 @@ export const useTempBeneficiaryImport = () => {
       const code = error?.response?.data?.code;
       const params = error?.response?.data?.params;
       const rawMessage =
-        error.response.data.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
+        error.response.data.message ||
+        t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
       const errorMessage = resolveBeneficiaryErrorMessage(
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      Swal.fire('Error', errorMessage, 'error');
+      showToast({
+        type: 'error',
+        title: 'Error',
+        description: errorMessage,
+      });
     },
   });
 };
@@ -956,25 +919,17 @@ const syncBeneficiaryGroup = async (uuid: UUID) => {
 export const useSyncBeneficiaryGroup = () => {
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (payload: UUID | { uuid: UUID; [key: string]: any }) =>
       syncBeneficiaryGroup(
         (typeof payload === 'object' ? payload.uuid : payload) as UUID,
       ),
     onSuccess: (_data, variables: any) => {
-      toast.fire({
-        title:
-          variables?.successMessage ||
+      toast.success(
+        variables?.successMessage ||
           tg('BENEFICIARY_SYNC_STARTED_FOR_PROJECTS'),
-        icon: 'success',
-      });
+      );
     },
     onError: (error: any, variables: any) => {
       const code = error?.response?.data?.code;
@@ -984,15 +939,19 @@ export const useSyncBeneficiaryGroup = () => {
         t,
         code,
         params,
-        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title:
           variables?.errorMessage ||
           tg('ERROR_WHILE_SYNCING_BENEFICIARY_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+
+        description: errorMessage,
       });
     },
   });

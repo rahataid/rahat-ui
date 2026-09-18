@@ -12,7 +12,8 @@ import {
 import { useProjectAction } from '../../projects';
 import { useStakeholdersStore } from './stakeholders.store';
 import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { useRSQuery } from '@rumsan/react-query';
 import { TAGS } from 'libs/query/src/config';
 import { useTranslations } from 'next-intl';
@@ -82,14 +83,6 @@ export const useCreateStakeholders = <
   const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const mutationResults = useMutation<TData, TError, StakeholderArgs, TContext>(
     {
@@ -106,10 +99,7 @@ export const useCreateStakeholders = <
         q.reset();
         options?.onSuccess?.(data, variables, ctx);
         qc.invalidateQueries({ queryKey: ['stakeholders'] });
-        toast.fire({
-          title: t('STAKEHOLDER_ADDED_SUCCESSFULLY'),
-          icon: 'success',
-        });
+        toast.success(t('STAKEHOLDER_ADDED_SUCCESSFULLY'));
       },
       onError: (error, variables, ctx) => {
         q.reset();
@@ -123,10 +113,10 @@ export const useCreateStakeholders = <
           ['STAKEHOLDERS_GROUPS'],
           rawMessage,
         );
-        toast.fire({
+        showToast({
+          type: 'error',
           title: t('ERROR_WHILE_ADDING_STAKEHOLDER'),
-          icon: 'error',
-          text: errorMessage,
+          description: errorMessage,
         });
       },
       ...options,
@@ -148,13 +138,6 @@ export const useUpdateStakeholders = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -174,10 +157,7 @@ export const useUpdateStakeholders = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['stakeholders'] });
-      toast.fire({
-        title: t('STAKEHOLDER_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('STAKEHOLDER_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -189,10 +169,10 @@ export const useUpdateStakeholders = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_STAKEHOLDER'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -203,13 +183,6 @@ export const useDeleteStakeholders = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -236,10 +209,7 @@ export const useDeleteStakeholders = () => {
       }
       // Only show success toast and invalidate queries if truly successful
       qc.invalidateQueries({ queryKey: ['stakeholders'] });
-      toast.fire({
-        title: t('STAKEHOLDER_REMOVED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('STAKEHOLDER_REMOVED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -251,10 +221,10 @@ export const useDeleteStakeholders = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_REMOVING_STAKEHOLDER'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -319,13 +289,6 @@ export const useUploadStakeholders = () => {
   const tRoot = useTranslations();
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-right',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -391,16 +354,16 @@ export const useUploadStakeholders = () => {
       }
 
       if (errorLines.length > 0) {
-        toast.fire({
-          icon: 'error',
+        showToast({
+          type: 'error',
           title: t('UNIQUE_CONSTRAINT_VIOLATION'),
-          text: errorLines.join('\n'),
+          description: errorLines.join('\n'),
         });
       } else {
-        toast.fire({
-          icon: 'error',
+        showToast({
+          type: 'error',
           title: t('SOMETHING_WENT_WRONG'),
-          text: message,
+          description: message,
         });
       }
     },

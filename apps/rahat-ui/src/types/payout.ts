@@ -7,6 +7,7 @@ export interface PayoutTransaction {
   hasFailedPayoutRequests: boolean;
   totalSuccessAmount: number;
   totalFailedPayoutRequests: number;
+  totalSkipOtp?: number;
   isPayoutTriggered: boolean;
   isCompleted: boolean;
   beneficiaryGroupToken?: {

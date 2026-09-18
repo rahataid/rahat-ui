@@ -407,6 +407,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               infoTooltip={tv('GROUP_GAP_TOOLTIP')}
             />
           )}
+          {payout?.type === 'VENDOR' && (
+            <DataCard
+              title={tv('TOTAL_SKIP_OTP')}
+              smallNumber={formatNum(payout?.totalSkipOtp ?? 0)}
+              className="rounded-sm h-[80px] pt-10 pb-8 "
+              infoIcon={true}
+              infoTooltip={tv('TOTAL_SKIP_OTP_TOOLTIP')}
+            />
+          )}
         </div>
       </div>
 

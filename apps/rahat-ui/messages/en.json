@@ -1160,7 +1160,8 @@
     "EDIT_SITE_INFO": "Edit Site Info",
     "UPDATE_YOUR_SITE_BRANDING_SHOWN_ON_THE_LOGIN_PAGE": "Update your site branding shown on the login page.",
     "UPLOAD_IMAGE": "Upload Image",
-    "UPLOADING_IMAGE": "Uploading Image..."
+    "UPLOADING_IMAGE": "Uploading Image...",
+    "CHANGE_IMAGE": "Change Image"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "DataType",

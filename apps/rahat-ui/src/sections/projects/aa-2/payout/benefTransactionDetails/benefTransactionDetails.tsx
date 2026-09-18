@@ -208,6 +208,19 @@ export default function BeneficiaryTransactionLogDetails() {
               </Badge>
             </InfoItem>
 
+            {data?.data?.info?.otpSkip && (
+              <>
+                <InfoItem
+                  label={tv('BENEFICIARY_SKIP_OTP')}
+                  value={String(data?.data?.info?.otpSkip)}
+                />
+                <InfoItem
+                  label={tv('BENEFICIARY_SKIP_OTP_REASON')}
+                  value={data?.data?.info?.otpSkipReason}
+                />
+              </>
+            )}
+
             {data?.data?.info?.mediaUrl && (
               <InfoItem label={tg('PROOF_OF_PAYMENT')}>
                 <FilePreview

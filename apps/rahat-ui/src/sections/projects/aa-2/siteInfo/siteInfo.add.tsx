@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { ImagePlus, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const SiteInfoFormSchema = z.object({
   BRAND_NAME: z.string().min(2, { message: 'Please enter brand name' }),
@@ -45,6 +46,8 @@ function ImagePicker({
   onSelect,
   onRemove,
 }: ImagePickerProps) {
+  const t = useTranslations('SITE_INFO');
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -77,7 +80,7 @@ function ImagePicker({
       ) : (
         <label className="mt-2 flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded border border-dashed text-muted-foreground hover:bg-muted/50">
           <ImagePlus size={24} />
-          <span className="text-xs">Click to upload image</span>
+          <span className="text-xs">{t('CLICK_TO_UPLOAD_IMAGE')}</span>
           <input
             type="file"
             accept="image/*"
@@ -95,6 +98,8 @@ export default function AddSiteInfo() {
   const queryClient = useQueryClient();
   const createSetting = useAppSettingsCreate();
   const uploadFile = useUploadFile();
+  const t = useTranslations('SITE_INFO');
+  const g = useTranslations('GLOBAL');
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -178,10 +183,8 @@ export default function AddSiteInfo() {
   return (
     <div className="p-4">
       <Back />
-      <h1 className="text-2xl font-bold">Add Site Info</h1>
-      <p className="text-muted-foreground">
-        Configure your site branding shown on the login page.
-      </p>
+      <h1 className="text-2xl font-bold">{t('ADD_SITE_INFO')}</h1>
+      <p className="text-muted-foreground">{t('CONFIGURE_YOUR_SITE_HERE')} </p>
 
       <div className="mt-4 w-full rounded border p-4 shadow">
         <Form {...form}>
@@ -191,9 +194,9 @@ export default function AddSiteInfo() {
               name="BRAND_NAME"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Brand Name</FormLabel>
+                  <FormLabel>{t('BRAND_NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter brand name" {...field} />
+                    <Input placeholder={t('ENTER_BRAND_NAME')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -204,10 +207,10 @@ export default function AddSiteInfo() {
               name="BRAND_DESCRIPTION"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Brand Description</FormLabel>
+                  <FormLabel>{t('BRAND_DESCRIPTION')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter brand description"
+                      placeholder={t('ENTER_BRAND_DESCRIPTION')}
                       {...field}
                     />
                   </FormControl>
@@ -216,14 +219,16 @@ export default function AddSiteInfo() {
               )}
             />
             <ImagePicker
-              label="Brand Logo"
-              hint="Logo shown on the top-left and center of the login page."
+              label={t('BRAND_LOGO')}
+              hint={t(
+                'LOGO_SHOWN_ON_THE_TOP_LEFT_AND_CENTER_OF_THE_LOGIN_PAGE',
+              )}
               previewUrl={logoPreview}
               onSelect={handleSelectLogo}
               onRemove={handleRemoveLogo}
             />
             <ImagePicker
-              label="Background Image"
+              label={t('BACKGROUND_IMAGE')}
               hint="Full-bleed image shown on the left side of the login page."
               previewUrl={backgroundPreview}
               onSelect={handleSelectBackground}
@@ -236,14 +241,14 @@ export default function AddSiteInfo() {
                 onClick={() => router.push('/site-info')}
                 disabled={isSubmitting}
               >
-                Cancel
+                {g('CANCEL')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isUploading
                   ? 'Uploading images...'
                   : createSetting.isPending
-                  ? 'Saving...'
-                  : 'Save'}
+                  ? g('SAVING')
+                  : g('SAVE')}
               </Button>
             </div>
           </form>

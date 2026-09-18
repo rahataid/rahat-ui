@@ -27,6 +27,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { ImagePlus, X } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { useTranslations } from 'next-intl';
 
 const SiteInfoFormSchema = z.object({
   BRAND_NAME: z.string().min(2, { message: 'Please enter brand name' }),
@@ -52,6 +53,7 @@ function ImagePicker({
   onSelect,
   onRemove,
 }: ImagePickerProps) {
+  const t = useTranslations('SITE_INFO');
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -85,7 +87,7 @@ function ImagePicker({
         )}
         <label className="flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-sm hover:bg-muted/50">
           <ImagePlus size={16} />
-          <span>{previewUrl ? 'Change image' : 'Upload image'}</span>
+          <span>{previewUrl ? t('CHANGE_IMAGE') : t('UPLOAD_IMAGE')}</span>
           <input
             type="file"
             accept="image/*"
@@ -104,6 +106,8 @@ export default function EditSiteInfo() {
   const { data, isPending } = useSiteInfoList();
   const updateSetting = useRahatSettingUpdate();
   const uploadFile = useUploadFile();
+  const t = useTranslations('SITE_INFO');
+  const g = useTranslations('GLOBAL');
 
   const record = data?.data;
   const original: SiteInfo | undefined = record?.value;
@@ -218,7 +222,7 @@ export default function EditSiteInfo() {
     return (
       <div className="p-4">
         <Back />
-        <h1 className="text-2xl font-bold">Edit Site Info</h1>
+        <h1 className="text-2xl font-bold">{t('EDIT_SITE_INFO')}</h1>
         <p className="text-muted-foreground">No site info found.</p>
         <Button className="mt-4" onClick={() => router.push('/site-info/add')}>
           Add Site Info
@@ -239,9 +243,9 @@ export default function EditSiteInfo() {
   return (
     <div className="p-4">
       <Back />
-      <h1 className="text-2xl font-bold">Edit Site Info</h1>
+      <h1 className="text-2xl font-bold">{t('EDIT_SITE_INFO')}</h1>
       <p className="text-muted-foreground">
-        Update your site branding shown on the login page.
+        {t('UPDATE_YOUR_SITE_BRANDING_SHOWN_ON_THE_LOGIN_PAGE')}
       </p>
 
       <div className="mt-4 w-full rounded border p-4 shadow">
@@ -252,7 +256,7 @@ export default function EditSiteInfo() {
               name="BRAND_NAME"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Brand Name</FormLabel>
+                  <FormLabel>{t('BRAND_NAME')}</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter brand name" {...field} />
                   </FormControl>
@@ -265,7 +269,7 @@ export default function EditSiteInfo() {
               name="BRAND_DESCRIPTION"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Brand Description</FormLabel>
+                  <FormLabel>{t('BRAND_DESCRIPTION')}</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter brand description"
@@ -277,8 +281,10 @@ export default function EditSiteInfo() {
               )}
             />
             <ImagePicker
-              label="Brand Logo"
-              hint="Logo shown on the top-left and center of the login page."
+              label={t('BRAND_LOGO')}
+              hint={t(
+                'LOGO_SHOWN_ON_THE_TOP_LEFT_AND_CENTER_OF_THE_LOGIN_PAGE',
+              )}
               previewUrl={
                 logoRemoved ? logoPreview : logoPreview || original.BRAND_LOGO
               }
@@ -286,8 +292,10 @@ export default function EditSiteInfo() {
               onRemove={handleRemoveLogo}
             />
             <ImagePicker
-              label="Background Image"
-              hint="Full-bleed image shown on the left side of the login page."
+              label={t('BACKGROUND_IMAGE')}
+              hint={t(
+                'FULL_BLEED_IMAGE_SHOWN_ON_THE_LEFT_SIDE_OF_THE_LOGIN_PAGE',
+              )}
               previewUrl={
                 backgroundRemoved
                   ? backgroundPreview
@@ -303,14 +311,14 @@ export default function EditSiteInfo() {
                 onClick={() => router.push('/site-info')}
                 disabled={isSubmitting}
               >
-                Cancel
+                {g('CANCEL')}
               </Button>
               <Button type="submit" disabled={isSubmitting || !hasChanges}>
                 {isUploading
-                  ? 'Uploading images...'
+                  ? t('UPLOADING_IMAGE')
                   : updateSetting.isPending
-                  ? 'Saving...'
-                  : 'Update'}
+                  ? g('SAVING')
+                  : g('UPDATE')}
               </Button>
             </div>
           </form>

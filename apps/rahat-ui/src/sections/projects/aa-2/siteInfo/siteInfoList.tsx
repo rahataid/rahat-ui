@@ -13,6 +13,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import SiteInfoPreview from './siteInfo.preview';
 import { useSiteInfoColumns } from './siteInfo.columns';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 export default function ListSiteInfo() {
   const t = useTranslations('SITE_INFO');
@@ -32,29 +33,28 @@ export default function ListSiteInfo() {
   });
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   const siteInfo = data?.data?.value;
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <h1 className="text-2xl font-bold">Site Info</h1>
-      <p>Configure your site information here.</p>
-
+      <h1 className="text-2xl font-bold">{t('SITE_INFO')}</h1>
+      <p className="text-muted-foreground">{t('CONFIGURE_YOUR_SITE_HERE')}</p>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             value="configuration"
             className="w-full data-[state=active]:bg-primary data-[state=active]:text-white "
           >
-            Configuration
+            {t('CONFIGURATION')}
           </TabsTrigger>
           <TabsTrigger
             value="preview"
             className="w-full data-[state=active]:bg-primary data-[state=active]:text-white"
           >
-            Preview
+            {t('PREVIEW')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="configuration">

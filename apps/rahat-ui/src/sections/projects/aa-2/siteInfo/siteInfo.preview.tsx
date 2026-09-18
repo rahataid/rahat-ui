@@ -4,13 +4,17 @@ import { SiteInfo } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { NepalFlag } from 'apps/rahat-ui/src/components/language-toggle';
-import { ChevronDown, Languages } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   data?: SiteInfo;
 };
 
 export default function SiteInfoPreview({ data }: IProps) {
+  const t = useTranslations('LOGIN');
+  const g = useTranslations('GLOBAL');
+
   const brandName = data?.BRAND_NAME || 'Rahat';
   const brandDescription = data?.BRAND_DESCRIPTION || '';
   const backgroundImage = data?.SITE_BACKGROUND_IMAGE || '';
@@ -21,7 +25,6 @@ export default function SiteInfoPreview({ data }: IProps) {
       {/* Left panel - background image with brand overlay */}
       <div className="relative min-h-[320px] md:min-h-full bg-muted">
         {backgroundImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={backgroundImage}
             alt={`${brandName} background`}
@@ -32,7 +35,6 @@ export default function SiteInfoPreview({ data }: IProps) {
         {/* Top-left brand logo */}
         <div className="absolute top-6 left-6">
           {brandLogo ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={brandLogo}
               alt={`${brandName} logo`}
@@ -59,7 +61,6 @@ export default function SiteInfoPreview({ data }: IProps) {
         </div>
 
         {brandLogo ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={brandLogo}
             alt={`${brandName} logo`}
@@ -71,20 +72,26 @@ export default function SiteInfoPreview({ data }: IProps) {
         </h1>
 
         <div className="w-full max-w-md rounded-xl border p-6">
-          <h2 className="text-xl font-medium text-center mb-2">Sign in</h2>
+          <h2 className="text-xl font-medium text-center mb-2">
+            {t('SIGN_IN')}
+          </h2>
           <p className="text-sm text-muted-foreground text-center mb-4">
-            Enter your email address to receive unique OTP code .
+            {t('ENTER_YOUR_EMAIL_ADDRESS_TO_RECEIVE')}
           </p>
           <div className="grid gap-3">
-            <Input placeholder="Email" disabled tabIndex={-1} />
+            <Input placeholder={g('EMAIL')} disabled tabIndex={-1} />
             <Button disabled tabIndex={-1} className="pointer-events-none">
-              Send OTP
+              {t('SEND_OTP')}
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-4">
-            By continuing, you agree to our{' '}
-            <span className="underline font-medium">Terms of Service</span> and{' '}
-            <span className="underline font-medium">Privacy Policy</span>.
+            {t('BY_CLICKING_CONTINUE_YOU_AGREE_TO')}{' '}
+            <span className="underline font-medium">
+              {t('TERMS_OF_SERVICE')}
+            </span>{' '}
+            {t('AND')}{' '}
+            <span className="underline font-medium">{t('PRIVACY_POLICY')}</span>
+            .
           </p>
         </div>
       </div>

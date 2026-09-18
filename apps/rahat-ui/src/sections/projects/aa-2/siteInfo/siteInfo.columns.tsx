@@ -39,8 +39,7 @@ export const useSiteInfoColumns = () => {
         accessorKey: 'SITE_BACKGROUND_IMAGE',
         cell: ({ row }) => {
           const url = row.getValue('SITE_BACKGROUND_IMAGE') as string;
-          if (!url)
-            return <span className="text-muted-foreground">N/A</span>;
+          if (!url) return <span className="text-muted-foreground">N/A</span>;
           return (
             <a href={url} target="_blank" rel="noopener noreferrer">
               <TruncatedCell text={url} truncateByWidth />
@@ -53,8 +52,7 @@ export const useSiteInfoColumns = () => {
         accessorKey: 'BRAND_LOGO',
         cell: ({ row }) => {
           const url = row.getValue('BRAND_LOGO') as string;
-          if (!url)
-            return <span className="text-muted-foreground">N/A</span>;
+          if (!url) return <span className="text-muted-foreground">N/A</span>;
           return (
             <a href={url} target="_blank" rel="noopener noreferrer">
               <TruncatedCell text={url} truncateByWidth />
@@ -67,16 +65,16 @@ export const useSiteInfoColumns = () => {
         header: g('ACTIONS'),
         cell: () => (
           <div className="flex items-center space-x-3">
-            {/* <SystemUserAuth hasContent={false}> */}
-            <TooltipWrapper tip="Edit Site Info">
-              <button
-                onClick={() => router.push('/site-info/edit')}
-                className="cursor-pointer"
-              >
-                <Edit size={18} />
-              </button>
-            </TooltipWrapper>
-            {/* </SystemUserAuth> */}
+            <SystemUserAuth hasContent={false}>
+              <TooltipWrapper tip={t('EDIT_SITE_INFO')}>
+                <button
+                  onClick={() => router.push('/site-info/edit')}
+                  className="cursor-pointer"
+                >
+                  <Edit size={18} />
+                </button>
+              </TooltipWrapper>
+            </SystemUserAuth>
           </div>
         ),
       },

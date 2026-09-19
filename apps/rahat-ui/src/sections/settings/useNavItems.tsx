@@ -44,7 +44,21 @@ export const useSettingFieldDefinitionNavItems = () => {
           path: '/project-info',
           icon: <List size={18} strokeWidth={1.5} />,
         },
-
+      ],
+    },
+    {
+      title: t('SITE_INFO'),
+      children: [
+        {
+          title: t('LIST'),
+          path: '/site-info',
+          icon: <List size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: g('ADD'),
+          path: '/site-info/add',
+          icon: <Plus size={18} strokeWidth={1.5} />,
+        },
       ],
     },
   ];

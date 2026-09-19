@@ -3709,10 +3709,38 @@
     "PUBLIC": "सार्वजनिक",
     "SEARCH_BY_NAME": "नामबाट खोज्नुहोस्..."
   },
+  "SITE_INFO": {
+    "NO_SITE_INFO_FOUND": "कुनै साइट जानकारी फेला परेन",
+    "BRAND_LOGO": "ब्रान्ड लोगो",
+    "SITE_INFO": "साइट जानकारी",
+    "BRAND_NAME": "ब्रान्ड नाम",
+    "BRAND_DESCRIPTION": "ब्रान्ड वर्णन",
+    "BACKGROUND_IMAGE": "पृष्ठभूमि छवि",
+    "CONFIGURATION": "कन्फिगरेसन",
+    "PREVIEW": "पूर्वावलोकन",
+    "UPLOAD_IMAGE": "छवि अपलोड गर्नुहोस्",
+    "UPLOAD_LOGO": "लोगो अपलोड गर्नुहोस्",
+    "UPLOAD_BACKGROUND_IMAGE": "पृष्ठभूमि छवि अपलोड गर्नुहोस्",
+    "UPLOAD_BRAND_LOGO": "ब्रान्ड लोगो अपलोड गर्नुहोस्",
+    "UPLOAD_BRAND_LOGO_DESC": "ब्रान्ड लोगो अपलोड गर्नुहोस्। यो लोगो तपाईंको साइटको ब्रान्डिङमा प्रयोग हुनेछ।",
+    "CONFIGURE_YOUR_SITE_HERE": "यहाँ आफ्नो साइट कन्फिगर गर्नुहोस्। तपाईंको साइटको ब्रान्डिङ र दृश्यतालाई अनुकूलित गर्न विभिन्न सेटिङहरू समायोजन गर्नुहोस्।",
+    "ADD_SITE_INFO": "साइट जानकारी थप्नुहोस्",
+    "CLICK_TO_UPLOAD_IMAGE": "तस्बिर अपलोड गर्न क्लिक गर्नुहोस्",
+    "LOGO_SHOWN_ON_THE_TOP_LEFT_AND_CENTER_OF_THE_LOGIN_PAGE": "लग-इन पृष्ठको माथिल्लो बायाँ भाग र बीचमा देखाइएको लोगो ",
+    "FULL_BLEED_IMAGE_SHOWN_ON_THE_LEFT_SIDE_OF_THE_LOGIN_PAGE": "लग-इन पृष्ठको बायाँतर्फ 'फुल-ब्लिड' (किनारासम्म फैलिएको) तस्बिर देखाइएको छ।",
+    "ENTER_BRAND_DESCRIPTION": "ब्रान्डको विवरण प्रविष्ट गर्नुहोस्",
+    "ENTER_BRAND_NAME": "ब्रान्डको नाम प्रविष्ट गर्नुहोस्",
+    "EDIT_SITE_INFO": "साइटको जानकारी सम्पादन गर्नुहोस्",
+    "UPDATE_YOUR_SITE_BRANDING_SHOWN_ON_THE_LOGIN_PAGE": "लगइन पृष्ठमा देखिने तपाईंको साइटको ब्रान्डिङ अपडेट गर्नुहोस्।",
+    "UPLOADING_IMAGE": "तस्बिर अपलोड गरिँदै छ",
+    "CHANGE_IMAGE": "छवि परिवर्तन गर्नुहोस्"
+  },
+
   "SETTINGS_NAVIGATION": {
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",
-    "PROJECT_INFO": "परियोजनाको जानकारी"
+    "PROJECT_INFO": "परियोजनाको जानकारी",
+    "SITE_INFO": "साइटको जानकारी"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "तथ्यांकको प्रकार",

@@ -17,7 +17,6 @@ const LOCALE_LABELS: Record<string, string> = {
   ne: 'नेपाली',
 };
 
-
 type FlagProps = { className?: string };
 
 function UnitedKingdomFlag({ className }: FlagProps) {
@@ -54,7 +53,7 @@ function UnitedKingdomFlag({ className }: FlagProps) {
   );
 }
 
-function NepalFlag({ className }: FlagProps) {
+export function NepalFlag({ className }: FlagProps) {
   return (
     <svg
       viewBox="0 0 62 82"
@@ -71,7 +70,10 @@ function NepalFlag({ className }: FlagProps) {
         strokeWidth="4"
         strokeLinejoin="round"
       />
-      <path d="M19,17 a7.5,7.5 0 1,0 7,9.5 a6,6 0 1,1 -7,-9.5 z" fill="#ffffff" />
+      <path
+        d="M19,17 a7.5,7.5 0 1,0 7,9.5 a6,6 0 1,1 -7,-9.5 z"
+        fill="#ffffff"
+      />
       <circle cx="19" cy="57" r="6.5" fill="#ffffff" />
     </svg>
   );

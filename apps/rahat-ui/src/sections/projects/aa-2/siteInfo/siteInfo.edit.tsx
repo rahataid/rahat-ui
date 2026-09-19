@@ -68,7 +68,6 @@ function ImagePicker({
       <div className="mt-2 flex items-center gap-4">
         {previewUrl && (
           <div className="relative w-fit">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={previewUrl}
               alt={label}

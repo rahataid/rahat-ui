@@ -123,7 +123,7 @@ export default function CreditUsageSection({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 space-y-0 pb-4">
         <CardTitle className="text-lg font-semibold">
           {t('CREDIT_CONSUMPTION')}
         </CardTitle>

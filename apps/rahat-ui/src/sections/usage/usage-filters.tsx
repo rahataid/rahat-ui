@@ -62,7 +62,7 @@ export default function UsageFilters({
   const hasDateSelected = fromDate || toDate;
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       <Select
         value={selectedXref ?? 'all'}
         onValueChange={(val) => onXrefChange(val === 'all' ? null : val)}

@@ -10,6 +10,7 @@ interface TruncatedCellProps {
   text: string;
   maxLength?: number;
   truncateByWidth?: boolean;
+  wrap?: boolean;
   className?: string;
 }
 
@@ -17,9 +18,19 @@ export function TruncatedCell({
   text,
   maxLength = 20,
   truncateByWidth = false,
+  wrap = false,
   className = '',
 }: TruncatedCellProps) {
   if (!text) return null;
+
+  // Wraps short, fully meaningful values (dates, statuses) instead of truncating them.
+  if (wrap) {
+    return (
+      <span className={cn('block whitespace-normal break-words', className)}>
+        {text}
+      </span>
+    );
+  }
 
   if (truncateByWidth) {
     return (

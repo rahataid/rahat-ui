@@ -164,9 +164,9 @@ export default function ActivityDetailCards({
           )}
           {activityDetail?.notes?.trim() && (
             <TooltipWrapper tip={activityDetail.notes}>
-              <div className="flex items-start text-xs mt-1 space-x-2 cursor-pointer">
+              <div className="flex items-start text-xs mt-1 space-x-2 cursor-pointer min-w-0">
                 <NotepadText className="w-4 h-3.5 flex-shrink-0 mt-0.5" />
-                <span className="break-words text-justify truncate w-[620px]">
+                <span className="break-words text-justify truncate min-w-0 flex-1">
                   {activityDetail.notes}
                 </span>
               </div>

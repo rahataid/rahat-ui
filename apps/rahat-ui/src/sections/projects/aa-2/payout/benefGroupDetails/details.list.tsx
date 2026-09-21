@@ -4,6 +4,7 @@ import {
   useGetPayoutLogs,
   usePagination,
   usePayoutExportLogs,
+  usePayoutExportPdfFile,
   useSinglePayout,
   useTriggerForPayoutFailed,
   useTriggerPayout,
@@ -103,6 +104,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     projectUUID: projectId,
     payoutUUID: payoutId,
   });
+  // PDF is generated server-side: the API renders the payout logs PDF
+  // (with photo evidence) and returns it as base64 for download.
+  const exportPdfFile = usePayoutExportPdfFile();
+  const pdfDownloading = exportPdfFile.isPending;
 
   const handleDownload = () => {
     const correctedLogs = (exportPayoutLogs || []).map(
@@ -117,6 +122,38 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     const worksheet = XLSX.utils.json_to_sheet(correctedLogs);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
+  };
+
+  const handleDownloadPdf = async () => {
+    const file = await exportPdfFile.mutateAsync({
+      projectUUID: projectId,
+      payoutUUID: payoutId,
+      transactionType: debounsSearch?.transactionType || undefined,
+      transactionStatus: debounsSearch?.transactionStatus || undefined,
+      search: debounsSearch?.search || undefined,
+      sort: 'updatedAt',
+      order: 'desc',
+      groupName:
+        payout?.beneficiaryGroupToken?.beneficiaryGroup?.name || undefined,
+      payoutType: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+      payoutMode:
+        payout?.type === 'VENDOR'
+          ? payout?.mode
+          : payout?.extras?.paymentProviderName,
+      vendorName: payout?.extras?.vendorName,
+    });
+    const bytes = Uint8Array.from(atob(file.base64), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], {
+      type: file.mimeType || 'application/pdf',
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = file.filename || `payout-logs-${payoutId}.pdf`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
   };
 
   const table = useReactTable({
@@ -230,12 +267,12 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description={tv('LIST_OF_ALL_THE_PAYOUT_TRANSACTION')}
-              status={
-                translateValue(tg, payout?.status, { fallbackStyle: 'raw' })
-                      ?.toLowerCase()
-                      .replace(/_/g, ' ')
-                      .replace(/^./, (char: string) => char.toUpperCase())
-              }
+              status={translateValue(tg, payout?.status, {
+                fallbackStyle: 'raw',
+              })
+                ?.toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char: string) => char.toUpperCase())}
               badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>
@@ -320,6 +357,23 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                     </TooltipWrapper>
                   </Can>
                 )}
+              {payout?.type === 'VENDOR' && (
+                <Button
+                  className={`gap-2 text-sm ${
+                    payoutlogs?.data?.length === 0 && 'hidden'
+                  }`}
+                  onClick={handleDownloadPdf}
+                  disabled={pdfDownloading}
+                  variant={'outline'}
+                >
+                  <CloudDownload
+                    className={`w-4 h-4 ${
+                      pdfDownloading ? 'animate-spin' : ''
+                    }`}
+                  />
+                  {tv('DOWNLOAD_PAYOUT_PDF')}
+                </Button>
+              )}
               <Button
                 className={`gap-2 text-sm ${
                   payoutlogs?.data?.length === 0 && 'hidden'
@@ -374,7 +428,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         >
           <DataCard
             title={tv('TOTAL_NO_OF_BENEFICIARIES')}
-            smallNumber={formatNum(payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ?? 0)}
+            smallNumber={formatNum(
+              payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+                ?.beneficiaries ?? 0,
+            )}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
             infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}

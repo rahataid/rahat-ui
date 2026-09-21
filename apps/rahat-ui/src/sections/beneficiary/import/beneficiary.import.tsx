@@ -31,11 +31,12 @@ import { useUploadBeneficiary } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 
 const SAMPLE_BENEFICIARY_HEADERS = [
-  'Name',
+  'Name*',
   'Phone Number',
-  'Gender*',
+  'Gender',
   'Age',
   'Government ID',
+  'Location'
 ];
 
 import { useTranslations } from 'next-intl';

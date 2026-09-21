@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
+import { useSiteInfoList } from '@rahat-ui/query';
 
 export default function AuthPage() {
   const t = useTranslations('LOGIN');
@@ -28,6 +29,8 @@ export default function AuthPage() {
   const [otp, setOtp] = useState('');
   const [otpinputError, setOtpinputError] = useState(false);
   const [optSent, setOtpSent] = useState(false);
+
+  const { data } = useSiteInfoList();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -115,9 +118,15 @@ export default function AuthPage() {
       <div className="w-full flex justify-center">
         <div className="flex flex-col gap-4 w-[450px]">
           <div className="flex flex-col space-y-2 items-center">
-            <Image src={'/rahat-logo.png'} width={40} height={40} alt="" />
+            <Image
+              src={data?.data?.value?.BRAND_LOGO || '/rahat-logo.png'}
+              width={40}
+              height={40}
+              alt=""
+            />
             <div className="text-2xl font-bold tracking-tight">
-              {t('WELCOME_TO_RAHAT')}
+              {`Welcome to ${data?.data?.value?.BRAND_NAME ?? 'Rahat'}`}
+              {/* t('WELCOME_TO_RAHAT') */}
             </div>
           </div>
           <div className="rounded-sm border shadow-sm p-4 space-y-4">

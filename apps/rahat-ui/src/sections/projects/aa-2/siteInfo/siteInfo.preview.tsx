@@ -15,10 +15,11 @@ export default function SiteInfoPreview({ data }: IProps) {
   const t = useTranslations('LOGIN');
   const g = useTranslations('GLOBAL');
 
-  const brandName = data?.BRAND_NAME || 'Rahat';
+  const brandName = data?.BRAND_NAME ?? 'Rahat';
   const brandDescription = data?.BRAND_DESCRIPTION || '';
-  const backgroundImage = data?.SITE_BACKGROUND_IMAGE || '';
-  const brandLogo = data?.BRAND_LOGO || '';
+  const backgroundImage =
+    data?.SITE_BACKGROUND_IMAGE || '/bg/rahat-login-bg.png';
+  const brandLogo = data?.BRAND_LOGO || '/svg/rahat-logo-white.png';
 
   return (
     <div className="grid md:grid-cols-2 rounded-lg overflow-hidden border bg-white min-h-[640px]">
@@ -68,7 +69,7 @@ export default function SiteInfoPreview({ data }: IProps) {
           />
         ) : null}
         <h1 className="text-2xl font-bold tracking-tight mb-6">
-          Welcome to {brandName}
+          Welcome to {brandName ?? 'Rahat'}
         </h1>
 
         <div className="w-full max-w-md rounded-xl border p-6">

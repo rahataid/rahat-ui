@@ -5,13 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   SiteInfo,
-  TAGS,
-  useRahatSettingUpdate,
   useSiteInfoList,
-  useUploadFile,
+  useUpdateSiteInfo,
 } from '@rahat-ui/query';
 import { Back } from 'apps/rahat-ui/src/common';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -101,10 +98,8 @@ function ImagePicker({
 
 export default function EditSiteInfo() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { data, isPending } = useSiteInfoList();
-  const updateSetting = useRahatSettingUpdate();
-  const uploadFile = useUploadFile();
+  const updateSiteInfo = useUpdateSiteInfo();
   const t = useTranslations('SITE_INFO');
   const g = useTranslations('GLOBAL');
 
@@ -119,7 +114,6 @@ export default function EditSiteInfo() {
     null,
   );
   const [backgroundRemoved, setBackgroundRemoved] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<SiteInfoFormValues>({
     resolver: zodResolver(SiteInfoFormSchema),
@@ -163,51 +157,30 @@ export default function EditSiteInfo() {
     setBackgroundRemoved(true);
   };
 
-  const uploadImage = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const res = await uploadFile.mutateAsync(formData);
-    return res?.data?.mediaURL as string;
-  };
-
   const onSubmit = async (values: SiteInfoFormValues) => {
     if (!original) return;
 
-    // Upload only the images the user replaced; removed images are cleared
-    let logoUrl = logoRemoved ? '' : original.BRAND_LOGO;
-    let backgroundUrl = backgroundRemoved ? '' : original.SITE_BACKGROUND_IMAGE;
-    if (logoFile || backgroundFile) {
-      setIsUploading(true);
-      try {
-        if (logoFile) logoUrl = await uploadImage(logoFile);
-        if (backgroundFile) backgroundUrl = await uploadImage(backgroundFile);
-      } finally {
-        setIsUploading(false);
-      }
-    }
-
-    const mergedValue: SiteInfo = {
-      BRAND_NAME: values.BRAND_NAME,
-      BRAND_DESCRIPTION: values.BRAND_DESCRIPTION,
-      BRAND_LOGO: logoUrl,
-      SITE_BACKGROUND_IMAGE: backgroundUrl,
-    };
-
-    const hasEdits = (Object.keys(mergedValue) as (keyof SiteInfo)[]).some(
-      (key) => mergedValue[key] !== original[key],
-    );
-    if (!hasEdits) {
+    const unchanged =
+      values.BRAND_NAME === original.BRAND_NAME &&
+      values.BRAND_DESCRIPTION === original.BRAND_DESCRIPTION &&
+      !logoFile &&
+      !backgroundFile &&
+      !logoRemoved &&
+      !backgroundRemoved;
+    if (unchanged) {
       Swal.fire('No changes', 'Nothing to update.', 'info');
       return;
     }
 
-    // Send the whole setting back, with only the edited values replaced
-    await updateSetting.mutateAsync({
-      ...record,
-      name: 'SITE_SETTINGS',
-      value: mergedValue,
+    await updateSiteInfo.mutateAsync({
+      original,
+      BRAND_NAME: values.BRAND_NAME,
+      BRAND_DESCRIPTION: values.BRAND_DESCRIPTION,
+      logoFile,
+      backgroundFile,
+      logoRemoved,
+      backgroundRemoved,
     });
-    queryClient.invalidateQueries({ queryKey: [TAGS.GET_SITE_INFO] });
     setLogoFile(null);
     setBackgroundFile(null);
     router.push('/site-info');
@@ -236,8 +209,7 @@ export default function EditSiteInfo() {
     backgroundFile !== null ||
     logoRemoved ||
     backgroundRemoved;
-  const isSubmitting =
-    isUploading || uploadFile.isPending || updateSetting.isPending;
+  const isSubmitting = updateSiteInfo.isPending;
 
   return (
     <div className="p-4">
@@ -313,11 +285,7 @@ export default function EditSiteInfo() {
                 {g('CANCEL')}
               </Button>
               <Button type="submit" disabled={isSubmitting || !hasChanges}>
-                {isUploading
-                  ? t('UPLOADING_IMAGE')
-                  : updateSetting.isPending
-                  ? g('SAVING')
-                  : g('UPDATE')}
+                {updateSiteInfo.isPending ? g('SAVING') : g('UPDATE')}
               </Button>
             </div>
           </form>

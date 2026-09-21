@@ -559,10 +559,6 @@ export const usePayoutExportPdfFile = () => {
       search,
       sort,
       order,
-      groupName,
-      payoutType,
-      payoutMode,
-      vendorName,
     }: {
       projectUUID: UUID;
       payoutUUID: string;
@@ -571,10 +567,6 @@ export const usePayoutExportPdfFile = () => {
       search?: string;
       sort?: string;
       order?: 'asc' | 'desc';
-      groupName?: string;
-      payoutType?: string;
-      payoutMode?: string;
-      vendorName?: string;
     }) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -589,11 +581,6 @@ export const usePayoutExportPdfFile = () => {
             ...(search ? { search } : {}),
             ...(sort ? { sort } : {}),
             ...(order ? { order } : {}),
-            ...(groupName ? { groupName } : {}),
-            ...(payoutType ? { payoutType } : {}),
-            ...(payoutMode ? { payoutMode } : {}),
-            ...(vendorName ? { vendorName } : {}),
-            generatedAt: new Date().toISOString(),
           },
         },
       });

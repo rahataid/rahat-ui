@@ -133,14 +133,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       search: debounsSearch?.search || undefined,
       sort: 'updatedAt',
       order: 'desc',
-      groupName:
-        payout?.beneficiaryGroupToken?.beneficiaryGroup?.name || undefined,
-      payoutType: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
-      payoutMode:
-        payout?.type === 'VENDOR'
-          ? payout?.mode
-          : payout?.extras?.paymentProviderName,
-      vendorName: payout?.extras?.vendorName,
     });
     const bytes = Uint8Array.from(atob(file.base64), (c) => c.charCodeAt(0));
     const blob = new Blob([bytes], {

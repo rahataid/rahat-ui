@@ -79,8 +79,8 @@ const CommunicationDataCard = ({
       <div className="grid grid-cols-1 gap-2 mt-4">
         {communicationData?.map((comm, i) => {
           return (
-            <Card className="p-4 shadow-sm rounded-sm" key={i}>
-              <div className="flex items-start gap-4">
+            <Card className="p-4 shadow-sm rounded-sm overflow-hidden" key={i}>
+              <div className="flex items-start gap-4 min-w-0">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
                   {appTransports?.find((g) => g.cuid === comm.transportId)
                     ?.name === 'EMAIL' ? (
@@ -98,7 +98,7 @@ const CommunicationDataCard = ({
 
                 <div className="flex-1">
                   <div className="mb-1">
-                    <h3 className="text-sm font-medium">
+                    <h3 className="text-sm font-medium break-all">
                       {comm?.communicationTitle}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
@@ -138,9 +138,13 @@ const CommunicationDataCard = ({
                     </div>
                   </div>
                   {comm?.subject && (
-                    <p className="text-sm text-gray-700 mt-1">{comm?.subject}</p>
+                    <p className="text-sm text-gray-700 mt-1 break-all">
+                      {comm?.subject}
+                    </p>
                   )}
-                  <p className="text-sm text-gray-700 mt-1">{comm?.message}</p>
+                  <p className="text-sm text-gray-700 mt-1 break-all">
+                    {comm?.message}
+                  </p>
                   {comm?.audioURL?.mediaURL && (
                     <div className="pt-2">
                       <h3 className="text-sm font-medium mb-2">

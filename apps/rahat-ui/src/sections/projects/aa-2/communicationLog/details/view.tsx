@@ -132,7 +132,6 @@ const CommunicationDetailsView = () => {
     projectId,
     activityId,
   );
- 
 
   // function getPhaseColor(phase: string) {
   //   if (phase === 'PREPAREDNESS') {
@@ -165,8 +164,8 @@ const CommunicationDetailsView = () => {
             <Label className="text-muted-foreground mb-2 text-xs">
               {t('ACTIVITY_TITLE')}:
             </Label>
-            <p className="text-base">
-              {activityDetail?.title}{' '}
+            <p className="text-base break-all">
+              {activityDetail?.title}
               <span>
                 <Badge className={getPhaseColor(activityDetail?.phase?.name)}>
                   {activityDetail?.phase?.name}

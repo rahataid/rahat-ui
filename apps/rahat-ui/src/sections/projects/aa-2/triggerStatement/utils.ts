@@ -23,6 +23,22 @@ export type Option = {
   value: string;
 };
 
+export const getLeadTimeParts = (
+  value?: string,
+  fallbackUnit: 'hours' | 'days' = 'days',
+) => {
+  const raw = value?.trim() ?? '';
+  const unitMatch = raw.match(/(hours|days)/i);
+  const unit = (unitMatch?.[0].toLowerCase() || fallbackUnit) as
+    | 'hours'
+    | 'days';
+
+  return {
+    lead: raw.replace(/\s*(hours|days)\s*/i, '') || '',
+    unit,
+  };
+};
+
 //*** Constants ***//
 // Maps form source values to trigger statement source values
 export const SOURCE_MAPPING = {

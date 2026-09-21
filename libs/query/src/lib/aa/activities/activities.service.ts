@@ -129,6 +129,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     completedBy: d?.completedBy,
     completedAt: d?.completedAt,
     activityDocuments: d?.activityDocuments || null,
+    activityCommunication: d?.activityCommunication || null,
     createdAt: d?.createdAt,
     notes: d?.notes,
     timeDifference: d?.differenceInTriggerAndActivityCompletion,

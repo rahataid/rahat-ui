@@ -9,7 +9,7 @@ import {
   CardFooter,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { RefreshCw, User } from 'lucide-react';
+import { RefreshCw, User, MessageSquare } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
@@ -29,6 +29,7 @@ interface PhaseCardProps {
   responsibility: string;
   onUpdateStatus: () => void;
   className?: string;
+  hasCommunication?: boolean;
 }
 
 export default function PhaseCard({
@@ -40,6 +41,7 @@ export default function PhaseCard({
   responsibility,
   onUpdateStatus,
   className,
+  hasCommunication,
 }: PhaseCardProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
@@ -67,9 +69,19 @@ export default function PhaseCard({
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <TooltipWrapper tip={`${t('ACTIVITY_STATUS')}: ${translatedStatus}`}>
-            <Badge className={getStatusBg(status)}>{translatedStatus}</Badge>
-          </TooltipWrapper>
+          <div className="flex items-center gap-2">
+            <TooltipWrapper
+              tip={`${t('ACTIVITY_STATUS')}: ${translatedStatus}`}
+            >
+              <Badge className={getStatusBg(status)}>{translatedStatus}</Badge>
+            </TooltipWrapper>
+            {hasCommunication && (
+              <TooltipWrapper tip={t('COMMUNICATIONS_AVAILABLE')}>
+                {' '}
+                <MessageSquare className="w-4 h-4 text-blue-500" />
+              </TooltipWrapper>
+            )}
+          </div>
           <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
             <TooltipWrapper tip={t('UPDATE_ACTIVITY_STATUS')}>
               <div
@@ -91,13 +103,17 @@ export default function PhaseCard({
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">
           <TooltipWrapper
-            tip={`${t('RESPONSIBLE_STATION')}: ${responsibleStation ?? tg('N_A')}`}
+            tip={`${t('RESPONSIBLE_STATION')}: ${
+              responsibleStation ?? tg('N_A')
+            }`}
           >
             {responsibleStation && responsibleStation.length > 20
               ? `${responsibleStation.substring(0, 20)}...`
               : responsibleStation ?? tg('N_A')}
           </TooltipWrapper>
-          <TooltipWrapper tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? tg('N_A')}`}>
+          <TooltipWrapper
+            tip={`${t('LEAD_TIME')}: ${formattedLeadTime ?? tg('N_A')}`}
+          >
             {leadTime && <span className="text-gray-400">&bull;</span>}
             <span>{formattedLeadTime ?? tg('N_A')}</span>
           </TooltipWrapper>

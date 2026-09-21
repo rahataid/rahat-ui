@@ -16,6 +16,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import {
+  useExportBeneficiariesExcel,
   useGenerateQrPdf,
   useGetBeneficiariesQr,
   useGetSponsorshipStatusForGroup,
@@ -33,6 +34,7 @@ import {
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
+import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const BeneficiaryGroupsDetails = () => {
@@ -51,6 +53,16 @@ const BeneficiaryGroupsDetails = () => {
   });
 
   const { mutate: generateQr } = useGenerateQrPdf(projectId);
+  const { mutate: exportExcel, isPending: isExporting } =
+    useExportBeneficiariesExcel(projectId);
+
+  const handleExportExcel = () => {
+    exportExcel(groupId, {
+      onSuccess: (rows) => {
+        exportToExcel(rows ?? [], `beneficiaries-${groupDetails?.name ?? groupId}`);
+      },
+    });
+  };
 
   const { data: sponsorshipStatus } = useGetSponsorshipStatusForGroup({
     projectUuid: projectId,
@@ -115,6 +127,15 @@ const BeneficiaryGroupsDetails = () => {
           path={`/projects/aa/${projectId}/beneficiary?tab=beneficiaryGroups`}
         />
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleExportExcel}
+            className="cursor-pointer"
+            disabled={isExporting}
+          >
+            <CloudDownload className="mr-1" />
+            {t('DOWNLOAD_EXCEL')}
+          </Button>
           {qrDetails?.status === 'completed' ? (
             <Button
               variant="outline"

@@ -54,6 +54,7 @@ export default function AASettingsView() {
     fundManagementSubmitRef,
     forecastSubmitRef,
     triggerTabSubmitRef,
+    dashboardSubmitRef,
   ];
 
   const [pendingSettings, setPendingSettings] = useState<

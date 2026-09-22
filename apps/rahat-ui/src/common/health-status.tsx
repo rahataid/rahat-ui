@@ -5,6 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { cn } from '@rahat-ui/shadcn/src';
 import { useLabelDigits } from '../utils/i18n/number';
+import { useDateFormat } from '../utils/i18n/date';
 import type { SystemHealthStatus } from './system-health-banner';
 
 /** One service row, shared by the core-platform and per-project health views. */
@@ -60,12 +61,17 @@ export function useHealthLabels() {
   return { labelFor, statusLabel };
 }
 
-/** Shared table columns; only latency digits are localised, timestamps stay raw ISO. */
+/** Backend latency arrives as "123ms"; separate the value and unit so it reads "123 ms". */
+const withUnitSpace = (latency: string) =>
+  latency.replace(/^([\d.]+)\s*([a-zA-Z]+)$/, '$1 $2');
+
+/** Shared table columns; latency digits and timestamps are both localised. */
 export function useHealthColumns(): ColumnDef<HealthRow>[] {
   const tg = useTranslations('GLOBAL');
   const ta = useTranslations('AA_PROJECT');
   const { statusLabel } = useHealthLabels();
   const formatDigits = useLabelDigits();
+  const formatDate = useDateFormat();
 
   return [
     {
@@ -98,7 +104,7 @@ export function useHealthColumns(): ColumnDef<HealthRow>[] {
       accessorKey: 'lastChecked',
       cell: ({ row }) => (
         <span className="font-mono text-sm text-muted-foreground">
-          {row.original.lastChecked ?? '-'}
+          {formatDate(row.original.lastChecked) || '-'}
         </span>
       ),
     },
@@ -107,7 +113,9 @@ export function useHealthColumns(): ColumnDef<HealthRow>[] {
       accessorKey: 'responseTime',
       cell: ({ row }) => (
         <span className="font-mono text-sm">
-          {row.original.responseTime ? formatDigits(row.original.responseTime) : '-'}
+          {row.original.responseTime
+            ? formatDigits(withUnitSpace(row.original.responseTime))
+            : '-'}
         </span>
       ),
     },

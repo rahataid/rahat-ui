@@ -20,6 +20,8 @@ import {
   useHealthLabels,
 } from 'apps/rahat-ui/src/common';
 import { useProjectHealthCheck } from '@rahat-ui/query';
+import { useAlert } from 'apps/rahat-ui/src/components/swal';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function ProjectHealthView() {
   const tg = useTranslations('GLOBAL');
@@ -38,6 +40,8 @@ export default function ProjectHealthView() {
   } = useProjectHealthCheck(id);
   const { labelFor } = useHealthLabels();
   const columns = useHealthColumns();
+  const alert = useAlert();
+  const formatDigits = useLabelDigits();
 
   // Built from whatever the backend returns, so new services need no frontend change.
   const rows: HealthRow[] = Object.entries(projectHealth?.services ?? {}).map(
@@ -62,6 +66,24 @@ export default function ProjectHealthView() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // Reports the outcome from the refetch result, since rows above are still the previous render's data.
+  const handleRunCheck = async () => {
+    const { data: result, isError: failed } = await refetch();
+    const checked = Object.values(result?.services ?? {});
+    const healthy = checked.filter((s) => s?.status === 'up').length;
+
+    alert.fire({
+      icon: failed || !checked.length ? 'error' : 'success',
+      title:
+        failed || !checked.length
+          ? tg('HEALTH_CHECK_FAILED')
+          : tg('HEALTH_CHECK_SUCCESS', {
+              healthy: formatDigits(healthy),
+              total: formatDigits(checked.length),
+            }),
+    });
+  };
+
   return (
     <div>
       <div className="pb-1 flex justify-between items-center space-x-4">
@@ -71,7 +93,7 @@ export default function ProjectHealthView() {
         />
         <IconLabelBtn
           Icon={RefreshCw}
-          handleClick={() => refetch()}
+          handleClick={handleRunCheck}
           name={isFetching ? tg('CHECKING') : tg('RUN_HEALTH_CHECK')}
           className="px-3 py-2"
           disabled={isFetching}

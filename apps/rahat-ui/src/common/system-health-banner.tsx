@@ -4,6 +4,7 @@ import { CheckCircle2, X } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { cn } from '@rahat-ui/shadcn/src';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 // 'NA' means data is genuinely unavailable; loading uses the skeleton instead.
 export type SystemHealthStatus = 'HEALTHY' | 'UNHEALTHY' | 'NA';
@@ -40,6 +41,7 @@ export function SystemHealthBanner({
   const style = statusStyles[overallStatus];
   // Counts render as Devanagari numerals on the Nepali locale.
   const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   return (
     <div className={cn('rounded border p-4 flex items-center justify-between flex-wrap gap-2', style.banner)}>
@@ -61,7 +63,7 @@ export function SystemHealthBanner({
       </div>
       {lastUpdated && (
         <span className="text-xs text-gray-500">
-          {lastUpdatedLabel}: {lastUpdated}
+          {lastUpdatedLabel}: {formatDate(lastUpdated)}
         </span>
       )}
     </div>

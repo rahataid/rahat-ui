@@ -561,7 +561,9 @@
     "PAYOUT": "Payout",
     "INKIND": "Inkind",
     "CHECKING": "Checking...",
-    "RUN_HEALTH_CHECK": "Run Health Check"
+    "RUN_HEALTH_CHECK": "Run Health Check",
+    "HEALTH_CHECK_SUCCESS": "Health check completed: {healthy} of {total} services healthy",
+    "HEALTH_CHECK_FAILED": "Health check failed. Please try again."
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",

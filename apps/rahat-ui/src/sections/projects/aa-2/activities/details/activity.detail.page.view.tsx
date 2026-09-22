@@ -151,8 +151,7 @@ export default function ActivitiesDetailView() {
         )}
       </div>
       {activityDetail ? (
-        // Stacks below xl since lg leaves both columns cramped once the sidebar is subtracted.
-        <div className="grid xl:grid-cols-2 gap-3 w-full [&>*]:min-w-0">
+        <div className="grid lg:grid-cols-2 gap-3 w-full [&>*]:min-w-0">
           <div className="flex flex-col gap-2 w-full min-w-0">
             <ActivityDetailCards
               activityDetail={activityDetail}

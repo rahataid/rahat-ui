@@ -94,6 +94,11 @@ export const useSessionBroadCastCount = (sessions: string[]) => {
     queryFn: () => newCommunicationService.session.broadcastCount({ sessions }),
 
     queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS, sessions],
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      const hasActive = data?.data.SCHEDULED || data?.data.PENDING;
+      return hasActive ? 3000 : false;
+    },
     staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;

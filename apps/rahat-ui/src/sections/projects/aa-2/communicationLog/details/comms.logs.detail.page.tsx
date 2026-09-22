@@ -159,6 +159,7 @@ export default function CommsLogsDetailPage() {
   );
 
   const count = useSessionBroadCastCount([sessionId]);
+
   const mutateRetry = useSessionRetryFailed();
 
   const retryFailed = async () => {
@@ -373,6 +374,7 @@ export default function CommsLogsDetailPage() {
                     <TooltipWrapper
                       tip={`${t('ACTIVITY_PHASE')}: ${translateValue(
                         tg,
+
                         activityDetail?.phase?.name,
                         { fallbackStyle: 'raw', silent: true },
                       )}`}

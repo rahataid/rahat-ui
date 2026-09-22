@@ -77,7 +77,7 @@ export default function FundManagementDetail() {
           }
         />
         {!isLoading && (
-          <DisburseButton groupUuid={fundId as string} status={data?.status} />
+          <DisburseButton groupUuid={data?.groupId} status={data?.status} />
         )}
       </div>
 

@@ -15,7 +15,11 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { Project } from '@rahataid/sdk/project/project.types';
 
-export default function DisburseButton() {
+type DisburseButtonProps = {
+  groupUuid?: string;
+};
+
+export default function DisburseButton({ groupUuid }: DisburseButtonProps) {
   const { id } = useParams();
   const projectId = id as UUID;
   const project = useProjectStore((state) => state.singleProject) as Project;
@@ -26,7 +30,7 @@ export default function DisburseButton() {
   const handleDisburse = () => {
     disburse.mutate({
       dName: `disburse-${new Date().toISOString()}`,
-      groups: [],
+      groups: groupUuid ? [groupUuid] : [],
     });
   };
 
@@ -34,7 +38,11 @@ export default function DisburseButton() {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button disabled={disburse.isPending}>
-          {disburse.isPending ? 'Disbursing...' : 'Disburse'}
+          {disburse.isPending
+            ? 'Disbursing...'
+            : groupUuid
+            ? 'Disburse'
+            : 'Disburse All'}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

@@ -34,9 +34,8 @@ export default function AuthLayout({
             />
             <div>
               <p className="text-white w-4/5">
-                {data?.data?.value?.BRAND_DESCRIPTION ??
+                {data?.data?.value?.BRAND_DESCRIPTION ||
                   t('RAHAT_AN_OPEN_SOURCE_BLOCKCHAIN_BASED')}
-                {/* {t('RAHAT_AN_OPEN_SOURCE_BLOCKCHAIN_BASED')} */}
               </p>
             </div>
           </div>

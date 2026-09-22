@@ -125,8 +125,7 @@ export default function AuthPage() {
               alt=""
             />
             <div className="text-2xl font-bold tracking-tight">
-              {`Welcome to ${data?.data?.value?.BRAND_NAME ?? 'Rahat'}`}
-              {/* t('WELCOME_TO_RAHAT') */}
+              {`Welcome to ${data?.data?.value?.BRAND_NAME || 'Rahat'}`}
             </div>
           </div>
           <div className="rounded-sm border shadow-sm p-4 space-y-4">

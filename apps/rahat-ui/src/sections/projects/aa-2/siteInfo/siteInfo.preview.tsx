@@ -6,6 +6,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { NepalFlag } from 'apps/rahat-ui/src/components/language-toggle';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { BRANCH_DESCRIPTION, BRANCH_NAME } from './constant';
 
 type IProps = {
   data?: SiteInfo;
@@ -15,8 +16,8 @@ export default function SiteInfoPreview({ data }: IProps) {
   const t = useTranslations('LOGIN');
   const g = useTranslations('GLOBAL');
 
-  const brandName = data?.BRAND_NAME ?? 'Rahat';
-  const brandDescription = data?.BRAND_DESCRIPTION || '';
+  const brandName = data?.BRAND_NAME || BRANCH_NAME;
+  const brandDescription = data?.BRAND_DESCRIPTION || BRANCH_DESCRIPTION;
   const backgroundImage =
     data?.SITE_BACKGROUND_IMAGE || '/bg/rahat-login-bg.png';
   const brandLogo = data?.BRAND_LOGO || '/svg/rahat-logo-white.png';

@@ -76,7 +76,9 @@ export default function FundManagementDetail() {
               : 'bg-gray-200'
           }
         />
-        {!isLoading && <DisburseButton groupUuid={fundId as string} />}
+        {!isLoading && (
+          <DisburseButton groupUuid={fundId as string} status={data?.status} />
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">

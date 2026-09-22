@@ -14,18 +14,30 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { Project } from '@rahataid/sdk/project/project.types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type DisburseButtonProps = {
   groupUuid?: string;
+  status?: string;
 };
 
-export default function DisburseButton({ groupUuid }: DisburseButtonProps) {
+export default function DisburseButton({
+  groupUuid,
+  status,
+}: DisburseButtonProps) {
   const { id } = useParams();
   const projectId = id as UUID;
   const project = useProjectStore((state) => state.singleProject) as Project;
   const disburse = useDisburseChain(projectId);
 
   if (project?.type !== 'cva') return null;
+
+  const isDisbursed = status === 'DISBURSED';
 
   const handleDisburse = () => {
     disburse.mutate({
@@ -34,17 +46,30 @@ export default function DisburseButton({ groupUuid }: DisburseButtonProps) {
     });
   };
 
+  const buttonLabel = disburse.isPending
+    ? 'Disbursing...'
+    : groupUuid
+    ? 'Disburse'
+    : 'Disburse All';
+
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button disabled={disburse.isPending}>
-          {disburse.isPending
-            ? 'Disbursing...'
-            : groupUuid
-            ? 'Disburse'
-            : 'Disburse All'}
-        </Button>
-      </AlertDialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
+              <AlertDialogTrigger asChild>
+                <Button disabled={disburse.isPending || isDisbursed}>
+                  {buttonLabel}
+                </Button>
+              </AlertDialogTrigger>
+            </span>
+          </TooltipTrigger>
+          {isDisbursed && (
+            <TooltipContent>Already completed disbursement</TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Disburse fund?</AlertDialogTitle>

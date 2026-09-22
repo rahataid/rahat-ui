@@ -639,6 +639,9 @@ export const useDisburseChain = (projectUUID: UUID) => {
       queryClient.invalidateQueries({
         queryKey: ['groupsreservedfunds', projectUUID],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['fundmanagement', projectUUID],
+      });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

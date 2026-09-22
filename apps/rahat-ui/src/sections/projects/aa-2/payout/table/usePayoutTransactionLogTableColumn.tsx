@@ -82,7 +82,10 @@ export default function usePayoutTransactionLogTableColumn() {
           (row.original.totalTokenAssigned * 1) /
           row.original.totalBeneficiaries;
         return (
-          <TruncatedCell text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`} maxLength={10} />
+          <TruncatedCell
+            text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`}
+            maxLength={10}
+          />
         );
       },
     },
@@ -114,9 +117,8 @@ export default function usePayoutTransactionLogTableColumn() {
       ),
     },
     {
-      // accessorKey: 'status',
       header: tg('STATUS'),
-      meta: { className: 'w-[150px]' },
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const status = row?.original?.status;
         const totalBeneficiaries = row.original.totalBeneficiaries;
@@ -129,11 +131,11 @@ export default function usePayoutTransactionLogTableColumn() {
               )}`}
             >
               {translateValue(tg, status, {
-              fallback: status
+                fallback: status
                   ?.toLowerCase()
                   .replace(/_/g, ' ')
                   .replace(/^./, (char: string) => char.toUpperCase()),
-            })}
+              })}
             </Badge>
 
             {totalBeneficiaries != null && totalSuccess != null && (
@@ -162,6 +164,7 @@ export default function usePayoutTransactionLogTableColumn() {
       id: 'actions',
       header: tg('ACTIONS'),
       enableHiding: false,
+      meta: { className: 'w-[7%]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

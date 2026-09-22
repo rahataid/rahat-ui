@@ -199,11 +199,12 @@ export default function VendorsDetailSplitView({
           </div>
         </div>
       </div>
-      <ScrollArea className="h-[calc(100vh-240px)]">
+      {/* Radix's viewport wrapper is display:table (shrink-to-fit) so it outgrows the panel; block bounds it so long values wrap. */}
+      <ScrollArea className="h-[calc(100vh-240px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
         <div className="p-4 flex flex-col space-y-4">
           <h1 className="font-medium">{g('GENERAL')}</h1>
           <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <FolderDot size={20} strokeWidth={1.5} />
               <p>{g('PROJECT_NAME')}</p>
             </div>
@@ -238,7 +239,7 @@ export default function VendorsDetailSplitView({
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Wallet size={20} strokeWidth={1.5} />
               <p>{g('WALLET_ADDRESS')}</p>
             </div>
@@ -264,31 +265,31 @@ export default function VendorsDetailSplitView({
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Phone size={20} strokeWidth={1.5} />
               <p>{g('PHONE_NUMBER')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {formatPhone(vendorsDetail?.phone) || '-'}
             </p>
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Mail size={20} strokeWidth={1.5} />
               <p>{g('EMAIL_ADDRESS')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {vendorsDetail?.email || '-'}
             </p>
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Calendar size={20} strokeWidth={1.5} />
               <p>{t('REGISTERED_DATE')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {formattedDate || '-'}
             </p>
           </div>

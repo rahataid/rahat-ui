@@ -47,8 +47,14 @@ export function Nav({ hasDefaultHeader = true }) {
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
     const projectPin = localStorage.getItem('PROJECT_PIN');
+    const {
+      preserveFormData,
+      restoreFormData,
+    } = require('apps/rahat-ui/src/utils/formStorage');
+    const formData = preserveFormData();
     clearUser();
     clearAuth();
+    restoreFormData(formData);
     if (pinnedPhases) {
       localStorage.setItem('aa_pinned_phases', pinnedPhases);
     }
@@ -85,9 +91,7 @@ export function Nav({ hasDefaultHeader = true }) {
             >
               <DropdownMenuGroup className="p-2 flex flex-col">
                 <div className="flex flex-col mb-1">
-                  <span className="font-medium">
-                    {user?.data?.name}
-                  </span>
+                  <span className="font-medium">{user?.data?.name}</span>
                   <span>{user?.data?.email}</span>
                 </div>
                 <Separator />

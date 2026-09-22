@@ -187,3 +187,47 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
     },
   });
 };
+
+export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+  const q = useProjectAction();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: async (groupId: UUID) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.beneficiary.exportGroupExcel',
+          payload: {
+            groupId: groupId,
+          },
+        },
+      });
+      return mutate.data as Array<{
+        name: string;
+        phone: string;
+        address: string;
+        gender: string;
+        otp: string;
+        walletAddress: string;
+      }>;
+    },
+    onError: (error: any) => {
+      const rawMessage: string =
+        error?.response?.data?.message || t('FAILED_TO_EXPORT_EXCEL');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['BENEFICIARIES_DASHBOARD_STATS'],
+        rawMessage,
+      );
+      toast.fire({
+        title: errorMessage,
+        icon: 'error',
+      });
+    },
+  });
+};

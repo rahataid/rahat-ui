@@ -28,6 +28,7 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
   const projectUUID = id as UUID;
 
   const { data: settings, isLoading } = useAAProjectSettingsList(projectUUID);
+  console.log('settings:', settings);
   const currentSetting = settings?.find((s: any) => s.name === SETTING_NAME);
 
   const [checkedTitles, setCheckedTitles] = useState<Set<string>>(new Set());
@@ -73,7 +74,9 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
   });
 
   if (isLoading) {
-    return <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>;
+    return (
+      <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>
+    );
   }
 
   return (
@@ -87,10 +90,7 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
         {defaultNavConfig.navsettings.map((item) => (
-          <div
-            key={item.title }
-            className="flex items-center space-x-2"
-          >
+          <div key={item.title} className="flex items-center space-x-2">
             <Checkbox
               id={`nav-path-${item.title}`}
               checked={checkedTitles.has(item.title)}
@@ -98,9 +98,11 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
                 toggleTitle(item.title, checked === true)
               }
             />
-            <Label htmlFor={`nav-path-${item.title }`}>
+            <Label htmlFor={`nav-path-${item.title}`}>
               {item.title
-                ? translateValue(t, item.title, { keyMap: { Payout: 'PAYOUT2' } })
+                ? translateValue(t, item.title, {
+                    keyMap: { Payout: 'PAYOUT2' },
+                  })
                 : `(${g('ROOT')})`}
             </Label>
           </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { DetailRow } from './gct.ui';
 
@@ -8,6 +9,7 @@ import { DetailRow } from './gct.ui';
 // Derives fields from nested offrampRequest / transaction paths.
 
 export function DisbursementInfoCard({ info, txUrl }: { info: any; txUrl?: string | null }) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tx = info?.result?.transaction;
   const batch = tx?.cipsBatchResponse;
   const cipsTxnMsg = tx?.cipsTxnResponseList?.[0]?.responseMessage;
@@ -18,11 +20,11 @@ export function DisbursementInfoCard({ info, txUrl }: { info: any; txUrl?: strin
   const error = info?.error;
 
   const rows: [string, string][] = ([
-    ['Disbursed By', disbursedBy],
-    ['Batch Response', batch?.responseMessage],
-    ['CIPS Txn Response', cipsTxnMsg],
-    ['Offramp Status', offramp],
-    ['Amount', payment?.amount != null ? String(payment.amount) : undefined],
+    [t('DISBURSED_BY'), disbursedBy],
+    [t('BATCH_RESPONSE'), batch?.responseMessage],
+    [t('CIPS_TXN_RESPONSE'), cipsTxnMsg],
+    [t('OFFRAMP_STATUS'), offramp],
+    [t('AMOUNT_COL'), payment?.amount != null ? String(payment.amount) : undefined],
   ] as [string, string | undefined][]).filter(([, v]) => v != null) as [string, string][];
 
   if (!rows.length && !txHash && !error) return null;
@@ -31,11 +33,11 @@ export function DisbursementInfoCard({ info, txUrl }: { info: any; txUrl?: strin
     <Card className="rounded-sm mt-4">
       <CardContent className="px-4 pt-4 pb-2">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-          Disbursement Info
+          {t('DISBURSEMENT_INFO')}
         </p>
         {txHash && (
           <div className="flex flex-col gap-0.5 py-2.5 border-b">
-            <span className="text-xs text-muted-foreground">Transaction Hash</span>
+            <span className="text-xs text-muted-foreground">{t('TRANSACTION_HASH')}</span>
             {txUrl ? (
               <a
                 href={txUrl}
@@ -53,7 +55,7 @@ export function DisbursementInfoCard({ info, txUrl }: { info: any; txUrl?: strin
         {rows.map(([label, value]) => (
           <DetailRow key={label} label={label} value={value} />
         ))}
-        {error && <DetailRow label="Error" value={error} />}
+        {error && <DetailRow label={t('ERROR')} value={error} />}
       </CardContent>
     </Card>
   );

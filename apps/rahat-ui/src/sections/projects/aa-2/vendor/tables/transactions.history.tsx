@@ -14,8 +14,10 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import { useVendorsTransactionTableColumns } from '../columns/useTransactionColumns';
+import { useTranslations } from 'next-intl';
 
 export default function VendorsTransactionsHistory() {
+  const tGlobal = useTranslations('GLOBAL');
   const { id, vendorId } = useParams();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -60,14 +62,14 @@ export default function VendorsTransactionsHistory() {
   return (
     <div className=" space-y-1">
       <Heading
-        title="Transaction History"
+        title={tGlobal('TRANSACTION_HISTORY')}
         titleStyle="text-lg"
-        description="List of all the transactions made"
+        description={tGlobal('TRANSACTIONS_DESC')}
       />
 
       <SearchInput
         className="w-full"
-        name="name"
+        name={tGlobal('NAME')}
         onSearch={(e) => handleSearch(e, 'name')}
         value={filters?.name || ''}
       />

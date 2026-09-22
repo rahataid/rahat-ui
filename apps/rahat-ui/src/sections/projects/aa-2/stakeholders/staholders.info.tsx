@@ -1,13 +1,16 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { User } from 'lucide-react';
-// import DataCard from '../../common/dataCard';
+import { useTranslations } from 'next-intl';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 type IProps = {
   stakeholder: any;
 };
 
 const StakeHolderInfo = ({ stakeholder }: IProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const formatPhone = usePhoneFormat();
   return (
     <>
       <div className="flex items-center">
@@ -23,16 +26,16 @@ const StakeHolderInfo = ({ stakeholder }: IProps) => {
       </div>
 
       <div className="grid grid-cols-3 gap-[clamp(8px,1.5vw,24px)] px-[clamp(8px,1.5vw,24px)] py-[clamp(4px,1vw,16px)]">
-        <DataItem label="Phone Number" value={stakeholder?.phone} />
-        <DataItem label="Email" value={stakeholder?.email} />
-        <DataItem label="Designation" value={stakeholder?.designation} />
-        <DataItem label="Organization" value={stakeholder?.organization} />
-        <DataItem label="District " value={stakeholder?.district} />
-        <DataItem label="Municipality" value={stakeholder?.municipality} />
+        <DataItem label={t('PHONE_NUMBER')} value={formatPhone(stakeholder?.phone)} />
+        <DataItem label={t('EMAIL')} value={stakeholder?.email} />
+        <DataItem label={t('DESIGNATION')} value={stakeholder?.designation} />
+        <DataItem label={t('ORGANIZATION')} value={stakeholder?.organization} />
+        <DataItem label={t('DISTRICT')} value={stakeholder?.district} />
+        <DataItem label={t('MUNICIPALITY')} value={stakeholder?.municipality} />
 
         <div>
           <h1 className="text-[clamp(12px,1.2vw,18px)] text-black">
-            Support Area
+            {t('SUPPORT_AREA')}
           </h1>
           {stakeholder?.supportArea?.map((a) => {
             return (

@@ -1,8 +1,10 @@
+import { getTranslations } from 'next-intl/server';
 import { TextEditView } from '../../../../../sections/communications/text';
 
-export const metadata = {
-  title: 'Text: Edit',
-};
+export async function generateMetadata() {
+  const t = await getTranslations('COMMUNICATIONS_NAVIGATION');
+  return { title: t('TEXT_EDIT') };
+}
 
 export default function TextCampaignEdit() {
   return <TextEditView />;

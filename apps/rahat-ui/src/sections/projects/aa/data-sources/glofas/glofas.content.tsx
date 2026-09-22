@@ -1,4 +1,6 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const getCellColor = (cell: string) => {
   const cellValue = cell ? Number(cell) : 0;
@@ -15,8 +17,10 @@ const getCellColor = (cell: string) => {
 };
 
 export default function GlofasContent({ location, glofasData }: any) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   if (!glofasData) {
-    return <p>Data not available for GloFAS.</p>;
+    return <p>{t('DATA_NOT_AVAILABLE_GLOFAS')}</p>;
   }
   const pointForecast = glofasData?.pointForecastData;
   const returnPeriodHeaders =
@@ -28,10 +32,10 @@ export default function GlofasContent({ location, glofasData }: any) {
     <ScrollArea className="h-[calc(100vh-215px)]">
       <div className="grid grid-cols-5 gap-4">
         <div className="bg-card p-4 rounded col-span-2">
-          <h1 className="font-semibold text-lg mb-4">Point Forecast</h1>
+          <h1 className="font-semibold text-lg mb-4">{t('POINT_FORECAST')}</h1>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h1 className="text-muted-foreground text-sm">Station</h1>
+              <h1 className="text-muted-foreground text-sm">{t('STATION')}</h1>
               <p>{location}</p>
             </div>
             <div className="text-right">
@@ -44,19 +48,19 @@ export default function GlofasContent({ location, glofasData }: any) {
               <h1 className="text-muted-foreground text-sm">
                 {pointForecast?.maxProbability?.header}
               </h1>
-              <p>{pointForecast?.maxProbability?.data}</p>
+              <p>{formatNum(pointForecast?.maxProbability?.data)}</p>
             </div>
             <div className="text-right">
               <h1 className="text-muted-foreground text-sm">
                 {pointForecast?.alertLevel?.header}
               </h1>
-              <p>{pointForecast?.alertLevel?.data}</p>
+              <p>{formatNum(pointForecast?.alertLevel?.data)}</p>
             </div>
             <div>
               <h1 className="text-muted-foreground text-sm">
                 {pointForecast?.maxProbabilityStep?.header}
               </h1>
-              <p>{pointForecast?.maxProbabilityStep?.data}</p>
+              <p>{formatNum(pointForecast?.maxProbabilityStep?.data)}</p>
             </div>
             <div className="text-right">
               <h1 className="text-muted-foreground text-sm">
@@ -74,7 +78,7 @@ export default function GlofasContent({ location, glofasData }: any) {
                 {' '}
                 {pointForecast?.peakForecasted?.header}
               </h1>
-              <p> {pointForecast?.peakForecasted?.data}</p>
+              <p> {formatNum(pointForecast?.peakForecasted?.data)}</p>
             </div>
           </div>
         </div>
@@ -85,7 +89,7 @@ export default function GlofasContent({ location, glofasData }: any) {
 
         <div className="bg-card p-4 rounded col-span-5">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="font-semibold text-lg">{'ECMWF-ENS > 2 yr RP'}</h1>
+            <h1 className="font-semibold text-lg">{t('ECMWF_ENS_2_YR_RP')}</h1>
           </div>
           <div className="overflow-auto">
             <table className="min-w-full bg-white border border-gray-200">

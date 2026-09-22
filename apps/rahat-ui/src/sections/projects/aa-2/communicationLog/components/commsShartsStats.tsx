@@ -1,4 +1,6 @@
 'use client';
+import { useTranslations } from 'next-intl';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   Card,
   CardContent,
@@ -51,29 +53,35 @@ function getChannelStats(
 }
 
 function CommsPieCard({
-  title,
+  titleKey,
   channelLabel,
   stats,
 }: {
-  title: string;
-  channelLabel: string;
+  titleKey: string;
+  channelLabel: 'SMS' | 'AVC';
   stats: ReturnType<typeof getChannelStats>;
 }) {
+  const t = useTranslations('AA_PROJECT');
+  const { formatNum, chartOptions } = useChartNumberOptions();
+
+  const deliveredKey = `SUCCESSFULLY_DELIVERED_${channelLabel}` as any;
+  const failuresKey = `${channelLabel}_DELIVERY_FAILURES` as any;
+
   const rows = [
-    { label: 'Successfully Delivered', value: stats.SUCCESS },
-    { label: `${channelLabel} Delivery Failures`, value: stats.FAIL },
-    { label: 'Scheduled', value: stats.SCHEDULED },
-    { label: 'Pending', value: stats.PENDING },
+    { label: t('SUCCESSFULLY_DELIVERED'), value: formatNum(stats.SUCCESS) },
+    { label: t(failuresKey), value: formatNum(stats.FAIL) },
+    { label: t('SCHEDULED'), value: formatNum(stats.SCHEDULED) },
+    { label: t('PENDING'), value: formatNum(stats.PENDING) },
   ];
 
   return (
     <Card className="shadow-sm rounded-sm flex-1 w-full">
       <CardHeader className="pb-0 pt-1">
         <CardTitle className="text-xl font-semibold text-gray-600">
-          {title}
+          {t(titleKey as any)}
         </CardTitle>
         <CardDescription className="text-lg text-sky-500 font-bold">
-          {stats.TOTAL}
+          {formatNum(stats.TOTAL)}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-between flex-col xl:flex-row">
@@ -81,16 +89,16 @@ function CommsPieCard({
           <div className="w-full max-w-[280px] aspect-square">
             <DynamicPieChart
               pieData={[
-                {
-                  label: `Successfully Delivered ${channelLabel}`,
-                  value: stats.SUCCESS,
-                },
-                {
-                  label: `${channelLabel} Delivery Failures`,
-                  value: stats.FAIL,
-                },
+                { label: t(deliveredKey), value: stats.SUCCESS },
+                { label: t(failuresKey), value: stats.FAIL },
               ]}
               colors={['#43A047', '#E53935']}
+              options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  ...chartOptions.tooltip,
+                },
+              }}
             />
           </div>
         </div>
@@ -113,33 +121,33 @@ export default function CommunicationsChartsStats({
 }: CommunicationsChartsStatsProps) {
   const charts = [
     {
-      title: 'Total SMS Sent',
-      channelLabel: 'SMS',
+      titleKey: 'TOTAL_SMS_SENT',
+      channelLabel: 'SMS' as const,
       stats: getChannelStats(statsBenefStakeholders, 'SMS'),
     },
     {
-      title: 'Total AVC Sent',
-      channelLabel: 'AVC',
+      titleKey: 'TOTAL_AVC_SENT',
+      channelLabel: 'AVC' as const,
       stats: getChannelStats(statsBenefStakeholders, 'VOICE'),
     },
     {
-      title: 'SMS Sent to Beneficiaries',
-      channelLabel: 'SMS',
+      titleKey: 'TOTAL_SMS_SENT_TO_BENEFICIARIES',
+      channelLabel: 'SMS' as const,
       stats: getChannelStats(statsBenefStakeholders, 'SMS', 'beneficiary'),
     },
     {
-      title: 'AVC Sent to Beneficiaries',
-      channelLabel: 'AVC',
+      titleKey: 'TOTAL_AVC_SENT_TO_BENEFICIARIES',
+      channelLabel: 'AVC' as const,
       stats: getChannelStats(statsBenefStakeholders, 'VOICE', 'beneficiary'),
     },
     {
-      title: 'SMS Sent to Stakeholders',
-      channelLabel: 'SMS',
+      titleKey: 'TOTAL_SMS_SENT_TO_STAKEHOLDERS',
+      channelLabel: 'SMS' as const,
       stats: getChannelStats(statsBenefStakeholders, 'SMS', 'stakeholder'),
     },
     {
-      title: 'AVC Sent to Stakeholders',
-      channelLabel: 'AVC',
+      titleKey: 'TOTAL_AVC_SENT_TO_STAKEHOLDERS',
+      channelLabel: 'AVC' as const,
       stats: getChannelStats(statsBenefStakeholders, 'VOICE', 'stakeholder'),
     },
   ];
@@ -148,7 +156,7 @@ export default function CommunicationsChartsStats({
     <div className="flex flex-col gap-2 w-full">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         {charts.map((chart) => (
-          <CommsPieCard key={chart.title} {...chart} />
+          <CommsPieCard key={chart.titleKey} {...chart} />
         ))}
       </div>
     </div>

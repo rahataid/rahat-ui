@@ -2,12 +2,24 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const createNextIntlPlugin = require('next-intl/plugin');
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
   output: 'standalone',
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.s3.*.amazonaws.com',
+      },
+    ],
+  },
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr
@@ -25,6 +37,11 @@ const nextConfig = {
       /@walletconnect[\\/]universal-provider/,
       /@metamask\/sdk|@wagmi\/connectors|connectkit|encoding/,
     ];
+
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      encoding: false,
+    };
 
     // Exclude 'react-native' from resolving for @walletconnect/universal-provider
     config.resolve.alias = {
@@ -45,4 +62,4 @@ const plugins = [
   withNx,
 ];
 
-module.exports = composePlugins(...plugins)(nextConfig);
+module.exports = composePlugins(...plugins)(withNextIntl(nextConfig));

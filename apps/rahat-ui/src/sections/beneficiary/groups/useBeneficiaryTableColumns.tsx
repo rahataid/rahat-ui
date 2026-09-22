@@ -2,11 +2,13 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useTranslations } from 'next-intl';
 
 export default function useBeneficiaryTableColumn(
   members: any,
   isAssignedToProject: boolean,
 ) {
+  const t = useTranslations('GLOBAL');
   const [prevData, setPrevData] = React.useState(members);
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
@@ -22,7 +24,7 @@ export default function useBeneficiaryTableColumn(
               table.toggleAllPageRowsSelected(!!value)
             }
             disabled={isAssignedToProject}
-            aria-label="Select all"
+            aria-label={t('SELECT_ALL')}
           />
         );
       },
@@ -54,7 +56,7 @@ export default function useBeneficiaryTableColumn(
                 }
               }
             }}
-            aria-label="Select row"
+            aria-label={t('SELECT_ROW')}
           />
         );
       },
@@ -63,22 +65,22 @@ export default function useBeneficiaryTableColumn(
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => row.getValue('name') || '-',
     },
     {
       accessorKey: 'phone',
-      header: 'Phone',
+      header: t('PHONE'),
       cell: ({ row }) => row.getValue('phone') || '-',
     },
     {
       accessorKey: 'email',
-      header: 'Email Address',
+      header: t('EMAIL_ADDRESS'),
       cell: ({ row }) => row.getValue('email') || '-',
     },
     {
       accessorKey: 'location',
-      header: 'Location',
+      header: t('LOCATION'),
       cell: ({ row }) => row.getValue('location') || '-',
     },
   ];

@@ -130,7 +130,7 @@ export default function EditSMSForm() {
                           <SelectGroup>
                             {benificiaryGroups?.map((group) => {
                               return (
-                                <SelectItem value={group.uuid}>
+                                <SelectItem key={group.uuid} value={group.uuid}>
                                   {group.name}
                                 </SelectItem>
                               );

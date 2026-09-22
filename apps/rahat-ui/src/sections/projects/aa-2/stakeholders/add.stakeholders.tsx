@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateStakeholders } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -11,16 +12,44 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
+import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
+
+type FormValues = {
+  name: string;
+  phone: string;
+  email: string;
+  designation: string;
+  organization: string;
+  district: string;
+  municipality: string;
+  supportArea?: { id: string; text: string }[];
+};
+
+const DEFAULT_FORM_VALUES: FormValues = {
+  name: '',
+  phone: '+977',
+  email: '',
+  designation: '',
+  organization: '',
+  district: '',
+  municipality: '',
+};
 
 export default function AddStakeholders() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,6 +60,18 @@ export default function AddStakeholders() {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
   const [unsavedSupportAreaInput, setUnsavedSupportAreaInput] =
     useState<string>('');
+  const hasInteracted = useRef(false);
+  const isRestored = useRef(false);
+  const isSubmittingRef = useRef(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>(
+    {
+      key: 'stakeholder_draft',
+      projectId: id as string,
+      defaultValue: DEFAULT_FORM_VALUES,
+    },
+  );
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
     return isValidPhoneNumber(value);
@@ -39,27 +80,36 @@ export default function AddStakeholders() {
   const FormSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter name.' }),
-    phone: z.string().refine(isValidPhoneNumberRefinement, {
-      message: 'Invalid phone number',
-    }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_NAME') }),
+    phone: z.preprocess(
+      normalizeNumeralsPreprocessor,
+      z.string().refine(isValidPhoneNumberRefinement, {
+        message: t('INVALID_PHONE_NUMBER'),
+      }),
+    ),
     email: z
       .string()
       .optional()
       .refine((email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
-        message: 'Invalid email address',
+        message: t('INVALID_EMAIL_ADDRESS'),
       }),
     designation: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter designation.' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_DESIGNATION') }),
     organization: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
-      .min(2, { message: 'Please enter organization.' }),
-    district: z.string().min(2, { message: 'Please enter district.' }),
-    municipality: z.string().min(2, { message: 'Please enter municipality' }),
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_ORGANIZATION') }),
+    district: z
+      .string()
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_DISTRICT') }),
+    municipality: z
+      .string()
+      .regex(/^[\p{L}\p{M}\s]*$/u, t('ONLY_ALPHABETIC_CHARACTERS'))
+      .min(2, { message: t('PLEASE_ENTER_MUNICIPALITY') }),
     supportArea: z
       .array(
         z.object({
@@ -70,18 +120,50 @@ export default function AddStakeholders() {
       .optional(),
   });
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      phone: '+977',
-      email: '',
-      designation: '',
-      organization: '',
-      district: '',
-      municipality: '',
-    },
+    mode: 'onChange',
+    defaultValues: DEFAULT_FORM_VALUES,
   });
+
+  // Restore saved data after   projectId becomes available
+  useEffect(() => {
+    if (isRestored.current || !id) return;
+    const saved = loadSaved();
+    if (saved && Object.keys(saved).length > 0) {
+      form.reset(saved);
+      if (saved.supportArea && saved.supportArea.length > 0) {
+        setVariationTags(saved.supportArea);
+      }
+    }
+    isRestored.current = true;
+  }, [id]);
+
+  const saveCurrentForm = () => {
+    const values = form.getValues();
+    saveData({ ...values, supportArea: variationTags });
+  };
+
+  const handleClearForm = () => {
+    clearSaved();
+    form.reset(DEFAULT_FORM_VALUES);
+    setVariationTags([]);
+    setUnsavedSupportAreaInput('');
+    setShowClearDialog(false);
+  };
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current &&
+    ((hasInteracted.current && form.formState.isDirty) ||
+      unsavedSupportAreaInput.trim() !== '');
+
+  const { showDialog, handleConfirmLeave, handleCancelLeave } =
+    useUnsavedChanges({
+      hasUnsavedChanges,
+      onConfirm: () => {
+        saveCurrentForm();
+      },
+    });
   // Handle Enter key in the support area TagInput
   const handleSupportAreaKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -102,6 +184,7 @@ export default function AddStakeholders() {
     }
   };
   const handleCreateStakeholders = async (data: z.infer<typeof FormSchema>) => {
+    isSubmittingRef.current = true;
     try {
       const payload = {
         ...data,
@@ -111,9 +194,11 @@ export default function AddStakeholders() {
         projectUUID: id as UUID,
         stakeholderPayload: payload,
       });
-      router.push(`/projects/aa/${id}/stakeholders`);
+      clearSaved();
       form.reset();
+      router.push(`/projects/aa/${id}/stakeholders`);
     } catch (e) {
+      isSubmittingRef.current = false;
       console.error('Create Stakeholder Error::', e);
     }
   };
@@ -121,12 +206,17 @@ export default function AddStakeholders() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title={'Create Stakeholder'}
-        subtitle="Fill the form below  to create a new stakeholder"
+        title={t('CREATE_STAKEHOLDER')}
+        subtitle={t('FILL_THE_FORM_BELOW_TO_CREATE')}
         path={`/projects/aa/${id}/stakeholders`}
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
+        <form
+          onSubmit={form.handleSubmit(handleCreateStakeholders)}
+          onFocus={() => {
+            hasInteracted.current = true;
+          }}
+        >
           <div className="p-[clamp(6px,1vw,10px)] rounded-sm border bg-card gap-3">
             <div className="grid grid-cols-2 gap-[clamp(6px,0.8vw,12px)]  ">
               <FormField
@@ -136,12 +226,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Stakeholders Name
+                        {t('STAKEHOLDERS_NAME')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a Stakeholder Name"
+                          placeholder={t('ENTER_A_STAKEHOLDER_NAME')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -159,7 +249,7 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Support Area
+                        {t('SUPPORT_AREA')}
                       </Label>
                       <FormControl>
                         <>
@@ -173,7 +263,7 @@ export default function AddStakeholders() {
                                 newTags as [Tag, ...Tag[]],
                               );
                             }}
-                            placeholder={'Enter a Support Area'}
+                            placeholder={t('ENTER_A_SUPPORT_AREA')}
                             className="min-h-[23px]"
                             styleClasses={{
                               inlineTagsContainer:
@@ -199,7 +289,7 @@ export default function AddStakeholders() {
                           />
                           {unsavedSupportAreaInput && (
                             <span className="text-[clamp(11px,1vw,14px)] text-red-400 ml-1">
-                              Press Enter to add.
+                              {t('PRESS_ENTER_TO_ADD')}
                             </span>
                           )}
                         </>
@@ -219,14 +309,15 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Phone Number
+                        {tg('PHONE_NUMBER')}
                       </Label>
                       <FormControl>
                         <PhoneInput
                           defaultCountry="NP"
-                          placeholder="Enter a Phone Number"
+                          placeholder={t('ENTER_A_PHONE_NUMBER')}
                           className="[&_input]:h-[clamp(28px,3vw,36px)] [&_input]:text-[clamp(11px,1vw,14px)] [&_button]:h-[clamp(28px,3vw,36px)]"
                           {...field}
+                          {...phoneCountrySelectProps}
                         />
                       </FormControl>
                       <FormMessage />
@@ -241,12 +332,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Email
+                        {tg('EMAIL')}
                       </Label>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Enter a Email Address"
+                          placeholder={t('ENTER_A_EMAIL_ADDRESS')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -263,12 +354,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Designation
+                        {t('DESIGNATION')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a Designation"
+                          placeholder={t('ENTER_A_DESIGNATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -285,12 +376,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Organization
+                        {t('ORGANIZATION')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter an Organization"
+                          placeholder={t('ENTER_AN_ORGANIZATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -308,12 +399,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        District
+                        {t('DISTRICT')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a District"
+                          placeholder={t('ENTER_A_DISTRICT')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -331,12 +422,12 @@ export default function AddStakeholders() {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
                       <Label className="text-[clamp(11px,1vw,14px)]">
-                        Municipality
+                        {t('MUNICIPALITY')}
                       </Label>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter a Municipality"
+                          placeholder={t('ENTER_A_MUNICIPALITY')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
                           {...field}
                         />
@@ -352,13 +443,9 @@ export default function AddStakeholders() {
                 type="button"
                 variant="secondary"
                 className="h-[clamp(28px,3vw,36px)] px-[clamp(16px,2vw,32px)] text-[clamp(11px,1vw,14px)]"
-                onClick={() => {
-                  form.reset();
-                  setVariationTags([]);
-                  setUnsavedSupportAreaInput('');
-                }}
+                onClick={() => setShowClearDialog(true)}
               >
-                Clear
+                {tg('CLEAR')}
               </Button>
               <Button
                 className="h-[clamp(28px,3vw,36px)] min-w-[clamp(80px,8vw,128px)] text-[clamp(11px,1vw,14px)]"
@@ -367,12 +454,32 @@ export default function AddStakeholders() {
                   unsavedSupportAreaInput.trim() !== ''
                 }
               >
-                Create
+                {tg('CREATE')}
               </Button>
             </div>
           </div>
         </form>
       </Form>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        title="Unsaved Changes"
+        description="You have unsaved changes. Your entered data will be saved and you can continue where you left off when you return."
+        cancelText="No, stay here"
+        confirmText="Yes, save and leave"
+      />
+
+      <UnsavedChangesDialog
+        open={showClearDialog}
+        onConfirm={handleClearForm}
+        onCancel={() => setShowClearDialog(false)}
+        title="Clear Form"
+        description="Are you sure you want to clear the form? All entered data will be lost and any saved progress will be removed."
+        cancelText="No, keep it"
+        confirmText="Yes, clear all"
+      />
     </div>
   );
 }

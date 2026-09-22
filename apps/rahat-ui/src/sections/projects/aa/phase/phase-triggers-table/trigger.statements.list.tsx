@@ -19,12 +19,14 @@ import { useAATriggerStatements, usePagination } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useTriggerStatementTableColumns } from './useTriggerStatementsColumns';
+import { useTranslations } from 'next-intl';
 
 export default function PhaseTriggerStatementsList({
   phaseId,
 }: {
   phaseId: string;
 }) {
+  const t = useTranslations('GLOBAL');
   const columns = useTriggerStatementTableColumns();
 
   const { id } = useParams();
@@ -106,7 +108,7 @@ export default function PhaseTriggerStatementsList({
                   colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('NO_RESULTS')}
                 </TableCell>
               </TableRow>
             )}

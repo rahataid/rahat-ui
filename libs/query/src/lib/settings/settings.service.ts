@@ -6,6 +6,8 @@ import { useSettingsStore } from './settings.store';
 import { Pagination } from '@rumsan/sdk/types';
 import { getSettingsClient } from '@rahataid/sdk/clients';
 import Swal from 'sweetalert2';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
 // const convertKeysToCamelCase = (obj:Record<string,any>):Record<string ,any>=> {
 //   return mapKeys(obj, (value, key) => camelCase(key));
@@ -227,6 +229,7 @@ export const useAppNavSettings = (enabled = true) => {
 export const useAppSettingsCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const settingClient = getSettingsClient(rumsanService.client);
+  const t = useTranslations();
   return useMutation(
     {
       mutationKey: ['CREATE_SETTINGS'],
@@ -240,14 +243,19 @@ export const useAppSettingsCreate = () => {
             },
           ],
         });
-        Swal.fire('Settings Created Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.SETTINGS_CREATED_SUCCESSFULLY' as never), '', 'success');
       },
       onError: (error: any) => {
-        Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
-          'error',
+        const rawMessage =
+          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['SETTINGS'],
+          rawMessage,
         );
+        Swal.fire(t('GLOBAL.ERROR' as never), errorMessage, 'error');
       },
     },
     queryClient,
@@ -273,6 +281,7 @@ export const useRahatSettingList = (
 export const useRahatSettingUpdate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const settingClient = getSettingsClient(rumsanService.client);
+  const t = useTranslations();
   return useMutation(
     {
       mutationKey: ['UPDATE_SETTINGS'],
@@ -286,14 +295,19 @@ export const useRahatSettingUpdate = () => {
             },
           ],
         });
-        Swal.fire('Settings Updated Successfully', '', 'success');
+        Swal.fire(t('GLOBAL.SETTINGS_UPDATED_SUCCESSFULLY' as never), '', 'success');
       },
       onError: (error: any) => {
-        Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
-          'error',
+        const rawMessage =
+          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['SETTINGS'],
+          rawMessage,
         );
+        Swal.fire(t('GLOBAL.ERROR' as never), errorMessage, 'error');
       },
     },
     queryClient,

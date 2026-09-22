@@ -5,6 +5,8 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Heading } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
+
 import InputCalendar from './input.calendar';
 import PointWaterLevel from './point.water.level';
 import HourlyAndDailyWaterLevel from './hourly.and.daily.water.level';
@@ -25,14 +27,15 @@ export function WaterLevelView({
   selectedDate,
   setSelectedDate,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   return (
     <div className="p-4 rounded-sm border shadow">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex justify-between items-center">
           <Heading
-            title="Water Level"
+            title={t('WATER_LEVEL')}
             titleStyle="font-semibold text-lg/7"
-            description="Chart and table showing waterlevel"
+            description={t('CHART_AND_TABLE_SHOWING_WATERLEVEL')}
           />
           <div className="flex space-x-2">
             <TabsList className="border bg-secondary rounded mb-2">
@@ -40,19 +43,19 @@ export function WaterLevelView({
                 className="w-full data-[state=active]:bg-white"
                 value="Point"
               >
-                Point
+                {t('POINT')}
               </TabsTrigger>
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white"
                 value="Hourly"
               >
-                Hourly
+                {t('HOURLY')}
               </TabsTrigger>
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white"
                 value="Daily"
               >
-                Daily
+                {t('DAILY')}
               </TabsTrigger>
             </TabsList>
             <InputCalendar

@@ -25,10 +25,11 @@ export const useProjectHeaderItems = (projectType: string) => {
   const currentPath = usePathname();
 
   const projectName = project?.name || '';
+  const isCVA = project?.type === 'cva';
   const projectHeader = (
     <div className="flex items-center">
       <Badge className="bg-blue-500 text-white rounded-full px-3 py-1">
-        {projectType}
+        {isCVA ? 'CASH VOUCHER ASSITANCE' : projectType}
       </Badge>
       <span className="ml-2 text-gray-700">{projectName}</span>
     </div>

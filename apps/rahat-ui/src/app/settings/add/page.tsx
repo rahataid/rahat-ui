@@ -1,4 +1,4 @@
-import AddSetting from 'apps/community-tool-ui/src/sections/settings/add.settings';
+import AddSetting from '../../../sections/settings/add.settings';
 
 const AddUserPage = () => {
   return <AddSetting />;

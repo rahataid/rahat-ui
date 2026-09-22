@@ -1,4 +1,7 @@
 import { AlertCircle, Check, Info, Package } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 function InKindStakeholderNode({
   name,
@@ -15,17 +18,10 @@ function InKindStakeholderNode({
   index?: number;
   isFirst?: boolean;
 }) {
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
+  const t = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tAA = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
 
   return (
     <div className="flex flex-col items-center">
@@ -59,9 +55,9 @@ function InKindStakeholderNode({
             <>
               <div className="text-xs text-gray-600">
                 <p>
-                  Received Stocks:{' '}
+                  {t('RECEIVED_STOCKS')}{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {received.toLocaleString()}
+                    {tAA('RS')} {formatNum(received)}
                   </span>
                 </p>
               </div>
@@ -69,15 +65,15 @@ function InKindStakeholderNode({
           ) : (
             <div className="text-xs text-gray-600">
               <p>
-                Stock:{' '}
+                {t('STOCK_LABEL')}{' '}
                 <span className="font-medium text-gray-900">
-                  {received.toLocaleString()}
+                  {formatNum(received)}
                 </span>
               </p>
               <p>
-                Remaining Stocks:{' '}
+                {t('REMAINING_STOCK')}:{' '}
                 <span className="font-medium text-gray-900">
-                  {balance.toLocaleString()}
+                  {formatNum(balance)}
                 </span>
               </p>
             </div>
@@ -86,7 +82,7 @@ function InKindStakeholderNode({
 
         {/* Timestamp */}
         <div className="mt-2 text-xs text-blue-400">
-          {formatDate(new Date())}
+          {formatDate(new Date(), 'dd MMMM, yyyy')}
         </div>
       </div>
     </div>

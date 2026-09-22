@@ -11,12 +11,14 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<any>;
 }
 
 export default function ActivitiesTable({ table }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <TableComponent>
       <ScrollArea className="h-[calc(100vh-179px)]">
@@ -61,8 +63,8 @@ export default function ActivitiesTable({ table }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
-              </TableCell>
+                  {t('NO_RESULTS')}
+                </TableCell>
             </TableRow>
           )}
         </TableBody>

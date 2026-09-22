@@ -9,6 +9,7 @@ import {
 import { ListBeneficiary } from '@rahat-ui/types';
 import { Table } from '@tanstack/react-table';
 import { useSwal } from '../../components/swal';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -17,6 +18,7 @@ type IProps = {
 export default function Filter({ table }: IProps) {
   const dialog = useSwal();
   const totalSelected = table.getFilteredSelectedRowModel().rows.length;
+  const t = useTranslations('GLOBAL');
 
   const selectedAddresses = table
     .getFilteredSelectedRowModel()
@@ -25,18 +27,18 @@ export default function Filter({ table }: IProps) {
 
   const handleAssignProject = async () => {
     const { value } = await dialog.fire({
-      title: 'Assign Project',
-      text: 'Assign a project for the beneficiary',
+      title: t('ASSIGN_PROJECT'),
+      text: t('SELECT_THE_PROJECT_TO_BE_ASSIGNED'),
       showCancelButton: true,
-      confirmButtonText: 'Assign',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: t('ASSIGN'),
+      cancelButtonText: t('CANCEL'),
       input: 'select',
       inputOptions: {
         project1: 'Project1',
         project2: 'Project2',
         project3: 'Project3',
       },
-      inputPlaceholder: 'Select a project',
+      inputPlaceholder: t('SELECT_A_PROJECT'),
     });
     if (value) {
       dialog.fire({
@@ -55,15 +57,17 @@ export default function Filter({ table }: IProps) {
     >
       <AccordionItem value="item-1">
         <AccordionTrigger className="no-underline bg-muted hover:bg-primary p-2 rounded hover:text-white">
-          {totalSelected} {totalSelected > 1 ? 'beneficiaries' : 'beneficiary'}{' '}
-          selected.
+          {totalSelected}{' '}
+          {totalSelected > 1
+            ? t('BENEFICIARIES_SELECTED')
+            : t('BENEFICIARY_SELECTED')}
         </AccordionTrigger>
         <AccordionContent className="p-2 border rounded mt-1">
           <div
             className="p-2 hover:bg-muted rounded cursor-pointer"
             onClick={handleAssignProject}
           >
-            Assign Project
+            {t('ASSIGN_PROJECT')}
           </div>
         </AccordionContent>
       </AccordionItem>

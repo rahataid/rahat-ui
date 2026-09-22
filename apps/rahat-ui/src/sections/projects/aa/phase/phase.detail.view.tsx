@@ -1,4 +1,5 @@
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useRevertPhase, useSinglePhase, useSingleStat } from '@rahat-ui/query';
 import {
   Tabs,
@@ -14,8 +15,11 @@ import PhaseTriggerStatementsList from './phase-triggers-table/trigger.statement
 import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
 import { generateExcel } from '../generate.excel';
 import { toast } from 'react-toastify';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function PhaseDetailView() {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
@@ -36,7 +40,7 @@ export default function PhaseDetailView() {
   };
 
   const handleDownloadReport = () => {
-    if (!revertedPhases) return toast.error('Phase is not reverted yet.');
+    if (!revertedPhases) return toast.error(t('PHASE_IS_NOT_REVERTED_YET'));
     const mappedData = revertedPhases?.revertHistory?.map(
       (item: Record<string, any>) => {
         return {
@@ -55,51 +59,51 @@ export default function PhaseDetailView() {
         <h1 className="font-semibold text-lg mb-2">{phaseDetail?.name}</h1>
         <div className="flex gap-2">
           <div className="grid gap-2 px-4 py-2 bg-card rounded w-1/4">
-            <h1 className="text-muted-foreground">Mandatory Triggers</h1>
+            <h1 className="text-muted-foreground">{t('MANDATORY_TRIGGERS')}</h1>
             <p>
-              Total:{' '}
-              {
+              {t('TOTAL')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.mandatoryTriggers
-                  ?.totalTriggers
-              }
+                  ?.totalTriggers ?? 0,
+              )}
             </p>
             <p>
-              Required:{' '}
-              {
+              {t('REQUIRED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.mandatoryTriggers
-                  ?.requiredTriggers
-              }
+                  ?.requiredTriggers ?? 0,
+              )}
             </p>
             <p>
-              Received:{' '}
-              {
+              {t('RECEIVED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.mandatoryTriggers
-                  ?.receivedTriggers
-              }
+                  ?.receivedTriggers ?? 0,
+              )}
             </p>
           </div>
           <div className="grid gap-2 px-4 py-2 bg-card rounded w-1/4">
-            <h1 className="text-muted-foreground">Optional Triggers</h1>
+            <h1 className="text-muted-foreground">{t('OPTIONAL_TRIGGERS')}</h1>
             <p>
-              Total:{' '}
-              {
+              {t('TOTAL')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.optionalTriggers
-                  ?.totalTriggers
-              }
+                  ?.totalTriggers ?? 0,
+              )}
             </p>
             <p>
-              Required:{' '}
-              {
+              {t('REQUIRED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.optionalTriggers
-                  ?.requiredTriggers
-              }
+                  ?.requiredTriggers ?? 0,
+              )}
             </p>
             <p>
-              Received:{' '}
-              {
+              {t('RECEIVED')}:{' '}
+              {formatNum(
                 phaseDetail?.triggerRequirements?.optionalTriggers
-                  ?.receivedTriggers
-              }
+                  ?.receivedTriggers ?? 0,
+              )}
             </p>
           </div>
         </div>
@@ -110,7 +114,7 @@ export default function PhaseDetailView() {
             value="triggers"
             className="w-52 bg-card border data-[state=active]:border-primary"
           >
-            Triggers List
+            {t('TRIGGERS_LIST')}
           </TabsTrigger>
           <TabsTrigger
             value="activities"
@@ -122,19 +126,19 @@ export default function PhaseDetailView() {
         <TabsContent value="triggers">
           <div className="bg-card p-4 rounded">
             <div className="flex justify-between items-center mb-2">
-              <h1 className="font-semibold text-lg">Triggers List</h1>
+              <h1 className="font-semibold text-lg">{t('TRIGGERS_LIST')}</h1>
               <div className="flex gap-2 items-center">
                 {/* Add Trigger Statements Btn */}
                 <AddButton
                   path={`/projects/aa/${projectId}/trigger-statements/add`}
-                  name="Trigger Statement"
+                  name={t('TRIGGER_STATEMENT')}
                 />
                 {phaseDetail?.canRevert && (
                   <Button
                     onClick={handleRevert}
                     disabled={!phaseDetail?.isActive}
                   >
-                    Revert Phase
+                    {t('REVERT_PHASE')}
                   </Button>
                 )}
                 {

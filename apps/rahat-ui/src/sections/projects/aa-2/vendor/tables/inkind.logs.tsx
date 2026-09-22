@@ -12,8 +12,10 @@ import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select
 import { useInkindLogsColumn } from '../columns/useInkindlogsColumn';
 import { InKindLog } from '../types';
 import { PaginatedResult } from '@rumsan/sdk/types';
+import { useTranslations } from 'next-intl';
 
 export default function InKindLogs() {
+  const tGlobal = useTranslations('GLOBAL');
   const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
 
   const {
@@ -53,9 +55,9 @@ export default function InKindLogs() {
   return (
     <div className="space-y-4">
       <Heading
-        title="In-kind Logs"
+        title={tGlobal('IN_KIND_LOGS')}
         titleStyle="text-lg"
-        description="List of all in-kind transactions"
+        description={tGlobal('IN_KIND_LOGS_DESC')}
       />
 
       {isLoading ? (
@@ -65,10 +67,10 @@ export default function InKindLogs() {
       ) : (
         <>
           <SearchInput
-            name="walletAddress"
+            name={tGlobal('WALLET_ADDRESS')}
             onSearch={(e) => handleSearch(e, 'walletAddress')}
             value={filters?.walletAddress || ''}
-            placeholder="Search wallet"
+            
           />
           <DemoTable
             table={table}

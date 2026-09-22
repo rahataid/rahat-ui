@@ -1,11 +1,16 @@
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
   const router = useRouter();
+  const formatDate = useDateFormat();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
 
   const handleEyeClick = (id: any) => {
     setPaginationToLocalStorage();
@@ -17,35 +22,32 @@ export default function useDailyMonitoringTableColumn() {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'createdAt',
-      header: 'Created At',
+      header: t('CREATED_AT'),
       cell: ({ row }) => {
         const createdAt = row.getValue('createdAt') as string;
         if (createdAt) {
-          const d = new Date(createdAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return `${localeDate} ${localeTime}`;
+          return formatDate(createdAt);
         }
-        return 'N/A';
+        return t('N_A');
       },
     },
     {
       accessorKey: 'dataEntryBy',
-      header: 'Created By',
+      header: t('CREATED_BY'),
       cell: ({ row }) => {
         return row.getValue('dataEntryBy');
       },
     },
     {
       accessorKey: 'location',
-      header: 'River Basin',
+      header: t('RIVER_BASIN'),
       cell: ({ row }) => {
         return row.getValue('location');
       },
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (

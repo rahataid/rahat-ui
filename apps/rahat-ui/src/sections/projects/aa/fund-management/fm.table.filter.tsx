@@ -10,6 +10,8 @@ import SearchInput from "../../components/search.input";
 import AddButton from '../../components/add.btn';
 import { ChevronDown } from 'lucide-react';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 type IProps = {
     table: Table<any>
@@ -17,11 +19,13 @@ type IProps = {
 }
 
 export default function TableFilter({ table, projectId }: IProps) {
+  const tAdd = useTranslations('GLOBAL');
+    const tGlobal = useTranslations('GLOBAL');
     return (
         <div className="flex items-center gap-2 mb-2">
             <SearchInput
                 className='w-full'
-                name="Fund Management"
+                name={tGlobal('FUND_MANAGEMENT')}
                 value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
                 onSearch={(event) =>
                     table.getColumn('title')?.setFilterValue(event.target.value)
@@ -46,14 +50,14 @@ export default function TableFilter({ table, projectId }: IProps) {
                                         column.toggleVisibility(!!value)
                                     }
                                 >
-                                    {column.id}
+                                    {getColumnLabel(column)}
                                 </DropdownMenuCheckboxItem>
                             );
                         })}
                 </DropdownMenuContent>
             </DropdownMenu>
             <AddButton
-                name="Fund Reservation"
+                name={tAdd('FUND_RESERVATION')}
                 path={`/projects/aa/${projectId}/fund-management/add`}
             />
         </div>

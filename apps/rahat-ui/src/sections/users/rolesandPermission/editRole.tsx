@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -54,6 +55,7 @@ const splitPermsBySubjectGroup = (perms: any) => {
 };
 
 export default function EditRole({ roleDetail, currentPerms }: Iprops) {
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const { closeSecondPanel } = useSecondPanel();
   const edit = useUserRoleEdit();
 
@@ -92,7 +94,7 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
 
   const FormSchema = z.object({
     roleName: z.string().min(2, {
-      message: 'Role Name must be at least 2 characters.',
+      message: t('ROLE_NAME_MUST_BE_AT_LEAST2'),
     }),
     isSystem: z.boolean().optional(),
   });
@@ -124,7 +126,7 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
     if (!hasPerms)
       return swal.fire(
         'Error',
-        'Please select at least one permission',
+        t('YOU_HAVE_TO_SELECT_AT_LEAST_ONE_PERMISSION'),
         'error',
       );
     const k = {
@@ -135,12 +137,12 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
 
     try {
       await edit.mutateAsync({ name: roleDetail?.data?.role?.name, data: k });
-      swal.fire('Role Updated Successfully', '', 'success');
+      swal.fire(t('ROLE_UPDATED_SUCCESSFULLY'), '', 'success');
       closeSecondPanel();
     } catch (err) {
       const errMsg =
         err instanceof Error ? err.message : 'Something went wrong';
-      swal.fire('Error Updating Role', errMsg, 'error');
+      swal.fire(t('ERROR_UPDATING_ROLE'), errMsg, 'error');
     }
   };
 
@@ -194,16 +196,16 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
         className="flex flex-col flex-1 min-h-0"
       >
         <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
-          <h1 className="text-lg font-semibold">Edit Role & Permissions</h1>
+          <h1 className="text-lg font-semibold">{t('EDIT_ROLE_PERMISSIONS')}</h1>
 
           <FormField
             control={form.control}
             name="roleName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role Name</FormLabel>
+                <FormLabel>{t('ROLE_NAME')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Role Name" {...field} />
+                    <Input placeholder={t('ROLE_NAME')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -215,7 +217,7 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
             name="isSystem"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>System</FormLabel>
+                <FormLabel>{t('SYSTEM')}</FormLabel>
                 <FormControl>
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -374,7 +376,7 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
             Cancel
           </Button>
           <Button type="submit" className="px-10">
-            Update Role
+            {t('UPDATE_ROLE')}
           </Button>
         </div>
       </form>

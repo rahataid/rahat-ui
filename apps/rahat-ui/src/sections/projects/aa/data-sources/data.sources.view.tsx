@@ -21,8 +21,10 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { DailyMonitoringListView } from './daily-monitoring';
+import { useTranslations } from 'next-intl';
 
 export default function DataSourcesView() {
+  const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const projectID = id as UUID;
   const { isLoading: isLoadingDhm, data: dhmData } =
@@ -40,9 +42,9 @@ export default function DataSourcesView() {
 
   return (
     <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
-      <h1 className="text-xl font-semibold">Data Sources</h1>
+      <h1 className="text-xl font-semibold">{t('DATA_SOURCES')}</h1>
       <p className="text-muted-foreground text-sm">
-        Select a data source to view the detail view
+        {t('SELECT_DATA_SOURCE')}
       </p>
       <Tabs defaultValue="dhm">
         <TabsList className="bg-secondary gap-4 mt-4 mb-2">
@@ -52,10 +54,10 @@ export default function DataSourcesView() {
           >
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger>DHM</TooltipTrigger>
+                <TooltipTrigger>{t('DHM')}</TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">
-                    Department of Hydrology and Meteorology
+                    {t('DHM_FULL')}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -69,10 +71,10 @@ export default function DataSourcesView() {
 
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger>GLoFAS</TooltipTrigger>
+                <TooltipTrigger>{t('GLOFAS')}</TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">
-                    Global Flood Awareness System
+                    {t('GLOFAS_FULL')}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -84,18 +86,18 @@ export default function DataSourcesView() {
             value="dailyMonitoring"
             className="w-36 border bg-card data-[state=active]:border-primary"
           >
-            Daily Monitoring
+            {t('DAILY_MONITORING')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="glofas">
           {isLoadingDhm ? (
-            'Loading GloFAS data...'
+            t('LOADING_GLOFAS_DATA')
           ) : (
             <GlofasView location={stationLocation} glofasData={glofasData} />
           )}
         </TabsContent>
         <TabsContent value="dhm">
-          {isLoadingDhm ? 'Loading DHM data...' : <DHMView data={dhmData} dhmDangerLevel={dhmDangerLevel} />}
+          {isLoadingDhm ? t('LOADING_DHM_DATA') : <DHMView data={dhmData} dhmDangerLevel={dhmDangerLevel} />}
         </TabsContent>
         <TabsContent value="dailyMonitoring">
           <DailyMonitoringListView />

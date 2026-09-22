@@ -20,32 +20,9 @@ import {
 } from '@rumsan/communication-query';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { debounce } from 'lodash';
-
-const FormSchema = z.object({
-  campaignName: z.string().min(2, {
-    message: 'Campaign Name must be at least 2 characters.',
-  }),
-  // startTime: z.date({
-  //   required_error: 'Start time is required.',
-  // }),
-  campaignType: z.string({
-    required_error: 'Camapign Type is required.',
-  }),
-  isQrSender: z.boolean().optional(),
-
-  message: z.string().optional(),
-  messageSid: z.string().optional(),
-  audiences: z.array(
-    z.object({
-      name: z.string(),
-      phone: z.string(),
-      beneficiaryId: z.number(),
-    }),
-  ),
-  file: z.any().optional(),
-});
 
 export type SelectedRowType = {
   name: string;
@@ -55,6 +32,30 @@ export type SelectedRowType = {
 };
 
 const AddCampaignView = () => {
+  const t = useTranslations('COMMUNICATIONS_ADD_CAMPAIGN');
+  const tg = useTranslations('GLOBAL');
+
+  const FormSchema = z.object({
+    campaignName: z.string().min(2, {
+      message: t('CAMPAIGN_NAME_MUST_BE_AT_LEAST'),
+    }),
+    campaignType: z.string({
+      required_error: t('CAMAPIGN_TYPE_IS_REQUIRED'),
+    }),
+    isQrSender: z.boolean().optional(),
+
+    message: z.string().optional(),
+    messageSid: z.string().optional(),
+    audiences: z.array(
+      z.object({
+        name: z.string(),
+        phone: z.string(),
+        beneficiaryId: z.number(),
+      }),
+    ),
+    file: z.any().optional(),
+  });
+
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
 
@@ -146,7 +147,7 @@ const AddCampaignView = () => {
           setIsSubmitting(false);
 
           router.push(paths.dashboard.communication.text);
-          toast.success('Campaign Created Success.');
+          toast.success(t('CAMPAIGN_CREATED_SUCCESS'));
         }
       })
       .catch((e) => {
@@ -169,7 +170,6 @@ const AddCampaignView = () => {
     <FormProvider {...form}>
       <form className="h-add">
         <AddForm
-          title="Add Campaign"
           audios={audioData?.data || []}
           setShowAddAudience={showAddAudienceView.onToggle}
           showAddAudience={showAddAudienceView.value}

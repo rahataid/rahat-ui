@@ -1,6 +1,8 @@
+import { useTranslations } from 'next-intl';
 import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from 'wagmi';
 
 export function Account() {
+  const t = useTranslations('WALLET');
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
   const { data: ensName } = useEnsName({ address });
@@ -25,14 +27,14 @@ export function Account() {
           </div>
         )}
         <div className="text-xs text-gray-500">
-          Connected to {connector?.name}
+          {t('CONNECTED_TO_CONNECTOR', { connector: connector?.name })}
         </div>
       </div>
       <button
         onClick={() => disconnect()}
         className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700 text-xs"
       >
-        Disconnect
+        {t('DISCONNECT')}
       </button>
     </div>
   );

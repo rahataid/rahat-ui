@@ -1,7 +1,11 @@
 'use client';
 
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import dynamic from 'next/dynamic';
+import { ProjectPermissionGuard } from 'apps/rahat-ui/src/guards/project-permission-guard';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 const ExtendedLogicPage = dynamic(
   () =>
@@ -15,8 +19,8 @@ const ExtendedLogicPage = dynamic(
 
 export default function Page() {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+    <ProjectPermissionGuard action={ACTIONS.UPDATE} subject={SUBJECTS.PHASE}>
       <ExtendedLogicPage />
-    </RoleAuth>
+    </ProjectPermissionGuard>
   );
 }

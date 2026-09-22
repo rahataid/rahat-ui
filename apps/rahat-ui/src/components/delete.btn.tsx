@@ -17,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   name: string;
@@ -31,6 +32,7 @@ export default function DeleteButton({
   className,
   disabled,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   const trigger = (
     <div
       className={cn(
@@ -56,16 +58,15 @@ export default function DeleteButton({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>{t('ARE_YOU_ABSOLUTELY_SURE')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    this {name}.
+                    {t('DELETE_CONFIRMATION', { name })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{t('CANCEL')}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleContinueClick}>
-                    Continue
+                    {t('CONTINUE')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -73,7 +74,7 @@ export default function DeleteButton({
           )}
         </TooltipTrigger>
         <TooltipContent className="bg-secondary">
-          <p className="text-xs font-medium">{disabled ? 'Cannot delete yourself' : 'Delete'}</p>
+          <p className="text-xs font-medium">{disabled ? t('CANNOT_DELETE_YOURSELF') : t('DELETE')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

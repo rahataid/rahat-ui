@@ -15,8 +15,15 @@ export interface HealthRow {
   status: SystemHealthStatus;
   lastChecked?: string;
   responseTime?: string;
-  message?: string;
+  message?: unknown;
 }
+
+/** Backend sends a plain string for some failures and a serialised error object for others. */
+const toMessageText = (message: unknown): string => {
+  if (typeof message === 'string') return message;
+  const nested = (message as { message?: unknown })?.message;
+  return typeof nested === 'string' ? nested : '';
+};
 
 /** Status badge colours, shared so both health pages stay visually identical. */
 export const healthBadgeStyles: Record<SystemHealthStatus, string> = {
@@ -82,22 +89,25 @@ export function useHealthColumns(): ColumnDef<HealthRow>[] {
     {
       header: tg('STATUS'),
       accessorKey: 'status',
-      cell: ({ row }) => (
-        <div className="flex flex-col gap-1">
-          <Badge
-            variant="outline"
-            className={cn(
-              'text-xs font-medium w-fit border',
-              healthBadgeStyles[row.original.status],
+      cell: ({ row }) => {
+        const message = toMessageText(row.original.message);
+        return (
+          <div className="flex flex-col gap-1">
+            <Badge
+              variant="outline"
+              className={cn(
+                'text-xs font-medium w-fit border',
+                healthBadgeStyles[row.original.status],
+              )}
+            >
+              {statusLabel(row.original.status)}
+            </Badge>
+            {message && row.original.status !== 'HEALTHY' && (
+              <span className="text-xs text-red-600 break-words">{message}</span>
             )}
-          >
-            {statusLabel(row.original.status)}
-          </Badge>
-          {row.original.message && row.original.status !== 'HEALTHY' && (
-            <span className="text-xs text-red-600">{row.original.message}</span>
-          )}
-        </div>
-      ),
+          </div>
+        );
+      },
     },
     {
       header: ta('LAST_CHECKED'),

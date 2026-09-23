@@ -81,12 +81,12 @@ export function ProjectNav({
 
   return (
     <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 min-w-0 max-w-[65%] overflow-hidden">
         {component}
 
         {isAAProject && !isLoading && activePhase && (
-          <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500">
-            <span>{activePhase.name} phase has been triggered</span>
+          <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500 min-w-0">
+            <span className="truncate">{activePhase.name} phase has been triggered</span>
           </div>
         )}
       </div>

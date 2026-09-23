@@ -34,6 +34,7 @@ import {
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
+import { QrOtpDialog } from './qr-otp.dialog';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
@@ -52,14 +53,29 @@ const BeneficiaryGroupsDetails = () => {
     groupId,
   });
 
-  const { mutate: generateQr } = useGenerateQrPdf(projectId);
+  const { mutate: generateQr, isPending: isGeneratingQr } =
+    useGenerateQrPdf(projectId);
+  const [isQrOptionsOpen, setIsQrOptionsOpen] = useState(false);
   const { mutate: exportExcel, isPending: isExporting } =
     useExportBeneficiariesExcel(projectId);
+
+  const handleGenerateQr = (includeOtp: boolean) => {
+    if (isGeneratingQr) return;
+    generateQr(
+      { groupId, includeOtp },
+      {
+        onSuccess: () => setIsQrOptionsOpen(false),
+      },
+    );
+  };
 
   const handleExportExcel = () => {
     exportExcel(groupId, {
       onSuccess: (rows) => {
-        exportToExcel(rows ?? [], `beneficiaries-${groupDetails?.name ?? groupId}`);
+        exportToExcel(
+          rows ?? [],
+          `beneficiaries-${groupDetails?.name ?? groupId}`,
+        );
       },
     });
   };
@@ -148,9 +164,9 @@ const BeneficiaryGroupsDetails = () => {
           ) : (
             <Button
               variant="outline"
-              onClick={() => generateQr(groupId)}
+              onClick={() => setIsQrOptionsOpen(true)}
               className="cursor-pointer"
-              disabled={isQrLoading}
+              disabled={isQrLoading || isGeneratingQr}
             >
               <CloudDownload className="mr-1" />
               {t('GENERATE_QR')}
@@ -180,10 +196,14 @@ const BeneficiaryGroupsDetails = () => {
           {sponsorshipStatus.pending === 0 && (
             <>
               <span className="text-green-600">
-                {t('SUCCESS_COUNT', { count: formatNum(sponsorshipStatus.sponsored) })}
+                {t('SUCCESS_COUNT', {
+                  count: formatNum(sponsorshipStatus.sponsored),
+                })}
               </span>
               <span className="text-red-600">
-                {t('FAILED_COUNT', { count: formatNum(sponsorshipStatus.failed) })}
+                {t('FAILED_COUNT', {
+                  count: formatNum(sponsorshipStatus.failed),
+                })}
               </span>
             </>
           )}
@@ -220,6 +240,12 @@ const BeneficiaryGroupsDetails = () => {
 
         <ClientSidePagination table={table} />
       </div>
+      <QrOtpDialog
+        open={isQrOptionsOpen}
+        onOpenChange={setIsQrOptionsOpen}
+        onConfirm={handleGenerateQr}
+        isPending={isGeneratingQr}
+      />
     </div>
   );
 };

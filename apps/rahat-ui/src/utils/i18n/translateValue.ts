@@ -44,7 +44,12 @@ export function translateValue(
   value: unknown,
   options: TranslateValueOptions = {},
 ): string {
-  const { keyMap, fallbackStyle = 'humanized', fallback, silent = false } = options;
+  const {
+    keyMap,
+    fallbackStyle = 'humanized',
+    fallback,
+    silent = false,
+  } = options;
 
   if (value === null || value === undefined) return fallback ?? '';
 
@@ -54,10 +59,15 @@ export function translateValue(
   const key = keyMap?.[raw] ?? toKey(raw);
   if (t.has(key)) return t(key);
 
-  if (!silent && process.env.NODE_ENV !== 'production' && !warnedKeys.has(key)) {
+  if (
+    !silent &&
+    process.env.NODE_ENV !== 'production' &&
+    !warnedKeys.has(key)
+  ) {
     warnedKeys.add(key);
     console.warn(
-      `[i18n] No translation for "${key}" — rendering "${fallback ?? (fallbackStyle === 'raw' ? raw : toLabel(raw))
+      `[i18n] No translation for "${key}" — rendering "${
+        fallback ?? (fallbackStyle === 'raw' ? raw : toLabel(raw))
       }". Add it to messages/en.json and messages/ne.json.`,
     );
   }

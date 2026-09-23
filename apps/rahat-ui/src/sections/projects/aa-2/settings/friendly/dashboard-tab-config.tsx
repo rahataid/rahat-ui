@@ -90,9 +90,9 @@ export default function DashboardTabConfigEditor({ submitRef }: IProps) {
   return (
     <div className="rounded border bg-white p-4">
       <div className="mb-3">
-        <h2 className="text-sm font-semibold">Dashboard Tabs</h2>
+        <h2 className="text-sm font-semibold">{t('DASHBOARD_TABS')}</h2>
         <p className="text-xs text-muted-foreground">
-          Choose which dashboard tabs are enabled for this project.
+          {t('CHOOSE_WHICH_DASHBOARD_TABS_ARE_ENABLED')}
         </p>
       </div>
 
@@ -106,7 +106,7 @@ export default function DashboardTabConfigEditor({ submitRef }: IProps) {
                 toggleValue(opt.value, checked === true)
               }
             />
-            <Label htmlFor={`fm-tab-${opt.value}`}>
+            <Label htmlFor={`db-tab-${opt.value}`}>
               {translateValue(t, opt.label, { fallbackStyle: 'raw' })}
             </Label>
           </div>

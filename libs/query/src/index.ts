@@ -23,6 +23,7 @@ export * from './lib/comms';
 
 export * from './lib/imports';
 export * from './lib/c2c';
+export * from './lib/health';
 
 export * from './config';
 export * from './lib/cva';

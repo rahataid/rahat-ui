@@ -359,6 +359,11 @@
     "DATA_AVAILABLE_FOR_THE_SELECTED_TIME": "छानिएको समय अवधिका तथ्यांक उपलब्ध छ।",
     "DATA_HEALTH_CHECKER": "तथ्यांकको अवस्था जाँच गर्ने उपकरण",
     "DATA_HEALTH_MONITOR": "तथ्यांकको स्थिति निगरानी",
+    "DATABASE": "डाटाबेस",
+    "REDIS": "रेडिस",
+    "BLOCKCHAIN_RPC": "ब्लकचेन RPC",
+    "CLOUDFLARE_STORAGE": "क्लाउडफ्लेयर भण्डारण",
+    "OFFRAMP_SERVICE": "अफर्याम्प सेवा",
     "DATA_NOT_AVAILABLE_AT_THE_MOMENT": "हाल तथ्यांक उपलब्ध छैन। कृपया केही समयपछि पुन: प्रयास गर्नुहोस्।",
     "DATA_NOT_AVAILABLE_DHM": "DHM का लागि तथ्यांक उपलब्ध छैन।",
     "DATA_NOT_AVAILABLE_FOR_DHM": "DHM का लागि तथ्यांक उपलब्ध छैन।",
@@ -1991,7 +1996,10 @@
     "single_woman": "एकल महिला",
     "steady": "स्थिर",
     "warning": "चेतावनी",
-    "widow": "विधवा"
+    "widow": "विधवा",
+    "HEALTH": "स्वास्थ्य",
+    "PROJECT_HEALTH": "परियोजनाको स्वास्थ्य",
+    "PROJECT_HEALTH_DESCRIPTION": "परियोजनाका निर्भरता र सेवाहरूको स्थिति अनुगमन गर्नुहोस्"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खातावालाको नाम",
@@ -3515,7 +3523,11 @@
     "PLEASE_SELECT_A_STATUS": "कृपया स्थिति छान्नुहोस्।",
     "ACTIVITY": "गतिविधि",
     "PAYOUT": "भुक्तानी",
-    "INKIND": "इन्काइन्ड"
+    "INKIND": "इन्काइन्ड",
+    "CHECKING": "जाँच गर्दै...",
+    "RUN_HEALTH_CHECK": "स्वास्थ्य जाँच चलाउनुहोस्",
+    "HEALTH_CHECK_SUCCESS": "स्वास्थ्य जाँच सम्पन्न भयो: {total} मध्ये {healthy} सेवाहरू स्वस्थ छन्",
+    "HEALTH_CHECK_FAILED": "स्वास्थ्य जाँच असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -3723,7 +3735,8 @@
   "SETTINGS_NAVIGATION": {
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",
-    "PROJECT_INFO": "परियोजनाको जानकारी"
+    "PROJECT_INFO": "परियोजनाको जानकारी",
+    "HEALTH": "स्वास्थ्य"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "तथ्यांकको प्रकार",

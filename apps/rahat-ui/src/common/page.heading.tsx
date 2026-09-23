@@ -64,13 +64,13 @@ export function Heading({
         )}
         {title}
         {status && <Badge className={badgeClassName}>{status}</Badge>}
-        {isShowStats &&
+        {/* {isShowStats &&
           totalSuccessAmount != null &&
           totalBeneficiaries != null && (
             <span className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
               {totalSuccessAmount}/{totalBeneficiaries} Beneficiaries
             </span>
-          )}
+          )} */}
       </div>
       <p className="text-[clamp(11px,1vw,14px)] leading-4 text-muted-foreground">
         {description}

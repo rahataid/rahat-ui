@@ -121,8 +121,8 @@ export default function usePayoutTransactionLogTableColumn() {
       meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const status = row?.original?.status;
-        const totalBeneficiaries = row.original.totalBeneficiaries;
-        const totalSuccess = row?.original?.totalSuccessAmount;
+        // const totalBeneficiaries = row.original.totalBeneficiaries;
+        // const totalSuccess = row?.original?.totalSuccessAmount;
         return (
           <div className="flex gap-2 w-full">
             <Badge
@@ -138,11 +138,11 @@ export default function usePayoutTransactionLogTableColumn() {
               })}
             </Badge>
 
-            {totalBeneficiaries != null && totalSuccess != null && (
+            {/* {totalBeneficiaries != null && totalSuccess != null && (
               <span className="text-[12px]">
                 {totalSuccess} / {totalBeneficiaries}
               </span>
-            )}
+            )} */}
           </div>
         );
       },

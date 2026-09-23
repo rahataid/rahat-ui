@@ -39,7 +39,6 @@ export default function DashboardTabConfigEditor({ submitRef }: IProps) {
 
   const { data: settings, isLoading } = useAAProjectSettingsList(projectUUID);
   const currentSetting = settings?.find((s: any) => s.name === SETTING_NAME);
-  console.log('currentSetting:', currentSetting);
   const [checkedValues, setCheckedValues] = useState<Set<string>>(new Set());
   const initialValuesRef = useRef<Set<string>>(new Set());
 
@@ -81,8 +80,6 @@ export default function DashboardTabConfigEditor({ submitRef }: IProps) {
   useEffect(() => {
     if (submitRef) submitRef.current = handleSubmit;
   });
-
-  console.log('checkedValue:', checkedValues);
 
   if (isLoading) {
     return (

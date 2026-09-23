@@ -28,9 +28,7 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
   const projectUUID = id as UUID;
 
   const { data: settings, isLoading } = useAAProjectSettingsList(projectUUID);
-  console.log('settings:', settings);
   const currentSetting = settings?.find((s: any) => s.name === SETTING_NAME);
-
   const [checkedTitles, setCheckedTitles] = useState<Set<string>>(new Set());
   const initialTitlesRef = useRef<Set<string>>(new Set());
 

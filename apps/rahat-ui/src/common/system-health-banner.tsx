@@ -49,7 +49,11 @@ export function SystemHealthBanner({
         <div className="flex items-center gap-2">
           <span className={cn('text-sm font-semibold', style.text)}>{overallLabel}</span>
           <Badge variant="outline" className={cn('font-semibold', style.badge)}>
-            {overallStatus}
+            {overallStatus === 'HEALTHY'
+              ? healthyLabel
+              : overallStatus === 'UNHEALTHY'
+                ? unhealthyLabel
+                : overallStatus}
           </Badge>
         </div>
         <span className="flex items-center gap-1 text-xs text-green-600">

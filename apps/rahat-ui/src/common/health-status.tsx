@@ -3,7 +3,14 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
+import { Info } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { cn } from '@rahat-ui/shadcn/src';
 import { useLabelDigits } from '../utils/i18n/number';
 import { useDateFormat } from '../utils/i18n/date';
@@ -93,8 +100,9 @@ export function useHealthColumns(): ColumnDef<HealthRow>[] {
       accessorKey: 'status',
       cell: ({ row }) => {
         const message = toMessageText(row.original.message);
+        const showError = !!message && row.original.status !== 'HEALTHY';
         return (
-          <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5">
             <Badge
               variant="outline"
               className={cn(
@@ -104,8 +112,24 @@ export function useHealthColumns(): ColumnDef<HealthRow>[] {
             >
               {statusLabel(row.original.status)}
             </Badge>
-            {message && row.original.status !== 'HEALTHY' && (
-              <span className="text-xs text-red-600 break-words">{message}</span>
+            {showError && (
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 cursor-help">
+                      <Info className="h-3 w-3" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    className="max-w-[360px] bg-white border shadow-lg"
+                  >
+                    <p className="text-xs font-mono break-words whitespace-pre-wrap text-foreground">
+                      {message}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         );

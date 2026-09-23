@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 
 export const useGetBeneficiariesQr = (payload: {
   projectUuid: UUID;
@@ -172,7 +173,6 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: async (groupId: UUID) => {
@@ -204,10 +204,11 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
         ['BENEFICIARIES_DASHBOARD_STATS'],
         rawMessage,
       );
-      toast.fire({
-        title: errorMessage,
-        icon: 'error',
-      });
+      showToast({
+          type: 'error',
+          title: errorMessage,
+          description: errorMessage,
+        });
     },
   });
 };

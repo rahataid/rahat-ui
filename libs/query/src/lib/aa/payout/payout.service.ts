@@ -2,7 +2,8 @@ import { UUID } from 'crypto';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { TAGS } from 'libs/query/src/config';
 import { useProjectAction } from '../../projects';
 import { useRSQuery } from '@rumsan/react-query';
@@ -45,13 +46,6 @@ export const useCreatePayout = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -70,10 +64,7 @@ export const useCreatePayout = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('PAYOUT_CREATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('PAYOUT_CREATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -85,10 +76,10 @@ export const useCreatePayout = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_CREATING_PAYOUT'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -210,13 +201,6 @@ export const useUpdatePayout = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -238,10 +222,7 @@ export const useUpdatePayout = () => {
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
       qc.invalidateQueries({ queryKey: ['payout-stats'] });
-      toast.fire({
-        title: t('PAYOUT_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('PAYOUT_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -253,10 +234,10 @@ export const useUpdatePayout = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_PAYOUT'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -267,13 +248,6 @@ export const useTriggerForPayoutFailed = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -297,10 +271,7 @@ export const useTriggerForPayoutFailed = () => {
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
       qc.invalidateQueries({ queryKey: ['payout-stats'] });
-      toast.fire({
-        title: t('PAYOUT_TRIGGERD_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('PAYOUT_TRIGGERD_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -312,10 +283,10 @@ export const useTriggerForPayoutFailed = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_TRIGGERING_PAYOUT'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -326,13 +297,6 @@ export const useTriggerForOnePayoutFailed = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -356,10 +320,7 @@ export const useTriggerForOnePayoutFailed = () => {
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
       qc.invalidateQueries({ queryKey: ['payout-stats'] });
-      toast.fire({
-        title: t('PAYOUT_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('PAYOUT_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -371,10 +332,10 @@ export const useTriggerForOnePayoutFailed = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_PAYOUT'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -385,13 +346,6 @@ export const useSendPayoutOtp = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -414,10 +368,7 @@ export const useSendPayoutOtp = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
-      toast.fire({
-        title: t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email: payload.email }),
-        icon: 'success',
-      });
+      toast.success(t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email: payload.email }));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || tb('GLOBAL.ERROR' as never);
@@ -429,10 +380,10 @@ export const useSendPayoutOtp = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_SENDING_OTP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -443,13 +394,6 @@ export const useTriggerPayout = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -473,10 +417,7 @@ export const useTriggerPayout = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
-      toast.fire({
-        title: t('PAYOUT_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('PAYOUT_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -488,10 +429,10 @@ export const useTriggerPayout = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_PAYOUT'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -599,13 +540,6 @@ export const useVerifyManualPayout = () => {
   const tb = useTranslations();
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-right',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -638,10 +572,7 @@ export const useVerifyManualPayout = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TAGS.VERFIY_MANUAL_PAYOUT] });
-      toast.fire({
-        icon: 'success',
-        title: t('MANUAL_PAYOUT_VERIFIED'),
-      });
+      toast.success(t('MANUAL_PAYOUT_VERIFIED'));
     },
     onError: (error: any) => {
       console.error('Upload error', error);
@@ -658,10 +589,10 @@ export const useVerifyManualPayout = () => {
         rawMessage,
       );
 
-      toast.fire({
-        icon: 'error',
+      showToast({
+        type: 'error',
         title: t('VERIFICATION_FAILED'),
-        text: message,
+        description: message,
       });
     },
   });

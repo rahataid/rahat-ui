@@ -8,11 +8,12 @@ import {
 import { useProjectAction } from '../../projects';
 import { useEffect } from 'react';
 import { useFundAssignmentStore } from './store';
-import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
 import { Pagination } from '@rumsan/sdk/types';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 
 export type InitiateFundTransfer = {
   from: string;
@@ -69,13 +70,6 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({ payload }: { payload: InitiateFundTransfer }) => {
       return q.mutateAsync({
@@ -88,10 +82,7 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('FUND_TRANSFERRED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('FUND_TRANSFERRED_SUCCESSFULLY'));
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
@@ -109,10 +100,10 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_FUND_TRANSFER'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -123,13 +114,6 @@ export const useCreateBudget = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       amount,
@@ -148,10 +132,7 @@ export const useCreateBudget = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('BUDGET_CREATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('BUDGET_CREATED_SUCCESSFULLY'));
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
@@ -169,10 +150,10 @@ export const useCreateBudget = (projectUUID: UUID) => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_CREATING_BUDGET'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -276,13 +257,6 @@ export const useGetCash = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({ payload }: { payload: ConfirmReceipt }) => {
       return q.mutateAsync({
@@ -295,10 +269,7 @@ export const useGetCash = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('CONFIRMED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('CONFIRMED_SUCCESSFULLY'));
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
@@ -319,10 +290,10 @@ export const useGetCash = (projectUUID: UUID) => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_CONFIRM'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -336,13 +307,6 @@ export const useInitateInkindTransfer = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({ payload }: { payload: InitiateFundTransfer }) => {
       return q.mutateAsync({
@@ -355,10 +319,7 @@ export const useInitateInkindTransfer = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('INKIND_TRANSFERRED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('INKIND_TRANSFERRED_SUCCESSFULLY'));
       // Invalidate the transactions query to refresh the data
       setTimeout(() => {
         queryClient.invalidateQueries({
@@ -376,10 +337,10 @@ export const useInitateInkindTransfer = (projectUUID: UUID) => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_INKIND_TRANSFER'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -437,13 +398,6 @@ export const useGetInkind = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({ payload }: { payload: ConfirmReceipt }) => {
       return q.mutateAsync({
@@ -456,10 +410,7 @@ export const useGetInkind = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('CONFIRMED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('CONFIRMED_SUCCESSFULLY'));
       // Invalidate the transactions query to refresh the data
       queryClient.invalidateQueries({
         queryKey: ['aa.inkind-tracker.getTransactions', projectUUID],
@@ -475,10 +426,10 @@ export const useGetInkind = (projectUUID: UUID) => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_CONFIRM'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -519,13 +470,6 @@ export const useCreateAASafeTransaction = () => {
   const tb = useTranslations();
   const projectActions = useProjectAction(['aa', 'multisig-actions']);
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationKey: ['create-safe-transaction'],
@@ -562,10 +506,10 @@ export const useCreateAASafeTransaction = () => {
         ['PROJECT_INFO_DASHBOARD_USAGE_AUDIT_CHART_REPORTS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -610,15 +554,9 @@ export const useGetTransferList = (projectUUID: UUID, payload: Pagination) => {
   return query;
 };
 export const useDisburseChain = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({ dName, groups = [] }: { dName: string; groups?: string[] }) => {
@@ -632,10 +570,7 @@ export const useDisburseChain = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Disbursement triggered successfully.',
-        icon: 'success',
-      });
+      toast.success(t('DISBURSEMENT_TRIGGERED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['groupsreservedfunds', projectUUID],
       });
@@ -646,10 +581,10 @@ export const useDisburseChain = (projectUUID: UUID) => {
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
-      toast.fire({
-        title: 'Error while triggering disbursement.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_TRIGGERING_DISBURSEMENT'),
+        description: errorMessage,
       });
     },
   });
@@ -659,13 +594,6 @@ export const useAddProjectFund = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({ amount }: { amount: string }) => {
@@ -679,10 +607,7 @@ export const useAddProjectFund = (projectUUID: UUID) => {
     },
     onSuccess: ({ data }) => {
       q.reset();
-      toast.fire({
-        title: t('FUND_ADDED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('FUND_ADDED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.tokenDetails', projectUUID],
       });
@@ -690,10 +615,10 @@ export const useAddProjectFund = (projectUUID: UUID) => {
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || t('ERROR');
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_ADDING_FUND'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

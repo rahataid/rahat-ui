@@ -1,19 +1,10 @@
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../projects';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
-function useToast() {
-  const alert = useSwal();
-  return alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-}
 export const useGetBeneficiariesQr = (payload: {
   projectUuid: UUID;
   groupId: UUID;
@@ -102,7 +93,6 @@ export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: async (groupUuid: UUID) => {
@@ -133,10 +123,7 @@ export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
         ['BENEFICIARIES_DASHBOARD_STATS'],
         rawMessage,
       );
-      toast.fire({
-        title: errorMessage,
-        icon: 'error',
-      });
+      toast.error(errorMessage);
     },
   });
 };
@@ -146,7 +133,6 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: async (groupId: UUID) => {
@@ -165,10 +151,7 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
       queryClient.invalidateQueries({
         queryKey: ['beneficiariesQr', { projectUuid, groupId }],
       });
-      toast.fire({
-        title: t('QR_GENERATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('QR_GENERATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage: string =
@@ -180,10 +163,7 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
         ['BENEFICIARIES_DASHBOARD_STATS'],
         rawMessage,
       );
-      toast.fire({
-        title: errorMessage,
-        icon: 'error',
-      });
+      toast.error(errorMessage);
     },
   });
 };

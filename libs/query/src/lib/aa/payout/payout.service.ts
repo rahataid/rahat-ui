@@ -547,6 +547,52 @@ export const usePayoutExportLogs = ({
   });
 };
 
+export const usePayoutExportPdfFile = () => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payoutUUID,
+      transactionType,
+      transactionStatus,
+      search,
+      sort,
+      order,
+    }: {
+      projectUUID: UUID;
+      payoutUUID: string;
+      transactionType?: string;
+      transactionStatus?: string;
+      search?: string;
+      sort?: string;
+      order?: 'asc' | 'desc';
+    }) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          // Server-side PDF generation: the API renders the payout logs
+          // PDF (with photo evidence) and returns it as base64.
+          action: 'aa.jobs.payout.exportPayoutLogsPdfFile',
+          payload: {
+            payoutUUID,
+            ...(transactionType ? { transactionType } : {}),
+            ...(transactionStatus ? { transactionStatus } : {}),
+            ...(search ? { search } : {}),
+            ...(sort ? { sort } : {}),
+            ...(order ? { order } : {}),
+          },
+        },
+      });
+      return mutate.data as {
+        filename: string;
+        mimeType: string;
+        base64: string;
+      };
+    },
+  });
+};
+
 export const useVerifyManualPayout = () => {
   const t = useTranslations('AA_PROJECT');
   const tRoot = useTranslations();

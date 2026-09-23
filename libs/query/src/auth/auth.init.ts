@@ -43,7 +43,17 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
   useEffect(() => {
     if (token) {
       if (currentUser.isFetched) {
-        if (currentUser.error || !currentUser.data?.data?.uuid) {
+        // Only force logout when the server positively rejects the identity
+        // (401 = token invalid/revoked, 404 = user deleted). Network failures,
+        // timeouts and 5xx responses leave `error.response` unset or
+        // non-auth related, so the session must survive those.
+        const errorStatus = (currentUser.error as any)?.response?.status;
+        const isSessionInvalid =
+          errorStatus === 401 || errorStatus === 404;
+        if (
+          isSessionInvalid ||
+          (!currentUser.error && !currentUser.data?.data?.uuid)
+        ) {
           clearAuth();
           clearUser();
           accessToken.remove();

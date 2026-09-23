@@ -30,6 +30,7 @@ import { NotificationButton } from 'apps/rahat-ui/src/components/notification-bu
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { LanguageToggle } from 'apps/rahat-ui/src/components/language-toggle';
 import { CircleAlert } from 'lucide-react';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export function ProjectNav({
   component,
@@ -85,9 +86,14 @@ export function ProjectNav({
         {component}
 
         {isAAProject && !isLoading && activePhase && (
-          <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500 min-w-0">
-            <span className="truncate">{activePhase.name} phase has been triggered</span>
-          </div>
+          <TooltipWrapper
+            className="min-w-0"
+            tip={`${activePhase.name} phase has been triggered`}
+          >
+            <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500 min-w-0">
+              <span className="truncate">{activePhase.name} phase has been triggered</span>
+            </div>
+          </TooltipWrapper>
         )}
       </div>
       <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">

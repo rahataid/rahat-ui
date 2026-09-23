@@ -118,6 +118,14 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
       return hasActive ? 5000 : false;
     },
     staleTime: 5 * 60 * 60 * 1000, // 5 hrs
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data?.data?.length) return false;
+      const hasActive = data.data.some(
+        (p: any) => p.status !== 'COMPLETED' && p.status !== 'FAILED',
+      );
+      return hasActive ? 5000 : false;
+    },
   });
   return query;
 };
@@ -143,7 +151,7 @@ export const usePayoutStats = (
       });
       return mutate.data;
     },
-    staleTime: 1 * 60 * 60 * 1000, // 1 hrs
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
   return query;
 };

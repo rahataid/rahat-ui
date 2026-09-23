@@ -1,6 +1,7 @@
 import {
   ACTIVITY_QUERY_KEYS,
   FUND_MANAGEMENT_QUERY_KEYS,
+  PAYOUT_QUERY_KEYS,
   PHASE_QUERY_KEYS,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
@@ -14,7 +15,8 @@ export type EVENT =
   | 'trigger.created'
   | 'fund.event'
   | 'activity.created'
-  | 'activity.updated';
+  | 'activity.updated'
+  | 'payout.event';
 
 export const EVENT_QUERY_MAP: Record<
   string,
@@ -63,5 +65,8 @@ export const EVENT_QUERY_MAP: Record<
   'token.disbursed': (projectUuid) => [
     [FUND_MANAGEMENT_QUERY_KEYS.GROUPS_RESERVED_FUNDS, projectUuid],
     [FUND_MANAGEMENT_QUERY_KEYS.GET_DISBURSEMENT_STATS, projectUuid],
+  ],
+  'payout.event': (projectUuid) => [
+    [PAYOUT_QUERY_KEYS.PAYOUT_LIST, projectUuid],
   ],
 };

@@ -3,17 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../projects';
 import { runAction, ACTION_NS } from './utils';
-import { useSwal } from 'libs/query/src/swal';
-
-function useToast() {
-  const alert = useSwal();
-  return alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-}
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import {
   AssignFundPayload,
   CreateGroupCashTransferPayload,
@@ -29,14 +20,13 @@ export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: CreateGroupCashTransferPayload) =>
       runAction(q, projectUUID, ACTION_NS + '.create', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: t('GROUP_CASH_TRANSFER_CREATED'), icon: 'success' });
+      toast.success(t('GROUP_CASH_TRANSFER_CREATED'));
       queryClient.invalidateQueries({
         queryKey: [ACTION_NS + '.get', projectUUID],
       });
@@ -51,10 +41,10 @@ export const useCreateGroupCashTransfer = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_CREATING_GROUP_CASH_TRANSFER'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -65,14 +55,13 @@ export const useUpdateGroupCashTransfer = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: UpdateGroupCashTransferPayload) =>
       runAction(q, projectUUID, ACTION_NS + '.update', payload as any),
     onSuccess: (_, variables) => {
       q.reset();
-      toast.fire({ title: t('GROUP_CASH_TRANSFER_UPDATED'), icon: 'success' });
+      toast.success(t('GROUP_CASH_TRANSFER_UPDATED'));
       queryClient.invalidateQueries({
         queryKey: [ACTION_NS + '.get', projectUUID],
       });
@@ -90,10 +79,10 @@ export const useUpdateGroupCashTransfer = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_UPDATING_GROUP_CASH_TRANSFER'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -104,14 +93,13 @@ export const useDeleteGroupCashTransfer = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ uuid }: { uuid: string }) =>
       runAction(q, projectUUID, ACTION_NS + '.delete', { uuid }),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: t('GROUP_CASH_TRANSFER_DELETED'), icon: 'success' });
+      toast.success(t('GROUP_CASH_TRANSFER_DELETED'));
       queryClient.invalidateQueries({
         queryKey: [ACTION_NS + '.get', projectUUID],
       });
@@ -126,10 +114,10 @@ export const useDeleteGroupCashTransfer = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_DELETING_GROUP_CASH_TRANSFER'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -140,14 +128,13 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: AssignFundPayload) =>
       runAction(q, projectUUID, ACTION_NS + '.assignFund', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: t('FUND_ASSIGNED_SUCCESSFULLY'), icon: 'success' });
+      toast.success(t('FUND_ASSIGNED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: [ACTION_NS + '.get', projectUUID],
       });
@@ -165,10 +152,10 @@ export const useAssignGroupCashTransferFund = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_ASSIGNING_FUND'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -179,14 +166,13 @@ export const useUpdateGctRecord = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: UpdateGctRecordPayload) =>
       runAction(q, projectUUID, ACTION_NS + '.updateRecord', payload as any),
     onSuccess: (_, variables) => {
       q.reset();
-      toast.fire({ title: t('RECORD_UPDATED_SUCCESSFULLY'), icon: 'success' });
+      toast.success(t('RECORD_UPDATED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: [ACTION_NS + '.getRecords', projectUUID],
       });
@@ -204,10 +190,10 @@ export const useUpdateGctRecord = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_UPDATING_RECORD'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -217,7 +203,6 @@ export const useValidateBankAccount = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
@@ -232,10 +217,10 @@ export const useValidateBankAccount = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('BANK_ACCOUNT_VALIDATION_FAILED'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -245,17 +230,13 @@ export const useSendGctOtp = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ email }: { email: string }) =>
       runAction(q, projectUUID, ACTION_NS + '.sendOtp', { email }),
     onSuccess: (_data, { email }) => {
       q.reset();
-      toast.fire({
-        title: t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email }),
-        icon: 'success',
-      });
+      toast.success(t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email }));
     },
     onError: (error: any) => {
       q.reset();
@@ -267,10 +248,10 @@ export const useSendGctOtp = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_SENDING_OTP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -281,7 +262,6 @@ export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: ({
@@ -314,10 +294,10 @@ export const useConfirmDisburseGroupCashTransfer = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_CONFIRMING_DISBURSEMENT'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -328,7 +308,6 @@ export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     // uuid here is the fund record UUID returned by assignFund, not the group UUID
@@ -350,10 +329,10 @@ export const useDisburseGroupCashTransfer = (projectUUID: UUID) => {
         ['GROUP_CASH_TRANSFER'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_INITIATING_DISBURSEMENT'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

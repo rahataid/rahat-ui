@@ -82,7 +82,10 @@ export default function usePayoutTransactionLogTableColumn() {
           (row.original.totalTokenAssigned * 1) /
           row.original.totalBeneficiaries;
         return (
-          <TruncatedCell text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`} maxLength={10} />
+          <TruncatedCell
+            text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`}
+            maxLength={10}
+          />
         );
       },
     },
@@ -114,11 +117,12 @@ export default function usePayoutTransactionLogTableColumn() {
       ),
     },
     {
-      // accessorKey: 'status',
-      header: 'Status',
-      meta: { className: 'w-[150px]' },
+      header: tg('STATUS'),
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const status = row?.original?.status;
+        // const totalBeneficiaries = row.original.totalBeneficiaries;
+        // const totalSuccess = row?.original?.totalSuccessAmount;
         return (
           <div className="flex gap-2 w-full">
             <Badge
@@ -127,16 +131,18 @@ export default function usePayoutTransactionLogTableColumn() {
               )}`}
             >
               {translateValue(tg, status, {
-              fallback: status
-                ?.toLowerCase()
-                .replace(/_/g, ' ')
-                .replace(/^./, (char: string) => char.toUpperCase()),
-            })}
+                fallback: status
+                  ?.toLowerCase()
+                  .replace(/_/g, ' ')
+                  .replace(/^./, (char: string) => char.toUpperCase()),
+              })}
             </Badge>
-            <span className="text-[12px]">
-              {row?.original.totalSuccessAmount} /{' '}
-              {row.getValue('totalBeneficiaries')}
-            </span>
+
+            {/* {totalBeneficiaries != null && totalSuccess != null && (
+              <span className="text-[12px]">
+                {totalSuccess} / {totalBeneficiaries}
+              </span>
+            )} */}
           </div>
         );
       },
@@ -158,6 +164,7 @@ export default function usePayoutTransactionLogTableColumn() {
       id: 'actions',
       header: tg('ACTIONS'),
       enableHiding: false,
+      meta: { className: 'w-[7%]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

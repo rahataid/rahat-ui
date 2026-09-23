@@ -164,6 +164,7 @@ export default function CommsLogsDetailPage() {
   );
 
   const count = useSessionBroadCastCount([sessionId]);
+
   const mutateRetry = useSessionRetryFailed();
 
   const retryFailed = async () => {
@@ -386,7 +387,12 @@ export default function CommsLogsDetailPage() {
                 <Card className="p-4 rounded-sm bg-white h-full">
                   <CardTitle className="flex gap-2 pb-2">
                     <TooltipWrapper
-                      tip={`${t('ACTIVITY_PHASE')}: ${activityDetail?.phase?.name || tg('N_A')}`}
+                      tip={`${t('ACTIVITY_PHASE')}: ${translateValue(
+                        tg,
+
+                        activityDetail?.phase?.name,
+                        { fallbackStyle: 'raw', silent: true },
+                      )}`}
                     >
                       <Badge
                         className={`${getPhaseColor(
@@ -581,17 +587,19 @@ export default function CommsLogsDetailPage() {
                             </span>
                           </div>
 
-                          <Badge
-                            className={`${
-                              logs?.sessionDetails?.status === 'COMPLETED'
-                                ? 'bg-green-100 text-green-600 hover:bg-green-100'
-                                : logs?.sessionDetails?.status === 'PENDING'
-                                ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
-                                : 'bg-red-100 text-red-600 hover:bg-red-100'
-                            } rounded-full px-3`}
-                          >
-                            {translateValue(tg, logs?.sessionDetails?.status)}
-                          </Badge>
+                          {logs?.sessionDetails?.status && (
+                            <Badge
+                              className={`${
+                                logs?.sessionDetails?.status === 'COMPLETED'
+                                  ? 'bg-green-100 text-green-600 hover:bg-green-100'
+                                  : logs?.sessionDetails?.status === 'PENDING'
+                                  ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
+                                  : 'bg-red-100 text-red-600 hover:bg-red-100'
+                              } rounded-full px-3`}
+                            >
+                              {translateValue(tg, logs?.sessionDetails?.status)}
+                            </Badge>
+                          )}
                         </div>
 
                         {/* Communication */}

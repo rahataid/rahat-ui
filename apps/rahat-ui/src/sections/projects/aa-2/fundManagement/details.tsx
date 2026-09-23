@@ -13,6 +13,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import DisburseButton from './components/disburse.button';
 
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
@@ -75,6 +76,9 @@ export default function FundManagementDetail() {
               : 'bg-gray-200'
           }
         />
+        {!isLoading && (
+          <DisburseButton groupUuid={data?.groupId} status={data?.status} />
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">

@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -8,7 +9,6 @@ import { useLabelDigits } from '../utils/i18n/number';
 import { useDateFormat } from '../utils/i18n/date';
 import type { SystemHealthStatus } from './system-health-banner';
 
-/** One service row, shared by the core-platform and per-project health views. */
 export interface HealthRow {
   key: string;
   name: string;
@@ -25,20 +25,17 @@ const toMessageText = (message: unknown): string => {
   return typeof nested === 'string' ? nested : '';
 };
 
-/** Status badge colours, shared so both health pages stay visually identical. */
 export const healthBadgeStyles: Record<SystemHealthStatus, string> = {
   HEALTHY: 'bg-green-50 text-green-700 border-green-300',
   UNHEALTHY: 'bg-red-50 text-red-700 border-red-300',
   NA: 'bg-gray-50 text-gray-600 border-gray-300',
 };
 
-/** Backend ServiceStatus is 'up' | 'down' only — per-service is never 'degraded'. */
 export const toHealthRowStatus = (
   status: 'up' | 'down' | undefined,
 ): SystemHealthStatus =>
   status === 'up' ? 'HEALTHY' : status === 'down' ? 'UNHEALTHY' : 'NA';
 
-/** Service key → i18n key; unmapped services fall back to their raw key rather than vanishing. */
 export const SERVICE_LABEL_KEYS: Record<string, string> = {
   database: 'DATABASE',
   redis: 'REDIS',
@@ -48,22 +45,28 @@ export const SERVICE_LABEL_KEYS: Record<string, string> = {
   offRamp: 'OFFRAMP_SERVICE',
 };
 
-/** Translated service and status labels; unknown keys fall back since t() throws on missing messages. */
 export function useHealthLabels() {
   const tg = useTranslations('GLOBAL');
   const ta = useTranslations('AA_PROJECT');
 
-  const labelFor = (key: string) => {
-    const labelKey = SERVICE_LABEL_KEYS[key];
-    return labelKey ? ta(labelKey) : key;
-  };
+  // Unmapped keys fall back to the raw key, since t() throws on a missing message.
+  const labelFor = useCallback(
+    (key: string) => {
+      const labelKey = SERVICE_LABEL_KEYS[key];
+      return labelKey ? ta(labelKey) : key;
+    },
+    [ta],
+  );
 
-  const statusLabel = (status: SystemHealthStatus) =>
-    status === 'HEALTHY'
-      ? ta('HEALTHY')
-      : status === 'UNHEALTHY'
-        ? ta('UNHEALTHY')
-        : tg('NA');
+  const statusLabel = useCallback(
+    (status: SystemHealthStatus) =>
+      status === 'HEALTHY'
+        ? ta('HEALTHY')
+        : status === 'UNHEALTHY'
+          ? ta('UNHEALTHY')
+          : tg('NA'),
+    [ta, tg],
+  );
 
   return { labelFor, statusLabel };
 }
@@ -72,7 +75,6 @@ export function useHealthLabels() {
 const withUnitSpace = (latency: string) =>
   latency.replace(/^([\d.]+)\s*([a-zA-Z]+)$/, '$1 $2');
 
-/** Shared table columns; latency digits and timestamps are both localised. */
 export function useHealthColumns(): ColumnDef<HealthRow>[] {
   const tg = useTranslations('GLOBAL');
   const ta = useTranslations('AA_PROJECT');
@@ -138,7 +140,6 @@ export const deriveOverallStatus = (rows: HealthRow[]): SystemHealthStatus => {
   return rows.some((r) => r.status === 'UNHEALTHY') ? 'UNHEALTHY' : 'HEALTHY';
 };
 
-/** Most recent probe across all services, without assuming any specific service key exists. */
 export const latestCheckedAt = (rows: HealthRow[]): string | undefined =>
   rows
     .map((r) => r.lastChecked)

@@ -2,7 +2,7 @@
 import { useRSQuery } from '@rumsan/react-query';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { HEALTH_CHECK_ACTION, TAGS } from '../../config';
-import { useProjectAction } from '../..';
+import { useProjectAction } from '../projects/projects.service';
 import { UUID } from 'crypto';
 
 
@@ -31,6 +31,9 @@ export const useCoreHealth = (): UseQueryResult<CoreHealthStatus, Error> => {
       // Global interceptor wraps responses in { success, data } — unwrap one extra level.
       queryFn: async () => (await rumsanService.client.get('/health')).data.data,
       refetchInterval: 60_000,
+      // Backend caches health for 60s, so refetching sooner returns identical data.
+      staleTime: 60_000,
+      refetchOnWindowFocus: false,
     },
     queryClient,
   );

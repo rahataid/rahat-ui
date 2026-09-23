@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { RefreshCw } from 'lucide-react';
@@ -44,15 +45,17 @@ export default function ProjectHealthView() {
   const formatDigits = useLabelDigits();
 
   // Built from whatever the backend returns, so new services need no frontend change.
-  const rows: HealthRow[] = Object.entries(projectHealth?.services ?? {}).map(
-    ([key, service]) => ({
-      key,
-      name: labelFor(key),
-      status: toHealthRowStatus(service?.status),
-      lastChecked: service?.last_checked,
-      responseTime: service?.latency,
-      message: service?.message,
-    }),
+  const rows: HealthRow[] = useMemo(
+    () =>
+      Object.entries(projectHealth?.services ?? {}).map(([key, service]) => ({
+        key,
+        name: labelFor(key),
+        status: toHealthRowStatus(service?.status),
+        lastChecked: service?.last_checked,
+        responseTime: service?.latency,
+        message: service?.message,
+      })),
+    [projectHealth, labelFor],
   );
 
   const healthyCount = rows.filter((r) => r.status === 'HEALTHY').length;

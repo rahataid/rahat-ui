@@ -115,6 +115,17 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
       });
       return mutate;
     },
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data?.data?.length) return false;
+      const hasActive = data.data.some(
+        (p: any) =>
+          p.status !== 'COMPLETED' &&
+          p.status !== 'FAILED' &&
+          p.status !== 'NOT_STARTED',
+      );
+      return hasActive ? 5000 : false;
+    },
     staleTime: 5 * 60 * 60 * 1000, // 5 hrs
   });
   return query;
@@ -420,7 +431,8 @@ export const useSendPayoutOtp = () => {
       });
     },
     onError: (error: any) => {
-      const rawMessage = error?.response?.data?.message || tb('GLOBAL.ERROR' as never);
+      const rawMessage =
+        error?.response?.data?.message || tb('GLOBAL.ERROR' as never);
       const errorMessage = resolveBackendErrorMessage(
         tb,
         error?.response?.data?.code,

@@ -230,13 +230,19 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description={tv('LIST_OF_ALL_THE_PAYOUT_TRANSACTION')}
-              status={
-                translateValue(tg, payout?.status, { fallbackStyle: 'raw' })
-                      ?.toLowerCase()
-                      .replace(/_/g, ' ')
-                      .replace(/^./, (char: string) => char.toUpperCase())
-              }
+              status={translateValue(tg, payout?.status, {
+                fallbackStyle: 'raw',
+              })
+                ?.toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char: string) => char.toUpperCase())}
               badgeClassName={isCompleteBgStatus(payout?.status)}
+              totalBeneficiaries={
+                payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+                  ?.beneficiaries
+              }
+              totalSuccessAmount={payout?.totalSuccessAmount}
+              isShowStats={true}
             />
           </div>
           {
@@ -374,7 +380,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         >
           <DataCard
             title={tv('TOTAL_NO_OF_BENEFICIARIES')}
-            smallNumber={formatNum(payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ?? 0)}
+            smallNumber={formatNum(
+              payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+                ?.beneficiaries ?? 0,
+            )}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
             infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}

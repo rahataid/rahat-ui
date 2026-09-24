@@ -3524,6 +3524,7 @@
     "ACTIVITY": "गतिविधि",
     "PAYOUT": "भुक्तानी",
     "INKIND": "इन्काइन्ड",
+    "ENVIRONMENT": "वातावरण",
     "CHECKING": "जाँच गर्दै...",
     "RUN_HEALTH_CHECK": "स्वास्थ्य जाँच चलाउनुहोस्",
     "HEALTH_CHECK_SUCCESS": "स्वास्थ्य जाँच सम्पन्न भयो: {total} मध्ये {healthy} सेवाहरू स्वस्थ छन्",
@@ -3736,7 +3737,9 @@
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",
     "PROJECT_INFO": "परियोजनाको जानकारी",
-    "HEALTH": "स्वास्थ्य"
+    "HEALTH": "स्वास्थ्य",
+    "VERSION": "संस्करण",
+    "UNREACHABLE": "पहुँच नभएको"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "तथ्यांकको प्रकार",

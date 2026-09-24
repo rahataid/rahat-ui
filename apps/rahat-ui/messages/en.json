@@ -561,6 +561,7 @@
     "ACTIVITY": "Activity",
     "PAYOUT": "Payout",
     "INKIND": "Inkind",
+    "ENVIRONMENT": "Environment",
     "CHECKING": "Checking...",
     "RUN_HEALTH_CHECK": "Run Health Check",
     "HEALTH_CHECK_SUCCESS": "Health check completed: {healthy} of {total} services healthy",
@@ -1143,7 +1144,9 @@
     "LIST": "List",
     "AUTH_APPS": "Auth Apps",
     "PROJECT_INFO": "Project Info",
-    "HEALTH": "Health"
+    "HEALTH": "Health",
+    "VERSION": "Version",
+    "UNREACHABLE": "Unreachable"
   },
   "VENDORS_LIST": {
     "VENDORS": "Vendors",

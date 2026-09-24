@@ -88,6 +88,10 @@ export interface Phase {
   phase?: string;
   title: string;
   responsibility: string;
+  activityCommunication?: {
+    communicationId: string;
+    sessionStatus?: string;
+  }[];
 }
 
 export interface PhaseContentProps {

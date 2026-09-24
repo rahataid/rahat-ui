@@ -123,16 +123,18 @@ export function DateRangePicker({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
+        <PopoverContent className="w-auto p-0 scale-90 origin-top-left translate-x-6">
+          {' '}
           <Calendar
             mode="range"
             selected={date}
             onSelect={(selectedRange) => {
               setDate(selectedRange);
-              if (selectedRange?.from && selectedRange?.to) {
-                handleDateChange(selectedRange);
-                setOpen(false);
-              }
+
+              if (!selectedRange?.from) return;
+
+              handleDateChange(selectedRange);
+              if (selectedRange.to) setOpen(false);
             }}
             defaultMonth={date?.from}
             numberOfMonths={2}

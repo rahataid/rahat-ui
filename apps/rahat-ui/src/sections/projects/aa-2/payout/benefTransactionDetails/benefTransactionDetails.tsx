@@ -126,14 +126,18 @@ export default function BeneficiaryTransactionLogDetails() {
         <DataCard
           title={tv('ACTUAL_BUDGET')}
           Icon={Coins}
-          smallNumber={`${t('RS')} ${formatNum(data?.data?.amount * ONE_TOKEN_VALUE)}`}
+          smallNumber={`${t('RS')} ${formatNum(
+            data?.data?.amount * ONE_TOKEN_VALUE,
+          )}`}
           className="h-24 w-full rounded-sm pt-1"
         />
 
         <DataCard
           title={tv('AMOUNT_DISBURSED')}
           Icon={Coins}
-          smallNumber={`${t('RS')} ${formatNum(totalSuccessAmount || totalFailedAmount || 0)}`}
+          smallNumber={`${t('RS')} ${formatNum(
+            totalSuccessAmount || totalFailedAmount || 0,
+          )}`}
           className="h-24 w-full rounded-sm pt-1"
         />
         {data?.data?.status.endsWith('COMPLETED') && (
@@ -183,11 +187,6 @@ export default function BeneficiaryTransactionLogDetails() {
               copyable
             />
             <InfoItem
-              label={tv('TRANSACTION_WALLET_ID')}
-              value={data?.data?.info?.offrampWalletAddress}
-              copyable
-            />
-            <InfoItem
               label={tv('TRANSACTION_HASH')}
               value={data?.data?.txHash}
               link
@@ -207,6 +206,19 @@ export default function BeneficiaryTransactionLogDetails() {
                 {translateValue(tg, data?.data?.transactionType)}
               </Badge>
             </InfoItem>
+
+            {data?.data?.info?.otpSkip && (
+              <>
+                <InfoItem
+                  label={tv('BENEFICIARY_SKIP_OTP')}
+                  value={String(data?.data?.info?.otpSkip)}
+                />
+                <InfoItem
+                  label={tv('BENEFICIARY_SKIP_OTP_REASON')}
+                  value={data?.data?.info?.otpSkipReason}
+                />
+              </>
+            )}
 
             {data?.data?.info?.mediaUrl && (
               <InfoItem label={tg('PROOF_OF_PAYMENT')}>

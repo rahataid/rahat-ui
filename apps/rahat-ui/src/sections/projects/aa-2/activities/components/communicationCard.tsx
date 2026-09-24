@@ -43,6 +43,8 @@ interface BaseCommunication {
   sessionStatus: string;
   sessionId: string;
   completedAt: string;
+  startedAt?: string;
+  updatedAt?: string;
   extras?: { smsCredits: number };
   onSend?: () => void;
   onEdit?: () => void;
@@ -73,7 +75,6 @@ export function CommunicationCard({
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();
   const router = useRouter();
-
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case SessionStatus.PENDING:
@@ -152,7 +153,9 @@ export function CommunicationCard({
             {/* Title */}
             <div className="flex items-center gap-2 mb-1">
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_TITLE')}: ${activityCommunication?.communicationTitle}`}
+                tip={`${t('COMMUNICATION_TITLE')}: ${
+                  activityCommunication?.communicationTitle
+                }`}
               >
                 <h3 className="font-medium text-gray-900 truncate w-[360px]">
                   {activityCommunication?.communicationTitle}
@@ -186,7 +189,9 @@ export function CommunicationCard({
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_CHANNEL')}: ${activityCommunication?.transportName}`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${
+                  activityCommunication?.transportName
+                }`}
               >
                 <span>
                   {activityCommunication?.transportName
@@ -214,11 +219,17 @@ export function CommunicationCard({
                 <>
                   <span>•</span>
                   <TooltipWrapper
-                    tip={`${activityCommunication?.extras.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}: ${formatNum(activityCommunication?.extras.smsCredits)}`}
+                    tip={`${
+                      activityCommunication?.extras.smsCredits === 1
+                        ? t('SMS_CREDIT')
+                        : t('SMS_CREDITS')
+                    }: ${formatNum(activityCommunication?.extras.smsCredits)}`}
                   >
                     <span>
                       {formatNum(activityCommunication?.extras.smsCredits)}{' '}
-                      {activityCommunication?.extras.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
+                      {activityCommunication?.extras.smsCredits === 1
+                        ? t('SMS_CREDIT')
+                        : t('SMS_CREDITS')}
                     </span>
                   </TooltipWrapper>
                 </>
@@ -252,9 +263,11 @@ export function CommunicationCard({
         {/* Subject for Email */}
         {activityCommunication?.subject && (
           <TooltipWrapper
-            tip={`${t('COMMUNICATION_SUBJECT')}: ${activityCommunication?.subject}`}
+            tip={`${t('COMMUNICATION_SUBJECT')}: ${
+              activityCommunication?.subject
+            }`}
           >
-            <h4 className="font-medium text-sm mt-3">
+            <h4 className="font-medium text-sm mt-3 break-words">
               {activityCommunication?.subject}
             </h4>
           </TooltipWrapper>
@@ -263,12 +276,13 @@ export function CommunicationCard({
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <TooltipWrapper
-            tip={`${t('COMMUNICATION_MESSAGE')}: ${activityCommunication?.message?.substring(
-              0,
-              50,
-            )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
+            tip={`${t(
+              'COMMUNICATION_MESSAGE',
+            )}: ${activityCommunication?.message?.substring(0, 50)}${
+              activityCommunication?.message?.length > 50 ? '...' : ''
+            }`}
           >
-            <div className="mt-2">
+            <div className="mt-2 overflow-hidden break-words">
               <MessageWithToggle
                 message={activityCommunication?.message ?? ''}
               />
@@ -280,7 +294,9 @@ export function CommunicationCard({
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message || {}).length !== 0 && (
             <TooltipWrapper
-              tip={`${t('VOICE_FILE')}: ${activityCommunication?.message?.fileName}`}
+              tip={`${t('VOICE_FILE')}: ${
+                activityCommunication?.message?.fileName
+              }`}
             >
               <div className="bg-gray-50 p-3 rounded-sm mt-3">
                 <p className="text-center mb-2 text-sm font-medium">
@@ -297,18 +313,46 @@ export function CommunicationCard({
             </TooltipWrapper>
           )}
 
-        {/* Completed At */}
-        {activityCommunication?.sessionStatus === 'COMPLETED' && (
-          <TooltipWrapper
-            tip={`${t('COMPLETED_AT')}: ${formatDate(
-              activityCommunication.completedAt,
-            )}`}
-          >
-            <p className="mt-3 text-sm text-gray-500">
-              {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
-            </p>
-          </TooltipWrapper>
-        )}
+        {/* Timestamps */}
+        <div className="mt-3 space-y-1">
+          {activityCommunication?.startedAt && (
+            <TooltipWrapper
+              tip={`${t('STARTED_AT')}: ${formatDate(
+                activityCommunication.startedAt,
+              )}`}
+            >
+              <p className="text-sm text-gray-500">
+                {t('STARTED_AT')}: {formatDate(activityCommunication.startedAt)}
+              </p>
+            </TooltipWrapper>
+          )}
+          {activityCommunication?.sessionStatus === 'COMPLETED' &&
+            activityCommunication?.completedAt && (
+              <TooltipWrapper
+                tip={`${t('COMPLETED_AT')}: ${formatDate(
+                  activityCommunication.completedAt,
+                )}`}
+              >
+                <p className="text-sm text-gray-500">
+                  {t('COMPLETED_AT')}:{' '}
+                  {formatDate(activityCommunication.completedAt)}
+                </p>
+              </TooltipWrapper>
+            )}
+          {activityCommunication?.sessionStatus !== 'COMPLETED' &&
+            activityCommunication?.updatedAt && (
+              <TooltipWrapper
+                tip={`${t('UPDATED_AT')}: ${formatDate(
+                  activityCommunication.updatedAt,
+                )}`}
+              >
+                <p className="text-sm text-gray-500">
+                  {t('UPDATED_AT')}:{' '}
+                  {formatDate(activityCommunication.updatedAt)}
+                </p>
+              </TooltipWrapper>
+            )}
+        </div>
       </CardContent>
 
       <ConfirmationDialog

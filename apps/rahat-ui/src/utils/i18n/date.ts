@@ -12,6 +12,7 @@ type DateFormatPattern =
   | 'eee, MMMM d, yyyy'
   | 'eee, MMMM d, yyyy, h:mm a'
   | 'MMM dd'
+  | 'MMM yyyy'
   | 'MMM dd, yyyy'
   | 'MMMM d, yyyy, h:mm:ss'
   | 'hh:mm a'
@@ -93,6 +94,10 @@ const PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> = {
   'MMM dd': {
     month: 'short',
     day: '2-digit',
+  },
+  'MMM yyyy': {
+    year: 'numeric',
+    month: 'short',
   },
   'MMM dd, yyyy': {
     year: 'numeric',

@@ -148,89 +148,10 @@ export default function GroupDetail({ uuid }: IProps) {
     editSubmitMode,
   );
 
-  // Compute presentColumns once per edit session from the first page data.
-  // Only runs when presentColumns is empty (reset by openEditSubmit) so page
-  // navigation does not overwrite the column list.
-  // isFetching guard prevents computing from stale cache while background
-  // refetch (after invalidating LIST_COMMUNITY_GROUP_BY_ID on submit) is
-  // in flight — this was the bug where newly added column appeared only after
-  // hard refresh.
   useEffect(() => {
-    if (
-      !editSubmitMode ||
-      editPageLoading ||
-      editPageFetching ||
-      !editPageData
-    )
+    if (!editSubmitMode || editPageLoading || editPageFetching || !editPageData)
       return;
-    if (presentColumns.length > 0) {
-      // Already computed — but check if server now has new keys (e.g. column
-      // added in previous Edit & Submit and now persisted in extras). Merge
-      // them instead of ignoring, so next Edit & Submit shows persisted column
-      // without requiring full page reload.
-      const sampleBgCheck = (editPageData?.data
-        ?.beneficiariesGroup ?? []) as {
-        beneficiary?: { extras?: Record<string, unknown> } & Record<
-          string,
-          unknown
-        >;
-      }[];
-      if (sampleBgCheck.length === 0) return;
-      const allExtrasCheck = new Set<string>();
-      sampleBgCheck.forEach((bg) => {
-        Object.keys(bg.beneficiary?.extras ?? {}).forEach((k) =>
-          allExtrasCheck.add(k),
-        );
-      });
-      const SYSTEM_ONLY_CHECK = new Set([
-        'id',
-        'archived',
-        'isVerified',
-        'extras',
-        'uuid',
-      ]);
-      const firstBeneCheck = sampleBgCheck[0]?.beneficiary ?? {};
-      const stableTopLevelCheck = Object.keys(firstBeneCheck).filter(
-        (k) => !SYSTEM_ONLY_CHECK.has(k),
-      );
-      const topLevelSetCheck = new Set(['uuid', ...stableTopLevelCheck]);
-      const stableExtrasCheck = Array.from(allExtrasCheck).filter(
-        (k) => !topLevelSetCheck.has(k),
-      );
-      const stablePresentCheck = [
-        'uuid',
-        ...stableTopLevelCheck,
-        ...stableExtrasCheck,
-      ];
-      const currentSet = new Set(presentColumns);
-      const newServerKeys = stablePresentCheck.filter(
-        (k) => !currentSet.has(k),
-      );
-      if (newServerKeys.length > 0) {
-        const mergedPresent = [...presentColumns, ...newServerKeys];
-        setPresentColumns(mergedPresent);
-        const mergedSet = new Set(mergedPresent);
-        // Remove newly persisted keys from added/available
-        setAddedColumns((prev) => {
-          const next = new Set(prev);
-          newServerKeys.forEach((k) => next.delete(k));
-          // also drop any added that is now server-present
-          return new Set([...next].filter((k) => !mergedSet.has(k)));
-        });
-        setAvailableColumns((prev) =>
-          prev.filter((k) => !mergedSet.has(k)),
-        );
-      }
-      return;
-    }
-    
-    const sampleBg = (editPageData?.data?.beneficiariesGroup ?? []) as {
-      beneficiary?: { extras?: Record<string, unknown> } & Record<
-        string,
-        unknown
-      >;
-    }[];
-    if (sampleBg.length === 0) return;
+
     const SYSTEM_ONLY = new Set([
       'id',
       'archived',
@@ -238,36 +159,56 @@ export default function GroupDetail({ uuid }: IProps) {
       'extras',
       'uuid',
     ]);
-    const firstBene = sampleBg[0]?.beneficiary ?? {};
-    const stableTopLevel = Object.keys(firstBene).filter(
-      (k) => !SYSTEM_ONLY.has(k),
-    );
-    // Union extras keys across ALL beneficiaries — extras are whatever the
-    // backend stored, no need to cross-check against listFieldDef.
-    const allExtrasKeys = new Set<string>();
-    sampleBg.forEach((bg) => {
+    const rows = (editPageData?.data?.beneficiariesGroup ?? []) as {
+      beneficiary?: { extras?: Record<string, unknown> } & Record<
+        string,
+        unknown
+      >;
+    }[];
+    if (rows.length === 0) return;
+
+    // Top-level fields from first row (they're the same shape for all rows)
+    const firstBene = rows[0]?.beneficiary ?? {};
+    const topLevel = Object.keys(firstBene).filter((k) => !SYSTEM_ONLY.has(k));
+    const topLevelSet = new Set(['uuid', ...topLevel]);
+
+    // Union extras keys across ALL rows — avoids missing a field added mid-page
+    const extrasKeys = new Set<string>();
+    rows.forEach((bg) => {
       Object.keys(bg.beneficiary?.extras ?? {}).forEach((k) => {
-        allExtrasKeys.add(k);
+        if (!topLevelSet.has(k)) extrasKeys.add(k);
       });
     });
-    // Exclude extras keys already present as top-level fields (e.g. koboId).
-    const topLevelSet = new Set(['uuid', ...stableTopLevel]);
-    const stableExtras = Array.from(allExtrasKeys).filter(
-      (k) => !topLevelSet.has(k),
-    );
-    const stablePresent = ['uuid', ...stableTopLevel, ...stableExtras];
-    // availableColumns: fields defined in listFieldDef not yet present in the table.
-    const presentSet = new Set(stablePresent);
+
+    const freshPresent = ['uuid', ...topLevel, ...Array.from(extrasKeys)];
+
+    if (presentColumns.length > 0) {
+      // Already initialised — merge any new server keys without overwriting order
+      const currentSet = new Set(presentColumns);
+      const newKeys = freshPresent.filter((k) => !currentSet.has(k));
+      if (newKeys.length === 0) return;
+      const merged = [...presentColumns, ...newKeys];
+      const mergedSet = new Set(merged);
+      setPresentColumns(merged);
+      setAddedColumns(
+        (prev) => new Set([...prev].filter((k) => !mergedSet.has(k))),
+      );
+      setAvailableColumns((prev) => prev.filter((k) => !mergedSet.has(k)));
+      return;
+    }
+
+    // First initialisation — also compute availableColumns from field definitions
     const allowedKeys = new Set<string>(
       (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
         fd.name,
         deHumanizeString(fd.name),
       ]),
     );
+    const presentSet = new Set(freshPresent);
     const remaining = [...allowedKeys].filter(
       (k) => k !== 'uuid' && !presentSet.has(k),
     );
-    setPresentColumns(stablePresent);
+    setPresentColumns(freshPresent);
     setAvailableColumns(remaining);
   }, [
     editPageData,

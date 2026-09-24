@@ -20,8 +20,6 @@ type UsageFiltersProps = {
   onXrefChange: (xref: string | null) => void;
   onDateChange: (dateRange: { from?: string; to?: string }) => void;
   onDateClear: () => void;
-  defaultFrom?: Date;
-  defaultTo?: Date;
 };
 
 export default function UsageFilters({
@@ -29,13 +27,11 @@ export default function UsageFilters({
   onXrefChange,
   onDateChange,
   onDateClear,
-  defaultFrom,
-  defaultTo,
 }: UsageFiltersProps) {
   const t = useTranslations('USAGE');
   const { data: projects } = useProjectList();
-  const [fromDate, setFromDate] = useState<Date | undefined>(defaultFrom);
-  const [toDate, setToDate] = useState<Date | undefined>(defaultTo);
+  const [fromDate, setFromDate] = useState<Date | undefined>();
+  const [toDate, setToDate] = useState<Date | undefined>();
 
   const handleFromChange = (date: Date | undefined) => {
     setFromDate(date);

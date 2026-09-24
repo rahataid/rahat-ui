@@ -15,7 +15,8 @@ import {
   useBeneficiariesGroupStore,
 } from './groups.store';
 import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
 import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 import { useTranslations } from 'next-intl';
@@ -45,14 +46,6 @@ export const useCreateStakeholdersGroups = <
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const mutationResults = useMutation<
     TData,
@@ -75,10 +68,7 @@ export const useCreateStakeholdersGroups = <
         queryKey: ['stakeholdersGroups'],
       });
       options?.onSuccess?.(data, variables, ctx);
-      toast.fire({
-        title: t('STAKEHOLDERS_GROUP_ADDED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('STAKEHOLDERS_GROUP_ADDED_SUCCESSFULLY'));
     },
     onError: (error, variables, ctx) => {
       q.reset();
@@ -91,10 +81,10 @@ export const useCreateStakeholdersGroups = <
         ['STAKEHOLDERS_GROUPS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_ADDING_STAKEHOLDERS_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
     ...options,
@@ -113,13 +103,6 @@ export const useCreateBenficiariesGroups = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -143,10 +126,7 @@ export const useCreateBenficiariesGroups = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('BENEFICIARIES_GROUP_ADDED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('BENEFICIARIES_GROUP_ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -158,10 +138,10 @@ export const useCreateBenficiariesGroups = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_ADDING_BENEFICIARIES_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -171,13 +151,6 @@ export const useReserveTokenForGroups = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -210,10 +183,7 @@ export const useReserveTokenForGroups = () => {
     onSuccess: (data: any) => {
       q.reset();
       if (data?.status === 'error') return;
-      toast.fire({
-        title: t('TOKEN_RESERVE_ADDED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('TOKEN_RESERVE_ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -225,10 +195,10 @@ export const useReserveTokenForGroups = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_RESERVING_TOKENS'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -462,13 +432,6 @@ export const useUpdateStakeholdersGroups = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -506,10 +469,7 @@ export const useUpdateStakeholdersGroups = () => {
           variables.stakeholdersGroupPayload.uuid,
         ],
       });
-      toast.fire({
-        title: t('STAKEHOLDERS_GROUP_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('STAKEHOLDERS_GROUP_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -521,10 +481,10 @@ export const useUpdateStakeholdersGroups = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_STAKEHOLDERS_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -535,13 +495,6 @@ export const useDeleteStakeholdersGroups = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 5000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -569,10 +522,7 @@ export const useDeleteStakeholdersGroups = () => {
         qc.invalidateQueries({
           queryKey: ['stakeholdersGroups', 'stakeholders'],
         });
-        toast.fire({
-          title: t('STAKEHOLDERS_GROUP_REMOVED_SUCCESSFULLY'),
-          icon: 'success',
-        });
+        toast.success(t('STAKEHOLDERS_GROUP_REMOVED_SUCCESSFULLY'));
       }
     },
     onError: (error: any) => {
@@ -585,10 +535,10 @@ export const useDeleteStakeholdersGroups = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_REMOVING_STAKEHOLDERS_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

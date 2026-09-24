@@ -7,6 +7,7 @@ export interface PayoutTransaction {
   hasFailedPayoutRequests: boolean;
   totalSuccessAmount: number;
   totalFailedPayoutRequests: number;
+  totalSkipOtp?: number;
   isPayoutTriggered: boolean;
   isCompleted: boolean;
   beneficiaryGroupToken?: {
@@ -53,4 +54,5 @@ export type PayoutOverviewProps = {
   };
   handleDateChange: (range: any) => void;
   handleClearDate: () => void;
+  isPending: boolean;
 };

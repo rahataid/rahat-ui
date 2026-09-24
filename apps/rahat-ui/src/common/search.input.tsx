@@ -56,7 +56,6 @@ export function SearchInput({
           onClick={handleClear}
         />
       )}
-      </div>
+    </div>
   );
 }
-

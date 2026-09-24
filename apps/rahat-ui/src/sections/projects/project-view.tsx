@@ -86,9 +86,7 @@ export default function ProjectListView() {
     <div className=" p-4 bg-card mt-14">
       <div className="mb-4">
         <h1 className="font-semibold text-2xl mb-">{t('PROJECTS')}</h1>
-        <p className="text-muted-foreground">
-          {t('HERE_IS_A_LIST_OF_ALL')}
-        </p>
+        <p className="text-muted-foreground">{t('HERE_IS_A_LIST_OF_ALL')}</p>
       </div>
       <AddProjectConfirmModal
         open={AddProjectModal.value}
@@ -101,14 +99,14 @@ export default function ProjectListView() {
             className="rounded"
             onChange={handleFilterChange}
           />
-          <Button
+          {/* <Button
             onClick={() => openAddProjectModal()}
             className="flex items-center justify-center gap-1"
             disabled
           >
             <CirclePlus size={16} strokeWidth={1.5} />
             {t('ADD_PROJECT')}
-          </Button>
+          </Button> */}
         </div>
         <ScrollArea className="pb-2 h-[calc(100vh-253px)]">
           {sortedProjects.length > 0 ? (
@@ -133,7 +131,9 @@ export default function ProjectListView() {
             </div>
           ) : (
             <div className="h-[calc(100vh-190px)] grid place-items-center">
-              <p className="text-muted-foreground text-xl">{t('NO_PROJECTS_FOUND')}</p>
+              <p className="text-muted-foreground text-xl">
+                {t('NO_PROJECTS_FOUND')}
+              </p>
             </div>
           )}
         </ScrollArea>

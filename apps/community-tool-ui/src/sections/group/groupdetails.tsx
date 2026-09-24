@@ -24,6 +24,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import React, { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import {
   useActiveFieldDefList,
@@ -100,6 +101,7 @@ export default function GroupDetail({ uuid }: IProps) {
     resetDeletedSelectedBeneficiaries,
   } = useCommunityGroupStore();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const table = useReactTable({
     manualPagination: true,
@@ -136,23 +138,92 @@ export default function GroupDetail({ uuid }: IProps) {
   const [editPage, setEditPage] = React.useState(1);
   const [editPerPage, setEditPerPage] = React.useState(20);
 
-  const { data: editPageData, isLoading: editPageLoading } =
-    useCommunityGroupListByID(
-      uuid,
-      { page: editPage, perPage: editPerPage },
-      editSubmitMode,
-    );
+  const {
+    data: editPageData,
+    isLoading: editPageLoading,
+    isFetching: editPageFetching,
+  } = useCommunityGroupListByID(
+    uuid,
+    { page: editPage, perPage: editPerPage },
+    editSubmitMode,
+  );
 
-  // When fresh edit data arrives recompute presentColumns from it so the table
-  // always reflects the latest field structure, not stale cached data.
+  // Compute presentColumns once per edit session from the first page data.
+  // Only runs when presentColumns is empty (reset by openEditSubmit) so page
+  // navigation does not overwrite the column list.
+  // isFetching guard prevents computing from stale cache while background
+  // refetch (after invalidating LIST_COMMUNITY_GROUP_BY_ID on submit) is
+  // in flight — this was the bug where newly added column appeared only after
+  // hard refresh.
   useEffect(() => {
-    if (!editSubmitMode || editPageLoading || !editPageData) return;
-    const allowedKeys = new Set<string>(
-      (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
-        fd.name,
-        deHumanizeString(fd.name),
-      ]),
-    );
+    if (
+      !editSubmitMode ||
+      editPageLoading ||
+      editPageFetching ||
+      !editPageData
+    )
+      return;
+    if (presentColumns.length > 0) {
+      // Already computed — but check if server now has new keys (e.g. column
+      // added in previous Edit & Submit and now persisted in extras). Merge
+      // them instead of ignoring, so next Edit & Submit shows persisted column
+      // without requiring full page reload.
+      const sampleBgCheck = (editPageData?.data
+        ?.beneficiariesGroup ?? []) as {
+        beneficiary?: { extras?: Record<string, unknown> } & Record<
+          string,
+          unknown
+        >;
+      }[];
+      if (sampleBgCheck.length === 0) return;
+      const allExtrasCheck = new Set<string>();
+      sampleBgCheck.forEach((bg) => {
+        Object.keys(bg.beneficiary?.extras ?? {}).forEach((k) =>
+          allExtrasCheck.add(k),
+        );
+      });
+      const SYSTEM_ONLY_CHECK = new Set([
+        'id',
+        'archived',
+        'isVerified',
+        'extras',
+        'uuid',
+      ]);
+      const firstBeneCheck = sampleBgCheck[0]?.beneficiary ?? {};
+      const stableTopLevelCheck = Object.keys(firstBeneCheck).filter(
+        (k) => !SYSTEM_ONLY_CHECK.has(k),
+      );
+      const topLevelSetCheck = new Set(['uuid', ...stableTopLevelCheck]);
+      const stableExtrasCheck = Array.from(allExtrasCheck).filter(
+        (k) => !topLevelSetCheck.has(k),
+      );
+      const stablePresentCheck = [
+        'uuid',
+        ...stableTopLevelCheck,
+        ...stableExtrasCheck,
+      ];
+      const currentSet = new Set(presentColumns);
+      const newServerKeys = stablePresentCheck.filter(
+        (k) => !currentSet.has(k),
+      );
+      if (newServerKeys.length > 0) {
+        const mergedPresent = [...presentColumns, ...newServerKeys];
+        setPresentColumns(mergedPresent);
+        const mergedSet = new Set(mergedPresent);
+        // Remove newly persisted keys from added/available
+        setAddedColumns((prev) => {
+          const next = new Set(prev);
+          newServerKeys.forEach((k) => next.delete(k));
+          // also drop any added that is now server-present
+          return new Set([...next].filter((k) => !mergedSet.has(k)));
+        });
+        setAvailableColumns((prev) =>
+          prev.filter((k) => !mergedSet.has(k)),
+        );
+      }
+      return;
+    }
+    
     const sampleBg = (editPageData?.data?.beneficiariesGroup ?? []) as {
       beneficiary?: { extras?: Record<string, unknown> } & Record<
         string,
@@ -169,20 +240,43 @@ export default function GroupDetail({ uuid }: IProps) {
     ]);
     const firstBene = sampleBg[0]?.beneficiary ?? {};
     const stableTopLevel = Object.keys(firstBene).filter(
-      (k) => !SYSTEM_ONLY.has(k) && allowedKeys.has(k),
+      (k) => !SYSTEM_ONLY.has(k),
     );
-    const stableExtras = Object.keys(firstBene.extras ?? {}).filter((k) =>
-      allowedKeys.has(k),
+    // Union extras keys across ALL beneficiaries — extras are whatever the
+    // backend stored, no need to cross-check against listFieldDef.
+    const allExtrasKeys = new Set<string>();
+    sampleBg.forEach((bg) => {
+      Object.keys(bg.beneficiary?.extras ?? {}).forEach((k) => {
+        allExtrasKeys.add(k);
+      });
+    });
+    // Exclude extras keys already present as top-level fields (e.g. koboId).
+    const topLevelSet = new Set(['uuid', ...stableTopLevel]);
+    const stableExtras = Array.from(allExtrasKeys).filter(
+      (k) => !topLevelSet.has(k),
     );
     const stablePresent = ['uuid', ...stableTopLevel, ...stableExtras];
+    // availableColumns: fields defined in listFieldDef not yet present in the table.
     const presentSet = new Set(stablePresent);
+    const allowedKeys = new Set<string>(
+      (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
+        fd.name,
+        deHumanizeString(fd.name),
+      ]),
+    );
     const remaining = [...allowedKeys].filter(
       (k) => k !== 'uuid' && !presentSet.has(k),
     );
     setPresentColumns(stablePresent);
     setAvailableColumns(remaining);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editPageData, editSubmitMode, editPageLoading]);
+  }, [
+    editPageData,
+    editSubmitMode,
+    editPageLoading,
+    editPageFetching,
+    presentColumns,
+    listFieldDef,
+  ]);
 
   // ── Download ───────────────────────────────────────────────────────────────
   const selectables =
@@ -300,15 +394,19 @@ export default function GroupDetail({ uuid }: IProps) {
   };
 
   // ── Edit & Submit ──────────────────────────────────────────────────────────
-  const openEditSubmit = () => {
+  const openEditSubmit = async () => {
     setDirtyRows(new Map());
     setPresentColumns([]);
     setAvailableColumns([]);
     setAddedColumns(new Set());
     setEditPage(1);
     setEditPerPage(20);
+    // Force stale cache to refetch so newly persisted extras columns (added
+    // in previous submit) are included in next edit session without hard refresh
+    await queryClient.invalidateQueries({
+      queryKey: ['list_community_group_by_id'],
+    });
     setEditSubmitMode(true);
-    // presentColumns are computed in the useEffect once editPageData arrives
   };
 
   const handleAddColumn = (colKey: string) => {

@@ -91,6 +91,24 @@ export const useGetVendor = (uuid: UUID): UseQueryResult<any, Error> => {
       queryKey: [TAGS.GET_VENDOR_DETAILS, uuid],
       // @ts-ignore
       queryFn: () => getVendor(uuid),
+      // Backend returns either the user object (unassigned vendor) or an
+      // array of project-link rows (assigned vendor). Normalize to one shape
+      // so all readers see consistent fields.
+      select: (res: any) => {
+        const payload = res?.data ?? res;
+        if (Array.isArray(payload)) {
+          const first = payload[0] as any;
+          return {
+            ...(res ?? {}),
+            data: {
+              ...(first?.User ?? {}),
+              projects: payload.map((row: any) => row?.Project).filter(Boolean),
+              vendorIdentifier: first?.extras,
+            },
+          };
+        }
+        return res;
+      },
     },
     queryClient,
   );

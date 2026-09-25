@@ -90,19 +90,19 @@ export default function VendorDetail() {
         />
         <div className="flex space-x-2">
           <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.VENDOR}>
-          <AlertDialog>
-            <AlertDialogTrigger className="flex items-center">
-              <Button
-                variant="secondary"
-                className="text-red-500 bg-red-100"
-                disabled={isVendorAssigned}
-              >
-                <Trash2 className="mr-1" size={18} strokeWidth={1.5} />
-                {g('DELETE')}
-              </Button>
-            </AlertDialogTrigger>
-            {renderAlertContent({ handleContinueClick: deleteVendor })}
-          </AlertDialog>
+            <AlertDialog>
+              <AlertDialogTrigger asChild className="flex items-center">
+                <Button
+                  variant="secondary"
+                  className="text-red-500 bg-red-100"
+                  disabled={isVendorAssigned}
+                >
+                  <Trash2 className="mr-1" size={18} strokeWidth={1.5} />
+                  {g('DELETE')}
+                </Button>
+              </AlertDialogTrigger>
+              {renderAlertContent({ handleContinueClick: deleteVendor })}
+            </AlertDialog>
           </GlobalCan>
         </div>
       </div>
@@ -132,7 +132,9 @@ export default function VendorDetail() {
           )}
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">{g('WALLET_ADDRESS')}</h1>
+          <h1 className="text-md text-muted-foreground">
+            {g('WALLET_ADDRESS')}
+          </h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => clickToCopy(vendor?.wallet)}
@@ -150,10 +152,14 @@ export default function VendorDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('PHONE_NUMBER')}</h1>
-          <p className="font-medium">{formatPhone(vendor?.phone) || g('N_A')}</p>
+          <p className="font-medium">
+            {formatPhone(vendor?.phone) || g('N_A')}
+          </p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">{g('EMAIL_ADDRESS')}</h1>
+          <h1 className="text-md text-muted-foreground">
+            {g('EMAIL_ADDRESS')}
+          </h1>
           <p className="font-medium">{vendor?.email || g('N_A')}</p>
         </div>
       </div>

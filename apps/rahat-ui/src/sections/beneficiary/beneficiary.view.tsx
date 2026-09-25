@@ -42,6 +42,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useActiveTab } from '../../utils/useActivetab';
 import { useTranslations } from 'next-intl';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { useDebounce } from '../../utils/useDebouncehooks';
 
@@ -208,6 +213,7 @@ function BeneficiaryView() {
             {t('BENEFICIARY_GROUPS')}
           </TabsTrigger>
         </TabsList>
+        <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="space-x-2">
             <Button variant="outline">
@@ -233,6 +239,7 @@ function BeneficiaryView() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </GlobalCan>
       </div>
       <TabsContent value="beneficiary">
         <div className="p-4">

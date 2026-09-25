@@ -18,6 +18,11 @@ import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
@@ -110,6 +115,7 @@ function BeneficiaryGroupsView() {
             name={t('GROUP')}
             onSearch={(e) => handleSearch(e.target.value)}
           />
+          <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
           <Button
             variant={'default'}
             type="button"
@@ -117,6 +123,7 @@ function BeneficiaryGroupsView() {
           >
             <Plus size={18} className="mr-1" /> {t('CREATE_GROUP')}
           </Button>
+          </GlobalCan>
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
           {isLoading ? (
@@ -205,6 +212,10 @@ function BeneficiaryGroupsView() {
                       </div>
                     </div>
 
+                    <GlobalCan
+                      action={ACTIONS.MANAGE}
+                      subject={SUBJECTS.BENEFICIARY}
+                    >
                     <Button
                       type="button"
                       variant="secondary"
@@ -218,6 +229,7 @@ function BeneficiaryGroupsView() {
                       <Plus className="mr-1" size={18} strokeWidth={1.5} />
                       {t('ASSIGN_PROJECT')}
                     </Button>
+                    </GlobalCan>
                   </div>
                 );
               })}

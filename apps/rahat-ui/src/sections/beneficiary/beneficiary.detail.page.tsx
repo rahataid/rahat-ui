@@ -11,6 +11,11 @@ import { humanizeString } from '../../utils';
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function BeneficiaryDetail() {
   const { id } = useParams() as { id: UUID };
@@ -57,6 +62,7 @@ export default function BeneficiaryDetail() {
             Icon={FolderPlus}
             handleClick={() => {}}
           /> */}
+          <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
           <CoreBtnComponent
             name={g('EDIT')}
             Icon={Pencil}
@@ -64,12 +70,15 @@ export default function BeneficiaryDetail() {
               router.push(`/beneficiary/${id}/edit`);
             }}
           />
+          </GlobalCan>
+          <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.BENEFICIARY}>
           <CoreBtnComponent
             className="bg-red-100 text-red-600"
             name={g('DELETE')}
             Icon={Trash2}
             handleClick={() => {}}
           />
+          </GlobalCan>
         </div>
       </div>
       <h1 className="font-medium mb-3">{g('GENERAL')}</h1>

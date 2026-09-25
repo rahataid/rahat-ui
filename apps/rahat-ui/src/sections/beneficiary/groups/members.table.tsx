@@ -15,6 +15,11 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FileWarning } from 'lucide-react';
 import AddButton from '../../projects/components/add.btn';
 import { useTranslations } from 'next-intl';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 type IProps = {
   table: Table<any>;
@@ -49,12 +54,14 @@ export default function MembersTable({
           />
           <ViewColumns table={table} />
           {groupedBeneficiaries?.length ? (
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
             <AddButton
               variant="outline"
               className="border-primary text-primary"
               name={tAdd('BENEFICIARY')}
               path={`/beneficiaries/groups/${groupUUID}/select`}
             />
+            </GlobalCan>
           ) : null}
         </div>
         <div className="bg-card border rounded">
@@ -124,10 +131,15 @@ export default function MembersTable({
                           <p className="text-muted-foreground text-base">
                             {t('ADD_BENEFICIARY_TO_GROUP') || 'Add beneficiary to the group to display data'}
                           </p>
+                          <GlobalCan
+                            action={ACTIONS.UPDATE}
+                            subject={SUBJECTS.BENEFICIARY}
+                          >
                           <AddButton
                             name={tAdd('BENEFICIARY')}
                             path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
                           />
+                          </GlobalCan>
                         </div>
                       )}
                     </TableCell>

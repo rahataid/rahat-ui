@@ -231,7 +231,9 @@ export default function AddSiteInfo() {
             />
             <ImagePicker
               label={t('BACKGROUND_IMAGE')}
-              hint="Full-bleed image shown on the left side of the login page."
+              hint={t(
+                'FULL_BLEED_IMAGE_SHOWN_ON_THE_LEFT_SIDE_OF_THE_LOGIN_PAGE',
+              )}
               previewUrl={backgroundPreview}
               onSelect={handleSelectBackground}
               onRemove={handleRemoveBackground}
@@ -247,7 +249,7 @@ export default function AddSiteInfo() {
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isUploading
-                  ? 'Uploading images...'
+                  ? t('UPLOADING_IMAGE')
                   : createSetting.isPending
                   ? g('SAVING')
                   : g('SAVE')}

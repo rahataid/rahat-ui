@@ -19,6 +19,11 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function VendorDetail() {
   const t = useTranslations('VENDORS_DETAIL');
@@ -84,6 +89,7 @@ export default function VendorDetail() {
           path="/vendors"
         />
         <div className="flex space-x-2">
+          <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.VENDOR}>
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
               <Button
@@ -97,6 +103,7 @@ export default function VendorDetail() {
             </AlertDialogTrigger>
             {renderAlertContent({ handleContinueClick: deleteVendor })}
           </AlertDialog>
+          </GlobalCan>
         </div>
       </div>
       <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">

@@ -10,6 +10,11 @@ import { IVendor } from './vendors.list.table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import TooltipComponent from '../../components/tooltip';
 import { useState } from 'react';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 const ProjectNameCell = ({
   projects,
@@ -127,11 +132,13 @@ export const useTableColumns = (handleAssignClick: any) => {
               Icon={Eye}
               tip={g('VIEW')}
             />
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
             <TooltipComponent
               handleOnClick={() => handleAssign(row.original)}
               Icon={FolderPlus}
               tip={g('ASSIGN_PROJECT')}
             />
+            </GlobalCan>
           </div>
         );
       },

@@ -24,4 +24,5 @@ export const SUBJECTS = {
   INKIND: 'Inkind',
   COMMUNICATION_LOG: 'Communication Log',
   GRIEVANCE: 'Grievance',
+  GROUP_CASH_TRANSFER: 'Group Cash Transfer',
 };

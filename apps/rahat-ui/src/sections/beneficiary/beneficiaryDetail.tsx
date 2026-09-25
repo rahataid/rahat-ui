@@ -31,6 +31,11 @@ import { humanizeString } from '../../utils';
 import useCopy from '../../hooks/useCopy';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useTranslations } from 'next-intl';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 type IProps = {
   beneficiaryDetail: any;
@@ -84,32 +89,38 @@ export default function BeneficiaryDetail({
       />
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
-          <TooltipComponent
-            disable={benfAssignedToProject}
-            handleOnClick={handleDeleteClick}
-            Icon={Trash2}
-            tip={g('DELETE')}
-            iconStyle="text-red-600"
-          />
-          <TooltipComponent
-            handleOnClick={() =>
-              router.push(
-                fromTab
-                  ? `/beneficiary/${beneficiaryDetail.uuid}/edit?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${isGroupValidForAA}&fromTab=${fromTab}&groupId=${Id}`
-                  : `/beneficiary/${beneficiaryDetail.uuid}/edit`,
-              )
-            }
-            Icon={Pencil}
-            tip={g('EDIT')}
-          />
+          <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.BENEFICIARY}>
+            <TooltipComponent
+              disable={benfAssignedToProject}
+              handleOnClick={handleDeleteClick}
+              Icon={Trash2}
+              tip={g('DELETE')}
+              iconStyle="text-red-600"
+            />
+          </GlobalCan>
+          <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
+            <TooltipComponent
+              handleOnClick={() =>
+                router.push(
+                  fromTab
+                    ? `/beneficiary/${beneficiaryDetail.uuid}/edit?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${isGroupValidForAA}&fromTab=${fromTab}&groupId=${Id}`
+                    : `/beneficiary/${beneficiaryDetail.uuid}/edit`,
+                )
+              }
+              Icon={Pencil}
+              tip={g('EDIT')}
+            />
+          </GlobalCan>
 
           {!fromTab && (
             <>
-              <TooltipComponent
-                handleOnClick={handleAssignModalClick}
-                Icon={FolderPlus}
-                tip={g('ASSIGN_PROJECT')}
-              />
+              <GlobalCan action={ACTIONS.MANAGE} subject={SUBJECTS.BENEFICIARY}>
+                <TooltipComponent
+                  handleOnClick={handleAssignModalClick}
+                  Icon={FolderPlus}
+                  tip={g('ASSIGN_PROJECT')}
+                />
+              </GlobalCan>
               <TooltipComponent
                 handleOnClick={() =>
                   router.push(`/beneficiary/${beneficiaryDetail.uuid}`)
@@ -142,7 +153,9 @@ export default function BeneficiaryDetail({
                 'John Doe'}
             </h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{formatEnumValue(beneficiaryDetail?.extras?.status ?? 'active')}</Badge>
+              <Badge>
+                {formatEnumValue(beneficiaryDetail?.extras?.status ?? 'active')}
+              </Badge>
               <p className="text-base text-muted-foreground">
                 {beneficiaryDetail?.extras?.age
                   ? formatNum(beneficiaryDetail.extras.age)
@@ -332,7 +345,11 @@ export default function BeneficiaryDetail({
                               {t('VIEW_LINK')}
                             </a>
                           ) : typeof value === 'boolean' ? (
-                            value ? g('YES') : g('NO')
+                            value ? (
+                              g('YES')
+                            ) : (
+                              g('NO')
+                            )
                           ) : (
                             String(value) || '-'
                           )}

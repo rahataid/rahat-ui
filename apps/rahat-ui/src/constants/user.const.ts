@@ -58,10 +58,16 @@ const PROJECT_SUBJECT_ACTION_OVERRIDES: Partial<Record<string, string[]>> = {
 
 // `all` is a global subject owned by SUBJECT_ACTIONS; keep it out of the
 // project subject list so global manage-all stays a system-level permission.
+const PROJECT_EXCLUDED_SUBJECTS = new Set([
+  SUBJECTS.ALL,
+  SUBJECTS.USER,
+  SUBJECTS.BENEFICIARY,
+]);
+
 export const PROJECT_SUBJECT_ACTIONS: Record<string, string[]> =
   Object.fromEntries(
     Object.values(SUBJECTS)
-      .filter((subject) => subject !== SUBJECTS.ALL)
+      .filter((subject) => !PROJECT_EXCLUDED_SUBJECTS.has(subject))
       .map((subject) => [
         subject,
         PROJECT_SUBJECT_ACTION_OVERRIDES[subject] ?? ACTION_ITEMS,

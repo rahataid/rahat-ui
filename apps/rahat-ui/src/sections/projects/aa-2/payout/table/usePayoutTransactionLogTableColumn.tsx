@@ -16,6 +16,13 @@ interface PayoutTransactionLogRow {
   totalBeneficiaries: number;
   totalTokenAssigned: number;
   totalSuccessAmount: number;
+  beneficiaryGroupToken: {
+    beneficiaryGroup: {
+      _count: {
+        beneficiaries: number;
+      };
+    };
+  };
   payoutType: string;
   payoutMode: string;
   status: string;
@@ -75,7 +82,10 @@ export default function usePayoutTransactionLogTableColumn() {
           (row.original.totalTokenAssigned * 1) /
           row.original.totalBeneficiaries;
         return (
-          <TruncatedCell text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`} maxLength={10} />
+          <TruncatedCell
+            text={`${t('RS')} ${formatNum(amountPerBeneficiary)}`}
+            maxLength={10}
+          />
         );
       },
     },
@@ -107,23 +117,33 @@ export default function usePayoutTransactionLogTableColumn() {
       ),
     },
     {
-      accessorKey: 'status',
       header: tg('STATUS'),
+      meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const status = row?.original?.status;
+        // const totalBeneficiaries = row.original.totalBeneficiaries;
+        // const totalSuccess = row?.original?.totalSuccessAmount;
         return (
-          <Badge
-            className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
-              status,
-            )}`}
-          >
-            {translateValue(tg, status, {
-              fallback: status
-                ?.toLowerCase()
-                .replace(/_/g, ' ')
-                .replace(/^./, (char: string) => char.toUpperCase()),
-            })}
-          </Badge>
+          <div className="flex gap-2 w-full">
+            <Badge
+              className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
+                status,
+              )}`}
+            >
+              {translateValue(tg, status, {
+                fallback: status
+                  ?.toLowerCase()
+                  .replace(/_/g, ' ')
+                  .replace(/^./, (char: string) => char.toUpperCase()),
+              })}
+            </Badge>
+
+            {/* {totalBeneficiaries != null && totalSuccess != null && (
+              <span className="text-[12px]">
+                {totalSuccess} / {totalBeneficiaries}
+              </span>
+            )} */}
+          </div>
         );
       },
     },
@@ -144,6 +164,7 @@ export default function usePayoutTransactionLogTableColumn() {
       id: 'actions',
       header: tg('ACTIONS'),
       enableHiding: false,
+      meta: { className: 'w-[7%]' },
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">

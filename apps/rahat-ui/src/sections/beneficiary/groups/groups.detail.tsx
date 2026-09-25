@@ -28,6 +28,11 @@ import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 const RemoveBenfGroupModal = React.lazy(() => import('./removeGroupModal'));
 const ValidateBenefBankAccountByGroupUuid = React.lazy(
@@ -288,6 +293,7 @@ export default function GroupDetailView() {
                 </Badge>
               )}
             {!group?.data?.beneficiaryGroupProject.length && (
+              <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
               <Button
                 variant={'outline'}
                 className="gap-2 text-gray-700 rounded-sm"
@@ -296,7 +302,9 @@ export default function GroupDetailView() {
                 <Pencil className="w-4 h-4" />
                 {t('EDIT')}
               </Button>
+              </GlobalCan>
             )}
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
             <Button
               variant={'outline'}
               className={`gap-2 text-gray-700 rounded-sm ${
@@ -308,10 +316,12 @@ export default function GroupDetailView() {
             >
               {groupPurposeName ? t('CHANGE_GROUP_PURPOSE') : t('ASSIGN_GROUP_PURPOSE')}
             </Button>
+            </GlobalCan>
 
             {!group?.data?.isGroupValidForAA &&
               (group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY ||
                 group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER) && (
+                <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
                 <Button
                   variant="outline"
                   className="gap-2 text-gray-700 rounded-sm"
@@ -331,8 +341,10 @@ export default function GroupDetailView() {
                     </>
                   )}
                 </Button>
+                </GlobalCan>
               )}
             {group?.data?.isAnyBeneficiaryInvalid && (
+              <GlobalCan action={ACTIONS.READ} subject={SUBJECTS.BENEFICIARY}>
               <Button
                 variant={'outline'}
                 className={` gap-2 text-gray-700 rounded-sm`}
@@ -340,8 +352,10 @@ export default function GroupDetailView() {
               >
                 <CloudDownloadIcon className="w-4 h-4" /> {t('EXPORT_FAILED')}
               </Button>
+              </GlobalCan>
             )}
 
+            <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.BENEFICIARY}>
             <Button
               variant={'outline'}
               className={`border-red-500 text-red-500 gap-2 rounded-sm ${
@@ -352,8 +366,10 @@ export default function GroupDetailView() {
               <Trash2Icon className="w-4 h-4" />
               {t('DELETE_GROUP')}
             </Button>
+            </GlobalCan>
             {(group?.data?.isGroupValidForAA || !groupPurposeName) &&
               group?.data?.groupedBeneficiaries?.length !== 0 && (
+                <GlobalCan action={ACTIONS.MANAGE} subject={SUBJECTS.BENEFICIARY}>
                 <Button
                   variant={'outline'}
                   className="border-blue-500 text-blue-500 gap-2 rounded-sm"
@@ -362,6 +378,7 @@ export default function GroupDetailView() {
                   <FolderDot className="w-4 h-4" />
                   {t('ASSIGN_TO_PROJECT')}
                 </Button>
+                </GlobalCan>
               )}
           </div>
         </div>

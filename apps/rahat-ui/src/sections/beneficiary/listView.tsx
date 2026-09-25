@@ -11,7 +11,11 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 
 import { Input } from '@rahat-ui/shadcn/components/input';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
 import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';import {
   TableBody,
   TableCell,
   Table as TableComponent,
@@ -100,15 +104,21 @@ export default function ListView({
             minDate={filters?.startDate}
           />
 
-          <Button
-            variant={'default'}
-            type="button"
-            onClick={() => router.push(`/beneficiary/add`)}
-          >
-            <Plus size={18} className="mr-1" /> {t('CREATE_BENEFICIARY')}
-          </Button>
+          <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
+            <Button
+              variant={'default'}
+              type="button"
+              onClick={() => router.push(`/beneficiary/add`)}
+            >
+              <Plus size={18} className="mr-1" /> {t('CREATE_BENEFICIARY')}
+            </Button>
+          </GlobalCan>
           {Object.values(table.getState().rowSelection).filter(Boolean)
             .length ? (
+            <GlobalCan
+              action={ACTIONS.UPDATE}
+              subject={SUBJECTS.BENEFICIARY}
+            >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="ml-2">
@@ -135,6 +145,7 @@ export default function ListView({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </GlobalCan>
           ) : null}
         </div>
 

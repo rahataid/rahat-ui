@@ -37,11 +37,6 @@ export interface GlobalPermissionGuardProps {
   children: React.ReactNode;
 }
 
-/**
- * Platform equivalent of ProjectPermissionGuard, driven by live global
- * abilities (no logout needed after role edits). Mirrors the backend
- * `DbAbilitiesGuard` subjects so UI and API agree.
- */
 export function GlobalPermissionGuard({
   action,
   subject,
@@ -67,8 +62,8 @@ export function GlobalPermissionGuard({
             <h3 className="text-2xl font-bold text-red-600">Access Denied</h3>
 
             <p className="text-muted-foreground">
-              You don&apos;t have permission to access this page. Please
-              contact your administrator for access.
+              You don&apos;t have permission to access this page. Please contact
+              your administrator for access.
             </p>
 
             <Button

@@ -1539,6 +1539,7 @@
     "SETSECONDPANELCOMPONENT": "दोस्रो प्यानलको कम्पोनेन्ट निर्धारण गर्नुहोस्",
     "SETTINGS": "सेटिङ",
     "SETTINGS_UPDATED_SUCCESSFULLY": "सेटिङहरू सफलतापूर्वक अपडेट भयो",
+
     "SETTING_ADDED_SUCCESSFULLY": "सेटिङ सफलतापूर्वक थपियो",
     "SET_UP_GROUPED_AND_OR_TRIGGER_CONDITIONS_FOR": "{phase} का लागि समूहबद्ध AND/OR ट्रिगर सर्तहरू सेटअप गर्नुहोस्।",
     "SET_UP_YOUR_TRIGGER_STATEMENT": "आफ्नो ट्रिगर विवरण सेटअप गर्नुहोस्।",
@@ -3733,7 +3734,9 @@
     "EDIT_SITE_INFO": "साइटको जानकारी सम्पादन गर्नुहोस्",
     "UPDATE_YOUR_SITE_BRANDING_SHOWN_ON_THE_LOGIN_PAGE": "लगइन पृष्ठमा देखिने तपाईंको साइटको ब्रान्डिङ अपडेट गर्नुहोस्।",
     "UPLOADING_IMAGE": "तस्बिर अपलोड गरिँदै छ",
-    "CHANGE_IMAGE": "छवि परिवर्तन गर्नुहोस्"
+    "CHANGE_IMAGE": "छवि परिवर्तन गर्नुहोस्",
+    "PLEASE_ENTER_BRAND_NAME": "कृपया ब्रान्डको नाम राख्नुहोस्।",
+    "PLEASE_ENTER_BRAND_DESCRIPTION": "कृपया ब्रान्डको विवरण राख्नुहोस्।"
   },
 
   "SETTINGS_NAVIGATION": {
@@ -4077,7 +4080,8 @@
       "SETTING_NAME_ALREADY_EXISTS": "यो नाम भएको सेटिङ पहिले नै अवस्थित छ",
       "VALIDATION_FAILED": "प्रमाणीकरण असफल भयो (+ प्रत्येक Field का त्रुटिहरू)",
       "SETTING_INVALID_VALUE_DATA_TYPE": "'value' का लागि अमान्य डाटा प्रकार: {dataType}",
-      "SETTING_REQUIRED_FIELDS_MISSING": "'value' वस्तुमा आवश्यक फिल्डहरू छुटेका छन्: {fields}"
+      "SETTING_REQUIRED_FIELDS_MISSING": "'value' वस्तुमा आवश्यक फिल्डहरू छुटेका छन्: {fields}",
+      "ADD_SETTING_ERROR": "सेटिङ थप्ने क्रममा त्रुटि"
     },
     "COMMUNICATIONS_CAMPAIGNS": {
       "OTP_SMS_SETTINGS_REQUIRED": "SMS_TRANSPORT_ID, APP_ID, URL हरु आवश्यक छन्",

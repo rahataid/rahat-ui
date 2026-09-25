@@ -22,14 +22,15 @@ import {
 import { ImagePlus, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const SiteInfoFormSchema = z.object({
-  BRAND_NAME: z.string().min(2, { message: 'Please enter brand name' }),
-  BRAND_DESCRIPTION: z
-    .string()
-    .min(2, { message: 'Please enter brand description' }),
-});
+const buildSiteInfoFormSchema = (t: any) =>
+  z.object({
+    BRAND_NAME: z.string().min(2, { message: t('PLEASE_ENTER_BRAND_NAME') }),
+    BRAND_DESCRIPTION: z
+      .string()
+      .min(2, { message: t('PLEASE_ENTER_BRAND_DESCRIPTION') }),
+  });
 
-type SiteInfoFormValues = z.infer<typeof SiteInfoFormSchema>;
+type SiteInfoFormValues = z.infer<ReturnType<typeof buildSiteInfoFormSchema>>;
 
 type ImagePickerProps = {
   label: string;
@@ -109,7 +110,7 @@ export default function AddSiteInfo() {
   const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<SiteInfoFormValues>({
-    resolver: zodResolver(SiteInfoFormSchema),
+    resolver: zodResolver(buildSiteInfoFormSchema(t)),
     defaultValues: {
       BRAND_NAME: '',
       BRAND_DESCRIPTION: '',
@@ -171,6 +172,8 @@ export default function AddSiteInfo() {
       });
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_SITE_INFO] });
       router.push('/site-info');
+    } catch (error) {
+      console.error(error);
     } finally {
       setIsUploading(false);
     }

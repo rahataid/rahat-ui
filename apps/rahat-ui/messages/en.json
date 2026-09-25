@@ -1161,7 +1161,10 @@
     "UPDATE_YOUR_SITE_BRANDING_SHOWN_ON_THE_LOGIN_PAGE": "Update your site branding shown on the login page.",
     "UPLOAD_IMAGE": "Upload Image",
     "UPLOADING_IMAGE": "Uploading Image...",
-    "CHANGE_IMAGE": "Change Image"
+    "CHANGE_IMAGE": "Change Image",
+    "PLEASE_ENTER_BRAND_NAME": "Please enter brand name",
+    "PLEASE_ENTER_BRAND_DESCRIPTION": "Please enter brand description"
+    
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "DataType",
@@ -4084,7 +4087,8 @@
       "SETTING_NAME_ALREADY_EXISTS": "Setting with this name already exists",
       "VALIDATION_FAILED": "Validation Failed (+ per-field errors)",
       "SETTING_INVALID_VALUE_DATA_TYPE": "Invalid data type for 'value': {dataType}",
-      "SETTING_REQUIRED_FIELDS_MISSING": "Required fields missing in 'value' object: {fields}"
+      "SETTING_REQUIRED_FIELDS_MISSING": "Required fields missing in 'value' object: {fields}",
+      "ADD_SETTING_ERROR": "Error while addind the setting"
     },
     "COMMUNICATIONS_CAMPAIGNS": {
       "OTP_SMS_SETTINGS_REQUIRED": "SMS_TRANSPORT_ID, APP_ID, URL are required",

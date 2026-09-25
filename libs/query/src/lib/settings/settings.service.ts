@@ -255,7 +255,7 @@ export const useAppSettingsCreate = () => {
           t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
         const errorMessage = resolveBackendErrorMessage(
           t,
-          error?.response?.data?.code,
+          'ADD_SETTING_ERROR',
           error?.response?.data?.params,
           ['SETTINGS'],
           rawMessage,

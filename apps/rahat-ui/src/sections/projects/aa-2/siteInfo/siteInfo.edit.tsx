@@ -5,11 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  SiteInfo,
-  useSiteInfoList,
-  useUpdateSiteInfo,
-} from '@rahat-ui/query';
+import { SiteInfo, useSiteInfoList, useUpdateSiteInfo } from '@rahat-ui/query';
 import { Back } from 'apps/rahat-ui/src/common';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -26,14 +22,15 @@ import { ImagePlus, X } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { useTranslations } from 'next-intl';
 
-const SiteInfoFormSchema = z.object({
-  BRAND_NAME: z.string().min(2, { message: 'Please enter brand name' }),
-  BRAND_DESCRIPTION: z
-    .string()
-    .min(2, { message: 'Please enter brand description' }),
-});
+const buildSiteInfoFormSchema = (t: any) =>
+  z.object({
+    BRAND_NAME: z.string().min(2, { message: t('PLEASE_ENTER_BRAND_NAME') }),
+    BRAND_DESCRIPTION: z
+      .string()
+      .min(2, { message: t('PLEASE_ENTER_BRAND_DESCRIPTION') }),
+  });
 
-type SiteInfoFormValues = z.infer<typeof SiteInfoFormSchema>;
+type SiteInfoFormValues = z.infer<ReturnType<typeof buildSiteInfoFormSchema>>;
 
 type ImagePickerProps = {
   label: string;
@@ -116,7 +113,7 @@ export default function EditSiteInfo() {
   const [backgroundRemoved, setBackgroundRemoved] = useState(false);
 
   const form = useForm<SiteInfoFormValues>({
-    resolver: zodResolver(SiteInfoFormSchema),
+    resolver: zodResolver(buildSiteInfoFormSchema(t)),
     values: original
       ? {
           BRAND_NAME: original.BRAND_NAME || '',
@@ -229,7 +226,7 @@ export default function EditSiteInfo() {
                 <FormItem>
                   <FormLabel>{t('BRAND_NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter brand name" {...field} />
+                    <Input placeholder={t('ENTER_BRAND_NAME')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -243,7 +240,7 @@ export default function EditSiteInfo() {
                   <FormLabel>{t('BRAND_DESCRIPTION')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter brand description"
+                      placeholder={t('ENTER_BRAND_DESCRIPTION')}
                       {...field}
                     />
                   </FormControl>

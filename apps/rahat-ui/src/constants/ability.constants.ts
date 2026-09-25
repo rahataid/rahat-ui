@@ -14,6 +14,7 @@ export const SUBJECTS = {
   ALL: 'all',
   USER: 'user',
   BENEFICIARY: 'beneficiary',
+  VENDOR: 'vendor',
   BENEFICIARY_GROUP: 'Beneficiary Group',
   STAKEHOLDER: 'Stakeholder',
   STAKEHOLDER_GROUP: 'Stakeholder Group',

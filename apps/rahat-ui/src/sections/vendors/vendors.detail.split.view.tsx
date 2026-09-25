@@ -48,6 +48,11 @@ import { toast } from 'react-toastify';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useLocale, useTranslations } from 'next-intl';
 import { localizeNepaliParts } from 'apps/rahat-ui/src/utils/i18n/date';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
@@ -146,6 +151,7 @@ export default function VendorsDetailSplitView({
     <div className="h-full border-l">
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
+          <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.VENDOR}>
           <DeleteButton
             className={`border-none p-0 shadow-none ${
               isVendorAssigned ? 'hidden' : ''
@@ -153,13 +159,16 @@ export default function VendorsDetailSplitView({
             name="vendor"
             handleContinueClick={deleteVendor}
           />
+          </GlobalCan>
 
           {vendorsDetail?.projectName === 'N/A' && (
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
             <TooltipComponent
               handleOnClick={assignVoucher}
               Icon={FolderPlus}
               tip={t('SELECT_A_PROJECT_TO_ASSIGN')}
             />
+            </GlobalCan>
           )}
           <TooltipComponent
             handleOnClick={() => router.push(`/vendors/${vendorsDetail?.id}`)}

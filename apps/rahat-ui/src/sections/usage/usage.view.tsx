@@ -66,7 +66,7 @@ export default function UsageView() {
           <SystemUserAuth hasContent={false}>
             <CoreBtnComponent
               Icon={ScrollText}
-              name="Log Stream"
+              name={t('LOG_STREAM')}
               handleClick={() => router.push(paths.logs.root)}
             />
           </SystemUserAuth>

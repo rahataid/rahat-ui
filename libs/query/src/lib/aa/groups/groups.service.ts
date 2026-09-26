@@ -163,6 +163,7 @@ export const useReserveTokenForGroups = () => {
         totalTokensReserved: number;
         title: string;
         isPayoutIntegrated?: boolean;
+        skipOldPayoutForRemaining?: boolean;
         params?: {
           type: string;
           mode: string;

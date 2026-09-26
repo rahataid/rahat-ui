@@ -278,7 +278,6 @@ export default function PayoutFundManagementForm({
             onWantsPayoutChange(true);
           }}
           wallets={cancelWallets}
-          confirmWord={groupName}
         />
       </div>
     );

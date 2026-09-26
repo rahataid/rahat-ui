@@ -1804,7 +1804,7 @@
     "ARE_YOU_SURE": "Are you sure?",
     "CANCEL_PAYOUT_WARNING": "The payouts for these wallets will be cancelled. These beneficiaries will no longer be able to collect them.",
     "CANCEL_PAYOUT": "Cancel Payout",
-    "TYPE_TO_CONFIRM": "Type <b>{word}</b> to confirm.",
+    "CANCEL_PAYOUT_ACKNOWLEDGE": "I understand these beneficiaries will no longer be able to collect the previous payout.",
     "DO_YOU_WANT_TO_CANCEL_PAYOUT": "Do you want to cancel the previous payout of {groupName} and create a new one?",
     "CANCEL_AND_CREATE_NEW_PAYOUT": "Cancel and Create New Payout",
     "AFFECTED_WALLETS": "Affected wallets ({count})",

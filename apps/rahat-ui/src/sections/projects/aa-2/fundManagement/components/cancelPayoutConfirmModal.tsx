@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/components/dialog';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useTranslations } from 'next-intl';
 import { WalletList } from './errorInfoPopupModel';
@@ -18,7 +18,6 @@ type IProps = {
   onClose: () => void;
   onConfirm: () => void;
   wallets: string[];
-  confirmWord: string;
 };
 
 const CancelPayoutConfirmModal = ({
@@ -26,14 +25,13 @@ const CancelPayoutConfirmModal = ({
   onClose,
   onConfirm,
   wallets,
-  confirmWord,
 }: IProps) => {
   const t = useTranslations('AA_PROJECT');
   const { clickToCopy, copyAction } = useCopy();
-  const [typed, setTyped] = useState('');
+  const [acknowledged, setAcknowledged] = useState(false);
 
   const close = () => {
-    setTyped('');
+    setAcknowledged(false);
     onClose();
   };
 
@@ -49,29 +47,25 @@ const CancelPayoutConfirmModal = ({
           copyAction={copyAction}
           clickToCopy={clickToCopy}
         />
-        <div className="space-y-2">
-          <p className="text-sm">
-            {t.rich('TYPE_TO_CONFIRM', {
-              word: confirmWord,
-              b: (chunks) => <span className="font-semibold">{chunks}</span>,
-            })}
-          </p>
-          <Input
-            value={typed}
-            onChange={(e) => setTyped(e.target.value)}
-            placeholder={confirmWord}
-            autoComplete="off"
+        <label className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3 cursor-pointer">
+          <Checkbox
+            className="mt-0.5"
+            checked={acknowledged}
+            onCheckedChange={(v) => setAcknowledged(v === true)}
           />
-        </div>
+          <span className="text-sm text-red-700">
+            {t('CANCEL_PAYOUT_ACKNOWLEDGE')}
+          </span>
+        </label>
         <DialogFooter>
           <Button variant="outline" onClick={close}>
             {t('BACK')}
           </Button>
           <Button
             variant="destructive"
-            disabled={typed.trim() !== confirmWord}
+            disabled={!acknowledged}
             onClick={() => {
-              setTyped('');
+              setAcknowledged(false);
               onConfirm();
             }}
           >

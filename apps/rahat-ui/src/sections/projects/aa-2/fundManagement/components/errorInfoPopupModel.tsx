@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -70,6 +70,8 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
   const tb = useTranslations();
   const { clickToCopy, copyAction } = useCopy();
 
+  const [confirming, setConfirming] = useState(false);
+
   const isWarningOnly = errorData?.isAssignable === true;
 
   const errorMessage = resolveBackendErrorMessage(
@@ -81,7 +83,11 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
   );
 
   return (
-    <Dialog open={validateModal.value} onOpenChange={validateModal.onToggle}>
+    <>
+    <Dialog
+      open={validateModal.value && !confirming}
+      onOpenChange={validateModal.onToggle}
+    >
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
@@ -149,15 +155,38 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
                 <p className="text-sm text-muted-foreground">
                   {t('CANCEL_REMAINING_PAYOUT_AND_ASSIGN')}
                 </p>
-                <DialogFooter>
-                  <Button onClick={onContinue}>{t('CONTINUE')}</Button>
-                </DialogFooter>
+                <Button className="w-full" onClick={() => setConfirming(true)}>
+                  {t('CONTINUE')}
+                </Button>
               </>
             )}
           </>
         )}
       </DialogContent>
     </Dialog>
+    <Dialog open={validateModal.value && confirming}>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>{t('ARE_YOU_SURE')}</DialogTitle>
+          <DialogDescription>{t('CANCEL_PAYOUT_WARNING')}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setConfirming(false)}>
+            {tg('CANCEL')}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => {
+              setConfirming(false);
+              onContinue?.();
+            }}
+          >
+            {t('CANCEL_PAYOUT')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 

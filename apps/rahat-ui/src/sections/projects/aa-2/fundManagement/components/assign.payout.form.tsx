@@ -5,7 +5,13 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, CheckCircle2, ChevronDown, X } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronDown,
+  TriangleAlert,
+  X,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
@@ -52,6 +58,9 @@ import {
   buildPayoutFundSchema,
   FundWithPayoutSchema,
 } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { WalletList } from './errorInfoPopupModel';
+import CancelPayoutConfirmModal from './cancelPayoutConfirmModal';
 import useBeneficiariesGroupTableColumn from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/useBeneficiariesGroupTablecolumn';
 
 export type { PaymentSchema as PayoutFormData };
@@ -98,6 +107,11 @@ export default function PayoutFundManagementForm({
     assignedFundData?.reserveTokenPayload?.beneficiaryName ?? 'this group';
   const groupId =
     assignedFundData?.reserveTokenPayload?.beneficiaryGroupId ?? '';
+  const isCancelMode =
+    !!assignedFundData?.reserveTokenPayload?.skipOldPayoutForRemaining;
+  const cancelWallets: string[] = assignedFundData?.cancelWallets ?? [];
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const { clickToCopy, copyAction } = useCopy();
 
   // Query goes here
   const { data: payoutTypes, isLoading: isPayoutLoading } = useTabConfiguration(
@@ -201,6 +215,74 @@ export default function PayoutFundManagementForm({
     onPayoutData(data);
     handleStepChange(2);
   };
+
+  // Cancel mode: previous payout will be cancelled, so a new payout is mandatory
+  if (wantsPayout === null && isCancelMode) {
+    return (
+      <div className="border border-red-200 rounded-sm p-10 bg-white flex flex-col items-center space-y-6">
+        <div className="flex items-center justify-center w-14 h-14 rounded-full bg-red-100">
+          <TriangleAlert className="w-7 h-7 text-red-600" />
+        </div>
+        <p className="text-2xl font-bold text-center">
+          {t('DO_YOU_WANT_TO_CANCEL_PAYOUT', { groupName })}
+        </p>
+
+        <div className="w-full max-w-xl flex flex-col gap-4">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-5">
+            <p className="font-bold text-base text-red-700">
+              {t('CANCEL_AND_CREATE_NEW_PAYOUT')}
+            </p>
+            <p className="text-sm text-red-700/80 mt-0.5">
+              {t('CANCEL_PAYOUT_WARNING')}
+            </p>
+          </div>
+
+          {cancelWallets.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                {t('AFFECTED_WALLETS', { count: cancelWallets.length })}
+              </p>
+              <WalletList
+                wallets={cancelWallets}
+                copyAction={copyAction}
+                clickToCopy={clickToCopy}
+              />
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-sm"
+              onClick={() => handleStepChange(0)}
+            >
+              {t('BACK')}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              className="flex-1 rounded-sm"
+              onClick={() => setConfirmCancelOpen(true)}
+            >
+              {t('CANCEL_AND_CREATE_NEW_PAYOUT')}
+            </Button>
+          </div>
+        </div>
+
+        <CancelPayoutConfirmModal
+          open={confirmCancelOpen}
+          onClose={() => setConfirmCancelOpen(false)}
+          onConfirm={() => {
+            setConfirmCancelOpen(false);
+            onWantsPayoutChange(true);
+          }}
+          wallets={cancelWallets}
+          confirmWord={groupName}
+        />
+      </div>
+    );
+  }
 
   if (wantsPayout === null) {
     return (

@@ -124,6 +124,13 @@ export default function Confirmation({
         </div>
       )}
       <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
+      {reserveTokenPayload.skipOldPayoutForRemaining && (
+        <div className="mb-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {t('PREVIOUS_PAYOUT_WILL_BE_CANCELLED', {
+            count: assignedFundData?.cancelWallets?.length ?? 0,
+          })}
+        </div>
+      )}
       <div className="flex gap-3 mb-3">
         <div className="w-[60%] p-3 rounded-md bg-gray-50">
           <p className="font-semibold text-sm mb-2">{t('FUND_ASSIGNMENT')}</p>

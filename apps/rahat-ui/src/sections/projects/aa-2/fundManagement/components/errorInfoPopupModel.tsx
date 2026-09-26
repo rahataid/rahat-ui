@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -34,7 +34,7 @@ type IProps = {
   onContinue?: () => void;
 };
 
-const WalletList = ({
+export const WalletList = ({
   wallets,
   copyAction,
   clickToCopy,
@@ -70,8 +70,6 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
   const tb = useTranslations();
   const { clickToCopy, copyAction } = useCopy();
 
-  const [confirming, setConfirming] = useState(false);
-
   const isWarningOnly = errorData?.isAssignable === true;
 
   const errorMessage = resolveBackendErrorMessage(
@@ -83,11 +81,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
   );
 
   return (
-    <>
-    <Dialog
-      open={validateModal.value && !confirming}
-      onOpenChange={validateModal.onToggle}
-    >
+    <Dialog open={validateModal.value} onOpenChange={validateModal.onToggle}>
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
@@ -160,7 +154,7 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
                 <p className="text-base font-semibold text-center">
                   {t('CANCEL_REMAINING_PAYOUT_AND_ASSIGN')}
                 </p>
-                <Button className="w-full" onClick={() => setConfirming(true)}>
+                <Button className="w-full" onClick={onContinue}>
                   {t('CONTINUE')}
                 </Button>
               </>
@@ -169,48 +163,6 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
         )}
       </DialogContent>
     </Dialog>
-    <Dialog
-      open={validateModal.value && confirming}
-      onOpenChange={(open) => {
-        if (!open) {
-          setConfirming(false);
-          validateModal.onFalse();
-        }
-      }}
-    >
-      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>{t('ARE_YOU_SURE')}</DialogTitle>
-          <DialogDescription>{t('CANCEL_PAYOUT_WARNING')}</DialogDescription>
-        </DialogHeader>
-        <WalletList
-          wallets={errorData?.foundAssignedBenf ?? []}
-          copyAction={copyAction}
-          clickToCopy={clickToCopy}
-        />
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setConfirming(false);
-              validateModal.onFalse();
-            }}
-          >
-            {t('BACK')}
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              setConfirming(false);
-              onContinue?.();
-            }}
-          >
-            {t('CANCEL_PAYOUT')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-    </>
   );
 };
 

@@ -151,7 +151,14 @@ export default function AssignFundsForm({
       ...(skipOldPayoutForRemaining && { skipOldPayoutForRemaining: true }),
     };
 
-    setAssignedFundData({ projectUUID: projectId, reserveTokenPayload });
+    setAssignedFundData({
+      projectUUID: projectId,
+      reserveTokenPayload,
+      // Wallets whose remaining payout gets cancelled — shown on the payout step
+      cancelWallets: skipOldPayoutForRemaining
+        ? errorData?.foundAssignedBenf ?? []
+        : [],
+    });
     handleStepChange(1);
   };
 

@@ -129,7 +129,16 @@ export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
   });
 };
 
-export const useGenerateQrPdf = (projectUuid: UUID) => {
+type GenerateQrPdfArgs = {
+  groupId: UUID;
+  includeOtp?: boolean;
+  excludeUnphonedBeneficiaries?: boolean;
+  pdfFields?: string[];
+};
+
+// Shared by useGenerateQrPdf and useRegenerateQrPdf -- both take the same
+// payload shape and only differ in which backend action they call.
+const useQrPdfMutation = (projectUuid: UUID, action: string) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
@@ -139,17 +148,18 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
     mutationFn: async ({
       groupId,
       includeOtp = true,
-    }: {
-      groupId: UUID;
-      includeOtp?: boolean;
-    }) => {
+      excludeUnphonedBeneficiaries = false,
+      pdfFields = [],
+    }: GenerateQrPdfArgs) => {
       const mutate = await q.mutateAsync({
         uuid: projectUuid,
         data: {
-          action: 'aaProject.beneficiary.generateQrPdf',
+          action,
           payload: {
             groupId,
             includeOtp,
+            excludeUnphonedBeneficiaries,
+            pdfFields,
           },
         },
       });
@@ -179,6 +189,12 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
     },
   });
 };
+
+export const useGenerateQrPdf = (projectUuid: UUID) =>
+  useQrPdfMutation(projectUuid, 'aaProject.beneficiary.generateQrPdf');
+
+export const useRegenerateQrPdf = (projectUuid: UUID) =>
+  useQrPdfMutation(projectUuid, 'aaProject.beneficiary.regenerateQrPdf');
 export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();

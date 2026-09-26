@@ -1,7 +1,15 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
+import { useProjectSettingsGet } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import MultipleSelector, {
+  Option,
+} from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import {
   Dialog,
   DialogContent,
@@ -10,12 +18,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Check, EyeOff, KeyRound, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'react-toastify';
+
+// Kept in sync with the setting name used on the Beneficiary QR settings tab.
+const BENEFICIARY_GROUP_PDF_CONFIG = 'BENEFICIARY_GROUP_PDF_CONFIG';
+
+// Backend caps pdfFields at 5 -- keep this in sync with that limit.
+const MAX_PDF_FIELDS = 5;
+
+export type QrOtpConfirmValues = {
+  includeOtp: boolean;
+  excludeUnphonedBeneficiaries: boolean;
+  pdfFields: string[];
+};
 
 export type QrOtpDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (includeOtp: boolean) => void;
+  onConfirm: (values: QrOtpConfirmValues) => void;
   isPending: boolean;
 };
 
@@ -26,12 +47,52 @@ export function QrOtpDialog({
   isPending,
 }: QrOtpDialogProps) {
   const t = useTranslations('AA_PROJECT');
+  const { id } = useParams();
+  const projectUUID = id as UUID;
 
-  const [qrOtpChoice, setQrOtpChoice] = useState(true);
+  const [includeOtp, setIncludeOtp] = useState(true);
+  const [excludeUnphonedBeneficiaries, setExcludeUnphonedBeneficiaries] =
+    useState(false);
+  const [selectedFields, setSelectedFields] = useState<Option[]>([]);
+
+  const { data: fieldsSetting } = useProjectSettingsGet(
+    projectUUID,
+    BENEFICIARY_GROUP_PDF_CONFIG,
+  );
+
+  // Value may be a plain string[] (["name","age"]) or an object shape
+  // ({ fields: [...] }) depending on how it was saved on the settings tab.
+  const fieldOptions: Option[] = useMemo(() => {
+    const rawValue = fieldsSetting?.value;
+    const fields: string[] = Array.isArray(rawValue)
+      ? rawValue
+      : Array.isArray(rawValue?.fields)
+      ? rawValue.fields
+      : [];
+    return fields.map((field) => ({ value: field, label: field }));
+  }, [fieldsSetting]);
 
   useEffect(() => {
-    if (open) setQrOtpChoice(true);
+    if (open) {
+      setIncludeOtp(true);
+      setExcludeUnphonedBeneficiaries(false);
+      setSelectedFields([]);
+    }
   }, [open]);
+
+  const exceedsMaxFields = selectedFields.length > MAX_PDF_FIELDS;
+
+  const handleConfirm = () => {
+    if (exceedsMaxFields) {
+      toast.error(t('MAX_PDF_FIELDS_REACHED', { max: MAX_PDF_FIELDS }));
+      return;
+    }
+    onConfirm({
+      includeOtp,
+      excludeUnphonedBeneficiaries,
+      pdfFields: selectedFields.map((option) => option.value),
+    });
+  };
 
   return (
     <Dialog
@@ -42,80 +103,61 @@ export function QrOtpDialog({
     >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>{t('QR_OTP_MODAL_TITLE')}</DialogTitle>
-          <DialogDescription>{t('QR_OTP_MODAL_DESCRIPTION')}</DialogDescription>
+          <DialogTitle>{t('QR_PDF_GENERATION_OPTIONS')}</DialogTitle>
+          <DialogDescription>
+            {t('QR_PDF_GENERATION_OPTIONS_DESCRIPTION')}
+          </DialogDescription>
         </DialogHeader>
-        <div
-          role="radiogroup"
-          aria-label={t('QR_OTP_MODAL_TITLE')}
-          className="flex flex-col gap-3 py-2"
-        >
-          <button
-            type="button"
-            role="radio"
-            aria-checked={qrOtpChoice}
-            disabled={isPending}
-            onClick={() => setQrOtpChoice(true)}
-            className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${
-              qrOtpChoice
-                ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                : 'border-muted hover:border-primary/50'
-            }`}
-          >
-            <span
-              className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-                qrOtpChoice
-                  ? 'bg-primary text-white'
-                  : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <KeyRound size={18} />
-            </span>
-            <span className="flex-1">
-              <span className="block text-sm font-semibold">
-                {t('GENERATE_RAHAT_PIN')}
-              </span>
-              <span className="mt-0.5 block text-sm text-muted-foreground">
-                {t('QR_INCLUDE_PIN_HINT')}
-              </span>
-            </span>
-            {qrOtpChoice && (
-              <Check size={18} className="mt-1 shrink-0 text-primary" />
+        <div className="flex flex-col gap-4 py-2">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="qr-include-otp"
+              checked={includeOtp}
+              disabled={isPending}
+              onCheckedChange={(checked) => setIncludeOtp(checked === true)}
+            />
+            <Label htmlFor="qr-include-otp">{t('GENERATE_RAHAT_PIN')}</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="qr-exclude-unphoned"
+              checked={excludeUnphonedBeneficiaries}
+              disabled={isPending}
+              onCheckedChange={(checked) =>
+                setExcludeUnphonedBeneficiaries(checked === true)
+              }
+            />
+            <Label htmlFor="qr-exclude-unphoned">
+              {t('EXCLUDE_UNPHONED_BENEFICIARIES')}
+            </Label>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="qr-fields">{t('FIELDS_TO_INCLUDE_IN_PDF')}</Label>
+            <MultipleSelector
+              value={selectedFields}
+              onChange={setSelectedFields}
+              options={fieldOptions}
+              placeholder={t('SELECT_FIELDS_TO_INCLUDE')}
+              hideClearAllButton
+              disabled={isPending || !fieldOptions.length}
+              maxSelected={MAX_PDF_FIELDS}
+              onMaxSelected={() =>
+                toast.error(
+                  t('MAX_PDF_FIELDS_REACHED', { max: MAX_PDF_FIELDS }),
+                )
+              }
+            />
+            {!fieldOptions.length ? (
+              <p className="text-xs text-muted-foreground">
+                {t('NO_BENEFICIARY_QR_FIELDS_CONFIGURED')}
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                {t('SELECT_UP_TO_MAX_FIELDS', { max: MAX_PDF_FIELDS })}
+              </p>
             )}
-          </button>
-          <button
-            type="button"
-            role="radio"
-            aria-checked={!qrOtpChoice}
-            disabled={isPending}
-            onClick={() => setQrOtpChoice(false)}
-            className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${
-              !qrOtpChoice
-                ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                : 'border-muted hover:border-primary/50'
-            }`}
-          >
-            <span
-              className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-                !qrOtpChoice
-                  ? 'bg-primary text-white'
-                  : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <EyeOff size={18} />
-            </span>
-            <span className="flex-1">
-              <span className="block text-sm font-semibold">
-                {t('EXCLUDE_RAHAT_PIN')}
-              </span>
-              <span className="mt-0.5 block text-sm text-muted-foreground">
-                {t('QR_EXCLUDE_PIN_HINT')}
-              </span>
-            </span>
-            {!qrOtpChoice && (
-              <Check size={18} className="mt-1 shrink-0 text-primary" />
-            )}
-          </button>
+          </div>
         </div>
         <DialogFooter className="gap-2 sm:gap-2">
           <Button
@@ -129,8 +171,8 @@ export function QrOtpDialog({
           </Button>
           <Button
             type="button"
-            onClick={() => onConfirm(qrOtpChoice)}
-            disabled={isPending}
+            onClick={handleConfirm}
+            disabled={isPending || exceedsMaxFields}
             className="cursor-pointer"
           >
             {isPending && <Loader2 size={16} className="mr-2 animate-spin" />}

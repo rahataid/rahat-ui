@@ -10,6 +10,7 @@ import {
 import AACategoriesView from './categories/categories.view';
 import AAProjectPhasesView from './aa.phases';
 import ProjectHealthView from './project-health/project-health.view';
+import BeneficiaryQrConfigView from './beneficiary-qr/beneficiary-qr.view';
 import { useSearchParams } from 'next/navigation';
 
 export default function AAProjectSettingsView() {
@@ -39,6 +40,12 @@ export default function AAProjectSettingsView() {
           >
             {t('HEALTH')}
           </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiaryQr"
+          >
+            {t('BENEFICIARY_QR')}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="categories">
           <AACategoriesView />
@@ -48,6 +55,9 @@ export default function AAProjectSettingsView() {
         </TabsContent>
         <TabsContent value="health">
           <ProjectHealthView />
+        </TabsContent>
+        <TabsContent value="beneficiaryQr">
+          <BeneficiaryQrConfigView />
         </TabsContent>
       </Tabs>
     </div>

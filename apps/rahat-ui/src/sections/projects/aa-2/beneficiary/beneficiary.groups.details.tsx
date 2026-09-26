@@ -20,6 +20,7 @@ import {
   useGenerateQrPdf,
   useGetBeneficiariesQr,
   useGetSponsorshipStatusForGroup,
+  useRegenerateQrPdf,
   useRetrySponsorshipForGroup,
   useSingleBeneficiaryGroup,
 } from '@rahat-ui/query';
@@ -33,8 +34,14 @@ import {
 } from 'apps/rahat-ui/src/common';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CloudDownload } from 'lucide-react';
-import { QrOtpDialog } from './qr-otp.dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { ChevronDown, CloudDownload, RefreshCw } from 'lucide-react';
+import { QrOtpConfirmValues, QrOtpDialog } from './qr-otp.dialog';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
@@ -55,18 +62,37 @@ const BeneficiaryGroupsDetails = () => {
 
   const { mutate: generateQr, isPending: isGeneratingQr } =
     useGenerateQrPdf(projectId);
+  const { mutate: regenerateQr, isPending: isRegeneratingQr } =
+    useRegenerateQrPdf(projectId);
   const [isQrOptionsOpen, setIsQrOptionsOpen] = useState(false);
+  // Tracks which action the dialog's confirm button should trigger --
+  // the initial generate, or a re-generate of an already-completed QR.
+  const [qrDialogMode, setQrDialogMode] = useState<'generate' | 'regenerate'>(
+    'generate',
+  );
   const { mutate: exportExcel, isPending: isExporting } =
     useExportBeneficiariesExcel(projectId);
 
-  const handleGenerateQr = (includeOtp: boolean) => {
-    if (isGeneratingQr) return;
-    generateQr(
-      { groupId, includeOtp },
+  const isSubmittingQr = isGeneratingQr || isRegeneratingQr;
+
+  const handleGenerateQr = ({
+    includeOtp,
+    excludeUnphonedBeneficiaries,
+    pdfFields,
+  }: QrOtpConfirmValues) => {
+    if (isSubmittingQr) return;
+    const mutate = qrDialogMode === 'regenerate' ? regenerateQr : generateQr;
+    mutate(
+      { groupId, includeOtp, excludeUnphonedBeneficiaries, pdfFields },
       {
         onSuccess: () => setIsQrOptionsOpen(false),
       },
     );
+  };
+
+  const openQrDialog = (mode: 'generate' | 'regenerate') => {
+    setQrDialogMode(mode);
+    setIsQrOptionsOpen(true);
   };
 
   const handleExportExcel = () => {
@@ -153,20 +179,48 @@ const BeneficiaryGroupsDetails = () => {
             {t('DOWNLOAD_EXCEL')}
           </Button>
           {qrDetails?.status === 'completed' ? (
-            <Button
-              variant="outline"
-              onClick={() => window.open(qrDetails.fileUrl, '_blank')}
-              className="cursor-pointer"
-            >
-              <CloudDownload className="mr-1" />
-              {t('DOWNLOAD_QR')}
-            </Button>
+            <div className="flex">
+              <Button
+                variant="outline"
+                onClick={() => window.open(qrDetails.fileUrl, '_blank')}
+                className="cursor-pointer rounded-r-none border-r-0"
+                disabled={isSubmittingQr}
+              >
+                <CloudDownload className="mr-1" />
+                {t('DOWNLOAD_QR')}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer rounded-l-none px-2"
+                    disabled={isSubmittingQr}
+                  >
+                    <ChevronDown size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onSelect={() => window.open(qrDetails.fileUrl, '_blank')}
+                  >
+                    <CloudDownload className="mr-2 h-4 w-4" />
+                    {t('DOWNLOAD_QR')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => openQrDialog('regenerate')}
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    {t('REGENERATE_QR')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             <Button
               variant="outline"
-              onClick={() => setIsQrOptionsOpen(true)}
+              onClick={() => openQrDialog('generate')}
               className="cursor-pointer"
-              disabled={isQrLoading || isGeneratingQr}
+              disabled={isQrLoading || isSubmittingQr}
             >
               <CloudDownload className="mr-1" />
               {t('GENERATE_QR')}
@@ -244,7 +298,7 @@ const BeneficiaryGroupsDetails = () => {
         open={isQrOptionsOpen}
         onOpenChange={setIsQrOptionsOpen}
         onConfirm={handleGenerateQr}
-        isPending={isGeneratingQr}
+        isPending={isSubmittingQr}
       />
     </div>
   );

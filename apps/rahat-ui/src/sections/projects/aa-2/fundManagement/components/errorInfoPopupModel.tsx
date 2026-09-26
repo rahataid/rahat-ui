@@ -144,6 +144,16 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
                 </div>
               )}
             </div>
+            {onContinue && (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  {t('CANCEL_REMAINING_PAYOUT_AND_ASSIGN')}
+                </p>
+                <DialogFooter>
+                  <Button onClick={onContinue}>{t('CONTINUE')}</Button>
+                </DialogFooter>
+              </>
+            )}
           </>
         )}
       </DialogContent>

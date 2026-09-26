@@ -134,7 +134,10 @@ export default function AssignFundsForm({
     proceedToNextStep(data);
   };
 
-  const proceedToNextStep = (data: FundAssignmentFormValues) => {
+  const proceedToNextStep = (
+    data: FundAssignmentFormValues,
+    skipOldPayoutForRemaining = false,
+  ) => {
     const selectedGroup = benGroups?.data.find(
       (group) => group.uuid === data.beneficiaryGroupId,
     );
@@ -145,6 +148,7 @@ export default function AssignFundsForm({
       title: data.title,
       beneficiaryName: selectedGroup?.name ?? '',
       tokenAmountPerBenef: data.tokenAmountPerBenef,
+      ...(skipOldPayoutForRemaining && { skipOldPayoutForRemaining: true }),
     };
 
     setAssignedFundData({ projectUUID: projectId, reserveTokenPayload });
@@ -299,7 +303,10 @@ export default function AssignFundsForm({
         errorData={errorData}
         onContinue={() => {
           errorModule.onFalse();
-          proceedToNextStep(form.getValues());
+          proceedToNextStep(
+            form.getValues(),
+            errorData?.isAssignable === false,
+          );
         }}
       />
     </Form>

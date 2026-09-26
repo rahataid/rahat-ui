@@ -109,10 +109,21 @@ export const resolveBeneficiaryErrorMessage = (
   groups: string[],
   rawMessage: string,
 ): string => {
-  const byCode = resolveBackendErrorMessage(t, code, params, groups, rawMessage);
+  const byCode = resolveBackendErrorMessage(
+    t,
+    code,
+    params,
+    groups,
+    rawMessage,
+  );
   if (byCode !== rawMessage) return byCode;
   for (const group of groups) {
-    const byPrefix = resolveBackendErrorMessageByPrefix(t, group, rawMessage, params);
+    const byPrefix = resolveBackendErrorMessageByPrefix(
+      t,
+      group,
+      rawMessage,
+      params,
+    );
     if (byPrefix !== rawMessage) return byPrefix;
   }
   const match = /^\[([A-Z0-9_]+)\]\s*(.*)$/s.exec(rawMessage);

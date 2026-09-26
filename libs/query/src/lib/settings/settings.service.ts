@@ -243,14 +243,19 @@ export const useAppSettingsCreate = () => {
             },
           ],
         });
-        Swal.fire(t('GLOBAL.SETTINGS_CREATED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.SETTINGS_CREATED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
       },
       onError: (error: any) => {
         const rawMessage =
-          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
+          error?.response?.data?.message ||
+          t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
         const errorMessage = resolveBackendErrorMessage(
           t,
-          error?.response?.data?.code,
+          'ADD_SETTING_ERROR',
           error?.response?.data?.params,
           ['SETTINGS'],
           rawMessage,
@@ -295,11 +300,16 @@ export const useRahatSettingUpdate = () => {
             },
           ],
         });
-        Swal.fire(t('GLOBAL.SETTINGS_UPDATED_SUCCESSFULLY' as never), '', 'success');
+        Swal.fire(
+          t('GLOBAL.SETTINGS_UPDATED_SUCCESSFULLY' as never),
+          '',
+          'success',
+        );
       },
       onError: (error: any) => {
         const rawMessage =
-          error?.response?.data?.message || t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
+          error?.response?.data?.message ||
+          t('GLOBAL.ERROR_ON_CREATING_DATA' as never);
         const errorMessage = resolveBackendErrorMessage(
           t,
           error?.response?.data?.code,

@@ -170,9 +170,20 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
           <DialogTitle>{t('ARE_YOU_SURE')}</DialogTitle>
           <DialogDescription>{t('CANCEL_PAYOUT_WARNING')}</DialogDescription>
         </DialogHeader>
+        <WalletList
+          wallets={errorData?.foundAssignedBenf ?? []}
+          copyAction={copyAction}
+          clickToCopy={clickToCopy}
+        />
         <DialogFooter>
-          <Button variant="outline" onClick={() => setConfirming(false)}>
-            {tg('CANCEL')}
+          <Button
+            variant="outline"
+            onClick={() => {
+              setConfirming(false);
+              validateModal.onFalse();
+            }}
+          >
+            {t('BACK')}
           </Button>
           <Button
             variant="destructive"

@@ -1799,7 +1799,7 @@
     "CONFLICTS_FOUND": "The following conflicts were found in group {groupName}. Please resolve them before proceeding.",
     "CONTACT_INFORMATION": "Contact Information",
     "CONTINUE": "Continue",
-    "CANCEL_REMAINING_PAYOUT_AND_ASSIGN": "You can cancel the previous remaining payout and assign the funds.",
+    "CANCEL_REMAINING_PAYOUT_AND_ASSIGN": "You can cancel the current payout and create a new one.",
     "PLEASE_WAIT_PROCESSING": "Please wait, this may take some time. Do not close or refresh this page.",
     "ARE_YOU_SURE": "Are you sure?",
     "CANCEL_PAYOUT_WARNING": "The payouts for these wallets will be cancelled. These beneficiaries will no longer be able to collect them.",

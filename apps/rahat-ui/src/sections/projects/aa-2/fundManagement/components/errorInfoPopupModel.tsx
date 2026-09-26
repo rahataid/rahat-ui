@@ -152,7 +152,12 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
             </div>
             {onContinue && (
               <>
-                <p className="text-sm text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-sm text-muted-foreground">{t('OR')}</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                <p className="text-base font-semibold text-center">
                   {t('CANCEL_REMAINING_PAYOUT_AND_ASSIGN')}
                 </p>
                 <Button className="w-full" onClick={() => setConfirming(true)}>
@@ -164,7 +169,15 @@ const ErrorInfoPopupModel = ({ validateModal, errorData, onContinue }: IProps) =
         )}
       </DialogContent>
     </Dialog>
-    <Dialog open={validateModal.value && confirming}>
+    <Dialog
+      open={validateModal.value && confirming}
+      onOpenChange={(open) => {
+        if (!open) {
+          setConfirming(false);
+          validateModal.onFalse();
+        }
+      }}
+    >
       <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('ARE_YOU_SURE')}</DialogTitle>

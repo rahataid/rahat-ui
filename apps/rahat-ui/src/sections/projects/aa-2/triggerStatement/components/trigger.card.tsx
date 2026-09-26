@@ -136,7 +136,13 @@ export default function TriggerCard({
       )}
       {leadTime && (
         <p className="text-muted-foreground text-sm/4">
-          {t('LEAD_TIME')} : {formatNum(parseFloat(leadTime) || 0)}{' '}
+          {t('LEAD_TIME')} :{' '}
+          {leadTime
+            .replace(/\s*(hours|days)\s*/i, '')
+            .trim()
+            .split('-')
+            .map((part: string) => formatNum(parseFloat(part) || 0))
+            .join('-')}{' '}
           {/hours/i.test(leadTime) ? t('HOURS') : t('DAYS')}
         </p>
       )}

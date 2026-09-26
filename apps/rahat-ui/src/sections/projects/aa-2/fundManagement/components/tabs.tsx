@@ -53,7 +53,6 @@ export default function FundManagementTabs() {
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FUNDMANAGEMENT_TAB_CONFIG,
   );
-  console.log('data:', data);
   const hasCashTracker = data?.value?.tabs?.some(
     (tab: any) => tab.value === 'cashTracker',
   );

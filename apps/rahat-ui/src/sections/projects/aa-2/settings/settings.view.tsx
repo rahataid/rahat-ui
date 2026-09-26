@@ -26,6 +26,7 @@ import DisbursementMethodsEditor from './friendly/disbursement-methods.editor';
 import FundManagementTabConfigEditor from './friendly/fundmanagement-tab-config.editor';
 import ForecastTabConfigEditor from './friendly/forecast-tab-config.editor';
 import TriggerTabConfigEditor from './friendly/trigger-tab-config.editor';
+import DashboardTabConfigEditor from './friendly/dashboard-tab-config';
 
 type SubmitFn = () => SettingNameValue | null;
 type SubmitRef = React.MutableRefObject<SubmitFn | null>;
@@ -44,6 +45,7 @@ export default function AASettingsView() {
   const fundManagementSubmitRef = useRef<SubmitFn | null>(null);
   const forecastSubmitRef = useRef<SubmitFn | null>(null);
   const triggerTabSubmitRef = useRef<SubmitFn | null>(null);
+  const dashboardSubmitRef = useRef<SubmitFn | null>(null);
 
   const submitRefs: SubmitRef[] = [
     payoutSubmitRef,
@@ -52,6 +54,7 @@ export default function AASettingsView() {
     fundManagementSubmitRef,
     forecastSubmitRef,
     triggerTabSubmitRef,
+    dashboardSubmitRef,
   ];
 
   const [pendingSettings, setPendingSettings] = useState<
@@ -100,6 +103,7 @@ export default function AASettingsView() {
         <DisbursementMethodsEditor submitRef={disbursementSubmitRef} />
         <FundManagementTabConfigEditor submitRef={fundManagementSubmitRef} />
         <PayoutTypeConfigEditor submitRef={payoutSubmitRef} />
+        <DashboardTabConfigEditor submitRef={dashboardSubmitRef} />
       </div>
 
       <AlertDialog

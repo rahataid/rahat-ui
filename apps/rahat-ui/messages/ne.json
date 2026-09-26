@@ -228,6 +228,8 @@
     "CHOOSE_TEMPLATE": "नमुना छान्नुहोस्",
     "CHOOSE_WHICH_DISBURSEMENT_METHODS_ARE_AVAILABLE": "यस परियोजनाको लागि कुन वितरण विधिहरू उपलब्ध छन् छान्नुहोस्।",
     "CHOOSE_WHICH_FORECAST_DATA_TABS_ARE_ENABLED": "यस परियोजनाको लागि कुन पूर्वानुमान डाटा ट्याबहरू सक्षम छन् छान्नुहोस्।",
+    "CHOOSE_WHICH_DASHBOARD_TABS_ARE_ENABLED": "यस परियोजनाको लागि कुन ड्यासबोर्ड ट्याबहरू सक्षम छन् छान्नुहोस्।",
+
     "CHOOSE_WHICH_FUND_MANAGEMENT_TABS_ARE_ENABLED": "यस परियोजनाको लागि कुन कोष व्यवस्थापन ट्याबहरू सक्षम छन् छान्नुहोस्।",
     "CHOOSE_WHICH_PAGES_ARE_ENABLED": "यस परियोजनाको लागि कुन पृष्ठहरू सक्षम छन् छान्नुहोस्।",
     "CHOOSE_WHICH_PAYOUT_METHODS_ARE_AVAILABLE": "यस परियोजनाको लागि कुन भुक्तानी विधिहरू उपलब्ध छन् छान्नुहोस्।",
@@ -355,6 +357,9 @@
     "DANGER_LEVEL_POSITIVE_NUMBER": "खतराको स्तर सकारात्मक संख्यामा हुनुपर्छ।",
     "DASHBOARD": "ड्यासबोर्ड",
     "DATATYPE": "तथ्यांकको प्रकार",
+    "DASHBOARD_TABS": "ड्यासबोर्ड ट्याबहरू",
+    "ACCESS_&_INCLUSION": "पहुँच र समावेशीकरण",
+    "COMMUNICATIONS_&_OUTREACH": "सञ्चार र आउटरिच",
     "DATA_ASSIMILATION_RELATIVE_HUMIDITY": "सापेक्षिक आर्द्रताको तथ्यांक समायोजन",
     "DATA_AVAILABLE_FOR_THE_SELECTED_TIME": "छानिएको समय अवधिका तथ्यांक उपलब्ध छ।",
     "DATA_HEALTH_CHECKER": "तथ्यांकको अवस्था जाँच गर्ने उपकरण",
@@ -2897,10 +2902,12 @@
     "N21_JAN202407_FEB2024": "21 जनवरी 2024, 07 फेब्रु 2024",
     "OVERVIEW": "अवलोकन",
     "OVERVIEW_OF_YOUR_SYSTEM": "तपाईंको प्रणालीको जानकारी",
-    "YOUR_HUB_FOR_REAL_TIME_ANALYTICS": "प्रणालीको वास्तविक-समय विश्लेषण र तथ्यांक दृश्याङ्कनका लागि तपाईंको केन्द्र"
+    "YOUR_HUB_FOR_REAL_TIME_ANALYTICS": "प्रणालीको वास्तविक-समय विश्लेषण र तथ्यांक दृश्याङ्कनका लागि तपाईंको केन्द्र",
+    "DASHBOARD_TABS": "ड्यासबोर्ड ट्याबहरू"
   },
   "DASHBOARD_ACCESS_INCLUSION": {
     "ACCESS_INCLUSION": "पहुँच र समावेशीकरण",
+    "ACCESS_&_INCLUSION": "पहुँच र समावेशीकरण",
     "ACCESS_TO_MOBILE_PHONES": "मोबाइल फोनहरूमा पहुँच",
     "BANK_ACCOUNTS": "बैंकको खाताहरू",
     "BANK_ACCOUNT_ACCESS": "बैंक खातामा पहुँच",

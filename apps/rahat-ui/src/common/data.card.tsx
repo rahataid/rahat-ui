@@ -109,7 +109,7 @@ export function DataCard({
         </p>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
-        <div>
+        <div className="min-w-0">
           {loading ? (
             <TableLoader />
           ) : (
@@ -144,7 +144,7 @@ export function DataCard({
               {badge ? (
                 <Badge>{smallNumber}</Badge>
               ) : (
-                <div className="text-xl font-normal text-primary">
+                <div className="text-xl font-normal text-primary break-words">
                   {smallNumber}
                 </div>
               )}

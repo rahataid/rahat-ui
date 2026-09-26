@@ -10,12 +10,14 @@ interface TooltipWrapperProps {
   tip: string;
   children: ReactNode;
   disable?: boolean;
+  className?: string;
 }
 
 export default function TooltipWrapper({
   tip,
   children,
   disable = false,
+  className,
 }: TooltipWrapperProps) {
   if (disable || !tip?.trim()) {
     return <>{children}</>;
@@ -24,7 +26,8 @@ export default function TooltipWrapper({
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div>{children}</div>
+          {/* Lets callers control how this wrapper shrinks inside flex parents. */}
+          <div className={className}>{children}</div>
         </TooltipTrigger>
         <TooltipContent className="bg-secondary" side="top">
           <p className="text-xs font-medium">{tip}</p>

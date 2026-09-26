@@ -418,10 +418,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         </div>
 
         <div
-          className={`grid ${
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${
             payout?.extras?.group_gap || payout?.type === 'VENDOR'
-              ? 'lg:grid-cols-5'
-              : 'lg:grid-cols-4'
+              ? 'xl:grid-cols-5'
+              : 'xl:grid-cols-4'
           } gap-4 pt-2`}
         >
           <DataCard
@@ -477,9 +477,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       </div>
 
       <div className="rounded-sm border border-gray-100 space-y-2 p-2 mt-2">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <SearchInput
-            className="w-full flex-[4]"
+            className="w-full flex-[4] min-w-0"
             name={tv('SEARCH_BENEFICIARY_WALLET')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
@@ -507,7 +507,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   })
                 }
                 value={filters?.transactionType || ''}
-                className="flex-[1]"
+                className="flex-[1] min-w-0"
               />
             )}
 
@@ -537,7 +537,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               })
             }
             value={filters?.transactionStatus || ''}
-            className="flex-[1]"
+            className="flex-[1] min-w-0"
           />
         </div>
         <DemoTable table={table} loading={payoutLogsLoading} />

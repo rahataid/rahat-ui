@@ -151,24 +151,28 @@ export function CommunicationCard({
 
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 min-w-0">
               <TooltipWrapper
+                className="min-w-0 flex-1"
                 tip={`${t('COMMUNICATION_TITLE')}: ${
                   activityCommunication?.communicationTitle
                 }`}
               >
-                <h3 className="font-medium text-gray-900 truncate w-[360px]">
+                <h3 className="font-medium text-gray-900 truncate">
                   {activityCommunication?.communicationTitle}
                 </h3>
               </TooltipWrapper>
 
-              <TooltipComponent
-                Icon={ArrowUpRightSquare}
-                tip={t('VIEW_COMMUNICATION_LOG')}
-                handleOnClick={() => router.push(redirectLink)}
-                iconStyle="text-primary"
-              />
+              <div className="flex-shrink-0">
+                <TooltipComponent
+                  Icon={ArrowUpRightSquare}
+                  tip={t('VIEW_COMMUNICATION_LOG')}
+                  handleOnClick={() => router.push(redirectLink)}
+                  iconStyle="text-primary"
+                />
+              </div>
               <TooltipWrapper
+                className="flex-shrink-0"
                 tip={`${t('COMMUNICATION_STATUS')}: ${
                   activityCommunication?.sessionStatus
                     ? tg(activityCommunication.sessionStatus as any)
@@ -187,7 +191,7 @@ export function CommunicationCard({
               </TooltipWrapper>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 min-w-0">
               <TooltipWrapper
                 tip={`${t('COMMUNICATION_CHANNEL')}: ${
                   activityCommunication?.transportName

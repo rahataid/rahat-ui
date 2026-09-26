@@ -277,10 +277,10 @@ export default function TokensOverview() {
       ) : (
         <TokenOverviewSkeleton number={[1, 2, 3, 4, 5]} />
       )}
-      <div className="flex flex-wrap flex-col xl:flex-row mt-4 gap-4">
+      <div className="flex flex-col xl:flex-row mt-4 gap-4">
         <div className="flex-1 border rounded-sm p-4">
           <h1 className="text-lg font-medium mb-4">{t('TOKEN_STATUS')}</h1>
-          <div className="w-full aspect-video">
+          <div className="w-full h-[320px]">
             <DynamicPieChart
               pieData={tokenStatus()}
               colors={['#2A9D90', '#E53935', '#BDBDBD']}

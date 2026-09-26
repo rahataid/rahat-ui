@@ -156,16 +156,16 @@ export default function BeneficiaryDetail({
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-240px)]">
+      <ScrollArea className="h-[calc(100vh-240px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
         <div className="p-4 flex flex-col space-y-4">
           <h1 className="font-medium">{g('GENERAL')}</h1>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <MapPin size={20} strokeWidth={1.5} />
               <p>{g('ADDRESS')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {beneficiaryDetail?.piiData?.extras?.address ||
                 beneficiaryDetail?.location ||
                 '-'}
@@ -173,11 +173,11 @@ export default function BeneficiaryDetail({
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Phone size={20} strokeWidth={1.5} />
               <p>{g('PHONE_NUMBER')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {formatPhone(
                 beneficiaryDetail?.piiData?.phone || beneficiaryDetail?.phone,
               ) || '-'}
@@ -185,11 +185,11 @@ export default function BeneficiaryDetail({
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Mail size={20} strokeWidth={1.5} />
               <p>{g('EMAIL_ADDRESS')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {beneficiaryDetail?.piiData?.email ||
                 beneficiaryDetail?.email ||
                 '-'}
@@ -197,37 +197,37 @@ export default function BeneficiaryDetail({
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Phone size={20} strokeWidth={1.5} />
               <p>{g('PHONE_STATUS')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {formatEnumValue(beneficiaryDetail?.phoneStatus) || '-'}
             </p>
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Landmark size={20} strokeWidth={1.5} />
               <p>{t('BANK_STATUS')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {formatEnumValue(beneficiaryDetail?.bankedStatus) || '-'}
             </p>
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <Wifi size={20} strokeWidth={1.5} />
               <p>{g('INTERNET_STATUS')}</p>
             </div>
-            <p className="text-muted-foreground text-base">
+            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
               {formatEnumValue(beneficiaryDetail?.internetStatus) || '-'}
             </p>
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 shrink-0">
               <WalletIcon size={20} strokeWidth={1.5} />
               <p>{g('WALLET_ADDRESS')}</p>
             </div>
@@ -252,9 +252,8 @@ export default function BeneficiaryDetail({
         </div>
         {beneficiaryDetail?.BeneficiaryProject && (
           <div
-            className={`p-4 flex flex-col space-y-4 ml-2 ${
-              beneficiaryDetail?.BeneficiaryProject?.length < 1 && 'hidden'
-            }`}
+            className={`p-4 flex flex-col space-y-4 ml-2 ${beneficiaryDetail?.BeneficiaryProject?.length < 1 && 'hidden'
+              }`}
           >
             <div className="flex justify-between items-start">
               <p className="text-base font-medium">{t('PROJECT_INVOLVED')}</p>
@@ -276,21 +275,21 @@ export default function BeneficiaryDetail({
         {beneficiaryDetail?.bankAccount && (
           <div className="p-4 flex flex-col space-y-4 ml-2">
             <h1 className="font-medium">Validated Bank Details</h1>
-            <div className="flex justify-between items-center">
-              <p>Bank Name</p>
-              <p className="text-muted-foreground text-base">
+            <div className="flex justify-between items-start gap-4">
+              <p className="shrink-0">Bank Name</p>
+              <p className="min-w-0 break-words text-right text-muted-foreground text-base">
                 {beneficiaryDetail.bankAccount.bankName || '-'}
               </p>
             </div>
-            <div className="flex justify-between items-center">
-              <p>Account Name</p>
-              <p className="text-muted-foreground text-base">
+            <div className="flex justify-between items-start gap-4">
+              <p className="shrink-0">Account Name</p>
+              <p className="min-w-0 break-words text-right text-muted-foreground text-base">
                 {beneficiaryDetail.bankAccount.accountName || '-'}
               </p>
             </div>
-            <div className="flex justify-between items-center">
-              <p>Account Number</p>
-              <p className="text-muted-foreground text-base">
+            <div className="flex justify-between items-start gap-4">
+              <p className="shrink-0">Account Number</p>
+              <p className="min-w-0 break-words text-right text-muted-foreground text-base">
                 {beneficiaryDetail.bankAccount.accountNumber || '-'}
               </p>
             </div>
@@ -317,12 +316,12 @@ export default function BeneficiaryDetail({
                     .map(([key, value]) => (
                       <div
                         key={key}
-                        className="flex justify-between items-center"
+                        className="flex justify-between items-start gap-4"
                       >
-                        <p>{humanizeString(key)}</p>
-                        <p className="text-muted-foreground text-base">
+                        <p className="shrink-0">{humanizeString(key)}</p>
+                        <p className="min-w-0 break-words text-right text-muted-foreground text-base">
                           {typeof value === 'string' &&
-                          value.startsWith('http') ? (
+                            value.startsWith('http') ? (
                             <a
                               href={value}
                               target="_blank"

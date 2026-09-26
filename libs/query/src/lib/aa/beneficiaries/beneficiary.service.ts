@@ -136,27 +136,38 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (groupId: UUID) => {
+    mutationFn: async ({
+      groupId,
+      includeOtp = true,
+    }: {
+      groupId: UUID;
+      includeOtp?: boolean;
+    }) => {
       const mutate = await q.mutateAsync({
         uuid: projectUuid,
         data: {
           action: 'aaProject.beneficiary.generateQrPdf',
           payload: {
-            groupId: groupId,
+            groupId,
+            includeOtp,
           },
         },
       });
+
       return mutate.data;
     },
-    onSuccess: (_, groupId) => {
+
+    onSuccess: (_, { groupId }) => {
       queryClient.invalidateQueries({
         queryKey: ['beneficiariesQr', { projectUuid, groupId }],
       });
       toast.success(t('QR_GENERATED_SUCCESSFULLY'));
     },
+
     onError: (error: any) => {
-      const rawMessage: string =
+      const rawMessage =
         error?.response?.data?.message || t('FAILED_TO_GENERATE_QR_PDF');
+
       const errorMessage = resolveBackendErrorMessage(
         tb,
         error?.response?.data?.code,
@@ -168,7 +179,6 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
     },
   });
 };
-
 export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
@@ -204,11 +214,7 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
         ['BENEFICIARIES_DASHBOARD_STATS'],
         rawMessage,
       );
-      showToast({
-          type: 'error',
-          title: errorMessage,
-          description: errorMessage,
-        });
+      toast.error(errorMessage);
     },
   });
 };

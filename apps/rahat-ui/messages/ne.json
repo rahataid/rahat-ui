@@ -359,6 +359,11 @@
     "DATA_AVAILABLE_FOR_THE_SELECTED_TIME": "छानिएको समय अवधिका तथ्यांक उपलब्ध छ।",
     "DATA_HEALTH_CHECKER": "तथ्यांकको अवस्था जाँच गर्ने उपकरण",
     "DATA_HEALTH_MONITOR": "तथ्यांकको स्थिति निगरानी",
+    "DATABASE": "डाटाबेस",
+    "REDIS": "रेडिस",
+    "BLOCKCHAIN_RPC": "ब्लकचेन RPC",
+    "CLOUDFLARE_STORAGE": "क्लाउडफ्लेयर भण्डारण",
+    "OFFRAMP_SERVICE": "अफर्याम्प सेवा",
     "DATA_NOT_AVAILABLE_AT_THE_MOMENT": "हाल तथ्यांक उपलब्ध छैन। कृपया केही समयपछि पुन: प्रयास गर्नुहोस्।",
     "DATA_NOT_AVAILABLE_DHM": "DHM का लागि तथ्यांक उपलब्ध छैन।",
     "DATA_NOT_AVAILABLE_FOR_DHM": "DHM का लागि तथ्यांक उपलब्ध छैन।",
@@ -658,6 +663,7 @@
     "ERROR_WHILE_UPDATING_STAKEHOLDERS_GROUP": "सरोकारवाला समूह अद्यावधिक गर्दा त्रुटि भयो।",
     "ERROR_WHILE_UPDATING_TRIGGER": "ट्रिगर अद्यावधिक गर्दा त्रुटि भयो।",
     "ERROR_WHILE_VALIDATING_ACTIVITIES": "गतिविधिहरू प्रमाणित गर्दा त्रुटि भयो।",
+    "EXCLUDE_RAHAT_PIN": "राहत PIN (OTP) नराख्नुहोस्",
     "EXISTING_STAKEHOLDER_WILL_BE_UPDATED": "भइरहेको सरोकारवालाहरुको जानकारीहरु अपडेट हुनेछ",
     "EXIT_PROJECT": "परियोजनाबाट बाहिर निस्कनुहोस्",
     "EXPIRED": "म्याद सकिएको",
@@ -786,6 +792,7 @@
     "GENERATE_LINK": "लिङ्क सिर्जना गर्नुहोस्",
     "GENERATE_PERMANENT_IPFS_LINK": "आफ्नो आइभिआर प्रवाह JSON को लागि स्थायी IPFS लिङ्क सिर्जना गर्नुहोस्",
     "GENERATE_QR": "QR सिर्जना गर्नुहोस्",
+    "GENERATE_RAHAT_PIN": "राहत PIN (OTP) सिर्जना गर्नुहोस्",
     "GENERATING": "सिर्जना गर्दै...",
     "GFH": "जीएफएच",
     "GLOBAL_FLOOD_AWARENESS_SYSTEM": "विश्वव्यापी बाढी सचेतना प्रणाली",
@@ -1349,7 +1356,11 @@
     "PROVIDE_THE_DETAILED_INFORMATION_ABOUT_THE": "गुनासोको बारेमा विस्तृत जानकारी प्रदान गर्नुहोस्",
     "PROVINCE": "प्रदेश",
     "PUBLIC": "सार्वजनिक",
+    "QR_EXCLUDE_PIN_HINT": "QR कार्डहरू राहत PIN बिना छापिनेछन्।",
     "QR_GENERATED_SUCCESSFULLY": "QR सफलतापूर्वक सिर्जना भयो",
+    "QR_INCLUDE_PIN_HINT": "राहत PIN प्रत्येक QR कार्डमा छापिनेछ।",
+    "QR_OTP_MODAL_DESCRIPTION": "डाउनलोड हुने QR दस्तावेजमा राहत PIN (OTP) सिर्जना गरेर समावेश गर्ने वा नगर्ने छनौट गर्नुहोस्।",
+    "QR_OTP_MODAL_TITLE": "राहत PIN (OTP) समावेश गर्ने?",
     "QUANTITY_MUST_BE_A_POSITIVE_NUMBER": "परिमाण धनात्मक संख्या हुनुपर्छ",
     "RAHAT_PIN_SENT_SUCCESSFULLY_TO": "रहत पिन {email} मा सफलतापूर्वक पठाइयो",
     "RAINFALL": "वर्षा",
@@ -1985,7 +1996,10 @@
     "single_woman": "एकल महिला",
     "steady": "स्थिर",
     "warning": "चेतावनी",
-    "widow": "विधवा"
+    "widow": "विधवा",
+    "HEALTH": "स्वास्थ्य",
+    "PROJECT_HEALTH": "परियोजनाको स्वास्थ्य",
+    "PROJECT_HEALTH_DESCRIPTION": "परियोजनाका निर्भरता र सेवाहरूको स्थिति अनुगमन गर्नुहोस्"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खातावालाको नाम",
@@ -3509,7 +3523,12 @@
     "PLEASE_SELECT_A_STATUS": "कृपया स्थिति छान्नुहोस्।",
     "ACTIVITY": "गतिविधि",
     "PAYOUT": "भुक्तानी",
-    "INKIND": "इन्काइन्ड"
+    "INKIND": "इन्काइन्ड",
+    "ENVIRONMENT": "वातावरण",
+    "CHECKING": "जाँच गर्दै...",
+    "RUN_HEALTH_CHECK": "स्वास्थ्य जाँच चलाउनुहोस्",
+    "HEALTH_CHECK_SUCCESS": "स्वास्थ्य जाँच सम्पन्न भयो: {total} मध्ये {healthy} सेवाहरू स्वस्थ छन्",
+    "HEALTH_CHECK_FAILED": "स्वास्थ्य जाँच असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -3717,7 +3736,10 @@
   "SETTINGS_NAVIGATION": {
     "AUTH_APPS": "प्रमाणीकरण एपहरू",
     "LIST": "सूची",
-    "PROJECT_INFO": "परियोजनाको जानकारी"
+    "PROJECT_INFO": "परियोजनाको जानकारी",
+    "HEALTH": "स्वास्थ्य",
+    "VERSION": "संस्करण",
+    "UNREACHABLE": "पहुँच नभएको"
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "तथ्यांकको प्रकार",
@@ -3847,7 +3869,8 @@
     "TOTAL_CREDITS_CONSUMED": "कुल क्रेडिट खपत",
     "TRANSPORT_DETAILS": "यातायात विवरण",
     "USAGE": "प्रयोग",
-    "USAGE_BY_TRANSPORT": "सञ्चार माध्यमको प्रयोग"
+    "USAGE_BY_TRANSPORT": "सञ्चार माध्यमको प्रयोग",
+    "LOG_STREAM": "लग स्ट्रिम"
   },
   "USERS_ADD": {
     "AN_UNEXPECTED_ERROR_OCCURRED": "एउटा अनपेक्षित त्रुटि भएको छ।",

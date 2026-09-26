@@ -9,6 +9,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import AACategoriesView from './categories/categories.view';
 import AAProjectPhasesView from './aa.phases';
+import ProjectHealthView from './project-health/project-health.view';
 import { useSearchParams } from 'next/navigation';
 
 export default function AAProjectSettingsView() {
@@ -32,12 +33,21 @@ export default function AAProjectSettingsView() {
           >
             {t('PHASES')}
           </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="health"
+          >
+            {t('HEALTH')}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="categories">
           <AACategoriesView />
         </TabsContent>
         <TabsContent value="phases">
           <AAProjectPhasesView />
+        </TabsContent>
+        <TabsContent value="health">
+          <ProjectHealthView />
         </TabsContent>
       </Tabs>
     </div>

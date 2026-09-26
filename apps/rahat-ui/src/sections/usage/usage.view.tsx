@@ -2,6 +2,11 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ScrollText } from 'lucide-react';
+import { SystemUserAuth } from '@rahat-ui/auth';
+import CoreBtnComponent from '../../components/core.btn';
+import { paths } from '../../routes/paths';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Card,
@@ -25,6 +30,7 @@ type DateRangeQuery = { from?: string; to?: string };
 
 export default function UsageView() {
   const t = useTranslations('USAGE');
+  const router = useRouter();
   const [usageXref, setUsageXref] = useState<string | null>(null);
   const [usageDateRange, setUsageDateRange] = useState<DateRangeQuery>({});
   const [creditXref, setCreditXref] = useState<string | null>(null);
@@ -55,7 +61,16 @@ export default function UsageView() {
   return (
     <ScrollArea className="h-[calc(100vh-80px)]">
       <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold">{t('USAGE')}</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">{t('USAGE')}</h2>
+          <SystemUserAuth hasContent={false}>
+            <CoreBtnComponent
+              Icon={ScrollText}
+              name={t('LOG_STREAM')}
+              handleClick={() => router.push(paths.logs.root)}
+            />
+          </SystemUserAuth>
+        </div>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">

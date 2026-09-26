@@ -3869,7 +3869,8 @@
     "TOTAL_CREDITS_CONSUMED": "कुल क्रेडिट खपत",
     "TRANSPORT_DETAILS": "यातायात विवरण",
     "USAGE": "प्रयोग",
-    "USAGE_BY_TRANSPORT": "सञ्चार माध्यमको प्रयोग"
+    "USAGE_BY_TRANSPORT": "सञ्चार माध्यमको प्रयोग",
+    "LOG_STREAM": "लग स्ट्रिम"
   },
   "USERS_ADD": {
     "AN_UNEXPECTED_ERROR_OCCURRED": "एउटा अनपेक्षित त्रुटि भएको छ।",

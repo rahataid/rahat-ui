@@ -1100,7 +1100,8 @@
     "CREDITS_OVER_TIME": "Credits Over Time",
     "DAILY_CREDIT_BREAKDOWN": "Daily Credit Breakdown",
     "SESSIONS": "Sessions",
-    "FAILED": "Failed"
+    "FAILED": "Failed",
+    "LOG_STREAM": "Log Stream"
   },
   "SETTINGS_ADD": {
     "ADD_SETTINGS": "Add Settings",

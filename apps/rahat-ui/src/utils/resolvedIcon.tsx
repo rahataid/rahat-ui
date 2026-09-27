@@ -112,6 +112,12 @@ export const defaultNavConfig: NavConfigDB = {
       subject: SUBJECTS.GRIEVANCE,
     },
     {
+      icon: 'Store',
+      path: 'vendors',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      title: 'Vendors',
+    },
+    {
       title: 'IVR',
       path: 'ivr',
       icon: 'PhoneCall',

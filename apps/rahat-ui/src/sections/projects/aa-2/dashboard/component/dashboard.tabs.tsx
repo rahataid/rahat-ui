@@ -18,11 +18,17 @@ import TokenStatsCard from './tokenStats.card';
 import ResilienceOverview from './resilienceOverview';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
+import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 type TabConfig = {
   value: string;
   label: string;
   content: React.ReactNode;
+  // Matching `value` in DASHBOARD_TAB_CONFIG `value.tabs`.
+  // Tabs without a configKey (i.e. `main`) are always shown.
+  configKey?: string;
 };
 
 type Props = {
@@ -38,12 +44,30 @@ export default function DashboardTabs({
   triggeersStats,
   tokenStats,
   projectId,
-  projectType,
 }: Props) {
   const t = useTranslations('AA_PROJECT');
-  const commonTabs: TabConfig[] = [
+  const { id: projectID } = useParams();
+
+  const { data, isLoading } = useTabConfiguration(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.DASHNBOARD_TAB_CONFIG,
+  );
+  // `main` is always shown; every other tab is shown only if its
+  // configKey appears in DASHBOARD_TAB_CONFIG `value.tabs`.
+  const configuredValues: string[] = Array.isArray(data?.value?.tabs)
+    ? data.value.tabs.map((tab: any) => tab?.value)
+    : [];
+  const isTabVisible = (tab: TabConfig) =>
+    !tab.configKey ? true : configuredValues.includes(tab.configKey);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  const projectTabs: TabConfig[] = [
     {
       value: 'beneficiary',
+      configKey: 'beneficiaryDemographics',
       label: t('BENEFICIARY_DEMOGRAPHICS'),
       content: (
         <div className="space-y-4">
@@ -61,17 +85,32 @@ export default function DashboardTabs({
       ),
     },
     {
+      value: 'flood',
+      configKey: 'floodSurveyData',
+      label: t('FLOOD_SURVEY_DATA'),
+      content: <AccessAndResilienceOverview data={benefStats} />,
+    },
+    {
+      value: 'heatwave',
+      configKey: 'heatwaveSurveyData',
+      label: t('HEATWAVE_SURVEY_DATA'),
+      content: <HeatwaveSpecific benefStats={benefStats} />,
+    },
+    {
       value: 'tokens',
+      configKey: 'tokenStats',
       label: t('TOKEN_STATS'),
       content: <TokenStatsCard tokenStats={tokenStats} />,
     },
     {
       value: 'access',
+      configKey: 'accessInclusion',
       label: t('ACCESS_INCLUSION'),
       content: <DigitalAccessOverview stats={benefStats} />,
     },
     {
       value: 'communication',
+      configKey: 'communicationOutreach',
       label: t('COMMUNICATION_OUTREACH'),
       content: (
         <CommunicationAnalytics
@@ -82,23 +121,6 @@ export default function DashboardTabs({
       ),
     },
   ];
-
-  const projectTabs: Record<string, TabConfig> = {
-    HEAT_WAVE: {
-      value: 'heatwave',
-      label: t('HEATWAVE_SURVEY_DATA'),
-      content: <HeatwaveSpecific benefStats={benefStats} />,
-    },
-    FLOOD: {
-      value: 'flood',
-      label: t('FLOOD_SURVEY_DATA'),
-      content: <AccessAndResilienceOverview data={benefStats} />,
-    },
-  };
-
-  const dynamicTabs: TabConfig[] = [];
-  const matched = projectTabs[projectType?.toUpperCase() ?? ''];
-  if (matched) dynamicTabs.push(matched);
 
   const allTabs: TabConfig[] = [
     {
@@ -115,9 +137,8 @@ export default function DashboardTabs({
         </div>
       ),
     },
-    ...dynamicTabs,
-    ...commonTabs,
-  ];
+    ...projectTabs,
+  ].filter(isTabVisible);
 
   return (
     <Tabs defaultValue="main" className="w-full">

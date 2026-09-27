@@ -20,6 +20,12 @@ jobs:
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "run_id_short=${GITHUB_RUN_ID:0:3}" >> $GITHUB_OUTPUT
 
+      - name: Extract version dynamically
+        id: extract_version
+        run: |
+          VERSION=$(jq -r '."rahat-ui-version"' package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Import Secrets
         uses: hashicorp/vault-action@v2.4.0
         with:
@@ -55,6 +61,8 @@ jobs:
           tags: |
             esatya/rahat-ui:release-v5.1.0-nrcs-client
             esatya/rahat-ui:release-v5.1.0-nrcs-client-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+          build-args: |
+            NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
       
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}

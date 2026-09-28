@@ -565,7 +565,16 @@
     "CHECKING": "Checking...",
     "RUN_HEALTH_CHECK": "Run Health Check",
     "HEALTH_CHECK_SUCCESS": "Health check completed: {healthy} of {total} services healthy",
-    "HEALTH_CHECK_FAILED": "Health check failed. Please try again."
+    "HEALTH_CHECK_FAILED": "Health check failed. Please try again.",
+    "CLEAR_FORM": "Clear Form",
+    "FORM_CLEAR_ALERT": "Are you sure you want to clear the form? All entered data will be lost and any saved progress will be removed.",
+    "KEEP_IT": "No, keep it",
+    "CLEAR_ALL": "Yes, clear all",
+    "UNSAVED_TITLE": "Unsaved Changes",
+    "UNSAVED_ALERT_DESCRIPTION": "You have unsaved changes. Your entered data will be saved and you can continue where you left off when you return.",
+    "CANCEL_TEXT": "No, stay here",
+    "DISCARD_TEXT": "Don't save",
+    "CONFIRM_TEXT": "Yes, save and leave"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",

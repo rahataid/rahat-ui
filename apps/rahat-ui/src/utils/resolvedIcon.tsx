@@ -98,6 +98,12 @@ export const defaultNavConfig: NavConfigDB = {
       icon: 'Banknote',
     },
     {
+      title: 'Communications',
+      path: 'communications',
+      icon: 'Megaphone',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+    },
+    {
       title: 'Communication Logs',
       path: 'communication-logs',
       icon: 'SmartphoneNfc',

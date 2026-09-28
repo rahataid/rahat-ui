@@ -17,7 +17,6 @@ export const SUBJECTS = {
   VENDOR: 'vendor',
   BENEFICIARY_GROUP: 'Beneficiary Group',
   STAKEHOLDER: 'Stakeholder',
-  STAKEHOLDER_GROUP: 'Stakeholder Group',
   // daily monitoring
   ACTIVITY: 'Activity',
   TRIGGER: 'Trigger',

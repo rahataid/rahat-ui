@@ -120,14 +120,7 @@ export function Nav({ hasDefaultHeader = true }) {
                 >
                   {t('USAGE')}
                 </Link>
-                <SystemUserAuth hasContent={false}>
-                  <Link
-                    className="p-1 hover:bg-secondary rounded"
-                    href={paths.logs.root}
-                  >
-                    Log Stream
-                  </Link>
-                </SystemUserAuth>
+
                 {/* <ThemeSwitch /> */}
                 <Badge
                   className="mt-2 rounded bg-primary text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"

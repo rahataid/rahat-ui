@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+
       - name: Get short SHA and short Run ID
         id: vars
         run: |
@@ -29,7 +30,10 @@ jobs:
       - name: Extract version dynamically
         id: extract_version
         run: |
-          VERSION=$(jq -r '."rahat-ui-version"' package.json)
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Import Secrets
@@ -106,7 +110,10 @@ jobs:
       - name: Extract version dynamically
         id: extract_version
         run: |
-          VERSION=$(jq -r '."community-tool-ui-version"' package.json)
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Import Secrets

@@ -25,14 +25,18 @@ type IProps = {
 };
 export function NavMain(items: IProps) {
   const currentPath = usePathname();
-  const activePath = currentPath.split('/')[4];
+  // Dashboard resolves to `/projects/aa/<id>` (no 5th segment) while its nav
+  // path is `/projects/aa/<id>/` (empty 5th segment) — normalize both to ''
+  // so they match.
+  const activePath = currentPath.split('/')[4] ?? '';
 
   return (
     <SidebarGroup className="p-[clamp(2px,0.4vw,8px)]">
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu className="gap-[clamp(0px,0.15vw,4px)]">
         {items?.items?.map((item) => {
-          const isActive = (item.path as string)?.split('/')[4] === activePath;
+          const isActive =
+            ((item.path as string)?.split('/')[4] ?? '') === activePath;
           const menuItem = item?.children?.length ? (
             <Collapsible
               key={item.title}

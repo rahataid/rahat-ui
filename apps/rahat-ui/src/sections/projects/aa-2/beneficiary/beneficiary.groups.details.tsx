@@ -173,7 +173,7 @@ const BeneficiaryGroupsDetails = () => {
             </Button>
           )}
           {sponsorshipStatus?.isStellarChain &&
-            sponsorshipStatus.failed > 0 && (
+               (
               <Button
                 variant="outline"
                 className="cursor-pointer"

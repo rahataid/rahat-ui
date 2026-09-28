@@ -117,9 +117,7 @@ export default function TriggerStatementDetail() {
         <Back path={`/projects/aa/${id}/trigger-statements`} />
         <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
           <AlertCircleIcon size={70} />
-          <p className="text-xl">
-            {t('TRIGGER_DETAILS_NOT_AVAILABLE')}
-          </p>
+          <p className="text-xl">{t('TRIGGER_DETAILS_NOT_AVAILABLE')}</p>
         </div>
       </div>
     );
@@ -229,11 +227,15 @@ export default function TriggerStatementDetail() {
             </div>
             <div>
               <p className="mb-1">{t('TRIGGER_TYPE')}</p>
-              <Badge>{source === 'MANUAL' ? t('MANUAL') : t('AUTOMATED')}</Badge>
+              <Badge>
+                {source === 'MANUAL' ? t('MANUAL') : t('AUTOMATED')}
+              </Badge>
             </div>
             <div>
               <p className="mb-1">{t('TYPE')}</p>
-              <Badge>{trigger?.isMandatory ? t('MANDATORY') : t('OPTIONAL')}</Badge>
+              <Badge>
+                {trigger?.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
+              </Badge>
             </div>
 
             {trigger?.transactionHash && (
@@ -271,7 +273,13 @@ export default function TriggerStatementDetail() {
             )}
             {trigger?.leadTime && (
               <p className="text-muted-foreground text-sm/4">
-                {t('LEAD_TIME')} : {formatNum(parseFloat(trigger.leadTime) || 0)}{' '}
+                {t('LEAD_TIME')} :{' '}
+                {trigger.leadTime
+                  .replace(/\s*(hours|days)\s*/i, '')
+                  .trim()
+                  .split('-')
+                  .map((part: string) => formatNum(parseFloat(part) || 0))
+                  .join('-')}{' '}
                 {/hours/i.test(trigger.leadTime) ? t('HOURS') : t('DAYS')}
               </p>
             )}

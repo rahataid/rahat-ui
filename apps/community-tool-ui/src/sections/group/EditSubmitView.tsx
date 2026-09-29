@@ -410,10 +410,13 @@ export default function EditSubmitView({
             <tbody>
               {pageRows.map((row, rowIdx) => {
                 const rowUuid = getRowUuid(row);
+                const beneData = row.beneficiary as Record<string, unknown> | undefined;
+                const isDuplicate = beneData?.isDuplicate === true;
                 return (
                   <tr
                     key={rowUuid}
-                    className="odd:bg-white even:bg-muted/30"
+                    className={isDuplicate ? 'bg-orange-100' : 'odd:bg-white even:bg-muted/30'}
+                    title={isDuplicate ? 'Duplicate data — phone number already exists' : undefined}
                     onMouseEnter={() => onRowMouseEnter(rowIdx)}
                   >
                     {visibleColumns.map((col) => {

@@ -158,6 +158,7 @@ export default function GroupDetail({ uuid }: IProps) {
       'isVerified',
       'extras',
       'uuid',
+      'isDuplicate',
     ]);
     const rows = (editPageData?.data?.beneficiariesGroup ?? []) as {
       beneficiary?: { extras?: Record<string, unknown> } & Record<

@@ -10,7 +10,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { UUID } from 'crypto';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { TAGS } from '../../config';
@@ -536,12 +536,14 @@ const uploadBeneficiary = async (
   formData.append('doctype', doctype);
   if (projectId) formData.append('projectId', projectId);
   if (groupName?.trim()) formData.append('groupName', groupName.trim());
-  if (groupPurpose?.trim()) formData.append('groupPurpose', groupPurpose.trim());
+  if (groupPurpose?.trim())
+    formData.append('groupPurpose', groupPurpose.trim());
   const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
 
 export const useUploadBeneficiary = () => {
+  console.log('upload called');
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
@@ -593,8 +595,110 @@ export const useUploadBeneficiary = () => {
           return;
         }
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroups'] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroup'] });
 
         toast.success(tg('BENEFICIARY_UPLOADED_SUCCESSFULLY'));
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const code = error?.response?.data?.code;
+        const params = error?.response?.data?.params;
+        const rawMessage = error.response?.data?.message || error.message;
+        const message = resolveBeneficiaryErrorMessage(
+          t,
+          code,
+          params,
+          [
+            'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+            'COMMUNICATIONS_CAMPAIGNS',
+          ],
+          rawMessage,
+        );
+        showToast({
+          type: 'error',
+          title: tg('SOMETHING_WENT_WRONG'),
+          description: message,
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+const uploadBeneficiariesToGroup = async (
+  selectedFile: File,
+  doctype: string,
+  client: any,
+  groupUuid: string,
+) => {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('doctype', doctype);
+  const response = await client.post(
+    `/beneficiaries/groups/${groupUuid}/upload`,
+    formData,
+  );
+  return response?.data;
+};
+
+export const useUploadBeneficiariesToGroup = () => {
+  const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations();
+  const locale = useLocale();
+  const { rumsanService, queryClient } = useRSQuery();
+  const formatCount = (n: number) =>
+    locale === 'ne'
+      ? new Intl.NumberFormat('ne', { numberingSystem: 'deva' }).format(n)
+      : String(n);
+
+  return useMutation(
+    {
+      mutationFn: ({
+        selectedFile,
+        doctype,
+        groupUuid,
+      }: {
+        selectedFile: File;
+        doctype: string;
+        groupUuid: string;
+      }) =>
+        uploadBeneficiariesToGroup(
+          selectedFile,
+          doctype,
+          rumsanService.client,
+          groupUuid,
+        ),
+      onSuccess: (data) => {
+        if (data?.data?.success === false) {
+          showToast({
+            type: 'error',
+            title: tg('SOMETHING_WENT_WRONG'),
+            description: data?.data?.message || '',
+          });
+          return;
+        }
+        qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroups'] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroup'] });
+        const added = data?.data?.addedToGroup ?? data?.addedToGroup ?? 0;
+        const created = data?.data?.created ?? data?.created ?? 0;
+        const updated = data?.data?.updated ?? data?.updated ?? 0;
+        if (!added) {
+          showToast({
+            type: 'error',
+            title: tg('SOMETHING_WENT_WRONG'),
+            description: tg('NO_BENEFICIARIES_ADDED_TO_GROUP'),
+          });
+          return;
+        }
+        toast.success(
+          tg('BENEFICIARIES_IMPORTED_TO_GROUP', {
+            created: formatCount(created),
+            updated: formatCount(updated),
+          }),
+        );
       },
       onError: (error: any) => {
         console.log('error', error);

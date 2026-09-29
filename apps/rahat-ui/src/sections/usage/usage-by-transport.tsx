@@ -35,6 +35,9 @@ const TRANSPORT_COLORS: Record<string, string> = {
   VOICE: '#FFA726',
 };
 
+const SUCCESS_COLOR = '#16A34A';
+const FAILED_COLOR = '#DC2626';
+
 function getColor(transportType: string, index: number) {
   const fallbackColors = ['#7a00b6', '#007bb6', '#8BC34A', '#F06292'];
   return (
@@ -83,9 +86,7 @@ export default function UsageByTransport({
                 show: true,
                 label: g('TOTAL'),
                 formatter: (w: { globals: { seriesTotals: number[] } }) =>
-                  formatNum(
-                    w.globals.seriesTotals.reduce((a, b) => a + b, 0),
-                  ),
+                  formatNum(w.globals.seriesTotals.reduce((a, b) => a + b, 0)),
               },
             },
           },
@@ -95,6 +96,7 @@ export default function UsageByTransport({
   };
 
   const barNumberOptions = {
+    colors: [SUCCESS_COLOR, FAILED_COLOR],
     yaxis: { labels: { formatter: (val: number) => formatNum(val) } },
     tooltip: { y: { formatter: (val: number) => formatNum(val) } },
   };

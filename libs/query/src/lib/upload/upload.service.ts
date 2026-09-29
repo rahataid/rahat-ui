@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { api } from '../../utils/api';
-import { useSwal } from 'libs/query/src/swal';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
+import { showToast } from '../../utils/custom-toast';
 
 const uploadFile = async (file: any) => {
   const response = await api.post('/upload/file', file);
@@ -12,13 +12,7 @@ const uploadFile = async (file: any) => {
 export const useUploadFile = () => {
   const tg = useTranslations('GLOBAL');
   const tb = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: (file: any) => uploadFile(file),
     onError: (error: any) => {
@@ -30,10 +24,10 @@ export const useUploadFile = () => {
         ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: tg('FILE_UPLOAD_FAILED'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

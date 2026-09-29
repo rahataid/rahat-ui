@@ -31,7 +31,7 @@ type IProps = {
   currentPage: number;
   setPagination?: (pagination: any) => void;
   showChevrons?: boolean;
-  isShowTotalCount: boolean;
+  isShowTotalCount?: boolean;
 };
 
 const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
@@ -118,7 +118,9 @@ export function CustomPagination({
             })}
           </>
         ) : (
-          <>{t('PAGE')} {formatNum(currentPage)}</>
+          <>
+            {t('PAGE')} {formatNum(currentPage)}
+          </>
         )}
       </div>
       <div className="flex gap-[clamp(4px,0.6vw,8px)] items-center justify-center">

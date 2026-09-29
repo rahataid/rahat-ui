@@ -1,19 +1,11 @@
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../projects';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 
-function useToast() {
-  const alert = useSwal();
-  return alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-}
 export const useGetBeneficiariesQr = (payload: {
   projectUuid: UUID;
   groupId: UUID;
@@ -102,7 +94,6 @@ export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: async (groupUuid: UUID) => {
@@ -133,10 +124,7 @@ export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
         ['BENEFICIARIES_DASHBOARD_STATS'],
         rawMessage,
       );
-      toast.fire({
-        title: errorMessage,
-        icon: 'error',
-      });
+      toast.error(errorMessage);
     },
   });
 };
@@ -146,33 +134,40 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
-    mutationFn: async (groupId: UUID) => {
+    mutationFn: async ({
+      groupId,
+      includeOtp = true,
+    }: {
+      groupId: UUID;
+      includeOtp?: boolean;
+    }) => {
       const mutate = await q.mutateAsync({
         uuid: projectUuid,
         data: {
           action: 'aaProject.beneficiary.generateQrPdf',
           payload: {
-            groupId: groupId,
+            groupId,
+            includeOtp,
           },
         },
       });
+
       return mutate.data;
     },
-    onSuccess: (_, groupId) => {
+
+    onSuccess: (_, { groupId }) => {
       queryClient.invalidateQueries({
         queryKey: ['beneficiariesQr', { projectUuid, groupId }],
       });
-      toast.fire({
-        title: t('QR_GENERATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('QR_GENERATED_SUCCESSFULLY'));
     },
+
     onError: (error: any) => {
-      const rawMessage: string =
+      const rawMessage =
         error?.response?.data?.message || t('FAILED_TO_GENERATE_QR_PDF');
+
       const errorMessage = resolveBackendErrorMessage(
         tb,
         error?.response?.data?.code,
@@ -180,19 +175,14 @@ export const useGenerateQrPdf = (projectUuid: UUID) => {
         ['BENEFICIARIES_DASHBOARD_STATS'],
         rawMessage,
       );
-      toast.fire({
-        title: errorMessage,
-        icon: 'error',
-      });
+      toast.error(errorMessage);
     },
   });
 };
-
 export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: async (groupId: UUID) => {
@@ -224,10 +214,7 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
         ['BENEFICIARIES_DASHBOARD_STATS'],
         rawMessage,
       );
-      toast.fire({
-        title: errorMessage,
-        icon: 'error',
-      });
+      toast.error(errorMessage);
     },
   });
 };

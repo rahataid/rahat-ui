@@ -47,6 +47,26 @@ export const useSettingFieldDefinitionNavItems = () => {
 
       ],
     },
+    {
+      title: t('VERSION'),
+      children: [
+        {
+          title: t('LIST'),
+          path: '/version',
+          icon: <List size={18} strokeWidth={1.5} />,
+        },
+      ],
+    },
+    {
+      title: t('HEALTH'),
+      children: [
+        {
+          title: t('LIST'),
+          path: '/health',
+          icon: <List size={18} strokeWidth={1.5} />,
+        },
+      ],
+    },
   ];
   return menuItems;
 };

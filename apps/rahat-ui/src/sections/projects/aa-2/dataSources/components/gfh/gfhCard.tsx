@@ -71,7 +71,9 @@ const GFHCard = ({
         {updatedAt && (
           <div className="flex items-center gap-1 text-xs text-green-500 mt-0.5 whitespace-nowrap">
             <RefreshCw size={12} />
-            <span>{t('LAST_SYNCED_AT')} {formatDate(updatedAt)}</span>
+            <span>
+              {t('LAST_SYNCED_AT')} {formatDate(updatedAt)}
+            </span>
           </div>
         )}
 
@@ -117,13 +119,13 @@ const GFHCard = ({
           </div>
 
           {/* Gauge Station Name */}
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <RadioTower className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium">{t('GAUGE_STATION_NAME')}</p>
               <p className="text-sm text-gray-600">{stationName || 'N/A'}</p>
             </div>
-          </div>
+          </div> */}
 
           {/* Date */}
           <div className="flex items-center gap-3">

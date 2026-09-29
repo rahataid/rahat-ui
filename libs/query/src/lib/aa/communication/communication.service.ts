@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { title } from 'process';
 import { group } from 'console';
 import { useTranslations } from 'next-intl';
@@ -43,13 +44,6 @@ export const useRetryFailedBroadcast = (
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     // queryKey: ['retryfailed', uuid, communicationId],
@@ -68,10 +62,7 @@ export const useRetryFailedBroadcast = (
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('SUCCESS'),
-        icon: 'success',
-      });
+      toast.success(t('SUCCESS'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || 'An error occured!';
@@ -83,10 +74,10 @@ export const useRetryFailedBroadcast = (
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_ADDING_ACTIVITY'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

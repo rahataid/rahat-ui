@@ -9,7 +9,8 @@ import { useAAVendorsStore } from './store';
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
@@ -222,13 +223,6 @@ export const useApproveVendorTokenRedemption = () => {
   const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -251,10 +245,7 @@ export const useApproveVendorTokenRedemption = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['aa.vendor.token_redemption.list'] });
-      toast.fire({
-        title: t('VENDOR_TOKEN_REDEMPTION_APPROVED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('VENDOR_TOKEN_REDEMPTION_APPROVED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -266,10 +257,10 @@ export const useApproveVendorTokenRedemption = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_APPROVING_VENDOR_TOKEN_REDEMPTION'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -432,14 +423,7 @@ export const useUpdateVendorRedemptionStatus = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
   const qc = useQueryClient();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -465,10 +449,7 @@ export const useUpdateVendorRedemptionStatus = () => {
         queryKey: ['aa.vendor.inkind_redemption.get_redemption_logs'],
       });
 
-      toast.fire({
-        title: t('VENDOR_REDEMPTION_STATUS_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('VENDOR_REDEMPTION_STATUS_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -480,10 +461,10 @@ export const useUpdateVendorRedemptionStatus = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_INKIND_REDEMPTION_STATUS'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

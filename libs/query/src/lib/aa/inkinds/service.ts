@@ -1,7 +1,8 @@
 'use client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
@@ -30,16 +31,6 @@ export type ListInkindParams = {
   type?: string;
   name?: string;
 };
-
-function useToast() {
-  const alert = useSwal();
-  return alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-}
 
 // Common runAction hook as similar mutation is required over sevices
 async function runAction(
@@ -85,17 +76,13 @@ export const useCreateInkind = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: CreateInkindPayload) =>
       runAction(q, projectUUID, 'aa.inkinds.create', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('IN_KIND_ITEM_CREATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('IN_KIND_ITEM_CREATED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -110,10 +97,10 @@ export const useCreateInkind = (projectUUID: UUID) => {
         ['IN_KIND_VENDORS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_CREATING_IN_KIND_ITEM'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -124,17 +111,13 @@ export const useUpdateInkind = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: UpdateInkindPayload) =>
       runAction(q, projectUUID, 'aa.inkinds.update', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('IN_KIND_ITEM_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('IN_KIND_ITEM_UPDATED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -149,10 +132,10 @@ export const useUpdateInkind = (projectUUID: UUID) => {
         ['IN_KIND_VENDORS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_IN_KIND_ITEM'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -163,17 +146,13 @@ export const useDeleteInkind = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ uuid }: { uuid: string }) =>
       runAction(q, projectUUID, 'aa.inkinds.delete', { uuid }),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('IN_KIND_ITEM_DELETED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('IN_KIND_ITEM_DELETED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -188,10 +167,10 @@ export const useDeleteInkind = (projectUUID: UUID) => {
         ['IN_KIND_VENDORS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_DELETING_IN_KIND_ITEM'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -257,14 +236,13 @@ export const useAddInkindStock = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: { inkindId: string; quantity: number }) =>
       runAction(q, projectUUID, 'aaProject.inkindStock.add', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: t('STOCK_ADDED_SUCCESSFULLY'), icon: 'success' });
+      toast.success(t('STOCK_ADDED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -282,10 +260,10 @@ export const useAddInkindStock = (projectUUID: UUID) => {
         ['IN_KIND_VENDORS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_ADDING_STOCK'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -296,14 +274,13 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: { inkindUuid: string; quantity: number }) =>
       runAction(q, projectUUID, 'aaProject.inkindStock.remove', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: t('STOCK_REMOVED_SUCCESSFULLY'), icon: 'success' });
+      toast.success(t('STOCK_REMOVED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -321,10 +298,10 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
         ['IN_KIND_VENDORS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_REMOVING_STOCK'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -352,7 +329,6 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: {
@@ -368,10 +344,7 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
       ),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('ALLOCATION_UPDATED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('ALLOCATION_UPDATED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aaProject.groupInkinds.list', projectUUID],
       });
@@ -392,10 +365,10 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
         ['IN_KIND_VENDORS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_UPDATING_ALLOCATION'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -489,7 +462,6 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
   const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: {
@@ -506,10 +478,7 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
       ),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: t('INKIND_ASSIGNED_TO_GROUP_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(t('INKIND_ASSIGNED_TO_GROUP_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -530,10 +499,10 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: t('ERROR_WHILE_ASSIGNING_INKIND_TO_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

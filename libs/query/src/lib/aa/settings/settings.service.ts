@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
 import { useProjectAction } from '../../projects';
-import { useSwal } from '../../../swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export enum SettingDataType {
@@ -39,13 +40,6 @@ export const useAAProjectSettingsList = (projectUUID: UUID) => {
 export const useAAProjectSettingsUpdateValues = () => {
   const q = useProjectAction<any>();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   const tb = useTranslations();
   return useMutation({
     mutationFn: async ({
@@ -71,10 +65,7 @@ export const useAAProjectSettingsUpdateValues = () => {
       queryClient.invalidateQueries({
         predicate: (query) => query.queryKey.includes(projectUUID),
       });
-      toast.fire({
-        title: tb('AA_PROJECT.SETTINGS_UPDATED_SUCCESSFULLY' as never),
-        icon: 'success',
-      });
+      toast.success(tb('AA_PROJECT.SETTINGS_UPDATED_SUCCESSFULLY' as never));
     },
     onError: (error: any) => {
       const rawMessage =
@@ -87,10 +78,10 @@ export const useAAProjectSettingsUpdateValues = () => {
         ['SETTINGS'],
         rawMessage,
       );
-      toast.fire({
+      showToast({
+        type: 'error',
         title: tb('AA_PROJECT.FAILED_TO_UPDATE_SETTINGS' as never),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -99,13 +90,6 @@ export const useAAProjectSettingsUpdateValues = () => {
 export const useAAProjectSettingsAdd = () => {
   const q = useProjectAction<any>();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   const tb = useTranslations();
   return useMutation({
     mutationFn: async ({
@@ -124,10 +108,7 @@ export const useAAProjectSettingsAdd = () => {
       queryClient.invalidateQueries({
         predicate: (query) => query.queryKey.includes(projectUUID),
       });
-      toast.fire({
-        title: tb('AA_PROJECT.SETTING_ADDED_SUCCESSFULLY' as never),
-        icon: 'success',
-      });
+      toast.success(tb('AA_PROJECT.SETTING_ADDED_SUCCESSFULLY' as never));
     },
     onError: (error: any) => {
       // This throw comes from the shared @rumsan/settings package, which we
@@ -140,10 +121,10 @@ export const useAAProjectSettingsAdd = () => {
         rawMessage === 'Setting with this name already exists'
           ? tb('BACKEND.SETTINGS.SETTING_NAME_ALREADY_EXISTS' as never)
           : rawMessage;
-      toast.fire({
+      showToast({
+        type: 'error',
         title: tb('AA_PROJECT.FAILED_TO_ADD_SETTING' as never),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

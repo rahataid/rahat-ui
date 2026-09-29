@@ -134,7 +134,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>{t('RESPONSE_TIME')}</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {data.response_time_ms ? `${formatNum(data.response_time_ms)}ms` : '-'}
+              {data.response_time_ms ? `${formatNum(data.response_time_ms)} ms` : '-'}
             </span>
           </div>
 

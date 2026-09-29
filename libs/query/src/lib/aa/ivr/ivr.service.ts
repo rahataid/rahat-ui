@@ -2,7 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { UUID } from 'crypto';
 
 const MS_ACTIONS = {
@@ -80,13 +81,6 @@ export const useIvrTemplateDetail = (projectUUID: UUID, id: number) => {
 export const useIvrTemplateCreate = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -110,18 +104,15 @@ export const useIvrTemplateCreate = () => {
       queryClient.invalidateQueries({
         queryKey: [MS_ACTIONS.IVR_TEMPLATES.LIST],
       });
-      toast.fire({
-        title: 'IVR template created successfully.',
-        icon: 'success',
-      });
+      toast.success('IVR template created successfully.');
     },
     onError: (error: any) => {
       q.reset();
       const errorMessage = error?.response?.data?.message || 'Error';
-      toast.fire({
+      showToast({
+        type: 'error',
         title: 'Error while creating IVR template.',
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -130,13 +121,6 @@ export const useIvrTemplateCreate = () => {
 export const useIvrTemplateUpdate = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -173,10 +157,10 @@ export const useIvrTemplateUpdate = () => {
     onError: (error: any) => {
       q.reset();
       const errorMessage = error?.response?.data?.message || 'Error';
-      toast.fire({
+      showToast({
+        type: 'error',
         title: 'Error while updating IVR template.',
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -185,13 +169,6 @@ export const useIvrTemplateUpdate = () => {
 export const useIvrTemplateDelete = () => {
   const queryClient = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -215,18 +192,15 @@ export const useIvrTemplateDelete = () => {
       queryClient.invalidateQueries({
         queryKey: [MS_ACTIONS.IVR_TEMPLATES.LIST],
       });
-      toast.fire({
-        title: 'IVR template archived successfully.',
-        icon: 'success',
-      });
+      toast.success('IVR template archived successfully.');
     },
     onError: (error: any) => {
       q.reset();
       const errorMessage = error?.response?.data?.message || 'Error';
-      toast.fire({
+      showToast({
+        type: 'error',
         title: 'Error while deleting IVR template.',
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -234,13 +208,6 @@ export const useIvrTemplateDelete = () => {
 
 export const useIvrTestCall = () => {
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -261,18 +228,15 @@ export const useIvrTestCall = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Test call sent successfully.',
-        icon: 'success',
-      });
+      toast.success('Test call sent successfully.');
     },
     onError: (error: any) => {
       q.reset();
       const errorMessage = error?.response?.data?.message || 'Error';
-      toast.fire({
+      showToast({
+        type: 'error',
         title: 'Error sending test call.',
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });

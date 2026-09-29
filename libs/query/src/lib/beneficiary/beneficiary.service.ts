@@ -648,9 +648,11 @@ export const useUploadBeneficiariesToGroup = () => {
   const t = useTranslations();
   const locale = useLocale();
   const { rumsanService, queryClient } = useRSQuery();
+
+  const DEVA_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
   const formatCount = (n: number) =>
     locale === 'ne'
-      ? new Intl.NumberFormat('ne', { numberingSystem: 'deva' }).format(n)
+      ? String(n).replace(/\d/g, (d) => DEVA_DIGITS[Number(d)])
       : String(n);
 
   return useMutation(

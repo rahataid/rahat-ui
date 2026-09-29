@@ -529,12 +529,14 @@ const uploadBeneficiary = async (
   client: any,
   projectId?: UUID,
   groupName?: string,
+  groupPurpose?: string,
 ) => {
   const formData = new FormData();
   formData.append('file', selectedFile);
   formData.append('doctype', doctype);
   if (projectId) formData.append('projectId', projectId);
   if (groupName?.trim()) formData.append('groupName', groupName.trim());
+  if (groupPurpose?.trim()) formData.append('groupPurpose', groupPurpose.trim());
   const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
@@ -552,11 +554,13 @@ export const useUploadBeneficiary = () => {
         doctype,
         projectId,
         groupName,
+        groupPurpose,
       }: {
         selectedFile: File;
         doctype: string;
         projectId?: UUID;
         groupName?: string;
+        groupPurpose?: string;
       }) =>
         uploadBeneficiary(
           selectedFile,
@@ -564,6 +568,7 @@ export const useUploadBeneficiary = () => {
           rumsanService.client,
           projectId,
           groupName,
+          groupPurpose,
         ),
       onSuccess: (data) => {
         if (data?.data?.success === false) {

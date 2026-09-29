@@ -2992,6 +2992,8 @@
     "ERROR_WHILE_VALIDATING_BENEFICIARY": "लाभग्राही प्रमाणीकरण गर्दा त्रुटि भयो।",
     "BENEFICIARY_SYNC_STARTED_FOR_PROJECTS": "निम्न परियोजनाहरूका लागि लाभग्राही समिकरण सुरु भयो",
     "ERROR_WHILE_SYNCING_BENEFICIARY_GROUP": "लाभग्राही समूह समिकरण गर्दा त्रुटि भयो।",
+    "SYNC_BENEFICIARY_GROUP": "लाभग्राही समूह समिकरण गर्नुहोस्",
+    "ARE_YOU_SURE_YOU_WANT_TO_SYNC_THIS_BENEFICIARY_GROUP": "के तपाईं यो लाभग्राही समूह समिकरण गर्न निश्चित हुनुहुन्छ?",
     "GROUP_PROPOSE_UPDATED_SUCCESSFULLY": "समूहको उद्देश्य सफलतापूर्वक अद्यावधिक गरियो",
     "ERROR_WHILE_UPDATING_GROUP_PROPOSE": "समूहको उद्देश्य अद्यावधिक गर्दा त्रुटि भयो",
     "BENEFICIARY_UPLOADED_SUCCESSFULLY": "लाभग्राही सफलतापूर्वक अपलोड गरियो",

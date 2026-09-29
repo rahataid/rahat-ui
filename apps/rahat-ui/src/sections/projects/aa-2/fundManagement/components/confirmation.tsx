@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Button } from 'libs/shadcn/src/components/ui/button';
-import { UserRound } from 'lucide-react';
+import { Loader2, UserRound } from 'lucide-react';
 import { NoResult } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';
 import {
@@ -117,7 +117,20 @@ export default function Confirmation({
 
   return (
     <div className="p-2">
+      {reserveTokenForGroups.isPending && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/80">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-sm font-medium">{t('PLEASE_WAIT_PROCESSING')}</p>
+        </div>
+      )}
       <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
+      {reserveTokenPayload.skipOldPayoutForRemaining && (
+        <div className="mb-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {t('PREVIOUS_PAYOUT_WILL_BE_CANCELLED', {
+            count: assignedFundData?.cancelWallets?.length ?? 0,
+          })}
+        </div>
+      )}
       <div className="flex gap-3 mb-3">
         <div className="w-[60%] p-3 rounded-md bg-gray-50">
           <p className="font-semibold text-sm mb-2">{t('FUND_ASSIGNMENT')}</p>

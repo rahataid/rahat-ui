@@ -10,7 +10,11 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useRef } from 'react';
 import { useStakeholdersGroups } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
@@ -95,17 +99,14 @@ const StakeGoldersGroups = () => {
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.STAKEHOLDER}>
             <AddButton
               path={`/projects/aa/${id}/stakeholders/groups/add`}
               name={t('STAKEHOLDER_GROUP')}
               // className="text-xs sm:text-sm h-9"
               className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             />
-          </RoleAuth>
+          </Can>
         </div>
         {/* <ScrollArea className="h-[max(250px,calc(100vh-380px))] mb-2"> */}
         <ScrollArea className="h-[clamp(300px,calc(100vh-260px),700px)] mb-2 mt-2">

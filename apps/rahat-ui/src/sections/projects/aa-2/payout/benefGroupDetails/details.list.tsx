@@ -345,7 +345,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               key={item.label}
               title={item.label}
-              className="rounded-sm h-[80px] pt-10 pb-8"
+              className="rounded-sm min-h-[88px] justify-between"
               infoIcon={item.infoIcon}
               infoTooltip={item.infoToolTip}
               badge={item.badge}
@@ -359,7 +359,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               infoIcon={true}
               infoTooltip={tv('VENDOR_TOOLTIP')}
               smallNumber={payout?.extras?.vendorName}
-              className="rounded-sm h-[80px] pt-10 pb-8"
+              className="rounded-sm min-h-[88px] justify-between"
               badge
             />
           )}
@@ -375,28 +375,28 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           <DataCard
             title={tv('TOTAL_NO_OF_BENEFICIARIES')}
             smallNumber={formatNum(payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}
           />
           <DataCard
             title={tv('SUCCESSFUL_TRANSACTIONS')}
             smallNumber={formatNum(payout?.totalSuccessRequests ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
             title={tv('FAILED_TRANSACTIONS')}
             smallNumber={formatNum(payout?.totalFailedPayoutRequests ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('FAILED_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
             title={tv('PAYOUT_GAP')}
             smallNumber={formatNum(payout?.payoutGap ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
           />
@@ -404,7 +404,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               title={tv('GROUP_GAP')}
               smallNumber={formatNum(payout?.extras?.group_gap ?? 0)}
-              className="rounded-sm h-[80px] pt-10 pb-8 "
+              className="rounded-sm min-h-[88px] justify-between"
               infoIcon={true}
               infoTooltip={tv('GROUP_GAP_TOOLTIP')}
             />
@@ -413,7 +413,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               title={tv('TOTAL_SKIP_OTP')}
               smallNumber={formatNum(payout?.totalSkipOtp ?? 0)}
-              className="rounded-sm h-[80px] pt-10 pb-8 "
+              className="rounded-sm min-h-[88px] justify-between"
               infoIcon={true}
               infoTooltip={tv('TOTAL_SKIP_OTP_TOOLTIP')}
             />

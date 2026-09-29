@@ -115,27 +115,26 @@ export function DataCard({
           ) : (
             <>
               {number && number?.length > 6 && truncate ? (
-                <TooltipProvider>
+                <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className={`${
-                          title === 'Created By' ? 'text-xl ' : 'text-3xl'
-                        } font-semibold text-primary truncate w-52`}
+                        className={`${title === 'Created By' ? 'text-xl ' : 'text-3xl'
+                          } font-semibold text-primary truncate w-52 cursor-pointer`}
                       >
                         {number}
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent>{number}</TooltipContent>
+                    <TooltipContent side="top">
+                      <p className="text-xs font-medium">{number}</p>
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               ) : (
                 <div
-                  className={`${
-                    title === 'Created By' ? 'text-xl' : 'text-3xl'
-                  } font-semibold text-primary ${
-                    truncate ? 'truncate w-52' : ''
-                  }`}
+                  className={`${title === 'Created By' ? 'text-xl' : 'text-3xl'
+                    } font-semibold text-primary ${truncate ? 'truncate w-52' : ''
+                    }`}
                 >
                   {number}
                 </div>
@@ -143,8 +142,28 @@ export function DataCard({
 
               {badge ? (
                 <Badge>{smallNumber}</Badge>
+              ) : smallNumber && smallNumber?.length > 6 && truncate ? (
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className="text-xl font-normal text-primary truncate cursor-pointer"
+                        title={typeof smallNumber === 'string' ? smallNumber : undefined}
+                      >
+                        {smallNumber}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      <p className="text-xs font-medium">{smallNumber}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ) : (
-                <div className="text-xl font-normal text-primary break-words">
+                <div
+                  className={`text-xl font-normal text-primary ${truncate ? 'truncate' : ''
+                    }`}
+                  title={typeof smallNumber === 'string' ? smallNumber : undefined}
+                >
                   {smallNumber}
                 </div>
               )}

@@ -67,9 +67,9 @@ export default function TokensOverview() {
 
   const getNameKey = (name: string) =>
     name === 'Token Price' ? 'TOKEN_PRICE' :
-    name === 'Average Disbursement time' ? 'AVERAGE_DISBURSEMENT_TIME' :
-    name === 'Average Duration' ? 'AVERAGE_DURATION' :
-    name.toUpperCase().replace(/[\s-]+/g, '_');
+      name === 'Average Disbursement time' ? 'AVERAGE_DISBURSEMENT_TIME' :
+        name === 'Average Duration' ? 'AVERAGE_DURATION' :
+          name.toUpperCase().replace(/[\s-]+/g, '_');
 
   // Stat names come from the backend, so a newly added stat may not have a
   // translation key yet. t() throws on a missing key and would crash the page,
@@ -158,8 +158,8 @@ export default function TokensOverview() {
 
       {!isLoading ? (
         <div className="space-y-4 mb-4">
-          {/* First Row - 4 Columns */}
-          <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
+          {/* First Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {/* <DataCard
               className="rounded-sm h-[116px]"
               title="Project Balance"
@@ -178,7 +178,7 @@ export default function TokensOverview() {
                 const assetUrl = getExplorerUrl({
                   chainSettings:
                     settings?.[projectId]?.[
-                      PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS
+                    PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS
                     ],
                   target: 'asset',
                   value:
@@ -241,18 +241,18 @@ export default function TokensOverview() {
                   smallNumber={formatStatValue(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                    subtitle={
-                      item.name === 'Average Duration'
-                        ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
-                        : ' '
-                    }
+                  subtitle={
+                    item.name === 'Average Duration'
+                      ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
+                      : ' '
+                  }
                 />
               );
             })}
           </div>
 
-          {/* Second Row - 3 Columns */}
-          <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+          {/* Second Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
             {data?.data?.slice(4).map((item, index) => {
               const infoTooltip = statTooltip(item.name);
 
@@ -264,11 +264,11 @@ export default function TokensOverview() {
                   smallNumber={formatStatValue(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                    subtitle={
-                      item.name === 'Average Duration'
-                        ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
-                        : ' '
-                    }
+                  subtitle={
+                    item.name === 'Average Duration'
+                      ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
+                      : ' '
+                  }
                 />
               );
             })}

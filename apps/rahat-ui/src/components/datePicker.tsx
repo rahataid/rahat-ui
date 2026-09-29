@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -34,6 +34,7 @@ export function DatePicker({
   maxDate,
 }: DatePickerType) {
   const [date, setDate] = useState<Date | undefined>(selectedDate);
+  const formatDate = useDateFormat();
 
   useEffect(() => {
     setDate(selectedDate);
@@ -51,7 +52,7 @@ export function DatePicker({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, 'PPP') : <span>{placeholder}</span>}
+          {date ? formatDate(date, 'PPP') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

@@ -281,18 +281,18 @@ export const useProjectVendorRedemptionTableColumns = () => {
         const status = row.original?.redemptionStatus?.toLowerCase();
         return (
           <>
-            <div className="flex items-center justify-start">
+            <div className="flex items-center justify-start min-w-0">
               {status === 'approved' ? (
-                <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
+                <div className="min-w-0 font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
                   <div>{t('APPROVED_ON')}</div>
                   <TruncatedCell
+                    wrap
                     text={
                       row.original?.redemptionStatus === 'APPROVED' &&
                       row.original?.approvedAt
                         ? formatDate(row.original?.approvedAt)
                         : tg('N_A')
                     }
-                    maxLength={30}
                   />
                 </div>
               ) : (

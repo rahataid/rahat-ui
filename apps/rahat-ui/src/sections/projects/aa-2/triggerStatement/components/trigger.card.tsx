@@ -77,8 +77,8 @@ export default function TriggerCard({
       className="p-4 rounded-xl border shadow cursor-pointer hover:shadow-md  "
       onClick={handleRoute}
     >
-      <div className="flex justify-between items-center space-x-4 mb-2">
-        <div className="flex items-center space-x-4">
+      <div className="flex justify-between items-center space-x-4 mb-2 min-w-0">
+        <div className="flex items-center space-x-4 min-w-0">
           <Badge
             className={`font-medium ${phase && renderPhaseBadgeColor(phase)}`}
           >
@@ -91,7 +91,7 @@ export default function TriggerCard({
           {!!version && <Badge className="font-medium">V{version}</Badge>}
         </div>
         <Badge
-          className={`font-medium ${
+          className={`font-medium shrink-0 ${
             isTriggered ? 'bg-red-50 text-red-500' : ''
           }`}
         >
@@ -99,7 +99,7 @@ export default function TriggerCard({
         </Badge>
       </div>
 
-      <div className="text-sm/6 font-medium mb-2 w-80  hover:cursor-pointer">
+      <div className="text-sm/6 font-medium mb-2 w-full min-w-0 hover:cursor-pointer">
         <TruncatedCell text={title} truncateByWidth />
       </div>
       <p className="text-muted-foreground text-sm/4 mb-1">

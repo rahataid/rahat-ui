@@ -12,6 +12,8 @@ export const ACTIONS = {
 
 export const SUBJECTS = {
   ALL: 'all',
+  USER: 'user',
+  BENEFICIARY: 'beneficiary',
   BENEFICIARY_GROUP: 'Beneficiary Group',
   STAKEHOLDER: 'Stakeholder',
   STAKEHOLDER_GROUP: 'Stakeholder Group',

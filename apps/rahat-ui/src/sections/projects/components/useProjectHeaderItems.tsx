@@ -16,6 +16,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import type { Project } from '@rahataid/sdk/project/project.types';
+import { StatusBadge } from '../projectList';
 
 export const useProjectHeaderItems = (projectType: string) => {
   const { id } = useParams();
@@ -66,11 +67,20 @@ export const useProjectHeaderItems = (projectType: string) => {
                 onClick={() => handleSwitchProject(p)}
                 className="flex cursor-pointer items-center gap-2"
               >
-                <span className="flex-1">
-                  <span className="block text-sm font-medium">
-                    {p.name || 'Untitled project'}
-                  </span>
-                </span>
+                <div className="flex-1">
+                  <div className="flex gap-4">
+                    <span className="block text-sm font-medium">
+                      {p?.name || 'Untitled project'}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="border-primary text-primary cursor-auto bg-secondary"
+                    >
+                      {p.type || ''}
+                    </Badge>
+                    <StatusBadge status={p?.status || ''} />
+                  </div>
+                </div>
                 {isCurrent && <Check size={16} className="text-primary" />}
               </DropdownMenuItem>
             );

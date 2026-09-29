@@ -1,6 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import {
+  useCancelPayout,
   useGetPayoutLogs,
   usePagination,
   usePayoutExportLogs,
@@ -37,6 +38,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import {
   ChevronDown,
+  CircleX,
   CloudDownload,
   CloudUpload,
   Landmark,
@@ -56,6 +58,8 @@ import {
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
 import { Can } from 'apps/rahat-ui/src/components/can';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -70,6 +74,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
+  const cancelConfirmDialog = useBoolean(false);
+
   const router = useRouter();
   const {
     pagination,
@@ -99,6 +105,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
+  const cancelPayout = useCancelPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
   const { data: exportPayoutLogs } = usePayoutExportLogs({
     projectUUID: projectId,
@@ -147,7 +154,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     anchor.remove();
     URL.revokeObjectURL(url);
   };
-
+  const handleCancelPayout = () => {
+    cancelPayout.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        uuid: payoutId,
+      },
+    });
+  };
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -241,6 +255,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
+
+  const cancelDialog = () => {
+    cancelConfirmDialog.onFalse();
+  };
+
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -276,6 +295,23 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           </div>
           {
             <div className="flex gap-2">
+              <Button
+                className={`gap-2 text-sm `}
+                // onClick={handleCancelPayout}
+
+                onClick={() => cancelConfirmDialog.onTrue()}
+                disabled={
+                  cancelPayout.isPending || payout?.status === 'COMPLETED'
+                }
+                variant={'outline'}
+              >
+                <CircleX
+                  className={`w-4 h-4 ${
+                    cancelPayout.isPending ? 'animate-spin' : ''
+                  }`}
+                />
+                Cancel Payout
+              </Button>
               <PayoutConfirmationDialog
                 projectId={projectId}
                 onConfirm={handleTriggerPayout}
@@ -556,6 +592,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           }
           perPage={pagination?.perPage}
           total={payoutlogs?.response?.meta?.total || 0}
+        />
+        <ConfirmationDialog
+          isConfirmationDialogOpen={cancelConfirmDialog.value}
+          onCancel={cancelDialog}
+          onConfirm={handleCancelPayout}
+          dialogTitle="Mark as cancelled"
+          dialogMessage="Are you sure you want cancel this payout?"
         />
       </div>
     </div>

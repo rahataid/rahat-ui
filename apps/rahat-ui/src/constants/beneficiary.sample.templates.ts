@@ -13,6 +13,7 @@ export const BENEFICIARY_SAMPLE_TEMPLATES: SampleTemplate[] = [
       'Age',
       'Government ID',
       'Location',
+      'UUID',
     ],
   },
   {

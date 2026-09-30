@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/components/dialog';
-import { CloudDownload, Repeat2, Share } from 'lucide-react';
+import { Repeat2, Share } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Form, FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
@@ -34,6 +34,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { HeaderWithBack, ClientSidePagination } from 'apps/rahat-ui/src/common';
+import DownloadBeneficiarySampleDialog from 'apps/rahat-ui/src/common/download.beneficiary.sample.dialog';
+import { BENEFICIARY_SAMPLE_TEMPLATES } from 'apps/rahat-ui/src/constants/beneficiary.sample.templates';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import {
   ColumnDef,
@@ -42,16 +44,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-
-const SAMPLE_BENEFICIARY_HEADERS = [
-  'Name*',
-  'Phone Number',
-  'Gender',
-  'Age',
-  'Government ID',
-  'Location',
-  'UUID',
-];
 
 const allowedExtensions: { [key: string]: string } = {
   xlsx: 'excel',
@@ -215,13 +207,6 @@ export default function AAImportBeneficiary() {
     await doUpload('append', { groupUuid: selectedGroupUuid });
   };
 
-  const handleDownloadSample = () => {
-    const worksheet = XLSX.utils.aoa_to_sheet([SAMPLE_BENEFICIARY_HEADERS]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
-    XLSX.writeFile(workbook, 'beneficiary_sample.xlsx');
-  };
-
   const handleClear = () => {
     setData([]);
     setFileName('');
@@ -241,15 +226,10 @@ export default function AAImportBeneficiary() {
             />
             <div className="flex flex-col items-end gap-2 mt-4">
               <div className="flex gap-2">
-                <Button
-                  onClick={handleDownloadSample}
-                  type="button"
-                  variant="outline"
-                  className=" h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-                >
-                  <CloudDownload className="mr-1" />
-                  {tg('DOWNLOAD_SAMPLE')}
-                </Button>
+                <DownloadBeneficiarySampleDialog
+                  templates={BENEFICIARY_SAMPLE_TEMPLATES}
+                  sheetName="Beneficiaries"
+                />
               </div>
             </div>
           </div>

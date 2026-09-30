@@ -419,7 +419,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
         <div
           className={`grid ${
-            payout?.extras?.group_gap || payout?.type === 'VENDOR'
+            payout?.groupGap  || payout?.type === 'VENDOR'
               ? 'lg:grid-cols-5'
               : 'lg:grid-cols-4'
           } gap-4 pt-2`}
@@ -455,10 +455,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             infoIcon={true}
             infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
           />
-          {payout?.extras?.group_gap && (
+          {payout?.groupGap && (
             <DataCard
               title={tv('GROUP_GAP')}
-              smallNumber={formatNum(payout?.extras?.group_gap ?? 0)}
+              smallNumber={formatNum(payout?.groupGap ?? 0)}
               className="rounded-sm h-[80px] pt-10 pb-8 "
               infoIcon={true}
               infoTooltip={tv('GROUP_GAP_TOOLTIP')}
@@ -540,7 +540,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             className="flex-[1]"
           />
         </div>
-        <DemoTable table={table} loading={payoutLogsLoading} />
+        <DemoTable
+          table={table}
+          loading={payoutLogsLoading}
+          tableHeight="h-[max(280px,calc(100vh-600px))]"
+        />
 
         <CustomPagination
           currentPage={pagination.page}
@@ -556,6 +560,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           }
           perPage={pagination?.perPage}
           total={payoutlogs?.response?.meta?.total || 0}
+          pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
         />
       </div>
     </div>

@@ -540,6 +540,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             className="flex-[1]"
           />
         </div>
+        {/* offset =navbar + back + heading + 2 stat rows + filters + pagination; retune if header changes */}
         <DemoTable
           table={table}
           loading={payoutLogsLoading}
@@ -560,7 +561,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           }
           perPage={pagination?.perPage}
           total={payoutlogs?.response?.meta?.total || 0}
-          pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
         />
       </div>
     </div>

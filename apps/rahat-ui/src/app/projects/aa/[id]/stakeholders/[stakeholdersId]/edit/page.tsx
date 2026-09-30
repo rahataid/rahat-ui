@@ -1,6 +1,10 @@
 'use client';
 
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 import dynamic from 'next/dynamic';
 
 const StakeholderEditPage = dynamic(
@@ -15,8 +19,11 @@ const StakeholderEditPage = dynamic(
 
 export default function Page() {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}>
+    <ProjectPermissionGuard
+      action={ACTIONS.UPDATE}
+      subject={SUBJECTS.STAKEHOLDER}
+    >
       <StakeholderEditPage />
-    </RoleAuth>
+    </ProjectPermissionGuard>
   );
 }

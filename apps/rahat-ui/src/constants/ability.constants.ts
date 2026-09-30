@@ -12,9 +12,11 @@ export const ACTIONS = {
 
 export const SUBJECTS = {
   ALL: 'all',
+  USER: 'user',
+  BENEFICIARY: 'beneficiary',
+  VENDOR: 'vendor',
   BENEFICIARY_GROUP: 'Beneficiary Group',
   STAKEHOLDER: 'Stakeholder',
-  STAKEHOLDER_GROUP: 'Stakeholder Group',
   // daily monitoring
   ACTIVITY: 'Activity',
   TRIGGER: 'Trigger',
@@ -24,4 +26,5 @@ export const SUBJECTS = {
   INKIND: 'Inkind',
   COMMUNICATION_LOG: 'Communication Log',
   GRIEVANCE: 'Grievance',
+  GROUP_CASH_TRANSFER: 'Group Cash Transfer',
 };

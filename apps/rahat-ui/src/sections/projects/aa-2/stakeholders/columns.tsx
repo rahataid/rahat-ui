@@ -8,7 +8,11 @@ import * as React from 'react';
 import { IconDialogComponent } from './component/iconDialog';
 import { useDeleteStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
@@ -139,11 +143,8 @@ export const useProjectStakeholdersTableColumns = (
       meta: { className: 'w-20 lg:w-28' },
       cell: ({ row }) => {
         return (
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
+          <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.STAKEHOLDER}>
               <IconDialogComponent
                 Icon={Edit2}
                 buttonText=""
@@ -160,6 +161,8 @@ export const useProjectStakeholdersTableColumns = (
                 }
                 variant="default"
               />
+            </Can>
+            <Can action={ACTIONS.DELETE} subject={SUBJECTS.STAKEHOLDER}>
               <IconDialogComponent
                 Icon={Trash2}
                 buttonText=""
@@ -173,18 +176,18 @@ export const useProjectStakeholdersTableColumns = (
                 variant="destructive"
                 color="red"
               />
-              <TooltipComponent
-                Icon={Eye}
-                tip={tg('VIEW_DETAILS')}
-                iconStyle="hover:text-primary cursor-pointer"
-                handleOnClick={() =>
-                  router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
-                  )
-                }
-              />
-            </div>
-          </RoleAuth>
+            </Can>
+            <TooltipComponent
+              Icon={Eye}
+              tip={tg('VIEW_DETAILS')}
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
+                router.push(
+                  `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
+                )
+              }
+            />
+          </div>
         );
       },
     },
@@ -260,23 +263,18 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       meta: { className: 'w-15 lg:w-20' },
       cell: ({ row }) => {
         return (
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
-              <TooltipComponent
-                Icon={Eye}
-                tip={tg('VIEW_DETAILS')}
-                iconStyle="hover:text-primary cursor-pointer"
-                handleOnClick={() =>
-                  router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
-                  )
-                }
-              />
-            </div>
-          </RoleAuth>
+          <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
+            <TooltipComponent
+              Icon={Eye}
+              tip={tg('VIEW_DETAILS')}
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
+                router.push(
+                  `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
+                )
+              }
+            />
+          </div>
         );
       },
     },

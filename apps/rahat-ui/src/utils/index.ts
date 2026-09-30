@@ -233,7 +233,8 @@ export type ChainSettings =
     }
   | {
       type: 'stellar';
-      network: 'mainnet' | 'testnet';
+      network?: 'mainnet' | 'testnet';
+      name?: string;
     };
 
 export const getExplorerUrl = ({
@@ -262,7 +263,10 @@ export const getExplorerUrl = ({
   }
 
   if (chainSettings.type === 'stellar') {
-    const network = chainSettings.network === 'mainnet' ? 'public' : 'testnet';
+    const network =
+      (chainSettings.network ?? chainSettings.name) === 'mainnet'
+        ? 'public'
+        : 'testnet';
 
     const stellarPathMap: Record<ExplorerTarget, string> = {
       asset: 'asset',
@@ -270,7 +274,10 @@ export const getExplorerUrl = ({
       tx: 'tx',
     };
 
-    return `https://stellar.expert/explorer/${network}/${stellarPathMap[target]}/${value}`;
+    // Horizon tx ids may come as "<txHash>:<opId>"; explorer only wants the hash
+    const id = target === 'tx' ? value.split(':')[0] : value;
+
+    return `https://stellar.expert/explorer/${network}/${stellarPathMap[target]}/${id}`;
   }
 
   return null;

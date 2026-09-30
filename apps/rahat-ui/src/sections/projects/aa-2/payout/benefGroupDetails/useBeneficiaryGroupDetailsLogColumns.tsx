@@ -288,7 +288,16 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
+            {row.original?.status === 'CANCELLED' && (
+              <TooltipComponent
+                Icon={TriangleAlertIcon}
+                tip={tv('PAYOUT_CANCELLED_FOR_BENEFICIARY')}
+                iconStyle="w-6 h-6 xl:w-4 xl:h-4 text-red-400 cursor-pointer"
+              />
+            )}
+
             {row.original?.isCompleted === false &&
+              row.original?.status !== 'CANCELLED' &&
               !editableStatuses.includes(row.original.status) && (
                 <TooltipProvider>
                   <Tooltip>

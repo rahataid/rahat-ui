@@ -18,6 +18,30 @@ import { useParams, usePathname, useRouter } from 'next/navigation';
 import type { Project } from '@rahataid/sdk/project/project.types';
 import { StatusBadge } from '../projectList';
 
+function ProjectStatusDot({
+  status,
+  textClassName = 'text-xs',
+}: {
+  status?: string;
+  textClassName?: string;
+}) {
+  if (!status) return null;
+  const dotColor =
+    status === 'ACTIVE'
+      ? 'bg-green-500'
+      : status === 'NOT_READY'
+      ? 'bg-yellow-500'
+      : 'bg-red-500';
+  return (
+    <span className="flex items-center gap-1 ">
+      <span className={`h-2 w-2 shrink-0 rounded-full ${dotColor}`} />
+      <span className={`font-medium text-foreground  ${textClassName}`}>
+        {status}
+      </span>
+    </span>
+  );
+}
+
 export const useProjectHeaderItems = (projectType: string) => {
   const { id } = useParams();
   const router = useRouter();
@@ -52,36 +76,68 @@ export const useProjectHeaderItems = (projectType: string) => {
         {isCVA ? 'CASH VOUCHER ASSITANCE' : projectType}
       </Badge>
       <DropdownMenu>
-        <DropdownMenuTrigger className="ml-1 flex items-center gap-2 rounded-sm px-2 py-1  border hover:bg-secondary hover:rounded-sm">
-          <span className="text-base font-semibold text-foreground">
-            {projectName || 'Select project'}
+        <DropdownMenuTrigger className="ml-2 flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-secondary border rounded-sm">
+          <span className="flex flex-col items-start leading-tight">
+            <span className="text-[13px] font-bold tracking-tight text-foreground">
+              {projectName || 'Select project'}
+            </span>
+            <span className="mt-1 flex items-center gap-1.5">
+              <Badge
+                variant="outline"
+                className="cursor-auto border-primary/40 bg-secondary px-1.5 py-0 text-[10px] text-primary"
+              >
+                {(project?.type || '').toUpperCase()}
+              </Badge>
+              <ProjectStatusDot status={project?.status} />
+              {/* <Badge
+                variant="outline"
+                className="border-primary text-primary cursor-auto bg-secondary"
+              >
+                {project?.type}
+              </Badge>
+              <StatusBadge status={project?.status} /> */}
+            </span>
           </span>
-          <ChevronDown size={16} className="text-muted-foreground" />
+          <ChevronDown size={16} className="shrink-0 text-muted-foreground" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-72 rounded-sm">
+        <DropdownMenuContent align="start" className="w-80 p-1.5">
+          <p className="px-2 pb-1 pt-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            Switch project
+          </p>
           {projects.map((p) => {
             const isCurrent = p.uuid === id;
             return (
               <DropdownMenuItem
                 key={p.uuid}
                 onClick={() => handleSwitchProject(p)}
-                className="flex cursor-pointer items-center gap-2"
+                className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 ${
+                  isCurrent ? 'bg-accent' : ''
+                }`}
               >
-                <div className="flex-1">
-                  <div className="flex gap-4">
-                    <span className="block text-sm font-medium">
-                      {p?.name || 'Untitled project'}
-                    </span>
+                <span className="min-w-0 flex-1">
+                  <span className="truncate text-sm font-semibold">
+                    {p?.name || 'Untitled project'}
+                  </span>
+                  <span className="mt-1 flex items-center gap-1.5">
+                    {/* <Badge
+                      variant="outline"
+                      className="cursor-auto border-primary/40 bg-secondary px-1.5 py-0 text-[10px] text-primary"
+                    >
+                      {(p.type || '').toUpperCase()}
+                    </Badge>
+                    <ProjectStatusDot status={p?.status} /> */}
                     <Badge
                       variant="outline"
                       className="border-primary text-primary cursor-auto bg-secondary"
                     >
-                      {p.type || ''}
+                      {p?.type?.toUpperCase()}
                     </Badge>
-                    <StatusBadge status={p?.status || ''} />
-                  </div>
-                </div>
-                {isCurrent && <Check size={16} className="text-primary" />}
+                    <StatusBadge status={p?.status} />
+                  </span>
+                </span>
+                {isCurrent && (
+                  <Check size={15} className="shrink-0 text-primary" />
+                )}
               </DropdownMenuItem>
             );
           })}

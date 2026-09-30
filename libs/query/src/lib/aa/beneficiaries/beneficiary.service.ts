@@ -200,7 +200,6 @@ export type ExportBeneficiariesExcelArgs = {
   includeOtp?: boolean;
   excludeUnphonedBeneficiaries?: boolean;
   excelFields?: string[];
-  pdfFields?: string[];
 };
 
 export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
@@ -212,8 +211,6 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
     mutationFn: async (
       args: UUID | ExportBeneficiariesExcelArgs,
     ): Promise<Array<Record<string, any>>> => {
-      // Legacy callers pass a plain groupId; the Excel options dialog passes
-      // the full filter object (same filters as QR: otp, unphoned, fields).
       const payload: ExportBeneficiariesExcelArgs =
         typeof args === 'string' ? { groupId: args } : args;
       const {
@@ -221,7 +218,6 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
         includeOtp = true,
         excludeUnphonedBeneficiaries = false,
         excelFields = [],
-        pdfFields = [],
       } = payload;
       const mutate = await q.mutateAsync({
         uuid: projectUuid,
@@ -231,8 +227,7 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
             groupId,
             includeOtp,
             excludeUnphonedBeneficiaries,
-            excelFields: excelFields.length ? excelFields : pdfFields,
-            pdfFields,
+            excelFields: excelFields,
           },
         },
       });

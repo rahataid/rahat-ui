@@ -109,7 +109,6 @@ const BeneficiaryGroupsDetails = () => {
         includeOtp,
         excludeUnphonedBeneficiaries,
         excelFields: pdfFields,
-        pdfFields,
       },
       {
         onSuccess: (rows) => {

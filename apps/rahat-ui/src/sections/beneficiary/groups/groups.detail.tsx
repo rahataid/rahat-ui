@@ -44,6 +44,8 @@ const AssignBeneficiaryToProjectModal = React.lazy(
 );
 const GroupNameEditModal = React.lazy(() => import('./groupNameEditModal'));
 
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+
 import * as XLSX from 'xlsx';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -73,6 +75,7 @@ export default function GroupDetailView() {
   const groupProposeModal = useBoolean();
   const projectModal = useBoolean();
   const editGroupNameModal = useBoolean(false);
+  const syncConfirmModal = useBoolean();
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
@@ -203,6 +206,15 @@ export default function GroupDetailView() {
     );
   }, [group?.data?.beneficiaryGroupProject]);
 
+  const handleSyncBeneficiaryGroup = () => {
+    syncBeneficiaryGroup.mutate({
+      uuid: Id,
+      successMessage: t('BENEFICIARY_SYNC_STARTED_FOR_PROJECTS'),
+      errorMessage: t('ERROR_WHILE_SYNCING_BENEFICIARY_GROUP'),
+    });
+    syncConfirmModal.onFalse();
+  };
+
   const onFailedExports = () => {
     const rowsToDownload = data?.data || [];
     const workbook = XLSX.utils.book_new();
@@ -255,6 +267,16 @@ export default function GroupDetailView() {
         onOpenChange={editGroupNameModal.setValue}
         beneficiaryGroupDetail={group?.data}
       />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={syncConfirmModal.value}
+        onCancel={syncConfirmModal.onFalse}
+        onConfirm={handleSyncBeneficiaryGroup}
+        dialogTitle={t('SYNC_BENEFICIARY_GROUP')}
+        isDestructive
+        dialogMessage={t(
+          'ARE_YOU_SURE_YOU_WANT_TO_SYNC_THIS_BENEFICIARY_GROUP',
+        )}
+      />
       <div className="p-4">
         <div className="flex justify-between items-center">
           <div>
@@ -294,90 +316,98 @@ export default function GroupDetailView() {
               )}
             {!group?.data?.beneficiaryGroupProject.length && (
               <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
-              <Button
-                variant={'outline'}
-                className="gap-2 text-gray-700 rounded-sm"
-                onClick={() => editGroupNameModal.onTrue()}
-              >
-                <Pencil className="w-4 h-4" />
-                {t('EDIT')}
-              </Button>
+                <Button
+                  variant={'outline'}
+                  className="gap-2 text-gray-700 rounded-sm"
+                  onClick={() => editGroupNameModal.onTrue()}
+                >
+                  <Pencil className="w-4 h-4" />
+                  {t('EDIT')}
+                </Button>
               </GlobalCan>
             )}
             <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
-            <Button
-              variant={'outline'}
-              className={`gap-2 text-gray-700 rounded-sm ${
-                (group?.data?.groupedBeneficiaries?.length === 0 ||
-                  isAssignToAA) &&
-                'hidden'
-              }`}
-              onClick={handleGroupPurposeClick}
-            >
-              {groupPurposeName ? t('CHANGE_GROUP_PURPOSE') : t('ASSIGN_GROUP_PURPOSE')}
-            </Button>
+              <Button
+                variant={'outline'}
+                className={`gap-2 text-gray-700 rounded-sm ${
+                  (group?.data?.groupedBeneficiaries?.length === 0 ||
+                    isAssignToAA) &&
+                  'hidden'
+                }`}
+                onClick={handleGroupPurposeClick}
+              >
+                {groupPurposeName
+                  ? t('CHANGE_GROUP_PURPOSE')
+                  : t('ASSIGN_GROUP_PURPOSE')}
+              </Button>
             </GlobalCan>
 
             {!group?.data?.isGroupValidForAA &&
               (group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY ||
                 group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER) && (
-                <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
-                <Button
-                  variant="outline"
-                  className="gap-2 text-gray-700 rounded-sm"
-                  onClick={() => {
-                    handleAssignModalClick();
-                  }}
+                <GlobalCan
+                  action={ACTIONS.UPDATE}
+                  subject={SUBJECTS.BENEFICIARY}
                 >
-                  {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
-                    <>
-                      <Phone className="w-4 h-4" />
-                      {t('VALIDATE_PHONE_NUMBER')}
-                    </>
-                  ) : (
-                    <>
-                      <LandmarkIcon className="w-4 h-4" />
-                      {t('VALIDATE_BANK_ACCOUNT')}
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    variant="outline"
+                    className="gap-2 text-gray-700 rounded-sm"
+                    onClick={() => {
+                      handleAssignModalClick();
+                    }}
+                  >
+                    {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
+                      <>
+                        <Phone className="w-4 h-4" />
+                        {t('VALIDATE_PHONE_NUMBER')}
+                      </>
+                    ) : (
+                      <>
+                        <LandmarkIcon className="w-4 h-4" />
+                        {t('VALIDATE_BANK_ACCOUNT')}
+                      </>
+                    )}
+                  </Button>
                 </GlobalCan>
               )}
             {group?.data?.isAnyBeneficiaryInvalid && (
               <GlobalCan action={ACTIONS.READ} subject={SUBJECTS.BENEFICIARY}>
-              <Button
-                variant={'outline'}
-                className={` gap-2 text-gray-700 rounded-sm`}
-                onClick={onFailedExports}
-              >
-                <CloudDownloadIcon className="w-4 h-4" /> {t('EXPORT_FAILED')}
-              </Button>
+                <Button
+                  variant={'outline'}
+                  className={` gap-2 text-gray-700 rounded-sm`}
+                  onClick={onFailedExports}
+                >
+                  <CloudDownloadIcon className="w-4 h-4" /> {t('EXPORT_FAILED')}
+                </Button>
               </GlobalCan>
             )}
 
             <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.BENEFICIARY}>
-            <Button
-              variant={'outline'}
-              className={`border-red-500 text-red-500 gap-2 rounded-sm ${
-                group?.data?.beneficiaryGroupProject.length > 0 && 'hidden'
-              }`}
-              onClick={handleRemoveClick}
-            >
-              <Trash2Icon className="w-4 h-4" />
-              {t('DELETE_GROUP')}
-            </Button>
+              <Button
+                variant={'outline'}
+                className={`border-red-500 text-red-500 gap-2 rounded-sm ${
+                  group?.data?.beneficiaryGroupProject.length > 0 && 'hidden'
+                }`}
+                onClick={handleRemoveClick}
+              >
+                <Trash2Icon className="w-4 h-4" />
+                {t('DELETE_GROUP')}
+              </Button>
             </GlobalCan>
             {(group?.data?.isGroupValidForAA || !groupPurposeName) &&
               group?.data?.groupedBeneficiaries?.length !== 0 && (
-                <GlobalCan action={ACTIONS.MANAGE} subject={SUBJECTS.BENEFICIARY}>
-                <Button
-                  variant={'outline'}
-                  className="border-blue-500 text-blue-500 gap-2 rounded-sm"
-                  onClick={handleProjectAssignModalClick}
+                <GlobalCan
+                  action={ACTIONS.MANAGE}
+                  subject={SUBJECTS.BENEFICIARY}
                 >
-                  <FolderDot className="w-4 h-4" />
-                  {t('ASSIGN_TO_PROJECT')}
-                </Button>
+                  <Button
+                    variant={'outline'}
+                    className="border-blue-500 text-blue-500 gap-2 rounded-sm"
+                    onClick={handleProjectAssignModalClick}
+                  >
+                    <FolderDot className="w-4 h-4" />
+                    {t('ASSIGN_TO_PROJECT')}
+                  </Button>
                 </GlobalCan>
               )}
           </div>
@@ -396,13 +426,7 @@ export default function GroupDetailView() {
               iconStyle="bg-white text-secondary-muted"
               title={t('PROJECT_INVOLVED')}
               Icon={FolderDot}
-              refresh={() =>
-                syncBeneficiaryGroup.mutate({
-                  uuid: Id,
-                  successMessage: t('BENEFICIARY_SYNC_STARTED_FOR_PROJECTS'),
-                  errorMessage: t('ERROR_WHILE_SYNCING_BENEFICIARY_GROUP'),
-                })
-              }
+              refresh={() => syncConfirmModal.onTrue()}
             >
               <div className="flex gap-2 flex-wrap">
                 {group?.data?.beneficiaryGroupProject?.map(
@@ -431,8 +455,10 @@ export default function GroupDetailView() {
                     <p>
                       {t('CURRENT_STATUS')}:
                       <span className="font-medium">
-                        {formatDigits(bankCheckStatus.total - bankCheckStatus.pending)}/
-                        {formatDigits(bankCheckStatus.total)}
+                        {formatDigits(
+                          bankCheckStatus.total - bankCheckStatus.pending,
+                        )}
+                        /{formatDigits(bankCheckStatus.total)}
                       </span>
                     </p>
                   </>
@@ -444,7 +470,9 @@ export default function GroupDetailView() {
                 <p className="text-green-600">
                   {t('SUCCESS')}: {formatDigits(bankCheckStatus.success)}
                 </p>
-                <p className="text-red-500">{t('FAILED')}: {formatDigits(bankCheckStatus.failed)}</p>
+                <p className="text-red-500">
+                  {t('FAILED')}: {formatDigits(bankCheckStatus.failed)}
+                </p>
               </div>
             )}
         </div>

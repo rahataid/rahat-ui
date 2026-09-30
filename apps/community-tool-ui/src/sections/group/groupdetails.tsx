@@ -338,15 +338,15 @@ export default function GroupDetail({ uuid }: IProps) {
   };
 
   // ── Edit & Submit ──────────────────────────────────────────────────────────
-  const openEditSubmit = async () => {
+  const openEditSubmit = () => {
     setDirtyRows(new Map());
     setPresentColumns([]);
     setAvailableColumns([]);
     setAddedColumns(new Set());
-    // Force stale cache to refetch so newly persisted extras columns (added
-    // in previous submit) are included in next edit session without hard refresh
-    await queryClient.invalidateQueries({
-      queryKey: ['list_community_group_by_id'],
+    // Drop the cached infinite-query pages entirely (not just invalidate) so
+    // the next Edit & Submit session starts fresh from page 1 instead of
+    queryClient.removeQueries({
+      queryKey: ['list_community_group_by_id', 'infinite', uuid],
     });
     setEditSubmitMode(true);
   };

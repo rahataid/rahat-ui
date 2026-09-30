@@ -247,10 +247,15 @@ export default function EditSubmitView({
     if (distanceToBottom <= LOAD_THRESHOLD_PX) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // After each batch renders, if the rows still don't fill the container
-  // (no scrollbar yet), load the next batch automatically.
+  // After each batch renders, if the rows still don't overflow the container
+  // (no scrollbar yet), load the next batch automatically — otherwise the
+  // user would have nothing to scroll to trigger further loads. Only fires
+  // while content is shorter than the container; once it overflows, further
+  // loads happen from onScroll instead.
   useEffect(() => {
-    if (!isLoading) maybeLoadMore();
+    const el = scrollContainerRef.current;
+    if (isLoading || !el) return;
+    if (el.scrollHeight <= el.clientHeight) maybeLoadMore();
   }, [pageRows.length, isLoading, maybeLoadMore]);
 
   return (

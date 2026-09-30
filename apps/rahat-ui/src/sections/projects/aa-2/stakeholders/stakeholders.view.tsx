@@ -37,7 +37,11 @@ import { CloudDownload } from 'lucide-react';
 import StakeGoldersGroups from './StakeholderGroups';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
@@ -161,10 +165,7 @@ function StakeholdersView() {
             </TabsTrigger>
           </TabsList>
 
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.STAKEHOLDER}>
             <IconLabelBtn
               name={t('IMPORT_STAKEHOLDERS')}
               Icon={CloudDownload}
@@ -174,7 +175,7 @@ function StakeholdersView() {
               variant="outline"
               className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
             />
-          </RoleAuth>
+          </Can>
         </div>
 
         <TabsContent value="stakeholders">
@@ -209,16 +210,13 @@ function StakeholdersView() {
                   onSearch={(e) => handleSearch(e, 'supportArea')}
                   value={filters?.supportArea || ''}
                 />
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.CREATE} subject={SUBJECTS.STAKEHOLDER}>
                   <AddButton
                     path={`/projects/aa/${projectId}/stakeholders/add`}
                     name={t('STAKEHOLDER')}
                     className='h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]'
                   />
-                </RoleAuth>
+                </Can>
               </div>
               <DemoTable
                 table={table}

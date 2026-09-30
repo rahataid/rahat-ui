@@ -9,7 +9,11 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import StakeHolderInfo from './staholders.info';
 import { useDeleteStakeholders, useStakeholderDetails } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useState } from 'react';
@@ -69,16 +73,16 @@ const StakeholdersDetail = () => {
           subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_STAKEHOLDER')}
           path={routeNav}
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-        >
-          <div className="flex flex-end justify-end gap-[clamp(4px,0.6vw,12px)] mt-auto">
+        <div className="flex flex-end justify-end gap-[clamp(4px,0.6vw,12px)] mt-auto">
+          <Can action={ACTIONS.DELETE} subject={SUBJECTS.STAKEHOLDER}>
             <DeleteButton
               className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
               name={t('STAKEHOLDER')}
               label={t('DELETE')}
               handleContinueClick={handleDelete}
             />
+          </Can>
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.STAKEHOLDER}>
             <EditButton
               className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
               label={t('EDIT')}
@@ -88,8 +92,8 @@ const StakeholdersDetail = () => {
                 )
               }
             />
-          </div>
-        </RoleAuth>
+          </Can>
+        </div>
       </div>
 
       <div className="flex">

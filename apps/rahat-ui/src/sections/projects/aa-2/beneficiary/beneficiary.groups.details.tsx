@@ -65,6 +65,7 @@ const BeneficiaryGroupsDetails = () => {
   const { mutate: regenerateQr, isPending: isRegeneratingQr } =
     useRegenerateQrPdf(projectId);
   const [isQrOptionsOpen, setIsQrOptionsOpen] = useState(false);
+  const [isExcelOptionsOpen, setIsExcelOptionsOpen] = useState(false);
   // Tracks which action the dialog's confirm button should trigger --
   // the initial generate, or a re-generate of an already-completed QR.
   const [qrDialogMode, setQrDialogMode] = useState<'generate' | 'regenerate'>(
@@ -95,15 +96,33 @@ const BeneficiaryGroupsDetails = () => {
     setIsQrOptionsOpen(true);
   };
 
-  const handleExportExcel = () => {
-    exportExcel(groupId, {
-      onSuccess: (rows) => {
-        exportToExcel(
-          rows ?? [],
-          `beneficiaries-${groupDetails?.name ?? groupId}`,
-        );
+  const handleExportExcel = ({
+    includeOtp,
+    excludeUnphonedBeneficiaries,
+    pdfFields,
+  }: QrOtpConfirmValues) => {
+    if (isExporting) return;
+    // Same filters as QR -- resolved server-side (bank_name and other
+    // `extras` keys included). Backend returns already-filtered rows.
+    exportExcel(
+      {
+        groupId,
+        includeOtp,
+        excludeUnphonedBeneficiaries,
+        excelFields: pdfFields,
+        pdfFields,
       },
-    });
+      {
+        onSuccess: (rows) => {
+          const list = Array.isArray(rows) ? rows : [];
+          exportToExcel(
+            list,
+            `beneficiaries-${groupDetails?.name ?? groupId}`,
+          );
+          setIsExcelOptionsOpen(false);
+        },
+      },
+    );
   };
 
   const { data: sponsorshipStatus } = useGetSponsorshipStatusForGroup({
@@ -171,7 +190,7 @@ const BeneficiaryGroupsDetails = () => {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={handleExportExcel}
+            onClick={() => setIsExcelOptionsOpen(true)}
             className="cursor-pointer"
             disabled={isExporting}
           >
@@ -299,6 +318,16 @@ const BeneficiaryGroupsDetails = () => {
         onOpenChange={setIsQrOptionsOpen}
         onConfirm={handleGenerateQr}
         isPending={isSubmittingQr}
+      />
+      <QrOtpDialog
+        open={isExcelOptionsOpen}
+        onOpenChange={setIsExcelOptionsOpen}
+        onConfirm={handleExportExcel}
+        isPending={isExporting}
+        title={t('DOWNLOAD_EXCEL')}
+        description={t('QR_PDF_GENERATION_OPTIONS_DESCRIPTION')}
+        confirmLabel={t('DOWNLOAD')}
+        pendingLabel={t('GENERATING')}
       />
     </div>
   );

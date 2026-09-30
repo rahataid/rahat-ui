@@ -42,7 +42,7 @@ export const BENEFICIARY_SAMPLE_TEMPLATES: SampleTemplate[] = [
     ],
   },
   {
-    value: 'nrcs-flood-cva',
+    value: 'nrcs-flood-banked-beneficiary',
     label: 'NRCS Flood Banked Beneficiary',
     fileName: 'nrcs_flood_banked_beneficiary_sample.xlsx',
     headers: [
@@ -68,7 +68,7 @@ export const BENEFICIARY_SAMPLE_TEMPLATES: SampleTemplate[] = [
     ],
   },
   {
-    value: 'nrcs-flood-cva',
+    value: 'nrcs-flood-un-banked-beneficiary',
     label: 'NRCS Flood Un-banked Beneficiary',
     fileName: 'nrcs_flood_un-banked_beneficiary_sample.xlsx',
     headers: [

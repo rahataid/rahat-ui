@@ -956,3 +956,56 @@ export const useSyncBeneficiaryGroup = () => {
     },
   });
 };
+
+const forceInvalidateBeneficiaryGroup = async (uuid: UUID) => {
+  const response = await api.post(
+    `/beneficiaries/groups/${uuid}/force-invalidate`,
+  );
+  return response?.data;
+};
+
+export const useForceInvalidateBeneficiaryGroup = () => {
+  const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations();
+
+  return useMutation({
+    mutationFn: (payload: UUID | { uuid: UUID; [key: string]: any }) =>
+      forceInvalidateBeneficiaryGroup(
+        (typeof payload === 'object' ? payload.uuid : payload) as UUID,
+      ),
+    onSuccess: async (_data, variables: any) => {
+      const uuid = variables?.uuid ?? variables;
+      qc.removeQueries({ queryKey: ['BANK_CHECK_STATUS', uuid] });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: [GET_BENEFICIARY_GROUP, uuid] }),
+        qc.invalidateQueries({
+          queryKey: [GET_FAILED_BANK_ACCOUNT_BENEFICIARY, uuid],
+        }),
+      ]);
+      toast.success(
+        variables?.successMessage || tg('GROUP_INVALIDATED_SUCCESSFULLY'),
+      );
+    },
+    onError: (error: any, variables: any) => {
+      const code = error?.response?.data?.code;
+      const params = error?.response?.data?.params;
+      const rawMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = resolveBeneficiaryErrorMessage(
+        t,
+        code,
+        params,
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: variables?.errorMessage || tg('ERROR_WHILE_INVALIDATING_GROUP'),
+        description: errorMessage,
+      });
+    },
+  });
+};

@@ -18,11 +18,11 @@ import { isEmpty } from 'lodash';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
-import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
+import { showToast } from '../../utils/custom-toast';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -83,13 +83,6 @@ export const useAssignBenToProject = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const tg = useTranslations('GLOBAL');
 
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       beneficiaryUUID,
@@ -110,19 +103,16 @@ export const useAssignBenToProject = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'));
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARY] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -132,13 +122,7 @@ export const useAssignBenGroupToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
   const tg = useTranslations('GLOBAL');
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       beneficiaryGroupUUID,
@@ -171,18 +155,15 @@ export const useAssignBenGroupToProject = () => {
         }),
       ]);
 
-      toast.fire({
-        title: tg('BENEFICIARY_GROUP_ASSIGNED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(tg('BENEFICIARY_GROUP_ASSIGNED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: tg('ERROR_WHILE_ASSIGNING_BENEFICIARY_GROUP'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -191,13 +172,7 @@ export const useAssignBenGroupToProject = () => {
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
   const tg = useTranslations('GLOBAL');
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       beneficiaryUUIDs,
@@ -221,18 +196,15 @@ export const useBulkAssignBenToProject = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -243,13 +215,7 @@ export const useAssignVendorToProject = () => {
   const queryClient = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const tb = useTranslations();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       vendorUUID,
@@ -272,10 +238,9 @@ export const useAssignVendorToProject = () => {
     },
     onSuccess: (_data, variables: any) => {
       q.reset();
-      toast.fire({
-        title: variables?.successMessage || tg('VENDOR_ASSIGNED_SUCCESSFULLY'),
-        icon: 'success',
-      });
+      toast.success(
+        variables?.successMessage || tg('VENDOR_ASSIGNED_SUCCESSFULLY'),
+      );
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
     onError: (error: any, variables: any) => {
@@ -288,10 +253,10 @@ export const useAssignVendorToProject = () => {
         rawMessage,
       );
       q.reset();
-      toast.fire({
+      showToast({
+        type: 'error',
         title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_VENDOR'),
-        icon: 'error',
-        text: errorMessage,
+        description: errorMessage,
       });
     },
   });
@@ -852,19 +817,10 @@ export const useListELRedemption = (
 
 export const useUpdateElRedemption = () => {
   const projectAction = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     onSuccess: () => {
-      toast.fire({
-        title: 'Redemption Successful.',
-        icon: 'success',
-      });
+      toast.success('Redemption Successful.');
     },
     mutationFn: async ({
       projectUUID,
@@ -891,20 +847,11 @@ export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
   const tp = useTranslations('PROJECTS_LIST');
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation(
     {
       onSuccess: () => {
-        toast.fire({
-          title: tp('PROJECT_EDITED_SUCCESSFULLY'),
-          icon: 'success',
-        });
+        toast.success(tp('PROJECT_EDITED_SUCCESSFULLY'));
         queryClient.invalidateQueries({
           queryKey: [TAGS.GET_PROJECT_DETAILS],
         });
@@ -913,10 +860,7 @@ export const useProjectEdit = () => {
         });
       },
       onError: () => {
-        toast.fire({
-          title: tp('ERROR_WHILE_EDITING_PROJECT'),
-          icon: 'error',
-        });
+        toast.error(tp('ERROR_WHILE_EDITING_PROJECT'));
       },
       mutationKey: ['projectEdit'],
       mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
@@ -930,27 +874,15 @@ export const useProjectEdit = () => {
 export const useProjectClose = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const tp = useTranslations('PROJECTS_LIST');
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation(
     {
       onSuccess: () => {
-        toast.fire({
-          title: tp('PROJECT_CLOSED_SUCCESSFULLY'),
-          icon: 'success',
-        });
+        toast.success(tp('PROJECT_CLOSED_SUCCESSFULLY'));
         queryClient.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
       },
       onError: () => {
-        toast.fire({
-          title: tp('ERROR_WHILE_CLOSING_PROJECT'),
-          icon: 'error',
-        });
+        toast.error(tp('ERROR_WHILE_CLOSING_PROJECT'));
       },
       mutationKey: ['projectClose'],
       mutationFn: async ({
@@ -1521,11 +1453,7 @@ export const useCambodiaTriggerComms = () => {
       return mutate;
     },
     onSuccess: () => {
-      Swal.fire(
-        'Your message is scheduled and will be delivered shortly',
-        '',
-        'success',
-      );
+      toast.success('Your message is scheduled and will be delivered shortly');
       qc.invalidateQueries({
         queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST],
       });

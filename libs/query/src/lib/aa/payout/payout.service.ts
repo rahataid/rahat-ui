@@ -611,7 +611,7 @@ export const useVerifyManualPayout = () => {
     },
   });
 };
-export const useCancelPayout = () => {
+export const useCompletePayout = () => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const qc = useQueryClient();
@@ -629,7 +629,7 @@ export const useCancelPayout = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aa.payout.cancel',
+          action: 'aa.payout.complete',
           payload: payload,
         },
       });
@@ -638,7 +638,7 @@ export const useCancelPayout = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
-      toast.success('Payout cancelled successfully');
+      toast.success(t('PAYOUT_IS_MARKED_COMPLETED'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');

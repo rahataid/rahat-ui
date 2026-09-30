@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import {
-  useCancelPayout,
+  useCompletePayout,
   useGetPayoutLogs,
   usePagination,
   usePayoutExportLogs,
@@ -38,7 +38,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import {
   ChevronDown,
-  CircleX,
+  CircleCheckBig,
   CloudDownload,
   CloudUpload,
   Landmark,
@@ -105,7 +105,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
-  const cancelPayout = useCancelPayout();
+  const cancelPayout = useCompletePayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
   const { data: exportPayoutLogs } = usePayoutExportLogs({
     projectUUID: projectId,
@@ -154,13 +154,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     anchor.remove();
     URL.revokeObjectURL(url);
   };
-  const handleCancelPayout = () => {
+  const handleCompletePayout = () => {
     cancelPayout.mutateAsync({
       projectUUID: projectId,
       payload: {
         uuid: payoutId,
       },
     });
+    cancelConfirmDialog.onFalse();
   };
   const table = useReactTable({
     manualPagination: true,
@@ -259,6 +260,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const cancelDialog = () => {
     cancelConfirmDialog.onFalse();
   };
+  const text = t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED');
 
   return isLoading ? (
     <TableLoader />
@@ -295,23 +297,31 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           </div>
           {
             <div className="flex gap-2">
-              <Button
-                className={`gap-2 text-sm `}
-                // onClick={handleCancelPayout}
+              {payout?.status !== 'COMPLETED' && (
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+                  <TooltipWrapper
+                    tip={`${
+                      !payout?.beneficiaryGroupToken?.isDisbursed
+                        ? t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED')
+                        : t('MARK_AS_COMPLETED_TOOLTIP')
+                    }`}
+                  >
+                    <Button
+                      className={`gap-2 text-sm `}
+                      onClick={() => cancelConfirmDialog.onTrue()}
+                      disabled={
+                        cancelPayout.isPending ||
+                        !payout?.beneficiaryGroupToken?.isDisbursed
+                      }
+                      variant={'default'}
+                    >
+                      <CircleCheckBig className={'w-4 h-4'} />
+                      {t('MARK_AS_COMPLETED')}
+                    </Button>
+                  </TooltipWrapper>
+                </Can>
+              )}
 
-                onClick={() => cancelConfirmDialog.onTrue()}
-                disabled={
-                  cancelPayout.isPending || payout?.status === 'COMPLETED'
-                }
-                variant={'outline'}
-              >
-                <CircleX
-                  className={`w-4 h-4 ${
-                    cancelPayout.isPending ? 'animate-spin' : ''
-                  }`}
-                />
-                Cancel Payout
-              </Button>
               <PayoutConfirmationDialog
                 projectId={projectId}
                 onConfirm={handleTriggerPayout}
@@ -596,9 +606,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         <ConfirmationDialog
           isConfirmationDialogOpen={cancelConfirmDialog.value}
           onCancel={cancelDialog}
-          onConfirm={handleCancelPayout}
-          dialogTitle="Mark as cancelled"
-          dialogMessage="Are you sure you want cancel this payout?"
+          onConfirm={handleCompletePayout}
+          dialogTitle={t('MARK_AS_COMPLETED')}
+          dialogMessage={t('COMPLETE_PAYOUT_ALERT_DESCRIPTION')}
         />
       </div>
     </div>

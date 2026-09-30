@@ -18,6 +18,7 @@ type ConfirmationDialogProps = {
   dialogTitle?: string;
   dialogMessage?: string;
   children?: React.ReactNode;
+  isDestructive?: boolean
 };
 const ConfirmationDialog = ({
   isConfirmationDialogOpen,
@@ -26,6 +27,7 @@ const ConfirmationDialog = ({
   dialogTitle,
   dialogMessage,
   children,
+  isDestructive,
 }: ConfirmationDialogProps) => {
   const t = useTranslations('CONFIRMATION_ALERT_DIALOGS');
   const tg = useTranslations('GLOBAL');
@@ -61,6 +63,7 @@ const ConfirmationDialog = ({
           </DialogClose>
           <Button
             type="submit"
+            variant={isDestructive ? 'destructive' : 'default'}
             onClick={onConfirm}
             className="w-full rounded-sm"
           >

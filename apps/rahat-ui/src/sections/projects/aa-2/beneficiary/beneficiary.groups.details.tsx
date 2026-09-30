@@ -102,8 +102,7 @@ const BeneficiaryGroupsDetails = () => {
     pdfFields,
   }: QrOtpConfirmValues) => {
     if (isExporting) return;
-    // Same filters as QR -- resolved server-side (bank_name and other
-    // `extras` keys included). Backend returns already-filtered rows.
+
     exportExcel(
       {
         groupId,
@@ -115,10 +114,7 @@ const BeneficiaryGroupsDetails = () => {
       {
         onSuccess: (rows) => {
           const list = Array.isArray(rows) ? rows : [];
-          exportToExcel(
-            list,
-            `beneficiaries-${groupDetails?.name ?? groupId}`,
-          );
+          exportToExcel(list, `beneficiaries-${groupDetails?.name ?? groupId}`);
           setIsExcelOptionsOpen(false);
         },
       },
@@ -225,9 +221,7 @@ const BeneficiaryGroupsDetails = () => {
                     <CloudDownload className="mr-2 h-4 w-4" />
                     {t('DOWNLOAD_QR')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => openQrDialog('regenerate')}
-                  >
+                  <DropdownMenuItem onSelect={() => openQrDialog('regenerate')}>
                     <RefreshCw className="mr-2 h-4 w-4" />
                     {t('REGENERATE_QR')}
                   </DropdownMenuItem>
@@ -245,17 +239,16 @@ const BeneficiaryGroupsDetails = () => {
               {t('GENERATE_QR')}
             </Button>
           )}
-          {sponsorshipStatus?.isStellarChain &&
-               (
-              <Button
-                variant="outline"
-                className="cursor-pointer"
-                disabled={isRetrying}
-                onClick={() => retrySponsorship(groupId)}
-              >
-                {t('RETRY_SPONSORSHIP')}
-              </Button>
-            )}
+          {sponsorshipStatus?.isStellarChain && (
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              disabled={isRetrying}
+              onClick={() => retrySponsorship(groupId)}
+            >
+              {t('RETRY_SPONSORSHIP')}
+            </Button>
+          )}
         </div>
       </div>
       {sponsorshipStatus?.isStellarChain ? (

@@ -14,7 +14,10 @@ import { UUID } from 'crypto';
 import { Check, ChevronDown, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import type { Project } from '@rahataid/sdk/project/project.types';
 import { StatusBadge } from '../projectList';
 
@@ -47,6 +50,9 @@ export const useProjectHeaderItems = (projectType: string) => {
   const router = useRouter();
   useProject(id as UUID);
   const { data: projectList } = useProjectList();
+  const projectSwitchDialog = useBoolean(false);
+  const [pendingProject, setPendingProject] = useState<Project | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const project = useProjectStore((p) => p.singleProject);
   const { data, subData } = useNavData();
@@ -55,6 +61,23 @@ export const useProjectHeaderItems = (projectType: string) => {
   const projectName = project?.name || '';
   const isCVA = project?.type === 'cva';
   const projects: Project[] = projectList?.data ?? [];
+
+  const handleSelectProject = (target: Project) => {
+    if (!target.uuid || target.uuid === id) return;
+    setPendingProject(target);
+    projectSwitchDialog.onTrue();
+  };
+
+  const confirmProjectSwitch = () => {
+    if (pendingProject) handleSwitchProject(pendingProject);
+    setPendingProject(null);
+    projectSwitchDialog.onFalse();
+  };
+
+  const cancelProjectSwitch = () => {
+    setPendingProject(null);
+    projectSwitchDialog.onFalse();
+  };
 
   const handleSwitchProject = (target: Project) => {
     if (!target.uuid || target.uuid === id) return;
@@ -75,7 +98,7 @@ export const useProjectHeaderItems = (projectType: string) => {
       <Badge className="bg-blue-500 text-white rounded-full px-3 py-1">
         {isCVA ? 'CASH VOUCHER ASSITANCE' : projectType}
       </Badge>
-      <DropdownMenu>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger className="ml-2 flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-secondary border rounded-sm">
           <span className="flex flex-col items-start leading-tight">
             <span className="text-[13px] font-bold tracking-tight text-foreground">
@@ -109,7 +132,14 @@ export const useProjectHeaderItems = (projectType: string) => {
             return (
               <DropdownMenuItem
                 key={p.uuid}
-                onClick={() => handleSwitchProject(p)}
+                // preventDefault skips Radix's default select-close sequence,
+                // whose focus cleanup would otherwise dismiss the confirm
+                // dialog opened synchronously below.
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  handleSelectProject(p);
+                }}
                 className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 ${
                   isCurrent ? 'bg-accent' : ''
                 }`}
@@ -148,6 +178,19 @@ export const useProjectHeaderItems = (projectType: string) => {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={projectSwitchDialog.value}
+        onCancel={cancelProjectSwitch}
+        onConfirm={confirmProjectSwitch}
+        dialogTitle="Switch project?"
+        dialogMessage={
+          pendingProject
+            ? `Switch to "${
+                pendingProject.name || 'Untitled project'
+              }"? Any unsaved changes on this page will be lost.`
+            : undefined
+        }
+      />
     </div>
   );
 

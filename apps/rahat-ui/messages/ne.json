@@ -1253,6 +1253,7 @@
     "CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED": "रकम भुक्तानी नभएकोले, यसलाई पूरा भएको जनाउन मिल्दैन।",
     "MARK_AS_COMPLETED_TOOLTIP": "यो भुक्तानी पूरा भएको जनाइनेछ।",
     "PAYOUT_IS_MARKED_COMPLETED": "भुक्तानी पूरा भएको जनाइएको छ।",
+    "PAYOUT_ALREADY_COMPLETED": "भुक्तानी पहिले नै सम्पन्न भइसकेको छ।",
     "PAYOUT_TYPES": "भुक्तानीका प्रकारहरू",
     "PAYOUT_UPDATED_SUCCESSFULLY": "भुक्तानी सफलतापूर्वक अद्यावधिक भयो",
     "PEAK_FORECASTED": "उच्चतम बहावको पूर्वानुमान गरिएको छ।",

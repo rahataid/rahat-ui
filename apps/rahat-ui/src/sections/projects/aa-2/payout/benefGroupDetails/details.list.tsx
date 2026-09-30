@@ -297,30 +297,31 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           </div>
           {
             <div className="flex gap-2">
-              {payout?.status !== 'COMPLETED' && (
-                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
-                  <TooltipWrapper
-                    tip={`${
+              <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+                <TooltipWrapper
+                  tip={`${
+                    payout?.status === 'COMPLETED'
+                      ? t('PAYOUT_ALREADY_COMPLETED')
+                      : !payout?.beneficiaryGroupToken?.isDisbursed
+                      ? t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED')
+                      : t('MARK_AS_COMPLETED_TOOLTIP')
+                  }`}
+                >
+                  <Button
+                    className={`gap-2 text-sm `}
+                    onClick={() => cancelConfirmDialog.onTrue()}
+                    disabled={
+                      cancelPayout.isPending ||
+                      payout?.status === 'COMPLETED' ||
                       !payout?.beneficiaryGroupToken?.isDisbursed
-                        ? t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED')
-                        : t('MARK_AS_COMPLETED_TOOLTIP')
-                    }`}
+                    }
+                    variant={'default'}
                   >
-                    <Button
-                      className={`gap-2 text-sm `}
-                      onClick={() => cancelConfirmDialog.onTrue()}
-                      disabled={
-                        cancelPayout.isPending ||
-                        !payout?.beneficiaryGroupToken?.isDisbursed
-                      }
-                      variant={'default'}
-                    >
-                      <CircleCheckBig className={'w-4 h-4'} />
-                      {t('MARK_AS_COMPLETED')}
-                    </Button>
-                  </TooltipWrapper>
-                </Can>
-              )}
+                    <CircleCheckBig className={'w-4 h-4'} />
+                    {t('MARK_AS_COMPLETED')}
+                  </Button>
+                </TooltipWrapper>
+              </Can>
 
               <PayoutConfirmationDialog
                 projectId={projectId}

@@ -30,6 +30,7 @@ import {
   useActiveFieldDefList,
   useBulkGenerateVerificationLink,
   useCommunityGroupListByID,
+  useCommunityGroupListByIDInfinite,
   useCommunityGroupRemove,
   useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
@@ -135,22 +136,24 @@ export default function GroupDetail({ uuid }: IProps) {
   const [addedColumns, setAddedColumns] = React.useState<Set<string>>(
     new Set(),
   );
-  const [editPage, setEditPage] = React.useState(1);
-  const [editPerPage, setEditPerPage] = React.useState(20);
-
   const {
-    data: editPageData,
+    data: editInfiniteData,
     isLoading: editPageLoading,
-    isFetching: editPageFetching,
-  } = useCommunityGroupListByID(
-    uuid,
-    { page: editPage, perPage: editPerPage },
-    editSubmitMode,
+    isFetchingNextPage: editPageFetchingNext,
+    fetchNextPage: fetchNextEditPage,
+    hasNextPage: hasNextEditPage,
+  } = useCommunityGroupListByIDInfinite(uuid, editSubmitMode);
+
+  const editPageRows = React.useMemo(
+    () =>
+      editInfiniteData?.pages.flatMap(
+        (p: any) => p?.data?.beneficiariesGroup ?? [],
+      ) ?? [],
+    [editInfiniteData],
   );
 
   useEffect(() => {
-    if (!editSubmitMode || editPageLoading || editPageFetching || !editPageData)
-      return;
+    if (!editSubmitMode || editPageLoading || editPageRows.length === 0) return;
 
     const SYSTEM_ONLY = new Set([
       'id',
@@ -160,7 +163,7 @@ export default function GroupDetail({ uuid }: IProps) {
       'uuid',
       'isDuplicate',
     ]);
-    const rows = (editPageData?.data?.beneficiariesGroup ?? []) as {
+    const rows = editPageRows as {
       beneficiary?: { extras?: Record<string, unknown> } & Record<
         string,
         unknown
@@ -212,10 +215,9 @@ export default function GroupDetail({ uuid }: IProps) {
     setPresentColumns(freshPresent);
     setAvailableColumns(remaining);
   }, [
-    editPageData,
+    editPageRows,
     editSubmitMode,
     editPageLoading,
-    editPageFetching,
     presentColumns,
     listFieldDef,
   ]);
@@ -341,8 +343,6 @@ export default function GroupDetail({ uuid }: IProps) {
     setPresentColumns([]);
     setAvailableColumns([]);
     setAddedColumns(new Set());
-    setEditPage(1);
-    setEditPerPage(20);
     // Force stale cache to refetch so newly persisted extras columns (added
     // in previous submit) are included in next edit session without hard refresh
     await queryClient.invalidateQueries({
@@ -533,30 +533,15 @@ export default function GroupDetail({ uuid }: IProps) {
     return (
       <EditSubmitView
         groupName={responseByUUID?.data?.name}
-        pageRows={editPageData?.data?.beneficiariesGroup ?? []}
+        pageRows={editPageRows}
         dirtyRows={dirtyRows}
         presentColumns={presentColumns}
         addedColumns={addedColumns}
         availableColumns={availableColumns}
         isLoading={editPageLoading}
-        page={editPage}
-        perPage={editPerPage}
-        total={editPageData?.response?.meta?.total ?? 0}
-        meta={
-          editPageData?.response?.meta ?? {
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: editPerPage,
-            prev: null,
-            next: null,
-          }
-        }
-        onPageChange={setEditPage}
-        onPerPageChange={(v: string | number) => {
-          setEditPerPage(Number(v));
-          setEditPage(1);
-        }}
+        hasNextPage={hasNextEditPage}
+        isFetchingNextPage={editPageFetchingNext}
+        fetchNextPage={fetchNextEditPage}
         onCellChange={handleCellChange}
         onAddColumn={handleAddColumn}
         onRemoveColumn={handleRemoveColumn}

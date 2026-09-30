@@ -4,6 +4,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
 import {
   UseQueryResult,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -90,6 +91,45 @@ export const useCommunityGroupListByID = (
     {
       queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, query, uuid],
       queryFn: () => groupClient.listById(uuid, query),
+      enabled,
+    },
+    queryClient,
+  );
+};
+
+const EDIT_SUBMIT_BATCH_SIZE = 20;
+
+export const useCommunityGroupListByIDInfinite = (
+  uuid: string,
+  enabled = true,
+) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  return useInfiniteQuery(
+    {
+      queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, 'infinite', uuid],
+      queryFn: ({ pageParam = 1 }) =>
+        groupClient.listById(uuid, {
+          page: pageParam,
+          perPage: EDIT_SUBMIT_BATCH_SIZE,
+        }),
+      getNextPageParam: (lastPage: any, allPages: any[]) => {
+        const meta = lastPage?.response?.meta;
+        if (meta) {
+          const current = Number(meta.currentPage ?? allPages.length);
+          const last = Number(
+            meta.lastPage ??
+              Math.ceil(Number(meta.total ?? 0) / EDIT_SUBMIT_BATCH_SIZE),
+          );
+          return current < last ? current + 1 : undefined;
+        }
+        // No meta: keep going while the server returns full batches
+        const rows = lastPage?.data?.beneficiariesGroup ?? [];
+        return rows.length === EDIT_SUBMIT_BATCH_SIZE
+          ? allPages.length + 1
+          : undefined;
+      },
+      initialPageParam: 1,
       enabled,
     },
     queryClient,

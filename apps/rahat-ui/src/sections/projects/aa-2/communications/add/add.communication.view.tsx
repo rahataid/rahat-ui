@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, Back } from 'apps/rahat-ui/src/common';
+import { useListAllTransports, useBeneficiariesGroups, useStakeholdersGroups, useCreateCommunication, useTriggerCommunicationBroadcast, useUploadFile } from '@rahat-ui/query';
 import { Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -17,13 +18,8 @@ import {
   SelectItem,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { TargetAudienceSelector } from '../components/target-audience-selector';
+import { TargetAudienceSelector, AudienceGroupOption } from '../components/target-audience-selector';
 import { VoiceMessageSource } from '../components/voice-message-source';
-
-// React Hook Form & Zod
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -32,95 +28,127 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import { useBroadcastForm } from '../hooks/useBroadcastForm';
+import { BroadcastFormValues } from '../types';
+import { resolveTransportByChannel } from '../utils/communications.utils';
+import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
+import { UUID } from 'crypto';
+import { toast } from 'react-toastify';
 
-// 1. Zod Validation Schema Factory
-const getBroadcastSchema = (t: (key: string) => string) =>
-  z.object({
-    title: z.string().min(1, t('BROADCAST_TITLE_REQUIRED')),
-    channel: z.enum(['sms', 'voice', 'email']),
-    subject: z.string().optional(),
-    message: z.string().optional(),
-    beneficiaries: z.array(z.any()).default([]),
-    stakeholders: z.array(z.any()).default([]),
-    audioFile: z.any().optional(),
-  }).superRefine((data, ctx) => {
-    if (data.channel === 'email' && !data.subject?.trim()) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: t('EMAIL_SUBJECT_REQUIRED'), path: ['subject'] });
-    }
-    if (data.channel === 'voice' && !data.audioFile) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: t('AUDIO_FILE_REQUIRED'), path: ['audioFile'] });
-    }
-    if (data.channel !== 'voice' && !data.message?.trim()) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: t('MESSAGE_REQUIRED'), path: ['message'] });
-    }
-    if (data.channel !== 'voice' && data.message) {
-      const isUni = /[\u0900-\u097F]/.test(data.message);
-      const max = isUni ? 350 : 700;
-      if (data.message.length > max) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: t('MAX_CHARS_EXCEEDED'), path: ['message'] });
-      }
-    }
-    if (data.beneficiaries.length === 0 && data.stakeholders.length === 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: t('TARGET_AUDIENCE_REQUIRED'), path: ['targetAudience'] });
-    }
-  });
+const toAudienceOptions = (groups: any[], countOf: (g: any) => number): AudienceGroupOption[] =>
+  (groups ?? []).map((g: any) => ({
+    id: g?.uuid,
+    name: g?.name,
+    count: countOf(g),
+  })).filter((g) => g.id && g.name);
 
-export type BroadcastFormValues = {
-  title: string;
-  channel: 'sms' | 'voice' | 'email';
-  subject?: string;
-  message?: string;
-  beneficiaries: any[];
-  stakeholders: any[];
-  audioFile?: any;
-};
-
-// ----------------------------------------------------------------------
-// Main View
-// ----------------------------------------------------------------------
 export default function AddCommunicationView() {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
   const router = useRouter();
   const { id: projectId } = useParams();
+  const uuid = projectId as UUID;
+  const appTransports = useListAllTransports();
+  const { form } = useBroadcastForm();
+  const createCommunication = useCreateCommunication();
+  const triggerBroadcast = useTriggerCommunicationBroadcast();
+  const uploadFile = useUploadFile();
 
-  const broadcastSchema = React.useMemo(() => getBroadcastSchema(t), [t]);
-
-  // Initialize the form with React Hook Form + Zod
-  const form = useForm<BroadcastFormValues>({
-    resolver: zodResolver(broadcastSchema),
-    defaultValues: {
-      title: '',
-      channel: 'sms',
-      subject: '',
-      message: '',
-      beneficiaries: [],
-      stakeholders: [],
-    }
+  const { data: beneficiaryGroupsData, isLoading: isLoadingBeneficiaries } = useBeneficiariesGroups(uuid, {
+    page: 1,
+    perPage: 100,
   });
+  const { data: stakeholderGroupsData, isLoading: isLoadingStakeholders } = useStakeholdersGroups(uuid, {
+    page: 1,
+    perPage: 100,
+  });
+
+  const beneficiaryGroups = React.useMemo(
+    () => toAudienceOptions(
+      (beneficiaryGroupsData as any)?.data ?? beneficiaryGroupsData ?? [],
+      (g) => g?._count?.beneficiaries ?? g?.groupedBeneficiaries?.length ?? 0,
+    ),
+    [beneficiaryGroupsData],
+  );
+  const stakeholderGroups = React.useMemo(
+    () => toAudienceOptions(
+      (stakeholderGroupsData as any)?.data ?? stakeholderGroupsData ?? [],
+      (g) => g?._count?.stakeholders ?? g?.stakeholders?.length ?? 0,
+    ),
+    [stakeholderGroupsData],
+  );
 
   const { watch, handleSubmit, control } = form;
   const channel = watch('channel');
   const message = watch('message') || '';
 
-  // Credit Calculation Logic
+  const selectedTransport = React.useMemo(
+    () => resolveTransportByChannel(appTransports, channel),
+    [appTransports, channel],
+  );
+
+  const smsInfo = channel === 'sms' && message ? getSmsInfo(message) : null;
   const isUnicode = /[\u0900-\u097F]/.test(message);
   const maxChars = isUnicode ? 350 : 700;
-  const charsCount = message.length;
+  const charsCount = smsInfo?.characterCount ?? message.length;
+  const credits = smsInfo?.smsCredits ?? 0;
 
-  let credits = 0;
-  if (charsCount > 0) {
-    if (isUnicode) {
-      credits = charsCount <= 70 ? 1 : Math.ceil(charsCount / 67);
-    } else {
-      credits = charsCount <= 160 ? 1 : Math.ceil(charsCount / 153);
+  const isSubmitting = createCommunication.isPending || triggerBroadcast.isPending || uploadFile.isPending;
+
+  const onSubmit = async (data: BroadcastFormValues) => {
+    if (!selectedTransport?.cuid) return;
+
+    try {
+      let audioURL: { fileName: string; mediaURL: string } | undefined;
+      if (data.channel === 'voice' && data.audioFile) {
+        if (typeof data.audioFile?.mediaURL === 'string') {
+          audioURL = { fileName: data.audioFile.fileName, mediaURL: data.audioFile.mediaURL };
+        } else {
+          const file = data.audioFile instanceof File
+            ? data.audioFile
+            : new File([data.audioFile], `recording-${Date.now()}.wav`, { type: 'audio/wav' });
+          const formData = new FormData();
+          formData.append('file', file, file.name);
+          const { data: uploaded } = await uploadFile.mutateAsync(formData);
+          audioURL = { fileName: uploaded?.fileName, mediaURL: uploaded?.mediaURL };
+        }
+      }
+
+      const targets = [
+        ...(data.beneficiaries ?? []).map((g: any) => ({ groupId: g.id, groupType: 'BENEFICIARY' as const })),
+        ...(data.stakeholders ?? []).map((g: any) => ({ groupId: g.id, groupType: 'STAKEHOLDERS' as const })),
+      ];
+
+      const created: any = await createCommunication.mutateAsync({
+        projectUUID: uuid,
+        broadcastPayload: {
+          title: data.title,
+          targets,
+          ...(data.channel !== 'voice' && data.message ? { message: data.message } : {}),
+          ...(data.channel === 'email' && data.subject ? { subject: data.subject } : {}),
+          ...(data.channel === 'voice' && audioURL ? { audioURL } : {}),
+          transportId: selectedTransport.cuid,
+        },
+      });
+
+      const communicationUUID = created?.data?.uuid ?? created?.response?.data?.uuid ?? created?.uuid;
+      if (!communicationUUID) {
+        toast.error(t('ERROR'));
+        return;
+      }
+
+      try {
+        await triggerBroadcast.mutateAsync({
+          projectUUID: uuid,
+          communicationUUID,
+        });
+        router.push(`/projects/aa/${projectId}/communications`);
+      } catch {
+        router.push(`/projects/aa/${projectId}/communications/${communicationUUID}`);
+      }
+    } catch {
+      return;
     }
-  }
-
-  const onSubmit = (data: BroadcastFormValues) => {
-    console.log("Valid Broadcast Form Data:", data);
-    // TODO: Connect to backend mutation
-    router.push(`/projects/aa/${projectId}/communications`);
   };
 
   return (
@@ -158,7 +186,7 @@ export default function AddCommunicationView() {
                     render={({ field }) => (
                       <FormItem className="space-y-2">
                         <FormLabel required>{t("COMMUNICATION_CHANNEL")}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <FormSelectTrigger><SelectValue placeholder={t("SELECT_CHANNEL")} /></FormSelectTrigger>
                           </FormControl>
@@ -168,6 +196,13 @@ export default function AddCommunicationView() {
                             <SelectItem value="email">{t("EMAIL")}</SelectItem>
                           </SelectContent>
                         </Select>
+                        {!appTransports ? (
+                          <p className="text-xs text-muted-foreground">{t("LOADING_TRANSPORTS")}</p>
+                        ) : !selectedTransport ? (
+                          <p className="text-xs text-destructive">
+                            {t("TRANSPORT_NOT_CONFIGURED")}
+                          </p>
+                        ) : null}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -188,10 +223,13 @@ export default function AddCommunicationView() {
                   />
                 )}
 
-                {/* Extracted Audience Selector Sub-component */}
-                <TargetAudienceSelector />
+                <TargetAudienceSelector
+                  beneficiaryGroups={beneficiaryGroups}
+                  stakeholderGroups={stakeholderGroups}
+                  isLoading={isLoadingBeneficiaries || isLoadingStakeholders}
+                />
 
-                {channel === 'voice' && <VoiceMessageSource />}
+                {channel === 'voice' && <VoiceMessageSource uploadFile={uploadFile} />}
 
                 {channel !== 'voice' && (
                   <FormField
@@ -234,7 +272,7 @@ export default function AddCommunicationView() {
                 <Button type="button" variant="outline" onClick={() => router.push(`/projects/aa/${projectId}/communications`)}>
                   {t("CANCEL")}
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={isSubmitting || !selectedTransport}>
                   <Send className="w-4 h-4 mr-2" />
                   {t("SEND_BROADCAST")}
                 </Button>

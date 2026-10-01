@@ -3,53 +3,65 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
-import { DataCard } from 'apps/rahat-ui/src/common';
-import { Radio, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
+import { Radio, CheckCircle2, AlertTriangle } from 'lucide-react';
 
-export function CommunicationsStatsCards() {
+type CommunicationsStatsCardsProps = {
+  total: number;
+  delivered: number;
+  failed: number;
+};
+
+export function CommunicationsStatsCards({
+  total,
+  delivered,
+  failed,
+}: CommunicationsStatsCardsProps) {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
+  const rate = total > 0 ? Math.round((delivered / total) * 100) : 0;
+  
   const stats = [
     {
       title: t("TOTAL_BROADCASTS"),
-      number: formatDigits("1,248"),
-      subtitle: `+${formatDigits(12)}% ${t("FROM_LAST_WEEK")}`,
+      number: formatDigits(total),
+      subtitle: `${formatDigits(delivered)} ${t("DELIVERED")?.toLowerCase() || 'delivered'} · ${formatDigits(failed)} ${t("FAILED")?.toLowerCase() || 'failed'}`,
       Icon: Radio,
     },
     {
       title: t("DELIVERY_RATE"),
-      number: `${formatDigits("98.4")}%`,
-      subtitle: `${formatDigits("1,228")} ${t("OF")} ${formatDigits("1,248")} ${t("DELIVERED")?.toLowerCase() || 'delivered'}`,
+      number: `${formatDigits(rate)}%`,
+      subtitle: `${formatDigits(delivered)} ${t("OF")} ${formatDigits(total)} ${t("DELIVERED")?.toLowerCase() || 'delivered'}`,
       Icon: CheckCircle2,
     },
     {
       title: t("FAILED_BOUNCED"),
-      number: formatDigits(6),
-      subtitle: `${formatDigits("0.48")}% ${t("FAILURE_RATE")}`,
+      number: formatDigits(failed),
+      subtitle: `${formatDigits(total > 0 ? Math.round((failed / total) * 100) : 0)}% ${t("FAILURE_RATE")}`,
       Icon: AlertTriangle,
     },
   ];
 
-  const getGridCols = (length: number) => {
-    switch (length) {
-      case 1: return 'lg:grid-cols-1';
-      case 2: return 'lg:grid-cols-2';
-      case 3: return 'lg:grid-cols-3';
-      default: return 'lg:grid-cols-4';
-    }
-  };
-
   return (
-    <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${getGridCols(stats.length)}`}>
-      {stats.map((stat, idx) => (
-        <DataCard
-          key={idx}
-          title={stat.title}
-          number={stat.number}
-          subtitle={stat.subtitle}
-          Icon={stat.Icon}
-        />
-      ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {stats.map((stat, idx) => {
+        const Icon = stat.Icon;
+        return (
+          <div key={idx} className="bg-card border rounded-lg p-3.5 flex flex-col justify-between gap-3 shadow-sm h-full">
+            <div className="flex justify-between items-start gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold text-neutral-800 dark:text-white truncate">{stat.title}</h3>
+                <p className="text-xs text-muted-foreground truncate">{stat.subtitle}</p>
+              </div>
+              <div className="bg-secondary rounded-full h-8 w-8 flex items-center justify-center text-primary shrink-0">
+                <Icon size={16} strokeWidth={2} />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-primary">{stat.number}</div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

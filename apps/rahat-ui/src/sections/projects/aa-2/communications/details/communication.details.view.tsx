@@ -11,30 +11,26 @@ import { DialogComponent } from '../../activities/details/dialog.reuse';
 import {
   ArrowLeft,
   MessageSquare,
-  PhoneCall,
   Mail,
   Users,
   Mic,
   RefreshCcw,
-  Pencil,
   Trash,
-  ExternalLink,
-  CheckCircle2,
-  AlertTriangle,
-  Clock,
-  SendHorizontal
+  SendHorizontal,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { toast } from 'react-toastify';
-import { mockData } from '../components/communications.table';
+import { useDeleteCommunication, useGetCommunication, useListAllTransports, useTriggerCommunicationBroadcast, useBeneficiariesGroups, useStakeholdersGroups } from '@rahat-ui/query';
+import { toCommunicationRecord } from '../components/useCommunicationsTableColumns';
+import { resolveChannelByTransportId } from '../utils/communications.utils';
+import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
+import { UUID } from 'crypto';
 
 export default function CommunicationDetailsView() {
   const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const formatDigits = useLabelDigits();
   const formatDate = useDateFormat();
   const router = useRouter();
@@ -44,10 +40,48 @@ export default function CommunicationDetailsView() {
 
   const [activeTab, setActiveTab] = useState('communications');
 
-  const record = mockData.find((d) => d.id === commId) || mockData[0];
+  const appTransports = useListAllTransports();
+  const { data: communication, isLoading, isError, refetch, isFetching } = useGetCommunication(projectId as UUID, commId);
+  const deleteCommunication = useDeleteCommunication();
+  const triggerBroadcast = useTriggerCommunicationBroadcast();
+  const { data: beneficiaryGroupsData } = useBeneficiariesGroups(projectId as UUID, { page: 1, perPage: 100 });
+  const { data: stakeholderGroupsData } = useStakeholdersGroups(projectId as UUID, { page: 1, perPage: 100 });
+  const isMutating = deleteCommunication.isPending || triggerBroadcast.isPending;
+
   const communicationsListPath = `/projects/aa/${projectId}/communications`;
 
-  if (!record) {
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-65px)] p-4">
+        <Back path={communicationsListPath} />
+        <div className="h-full flex flex-col justify-center items-center space-y-3">
+          <p className="text-gray-500 text-sm">{t('LOADING')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const raw = (communication as any)?.data ?? communication;
+
+  if (isError) {
+    return (
+      <div className="h-[calc(100vh-65px)] p-4">
+        <Back path={communicationsListPath} />
+        <div className="h-full flex flex-col justify-center items-center space-y-3">
+          <p className="text-gray-500 text-sm">{t('ERROR')}</p>
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="text-primary hover:underline text-sm flex items-center font-medium disabled:opacity-50"
+          >
+            <RefreshCcw className="w-4 h-4 mr-2" /> {t('RETRY_BROADCAST')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!raw?.uuid) {
     return (
       <div className="h-[calc(100vh-65px)] p-4">
         <Back path={communicationsListPath} />
@@ -63,6 +97,16 @@ export default function CommunicationDetailsView() {
       </div>
     );
   }
+
+  const record = toCommunicationRecord(
+    raw,
+    resolveChannelByTransportId(appTransports, raw?.transportId, raw?.audioURL),
+  );
+  const targets = raw?.targets ?? [];
+  const audioURL = typeof raw?.audioURL === 'object' ? raw.audioURL : null;
+  const smsInfo = record.channel === 'SMS' && typeof raw?.message === 'string' && raw.message
+    ? getSmsInfo(raw.message)
+    : null;
 
   const getIcon = () => {
     switch (record.channel) {
@@ -102,18 +146,74 @@ export default function CommunicationDetailsView() {
     }
   };
 
-  const percent = Math.round((record.delivered / (record.recipients || 1)) * 100) || 0;
+  const percent = record.recipients > 0 ? Math.round((record.delivered / record.recipients) * 100) : 0;
   const targetBeneficiaries = record.targetAudience?.beneficiaries || [];
   const targetStakeholders = record.targetAudience?.stakeholders || [];
   const totalGroups = targetBeneficiaries.length + targetStakeholders.length;
+  const hasFailedTargets = targets.some((target: any) => target?.status === 'FAILED');
+  const hasPendingTargets = targets.some(
+    (target: any) => target?.status === 'PENDING' || target?.status === 'PROCESSING',
+  );
+
+  const getGroupDetails = (groupId: string, groupType: string, targetGroupObj?: any) => {
+    if (targetGroupObj?.name) {
+      const count =
+        targetGroupObj?._count?.beneficiaries ??
+        targetGroupObj?._count?.stakeholders ??
+        targetGroupObj?.beneficiaries?.length ??
+        targetGroupObj?.stakeholders?.length ??
+        0;
+      return { name: targetGroupObj.name, count };
+    }
+
+    const isBeneficiary = groupType === 'BENEFICIARY';
+    const rawList = isBeneficiary
+      ? (beneficiaryGroupsData as any)?.data ?? beneficiaryGroupsData ?? []
+      : (stakeholderGroupsData as any)?.data ?? stakeholderGroupsData ?? [];
+
+    const found = (rawList as any[]).find((g: any) => g?.uuid === groupId || g?.id === groupId);
+    if (found) {
+      const count = isBeneficiary
+        ? (found._count?.beneficiaries ?? found?.groupedBeneficiaries?.length ?? found?.beneficiaries?.length ?? 0)
+        : (found._count?.stakeholders ?? found?.stakeholders?.length ?? 0);
+      return { name: found.name, count };
+    }
+
+    return { name: groupId || (isBeneficiary ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')), count: 0 };
+  };
+
+  const totalAudienceReach = targets.reduce((sum: number, target: any) => {
+    const info = getGroupDetails(target.groupId, target.groupType, target.group);
+    return sum + (info.count || 0);
+  }, 0);
+
+  const handleSendConfirm = () => {
+    if (isMutating) return;
+    triggerBroadcast.mutate({
+      projectUUID: projectId as UUID,
+      communicationUUID: commId,
+    });
+  };
 
   const handleRetryConfirm = () => {
-    toast.success(t('COMMUNICATION_RETRY_SUCCESS'));
+    if (isMutating) return;
+    triggerBroadcast.mutate({
+      projectUUID: projectId as UUID,
+      communicationUUID: commId,
+    });
   };
 
   const handleDeleteConfirm = () => {
-    toast.success(t('DELETE_COMMUNICATION'));
-    router.push(communicationsListPath);
+    if (isMutating) return;
+    deleteCommunication.mutate(
+      {
+        projectUUID: projectId as UUID,
+        communicationUUID: commId,
+      },
+      {
+        onSuccess: () => router.push(communicationsListPath),
+      },
+    );
   };
 
   return (
@@ -145,33 +245,37 @@ export default function CommunicationDetailsView() {
               />
             </TooltipWrapper>
 
-            <TooltipWrapper tip={t('EDIT_COMMUNICATION')}>
-              <DialogComponent
-                buttonIcon={Pencil}
-                buttonText={t('EDIT')}
-                dialogTitle={t('EDIT_COMMUNICATION')}
-                dialogDescription={t('EDIT_COMMUNICATION')}
-                confirmButtonText={t('CONFIRM')}
-                handleClick={() => router.push(`/projects/aa/${projectId}/communications/add`)}
-                buttonClassName="rounded-sm w-full"
-                confirmButtonClassName="rounded-sm w-full bg-primary"
-                variant="outline"
-              />
-            </TooltipWrapper>
+            {hasPendingTargets && !hasFailedTargets && (
+              <TooltipWrapper tip={t('SEND_BROADCAST')}>
+                <DialogComponent
+                  buttonIcon={SendHorizontal}
+                  buttonText={t('SEND_BROADCAST')}
+                  dialogTitle={t('SEND_BROADCAST')}
+                  dialogDescription={t('SEND_BROADCAST_CONFIRM')}
+                  confirmButtonText={t('CONFIRM')}
+                  handleClick={handleSendConfirm}
+                  buttonClassName="rounded-sm w-full"
+                  confirmButtonClassName="rounded-sm w-full bg-primary"
+                  variant="outline"
+                />
+              </TooltipWrapper>
+            )}
 
-            <TooltipWrapper tip={t('RETRY_BROADCAST')}>
-              <DialogComponent
-                buttonIcon={RefreshCcw}
-                buttonText={t('RETRY_FAILED')}
-                dialogTitle={t('RETRY_BROADCAST')}
-                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM')}
-                confirmButtonText={t('CONFIRM')}
-                handleClick={handleRetryConfirm}
-                buttonClassName="rounded-sm w-full"
-                confirmButtonClassName="rounded-sm w-full bg-primary"
-                variant="outline"
-              />
-            </TooltipWrapper>
+            {hasFailedTargets && (
+              <TooltipWrapper tip={t('RETRY_BROADCAST')}>
+                <DialogComponent
+                  buttonIcon={RefreshCcw}
+                  buttonText={t('RETRY_FAILED')}
+                  dialogTitle={t('RETRY_BROADCAST')}
+                  dialogDescription={t('RETRY_COMMUNICATION_CONFIRM')}
+                  confirmButtonText={t('CONFIRM')}
+                  handleClick={handleRetryConfirm}
+                  buttonClassName="rounded-sm w-full"
+                  confirmButtonClassName="rounded-sm w-full bg-primary"
+                  variant="outline"
+                />
+              </TooltipWrapper>
+            )}
           </div>
         </div>
       </div>
@@ -195,16 +299,18 @@ export default function CommunicationDetailsView() {
                   {targetBeneficiaries.length > 0 && targetStakeholders.length > 0
                     ? `${t('BENEFICIARIES')} & ${t('STAKEHOLDERS')}`
                     : targetBeneficiaries.length > 0
-                    ? t('BENEFICIARIES')
-                    : t('STAKEHOLDERS')}
+                      ? t('BENEFICIARIES')
+                      : t('STAKEHOLDERS')}
                 </span>
               </TooltipWrapper>
 
-              <TooltipWrapper tip={`${t('SMS_CREDIT')}: ${formatDigits(1)}`}>
-                <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
-                  {formatDigits(1)} {t('SMS_CREDIT')}
-                </span>
-              </TooltipWrapper>
+              {smsInfo && (
+                <TooltipWrapper tip={`${t('SMS_CREDIT')}: ${formatDigits(smsInfo.smsCredits)}`}>
+                  <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+                    {formatDigits(smsInfo.smsCredits)} {t(smsInfo.smsCredits === 1 ? 'SMS_CREDIT' : 'SMS_CREDITS')}
+                  </span>
+                </TooltipWrapper>
+              )}
 
               <div className="ml-auto">
                 <TooltipWrapper tip={`${t('STATUS')}: ${t(record.status)}`}>
@@ -227,22 +333,27 @@ export default function CommunicationDetailsView() {
               {record.channel === 'VOICE' ? (
                 <div className="bg-slate-50 p-3 rounded-lg border border-gray-200 space-y-2">
                   <div className="flex items-center justify-between text-xs text-gray-600">
-                    <span className="font-medium">audio_broadcast_sample.mp3</span>
-                    <span>0:45</span>
+                    <span className="font-medium">{audioURL?.fileName ?? t('VOICE_RECORDING')}</span>
                   </div>
-                  <audio
-                    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-                    controls
-                    className="w-full h-8 rounded"
-                  />
-                  <div className="pt-2 border-t border-gray-200">
-                    <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
-                      {t('TRANSCRIPT')}
-                    </p>
-                    <p className="text-xs text-gray-700 italic leading-relaxed">
-                      "{record.description}"
-                    </p>
-                  </div>
+                  {audioURL?.mediaURL ? (
+                    <audio
+                      src={audioURL.mediaURL}
+                      controls
+                      className="w-full h-8 rounded"
+                    />
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">{t('NO_DATA_AVAILABLE')}</p>
+                  )}
+                  {!!record.description && (
+                    <div className="pt-2 border-t border-gray-200">
+                      <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
+                        {t('TRANSCRIPT')}
+                      </p>
+                      <p className="text-xs text-gray-700 italic leading-relaxed">
+                        "{record.description}"
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="bg-slate-50 p-3 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-800 leading-relaxed whitespace-pre-wrap font-sans">
@@ -255,11 +366,11 @@ export default function CommunicationDetailsView() {
             <div className="mt-4 pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500 gap-1">
               <div>
                 <span className="font-medium text-gray-700">{t('STARTED_AT')}: </span>
-                {formatDate(record.date, 'MMMM d, yyyy, h:mm:ss a') || record.date}
+                {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt}
               </div>
               <div>
                 <span className="font-medium text-gray-700">{t('COMPLETED_AT')}: </span>
-                {formatDate(record.date, 'MMMM d, yyyy, h:mm:ss a') || record.date}
+                {formatDate(raw?.updatedAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.updatedAt}
               </div>
             </div>
           </div>
@@ -279,10 +390,14 @@ export default function CommunicationDetailsView() {
               <Progress value={percent} className="h-2" />
             </div>
 
-            <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-gray-100">
               <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                <p className="text-[11px] text-gray-500 mb-0.5">{t('TOTAL_RECIPIENTS')}</p>
+                <p className="text-[11px] text-gray-500 mb-0.5">{t('TOTAL_GROUPS') || 'Total Groups'}</p>
                 <p className="text-sm font-bold text-gray-900">{formatDigits(record.recipients)}</p>
+              </div>
+              <div className="p-2.5 bg-blue-50 rounded-lg border border-blue-100">
+                <p className="text-[11px] text-blue-700 mb-0.5">{t('TOTAL_AUDIENCE_REACH') || 'Audience Reach'}</p>
+                <p className="text-sm font-bold text-blue-700">{formatDigits(totalAudienceReach)}</p>
               </div>
               <div className="p-2.5 bg-green-50 rounded-lg border border-green-100">
                 <p className="text-[11px] text-green-700 mb-0.5">{t('SUCCESSFUL')}</p>
@@ -318,16 +433,29 @@ export default function CommunicationDetailsView() {
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {targetBeneficiaries.map((groupName) => (
-                      <TooltipWrapper key={groupName} tip={groupName}>
-                        <Badge
-                          variant="secondary"
-                          className="text-xs font-medium px-2.5 py-0.5 max-w-[240px] truncate cursor-default bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/60 rounded-md"
-                        >
-                          {groupName}
-                        </Badge>
-                      </TooltipWrapper>
-                    ))}
+                    {targets
+                      .filter((target: any) => target?.groupType === 'BENEFICIARY')
+                      .map((target: any) => {
+                        const info = getGroupDetails(target.groupId, 'BENEFICIARY', target.group);
+                        const isEmpty = info.count === 0;
+                        return (
+                          <Badge
+                            key={target.uuid || target.groupId}
+                            variant="secondary"
+                            className="text-xs font-medium px-2.5 py-1 max-w-[280px] truncate cursor-default bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/60 rounded-md flex items-center gap-1.5"
+                          >
+                            <span>{info.name}</span>
+                            <span
+                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1 ${isEmpty
+                                  ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                  : 'bg-slate-200 text-slate-800'
+                                }`}
+                            >
+                              {formatDigits(info.count)}
+                            </span>
+                          </Badge>
+                        );
+                      })}
                   </div>
                 </div>
               )}
@@ -340,16 +468,29 @@ export default function CommunicationDetailsView() {
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {targetStakeholders.map((groupName) => (
-                      <TooltipWrapper key={groupName} tip={groupName}>
-                        <Badge
-                          variant="outline"
-                          className="text-xs font-medium px-2.5 py-0.5 max-w-[240px] truncate cursor-default bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-md"
-                        >
-                          {groupName}
-                        </Badge>
-                      </TooltipWrapper>
-                    ))}
+                    {targets
+                      .filter((target: any) => target?.groupType === 'STAKEHOLDERS' || target?.groupType === 'STAKEHOLDER')
+                      .map((target: any) => {
+                        const info = getGroupDetails(target.groupId, target.groupType, target.group);
+                        const isEmpty = info.count === 0;
+                        return (
+                          <Badge
+                            key={target.uuid || target.groupId}
+                            variant="outline"
+                            className="text-xs font-medium px-2.5 py-1 max-w-[280px] truncate cursor-default bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-md flex items-center gap-1.5"
+                          >
+                            <span>{info.name}</span>
+                            <span
+                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1 ${isEmpty
+                                  ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                  : 'bg-slate-100 text-slate-700'
+                                }`}
+                            >
+                              {formatDigits(info.count)}
+                            </span>
+                          </Badge>
+                        );
+                      })}
                   </div>
                 </div>
               )}
@@ -386,9 +527,8 @@ export default function CommunicationDetailsView() {
               >
                 {t('COMMUNICATIONS')}
                 <Badge
-                  className={`h-5 w-5 justify-center text-white px-2 py-0 ${
-                    activeTab === 'communications' ? 'bg-blue-500' : 'bg-gray-500'
-                  }`}
+                  className={`h-5 w-5 justify-center text-white px-2 py-0 ${activeTab === 'communications' ? 'bg-blue-500' : 'bg-gray-500'
+                    }`}
                 >
                   {formatDigits(1)}
                 </Badge>
@@ -400,11 +540,10 @@ export default function CommunicationDetailsView() {
               >
                 {t('HISTORY')}
                 <Badge
-                  className={`h-5 w-5 justify-center text-white px-2 py-0 ${
-                    activeTab === 'history' ? 'bg-blue-500' : 'bg-gray-500'
-                  }`}
+                  className={`h-5 w-5 justify-center text-white px-2 py-0 ${activeTab === 'history' ? 'bg-blue-500' : 'bg-gray-500'
+                    }`}
                 >
-                  {formatDigits(2)}
+                  {formatDigits(targets.length)}
                 </Badge>
               </TabsTrigger>
             </TabsList>
@@ -429,9 +568,7 @@ export default function CommunicationDetailsView() {
 
                           <div className="ml-auto flex items-center gap-2">
                             <TooltipWrapper tip={`${t('STATUS')}: ${t(record.status)}`}>
-                              <span className="text-green-700 bg-green-200 text-xs px-2 py-0.5 rounded-sm">
-                                {t('COMPLETED')}
-                              </span>
+                              {getStatusBadge(record.status)}
                             </TooltipWrapper>
                           </div>
                         </div>
@@ -440,9 +577,11 @@ export default function CommunicationDetailsView() {
                           <span>{t(record.channel)}</span>
                           <span>•</span>
                           <span>
-                            {targetBeneficiaries.length > 0
-                              ? `${t('BENEFICIARIES')}`
-                              : `${t('STAKEHOLDERS')}`}
+                            {totalGroups === 0
+                              ? t('NONE_SPECIFIED')
+                              : targetBeneficiaries.length > 0
+                                ? `${t('BENEFICIARIES')}`
+                                : `${t('STAKEHOLDERS')}`}
                           </span>
                           <span>•</span>
                           <span>
@@ -450,21 +589,31 @@ export default function CommunicationDetailsView() {
                           </span>
                           <span>•</span>
                           <span>
-                            {formatDigits(1)} {t('SMS_CREDIT')}
+                            {formatDigits(totalAudienceReach)} {t('INDIVIDUALS') || 'Recipients'}
                           </span>
+                          {smsInfo && (
+                            <>
+                              <span>•</span>
+                              <span>
+                                {formatDigits(smsInfo.smsCredits)} {t(smsInfo.smsCredits === 1 ? 'SMS_CREDIT' : 'SMS_CREDITS')}
+                              </span>
+                            </>
+                          )}
                         </div>
 
                         <p className="text-sm font-semibold text-gray-900 mb-1">{record.title}</p>
-                        <p className="text-xs text-gray-600 mb-3">{record.description}</p>
+                        {!!record.description && (
+                          <p className="text-xs text-gray-600 mb-3">{record.description}</p>
+                        )}
 
                         <div className="text-xs text-gray-500 pt-2 border-t border-gray-100 space-y-0.5">
                           <p>
                             <span className="font-medium">{t('STARTED_AT')}: </span>
-                            {record.date} at 11:22:29 AM
+                            {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt}
                           </p>
                           <p>
                             <span className="font-medium">{t('COMPLETED_AT')}: </span>
-                            {record.date} at 11:22:30 AM
+                            {formatDate(raw?.updatedAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.updatedAt}
                           </p>
                         </div>
                       </div>
@@ -477,96 +626,67 @@ export default function CommunicationDetailsView() {
             {/* History Tab Content */}
             <TabsContent value="history" className="mt-3">
               <div className="overflow-y-auto scrollbar-hidden xl:h-[calc(100vh-320px)] h-[calc(100vh-200px)] space-y-3">
-                <Card className="rounded-sm border border-gray-200">
-                  <CardContent className="pt-4 px-4 pb-4">
-                    <div className="flex gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 flex-shrink-0">
-                        <MessageSquare className="h-5 w-5 text-gray-500" />
-                      </div>
+                {targets.length === 0 && (
+                  <p className="text-xs text-muted-foreground italic text-center py-6">
+                    {t('NO_DATA_AVAILABLE')}
+                  </p>
+                )}
+                {targets.map((target: any) => {
+                  const groupInfo = getGroupDetails(target?.groupId, target?.groupType, target?.group);
+                  const isEmpty = groupInfo.count === 0;
+                  return (
+                    <Card key={target.uuid} className="rounded-sm border border-gray-200">
+                      <CardContent className="pt-4 px-4 pb-4">
+                        <div className="flex gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 flex-shrink-0">
+                            {getIcon()}
+                          </div>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-medium text-gray-900 truncate w-[320px]">
-                            Transport Communication
-                          </h3>
-                          <div className="ml-auto flex items-center gap-2">
-                            <span className="text-green-700 bg-green-200 text-xs px-2 py-0.5 rounded-sm">
-                              {t('COMPLETED')}
-                            </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-medium text-gray-900 truncate max-w-[280px]">
+                                {groupInfo.name}
+                              </h3>
+                              <span
+                                className={`text-xs font-normal px-2 py-0.5 rounded-sm ${isEmpty
+                                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                    : 'bg-gray-100 text-gray-600'
+                                  }`}
+                              >
+                                {formatDigits(groupInfo.count)} {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARIES') : t('STAKEHOLDERS')}
+                                {isEmpty && ' (0 Recipients)'}
+                              </span>
+                              <div className="ml-auto flex items-center gap-2">
+                                {getStatusBadge(
+                                  target?.status === 'SENT' ? 'DELIVERED' : target?.status === 'FAILED' ? 'FAILED' : 'IN_PROGRESS',
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="text-xs text-gray-500 mb-2 flex items-center gap-1.5 flex-wrap">
+                              <span>{t(record.channel)}</span>
+                              <span>•</span>
+                              <span>{target?.groupType === 'BENEFICIARY' ? t('BENEFICIARIES') : t('STAKEHOLDERS')}</span>
+                            </div>
+
+                            {!!target?.error && (
+                              <p className="text-xs text-red-600 mb-3 break-words">{target.error}</p>
+                            )}
+
+                            <div className="text-xs text-gray-500 pt-2 border-t border-gray-100 space-y-0.5">
+                              {!!target?.sessionId && (
+                                <p>
+                                  <span className="font-medium">Session: </span>
+                                  {target.sessionId}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
-
-                        <div className="text-xs text-gray-500 mb-2 flex items-center gap-1.5 flex-wrap">
-                          <span>{t("SMS")}</span>
-                          <span>•</span>
-                          <span>{t("STAKEHOLDERS")}</span>
-                          <span>•</span>
-                          <span>{t("GROUP_NAME_LABEL")}</span>
-                          <span>•</span>
-                          <span>{formatDigits(1)} {t("SMS_CREDIT")}</span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-900 mb-1">Early Warning Communication Test</p>
-
-                        <div className="text-xs text-gray-500 pt-2 border-t border-gray-100 space-y-0.5">
-                          <p>
-                            <span className="font-medium">{t('STARTED_AT')}: </span>
-                            {formatDate('2026-09-17T11:22:29', 'MMMM d, yyyy, h:mm:ss a')}
-                          </p>
-                          <p>
-                            <span className="font-medium">{t('COMPLETED_AT')}: </span>
-                            {formatDate('2026-09-17T11:22:30', 'MMMM d, yyyy, h:mm:ss a')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="rounded-sm border border-gray-200">
-                  <CardContent className="pt-4 px-4 pb-4">
-                    <div className="flex gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 flex-shrink-0">
-                        <Mail className="h-5 w-5 text-gray-500" />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-medium text-gray-900 truncate w-[320px]">
-                            Transport Communication
-                          </h3>
-                          <div className="ml-auto flex items-center gap-2">
-                            <span className="text-green-700 bg-green-200 text-xs px-2 py-0.5 rounded-sm">
-                              {t('COMPLETED')}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="text-xs text-gray-500 mb-2 flex items-center gap-1.5 flex-wrap">
-                          <span>{t("EMAIL")}</span>
-                          <span>•</span>
-                          <span>{t("STAKEHOLDERS")}</span>
-                          <span>•</span>
-                          <span>{t("GROUP_NAME_LABEL")}</span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-900 mb-1">Early Warning Communication Test</p>
-                        <p className="text-xs text-gray-600 mb-3">Notice sent to municipal transport stakeholders</p>
-
-                        <div className="text-xs text-gray-500 pt-2 border-t border-gray-100 space-y-0.5">
-                          <p>
-                            <span className="font-medium">{t('STARTED_AT')}: </span>
-                            {formatDate('2026-09-17T11:22:29', 'MMMM d, yyyy, h:mm:ss a')}
-                          </p>
-                          <p>
-                            <span className="font-medium">{t('COMPLETED_AT')}: </span>
-                            {formatDate('2026-09-17T11:22:32', 'MMMM d, yyyy, h:mm:ss a')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </TabsContent>
           </Tabs>

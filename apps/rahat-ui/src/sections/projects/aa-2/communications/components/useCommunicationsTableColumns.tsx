@@ -6,13 +6,14 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
-import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
-import { Eye, MessageSquare, PhoneCall, Mail } from 'lucide-react';
+import { Eye, MessageSquare, PhoneCall, Mail, SendHorizontal } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
-import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { aggregateTargetStatus } from '../utils/communications.utils';
+import { useTriggerCommunicationBroadcast } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export type CommunicationRecord = {
   id: string;
@@ -31,10 +32,65 @@ export type CommunicationRecord = {
   date: string;
 };
 
+export type BackendCommunication = {
+  uuid: string;
+  title: string;
+  message?: string | null;
+  subject?: string | null;
+  audioURL?: { mediaURL?: string; fileName?: string } | null;
+  transportId?: string | null;
+  createdBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  targets?: {
+    uuid: string;
+    groupId: string;
+    groupType: string;
+    status?: string;
+    sessionId?: string | null;
+  }[];
+};
+
+export const toCommunicationRecord = (
+  item: BackendCommunication,
+  channel: CommunicationRecord['channel'],
+): CommunicationRecord => {
+  const targets = item?.targets ?? [];
+  const beneficiaries = targets
+    .filter((target) => target?.groupType === 'BENEFICIARY')
+    .map((target) => target.groupId);
+  const stakeholders = targets
+    .filter((target) => target?.groupType === 'STAKEHOLDERS' || target?.groupType === 'STAKEHOLDER')
+    .map((target) => target.groupId);
+  const delivered = targets.filter((target) => target?.status === 'SENT').length;
+  const failed = targets.filter((target) => target?.status === 'FAILED').length;
+  const message =
+    typeof item?.message === 'string'
+      ? item.message
+      : item?.subject ?? '';
+
+  return {
+    id: item.uuid,
+    title: item.title,
+    description: message,
+    channel,
+    targetAudience: { beneficiaries, stakeholders },
+    recipients: targets.length,
+    delivered,
+    failed,
+    sender: item.createdBy ?? undefined,
+    status: aggregateTargetStatus(targets),
+    date: item.createdAt,
+  };
+};
+
 export default function useCommunicationsTableColumns() {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
   const formatDate = useDateFormat();
+  const { id: projectId } = useParams();
+  const router = useRouter();
+  const triggerBroadcast = useTriggerCommunicationBroadcast();
   const columns: ColumnDef<CommunicationRecord>[] = [
     {
       accessorKey: 'title',
@@ -78,21 +134,17 @@ export default function useCommunicationsTableColumns() {
         const aud = row.getValue('targetAudience') as CommunicationRecord['targetAudience'];
         const benCount = aud.beneficiaries?.length || 0;
         const stakeCount = aud.stakeholders?.length || 0;
-        
+
         return (
           <div className="flex flex-col gap-1 w-full max-w-[200px]">
             {benCount > 0 && (
               <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-medium line-clamp-1 w-max">
-                {benCount === 1
-                  ? aud.beneficiaries[0]
-                  : `${formatDigits(benCount)} ${t("BENEFICIARY_GROUPS")}`}
+                {`${formatDigits(benCount)} ${t("BENEFICIARY_GROUPS")}`}
               </Badge>
             )}
             {stakeCount > 0 && (
               <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-medium line-clamp-1 w-max bg-white">
-                {stakeCount === 1
-                  ? aud.stakeholders[0]
-                  : `${formatDigits(stakeCount)} ${t("STAKEHOLDER_GROUPS")}`}
+                {`${formatDigits(stakeCount)} ${t("STAKEHOLDER_GROUPS")}`}
               </Badge>
             )}
             {benCount === 0 && stakeCount === 0 && (
@@ -127,7 +179,7 @@ export default function useCommunicationsTableColumns() {
       meta: { className: 'w-[180px]' },
       cell: ({ row }) => {
         const item = row.original;
-        const percent = Math.round((item.delivered / item.recipients) * 100);
+        const percent = item.recipients > 0 ? Math.round((item.delivered / item.recipients) * 100) : 0;
         return (
           <div className="space-y-1 w-full max-w-[150px]">
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -149,7 +201,7 @@ export default function useCommunicationsTableColumns() {
         const dateVal = row.getValue('date') as string;
         return (
           <span className="text-xs text-muted-foreground">
-            {formatDate(dateVal, 'yyyy-MM-dd') || formatDigits(dateVal)}
+            {formatDate(dateVal, 'yyyy-MM-dd') || dateVal}
           </span>
         );
       },
@@ -158,14 +210,30 @@ export default function useCommunicationsTableColumns() {
       id: 'actions',
       header: t('ACTION'),
       enableHiding: false,
-      meta: { className: 'w-[70px]' },
+      meta: { className: 'w-[100px]' },
       cell: ({ row }) => {
-        const { id: projectId } = useParams();
-        const router = useRouter();
         const commId = row.original.id;
+        const isSent = row.original.status === 'DELIVERED';
+
+        const handleSend = () => {
+          if (triggerBroadcast.isPending) return;
+          triggerBroadcast.mutate({
+            projectUUID: projectId as UUID,
+            communicationUUID: commId,
+          });
+        };
 
         return (
           <div className="flex items-center space-x-2">
+            {!isSent && (
+              <span onClick={handleSend}>
+                <TooltipComponent
+                  Icon={SendHorizontal}
+                  tip={t('SEND_BROADCAST')}
+                  iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
+                />
+              </span>
+            )}
             <span onClick={() => router.push(`/projects/aa/${projectId}/communications/${commId}`)}>
               <TooltipComponent
                 Icon={Eye}

@@ -11,7 +11,9 @@ import { ProjectTypes } from '@rahataid/sdk/enums';
 import { useNavData } from 'apps/rahat-ui/src/app/config-nav';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { UUID } from 'crypto';
-import { Check, ChevronDown, X } from 'lucide-react';
+import { Check, ChevronDown, Search, X } from 'lucide-react';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -20,30 +22,7 @@ import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import type { Project } from '@rahataid/sdk/project/project.types';
 import { StatusBadge } from '../projectList';
-
-function ProjectStatusDot({
-  status,
-  textClassName = 'text-xs',
-}: {
-  status?: string;
-  textClassName?: string;
-}) {
-  if (!status) return null;
-  const dotColor =
-    status === 'ACTIVE'
-      ? 'bg-green-500'
-      : status === 'NOT_READY'
-      ? 'bg-yellow-500'
-      : 'bg-red-500';
-  return (
-    <span className="flex items-center gap-1 ">
-      <span className={`h-2 w-2 shrink-0 rounded-full ${dotColor}`} />
-      <span className={`font-medium text-foreground  ${textClassName}`}>
-        {status}
-      </span>
-    </span>
-  );
-}
+import { useTranslations } from 'next-intl';
 
 export const useProjectHeaderItems = (projectType: string) => {
   const { id } = useParams();
@@ -53,6 +32,13 @@ export const useProjectHeaderItems = (projectType: string) => {
   const projectSwitchDialog = useBoolean(false);
   const [pendingProject, setPendingProject] = useState<Project | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [projectSearch, setProjectSearch] = useState('');
+
+  const handleMenuOpenChange = (open: boolean) => {
+    setMenuOpen(open);
+    if (!open) setProjectSearch('');
+  };
+  const tg = useTranslations('GLOBAL');
 
   const project = useProjectStore((p) => p.singleProject);
   const { data, subData } = useNavData();
@@ -61,6 +47,16 @@ export const useProjectHeaderItems = (projectType: string) => {
   const projectName = project?.name || '';
   const isCVA = project?.type === 'cva';
   const projects: Project[] = projectList?.data ?? [];
+
+  const visibleProjects = projects.filter((p) => {
+    const q = projectSearch.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.type || '').toLowerCase().includes(q) ||
+      (p.status || '').toLowerCase().includes(q)
+    );
+  });
 
   const handleSelectProject = (target: Project) => {
     if (!target.uuid || target.uuid === id) return;
@@ -95,76 +91,105 @@ export const useProjectHeaderItems = (projectType: string) => {
 
   const projectHeader = (
     <div className="flex items-center ">
-      <Badge className="bg-blue-500 text-white rounded-full px-3 py-1">
+      {/* <Badge className="bg-blue-500 text-white rounded-full px-3 py-1">
         {isCVA ? 'CASH VOUCHER ASSITANCE' : projectType}
-      </Badge>
-      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+      </Badge> */}
+      <DropdownMenu open={menuOpen} onOpenChange={handleMenuOpenChange}>
         <DropdownMenuTrigger className="ml-2 flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-secondary border rounded-sm">
-          <span className="flex flex-col items-start leading-tight">
-            <span className="text-[13px] font-bold tracking-tight text-foreground">
+          <span className="flex gap-2 items-center">
+            <span className="text-[15px] font-bold  text-foreground">
               {projectName || 'Select project'}
             </span>
+            <Badge
+              variant="outline"
+              className="border-primary text-primary cursor-auto bg-secondary"
+            >
+              {project?.type?.toUpperCase()}
+            </Badge>
           </span>
           <ChevronDown size={16} className="shrink-0 text-muted-foreground" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-80 p-1.5">
           <p className="px-2 pb-1 pt-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Switch project
+            {tg('SWITCH_PROJECT')}
           </p>
-          {projects.map((p) => {
-            const isCurrent = p.uuid === id;
-            return (
-              <DropdownMenuItem
-                key={p.uuid}
-                // preventDefault skips Radix's default select-close sequence,
-                // whose focus cleanup would otherwise dismiss the confirm
-                // dialog opened synchronously below.
-                onSelect={(e) => {
-                  e.preventDefault();
-                  setMenuOpen(false);
-                  handleSelectProject(p);
-                }}
-                className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 ${
-                  isCurrent ? 'bg-accent' : ''
-                }`}
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="truncate text-sm font-semibold">
-                    {p?.name || 'Untitled project'}
+          <div
+            className="relative px-1 pb-1.5"
+            onKeyDown={(e) => {
+              // Keep typing in the search box from triggering the menu's
+              // built-in typeahead; Escape/Tab still reach the menu.
+              if (e.key !== 'Escape' && e.key !== 'Tab') e.stopPropagation();
+            }}
+          >
+            <Search
+              size={14}
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-[calc(50%+2px)] text-muted-foreground"
+            />
+            <Input
+              value={projectSearch}
+              onChange={(e) => setProjectSearch(e.target.value)}
+              placeholder="Search projects..."
+              className="h-8 pl-8 text-sm"
+            />
+          </div>
+          <ScrollArea className="max-h-[300px]">
+            {visibleProjects.map((p) => {
+              const isCurrent = p.uuid === id;
+              return (
+                <DropdownMenuItem
+                  key={p.uuid}
+                  // preventDefault skips Radix's default select-close sequence,
+                  // whose focus cleanup would otherwise dismiss the confirm
+                  // dialog opened synchronously below.
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    handleSelectProject(p);
+                  }}
+                  className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 ${
+                    isCurrent ? 'bg-accent' : ''
+                  }`}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="truncate text-sm font-semibold">
+                      {p?.name || 'Untitled project'}
+                    </span>
+                    <span className="mt-1 flex items-center gap-1.5">
+                      <Badge
+                        variant="outline"
+                        className="border-primary text-primary cursor-auto bg-secondary"
+                      >
+                        {p?.type?.toUpperCase()}
+                      </Badge>
+                      <StatusBadge status={p?.status} />
+                    </span>
                   </span>
-                  <span className="mt-1 flex items-center gap-1.5">
-                    <Badge
-                      variant="outline"
-                      className="border-primary text-primary cursor-auto bg-secondary"
-                    >
-                      {p?.type?.toUpperCase()}
-                    </Badge>
-                    <StatusBadge status={p?.status} />
-                  </span>
-                </span>
-                {isCurrent && (
-                  <Check size={15} className="shrink-0 text-primary" />
-                )}
-              </DropdownMenuItem>
-            );
-          })}
-          {projects.length === 0 && (
-            <p className="px-2 py-1.5 text-sm text-muted-foreground">
-              No projects found
-            </p>
-          )}
+                  {isCurrent && (
+                    <Check size={15} className="shrink-0 text-primary" />
+                  )}
+                </DropdownMenuItem>
+              );
+            })}
+            {visibleProjects.length === 0 && (
+              <p className="px-2 py-1.5 text-sm text-muted-foreground">
+                {projects.length === 0
+                  ? 'No projects found'
+                  : 'No matching projects'}
+              </p>
+            )}
+          </ScrollArea>
         </DropdownMenuContent>
       </DropdownMenu>
       <ConfirmationDialog
         isConfirmationDialogOpen={projectSwitchDialog.value}
         onCancel={cancelProjectSwitch}
         onConfirm={confirmProjectSwitch}
-        dialogTitle="Switch project?"
+        dialogTitle={tg('SWITCH_PROJECT')}
         dialogMessage={
           pendingProject
-            ? `Switch to "${
-                pendingProject.name || 'Untitled project'
-              }"? Any unsaved changes on this page will be lost.`
+            ? tg('SWITCH_PROJECT_DESCRIPTION', {
+                projectName: pendingProject.name ?? 'Untitled project',
+              })
             : undefined
         }
       />

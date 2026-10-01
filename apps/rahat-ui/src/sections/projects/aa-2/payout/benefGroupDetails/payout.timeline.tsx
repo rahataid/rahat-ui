@@ -453,20 +453,7 @@ export default function PayoutTimeline({
         },
       },
       legend: {
-        show: true,
-        position: 'top',
-        horizontalAlign: 'left',
-        offsetY: -4,
-        markers: {
-          radius: 12,
-        },
-        itemMargin: {
-          horizontal: 10,
-          vertical: 0,
-        },
-        labels: {
-          colors: '#475569',
-        },
+        show: false,
       },
       // Peak annotation
       annotations: peakPoint
@@ -603,8 +590,8 @@ export default function PayoutTimeline({
 
       {/* Timeline Chart Card */}
       <div className="border border-gray-200 rounded-sm p-4 bg-white">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-2 border-b border-gray-100">
+          <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-sm font-semibold text-gray-900">
               {translateValue(tv, 'TRANSACTION_TIMELINE', { fallback: translateValue(tg, 'TIMELINE', { fallback: 'Transaction Timeline' }) })}
             </h2>
@@ -613,8 +600,18 @@ export default function PayoutTimeline({
                 {peakLabel}: {formatNum(peakPoint.total)} {txnsLabel} ({formatChartDate((peakPoint as any).exactTimestamp || peakPoint.timestamp, 'PPp', locale)})
               </span>
             )}
+            <div className="flex items-center gap-3.5 text-xs font-medium text-slate-600 sm:ml-2">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block" />
+                {translateValue(tv, 'TOTAL_TRANSACTIONS', { fallback: 'Total Transactions' })}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block" />
+                {translateValue(tg, 'COMPLETED', { fallback: 'Completed' })}
+              </span>
+            </div>
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
             {totalAmount > 0 && (
               <>
                 {translateValue(tg, 'DISBURSED', { fallback: 'Disbursed' })}:{' '}

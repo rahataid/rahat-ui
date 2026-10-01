@@ -421,7 +421,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
         <div
           className={`mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${
-            Number(payout?.extras?.group_gap) > 0 || (payout?.type === 'VENDOR' && Number(payout?.totalSkipOtp) > 0)
+            payout?.extras?.group_gap || payout?.type === 'VENDOR'
               ? 'xl:grid-cols-6 lg:grid-cols-3'
               : 'xl:grid-cols-5 lg:grid-cols-3'
           } gap-3 items-stretch`}
@@ -438,7 +438,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             />
           ))}
 
-          {Number(payout?.extras?.group_gap) > 0 && (
+          {payout?.extras?.group_gap && (
             <DataCard
               title={tv('GROUP_GAP')}
               smallNumber={formatNum(payout?.extras?.group_gap ?? 0)}
@@ -447,7 +447,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               infoTooltip={tv('GROUP_GAP_TOOLTIP')}
             />
           )}
-          {payout?.type === 'VENDOR' && Number(payout?.totalSkipOtp) > 0 ? (
+          {payout?.type === 'VENDOR' && (
             <DataCard
               title={tv('TOTAL_SKIP_OTP')}
               smallNumber={formatNum(payout?.totalSkipOtp ?? 0)}
@@ -455,7 +455,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               infoIcon={true}
               infoTooltip={tv('TOTAL_SKIP_OTP_TOOLTIP')}
             />
-          ) : null}
+          )}
         </div>
       </div>
 

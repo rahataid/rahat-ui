@@ -20,7 +20,6 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { UUID } from 'crypto';
-import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -35,6 +34,7 @@ type IProps = {
   projectModal: ProjectModalType;
   closeSecondPanel?: VoidFunction;
   assignedGroupId: string[];
+  onAssigningChange?: (assigning: boolean) => void;
 };
 
 export default function AssignBeneficiaryToProjectModal({
@@ -42,6 +42,7 @@ export default function AssignBeneficiaryToProjectModal({
   beneficiaryGroupDetail,
   closeSecondPanel,
   assignedGroupId,
+  onAssigningChange,
 }: IProps) {
   const assignBeneficiaryGroup = useAssignBenGroupToProject();
   const projectsList = useProjectList({ page: 1, perPage: 10 });
@@ -56,6 +57,7 @@ export default function AssignBeneficiaryToProjectModal({
   const handleAssignProject = async () => {
     if (!selectedProject) return alert(t('PLEASE_SELECT_A_PROJECT'));
     setIsAssigning(true);
+    onAssigningChange?.(true);
     try {
       await assignBeneficiaryGroup.mutateAsync({
         projectUUID: selectedProject,
@@ -66,6 +68,7 @@ export default function AssignBeneficiaryToProjectModal({
       // error toast handled in useAssignBenGroupToProject onError
     } finally {
       setIsAssigning(false);
+      onAssigningChange?.(false);
     }
   };
 
@@ -84,14 +87,6 @@ export default function AssignBeneficiaryToProjectModal({
       }}
     >
       <DialogContent>
-        {isAssigning && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-background/90">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm font-medium text-center px-4">
-              {t('ASSIGNING_GROUP_PLEASE_WAIT')}
-            </p>
-          </div>
-        )}
         <DialogHeader>
           <DialogTitle>{t('ASSIGN_PROJECT')}</DialogTitle>
           <DialogDescription>

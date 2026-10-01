@@ -23,7 +23,7 @@
     "SYNC_BENEFICIARY_GROUP": "Sync Beneficiary Group",
     "ARE_YOU_SURE_YOU_WANT_TO_SYNC_THIS_BENEFICIARY_GROUP": "Are you sure you want to sync this beneficiary group?",
     "INVALIDATE_GROUP_VALIDATION": "Invalidate Group Validation",
-    "ARE_YOU_SURE_YOU_WANT_TO_INVALIDATE_THIS_GROUP_VALIDATION": "Are you sure you want to invalidate the validation of all beneficiaries in this group?",
+    "ARE_YOU_SURE_YOU_WANT_TO_INVALIDATE_THIS_GROUP_VALIDATION": "Are you sure you want to reset verification for all <b>{purpose, select, BANK_TRANSFER {bank accounts} MOBILE_MONEY {phone numbers} other {beneficiaries}}</b> in this group? They will need to be verified again.",
     "GROUP_INVALIDATED_SUCCESSFULLY": "Group validation invalidated successfully.",
     "ERROR_WHILE_INVALIDATING_GROUP": "Error while invalidating group validation.",
     "VALIDATION_STATUS": "Validation Status",

@@ -326,10 +326,12 @@ export default function GroupDetailView() {
         onConfirm={handleForceInvalidateGroup}
         dialogTitle={t('INVALIDATE_GROUP_VALIDATION')}
         isDestructive
-        dialogMessage={t(
-          'ARE_YOU_SURE_YOU_WANT_TO_INVALIDATE_THIS_GROUP_VALIDATION',
-        )}
-      />
+      >
+        {t.rich('ARE_YOU_SURE_YOU_WANT_TO_INVALIDATE_THIS_GROUP_VALIDATION', {
+          purpose: group?.data?.groupPurpose ?? '',
+          b: (chunks) => <b className="font-semibold">{chunks}</b>,
+        })}
+      </ConfirmationDialog>
       <div className="p-4">
         <div className="flex justify-between items-center">
           <div>

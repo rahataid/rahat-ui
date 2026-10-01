@@ -4,7 +4,14 @@ import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Eye, Copy, CopyCheck, TriangleAlertIcon } from 'lucide-react';
+import {
+  Eye,
+  Copy,
+  CopyCheck,
+  TriangleAlertIcon,
+  LandmarkIcon,
+  Phone,
+} from 'lucide-react';
 import BeneficiaryDetail from './beneficiaryDetail';
 import {
   Tooltip,
@@ -18,7 +25,22 @@ import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { GroupPurpose } from '../../constants/beneficiary.const';
 import { useTranslations } from 'next-intl';
 
-export const useBeneficiaryTableColumns = () => {
+type ValidationStatus = 'VALID' | 'INVALID' | 'NOT_VALIDATED';
+
+const getValidationStatus = (row: any): ValidationStatus => {
+  const extras = row?.extras ?? {};
+  const isValid =
+    row?.groupPurpose === GroupPurpose.MOBILE_MONEY
+      ? extras.validPhoneNumber
+      : extras.validBankAccount;
+  if (isValid === true) return 'VALID';
+  if (isValid === false || extras.error) return 'INVALID';
+  return 'NOT_VALIDATED';
+};
+
+export const useBeneficiaryTableColumns = ({
+  showValidationStatus = false,
+}: { showValidationStatus?: boolean } = {}) => {
   const t = useTranslations('GLOBAL');
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
@@ -38,6 +60,64 @@ export const useBeneficiaryTableColumns = () => {
         closeSecondPanel={closeSecondPanel}
       />,
     );
+  };
+
+  const validationStatusColumn: ColumnDef<ListBeneficiary> = {
+    id: 'validationStatus',
+    header: t('VALIDATION_STATUS'),
+    cell: ({ row }) => {
+      const original = row.original as any;
+      const isMobileMoney =
+        original?.groupPurpose === GroupPurpose.MOBILE_MONEY;
+      const Icon = isMobileMoney ? Phone : LandmarkIcon;
+      const status = getValidationStatus(original);
+
+      const statusConfig = {
+        VALID: {
+          className: 'bg-green-50 text-green-600',
+          label: isMobileMoney
+            ? t('PHONE_NUMBER_VERIFIED')
+            : t('BANK_ACCOUNT_VERIFIED'),
+        },
+        INVALID: {
+          className: 'bg-red-50 text-red-500',
+          label: isMobileMoney
+            ? t('PHONE_NUMBER_VALIDATION_FAILED')
+            : t('BANK_ACCOUNT_VALIDATION_FAILED'),
+        },
+        NOT_VALIDATED: {
+          className: 'bg-gray-100 text-gray-400',
+          label: t('NOT_VALIDATED'),
+        },
+      }[status];
+
+      return (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={`inline-flex items-center justify-center rounded-full p-1.5 ${statusConfig.className}`}
+                aria-label={statusConfig.label}
+              >
+                <Icon className="h-4 w-4" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="max-w-80 rounded-sm break-words"
+            >
+              <p className="text-xs font-medium">{statusConfig.label}</p>
+              {status === 'INVALID' && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {original?.error ?? t('SOMETHING_WENT_WRONG')}
+                </p>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+    enableSorting: false,
   };
 
   const columns: ColumnDef<ListBeneficiary>[] = [
@@ -148,6 +228,7 @@ export const useBeneficiaryTableColumns = () => {
         return <div>{bankedStatus ? t(bankedStatus) : ''}</div>;
       },
     },
+    ...(showValidationStatus ? [validationStatusColumn] : []),
     {
       id: 'actions',
       header: t('ACTIONS'),
@@ -162,7 +243,7 @@ export const useBeneficiaryTableColumns = () => {
               onClick={() => openSplitDetailView(row.original)}
             />
 
-            {!row?.original?.isGroupValidForAA && (
+            {!showValidationStatus && !row?.original?.isGroupValidForAA && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild className="hover:cursor-pointer py-0">

@@ -8,8 +8,10 @@ import {
   Phone,
   FolderDot,
   Pencil,
+  ShieldX,
+  RefreshCcw,
+  LucideIcon,
 } from 'lucide-react';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
@@ -19,6 +21,7 @@ import {
 } from '@tanstack/react-table';
 import {
   useExportBeneficiariesFailedBankAccount,
+  useForceInvalidateBeneficiaryGroup,
   useGetBankCheckStatus,
   useGetBeneficiaryGroup,
   usePagination,
@@ -58,6 +61,26 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
+type InfoCardProps = {
+  title: React.ReactNode;
+  Icon?: LucideIcon;
+  children?: React.ReactNode;
+};
+
+function InfoCard({ title, Icon, children }: InfoCardProps) {
+  return (
+    <div className="w-1/3 rounded-xl border p-4 text-sm leading-snug">
+      <div className="flex items-start justify-between gap-2 mb-1">
+        <p className="text-muted-foreground font-medium flex items-center gap-1">
+          {title}
+        </p>
+        {Icon && <Icon className="w-4 h-4 text-muted-foreground shrink-0" />}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 type BenProjectType = {
   Project: {
     id: number;
@@ -76,6 +99,7 @@ export default function GroupDetailView() {
   const projectModal = useBoolean();
   const editGroupNameModal = useBoolean(false);
   const syncConfirmModal = useBoolean();
+  const invalidateConfirmModal = useBoolean();
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
@@ -104,7 +128,6 @@ export default function GroupDetailView() {
     setFilters,
     filters,
   } = usePagination();
-  const columns = useBeneficiaryTableColumns();
   const { data } = useExportBeneficiariesFailedBankAccount(Id);
 
   const [clickedValidateBankAccount, setClickedValidateBankAccount] = useState(
@@ -126,12 +149,17 @@ export default function GroupDetailView() {
 
   const isBankTransfer =
     group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER;
+  const isMobileMoney = group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY;
+  const columns = useBeneficiaryTableColumns({
+    showValidationStatus: isBankTransfer || isMobileMoney,
+  });
   const { data: bankCheckStatus } = useGetBankCheckStatus(
     Id,
     isBankTransfer,
     clickedValidateBankAccount,
   );
   const syncBeneficiaryGroup = useSyncBeneficiaryGroup();
+  const forceInvalidateGroup = useForceInvalidateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const tableData = React.useMemo(() => {
@@ -215,6 +243,21 @@ export default function GroupDetailView() {
     syncConfirmModal.onFalse();
   };
 
+  const handleForceInvalidateGroup = async () => {
+    invalidateConfirmModal.onFalse();
+    try {
+      await forceInvalidateGroup.mutateAsync({
+        uuid: Id,
+        successMessage: t('GROUP_INVALIDATED_SUCCESSFULLY'),
+        errorMessage: t('ERROR_WHILE_INVALIDATING_GROUP'),
+      });
+      sessionStorage.removeItem(`bank_validation_${Id}`);
+      setClickedValidateBankAccount(false);
+    } catch {
+      // error toast is handled in the hook
+    }
+  };
+
   const onFailedExports = () => {
     const rowsToDownload = data?.data || [];
     const workbook = XLSX.utils.book_new();
@@ -277,6 +320,18 @@ export default function GroupDetailView() {
           'ARE_YOU_SURE_YOU_WANT_TO_SYNC_THIS_BENEFICIARY_GROUP',
         )}
       />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={invalidateConfirmModal.value}
+        onCancel={invalidateConfirmModal.onFalse}
+        onConfirm={handleForceInvalidateGroup}
+        dialogTitle={t('INVALIDATE_GROUP_VALIDATION')}
+        isDestructive
+      >
+        {t.rich('ARE_YOU_SURE_YOU_WANT_TO_INVALIDATE_THIS_GROUP_VALIDATION', {
+          purpose: group?.data?.groupPurpose ?? '',
+          b: (chunks) => <b className="font-semibold">{chunks}</b>,
+        })}
+      </ConfirmationDialog>
       <div className="p-4">
         <div className="flex justify-between items-center">
           <div>
@@ -311,6 +366,27 @@ export default function GroupDetailView() {
                       <Phone className="h-4 w-4 text-green-600" />
                       {t('PHONE_NUMBER_VERIFIED')}
                     </>
+                  )}
+                  {!isAssignToAA && (
+                    <GlobalCan
+                      action={ACTIONS.UPDATE}
+                      subject={SUBJECTS.BENEFICIARY}
+                    >
+                      <button
+                        type="button"
+                        className="ml-1 rounded-full text-green-600 hover:text-red-500 disabled:opacity-50"
+                        title={t('INVALIDATE_GROUP_VALIDATION')}
+                        aria-label={t('INVALIDATE_GROUP_VALIDATION')}
+                        disabled={forceInvalidateGroup.isPending}
+                        onClick={invalidateConfirmModal.onTrue}
+                      >
+                        {forceInvalidateGroup.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ShieldX className="h-4 w-4" />
+                        )}
+                      </button>
+                    </GlobalCan>
                   )}
                 </Badge>
               )}
@@ -412,46 +488,57 @@ export default function GroupDetailView() {
               )}
           </div>
         </div>
-        <div className="flex gap-4 items-start">
-          <DataCard
-            className="border-solid w-1/3 rounded-xl"
-            iconStyle="bg-white text-secondary-muted"
-            title={t('TOTAL_BENEFICIARIES')}
-            Icon={UsersRound}
-            number={formatDigits(group?.meta?.total)}
-          />
+        <div className="flex gap-4 items-stretch">
+          <InfoCard title={t('TOTAL_BENEFICIARIES')} Icon={UsersRound}>
+            <p className="text-2xl font-semibold text-primary">
+              {formatDigits(group?.meta?.total)}
+            </p>
+          </InfoCard>
           {group?.data?.beneficiaryGroupProject?.length > 0 && (
-            <DataCard
-              className="border-solid w-1/3 rounded-xl"
-              iconStyle="bg-white text-secondary-muted"
-              title={t('PROJECT_INVOLVED')}
+            <InfoCard
+              title={
+                <>
+                  {t('PROJECT_INVOLVED')}
+                  <RefreshCcw
+                    className="w-3 h-3 text-primary cursor-pointer"
+                    onClick={() => syncConfirmModal.onTrue()}
+                  />
+                </>
+              }
               Icon={FolderDot}
-              refresh={() => syncConfirmModal.onTrue()}
             >
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap mt-1">
                 {group?.data?.beneficiaryGroupProject?.map(
                   (benProject: any) => (
                     <Badge
                       key={benProject.Project.id}
-                      className="text-sm font-normal"
+                      className="text-xs font-normal"
                     >
                       {benProject.Project.name}
                     </Badge>
                   ),
                 )}
               </div>
-            </DataCard>
+            </InfoCard>
           )}
           {isBankTransfer &&
             bankCheckStatus &&
             (bankCheckStatus.pending === 0 || clickedValidateBankAccount) && (
-              <div className="border-solid w-1/3 rounded-xl border p-4 text-sm leading-snug">
-                {bankCheckStatus.pending > 0 ? (
-                  <>
-                    <p className="text-muted-foreground font-medium mb-1 flex items-center gap-1">
+              <InfoCard
+                title={
+                  bankCheckStatus.pending > 0 ? (
+                    <>
                       <Loader2 className="w-3 h-3 animate-spin" />
                       {t('BANK_VALIDATION_IN_PROGRESS')}
-                    </p>
+                    </>
+                  ) : (
+                    t('BANK_VALIDATION_COMPLETED')
+                  )
+                }
+                Icon={LandmarkIcon}
+              >
+                {bankCheckStatus.pending > 0 && (
+                  <>
                     <p>
                       {t('CURRENT_STATUS')}:
                       <span className="font-medium">
@@ -462,10 +549,6 @@ export default function GroupDetailView() {
                       </span>
                     </p>
                   </>
-                ) : (
-                  <p className="text-muted-foreground font-medium mb-1">
-                    {t('BANK_VALIDATION_COMPLETED')}
-                  </p>
                 )}
                 <p className="text-green-600">
                   {t('SUCCESS')}: {formatDigits(bankCheckStatus.success)}
@@ -473,7 +556,7 @@ export default function GroupDetailView() {
                 <p className="text-red-500">
                   {t('FAILED')}: {formatDigits(bankCheckStatus.failed)}
                 </p>
-              </div>
+              </InfoCard>
             )}
         </div>
 

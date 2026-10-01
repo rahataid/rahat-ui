@@ -71,6 +71,11 @@
     "FILTER_BENEFICIARY": "Filter Beneficiary...",
     "NO_DATA_AVAILABLE": "No Data Available",
     "ASSIGN_PROJECT": "Assign Project",
+    "SWITCH_PROJECT": "Switch project",
+    "SWITCH_PROJECT_DESCRIPTION": "You are about to switch from the current project to {projectName}.Do you want to continue?",
+    "NO_MATCHING_PROJECT": "No matching projects",
+    "PROJECTS_NOT_FOUND": "Projects not found",
+    "SEARCH_PROJECT": "Search Projects...",
     "PROJECTS": "Projects",
     "CLOSE": "Close",
     "ASSIGN": "Assign",
@@ -1178,7 +1183,6 @@
     "CHANGE_IMAGE": "Change Image",
     "PLEASE_ENTER_BRAND_NAME": "Please enter brand name",
     "PLEASE_ENTER_BRAND_DESCRIPTION": "Please enter brand description"
-    
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "DataType",

@@ -379,7 +379,9 @@ export const useSendPayoutOtp = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
-      toast.success(t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email: payload.email }));
+      toast.success(
+        t('RAHAT_PIN_SENT_SUCCESSFULLY_TO', { email: payload.email }),
+      );
     },
     onError: (error: any) => {
       const rawMessage =
@@ -605,6 +607,53 @@ export const useVerifyManualPayout = () => {
         type: 'error',
         title: t('VERIFICATION_FAILED'),
         description: message,
+      });
+    },
+  });
+};
+export const useCompletePayout = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        uuid: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.complete',
+          payload: payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['payouts'] });
+      qc.invalidateQueries({ queryKey: ['payout'] });
+      toast.success(t('PAYOUT_IS_MARKED_COMPLETED'));
+    },
+    onError: (error: any) => {
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['FUND_MANAGEMENT_PAYOUT', 'GROUP_CASH_TRANSFER'],
+        rawMessage,
+      );
+      q.reset();
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING_PAYOUT'),
+        description: errorMessage,
       });
     },
   });

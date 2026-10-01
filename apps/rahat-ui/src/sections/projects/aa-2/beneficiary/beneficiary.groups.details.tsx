@@ -317,7 +317,7 @@ const BeneficiaryGroupsDetails = () => {
         onConfirm={handleExportExcel}
         isPending={isExporting}
         title={t('DOWNLOAD_EXCEL')}
-        description={t('QR_PDF_GENERATION_OPTIONS_DESCRIPTION')}
+        description={t('EXCEL_EXPORT_OPTIONS_DESCRIPTION')}
         confirmLabel={t('DOWNLOAD')}
         pendingLabel={t('GENERATING')}
       />

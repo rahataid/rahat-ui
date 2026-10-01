@@ -104,22 +104,6 @@ export const useProjectHeaderItems = (projectType: string) => {
             <span className="text-[13px] font-bold tracking-tight text-foreground">
               {projectName || 'Select project'}
             </span>
-            <span className="mt-1 flex items-center gap-1.5">
-              <Badge
-                variant="outline"
-                className="cursor-auto border-primary/40 bg-secondary px-1.5 py-0 text-[10px] text-primary"
-              >
-                {(project?.type || '').toUpperCase()}
-              </Badge>
-              <ProjectStatusDot status={project?.status} />
-              {/* <Badge
-                variant="outline"
-                className="border-primary text-primary cursor-auto bg-secondary"
-              >
-                {project?.type}
-              </Badge>
-              <StatusBadge status={project?.status} /> */}
-            </span>
           </span>
           <ChevronDown size={16} className="shrink-0 text-muted-foreground" />
         </DropdownMenuTrigger>
@@ -149,13 +133,6 @@ export const useProjectHeaderItems = (projectType: string) => {
                     {p?.name || 'Untitled project'}
                   </span>
                   <span className="mt-1 flex items-center gap-1.5">
-                    {/* <Badge
-                      variant="outline"
-                      className="cursor-auto border-primary/40 bg-secondary px-1.5 py-0 text-[10px] text-primary"
-                    >
-                      {(p.type || '').toUpperCase()}
-                    </Badge>
-                    <ProjectStatusDot status={p?.status} /> */}
                     <Badge
                       variant="outline"
                       className="border-primary text-primary cursor-auto bg-secondary"

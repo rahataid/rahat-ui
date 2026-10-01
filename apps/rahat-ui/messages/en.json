@@ -421,6 +421,7 @@
     "SELECT_BENEFICIARY_FILE_TO_UPDATE": "Select beneficiary file to update",
     "SELECT_PROJECT": "Select Project",
     "SELECT_THE_PROJECT_TO_BE_ASSIGNED": "Select the project to be assigned",
+    "ASSIGNING_GROUP_PLEASE_WAIT": "Please wait, beneficiary group is being assigned to the project...",
     "THERE_ARE_NO_GROUPS_TO_DISPLAY": "There are no groups to display",
     "THIS_ACTION_CANNOT_BE_UNDONE": "This action cannot be undone",
     "TOKEN_DETAILS": "Token Details",

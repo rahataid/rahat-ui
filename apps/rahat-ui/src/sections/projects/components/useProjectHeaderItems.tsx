@@ -128,7 +128,7 @@ export const useProjectHeaderItems = (projectType: string) => {
             <Input
               value={projectSearch}
               onChange={(e) => setProjectSearch(e.target.value)}
-              placeholder="Search projects..."
+              placeholder={tg('SEARCH_PROJECT')}
               className="h-8 pl-8 text-sm"
             />
           </div>
@@ -174,7 +174,7 @@ export const useProjectHeaderItems = (projectType: string) => {
               <p className="px-2 py-1.5 text-sm text-muted-foreground">
                 {projects.length === 0
                   ? 'No projects found'
-                  : 'No matching projects'}
+                  : tg('NO_MATCHING_PROJECT')}
               </p>
             )}
           </ScrollArea>

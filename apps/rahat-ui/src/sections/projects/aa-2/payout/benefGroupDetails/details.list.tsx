@@ -335,7 +335,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                       payout?.hasFailedPayoutRequests === false && 'hidden'
                     }`}
                     onClick={handleTriggerPayoutFailed}
-                    disabled={triggerForPayoutFailed.isPending}
+                    disabled={
+                      triggerForPayoutFailed.isPending ||
+                      payout?.status === 'COMPLETED'
+                    }
                   >
                     <RotateCcw
                       className={`${
@@ -363,7 +366,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                               payout?.status === 'COMPLETED' && 'hidden'
                             } `}
                             disabled={
-                              !payout?.beneficiaryGroupToken?.isDisbursed
+                              !payout?.beneficiaryGroupToken?.isDisbursed ||
+                              payout?.status === 'COMPLETED'
                             }
                             variant={'outline'}
                           >

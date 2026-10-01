@@ -58,12 +58,12 @@ export default function AssignBeneficiaryToProjectModal({
     if (!selectedProject) return alert(t('PLEASE_SELECT_A_PROJECT'));
     setIsAssigning(true);
     onAssigningChange?.(true);
+    projectModal.onFalse();
     try {
       await assignBeneficiaryGroup.mutateAsync({
         projectUUID: selectedProject,
         beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
       });
-      projectModal.onFalse();
     } catch {
       // error toast handled in useAssignBenGroupToProject onError
     } finally {

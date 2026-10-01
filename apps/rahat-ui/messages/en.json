@@ -2023,7 +2023,7 @@
     "DOWNLOAD_PNG": "Download PNG",
     "DOWNLOAD_QR": "Download QR",
     "DOWNLOAD_EXCEL": "Download Excel",
-    "EXCEL_EXPORT_OPTIONS_DESCRIPTION": "Name, phone and address are included by default. Choose whether to include the Rahat PIN (OTP), exclude beneficiaries without a phone number, and pick extra fields to add.",
+    "EXCEL_EXPORT_OPTIONS_DESCRIPTION": "Name, phone, address and gender are included by default. Choose whether to include the Rahat PIN (OTP), exclude beneficiaries without a phone number, and pick extra fields to add.",
     "DOWNLOAD_REPORT": "Download Report",
     "DOWNLOAD_SAMPLE": "Download Sample",
     "DOWNLOAD_SVG": "Download SVG",

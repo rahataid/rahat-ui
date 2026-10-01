@@ -51,13 +51,22 @@ export default function AssignBeneficiaryToProjectModal({
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
+  const [isAssigning, setIsAssigning] = React.useState(false);
+
   const handleAssignProject = async () => {
     if (!selectedProject) return alert(t('PLEASE_SELECT_A_PROJECT'));
-    await assignBeneficiaryGroup.mutateAsync({
-      projectUUID: selectedProject,
-      beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
-    });
-    projectModal.onFalse();
+    setIsAssigning(true);
+    try {
+      await assignBeneficiaryGroup.mutateAsync({
+        projectUUID: selectedProject,
+        beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
+      });
+      projectModal.onFalse();
+    } catch {
+      // error toast handled in useAssignBenGroupToProject onError
+    } finally {
+      setIsAssigning(false);
+    }
   };
 
   // React.useEffect(() => {
@@ -70,12 +79,12 @@ export default function AssignBeneficiaryToProjectModal({
     <Dialog
       open={projectModal.value}
       onOpenChange={() => {
-        if (assignBeneficiaryGroup.isPending) return;
+        if (isAssigning) return;
         projectModal.onToggle();
       }}
     >
       <DialogContent>
-        {assignBeneficiaryGroup.isPending && (
+        {isAssigning && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-background/90">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="text-sm font-medium text-center px-4">
@@ -125,7 +134,7 @@ export default function AssignBeneficiaryToProjectModal({
             </Button>
           </DialogClose>
           <Button
-            disabled={assignBeneficiaryGroup.isPending}
+            disabled={isAssigning}
             onClick={handleAssignProject}
             type="button"
             variant="ghost"

@@ -152,7 +152,7 @@ export function CommunicationsTable({
         handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
         perPage={pagination.perPage}
-        total={meta.lastPage}
+        total={meta.total}
         isShowTotalCount={true}
       />
     </div>

@@ -329,6 +329,7 @@ export const useTriggerCommunicationBroadcast = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['ms.communications.getAll'] });
+      qc.invalidateQueries({ queryKey: ['ms.communications.getOne'] });
       toast.success(t('COMMUNICATION_TRIGGER_SUCCESSFULLY'));
     },
     onError: (error: any) => {

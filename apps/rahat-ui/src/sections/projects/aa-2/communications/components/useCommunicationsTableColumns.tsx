@@ -210,6 +210,13 @@ export default function useCommunicationsTableColumns() {
 
         return (
           <div className="flex items-center space-x-2">
+            <span onClick={() => router.push(`/projects/aa/${projectId}/communications/${commId}`)}>
+              <TooltipComponent
+                Icon={Eye}
+                tip={t('VIEW_DETAILS')}
+                iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
+              />
+            </span>
             {!isSent && (
               <span onClick={handleSend}>
                 <TooltipComponent
@@ -219,13 +226,6 @@ export default function useCommunicationsTableColumns() {
                 />
               </span>
             )}
-            <span onClick={() => router.push(`/projects/aa/${projectId}/communications/${commId}`)}>
-              <TooltipComponent
-                Icon={Eye}
-                tip={t('VIEW_DETAILS')}
-                iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
-              />
-            </span>
           </div>
         );
       },

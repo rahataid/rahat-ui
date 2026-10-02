@@ -14,7 +14,9 @@ import {
   RefreshCcw,
   Trash,
   SendHorizontal,
+  Download,
 } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
@@ -31,6 +33,7 @@ import { CommunicationStatusBadge } from '../components/communication-status-bad
 import { CommunicationChannelIcon } from '../components/communication-channel-icon';
 import { resolveChannelByTransportId } from '../utils/communications.utils';
 import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
+import { exportCommunicationGroups } from '../../communicationLog/details/comms.logs.export.utils';
 import { UUID } from 'crypto';
 
 export default function CommunicationDetailsView() {
@@ -182,12 +185,17 @@ export default function CommunicationDetailsView() {
     });
   };
 
-  const handleRetryConfirm = () => {
+  const handleRetryConfirm = async () => {
     if (isMutating) return;
-    triggerBroadcast.mutate({
-      projectUUID: projectId as UUID,
-      communicationUUID: commId,
-    });
+    try {
+      await triggerBroadcast.mutateAsync({
+        projectUUID: projectId as UUID,
+        communicationUUID: commId,
+      });
+      Swal.fire(t('RETRY_SUCCESSFUL'), '', 'success');
+    } catch (error) {
+      console.error('Retry failed:', error);
+    }
   };
 
   const handleDeleteConfirm = () => {
@@ -201,6 +209,10 @@ export default function CommunicationDetailsView() {
         onSuccess: () => router.push(communicationsListPath),
       },
     );
+  };
+
+  const handleExportLogs = () => {
+    exportCommunicationGroups(targets, getGroupDetails, record.title);
   };
 
   return (
@@ -235,6 +247,18 @@ export default function CommunicationDetailsView() {
                 confirmButtonClassName="rounded-sm bg-red-500"
                 variant="outline"
               />
+            </TooltipWrapper>
+
+            <TooltipWrapper tip={tg('EXPORT_LOGS') || 'Export Logs'}>
+              <Button
+                variant="outline"
+                className="gap-2 h-7"
+                onClick={handleExportLogs}
+                disabled={!targets.length}
+              >
+                <Download className="h-3.5 w-3.5" />
+                {tg('EXPORT') || 'Export'}
+              </Button>
             </TooltipWrapper>
 
             {hasPendingTargets && !hasFailedTargets && (
@@ -323,100 +347,85 @@ export default function CommunicationDetailsView() {
 
       {/* ── Bottom Split Section (Left 1/3 Details Card + Right 2/3 Audience Table) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-        {/* Left Column (1/3) — Details Card with Tabs */}
+        {/* Left Column (1/3) — Details Card */}
         <Card className="col-span-1 bg-white rounded-sm border border-gray-200 p-4 shadow-none flex flex-col justify-between">
-          <Tabs defaultValue="details" className="w-full">
-            <TabsList className="border bg-slate-100 rounded h-8 mb-4 w-full justify-start">
-              <TabsTrigger value="details" className="data-[state=active]:bg-white text-xs h-7 px-4">
-                {tg('DETAILS') || 'Details'}
-              </TabsTrigger>
-              <TabsTrigger value="logs" className="data-[state=active]:bg-white text-xs h-7 px-4">
-                {t('LOGS_TAB') || 'Logs'}
-              </TabsTrigger>
-            </TabsList>
+          <div className="space-y-4 text-xs text-gray-700">
+            {/* Target Audience Groups */}
+            <div>
+              <p className="text-gray-500 text-xs font-medium mb-1">{t('TARGET_AUDIENCE')}</p>
+              <p className="font-semibold text-sm text-gray-900">
+                {targetBeneficiaries.length > 0 && targetStakeholders.length > 0
+                  ? `${t('BENEFICIARIES')} & ${t('STAKEHOLDERS')}`
+                  : targetBeneficiaries.length > 0
+                  ? t('BENEFICIARIES')
+                  : targetStakeholders.length > 0
+                  ? t('STAKEHOLDERS')
+                  : t('NONE_SPECIFIED')}
+              </p>
+            </div>
 
-            <TabsContent value="details" className="space-y-4 m-0 text-xs text-gray-700">
-              {/* Target Audience Groups */}
-              <div>
-                <p className="text-gray-500 text-xs font-medium mb-1">{t('TARGET_AUDIENCE')}</p>
-                <p className="font-semibold text-sm text-gray-900">
-                  {targetBeneficiaries.length > 0 && targetStakeholders.length > 0
-                    ? `${t('BENEFICIARIES')} & ${t('STAKEHOLDERS')}`
-                    : targetBeneficiaries.length > 0
-                    ? t('BENEFICIARIES')
-                    : targetStakeholders.length > 0
-                    ? t('STAKEHOLDERS')
-                    : t('NONE_SPECIFIED')}
-                </p>
-              </div>
+            {/* Triggered Date */}
+            <div>
+              <p className="text-gray-500 text-xs font-medium mb-1">{t('TRIGGERED_DATE') || 'Triggered Date'}</p>
+              <p className="font-semibold text-gray-900 text-xs">
+                {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt || tg('N_A')}
+              </p>
+            </div>
 
-              {/* Triggered Date */}
-              <div>
-                <p className="text-gray-500 text-xs font-medium mb-1">{t('TRIGGERED_DATE') || 'Triggered Date'}</p>
-                <p className="font-semibold text-gray-900 text-xs">
-                  {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt || tg('N_A')}
-                </p>
-              </div>
+            {/* Total Audience */}
+            <div>
+              <p className="text-gray-500 text-xs font-medium mb-1">{t('TOTAL_AUDIENCE') || 'Total Audience'}</p>
+              <p className="font-semibold text-gray-900 text-sm">
+                {formatNum(totalAudienceReach)}
+              </p>
+            </div>
 
-              {/* Total Audience */}
-              <div>
-                <p className="text-gray-500 text-xs font-medium mb-1">{t('TOTAL_AUDIENCE') || 'Total Audience'}</p>
-                <p className="font-semibold text-gray-900 text-sm">
-                  {formatNum(totalAudienceReach)}
-                </p>
-              </div>
+            {/* Started At */}
+            <div>
+              <p className="text-gray-500 text-xs font-medium mb-1">{t('STARTED_AT') || 'Started At'}</p>
+              <p className="font-semibold text-gray-900 text-xs">
+                {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt || tg('N_A')}
+              </p>
+            </div>
 
-              {/* Started At */}
-              <div>
-                <p className="text-gray-500 text-xs font-medium mb-1">{t('STARTED_AT') || 'Started At'}</p>
-                <p className="font-semibold text-gray-900 text-xs">
-                  {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt || tg('N_A')}
-                </p>
-              </div>
+            {/* Ended At */}
+            <div>
+              <p className="text-gray-500 text-xs font-medium mb-1">{t('ENDED_AT') || 'Ended At'}</p>
+              <p className="font-semibold text-gray-900 text-xs">
+                {formatDate(raw?.updatedAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.updatedAt || tg('N_A')}
+              </p>
+            </div>
 
-              {/* Ended At */}
-              <div>
-                <p className="text-gray-500 text-xs font-medium mb-1">{t('ENDED_AT') || 'Ended At'}</p>
-                <p className="font-semibold text-gray-900 text-xs">
-                  {formatDate(raw?.updatedAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.updatedAt || tg('N_A')}
-                </p>
-              </div>
+            {/* Channel & Status */}
+            <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+              <span className="bg-slate-100 text-slate-800 text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1.5 border border-slate-200">
+                <CommunicationChannelIcon channel={record.channel} className="h-3.5 w-3.5" />
+                {t(record.channel)}
+              </span>
+              <CommunicationStatusBadge status={record.status} />
+            </div>
 
-              {/* Channel & Status */}
-              <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
-                <span className="bg-slate-100 text-slate-800 text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1.5 border border-slate-200">
-                  <CommunicationChannelIcon channel={record.channel} className="h-3.5 w-3.5" />
-                  {t(record.channel)}
-                </span>
-                <CommunicationStatusBadge status={record.status} />
-              </div>
-
-              {/* Message Content or Voice Player */}
-              <div className="pt-2">
-                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                  {record.channel === 'VOICE' ? t('VOICE_RECORDING') : t('MESSAGE_CONTENT')}
-                </p>
-                {record.channel === 'VOICE' ? (
-                  <div className="bg-slate-50 p-2.5 rounded border border-gray-200 space-y-2">
-                    <p className="text-[11px] font-medium text-gray-600 truncate">{audioURL?.fileName || 'recording.mp3'}</p>
-                    {audioURL?.mediaURL ? (
-                      <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
-                    ) : (
-                      <p className="text-xs text-muted-foreground italic">{t('NO_DATA_AVAILABLE')}</p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="bg-slate-50 p-3 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-40 overflow-y-auto font-sans">
-                    {record.description || <span className="text-gray-400 italic">{tg('N_A')}</span>}
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="logs" className="m-0">
-              <p className="text-xs text-muted-foreground py-4 text-center">{t('NO_COMMUNICATION_LOGS') || 'No logs available'}</p>
-            </TabsContent>
-          </Tabs>
+            {/* Message Content or Voice Player */}
+            <div className="pt-2">
+              <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                {record.channel === 'VOICE' ? t('VOICE_RECORDING') : t('MESSAGE_CONTENT')}
+              </p>
+              {record.channel === 'VOICE' ? (
+                <div className="bg-slate-50 p-2.5 rounded border border-gray-200 space-y-2">
+                  <p className="text-[11px] font-medium text-gray-600 truncate">{audioURL?.fileName || 'recording.mp3'}</p>
+                  {audioURL?.mediaURL ? (
+                    <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">{t('NO_DATA_AVAILABLE')}</p>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-slate-50 p-3 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-40 overflow-y-auto font-sans">
+                  {record.description || <span className="text-gray-400 italic">{tg('N_A')}</span>}
+                </div>
+              )}
+            </div>
+          </div>
         </Card>
 
         {/* Right Column (2/3) — Search Filter & Audience Table matching comms logs detail page */}
@@ -436,6 +445,7 @@ export default function CommunicationDetailsView() {
                   options={[
                     { label: t('ALL_STATUSES') || 'Select Status', value: 'ALL' },
                     { label: t('PENDING'), value: 'PENDING' },
+                    { label: t('PROCESSING') || 'Processing', value: 'PROCESSING' },
                     { label: t('SENT') || 'Sent', value: 'SENT' },
                     { label: t('FAILED'), value: 'FAILED' },
                   ]}
@@ -452,15 +462,13 @@ export default function CommunicationDetailsView() {
                   <tr>
                     <th className="py-2.5 px-3.5">{t('AUDIENCE') || 'Audience'}</th>
                     <th className="py-2.5 px-3.5">{t('STATUS') || 'Status'}</th>
-                    <th className="py-2.5 px-3.5">{t('ATTEMPTS') || 'Attempts'}</th>
-                    <th className="py-2.5 px-3.5">{t('DURATION') || 'Duration'}</th>
                     <th className="py-2.5 px-3.5 text-right">{t('TIMESTAMP') || 'Timestamp'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {filteredTargets.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-muted-foreground italic">
+                      <td colSpan={3} className="py-8 text-center text-muted-foreground italic">
                         {t('NO_AUDIENCE_FOUND') || 'No audience records found'}
                       </td>
                     </tr>
@@ -478,8 +486,6 @@ export default function CommunicationDetailsView() {
                           <td className="py-3 px-3.5">
                             <CommunicationStatusBadge status={target?.status} />
                           </td>
-                          <td className="py-3 px-3.5 font-medium text-gray-700">1</td>
-                          <td className="py-3 px-3.5 font-medium text-gray-700">-</td>
                           <td className="py-3 px-3.5 text-right text-muted-foreground">
                             {formatDate(target?.updatedAt || raw?.updatedAt, 'yyyy-MM-dd, h:mm:ss a')}
                           </td>

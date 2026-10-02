@@ -6,7 +6,7 @@ import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, Back } from 'apps/rahat-ui/src/common';
 import { useListAllTransports, useBeneficiariesGroups, useStakeholdersGroups, useCreateCommunication, useTriggerCommunicationBroadcast, useUploadFile } from '@rahat-ui/query';
-import { Send } from 'lucide-react';
+import { Send, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -93,7 +93,7 @@ export default function AddCommunicationView() {
   const charsCount = smsInfo?.characterCount ?? message.length;
   const credits = smsInfo?.smsCredits ?? 0;
 
-  const isSubmitting = createCommunication.isPending || triggerBroadcast.isPending || uploadFile.isPending;
+  const isSubmitting = createCommunication.isPending || uploadFile.isPending;
 
   const onSubmit = async (data: BroadcastFormValues) => {
     if (!selectedTransport?.cuid) return;
@@ -137,15 +137,7 @@ export default function AddCommunicationView() {
         return;
       }
 
-      try {
-        await triggerBroadcast.mutateAsync({
-          projectUUID: uuid,
-          communicationUUID,
-        });
-        router.push(`/projects/aa/${projectId}/communications`);
-      } catch {
-        router.push(`/projects/aa/${projectId}/communications/${communicationUUID}`);
-      }
+      router.push(`/projects/aa/${projectId}/communications`);
     } catch {
       return;
     }
@@ -273,8 +265,8 @@ export default function AddCommunicationView() {
                   {t("CANCEL")}
                 </Button>
                 <Button type="submit" disabled={isSubmitting || !selectedTransport}>
-                  <Send className="w-4 h-4 mr-2" />
-                  {t("SEND_BROADCAST")}
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t("CREATE_COMMUNICATION")}
                 </Button>
               </CardFooter>
             </Card>
@@ -284,3 +276,4 @@ export default function AddCommunicationView() {
     </div>
   );
 }
+

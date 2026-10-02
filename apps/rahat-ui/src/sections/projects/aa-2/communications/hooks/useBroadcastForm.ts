@@ -23,6 +23,8 @@ export const useBroadcastForm = () => {
   const form = useForm<BroadcastFormValues>({
     resolver: zodResolver(broadcastSchema),
     defaultValues: defaultBroadcastValues,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   return {

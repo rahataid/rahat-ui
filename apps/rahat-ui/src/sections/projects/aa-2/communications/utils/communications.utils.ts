@@ -39,13 +39,14 @@ export const resolveChannelByTransportId = (
   return 'SMS';
 };
 
-export type TargetAggregateStatus = 'DELIVERED' | 'IN_PROGRESS' | 'FAILED';
+export type TargetAggregateStatus = 'DELIVERED' | 'IN_PROGRESS' | 'FAILED' | 'PENDING';
 
 export const aggregateTargetStatus = (
   targets: { status?: string }[] | undefined,
 ): TargetAggregateStatus => {
-  if (!targets || targets.length === 0) return 'IN_PROGRESS';
+  if (!targets || targets.length === 0) return 'PENDING';
   if (targets.every((target) => target?.status === 'SENT')) return 'DELIVERED';
+  if (targets.every((target) => target?.status === 'PENDING')) return 'PENDING';
   if (
     targets.some(
       (target) =>
@@ -55,3 +56,4 @@ export const aggregateTargetStatus = (
     return 'IN_PROGRESS';
   return 'FAILED';
 };
+

@@ -14,6 +14,8 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { aggregateTargetStatus } from '../utils/communications.utils';
 import { useTriggerCommunicationBroadcast } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { CommunicationStatusBadge } from './communication-status-badge';
+import { CommunicationChannelIcon } from './communication-channel-icon';
 
 export type CommunicationRecord = {
   id: string;
@@ -28,7 +30,7 @@ export type CommunicationRecord = {
   delivered: number;
   failed?: number;
   sender?: string;
-  status: 'DELIVERED' | 'IN_PROGRESS' | 'FAILED';
+  status: 'DELIVERED' | 'IN_PROGRESS' | 'FAILED' | 'PENDING';
   date: string;
 };
 
@@ -115,13 +117,9 @@ export default function useCommunicationsTableColumns() {
       meta: { className: 'w-[120px]' },
       cell: ({ row }) => {
         const channel = row.getValue('channel') as string;
-        let Icon = MessageSquare;
-        if (channel === 'VOICE') Icon = PhoneCall;
-        if (channel === 'EMAIL') Icon = Mail;
-
         return (
           <div className="flex items-center gap-1.5">
-            <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+            <CommunicationChannelIcon channel={channel} className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-xs font-medium">{t(channel)}</span>
           </div>
         );
@@ -158,20 +156,7 @@ export default function useCommunicationsTableColumns() {
       accessorKey: 'status',
       header: t("STATUS"),
       meta: { className: 'w-[130px]' },
-      cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        let badgeClass = 'bg-green-100 text-green-700 hover:bg-green-100';
-        if (status === 'IN_PROGRESS')
-          badgeClass = 'bg-blue-100 text-blue-700 hover:bg-blue-100';
-        if (status === 'FAILED')
-          badgeClass = 'bg-red-100 text-red-700 hover:bg-red-100';
-
-        return (
-          <Badge className={`text-[11px] font-normal border-none ${badgeClass}`}>
-            {t(status)}
-          </Badge>
-        );
-      },
+      cell: ({ row }) => <CommunicationStatusBadge status={row.getValue('status')} />,
     },
     {
       accessorKey: 'delivered',

@@ -84,11 +84,27 @@ export interface CustomersByMonthEntry {
   NEWLY_INACTIVE: number;
 }
 
-/** SMS-attributed conversion: of customers messaged, how many purchased in-window. */
-export interface SmsConversion {
+/**
+ * Category a customer was in when messaged (from their last purchase before the
+ * SMS). UNKNOWN = no purchase on record before the SMS.
+ */
+export type SmsConversionCategory =
+  'ACTIVE' | 'NEWLY_INACTIVE' | 'INACTIVE' | 'UNKNOWN';
+
+export interface SmsConversionCounts {
   messaged: number;
   converted: number;
   rate: number;
+}
+
+/** SMS-attributed conversion: of customers messaged, how many purchased in-window. */
+export interface SmsConversion extends SmsConversionCounts {
+  /**
+   * Per category-at-send cohort. A customer messaged in more than one category
+   * counts in each, so these can sum to more than the overall totals.
+   * Absent on stats saved before the breakdown existed.
+   */
+  byCategory?: Record<SmsConversionCategory, SmsConversionCounts>;
   windowDays: number;
 }
 

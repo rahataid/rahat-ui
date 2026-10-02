@@ -70,6 +70,7 @@ import {
   type RecentImport,
   type CustomersByMonthEntry,
   type SmsConversion,
+  type SmsConversionCategory,
   type SmsConversionByMonthEntry,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
@@ -170,7 +171,23 @@ const COLORS = {
   smsConverted: '#22c55e', // green-500
   smsMessaged: '#c7d2fe', // indigo-200 (the not-converted remainder)
   smsRate: '#6366f1', // indigo-500
+  unknown: '#cbd5e1', // slate-300
 };
+
+const SMS_CONVERSION_CATEGORIES: {
+  key: SmsConversionCategory;
+  label: string;
+  color: string;
+}[] = [
+  { key: 'ACTIVE', label: 'Active', color: COLORS.active },
+  {
+    key: 'NEWLY_INACTIVE',
+    label: 'Newly Inactive',
+    color: COLORS.newlyInactive,
+  },
+  { key: 'INACTIVE', label: 'Inactive', color: COLORS.inactive },
+  { key: 'UNKNOWN', label: 'No prior purchase', color: COLORS.unknown },
+];
 
 // =============================================================================
 // DASHBOARD COMPONENT
@@ -205,6 +222,18 @@ export default function DashboardView() {
     rate: 0,
     windowDays: 60,
   };
+  const smsConversionByCategory = useMemo(
+    () =>
+      SMS_CONVERSION_CATEGORIES.map((c) => ({
+        ...c,
+        ...(smsConversion.byCategory?.[c.key] ?? {
+          messaged: 0,
+          converted: 0,
+          rate: 0,
+        }),
+      })).filter((c) => c.messaged > 0),
+    [smsConversion.byCategory],
+  );
   const smsConversionByMonth: SmsConversionByMonthEntry[] =
     getStat(stats, 'SMS_CONVERSION_BY_MONTH') || [];
   // Stacked-bar shape: converted (green) + the not-converted remainder = messaged.
@@ -397,20 +426,20 @@ export default function DashboardView() {
         commStats.deliveryRate >= 80
           ? 'bg-emerald-500/10'
           : commStats.deliveryRate >= 60
-          ? 'bg-amber-500/10'
-          : 'bg-red-500/10',
+            ? 'bg-amber-500/10'
+            : 'bg-red-500/10',
       iconColor:
         commStats.deliveryRate >= 80
           ? 'text-emerald-500'
           : commStats.deliveryRate >= 60
-          ? 'text-amber-500'
-          : 'text-red-500',
+            ? 'text-amber-500'
+            : 'text-red-500',
       subtitle:
         commStats.deliveryRate >= 80
           ? 'Healthy'
           : commStats.deliveryRate >= 60
-          ? 'Needs improvement'
-          : 'Critical',
+            ? 'Needs improvement'
+            : 'Critical',
     },
   ];
 
@@ -1046,6 +1075,51 @@ export default function DashboardView() {
                     </p>
                   </div>
                 </div>
+
+                {/* Conversion rate by category at time of messaging */}
+                {smsConversionByCategory.length > 0 && (
+                  <div className="mt-5 space-y-3">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      By customer category when messaged
+                    </p>
+                    {smsConversionByCategory.map((c) => (
+                      <div key={c.key} className="space-y-1">
+                        <div className="flex items-center justify-between gap-2 text-sm">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                              style={{ backgroundColor: c.color }}
+                            />
+                            <span className="truncate">{c.label}</span>
+                          </div>
+                          <span className="tabular-nums shrink-0">
+                            <span className="font-semibold">
+                              {formatRate(c.rate)}
+                            </span>{' '}
+                            <span className="text-xs text-muted-foreground">
+                              ({formatNumber(c.converted)} of{' '}
+                              {formatNumber(c.messaged)})
+                            </span>
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${Math.min(c.rate, 100)}%`,
+                              backgroundColor: c.color,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <p className="text-[11px] text-muted-foreground">
+                      Category is based on the customer&apos;s last purchase
+                      before each message. Customers messaged in more than one
+                      category are counted in each.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

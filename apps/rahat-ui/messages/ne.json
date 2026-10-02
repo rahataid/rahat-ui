@@ -3423,7 +3423,7 @@
     "SELECT_BENEFICIARY_FILE_TO_UPDATE": "अद्यावधिक गर्न लाभग्राही फाइल छान्नुहोस्",
     "SELECT_PROJECT": "परियोजना चयन गर्नुहोस्",
     "SELECT_THE_PROJECT_TO_BE_ASSIGNED": "तोक्नुपर्ने परियोजना छान्नुहोस्",
-    "ASSIGNING_GROUP_PLEASE_WAIT": "कृपया पर्खनुहोस्, लाभग्राही समूहलाई परियोजनामा तोकिँदैछ...",
+    "ASSIGNING_GROUP_PLEASE_WAIT": "लाभग्राही सिङ्क प्रक्रियामा छ। कृपया केही समयपछि हेर्नुहोस्।",
     "THERE_ARE_NO_GROUPS_TO_DISPLAY": "देखाउनका लागि कुनै समूह छैन",
     "THIS_ACTION_CANNOT_BE_UNDONE": "यो कार्य फिर्ता गर्न सकिँदैन",
     "TOKEN_DETAILS": "टोकनको विवरण",

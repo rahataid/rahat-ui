@@ -69,7 +69,6 @@ type BenProjectType = {
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const t = useTranslations('GLOBAL');
-  const [isAssigning, setIsAssigning] = useState(false);
   const formatDigits = useLabelDigits();
   const validateModal = useBoolean();
   const removeModal = useBoolean();
@@ -262,16 +261,7 @@ export default function GroupDetailView() {
         beneficiaryGroupDetail={group?.data}
         projectModal={projectModal}
         assignedGroupId={assignedGroupId}
-        onAssigningChange={setIsAssigning}
       />
-      {isAssigning && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/90">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm font-medium text-center px-4">
-            {t('ASSIGNING_GROUP_PLEASE_WAIT')}
-          </p>
-        </div>
-      )}
       <GroupNameEditModal
         open={editGroupNameModal.value}
         onOpenChange={editGroupNameModal.setValue}

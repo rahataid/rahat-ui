@@ -22,6 +22,7 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { UUID } from 'crypto';
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'react-toastify';
 
 type ProjectModalType = {
   value: boolean;
@@ -34,7 +35,6 @@ type IProps = {
   projectModal: ProjectModalType;
   closeSecondPanel?: VoidFunction;
   assignedGroupId: string[];
-  onAssigningChange?: (assigning: boolean) => void;
 };
 
 export default function AssignBeneficiaryToProjectModal({
@@ -42,7 +42,6 @@ export default function AssignBeneficiaryToProjectModal({
   beneficiaryGroupDetail,
   closeSecondPanel,
   assignedGroupId,
-  onAssigningChange,
 }: IProps) {
   const assignBeneficiaryGroup = useAssignBenGroupToProject();
   const projectsList = useProjectList({ page: 1, perPage: 10 });
@@ -52,24 +51,14 @@ export default function AssignBeneficiaryToProjectModal({
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
-  const [isAssigning, setIsAssigning] = React.useState(false);
-
-  const handleAssignProject = async () => {
+  const handleAssignProject = () => {
     if (!selectedProject) return alert(t('PLEASE_SELECT_A_PROJECT'));
-    setIsAssigning(true);
-    onAssigningChange?.(true);
+    assignBeneficiaryGroup.mutate({
+      projectUUID: selectedProject,
+      beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
+    });
     projectModal.onFalse();
-    try {
-      await assignBeneficiaryGroup.mutateAsync({
-        projectUUID: selectedProject,
-        beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
-      });
-    } catch {
-      // error toast handled in useAssignBenGroupToProject onError
-    } finally {
-      setIsAssigning(false);
-      onAssigningChange?.(false);
-    }
+    toast.info(t('ASSIGNING_GROUP_PLEASE_WAIT'));
   };
 
   // React.useEffect(() => {
@@ -79,13 +68,7 @@ export default function AssignBeneficiaryToProjectModal({
   //   }
   // }, [assignBeneficiaryGroup.isSuccess]);
   return (
-    <Dialog
-      open={projectModal.value}
-      onOpenChange={() => {
-        if (isAssigning) return;
-        projectModal.onToggle();
-      }}
-    >
+    <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('ASSIGN_PROJECT')}</DialogTitle>
@@ -129,7 +112,7 @@ export default function AssignBeneficiaryToProjectModal({
             </Button>
           </DialogClose>
           <Button
-            disabled={isAssigning}
+            disabled={assignBeneficiaryGroup.isPending}
             onClick={handleAssignProject}
             type="button"
             variant="ghost"

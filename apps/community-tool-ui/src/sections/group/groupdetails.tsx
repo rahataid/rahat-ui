@@ -136,13 +136,44 @@ export default function GroupDetail({ uuid }: IProps) {
   const [addedColumns, setAddedColumns] = React.useState<Set<string>>(
     new Set(),
   );
+  // Server-side fallback search — used when a column filter's typed text
+  // doesn't match any value already loaded via infinite scroll.
+  const [serverSearchCol, setServerSearchCol] = React.useState<string | null>(
+    null,
+  );
+  const [serverSearchValue, setServerSearchValue] = React.useState('');
+  const serverSearchFilters = React.useMemo(
+    () =>
+      serverSearchCol && serverSearchValue
+        ? { [serverSearchCol]: serverSearchValue }
+        : undefined,
+    [serverSearchCol, serverSearchValue],
+  );
   const {
     data: editInfiniteData,
     isLoading: editPageLoading,
+    isFetching: editPageFetching,
     isFetchingNextPage: editPageFetchingNext,
     fetchNextPage: fetchNextEditPage,
     hasNextPage: hasNextEditPage,
-  } = useCommunityGroupListByIDInfinite(uuid, editSubmitMode);
+  } = useCommunityGroupListByIDInfinite(
+    uuid,
+    editSubmitMode,
+    serverSearchFilters,
+  );
+
+  // Only the very first load should blank the whole table — a server search
+  // afterward swaps the query key (no cached data for that exact filter) and
+  // would otherwise re-trigger isLoading and hide the open filter popover.
+  const [hasLoadedEditPageOnce, setHasLoadedEditPageOnce] =
+    React.useState(false);
+  useEffect(() => {
+    if (!editSubmitMode) {
+      setHasLoadedEditPageOnce(false);
+    } else if (!editPageLoading) {
+      setHasLoadedEditPageOnce(true);
+    }
+  }, [editSubmitMode, editPageLoading]);
 
   const editPageRows = React.useMemo(
     () =>
@@ -343,12 +374,19 @@ export default function GroupDetail({ uuid }: IProps) {
     setPresentColumns([]);
     setAvailableColumns([]);
     setAddedColumns(new Set());
+    setServerSearchCol(null);
+    setServerSearchValue('');
     // Drop the cached infinite-query pages entirely (not just invalidate) so
     // the next Edit & Submit session starts fresh from page 1 instead of
     queryClient.removeQueries({
       queryKey: ['list_community_group_by_id', 'infinite', uuid],
     });
     setEditSubmitMode(true);
+  };
+
+  const handleServerSearch = (col: string, value: string) => {
+    setServerSearchCol(value ? col : null);
+    setServerSearchValue(value);
   };
 
   const handleAddColumn = (colKey: string) => {
@@ -538,7 +576,7 @@ export default function GroupDetail({ uuid }: IProps) {
         presentColumns={presentColumns}
         addedColumns={addedColumns}
         availableColumns={availableColumns}
-        isLoading={editPageLoading}
+        isLoading={editPageLoading && !hasLoadedEditPageOnce}
         hasNextPage={hasNextEditPage}
         isFetchingNextPage={editPageFetchingNext}
         fetchNextPage={fetchNextEditPage}
@@ -552,8 +590,12 @@ export default function GroupDetail({ uuid }: IProps) {
           setPresentColumns([]);
           setAvailableColumns([]);
           setAddedColumns(new Set());
+          setServerSearchCol(null);
+          setServerSearchValue('');
         }}
         isSubmitting={editSubmitSubmitting}
+        onServerSearch={handleServerSearch}
+        isServerSearching={hasLoadedEditPageOnce && editPageFetching}
       />
     );
   }

@@ -26,7 +26,6 @@ import { useAuthStore, useUserStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../../app/config-nav';
 import { paths } from '../../routes/paths';
-import { WalletConnect } from '../connectWallet';
 import { ModeToggle } from '../dropdown';
 import MobileNav from '../mobileNav';
 
@@ -43,7 +42,10 @@ export function Nav() {
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
     const projectPin = localStorage.getItem('PROJECT_PIN');
-    const { preserveFormData, restoreFormData } = require('apps/rahat-ui/src/utils/formStorage');
+    const {
+      preserveFormData,
+      restoreFormData,
+    } = require('apps/rahat-ui/src/utils/formStorage');
     const formData = preserveFormData();
     clearUser();
     clearAuth();
@@ -110,7 +112,6 @@ export function Nav() {
       </div>
       <div className="flex gap-4 items-center">
         <ModeToggle />
-        <WalletConnect />
         <MobileNav />
         <DropdownMenu>
           <DropdownMenuTrigger>

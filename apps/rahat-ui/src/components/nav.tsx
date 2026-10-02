@@ -19,8 +19,6 @@ import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { toast } from 'react-toastify';
 import { paths } from '../routes/paths';
-
-import ConnectWallet from './wallet/connect-wallet';
 import SearchInput from '../sections/projects/components/search.input';
 import React from 'react';
 
@@ -74,7 +72,6 @@ export function Nav({ hasDefaultHeader = true }) {
         <div className="flex space-x-6 items-center">
           {showNotification && <NotificationButton unreadCount={3} />}
           <LanguageToggle />
-          <ConnectWallet />
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar className="h-10 w-10">

@@ -15,9 +15,7 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ArrowLeft, Columns, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { PaginatedResult } from '@rumsan/sdk/types';
-import InlinePagination from '../../components/inlinePagination';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const READ_ONLY_FIELDS = new Set([
   'uuid',
@@ -66,12 +64,9 @@ type Props = {
   addedColumns: Set<string>;
   availableColumns: string[];
   isLoading?: boolean;
-  page: number;
-  perPage: number;
-  total: number;
-  meta: PaginatedResult<unknown>['meta'];
-  onPageChange: (page: number) => void;
-  onPerPageChange: (value: string | number) => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  fetchNextPage: () => void;
   onCellChange: (rowUuid: string, field: string, value: string) => void;
   onAddColumn: (colKey: string) => void;
   onRemoveColumn: (colKey: string) => void;
@@ -88,12 +83,9 @@ export default function EditSubmitView({
   addedColumns,
   availableColumns,
   isLoading = false,
-  page,
-  perPage,
-  total,
-  meta,
-  onPageChange,
-  onPerPageChange,
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  fetchNextPage,
   onCellChange,
   onAddColumn,
   onRemoveColumn,
@@ -245,11 +237,34 @@ export default function EditSubmitView({
     return rowIdx >= start && rowIdx <= end && rowIdx !== dragFill.startRowIdx;
   };
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const LOAD_THRESHOLD_PX = 200;
+
+  const maybeLoadMore = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el || !hasNextPage || isFetchingNextPage) return;
+    const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    if (distanceToBottom <= LOAD_THRESHOLD_PX) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // After each batch renders, if the rows still don't overflow the container
+  // (no scrollbar yet), load the next batch automatically — otherwise the
+  // user would have nothing to scroll to trigger further loads. Only fires
+  // while content is shorter than the container; once it overflows, further
+  // loads happen from onScroll instead.
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (isLoading || !el) return;
+    if (el.scrollHeight <= el.clientHeight) maybeLoadMore();
+  }, [pageRows.length, isLoading, maybeLoadMore]);
+
   return (
-    // onMouseUp on the outer div catches mouse-up anywhere in the table area
-    <div className="flex flex-col w-full" onMouseUp={onMouseUp}>
+    <div
+      className="absolute inset-0 flex flex-col bg-background"
+      onMouseUp={onMouseUp}
+    >
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b bg-background flex-wrap">
+      <div className="flex items-center gap-2 px-4 py-2 border-b bg-background flex-wrap shrink-0">
         <Button
           variant="ghost"
           size="sm"
@@ -366,7 +381,11 @@ export default function EditSubmitView({
       </div>
 
       {/* Table */}
-      <div className="import-container overflow-x-auto">
+      <div
+        ref={scrollContainerRef}
+        onScroll={maybeLoadMore}
+        className="relative flex-1 min-h-0 min-w-0 overflow-auto"
+      >
         {isLoading ? (
           <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
             Loading...
@@ -376,9 +395,9 @@ export default function EditSubmitView({
             className="text-sm border-collapse select-none"
             style={{ minWidth: 'max-content' }}
           >
-            <thead>
+            <thead className="sticky top-0 z-20">
               <tr>
-                {visibleColumns.map((col) => (
+                {visibleColumns.map((col, colIdx) => (
                   <th
                     key={col}
                     draggable
@@ -386,7 +405,9 @@ export default function EditSubmitView({
                     onDragOver={(e) => handleDragOver(e, col)}
                     onDrop={() => handleDrop(col)}
                     onDragEnd={handleDragEnd}
-                    className={`border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap select-none cursor-grab active:cursor-grabbing transition-colors ${
+                    className={`${
+                      colIdx === 0 ? 'sticky left-0 z-30 ' : ''
+                    } border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap select-none cursor-grab active:cursor-grabbing transition-colors ${
                       dragOverCol === col
                         ? 'border-l-2 border-l-primary bg-primary/10'
                         : ''
@@ -410,19 +431,39 @@ export default function EditSubmitView({
             <tbody>
               {pageRows.map((row, rowIdx) => {
                 const rowUuid = getRowUuid(row);
+                const beneData = row.beneficiary as
+                  | Record<string, unknown>
+                  | undefined;
+                const isDuplicate = beneData?.isDuplicate === true;
                 return (
                   <tr
                     key={rowUuid}
-                    className="odd:bg-white even:bg-muted/30"
+                    className={
+                      isDuplicate
+                        ? 'bg-orange-100'
+                        : 'odd:bg-white even:bg-muted/30'
+                    }
+                    title={
+                      isDuplicate
+                        ? 'Duplicate data — phone number already exists'
+                        : undefined
+                    }
                     onMouseEnter={() => onRowMouseEnter(rowIdx)}
                   >
-                    {visibleColumns.map((col) => {
+                    {visibleColumns.map((col, colIdx) => {
+                      // First visible column stays pinned while scrolling right
+                      const pinCls =
+                        colIdx === 0
+                          ? `sticky left-0 z-10 ${
+                              isDuplicate ? 'bg-orange-100' : 'bg-white'
+                            }`
+                          : '';
                       const fillHighlight = isFillHighlighted(rowIdx, col);
                       if (READ_ONLY_FIELDS.has(col)) {
                         return (
                           <td
                             key={col}
-                            className="border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap"
+                            className={`${pinCls} border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap`}
                           >
                             {getCellValue(row, col)}
                           </td>
@@ -432,7 +473,9 @@ export default function EditSubmitView({
                       return (
                         <td
                           key={col}
-                          className={`border px-1 py-1 relative group ${
+                          className={`${pinCls} border px-1 py-1 ${
+                            colIdx === 0 ? '' : 'relative'
+                          } group ${
                             fillHighlight
                               ? 'bg-blue-100'
                               : isDirtyCell(row, col)
@@ -465,16 +508,12 @@ export default function EditSubmitView({
             </tbody>
           </table>
         )}
+        {isFetchingNextPage && (
+          <div className="sticky left-0 py-2 text-center text-xs text-muted-foreground">
+            Loading more...
+          </div>
+        )}
       </div>
-
-      <InlinePagination
-        page={page}
-        perPage={perPage}
-        total={total}
-        meta={meta}
-        onPageChange={onPageChange}
-        onPerPageChange={onPerPageChange}
-      />
     </div>
   );
 }

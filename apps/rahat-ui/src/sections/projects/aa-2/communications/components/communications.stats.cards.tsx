@@ -46,7 +46,7 @@ export function CommunicationsStatsCards({
       {stats.map((stat, idx) => {
         const Icon = stat.Icon;
         return (
-          <div key={idx} className="bg-card border rounded-lg p-3.5 flex flex-col justify-between gap-3 shadow-sm h-full">
+          <div key={idx} className="bg-card border rounded-sm px-3.5 py-3 flex flex-col gap-2.5 shadow-sm">
             <div className="flex justify-between items-start gap-2">
               <div className="min-w-0">
                 <h3 className="text-sm font-semibold text-neutral-800 dark:text-white truncate">{stat.title}</h3>

@@ -705,7 +705,7 @@
     "FAIL": "असफल",
     "FAILED": "असफल भयो",
     "FAILED_COUNT": "असफल: {count}",
-    "FAILED_DELIVERED": "अङ्ग्रेजी सन्देश सीमा १६० क्यारेक्टर हो",
+    "FAILED_DELIVERED": "वितरण असफल",
     "FAILED_EXPORTS": "असफल निर्यात",
     "FAILED_EXPORTS_ATTEMPTS": "असफल निर्यात प्रयासहरू",
     "FAILED_EXPORT_LOGS": "लगहरू निर्यात गर्न असफल",

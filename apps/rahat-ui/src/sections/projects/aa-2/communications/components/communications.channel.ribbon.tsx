@@ -17,11 +17,17 @@ const transportDescription = (
   transports: Transport[] | undefined,
   names: string[],
   fallback: string,
+  t: any,
 ) => {
   const match = transports?.find((transport) =>
     names.includes(transport?.name?.toUpperCase()),
   );
-  return match?.name ?? fallback;
+  if (!match) return fallback;
+  const upperName = match.name.toUpperCase();
+  if (['SMS', 'VOICE', 'EMAIL'].includes(upperName)) {
+    return t(upperName);
+  }
+  return match.name;
 };
 
 export function CommunicationsChannelRibbon({
@@ -36,19 +42,19 @@ export function CommunicationsChannelRibbon({
     {
       label: t("SMS_BROADCASTS"),
       count: formatDigits(sms),
-      description: transportDescription(transports, ['SMS', 'API', 'SES', 'ECHO'], t("NCELL_NTC_GATEWAYS_ACTIVE")),
+      description: transportDescription(transports, ['SMS', 'API', 'SES', 'ECHO'], t("NCELL_NTC_GATEWAYS_ACTIVE"), t),
       Icon: MessageSquare,
     },
     {
       label: t("VOICE_IVR_ALERTS"),
       count: formatDigits(voice),
-      description: transportDescription(transports, ['VOICE'], t("BULK_VOICE_DISPATCH_SERVER")),
+      description: transportDescription(transports, ['VOICE'], t("BULK_VOICE_DISPATCH_SERVER"), t),
       Icon: PhoneCall,
     },
     {
       label: t("EMAIL_BULLETINS"),
       count: formatDigits(email),
-      description: transportDescription(transports, ['EMAIL', 'SMTP'], t("STAKEHOLDER_NEWSLETTERS")),
+      description: transportDescription(transports, ['EMAIL', 'SMTP'], t("STAKEHOLDER_NEWSLETTERS"), t),
       Icon: Mail,
     },
   ];
@@ -59,7 +65,7 @@ export function CommunicationsChannelRibbon({
         return (
           <div
             key={idx}
-            className="flex items-center gap-3 p-3 bg-card border rounded-md shadow-sm"
+            className="flex items-center gap-3 px-3 py-2.5 bg-card border rounded-sm shadow-sm"
           >
             <div className="p-2 rounded-md bg-secondary text-primary shrink-0">
               <Icon size={18} />

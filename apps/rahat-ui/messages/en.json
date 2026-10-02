@@ -2245,7 +2245,7 @@
     "FAIL": "Fail",
     "FAILED": "Failed",
     "FAILED_COUNT": "Failed: {count}",
-    "FAILED_DELIVERED": "Failed Delivered",
+    "FAILED_DELIVERED": "Failed / Bounced",
     "FAILED_EXPORTS": "Failed Exports",
     "FAILED_EXPORTS_ATTEMPTS": "Failed Exports Attempts",
     "FAILED_EXPORT_LOGS": "Failed to export logs",

@@ -322,26 +322,30 @@ export default function CommunicationDetailsView() {
 
         {/* Right Section: 2x2 Data Cards Grid matching comms logs detail page */}
         <div className="flex-1 grid grid-cols-2 gap-3">
-          <DataCard
-            title={t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}
-            smallNumber={formatNum(record.delivered)}
-            className="rounded-sm w-full h-20 pt-10 pb-8"
-          />
-          <DataCard
-            title={t('FAILED_DELIVERED') || 'Failed Delivered'}
-            smallNumber={formatNum(record.failed || 0)}
-            className="rounded-sm w-full h-20 pt-10 pb-8"
-          />
-          <DataCard
-            title={tg('SCHEDULED') || 'Scheduled'}
-            smallNumber={formatNum(0)}
-            className="rounded-sm w-full h-20 pt-10 pb-8"
-          />
-          <DataCard
-            title={tg('PENDING') || 'Pending'}
-            smallNumber={formatNum(pendingCount)}
-            className="rounded-sm w-full h-20 pt-10 pb-8"
-          />
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}>
+              {t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}
+            </h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(record.delivered)}</p>
+          </div>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={t('FAILED_DELIVERED') || 'Failed Delivered'}>
+              {t('FAILED_DELIVERED') || 'Failed Delivered'}
+            </h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(record.failed || 0)}</p>
+          </div>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={tg('SCHEDULED') || 'Scheduled'}>
+              {tg('SCHEDULED') || 'Scheduled'}
+            </h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(0)}</p>
+          </div>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={tg('PENDING') || 'Pending'}>
+              {tg('PENDING') || 'Pending'}
+            </h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(pendingCount)}</p>
+          </div>
         </div>
       </div>
 

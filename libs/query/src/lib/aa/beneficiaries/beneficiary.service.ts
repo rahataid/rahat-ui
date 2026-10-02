@@ -198,7 +198,7 @@ export const useRegenerateQrPdf = (projectUuid: UUID) =>
 export type ExportBeneficiariesExcelArgs = {
   groupId: UUID;
   includeOtp?: boolean;
-  excludeUnphonedBeneficiaries?: boolean;
+  onlyUnphonedBeneficiaries?: boolean;
   excelFields?: string[];
 };
 
@@ -216,7 +216,7 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
       const {
         groupId,
         includeOtp = true,
-        excludeUnphonedBeneficiaries = false,
+        onlyUnphonedBeneficiaries = false,
         excelFields = [],
       } = payload;
       const mutate = await q.mutateAsync({
@@ -226,7 +226,7 @@ export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
           payload: {
             groupId,
             includeOtp,
-            excludeUnphonedBeneficiaries,
+            onlyUnphonedBeneficiaries,
             excelFields: excelFields,
           },
         },

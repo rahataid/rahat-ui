@@ -98,7 +98,7 @@ const BeneficiaryGroupsDetails = () => {
 
   const handleExportExcel = ({
     includeOtp,
-    excludeUnphonedBeneficiaries,
+    onlyUnphonedBeneficiaries,
     pdfFields,
   }: QrOtpConfirmValues) => {
     if (isExporting) return;
@@ -107,7 +107,7 @@ const BeneficiaryGroupsDetails = () => {
       {
         groupId,
         includeOtp,
-        excludeUnphonedBeneficiaries,
+        onlyUnphonedBeneficiaries,
         excelFields: pdfFields,
       },
       {

@@ -1,11 +1,12 @@
 'use client';
 
+import Swal from 'sweetalert2';
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits, useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
-import { Heading, Back, DataCard, SearchInput } from 'apps/rahat-ui/src/common';
+import { Heading, Back, SearchInput } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
@@ -14,12 +15,11 @@ import {
   RefreshCcw,
   Trash,
   SendHorizontal,
-  Download,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import {
   useDeleteCommunication,
   useGetCommunication,
@@ -27,19 +27,21 @@ import {
   useTriggerCommunicationBroadcast,
   useBeneficiariesGroups,
   useStakeholdersGroups,
+  useSessionBroadCastCount,
+  useSessionRetryFailed,
 } from '@rahat-ui/query';
 import { toCommunicationRecord } from '../components/useCommunicationsTableColumns';
 import { CommunicationStatusBadge } from '../components/communication-status-badge';
 import { CommunicationChannelIcon } from '../components/communication-channel-icon';
-import { resolveChannelByTransportId } from '../utils/communications.utils';
-import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
-import { exportCommunicationGroups } from '../../communicationLog/details/comms.logs.export.utils';
+import {
+  resolveChannelByTransportId,
+  resolveTargetEffectiveStatus,
+} from '../utils/communications.utils';
 import { UUID } from 'crypto';
 
 export default function CommunicationDetailsView() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
-  const formatDigits = useLabelDigits();
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const router = useRouter();
@@ -63,6 +65,83 @@ export default function CommunicationDetailsView() {
 
   const communicationsListPath = `/projects/aa/${projectId}/communications`;
 
+  const raw = (communication as any)?.data ?? communication;
+  const targets = raw?.targets ?? [];
+
+  const sessionIds = useMemo(() => {
+    const ids: string[] = [];
+    if (Array.isArray(targets)) {
+      targets.forEach((target: any) => {
+        if (target.sessionId) ids.push(target.sessionId);
+      });
+    }
+    return [...new Set(ids)];
+  }, [targets]);
+
+  const getGroupDetails = (groupId: string, groupType: string, targetGroupObj?: any) => {
+    if (targetGroupObj?.name) {
+      const count =
+        targetGroupObj?._count?.beneficiaries ??
+        targetGroupObj?._count?.stakeholders ??
+        targetGroupObj?.beneficiaries?.length ??
+        targetGroupObj?.stakeholders?.length ??
+        0;
+      return { name: targetGroupObj.name, count };
+    }
+
+    const isBeneficiary = groupType === 'BENEFICIARY';
+    const rawList = isBeneficiary
+      ? (beneficiaryGroupsData as any)?.data ?? beneficiaryGroupsData ?? []
+      : (stakeholderGroupsData as any)?.data ?? stakeholderGroupsData ?? [];
+
+    const found = (rawList as any[]).find((g: any) => g?.uuid === groupId || g?.id === groupId);
+    if (found) {
+      const count = isBeneficiary
+        ? (found._count?.beneficiaries ?? found?.groupedBeneficiaries?.length ?? found?.beneficiaries?.length ?? 0)
+        : (found._count?.stakeholders ?? found?.stakeholders?.length ?? 0);
+      return { name: found.name, count };
+    }
+
+    return { name: groupId || (isBeneficiary ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')), count: 0 };
+  };
+
+  const failedTargetsAudienceCount = targets
+    .filter((t: any) => t?.status === 'FAILED')
+    .reduce((sum: number, target: any) => {
+      const info = getGroupDetails(target.groupId, target.groupType, target.group);
+      return sum + (info.count || 0);
+    }, 0);
+
+  const pendingTargetsAudienceCount = targets
+    .filter((t: any) => t?.status === 'PENDING' || t?.status === 'PROCESSING')
+    .reduce((sum: number, target: any) => {
+      const info = getGroupDetails(target.groupId, target.groupType, target.group);
+      return sum + (info.count || 0);
+    }, 0);
+
+  const { data: broadcastCounts } = useSessionBroadCastCount(sessionIds);
+  const deliveredCount = broadcastCounts?.data?.SUCCESS ?? 0;
+  const failedCount = (broadcastCounts?.data?.FAIL ?? 0) + failedTargetsAudienceCount;
+  const pendingCountBroadcast = (broadcastCounts?.data?.PENDING ?? 0) + pendingTargetsAudienceCount;
+  const scheduledCount = broadcastCounts?.data?.SCHEDULED ?? 0;
+
+  const record = useMemo(() => {
+    if (!raw) return null;
+    return toCommunicationRecord(
+      raw,
+      resolveChannelByTransportId(appTransports, raw?.transportId, raw?.audioURL),
+    );
+  }, [raw, appTransports]);
+
+  const effectiveOverallStatus = useMemo(() => {
+    if (targets.length === 0) return 'PENDING';
+    if (pendingCountBroadcast > 0) return 'IN_PROGRESS';
+    if (failedCount > 0 && deliveredCount === 0) return 'FAILED';
+    if (deliveredCount > 0 && failedCount === 0) return 'DELIVERED';
+    if (failedCount > 0 && deliveredCount > 0) return 'COMPLETED';
+    return record?.status || 'PENDING';
+  }, [targets, pendingCountBroadcast, failedCount, deliveredCount, record?.status]);
+
   if (isLoading) {
     return (
       <div className="h-[calc(100vh-65px)] p-4">
@@ -73,8 +152,6 @@ export default function CommunicationDetailsView() {
       </div>
     );
   }
-
-  const raw = (communication as any)?.data ?? communication;
 
   if (isError) {
     return (
@@ -111,57 +188,12 @@ export default function CommunicationDetailsView() {
     );
   }
 
-  const record = toCommunicationRecord(
-    raw,
-    resolveChannelByTransportId(appTransports, raw?.transportId, raw?.audioURL),
-  );
-  const targets = raw?.targets ?? [];
-  const audioURL = typeof raw?.audioURL === 'object' ? raw.audioURL : null;
-  const smsInfo =
-    record.channel === 'SMS' && typeof raw?.message === 'string' && raw.message
-      ? getSmsInfo(raw.message)
-      : null;
 
-  const targetBeneficiaries = record.targetAudience?.beneficiaries || [];
-  const targetStakeholders = record.targetAudience?.stakeholders || [];
+
   const hasFailedTargets = targets.some((target: any) => target?.status === 'FAILED');
   const hasPendingTargets = targets.some(
     (target: any) => target?.status === 'PENDING' || target?.status === 'PROCESSING',
   );
-
-  const getGroupDetails = (groupId: string, groupType: string, targetGroupObj?: any) => {
-    if (targetGroupObj?.name) {
-      const count =
-        targetGroupObj?._count?.beneficiaries ??
-        targetGroupObj?._count?.stakeholders ??
-        targetGroupObj?.beneficiaries?.length ??
-        targetGroupObj?.stakeholders?.length ??
-        0;
-      return { name: targetGroupObj.name, count };
-    }
-
-    const isBeneficiary = groupType === 'BENEFICIARY';
-    const rawList = isBeneficiary
-      ? (beneficiaryGroupsData as any)?.data ?? beneficiaryGroupsData ?? []
-      : (stakeholderGroupsData as any)?.data ?? stakeholderGroupsData ?? [];
-
-    const found = (rawList as any[]).find((g: any) => g?.uuid === groupId || g?.id === groupId);
-    if (found) {
-      const count = isBeneficiary
-        ? (found._count?.beneficiaries ?? found?.groupedBeneficiaries?.length ?? found?.beneficiaries?.length ?? 0)
-        : (found._count?.stakeholders ?? found?.stakeholders?.length ?? 0);
-      return { name: found.name, count };
-    }
-
-    return { name: groupId || (isBeneficiary ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')), count: 0 };
-  };
-
-  const totalAudienceReach = targets.reduce((sum: number, target: any) => {
-    const info = getGroupDetails(target.groupId, target.groupType, target.group);
-    return sum + (info.count || 0);
-  }, 0);
-
-  const pendingCount = targets.filter((t: any) => t?.status === 'PENDING' || t?.status === 'PROCESSING').length;
 
   const filteredTargets = targets.filter((target: any) => {
     const groupInfo = getGroupDetails(target?.groupId, target?.groupType, target?.group);
@@ -211,10 +243,6 @@ export default function CommunicationDetailsView() {
     );
   };
 
-  const handleExportLogs = () => {
-    exportCommunicationGroups(targets, getGroupDetails, record.title);
-  };
-
   return (
     <div className="p-4 space-y-4">
       {/* ── Header Section ── */}
@@ -225,7 +253,7 @@ export default function CommunicationDetailsView() {
           <div>
             <Heading
               title={t('COMMUNICATION_DETAILS')}
-              description={t('DETAILED_VIEW_OF_COMMUNICATION')}
+              description={t('SELECT_COMMUNICATION_TO_VIEW') || 'Select a target group to view its details'}
             />
             {raw?.updatedAt && (
               <p className="text-xs text-muted-foreground mt-1">
@@ -247,18 +275,6 @@ export default function CommunicationDetailsView() {
                 confirmButtonClassName="rounded-sm bg-red-500"
                 variant="outline"
               />
-            </TooltipWrapper>
-
-            <TooltipWrapper tip={tg('EXPORT_LOGS') || 'Export Logs'}>
-              <Button
-                variant="outline"
-                className="gap-2 h-7"
-                onClick={handleExportLogs}
-                disabled={!targets.length}
-              >
-                <Download className="h-3.5 w-3.5" />
-                {tg('EXPORT') || 'Export'}
-              </Button>
             </TooltipWrapper>
 
             {hasPendingTargets && !hasFailedTargets && (
@@ -296,219 +312,235 @@ export default function CommunicationDetailsView() {
         </div>
       </div>
 
-      {/* ── Top Summary Grid (Left 2/3 Main Card + Right 1/3 4 Data Cards) ── */}
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
-        {/* Left Card: Communication Title & Channel/Status */}
-        <div className="flex-[2]">
-          <Card className="p-4 rounded-sm bg-white border border-gray-200 h-full flex flex-col justify-between shadow-none">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded border border-slate-200 flex items-center gap-1.5">
-                  <CommunicationChannelIcon channel={record.channel} className="h-3.5 w-3.5" />
-                  {t(record.channel)}
-                </span>
-                <CommunicationStatusBadge status={record.status} />
-              </div>
-
-              <div className="space-y-1">
-                <span className="text-xs text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
-                <h2 className="text-lg font-bold text-gray-900 leading-snug">
-                  {record.title}
-                </h2>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Right Section: 2x2 Data Cards Grid matching comms logs detail page */}
-        <div className="flex-1 grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}>
-              {t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}
-            </h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(record.delivered)}</p>
-          </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={t('FAILED_DELIVERED') || 'Failed Delivered'}>
-              {t('FAILED_DELIVERED') || 'Failed Delivered'}
-            </h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(record.failed || 0)}</p>
-          </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={tg('SCHEDULED') || 'Scheduled'}>
-              {tg('SCHEDULED') || 'Scheduled'}
-            </h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(0)}</p>
-          </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug" title={tg('PENDING') || 'Pending'}>
-              {tg('PENDING') || 'Pending'}
-            </h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(pendingCount)}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Bottom Split Section (Left 1/3 Details Card + Right 2/3 Audience Table) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-        {/* Left Column (1/3) — Details Card */}
-        <Card className="col-span-1 bg-white rounded-sm border border-gray-200 p-4 shadow-none flex flex-col justify-between">
-          <div className="space-y-4 text-xs text-gray-700">
-            {/* Target Audience Groups */}
-            <div>
-              <p className="text-gray-500 text-xs font-medium mb-1">{t('TARGET_AUDIENCE')}</p>
-              <p className="font-semibold text-sm text-gray-900">
-                {targetBeneficiaries.length > 0 && targetStakeholders.length > 0
-                  ? `${t('BENEFICIARIES')} & ${t('STAKEHOLDERS')}`
-                  : targetBeneficiaries.length > 0
-                  ? t('BENEFICIARIES')
-                  : targetStakeholders.length > 0
-                  ? t('STAKEHOLDERS')
-                  : t('NONE_SPECIFIED')}
-              </p>
-            </div>
-
-            {/* Triggered Date */}
-            <div>
-              <p className="text-gray-500 text-xs font-medium mb-1">{t('TRIGGERED_DATE') || 'Triggered Date'}</p>
-              <p className="font-semibold text-gray-900 text-xs">
-                {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt || tg('N_A')}
-              </p>
-            </div>
-
-            {/* Total Audience */}
-            <div>
-              <p className="text-gray-500 text-xs font-medium mb-1">{t('TOTAL_AUDIENCE') || 'Total Audience'}</p>
-              <p className="font-semibold text-gray-900 text-sm">
-                {formatNum(totalAudienceReach)}
-              </p>
-            </div>
-
-            {/* Started At */}
-            <div>
-              <p className="text-gray-500 text-xs font-medium mb-1">{t('STARTED_AT') || 'Started At'}</p>
-              <p className="font-semibold text-gray-900 text-xs">
-                {formatDate(raw?.createdAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.createdAt || tg('N_A')}
-              </p>
-            </div>
-
-            {/* Ended At */}
-            <div>
-              <p className="text-gray-500 text-xs font-medium mb-1">{t('ENDED_AT') || 'Ended At'}</p>
-              <p className="font-semibold text-gray-900 text-xs">
-                {formatDate(raw?.updatedAt, 'MMMM d, yyyy, h:mm:ss a') || raw?.updatedAt || tg('N_A')}
-              </p>
-            </div>
-
-            {/* Channel & Status */}
-            <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
-              <span className="bg-slate-100 text-slate-800 text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1.5 border border-slate-200">
+      {/* ── Communication Main Banner & 4 Top Data Cards ── */}
+      <div className="space-y-3">
+        {/* Title & Channel Header Card */}
+        <Card className="p-4 rounded-sm bg-white border border-gray-200 shadow-none flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded border border-slate-200 flex items-center gap-1.5">
                 <CommunicationChannelIcon channel={record.channel} className="h-3.5 w-3.5" />
                 {t(record.channel)}
               </span>
-              <CommunicationStatusBadge status={record.status} />
+              <CommunicationStatusBadge status={effectiveOverallStatus} />
             </div>
-
-            {/* Message Content or Voice Player */}
-            <div className="pt-2">
-              <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                {record.channel === 'VOICE' ? t('VOICE_RECORDING') : t('MESSAGE_CONTENT')}
-              </p>
-              {record.channel === 'VOICE' ? (
-                <div className="bg-slate-50 p-2.5 rounded border border-gray-200 space-y-2">
-                  <p className="text-[11px] font-medium text-gray-600 truncate">{audioURL?.fileName || 'recording.mp3'}</p>
-                  {audioURL?.mediaURL ? (
-                    <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
-                  ) : (
-                    <p className="text-xs text-muted-foreground italic">{t('NO_DATA_AVAILABLE')}</p>
-                  )}
-                </div>
-              ) : (
-                <div className="bg-slate-50 p-3 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-40 overflow-y-auto font-sans">
-                  {record.description || <span className="text-gray-400 italic">{tg('N_A')}</span>}
-                </div>
-              )}
+            <div className="pt-1">
+              <span className="text-xs text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
+              <h2 className="text-lg font-bold text-gray-900 leading-snug">{record.title}</h2>
             </div>
           </div>
         </Card>
 
-        {/* Right Column (2/3) — Search Filter & Audience Table matching comms logs detail page */}
-        <Card className="col-span-1 lg:col-span-2 bg-white rounded-sm border border-gray-200 p-4 space-y-4 shadow-none flex flex-col justify-between">
-          <div className="space-y-4">
-            {/* Search & Filter Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="w-full sm:w-72">
-                <SearchInput
-                  placeholder={t('SEARCH_AUDIENCE') || 'Search Audience...'}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="w-full sm:w-48">
-                <SelectComponent
-                  options={[
-                    { label: t('ALL_STATUSES') || 'Select Status', value: 'ALL' },
-                    { label: t('PENDING'), value: 'PENDING' },
-                    { label: t('PROCESSING') || 'Processing', value: 'PROCESSING' },
-                    { label: t('SENT') || 'Sent', value: 'SENT' },
-                    { label: t('FAILED'), value: 'FAILED' },
-                  ]}
-                  value={statusFilter}
-                  onChange={(val) => setStatusFilter(val)}
-                />
-              </div>
-            </div>
-
-            {/* Target Audience Table matching screenshot */}
-            <div className="overflow-x-auto border border-gray-200 rounded-sm">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 border-b border-gray-200 text-gray-600 font-semibold uppercase">
-                  <tr>
-                    <th className="py-2.5 px-3.5">{t('AUDIENCE') || 'Audience'}</th>
-                    <th className="py-2.5 px-3.5">{t('STATUS') || 'Status'}</th>
-                    <th className="py-2.5 px-3.5 text-right">{t('TIMESTAMP') || 'Timestamp'}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {filteredTargets.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="py-8 text-center text-muted-foreground italic">
-                        {t('NO_AUDIENCE_FOUND') || 'No audience records found'}
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredTargets.map((target: any) => {
-                      const groupInfo = getGroupDetails(target?.groupId, target?.groupType, target?.group);
-                      return (
-                        <tr key={target.uuid} className="hover:bg-slate-50/80">
-                          <td className="py-3 px-3.5 font-medium text-gray-900">
-                            <div>{groupInfo.name}</div>
-                            <div className="text-[10px] text-muted-foreground mt-0.5">
-                              {formatNum(groupInfo.count)} {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARIES') : t('STAKEHOLDERS')}
-                            </div>
-                          </td>
-                          <td className="py-3 px-3.5">
-                            <CommunicationStatusBadge status={target?.status} />
-                          </td>
-                          <td className="py-3 px-3.5 text-right text-muted-foreground">
-                            {formatDate(target?.updatedAt || raw?.updatedAt, 'yyyy-MM-dd, h:mm:ss a')}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
+        {/* 4 Summary Stats Cards Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}</h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(deliveredCount)}</p>
           </div>
-
-          {/* Footer Count Bar */}
-          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-muted-foreground">
-            <span>{t('TOTAL_COUNT') || 'Total Count'}: {formatNum(filteredTargets.length)}</span>
-            <span>{t('PAGE') || 'Page'} 1 {t('OF') || 'of'} 1</span>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{t('FAILED_DELIVERED') || 'Failed Delivered'}</h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(failedCount)}</p>
           </div>
-        </Card>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{tg('SCHEDULED') || 'Scheduled'}</h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(scheduledCount)}</p>
+          </div>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{tg('PENDING') || 'Pending'}</h1>
+            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(pendingCountBroadcast)}</p>
+          </div>
+        </div>
       </div>
+
+      {/* ── Filter Bar & Target Group Cards Grid (matching Activity Communication Details) ── */}
+      <Card className="bg-white rounded-sm border border-gray-200 p-4 space-y-4 shadow-none">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="w-full sm:w-72">
+            <SearchInput
+              name="search-audience"
+              placeholder={t('SEARCH_AUDIENCE') || 'Search Audience...'}
+              value={searchTerm}
+              onSearch={(e: any) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="w-full sm:w-48">
+            <SelectComponent
+              options={[
+                { label: t('ALL_STATUSES') || 'Select Status', value: 'ALL' },
+                { label: t('PENDING'), value: 'PENDING' },
+                { label: t('PROCESSING') || 'Processing', value: 'PROCESSING' },
+                { label: t('SENT') || 'Sent', value: 'SENT' },
+                { label: t('FAILED'), value: 'FAILED' },
+              ]}
+              value={statusFilter}
+              onChange={(val) => setStatusFilter(val)}
+            />
+          </div>
+        </div>
+
+        {filteredTargets.length === 0 ? (
+          <div className="py-12 border border-dashed border-gray-200 rounded-sm text-center text-muted-foreground italic">
+            {t('NO_AUDIENCE_FOUND') || 'No audience records found'}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {filteredTargets.map((target: any) => {
+              const groupInfo = getGroupDetails(target?.groupId, target?.groupType, target?.group);
+              return (
+                <TargetGroupCardItem
+                  key={target.uuid}
+                  target={target}
+                  groupInfo={groupInfo}
+                  record={record}
+                  raw={raw}
+                  refetch={refetch}
+                  onViewDetails={() => {
+                    if (target.sessionId) {
+                      router.push(`/projects/aa/${projectId}/communications/${commId}/logs/${target.sessionId}`);
+                    } else {
+                      Swal.fire(t('NO_SESSION_CREATED') || 'No broadcast session was created for this group.', '', 'info');
+                    }
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </Card>
     </div>
+  );
+}
+
+function TargetGroupCardItem({
+  target,
+  groupInfo,
+  record,
+  raw,
+  refetch,
+  onViewDetails,
+}: {
+  target: any;
+  groupInfo: { name: string; count: number };
+  record: any;
+  raw: any;
+  refetch: () => void;
+  onViewDetails: () => void;
+}) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
+  const params = useParams();
+  const projectId = params.id as string;
+  const commId = params.commId as string;
+
+  const { data: broadcastCounts } = useSessionBroadCastCount(target?.sessionId ? [target.sessionId] : []);
+  const mutateRetry = useSessionRetryFailed();
+  const triggerBroadcast = useTriggerCommunicationBroadcast();
+
+  const delivered = broadcastCounts?.data?.SUCCESS ?? 0;
+  const failed = broadcastCounts?.data?.FAIL ?? 0;
+  const audioURL = typeof raw?.audioURL === 'object' ? raw.audioURL : null;
+  const messageText =
+    typeof raw?.message === 'string' && raw.message.trim()
+      ? raw.message
+      : raw?.subject || record.description || null;
+
+  const isRetrying = mutateRetry.isPending || triggerBroadcast.isPending;
+
+  const effectiveTargetStatus = useMemo(() => {
+    return resolveTargetEffectiveStatus(target?.status, broadcastCounts?.data);
+  }, [target?.status, broadcastCounts?.data]);
+
+  const handleRetry = async () => {
+    if (isRetrying) return;
+    try {
+      if (target?.sessionId) {
+        await mutateRetry.mutateAsync({ cuid: target.sessionId, includeFailed: true });
+      } else {
+        await triggerBroadcast.mutateAsync({
+          projectUUID: projectId as UUID,
+          communicationUUID: commId,
+        });
+      }
+      refetch();
+    } catch (error) {
+      console.error('Retry error:', error);
+    }
+  };
+
+  return (
+    <Card className="bg-white border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between p-4 space-y-3 hover:border-gray-300 transition-colors">
+      <div className="space-y-3">
+        {/* Header Row: Channel Icon + Title/Subtitle + Status Badge */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 shrink-0">
+              <CommunicationChannelIcon channel={record.channel} className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <h4 className="font-semibold text-sm text-gray-900 truncate">{groupInfo.name}</h4>
+              <p className="text-xs text-gray-500 truncate">
+                {t(record.channel)} • {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY') : t('STAKEHOLDER')} • {groupInfo.name}
+              </p>
+            </div>
+          </div>
+          <CommunicationStatusBadge status={effectiveTargetStatus} />
+        </div>
+
+        {/* Voice Player or Message Preview */}
+        {record.channel === 'VOICE' && audioURL?.mediaURL ? (
+          <div className="bg-slate-50 p-2.5 rounded border border-gray-200 space-y-1">
+            <p className="text-[11px] font-medium text-gray-600 truncate">{audioURL.fileName || 'recording.wav'}</p>
+            <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
+          </div>
+        ) : messageText ? (
+          <div className="bg-slate-50 p-2.5 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-28 overflow-y-auto font-sans">
+            {messageText}
+          </div>
+        ) : null}
+
+        {/* Deliveries Count */}
+        <div className="text-xs text-gray-500 font-medium pt-0.5">
+          {formatNum(delivered)} {t('DELIVERED')?.toLowerCase() || 'delivered'} · {formatNum(failed)} {t('FAILED')?.toLowerCase() || 'failed'} ({formatNum(groupInfo.count)} {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARIES') : t('STAKEHOLDERS')})
+        </div>
+      </div>
+
+      {/* Footer Section: Timestamps on Left + Buttons on Right */}
+      <div className="pt-3 border-t border-gray-100 flex flex-wrap items-end justify-between gap-2">
+        <div className="text-[11px] text-gray-500 space-y-0.5">
+          <p>{t('COMPLETED_AT') || 'Completed At'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+          <p>{t('UPDATED_AT') || 'Updated at'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+        </div>
+
+        <div className="flex items-center gap-2 ml-auto">
+          {(failed > 0 || target?.status === 'FAILED') && (
+            <TooltipWrapper tip={t('RETRY_BROADCAST')}>
+              <DialogComponent
+                buttonIcon={RefreshCcw}
+                buttonText={tg('RETRY') || 'Retry'}
+                dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
+                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
+                confirmButtonText={t('CONFIRM') || 'Confirm'}
+                handleClick={handleRetry}
+                buttonClassName="h-8 text-xs font-medium px-3 rounded-sm"
+                confirmButtonClassName="rounded-sm bg-primary"
+                variant="outline"
+              />
+            </TooltipWrapper>
+          )}
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 text-xs text-blue-600 border-blue-200 hover:bg-blue-50 font-medium shrink-0"
+            onClick={onViewDetails}
+          >
+            <span>{t('VIEW_DETAILS') || 'View Details'}</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </div>
+    </Card>
   );
 }

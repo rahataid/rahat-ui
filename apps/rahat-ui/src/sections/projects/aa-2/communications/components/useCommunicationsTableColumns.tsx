@@ -64,8 +64,16 @@ export const toCommunicationRecord = (
   const stakeholders = targets
     .filter((target) => target?.groupType === 'STAKEHOLDERS' || target?.groupType === 'STAKEHOLDER')
     .map((target) => target.groupId);
-  const delivered = targets.filter((target) => target?.status === 'SENT').length;
-  const failed = targets.filter((target) => target?.status === 'FAILED').length;
+  const delivered = targets.filter(
+    (target) =>
+      target?.status === 'SENT' ||
+      target?.status === 'DELIVERED' ||
+      target?.status === 'SUCCESS' ||
+      target?.status === 'COMPLETED',
+  ).length;
+  const failed = targets.filter(
+    (target) => target?.status === 'FAILED' || target?.status === 'FAIL',
+  ).length;
   const message =
     typeof item?.message === 'string'
       ? item.message

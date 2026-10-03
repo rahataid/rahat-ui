@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useParams, useRouter } from 'next/navigation';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Heading } from 'apps/rahat-ui/src/common';
 import {
   Tabs,
   TabsContent,
@@ -12,13 +12,13 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CloudDownloadIcon, PlusCircle } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { CommunicationsStatsCards } from './components/communications.stats.cards';
 import { CommunicationsChannelRibbon } from './components/communications.channel.ribbon';
 import { CommunicationsTable } from './components/communications.table';
 import { toCommunicationRecord } from './components/useCommunicationsTableColumns';
 import { resolveChannelByTransportId } from './utils/communications.utils';
-import { useListAllTransports, useListCommunications } from '@rahat-ui/query';
+import { useListAllTransports, useListCommunications, useSessionBroadCastCount } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
@@ -92,15 +92,23 @@ export default function CommunicationsView() {
     return counts;
   }, [statsRecords]);
 
-  const delivered = useMemo(
-    () => statsRecords.filter((record) => record.status === 'DELIVERED').length,
-    [statsRecords],
-  );
-  const failed = useMemo(
-    () => statsRecords.filter((record) => record.status === 'FAILED').length,
-    [statsRecords],
-  );
-  const statsTotal = statsData?.meta?.total ?? statsRecords.length;
+  const sessionIds = useMemo(() => {
+    const ids: string[] = [];
+    if (Array.isArray(statsData?.data)) {
+      statsData.data.forEach((item: any) => {
+        item.targets?.forEach((target: any) => {
+          if (target.sessionId) ids.push(target.sessionId);
+        });
+      });
+    }
+    return [...new Set(ids)];
+  }, [statsData]);
+
+  const { data: broadcastCounts } = useSessionBroadCastCount(sessionIds);
+
+  const delivered = broadcastCounts?.data?.SUCCESS ?? 0;
+  const failed = broadcastCounts?.data?.FAIL ?? 0;
+  const statsTotal = broadcastCounts?.data?.TOTAL ?? 0;
 
   const setNextPage = () => {
     if (pagination.page < meta.lastPage) {
@@ -140,13 +148,6 @@ export default function CommunicationsView() {
           description={t("NEW_COMMUNICATION_DESCRIPTION")}
         />
         <div className="flex items-center gap-2 flex-wrap">
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            name={t("EXPORT_LOGS")}
-            variant="outline"
-            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-          />
-
           <Button
             className="h-[clamp(28px,3vw,36px)] px-3.5 text-xs font-medium"
             onClick={() => router.push(`/projects/aa/${projectId}/communications/add`)}

@@ -1,22 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslations } from 'next-intl';
 import {
   getCoreRowModel,
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { Trash2 } from 'lucide-react';
 import { DemoTable, CustomPagination, SearchInput } from 'apps/rahat-ui/src/common';
+import { IconLabelBtn } from 'apps/rahat-ui/src/common/icon.label.btn';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { ToggleColumns } from 'apps/rahat-ui/src/common/toggle.columns';
+import { useQueries } from '@tanstack/react-query';
+import {
+  broadcastCountsQueryOptions,
+  useNewCommunicationQuery,
+} from '@rahat-ui/query';
+import { resolveCommunicationLifecycleStatus } from '../utils/communications.utils';
 import useCommunicationsTableColumns, {
   CommunicationRecord,
 } from './useCommunicationsTableColumns';
 
+export type CommunicationDateRange = {
+  from?: Date;
+  to?: Date;
+};
+
 type TableProps = {
-  activeTab?: string;
   records: CommunicationRecord[];
   meta: {
     total: number;
@@ -32,10 +44,84 @@ type TableProps = {
   setPerPage: (size: string | number) => void;
   search: string;
   onSearchChange: (value: string) => void;
+  channelFilter: '' | 'SMS' | 'VOICE' | 'EMAIL';
+  onChannelFilterChange: (value: '' | 'SMS' | 'VOICE' | 'EMAIL') => void;
+  statusFilter: string;
+  onStatusFilterChange: (value: string) => void;
+  dateRange: CommunicationDateRange | undefined;
+  onDateRangeChange: (value: CommunicationDateRange | undefined) => void;
+  datePickerKey: number;
+  showResetFilters: boolean;
+  onResetFilters: () => void;
 };
 
+const STATUS_FILTER_OPTIONS = [
+  'ALL',
+  'DELIVERED',
+  'ANSWERED',
+  'COMPLETED',
+  'IN_PROGRESS',
+  'PENDING',
+  'SCHEDULED',
+  'FAILED',
+  'CANCELLED',
+];
+
+function useResolvedCommunicationStatuses(records: CommunicationRecord[]) {
+  const { newCommunicationService } = useNewCommunicationQuery();
+
+  const recordSessionIds = React.useMemo(() => {
+    return records.map((record) => [
+      ...new Set(
+        (record.targets ?? [])
+          .map((target) => target.sessionId)
+          .filter(Boolean) as string[],
+      ),
+    ]);
+  }, [records]);
+
+  const results = useQueries({
+    queries: recordSessionIds.map((sessionIds) =>
+      broadcastCountsQueryOptions(newCommunicationService, sessionIds),
+    ),
+  });
+
+  const stableDataKey = React.useMemo(
+    () =>
+      JSON.stringify(
+        results.map((r) => r.data?.data ?? null),
+      ),
+    [results],
+  );
+
+  return React.useMemo(() => {
+    const resolvedById = new Map<string, string>();
+    records.forEach((record, index) => {
+      const sessionIds = recordSessionIds[index] ?? [];
+      const counts =
+        sessionIds.length > 0 ? results[index]?.data?.data : undefined;
+      resolvedById.set(
+        record.id,
+        resolveCommunicationLifecycleStatus({
+          channel: record.channel || 'SMS',
+          rawStatus: record.status,
+          counts,
+          hasActiveTargets: (record.targets ?? []).some(
+            (target) => target.status === 'SENT' || target.status === 'PROCESSING',
+          ),
+          hasPendingTargets: (record.targets ?? []).some(
+            (target) => target.status === 'PENDING',
+          ),
+          hasSession: sessionIds.length > 0,
+        }),
+      );
+    });
+    return resolvedById;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [records, recordSessionIds, stableDataKey]);
+}
+
 export function CommunicationsTable({
-  activeTab = 'all',
   records,
   meta,
   isLoading,
@@ -46,33 +132,101 @@ export function CommunicationsTable({
   setPerPage,
   search,
   onSearchChange,
+  channelFilter,
+  onChannelFilterChange,
+  statusFilter,
+  onStatusFilterChange,
+  dateRange,
+  onDateRangeChange,
+  datePickerKey,
+  showResetFilters,
+  onResetFilters,
 }: TableProps) {
   const t = useTranslations('AA_PROJECT');
-  const [channelFilter, setChannelFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
   const columns = useCommunicationsTableColumns();
+  const resolvedStatuses = useResolvedCommunicationStatuses(records);
+
+  const isFiltering = Boolean(
+    channelFilter || statusFilter || dateRange?.from || dateRange?.to,
+  );
 
   const filteredData = React.useMemo(() => {
     let data = records;
 
-    if (activeTab === 'sms') {
-      data = data.filter((d) => d.channel === 'SMS');
-    } else if (activeTab === 'voice') {
-      data = data.filter((d) => d.channel === 'VOICE');
-    } else if (activeTab === 'email') {
-      data = data.filter((d) => d.channel === 'EMAIL');
+    if (channelFilter) {
+      data = data.filter((record) => record.channel === channelFilter);
     }
 
-    if (activeTab === 'all' && channelFilter && channelFilter !== 'ALL') {
-      data = data.filter((d) => d.channel === channelFilter);
+    if (statusFilter) {
+      data = data.filter(
+        (record) => resolvedStatuses.get(record.id) === statusFilter,
+      );
     }
 
-    if (statusFilter && statusFilter !== 'ALL') {
-      data = data.filter((d) => d.status === statusFilter);
+    if (dateRange?.from || dateRange?.to) {
+      const start = dateRange.from
+        ? new Date(
+            dateRange.from.getFullYear(),
+            dateRange.from.getMonth(),
+            dateRange.from.getDate(),
+          )
+        : null;
+      const end = dateRange.to
+        ? new Date(
+            dateRange.to.getFullYear(),
+            dateRange.to.getMonth(),
+            dateRange.to.getDate(),
+            23,
+            59,
+            59,
+            999,
+          )
+        : null;
+      data = data.filter((record) => {
+        const time = new Date(record.date).getTime();
+        if (Number.isNaN(time)) return false;
+        if (start && time < start.getTime()) return false;
+        if (end && time > end.getTime()) return false;
+        return true;
+      });
     }
 
     return data;
-  }, [records, activeTab, channelFilter, statusFilter]);
+  }, [records, channelFilter, statusFilter, dateRange, resolvedStatuses]);
+
+  const effectiveMeta = React.useMemo(() => {
+    if (!isFiltering) return meta;
+    return {
+      total: filteredData.length,
+      currentPage: pagination.page,
+      lastPage: Math.max(
+        1,
+        Math.ceil(filteredData.length / pagination.perPage),
+      ),
+      perPage: pagination.perPage,
+    };
+  }, [
+    isFiltering,
+    filteredData.length,
+    meta,
+    pagination.page,
+    pagination.perPage,
+  ]);
+
+  const shouldResetPage = isFiltering && pagination.page > effectiveMeta.lastPage;
+  React.useEffect(() => {
+    if (shouldResetPage) {
+      setPagination((prev: any) => ({ ...prev, page: 1 }));
+    }
+  }, [shouldResetPage, setPagination]);
+
+  const handleNextPage = () => {
+    if (pagination.page < effectiveMeta.lastPage) setNextPage();
+  };
+
+  const handlePrevPage = () => {
+    if (pagination.page > 1) setPrevPage();
+  };
 
   const table = useReactTable({
     data: filteredData,
@@ -101,33 +255,54 @@ export function CommunicationsTable({
               VOICE: t('VOICE'),
               EMAIL: t('EMAIL'),
             }}
-            onChange={(val) => setChannelFilter(val === 'ALL' ? '' : val)}
+            onChange={(val) =>
+              onChannelFilterChange(
+                val === 'ALL' ? '' : (val as 'SMS' | 'VOICE' | 'EMAIL'),
+              )
+            }
             value={channelFilter || 'ALL'}
             className="w-36"
           />
           <SelectComponent
             name={t("STATUS")}
-            options={['ALL', 'DELIVERED', 'IN_PROGRESS', 'FAILED']}
+            options={STATUS_FILTER_OPTIONS}
             labels={{
               ALL: t('ALL'),
               DELIVERED: t('DELIVERED'),
+              ANSWERED: t('ANSWERED'),
+              COMPLETED: t('COMPLETED'),
               IN_PROGRESS: t('IN_PROGRESS'),
+              PENDING: t('PENDING'),
+              SCHEDULED: t('SCHEDULED'),
               FAILED: t('FAILED'),
+              CANCELLED: t('CANCELLED'),
             }}
-            onChange={(val) => setStatusFilter(val === 'ALL' ? '' : val)}
+            onChange={(val) => onStatusFilterChange(val === 'ALL' ? '' : val)}
             value={statusFilter || 'ALL'}
             className="w-40"
           />
           <DateRangePicker
+            key={datePickerKey}
             placeholder={t("DATE_RANGE")}
             type="range"
-            handleDateChange={() => {}}
-            handleClearDate={() => {}}
+            handleDateChange={onDateRangeChange}
+            handleClearDate={() => onDateRangeChange(undefined)}
             className="h-[36px] text-xs"
           />
         </div>
 
-        <ToggleColumns table={table} />
+        <div className="flex items-center gap-2">
+          {showResetFilters && (
+            <IconLabelBtn
+              Icon={Trash2}
+              name={t('CLEAR')}
+              handleClick={onResetFilters}
+              variant="outline"
+              className="text-red-500 rounded-xl"
+            />
+          )}
+          <ToggleColumns table={table} />
+        </div>
       </div>
 
       <DemoTable
@@ -139,20 +314,20 @@ export function CommunicationsTable({
 
       <CustomPagination
         meta={{
-          total: meta.total,
-          currentPage: meta.currentPage,
-          lastPage: meta.lastPage,
-          perPage: meta.perPage,
+          total: effectiveMeta.total,
+          currentPage: effectiveMeta.currentPage,
+          lastPage: effectiveMeta.lastPage,
+          perPage: effectiveMeta.perPage,
           next: null,
           prev: null,
         }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
+        handleNextPage={handleNextPage}
+        handlePrevPage={handlePrevPage}
         setPagination={setPagination}
         handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
         perPage={pagination.perPage}
-        total={meta.total}
+        total={effectiveMeta.total}
         isShowTotalCount={true}
       />
     </div>

@@ -8,7 +8,6 @@ import { useLabelDigits, useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/nu
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { Heading, Back, SearchInput } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
 import {
   ArrowLeft,
@@ -20,6 +19,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import {
   useDeleteCommunication,
   useGetCommunication,
@@ -36,6 +36,7 @@ import { CommunicationChannelIcon } from '../components/communication-channel-ic
 import {
   resolveChannelByTransportId,
   resolveTargetEffectiveStatus,
+  resolveCommunicationLifecycleStatus,
 } from '../utils/communications.utils';
 import { UUID } from 'crypto';
 
@@ -59,14 +60,20 @@ export default function CommunicationDetailsView() {
   );
   const deleteCommunication = useDeleteCommunication();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
+  const retryFailedSession = useSessionRetryFailed();
+  const [isRetrying, setIsRetrying] = useState(false);
   const { data: beneficiaryGroupsData } = useBeneficiariesGroups(projectId as UUID, { page: 1, perPage: 100 });
   const { data: stakeholderGroupsData } = useStakeholdersGroups(projectId as UUID, { page: 1, perPage: 100 });
-  const isMutating = deleteCommunication.isPending || triggerBroadcast.isPending;
+  const isMutating =
+    deleteCommunication.isPending ||
+    triggerBroadcast.isPending ||
+    retryFailedSession.isPending ||
+    isRetrying;
 
   const communicationsListPath = `/projects/aa/${projectId}/communications`;
 
   const raw = (communication as any)?.data ?? communication;
-  const targets = raw?.targets ?? [];
+  const targets = Array.isArray(raw?.targets) ? raw.targets : [];
 
   const sessionIds = useMemo(() => {
     const ids: string[] = [];
@@ -90,9 +97,11 @@ export default function CommunicationDetailsView() {
     }
 
     const isBeneficiary = groupType === 'BENEFICIARY';
-    const rawList = isBeneficiary
-      ? (beneficiaryGroupsData as any)?.data ?? beneficiaryGroupsData ?? []
-      : (stakeholderGroupsData as any)?.data ?? stakeholderGroupsData ?? [];
+    const groupsData: any = isBeneficiary
+      ? beneficiaryGroupsData
+      : stakeholderGroupsData;
+    const list = Array.isArray(groupsData?.data) ? groupsData.data : groupsData;
+    const rawList = Array.isArray(list) ? list : [];
 
     const found = (rawList as any[]).find((g: any) => g?.uuid === groupId || g?.id === groupId);
     if (found) {
@@ -119,7 +128,8 @@ export default function CommunicationDetailsView() {
       return sum + (info.count || 0);
     }, 0);
 
-  const { data: broadcastCounts } = useSessionBroadCastCount(sessionIds);
+  const { data: broadcastCounts, isLoading: isBroadcastLoading } = useSessionBroadCastCount(sessionIds);
+  const isBroadcastResolving = sessionIds.length > 0 && (isBroadcastLoading || broadcastCounts === undefined);
   const deliveredCount = broadcastCounts?.data?.SUCCESS ?? 0;
   const failedCount = (broadcastCounts?.data?.FAIL ?? 0) + failedTargetsAudienceCount;
   const pendingCountBroadcast = (broadcastCounts?.data?.PENDING ?? 0) + pendingTargetsAudienceCount;
@@ -134,13 +144,29 @@ export default function CommunicationDetailsView() {
   }, [raw, appTransports]);
 
   const effectiveOverallStatus = useMemo(() => {
-    if (targets.length === 0) return 'PENDING';
-    if (pendingCountBroadcast > 0) return 'IN_PROGRESS';
-    if (failedCount > 0 && deliveredCount === 0) return 'FAILED';
-    if (deliveredCount > 0 && failedCount === 0) return 'DELIVERED';
-    if (failedCount > 0 && deliveredCount > 0) return 'COMPLETED';
-    return record?.status || 'PENDING';
-  }, [targets, pendingCountBroadcast, failedCount, deliveredCount, record?.status]);
+    return resolveCommunicationLifecycleStatus({
+      channel: record?.channel || raw?.channel || 'SMS',
+      rawStatus: record?.status || raw?.status,
+      counts: broadcastCounts?.data,
+      hasActiveTargets:
+        sessionIds.length > 0 ||
+        targets.some((t: any) => t?.status === 'SENT' || t?.status === 'PROCESSING'),
+      hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING'),
+      hasSession: sessionIds.length > 0,
+      isRetrying: isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending,
+    });
+  }, [
+    record?.channel,
+    raw?.channel,
+    record?.status,
+    raw?.status,
+    broadcastCounts?.data,
+    sessionIds.length,
+    targets,
+    isRetrying,
+    retryFailedSession.isPending,
+    triggerBroadcast.isPending,
+  ]);
 
   if (isLoading) {
     return (
@@ -195,6 +221,13 @@ export default function CommunicationDetailsView() {
     (target: any) => target?.status === 'PENDING' || target?.status === 'PROCESSING',
   );
 
+  const canSend =
+    targets.length > 0 &&
+    sessionIds.length === 0 &&
+    targets.every((target: any) => target?.status === 'PENDING');
+
+  const canRetry = (failedCount > 0 || hasFailedTargets) && !isRetrying;
+
   const filteredTargets = targets.filter((target: any) => {
     const groupInfo = getGroupDetails(target?.groupId, target?.groupType, target?.group);
     const matchesSearch =
@@ -218,15 +251,26 @@ export default function CommunicationDetailsView() {
   };
 
   const handleRetryConfirm = async () => {
-    if (isMutating) return;
+    if (isMutating || isRetrying) return;
+    setIsRetrying(true);
     try {
-      await triggerBroadcast.mutateAsync({
-        projectUUID: projectId as UUID,
-        communicationUUID: commId,
-      });
-      Swal.fire(t('RETRY_SUCCESSFUL'), '', 'success');
+      if (sessionIds.length > 0) {
+        await Promise.all(
+          sessionIds.map((cuid) =>
+            retryFailedSession.mutateAsync({ cuid, includeFailed: true }),
+          ),
+        );
+      } else {
+        await triggerBroadcast.mutateAsync({
+          projectUUID: projectId as UUID,
+          communicationUUID: commId,
+        });
+      }
+      await refetch();
     } catch (error) {
       console.error('Retry failed:', error);
+    } finally {
+      setIsRetrying(false);
     }
   };
 
@@ -263,50 +307,44 @@ export default function CommunicationDetailsView() {
           </div>
 
           <div className="flex items-center gap-2">
-            <TooltipWrapper tip={t('DELETE_COMMUNICATION')}>
+            <DialogComponent
+              buttonIcon={Trash}
+              buttonText={t('DELETE')}
+              dialogTitle={t('DELETE_COMMUNICATION')}
+              dialogDescription={t('DELETE_COMMUNICATION_CONFIRM')}
+              confirmButtonText={t('CONFIRM')}
+              handleClick={handleDeleteConfirm}
+              buttonClassName="rounded-sm text-red-500 border-red-500 text-xs h-9 px-3"
+              confirmButtonClassName="rounded-sm bg-red-500"
+              variant="outline"
+            />
+
+            {canSend && (
               <DialogComponent
-                buttonIcon={Trash}
-                buttonText={t('DELETE')}
-                dialogTitle={t('DELETE_COMMUNICATION')}
-                dialogDescription={t('DELETE_COMMUNICATION_CONFIRM')}
+                buttonIcon={SendHorizontal}
+                buttonText={t('SEND_BROADCAST')}
+                dialogTitle={t('SEND_BROADCAST')}
+                dialogDescription={t('SEND_BROADCAST_CONFIRM')}
                 confirmButtonText={t('CONFIRM')}
-                handleClick={handleDeleteConfirm}
-                buttonClassName="rounded-sm text-red-500 border-red-500 text-xs h-9 px-3"
-                confirmButtonClassName="rounded-sm bg-red-500"
+                handleClick={handleSendConfirm}
+                buttonClassName="rounded-sm text-xs h-9 px-3 gap-1.5"
+                confirmButtonClassName="rounded-sm bg-primary"
                 variant="outline"
               />
-            </TooltipWrapper>
-
-            {hasPendingTargets && !hasFailedTargets && (
-              <TooltipWrapper tip={t('SEND_BROADCAST')}>
-                <DialogComponent
-                  buttonIcon={SendHorizontal}
-                  buttonText={t('SEND_BROADCAST')}
-                  dialogTitle={t('SEND_BROADCAST')}
-                  dialogDescription={t('SEND_BROADCAST_CONFIRM')}
-                  confirmButtonText={t('CONFIRM')}
-                  handleClick={handleSendConfirm}
-                  buttonClassName="rounded-sm text-xs h-9 px-3"
-                  confirmButtonClassName="rounded-sm bg-primary"
-                  variant="outline"
-                />
-              </TooltipWrapper>
             )}
 
-            {hasFailedTargets && (
-              <TooltipWrapper tip={t('RETRY_BROADCAST')}>
-                <DialogComponent
-                  buttonIcon={RefreshCcw}
-                  buttonText={t('RETRY_FAILED')}
-                  dialogTitle={t('RETRY_BROADCAST')}
-                  dialogDescription={t('RETRY_COMMUNICATION_CONFIRM')}
-                  confirmButtonText={t('CONFIRM')}
-                  handleClick={handleRetryConfirm}
-                  buttonClassName="rounded-sm text-xs h-9 px-3"
-                  confirmButtonClassName="rounded-sm bg-primary"
-                  variant="outline"
-                />
-              </TooltipWrapper>
+            {canRetry && (
+              <DialogComponent
+                buttonIcon={RefreshCcw}
+                buttonText={t('RETRY_FAILED') || 'Retry Failed'}
+                dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
+                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry sending failed messages for this broadcast?'}
+                confirmButtonText={t('CONFIRM')}
+                handleClick={handleRetryConfirm}
+                buttonClassName="rounded-sm text-xs h-9 px-3 gap-1.5"
+                confirmButtonClassName="rounded-sm bg-primary"
+                variant="outline"
+              />
             )}
           </div>
         </div>
@@ -319,14 +357,14 @@ export default function CommunicationDetailsView() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded border border-slate-200 flex items-center gap-1.5">
-                <CommunicationChannelIcon channel={record.channel} className="h-3.5 w-3.5" />
-                {t(record.channel)}
+                <CommunicationChannelIcon channel={record?.channel || 'SMS'} className="h-3.5 w-3.5" />
+                {t(record?.channel || 'SMS')}
               </span>
-              <CommunicationStatusBadge status={effectiveOverallStatus} />
+              <CommunicationStatusBadge status={effectiveOverallStatus} isLoading={isBroadcastResolving} />
             </div>
             <div className="pt-1">
               <span className="text-xs text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
-              <h2 className="text-lg font-bold text-gray-900 leading-snug">{record.title}</h2>
+              <h2 className="text-lg font-bold text-gray-900 leading-snug">{record?.title || raw?.title || ''}</h2>
             </div>
           </div>
         </Card>
@@ -335,19 +373,35 @@ export default function CommunicationDetailsView() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
             <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}</h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(deliveredCount)}</p>
+            {isBroadcastResolving ? (
+              <Skeleton className="h-7 w-16 mt-2" />
+            ) : (
+              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(deliveredCount)}</p>
+            )}
           </div>
           <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
             <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{t('FAILED_DELIVERED') || 'Failed Delivered'}</h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(failedCount)}</p>
+            {isBroadcastResolving ? (
+              <Skeleton className="h-7 w-16 mt-2" />
+            ) : (
+              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(failedCount)}</p>
+            )}
           </div>
           <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
             <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{tg('SCHEDULED') || 'Scheduled'}</h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(scheduledCount)}</p>
+            {isBroadcastResolving ? (
+              <Skeleton className="h-7 w-16 mt-2" />
+            ) : (
+              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(scheduledCount)}</p>
+            )}
           </div>
           <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
             <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{tg('PENDING') || 'Pending'}</h1>
-            <p className="text-primary font-semibold text-2xl mt-2">{formatNum(pendingCountBroadcast)}</p>
+            {isBroadcastResolving ? (
+              <Skeleton className="h-7 w-16 mt-2" />
+            ) : (
+              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(pendingCountBroadcast)}</p>
+            )}
           </div>
         </div>
       </div>
@@ -434,9 +488,11 @@ function TargetGroupCardItem({
   const projectId = params.id as string;
   const commId = params.commId as string;
 
-  const { data: broadcastCounts } = useSessionBroadCastCount(target?.sessionId ? [target.sessionId] : []);
+  const { data: broadcastCounts, isLoading: isGroupBroadcastLoading } = useSessionBroadCastCount(target?.sessionId ? [target.sessionId] : []);
   const mutateRetry = useSessionRetryFailed();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
+
+  const isTargetResolving = !!target?.sessionId && (isGroupBroadcastLoading || broadcastCounts === undefined);
 
   const delivered = broadcastCounts?.data?.SUCCESS ?? 0;
   const failed = broadcastCounts?.data?.FAIL ?? 0;
@@ -449,8 +505,16 @@ function TargetGroupCardItem({
   const isRetrying = mutateRetry.isPending || triggerBroadcast.isPending;
 
   const effectiveTargetStatus = useMemo(() => {
-    return resolveTargetEffectiveStatus(target?.status, broadcastCounts?.data);
-  }, [target?.status, broadcastCounts?.data]);
+    return resolveCommunicationLifecycleStatus({
+      channel: record.channel,
+      rawStatus: target?.status,
+      counts: broadcastCounts?.data,
+      hasActiveTargets: target?.status === 'SENT' || target?.status === 'PROCESSING',
+      hasPendingTargets: target?.status === 'PENDING',
+      hasSession: !!target?.sessionId,
+      isRetrying,
+    });
+  }, [target?.status, broadcastCounts?.data, record.channel, isRetrying]);
 
   const handleRetry = async () => {
     if (isRetrying) return;
@@ -485,7 +549,7 @@ function TargetGroupCardItem({
               </p>
             </div>
           </div>
-          <CommunicationStatusBadge status={effectiveTargetStatus} />
+          <CommunicationStatusBadge status={effectiveTargetStatus} isLoading={isTargetResolving} />
         </div>
 
         {/* Voice Player or Message Preview */}
@@ -501,9 +565,13 @@ function TargetGroupCardItem({
         ) : null}
 
         {/* Deliveries Count */}
-        <div className="text-xs text-gray-500 font-medium pt-0.5">
-          {formatNum(delivered)} {t('DELIVERED')?.toLowerCase() || 'delivered'} · {formatNum(failed)} {t('FAILED')?.toLowerCase() || 'failed'} ({formatNum(groupInfo.count)} {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARIES') : t('STAKEHOLDERS')})
-        </div>
+        {isTargetResolving ? (
+          <Skeleton className="h-4 w-44 mt-0.5 rounded" />
+        ) : (
+          <div className="text-xs text-gray-500 font-medium pt-0.5">
+            {formatNum(delivered)} {t('DELIVERED')?.toLowerCase() || 'delivered'} · {formatNum(failed)} {t('FAILED')?.toLowerCase() || 'failed'} ({formatNum(groupInfo.count)} {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARIES') : t('STAKEHOLDERS')})
+          </div>
+        )}
       </div>
 
       {/* Footer Section: Timestamps on Left + Buttons on Right */}
@@ -515,19 +583,17 @@ function TargetGroupCardItem({
 
         <div className="flex items-center gap-2 ml-auto">
           {(failed > 0 || target?.status === 'FAILED') && (
-            <TooltipWrapper tip={t('RETRY_BROADCAST')}>
-              <DialogComponent
-                buttonIcon={RefreshCcw}
-                buttonText={tg('RETRY') || 'Retry'}
-                dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
-                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
-                confirmButtonText={t('CONFIRM') || 'Confirm'}
-                handleClick={handleRetry}
-                buttonClassName="h-8 text-xs font-medium px-3 rounded-sm"
-                confirmButtonClassName="rounded-sm bg-primary"
-                variant="outline"
-              />
-            </TooltipWrapper>
+            <DialogComponent
+              buttonIcon={RefreshCcw}
+              buttonText={tg('RETRY') || 'Retry'}
+              dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
+              dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
+              confirmButtonText={t('CONFIRM') || 'Confirm'}
+              handleClick={handleRetry}
+              buttonClassName="h-8 text-xs font-medium px-3.5 gap-1.5 rounded-sm shrink-0 whitespace-nowrap"
+              confirmButtonClassName="rounded-sm bg-primary"
+              variant="outline"
+            />
           )}
 
           <Button

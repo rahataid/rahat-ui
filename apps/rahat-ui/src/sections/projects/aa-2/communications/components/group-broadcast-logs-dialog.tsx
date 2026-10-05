@@ -18,7 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
 import { TriangleAlertIcon, RefreshCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
@@ -34,7 +33,11 @@ import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { CommunicationChannelIcon } from './communication-channel-icon';
 import { CommunicationStatusBadge } from './communication-status-badge';
-import { resolveTargetEffectiveStatus, resolveBroadcastLogStatus } from '../utils/communications.utils';
+import {
+  resolveTargetEffectiveStatus,
+  resolveBroadcastLogStatus,
+  resolveCommunicationLifecycleStatus,
+} from '../utils/communications.utils';
 
 type GroupBroadcastLogsDialogProps = {
   isOpen: boolean;
@@ -94,8 +97,16 @@ export function GroupBroadcastLogsDialog({
   };
 
   const effectiveStatus = useMemo(() => {
-    return resolveTargetEffectiveStatus(target?.status, counts);
-  }, [target?.status, counts]);
+    return resolveCommunicationLifecycleStatus({
+      channel,
+      rawStatus: target?.status,
+      counts,
+      hasActiveTargets: target?.status === 'SENT' || target?.status === 'PROCESSING',
+      hasPendingTargets: target?.status === 'PENDING',
+      hasSession: !!sessionId,
+      isRetrying: mutateRetry.isPending,
+    });
+  }, [channel, target?.status, counts, sessionId, mutateRetry.isPending]);
 
   const logsList = sessionLogsData?.httpReponse?.data?.data ?? [];
   const meta = sessionLogsData?.httpReponse?.data?.meta ?? { total: 0, lastPage: 1 };
@@ -126,25 +137,23 @@ export function GroupBroadcastLogsDialog({
               </DialogTitle>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-xs text-muted-foreground">
-                  {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')} • Session ID: {sessionId || 'N/A'}
+                  {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')} • {t('SESSION_ID')}: {sessionId || tg('N_A')}
                 </span>
                 <CommunicationStatusBadge status={effectiveStatus} />
               </div>
             </div>
             {counts.FAIL > 0 && (
-              <TooltipWrapper tip={t('RETRY_FAILED') || 'Retry Failed'}>
-                <DialogComponent
-                  buttonIcon={RefreshCcw}
-                  buttonText={t('RETRY_FAILED') || 'Retry Failed'}
-                  dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
-                  dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
-                  confirmButtonText={t('CONFIRM') || 'Confirm'}
-                  handleClick={handleRetry}
-                  buttonClassName="h-8 gap-1.5 text-xs border-red-300 text-red-600 hover:bg-red-50"
-                  confirmButtonClassName="rounded-sm bg-primary"
-                  variant="outline"
-                />
-              </TooltipWrapper>
+              <DialogComponent
+                buttonIcon={RefreshCcw}
+                buttonText={t('RETRY_FAILED') || 'Retry Failed'}
+                dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
+                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
+                confirmButtonText={t('CONFIRM') || 'Confirm'}
+                handleClick={handleRetry}
+                buttonClassName="h-8 gap-1.5 text-xs border-red-300 text-red-600 hover:bg-red-50"
+                confirmButtonClassName="rounded-sm bg-primary"
+                variant="outline"
+              />
             )}
           </div>
         </DialogHeader>
@@ -233,7 +242,7 @@ export function GroupBroadcastLogsDialog({
                   </tr>
                 ) : (
                   logsList.map((row: any, idx: number) => {
-                    const { displayStatus, isFail, failReason, durationSec } = resolveBroadcastLogStatus(row, channel);
+                    const { displayStatus, isFail, failReason, durationSec } = resolveBroadcastLogStatus(row, channel, t);
 
                     return (
                       <tr key={row.uuid || row.cuid || idx} className="hover:bg-slate-50/80">
@@ -262,7 +271,7 @@ export function GroupBroadcastLogsDialog({
                           {formatNum(row?.attempts ?? 1)}
                         </td>
                         <td className="py-2.5 px-3.5 text-center text-muted-foreground">
-                          {durationSec != null ? `${formatNum(durationSec)}s` : tg('N_A')}
+                          {durationSec != null ? `${formatNum(durationSec)}${t('SECONDS_SHORT')}` : tg('N_A')}
                         </td>
                         <td className="py-2.5 px-3.5 text-right text-muted-foreground">
                           {formatDate(row?.updatedAt || row?.createdAt, 'yyyy-MM-dd, h:mm:ss a')}

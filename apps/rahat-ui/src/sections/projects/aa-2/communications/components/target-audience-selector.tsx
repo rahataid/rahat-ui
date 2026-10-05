@@ -113,7 +113,7 @@ export function TargetAudienceSelector({
                         <Check className={cn("mr-2 h-4 w-4", selectedBeneficiaries.find((p: any) => p.id === option.id) ? "opacity-100" : "opacity-0")} />
                         {option.name}
                         <span className={cn("ml-auto text-xs", option.count === 0 ? "text-amber-600 font-medium" : "text-muted-foreground")}>
-                          ({formatDigits(option.count)}{option.count === 0 ? ' - empty' : ''})
+                          ({formatDigits(option.count)}{option.count === 0 ? ` - ${t('EMPTY')}` : ''})
                         </span>
                       </CommandItem>
                     ))}
@@ -156,7 +156,7 @@ export function TargetAudienceSelector({
                         <Check className={cn("mr-2 h-4 w-4", selectedStakeholders.find((p: any) => p.id === option.id) ? "opacity-100" : "opacity-0")} />
                         {option.name}
                         <span className={cn("ml-auto text-xs", option.count === 0 ? "text-amber-600 font-medium" : "text-muted-foreground")}>
-                          ({formatDigits(option.count)}{option.count === 0 ? ' - empty' : ''})
+                          ({formatDigits(option.count)}{option.count === 0 ? ` - ${t('EMPTY')}` : ''})
                         </span>
                       </CommandItem>
                     ))}

@@ -4,17 +4,20 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Radio, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 type CommunicationsStatsCardsProps = {
   total: number;
   delivered: number;
   failed: number;
+  isLoading?: boolean;
 };
 
 export function CommunicationsStatsCards({
   total,
   delivered,
   failed,
+  isLoading = false,
 }: CommunicationsStatsCardsProps) {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
@@ -48,16 +51,24 @@ export function CommunicationsStatsCards({
         return (
           <div key={idx} className="bg-card border rounded-sm px-3.5 py-3 flex flex-col gap-2.5 shadow-sm">
             <div className="flex justify-between items-start gap-2">
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h3 className="text-sm font-semibold text-neutral-800 dark:text-white truncate">{stat.title}</h3>
-                <p className="text-xs text-muted-foreground truncate">{stat.subtitle}</p>
+                {isLoading ? (
+                  <Skeleton className="h-3.5 w-32 mt-1 rounded" />
+                ) : (
+                  <p className="text-xs text-muted-foreground truncate">{stat.subtitle}</p>
+                )}
               </div>
               <div className="bg-secondary rounded-full h-8 w-8 flex items-center justify-center text-primary shrink-0">
                 <Icon size={16} strokeWidth={2} />
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-primary">{stat.number}</div>
+              {isLoading ? (
+                <Skeleton className="h-7 w-20 rounded" />
+              ) : (
+                <div className="text-2xl font-bold text-primary">{stat.number}</div>
+              )}
             </div>
           </div>
         );

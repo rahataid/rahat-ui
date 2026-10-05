@@ -9,7 +9,7 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import { Card, CardTitle } from '@rahat-ui/shadcn/src/components/ui/card';
-import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
 import {
   Tooltip,
@@ -36,11 +36,16 @@ import {
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
-import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import { resolveChannelByTransportId, resolveTargetEffectiveStatus, resolveBroadcastLogStatus } from '../utils/communications.utils';
-import { CommunicationStatusBadge } from '../components/communication-status-badge';
+import {
+  resolveChannelByTransportId,
+  resolveTargetEffectiveStatus,
+  resolveBroadcastLogStatus,
+  resolveCommunicationLifecycleStatus,
+} from '../utils/communications.utils';
 import { CommunicationChannelIcon } from '../components/communication-channel-icon';
 import { UUID } from 'crypto';
+import { CommunicationStatusBadge } from '../components/communication-status-badge';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export function CommunicationSessionLogsView() {
   const t = useTranslations('AA_PROJECT');
@@ -85,7 +90,8 @@ export function CommunicationSessionLogsView() {
     },
   );
 
-  const { data: broadcastCounts } = useSessionBroadCastCount(sessionId ? [sessionId] : []);
+  const { data: broadcastCounts, isLoading: isBroadcastLoading } = useSessionBroadCastCount(sessionId ? [sessionId] : []);
+  const isBroadcastResolving = !!sessionId && (isBroadcastLoading || broadcastCounts === undefined);
   const mutateRetry = useSessionRetryFailed();
 
   const counts = broadcastCounts?.data ?? {
@@ -97,8 +103,16 @@ export function CommunicationSessionLogsView() {
   };
 
   const effectiveStatus = useMemo(() => {
-    return resolveTargetEffectiveStatus(targetGroup?.status, counts);
-  }, [targetGroup?.status, counts]);
+    return resolveCommunicationLifecycleStatus({
+      channel,
+      rawStatus: targetGroup?.status,
+      counts,
+      hasActiveTargets: targetGroup?.status === 'SENT' || targetGroup?.status === 'PROCESSING',
+      hasPendingTargets: targetGroup?.status === 'PENDING',
+      hasSession: !!sessionId,
+      isRetrying: mutateRetry.isPending,
+    });
+  }, [channel, targetGroup?.status, counts, sessionId, mutateRetry.isPending]);
 
   const logsList = sessionLogsData?.httpReponse?.data?.data ?? [];
   const meta = sessionLogsData?.httpReponse?.data?.meta ?? { total: 0, lastPage: 1 };
@@ -107,19 +121,14 @@ export function CommunicationSessionLogsView() {
     if (!sessionId || mutateRetry.isPending) return;
     try {
       await mutateRetry.mutateAsync({ cuid: sessionId, includeFailed: true });
-      Swal.fire(t('RETRY_SUCCESSFUL') || 'Retry broadcast triggered successfully', '', 'success');
       refetch();
     } catch (error) {
       console.error('Retry error:', error);
-      Swal.fire(t('RETRY_FAILED') || 'Retry failed', '', 'error');
     }
   };
 
-
-
   return (
     <div className="p-4 space-y-4">
-      {/* Header Section matching Activity Communication Logs detail page */}
       <div className="flex flex-col space-y-0">
         <Back path={backPath} />
 
@@ -138,27 +147,23 @@ export function CommunicationSessionLogsView() {
 
             <div className="flex gap-2 items-center">
               {counts.FAIL > 0 && (
-                <TooltipWrapper tip={t('RETRY_FAILED_REQUESTS') || 'Retry Failed'}>
-                  <DialogComponent
-                    buttonIcon={RefreshCcw}
-                    buttonText={t('RETRY_FAILED_REQUESTS') || 'Retry Failed'}
-                    dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
-                    dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
-                    confirmButtonText={t('CONFIRM') || 'Confirm'}
-                    handleClick={handleRetry}
-                    buttonClassName="gap-2 h-7 text-xs bg-primary text-white hover:bg-primary/90"
-                    confirmButtonClassName="rounded-sm bg-primary"
-                    variant="default"
-                  />
-                </TooltipWrapper>
+                <DialogComponent
+                  buttonIcon={RefreshCcw}
+                  buttonText={t('RETRY_FAILED_REQUESTS') || 'Retry Failed'}
+                  dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
+                  dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
+                  confirmButtonText={t('CONFIRM') || 'Confirm'}
+                  handleClick={handleRetry}
+                  buttonClassName="gap-1.5 h-8 px-3.5 text-xs bg-primary text-white hover:bg-primary/90 shrink-0 whitespace-nowrap"
+                  confirmButtonClassName="rounded-sm bg-primary"
+                  variant="default"
+                />
               )}
             </div>
           </div>
         </div>
 
-        {/* Top Summary Split (Left 2/3 Target Group Info + Right 1/3 4 Stats Cards) */}
         <div className="flex flex-col lg:flex-row gap-4 w-full mt-2">
-          {/* Left Card */}
           <div className="flex-[2]">
             <Card className="p-4 rounded-sm bg-white border border-gray-200 h-full flex flex-col justify-between shadow-none space-y-3">
               <div>
@@ -167,21 +172,22 @@ export function CommunicationSessionLogsView() {
                     <CommunicationChannelIcon channel={channel} className="h-3.5 w-3.5" />
                     {t(channel)}
                   </span>
-                  <CommunicationStatusBadge status={effectiveStatus} />
+                  <CommunicationStatusBadge status={effectiveStatus} isLoading={isBroadcastResolving} />
                 </div>
 
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
                   <h2 className="text-base font-bold text-gray-900 leading-snug">
-                    {rawComm?.title || 'Communication'}
+                    {rawComm?.title || t('COMMUNICATION')}
                   </h2>
                   <p className="text-xs text-muted-foreground">
-                    {t(channel)} • {targetGroup?.groupType === 'BENEFICIARY' ? t('BENEFICIARY') : t('STAKEHOLDER')} • {targetGroup?.group?.name || targetGroup?.groupId || 'Target Group'}
+                    {t(channel)} 
+                    {targetGroup?.groupType ? ` • ${targetGroup.groupType === 'BENEFICIARY' ? t('BENEFICIARY') : t('STAKEHOLDER')}` : ''} 
+                    {targetGroup?.group?.name || targetGroup?.groupId ? ` • ${targetGroup.group?.name || targetGroup.groupId}` : ''}
                   </p>
                 </div>
               </div>
 
-              {/* Message Content or Voice Player */}
               <div>
                 <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                   {channel === 'VOICE' ? t('VOICE_RECORDING') : t('MESSAGE_CONTENT')}
@@ -198,7 +204,6 @@ export function CommunicationSessionLogsView() {
                 )}
               </div>
 
-              {/* Timestamps */}
               <div className="flex gap-4 text-xs text-muted-foreground pt-2 border-t border-gray-100">
                 <span>{t('STARTED_AT')}: {formatDate(targetGroup?.createdAt || rawComm?.createdAt, 'MMMM d, yyyy, h:mm:ss a')}</span>
                 <span>{t('ENDED_AT')}: {formatDate(targetGroup?.updatedAt || rawComm?.updatedAt, 'MMMM d, yyyy, h:mm:ss a')}</span>
@@ -206,44 +211,57 @@ export function CommunicationSessionLogsView() {
             </Card>
           </div>
 
-          {/* Right Section: 2x2 Data Cards Grid */}
           <div className="flex-1 grid grid-cols-2 gap-3">
             <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
               <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug">
                 {t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}
               </h1>
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.SUCCESS)}</p>
+              {isBroadcastResolving ? (
+                <Skeleton className="h-7 w-16 mt-2" />
+              ) : (
+                <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.SUCCESS)}</p>
+              )}
             </div>
             <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
               <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug">
                 {t('FAILED_DELIVERED') || 'Failed Delivered'}
               </h1>
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.FAIL)}</p>
+              {isBroadcastResolving ? (
+                <Skeleton className="h-7 w-16 mt-2" />
+              ) : (
+                <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.FAIL)}</p>
+              )}
             </div>
             <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
               <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug">
                 {tg('SCHEDULED') || 'Scheduled'}
               </h1>
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.SCHEDULED)}</p>
+              {isBroadcastResolving ? (
+                <Skeleton className="h-7 w-16 mt-2" />
+              ) : (
+                <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.SCHEDULED)}</p>
+              )}
             </div>
             <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
               <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-snug">
                 {tg('PENDING') || 'Pending'}
               </h1>
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.PENDING)}</p>
+              {isBroadcastResolving ? (
+                <Skeleton className="h-7 w-16 mt-2" />
+              ) : (
+                <p className="text-primary font-semibold text-2xl mt-2">{formatNum(counts.PENDING)}</p>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Table Card */}
       <Card className="bg-white rounded-sm border border-gray-200 p-4 space-y-4 shadow-none">
-        {/* Search & Filter Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="w-full sm:w-72">
             <SearchInput
               name="search-member-logs-page"
-              placeholder={t('SEARCH_AUDIENCE') || 'Search Phone/Recipient...'}
+              placeholder={t('SEARCH') || 'Search...'}
               value={searchTerm}
               onSearch={(e: any) => {
                 setSearchTerm(e.target.value);
@@ -268,7 +286,6 @@ export function CommunicationSessionLogsView() {
           </div>
         </div>
 
-        {/* Broadcast Logs Table */}
         <div className="overflow-x-auto border border-gray-200 rounded-sm">
           <table className="w-full text-xs text-left">
             <thead className="bg-slate-50 border-b border-gray-200 text-gray-600 font-semibold uppercase">
@@ -295,7 +312,7 @@ export function CommunicationSessionLogsView() {
                 </tr>
               ) : (
                 logsList.map((row: any, idx: number) => {
-                  const { displayStatus, isFail, failReason, durationSec } = resolveBroadcastLogStatus(row, channel);
+                  const { displayStatus, isFail, failReason, durationSec } = resolveBroadcastLogStatus(row, channel, t);
 
                   return (
                     <tr key={row.uuid || row.cuid || idx} className="hover:bg-slate-50/80">
@@ -324,7 +341,7 @@ export function CommunicationSessionLogsView() {
                         {formatNum(row?.attempts ?? 1)}
                       </td>
                       <td className="py-3 px-3.5 text-center text-muted-foreground">
-                        {durationSec != null ? `${formatNum(durationSec)}s` : tg('N_A')}
+                        {durationSec != null ? `${formatNum(durationSec)}${t('SECONDS_SHORT')}` : tg('N_A')}
                       </td>
                       <td className="py-3 px-3.5 text-right text-muted-foreground">
                         {formatDate(row?.updatedAt || row?.createdAt, 'yyyy-MM-dd, h:mm:ss a')}
@@ -337,7 +354,6 @@ export function CommunicationSessionLogsView() {
           </table>
         </div>
 
-        {/* Footer Pagination */}
         <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-muted-foreground">
           <span>{t('TOTAL_COUNT') || 'Total Count'}: {formatNum(meta?.total ?? logsList.length)}</span>
           <div className="flex items-center gap-2">

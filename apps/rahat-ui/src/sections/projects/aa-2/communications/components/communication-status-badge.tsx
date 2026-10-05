@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { cn } from '@rahat-ui/shadcn/src';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { CommunicationStatus } from '../utils/communications.utils';
 
 export type { CommunicationStatus };
@@ -21,54 +22,67 @@ const STATUS_STYLES = {
 
 type StatusVariant = keyof typeof STATUS_STYLES;
 
-// 2. Map logical statuses to their translations and visual variants
-const STATUS_CONFIG: Record<string, { labelKey: string; variant: StatusVariant }> = {
+// 2. Map logical statuses to their translations, default labels, and visual variants
+const STATUS_CONFIG: Record<
+  string,
+  { labelKey: string; defaultLabel: string; variant: StatusVariant }
+> = {
   // Successful States
-  DELIVERED: { labelKey: 'DELIVERED', variant: 'success' },
-  SUCCESS: { labelKey: 'DELIVERED', variant: 'success' },
-  ANSWERED: { labelKey: 'ANSWERED', variant: 'success' },
-  COMPLETED: { labelKey: 'COMPLETED', variant: 'success' },
+  DELIVERED: { labelKey: 'DELIVERED', defaultLabel: 'Delivered', variant: 'success' },
+  SUCCESS: { labelKey: 'DELIVERED', defaultLabel: 'Delivered', variant: 'success' },
+  ANSWERED: { labelKey: 'ANSWERED', defaultLabel: 'Answered', variant: 'success' },
+  COMPLETED: { labelKey: 'COMPLETED', defaultLabel: 'Completed', variant: 'success' },
 
   // Dispatched / Sent
-  SENT: { labelKey: 'SENT', variant: 'info' },
+  SENT: { labelKey: 'SENT', defaultLabel: 'Sent', variant: 'info' },
 
   // Active / Processing States
-  PROCESSING: { labelKey: 'PROCESSING', variant: 'processing' },
-  IN_PROGRESS: { labelKey: 'IN_PROGRESS', variant: 'processing' },
+  PROCESSING: { labelKey: 'PROCESSING', defaultLabel: 'Processing', variant: 'processing' },
+  IN_PROGRESS: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
 
   // Queued / Scheduled
-  PENDING: { labelKey: 'PENDING', variant: 'warning' },
-  SCHEDULED: { labelKey: 'SCHEDULED', variant: 'neutral' },
+  PENDING: { labelKey: 'PENDING', defaultLabel: 'Pending', variant: 'warning' },
+  SCHEDULED: { labelKey: 'SCHEDULED', defaultLabel: 'Scheduled', variant: 'neutral' },
 
   // Failure States
-  FAILED: { labelKey: 'FAILED', variant: 'error' },
-  FAIL: { labelKey: 'FAILED', variant: 'error' },
-  'NO ANSWER': { labelKey: 'NO_ANSWER', variant: 'error' },
-  BUSY: { labelKey: 'BUSY', variant: 'error' },
-  REJECTED: { labelKey: 'REJECTED', variant: 'error' },
+  FAILED: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  FAIL: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  'NO ANSWER': { labelKey: 'NO_ANSWER', defaultLabel: 'No Answer', variant: 'error' },
+  BUSY: { labelKey: 'BUSY', defaultLabel: 'Busy', variant: 'error' },
+  REJECTED: { labelKey: 'REJECTED', defaultLabel: 'Rejected', variant: 'error' },
 
   // Cancelled State
-  CANCELLED: { labelKey: 'CANCELLED', variant: 'neutral' },
+  CANCELLED: { labelKey: 'CANCELLED', defaultLabel: 'Cancelled', variant: 'neutral' },
 };
 
 interface CommunicationStatusBadgeProps {
   status: CommunicationStatus;
   className?: string;
+  isLoading?: boolean;
 }
 
 export const CommunicationStatusBadge = React.memo(({
   status,
   className,
+  isLoading = false,
 }: CommunicationStatusBadgeProps) => {
   const t = useTranslations('AA_PROJECT');
+  if (isLoading) {
+    return <Skeleton className={cn("h-5 w-20 rounded-md", className)} />;
+  }
   const normalizedStatus = (status || '').toUpperCase();
   
   const config = STATUS_CONFIG[normalizedStatus];
   const variantStyle = STATUS_STYLES[config?.variant ?? 'default'];
   
-  const label = config?.labelKey 
-    ? t(config.labelKey as any) 
-    : normalizedStatus || t('PENDING');
+  let label = config?.defaultLabel || normalizedStatus;
+  try {
+    if (config?.labelKey && typeof t.has === 'function' && t.has(config.labelKey as any)) {
+      label = t(config.labelKey as any);
+    }
+  } catch {
+    label = config?.defaultLabel || normalizedStatus;
+  }
 
   return (
     <Badge 

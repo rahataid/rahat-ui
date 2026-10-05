@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading } from 'apps/rahat-ui/src/common';
 import {
   Tabs,
-  TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
@@ -33,6 +32,14 @@ export default function CommunicationsView() {
   const [pagination, setPagination] = useState({ page: 1, perPage: 10 });
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
+  const [channelFilter, setChannelFilter] = useState<
+    '' | 'SMS' | 'VOICE' | 'EMAIL'
+  >('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [dateRange, setDateRange] = useState<
+    { from?: Date; to?: Date } | undefined
+  >(undefined);
+  const [datePickerKey, setDatePickerKey] = useState(0);
 
   const appTransports = useListAllTransports();
   const { data, isLoading } = useListCommunications(uuid, {
@@ -40,7 +47,7 @@ export default function CommunicationsView() {
     perPage: pagination.perPage,
     ...(debouncedSearch.trim() ? { title: debouncedSearch.trim() } : {}),
   });
-  const { data: statsData } = useListCommunications(uuid, {
+  const { data: statsData, isLoading: isStatsDataLoading } = useListCommunications(uuid, {
     page: 1,
     perPage: 100,
   });
@@ -96,35 +103,94 @@ export default function CommunicationsView() {
     const ids: string[] = [];
     if (Array.isArray(statsData?.data)) {
       statsData.data.forEach((item: any) => {
-        item.targets?.forEach((target: any) => {
-          if (target.sessionId) ids.push(target.sessionId);
-        });
+        if (Array.isArray(item.targets)) {
+          item.targets.forEach((target: any) => {
+            if (target.sessionId) ids.push(target.sessionId);
+          });
+        }
       });
     }
     return [...new Set(ids)];
   }, [statsData]);
 
-  const { data: broadcastCounts } = useSessionBroadCastCount(sessionIds);
+  const { data: broadcastCounts, isLoading: isBroadcastLoading } = useSessionBroadCastCount(sessionIds);
+
+  const isStatsResolving = isLoading || isStatsDataLoading || (sessionIds.length > 0 && (isBroadcastLoading || broadcastCounts === undefined));
 
   const delivered = broadcastCounts?.data?.SUCCESS ?? 0;
   const failed = broadcastCounts?.data?.FAIL ?? 0;
   const statsTotal = broadcastCounts?.data?.TOTAL ?? 0;
 
-  const setNextPage = () => {
-    if (pagination.page < meta.lastPage) {
-      setPagination((prev) => ({ ...prev, page: prev.page + 1 }));
-    }
-  };
-  const setPrevPage = () => {
-    if (pagination.page > 1) {
-      setPagination((prev) => ({ ...prev, page: prev.page - 1 }));
-    }
-  };
-  const setPerPage = (size: string | number) => {
-    setPagination({ page: 1, perPage: Number(size) });
-  };
+  const setNextPage = useCallback(() => {
+    setPagination((prev) => {
+      if (prev.page < meta.lastPage) return { ...prev, page: prev.page + 1 };
+      return prev;
+    });
+  }, [meta.lastPage]);
 
-  const tableProps = {
+  const setPrevPage = useCallback(() => {
+    setPagination((prev) => {
+      if (prev.page > 1) return { ...prev, page: prev.page - 1 };
+      return prev;
+    });
+  }, []);
+
+  const setPerPage = useCallback((size: string | number) => {
+    setPagination({ page: 1, perPage: Number(size) });
+  }, []);
+
+  const handleTabChange = useCallback((value: string) => {
+    setActiveTab(value);
+    setChannelFilter(
+      value === 'all' ? '' : (value.toUpperCase() as 'SMS' | 'VOICE' | 'EMAIL'),
+    );
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, []);
+
+  const handleChannelFilterChange = useCallback((value: '' | 'SMS' | 'VOICE' | 'EMAIL') => {
+    setChannelFilter(value);
+    setActiveTab(value === '' ? 'all' : value.toLowerCase());
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, []);
+
+  const handleStatusFilterChange = useCallback((value: string) => {
+    setStatusFilter(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, []);
+
+  const handleDateRangeChange = useCallback((
+    value: { from?: Date; to?: Date } | undefined,
+  ) => {
+    setDateRange(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, []);
+
+  const handleResetFilters = useCallback(() => {
+    setSearch('');
+    setChannelFilter('');
+    setStatusFilter('');
+    setDateRange(undefined);
+    setActiveTab('all');
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setDatePickerKey((prev) => prev + 1);
+  }, []);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, []);
+
+  const showResetFilters = Boolean(
+    search ||
+      channelFilter ||
+      statusFilter ||
+      dateRange?.from ||
+      dateRange?.to ||
+      activeTab !== 'all' ||
+      pagination.page !== 1,
+  );
+
+  const tableProps = useMemo(() => ({
     records,
     meta,
     isLoading,
@@ -134,11 +200,23 @@ export default function CommunicationsView() {
     setPrevPage,
     setPerPage,
     search,
-    onSearchChange: (value: string) => {
-      setSearch(value);
-      setPagination((prev) => ({ ...prev, page: 1 }));
-    },
-  };
+    onSearchChange: handleSearchChange,
+    channelFilter,
+    onChannelFilterChange: handleChannelFilterChange,
+    statusFilter,
+    onStatusFilterChange: handleStatusFilterChange,
+    dateRange,
+    onDateRangeChange: handleDateRangeChange,
+    datePickerKey,
+    showResetFilters,
+    onResetFilters: handleResetFilters,
+  }), [
+    records, meta, isLoading, pagination, search, channelFilter,
+    statusFilter, dateRange, datePickerKey, showResetFilters,
+    handleSearchChange, handleChannelFilterChange,
+    handleStatusFilterChange, handleDateRangeChange,
+    handleResetFilters, setNextPage, setPrevPage, setPerPage,
+  ]);
 
   return (
     <div className="flex flex-col p-4 space-y-5">
@@ -158,16 +236,22 @@ export default function CommunicationsView() {
         </div>
       </div>
 
-      <CommunicationsStatsCards total={statsTotal} delivered={delivered} failed={failed} />
+      <CommunicationsStatsCards
+        total={statsTotal}
+        delivered={delivered}
+        failed={failed}
+        isLoading={isStatsResolving}
+      />
 
       <CommunicationsChannelRibbon
         sms={channelCounts.sms}
         voice={channelCounts.voice}
         email={channelCounts.email}
         transports={appTransports}
+        isLoading={isLoading || isStatsDataLoading}
       />
 
-      <Tabs value={activeTab} defaultValue="all" onValueChange={setActiveTab} className="space-y-4">
+      <Tabs value={activeTab} defaultValue="all" onValueChange={handleTabChange} className="space-y-4">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <TabsList className="grid grid-cols-4 gap-1 w-full sm:w-[460px]">
             <TabsTrigger
@@ -198,19 +282,7 @@ export default function CommunicationsView() {
           </TabsList>
         </div>
 
-        <TabsContent value="all" className="m-0">
-          <CommunicationsTable activeTab="all" {...tableProps} />
-        </TabsContent>
-
-        <TabsContent value="sms" className="m-0">
-          <CommunicationsTable activeTab="sms" {...tableProps} />
-        </TabsContent>
-        <TabsContent value="voice" className="m-0">
-          <CommunicationsTable activeTab="voice" {...tableProps} />
-        </TabsContent>
-        <TabsContent value="email" className="m-0">
-          <CommunicationsTable activeTab="email" {...tableProps} />
-        </TabsContent>
+        <CommunicationsTable {...tableProps} />
       </Tabs>
     </div>
   );

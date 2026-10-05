@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { showToast } from 'libs/query/src/utils/custom-toast';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { TAGS } from '../../../config';
 
 export const useGetCommunicationLogs = (
   uuid: UUID,
@@ -330,6 +331,8 @@ export const useTriggerCommunicationBroadcast = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['ms.communications.getAll'] });
       qc.invalidateQueries({ queryKey: ['ms.communications.getOne'] });
+      qc.invalidateQueries({ queryKey: [TAGS.NEW_COMMS.BROADCAST_COUNTS] });
+      qc.invalidateQueries({ queryKey: [TAGS.NEW_COMMS.LIST_SESSION_LOGS] });
       toast.success(t('COMMUNICATION_TRIGGER_SUCCESSFULLY'));
     },
     onError: (error: any) => {

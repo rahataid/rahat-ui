@@ -88,9 +88,12 @@ function BeneficiaryGroupsView() {
     [allGroups, visibleLimit],
   );
 
-  const handleSearch = React.useCallback((value: string) => {
-    setFilters({ ...filters, groupName: value });
-  }, []);
+  const handleSearch = React.useCallback(
+    (value: string) => {
+      setFilters({ ...filters, groupName: value });
+    },
+    [filters, setFilters],
+  );
 
   const projectModal = useBoolean();
 
@@ -114,6 +117,7 @@ function BeneficiaryGroupsView() {
           <SearchInput
             className="w-full"
             name={t('GROUP')}
+            value={filters.groupName ?? ''}
             onSearch={(e) => handleSearch(e.target.value)}
           />
           <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>

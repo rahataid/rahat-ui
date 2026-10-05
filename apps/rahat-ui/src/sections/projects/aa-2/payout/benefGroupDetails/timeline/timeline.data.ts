@@ -24,13 +24,6 @@ import {
 
 type NormalizeResult = { events: TimelineEvent[]; undatedCount: number };
 
-/**
- * Normalizes log rows from both API responses and Excel exports.
- * Uses second-accurate timestamps based on transaction status:
- * - Completed/Failed/Transitioned rows lead with `updatedAt` (when the milestone actually occurred).
- * - Pending/Initiated rows lead with `createdAt` (when the transaction was initiated).
- * - Fallbacks between updated and created ensure missing or empty dates don't drop valid rows.
- */
 export const normalizeTimelineEvents = (
   logs: any[],
   isFsp: boolean,
@@ -64,7 +57,6 @@ export const normalizeTimelineEvents = (
 
     const status = resolveStatusKey(rawStatus);
 
-    // Amount disbursed: token units from API, or numeric currency from export
     const rawAmount = parseNumeric(item?.amount);
     const amount =
       rawAmount !== null
@@ -87,7 +79,6 @@ export const normalizeTimelineEvents = (
       item?.date ??
       item?.['Date'];
 
-    // Milestone completion/failure happened at updatedAt. Initiation happened at createdAt.
     const isTransitioned =
       status !== 'PENDING' &&
       status !== 'TOKEN_TRANSACTION_INITIATED' &&
@@ -150,7 +141,6 @@ export const filterTimelineEvents = (
       if (!matchesWallet && !matchesHash && !matchesName) return false;
     }
 
-    // Exact status matching against selected filter option
     if (status && status !== 'ALL') {
       if (normalizeStatusKey(event.status) !== normalizeStatusKey(status)) {
         return false;
@@ -202,9 +192,6 @@ const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-/**
- * Finds the timestamp with highest transaction density to anchor zoomed views.
- */
 const findPeakTimestamp = (events: TimelineEvent[]): number => {
   if (!events.length) return Date.now();
   const densityMap = new Map<number, number>();
@@ -223,11 +210,6 @@ const findPeakTimestamp = (events: TimelineEvent[]): number => {
   return peakTime;
 };
 
-/**
- * Builds smooth spline Area Series matching the reference UI.
- * Handles exact second timestamps and creates an elegant, continuous curve
- * with clear point markers and proper status handling.
- */
 export const buildTimelineSeries = (
   filteredEvents: TimelineEvent[],
   rangeType: TimelineRangeType = 'all',
@@ -249,18 +231,14 @@ export const buildTimelineSeries = (
     statusTotalMap[ev.status] = (statusTotalMap[ev.status] || 0) + 1;
   });
 
-  // Active statuses in canonical business order (Completed -> In Progress -> Failed/Cancelled) for legend
   const activeStatuses = sortStatusesCanonically(Array.from(statusSet));
 
-  // Chart layer order: render larger area series first (in back) and smaller series on top (in front)
   const chartStatuses = [...activeStatuses].sort(
     (a, b) => (statusTotalMap[b] || 0) - (statusTotalMap[a] || 0),
   );
 
   let totalDisbursed = 0;
   ascEvents.forEach((ev) => {
-    // For FSP: only FIAT_TRANSACTION_COMPLETED or final COMPLETED represents money disbursed to beneficiary.
-    // For CVA / Vendor: COMPLETED or PARTIALLY_COMPLETED represents disbursed money.
     const isDisbursed = isFsp
       ? ev.status === 'FIAT_TRANSACTION_COMPLETED' || ev.status === 'COMPLETED'
       : ev.status === 'COMPLETED' || ev.status === 'PARTIALLY_COMPLETED';
@@ -270,9 +248,6 @@ export const buildTimelineSeries = (
     }
   });
 
-  // -------------------------------------------------------------------------
-  // 1. Determine active window based on Range Pill (10m, 30m, 1h, 6h, 24h, all)
-  // -------------------------------------------------------------------------
   const peakTime = findPeakTimestamp(ascEvents);
 
   let windowStart = dataMinT;
@@ -299,7 +274,6 @@ export const buildTimelineSeries = (
     windowStart = dataMinT - 30 * MINUTE;
     windowEnd = windowStart + duration;
   } else {
-    // 'all' — pad slightly on both sides so edge markers have breathing room
     const pad = Math.max(MINUTE, Math.floor(dataSpanMs * 0.05));
     windowStart = dataMinT - pad;
     windowEnd = dataMaxT + pad;
@@ -307,14 +281,11 @@ export const buildTimelineSeries = (
 
   const activeSpanMs = Math.max(MINUTE, windowEnd - windowStart);
 
-  // -------------------------------------------------------------------------
-  // 2. Adaptive Step Size for Spline Points (12 to 35 points across width)
-  // -------------------------------------------------------------------------
   let stepMs = MINUTE;
   if (activeSpanMs <= 2 * MINUTE) {
     stepMs = 5 * SECOND;
   } else if (activeSpanMs <= 15 * MINUTE) {
-    stepMs = MINUTE; // 1-minute steps for 10-15m (exactly like the reference image!)
+    stepMs = MINUTE;
   } else if (activeSpanMs <= 45 * MINUTE) {
     stepMs = 2 * MINUTE;
   } else if (activeSpanMs <= 2 * HOUR) {
@@ -329,7 +300,6 @@ export const buildTimelineSeries = (
     stepMs = 1 * DAY;
   }
 
-  // Bound points count between 11 and 45 for optimal smooth spline rendering
   while (activeSpanMs / stepMs > 45) {
     stepMs *= 2;
   }
@@ -337,9 +307,6 @@ export const buildTimelineSeries = (
     stepMs = Math.max(5 * SECOND, Math.floor(stepMs / 2));
   }
 
-  // -------------------------------------------------------------------------
-  // 3. Aggregate transactions into time buckets with exact second timestamps
-  // -------------------------------------------------------------------------
   type BucketData = {
     total: number;
     counts: Record<string, number>;
@@ -385,12 +352,10 @@ export const buildTimelineSeries = (
       perStatusSeries[s].push([t, sCount]);
     });
 
-    // Determine exact timestamp string for tooltip
     if (b && b.exactTimestamps.length > 0) {
       const firstTs = b.exactTimestamps[0];
       const lastTs = b.exactTimestamps[b.exactTimestamps.length - 1];
       if (firstTs === lastTs || lastTs - firstTs < 1000) {
-        // All events in bucket occurred at the exact same second!
         exactTimes[t] = formatChartDate(firstTs, 'PPp', locale);
       } else {
         const startStr = formatChartDate(firstTs, 'hh:mm:ss a', locale);
@@ -399,14 +364,10 @@ export const buildTimelineSeries = (
         exactTimes[t] = `${dateStr} • ${startStr} – ${endStr}`;
       }
     } else {
-      // Empty interval
       exactTimes[t] = formatChartDate(t, 'PPp', locale);
     }
   }
 
-  // -------------------------------------------------------------------------
-  // 4. Default range recommendation
-  // -------------------------------------------------------------------------
   let defaultRange: TimelineRangeType = 'all';
   if (dataSpanMs <= 15 * MINUTE) {
     defaultRange = '10m';
@@ -422,9 +383,6 @@ export const buildTimelineSeries = (
     defaultRange = 'all';
   }
 
-  // -------------------------------------------------------------------------
-  // 5. Time Window & Duration Text
-  // -------------------------------------------------------------------------
   const isSameDay = isSameLocalDay(dataMinT, dataMaxT);
   const startDateStr = formatChartDate(dataMinT, 'MMM d, yyyy', locale);
   const startTimeStr = formatChartDate(dataMinT, 'hh:mm:ss a', locale);
@@ -437,10 +395,9 @@ export const buildTimelineSeries = (
 
   const durationText = formatDuration(dataMinT, dataMaxT);
 
-  // X-axis label pattern matching the view span
   const xLabelPattern =
     activeSpanMs <= 15 * MINUTE
-      ? 'hh:mm:ss a' // e.g. "9:00:00 PM" as in reference image!
+      ? 'hh:mm:ss a'
       : isSameDay
         ? 'hh:mm a'
         : activeSpanMs <= 7 * DAY

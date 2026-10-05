@@ -14,7 +14,6 @@ import type {
   TimelineChartLabels,
 } from './timeline.types';
 
-// Same pattern as the DHM chart and the shadcn Chart wrapper.
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type TimelineChartCardProps = {
@@ -118,7 +117,6 @@ export default function TimelineChartCard({
     ],
   );
 
-  // Series 0 is "All Transactions", series 1..N are active statuses ordered for area layering
   const chartSeries = useMemo(() => {
     return [
       { name: labels.allTransactions, data: seriesData.total },
@@ -133,7 +131,6 @@ export default function TimelineChartCard({
 
   return (
     <div className="rounded-sm border border-gray-100 bg-white p-3 space-y-2">
-      {/* Header bar matching table card aesthetic */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-gray-100">
         <div>
           <h2 className="text-sm sm:text-base font-semibold text-gray-900 tracking-tight">
@@ -179,7 +176,6 @@ export default function TimelineChartCard({
         />
       )}
 
-      {/* Centered Legend matching the reference image */}
       {hasData && (
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 border-t border-slate-100 text-xs font-medium text-slate-700">
           <span className="flex items-center gap-2">

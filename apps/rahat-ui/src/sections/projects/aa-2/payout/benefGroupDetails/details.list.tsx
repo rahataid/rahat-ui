@@ -63,8 +63,6 @@ import {
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
 import { Can } from 'apps/rahat-ui/src/components/can';
-// TODO: remove this table if used nowhgere
-// import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const t = useTranslations('AA_PROJECT');
@@ -118,8 +116,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     projectUUID: projectId,
     payoutUUID: payoutId,
   });
-  // PDF is generated server-side: the API renders the payout logs PDF
-  // (with photo evidence) and returns it as base64 for download.
   const exportPdfFile = usePayoutExportPdfFile();
   const pdfDownloading = exportPdfFile.isPending;
 

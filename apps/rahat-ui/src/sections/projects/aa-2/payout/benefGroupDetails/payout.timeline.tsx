@@ -45,7 +45,6 @@ export default function PayoutTimeline({
     [logs, isFsp],
   );
 
-  // Status options matching transactions tab + any active status in normalized events
   const statusOptions = useMemo<string[]>(() => {
     const base = getPayoutTransactionStatusOptions(
       payout?.type,

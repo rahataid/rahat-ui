@@ -48,7 +48,6 @@ export default function TimelineFilterBar({
         value={searchQuery}
       />
 
-      {/* SelectComponent translates each option itself, so no labels map is needed. */}
       <SelectComponent
         name={tg('STATUS')}
         options={statusOptions}

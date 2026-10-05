@@ -12,7 +12,6 @@ export const CHART_DATE_PATTERN_MAP: Record<string, Intl.DateTimeFormatOptions> 
   'MMM dd, yyyy, hh:mm:ss a': { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true },
   'MMM dd, yyyy, hh:mm a': { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true },
   'MMM dd, yyyy': { month: 'short', day: '2-digit', year: 'numeric' },
-  // Matches intlFormatDate (the Transactions tab's timestamp column) exactly.
   PPp: { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true },
 };
 
@@ -37,13 +36,6 @@ export const formatChartDate = (
   return formatter.format(d);
 };
 
-/**
- * Robust epoch-ms parser that supports:
- * - numeric epoch (milliseconds or seconds)
- * - Date objects
- * - ISO-8601 strings
- * - SQL format strings ("YYYY-MM-DD HH:mm:ss") with Safari compatibility
- */
 export const toEpochMs = (value: unknown): number | null => {
   if (value === null || value === undefined || value === '') return null;
   if (typeof value === 'number') {
@@ -57,7 +49,6 @@ export const toEpochMs = (value: unknown): number | null => {
   const str = String(value).trim();
   if (!str) return null;
 
-  // Handle SQL timestamps "YYYY-MM-DD HH:mm:ss" for Safari WebKit
   const normalizedStr = str.replace(
     /^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})/,
     '$1T$2',

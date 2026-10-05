@@ -19,7 +19,6 @@ type ChartOptionsParams = {
   seriesData: SeriesData;
 };
 
-/** Compact Y-axis labels: 1.2K / 3.4M or comma-separated numbers like 5,000 / 25,000. */
 const yLabelFormatter = (formatNumRef: FormatNumRef) => (val: number): string => {
   if (val === null || val === undefined) return '';
   const n = Math.round(Number(val));
@@ -39,9 +38,8 @@ export const buildTimelineChartOptions = ({
   activeStatuses,
   seriesData,
 }: ChartOptionsParams): ApexCharts.ApexOptions => {
-  // Series 0 is "All Transactions" (blue), followed by active statuses
   const seriesColors = [
-    '#2563EB', // Blue for "All Transactions"
+    '#2563EB',
     ...activeStatuses.map((s) => getStatusColor(s)),
   ];
 
@@ -100,7 +98,6 @@ export const buildTimelineChartOptions = ({
         stops: [0, 90, 100],
       },
     },
-    // Distinct point markers on every point matching the reference image!
     markers: {
       size: 4.5,
       strokeColors: '#ffffff',
@@ -168,7 +165,6 @@ export const buildTimelineChartOptions = ({
         const totalVal = series[0]?.[dataPointIndex] ?? 0;
 
         let itemsHtml = '';
-        // Row 0: All Transactions
         itemsHtml += `
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 4px; font-size: 12px;">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -179,7 +175,6 @@ export const buildTimelineChartOptions = ({
           </div>
         `;
 
-        // Rows 1..N: Individual statuses (filter out zero counts when transactions are present)
         for (let i = 1; i < series.length; i++) {
           const val = series[i]?.[dataPointIndex] ?? 0;
           if (totalVal > 0 && val === 0) continue;

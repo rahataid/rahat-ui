@@ -154,7 +154,7 @@ export function CommunicationSessionLogsView() {
                   dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
                   confirmButtonText={t('CONFIRM') || 'Confirm'}
                   handleClick={handleRetry}
-                  buttonClassName="gap-1.5 h-8 px-3.5 text-xs bg-primary text-white hover:bg-primary/90 shrink-0 whitespace-nowrap"
+                  buttonClassName="gap-1.5 h-8 px-3.5 text-xs bg-primary text-white hover:!bg-primary/90 shrink-0 whitespace-nowrap"
                   confirmButtonClassName="rounded-sm bg-primary"
                   variant="default"
                 />

@@ -2,27 +2,24 @@
 
 import { useParams, useRouter } from 'next/navigation';
 
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
-import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { Eye, SendHorizontal } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
   aggregateTargetStatus,
   resolveCommunicationLifecycleStatus,
 } from '../utils/communications.utils';
-import {
-  useTriggerCommunicationBroadcast,
-  useSessionBroadCastCount,
-} from '@rahat-ui/query';
+import { useTriggerCommunicationBroadcast } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { CommunicationStatusBadge } from './communication-status-badge';
 import { CommunicationChannelIcon } from './communication-channel-icon';
+import { BroadcastCountsContext } from './communications.table';
 
 export type CommunicationRecord = {
   id: string;
@@ -113,23 +110,20 @@ export function CommunicationRowStatusCell({
 }: {
   record: CommunicationRecord;
 }) {
+  const countsMap = useContext(BroadcastCountsContext);
+  const entry = countsMap.get(record.id);
+
   const sessionIds = useMemo(() => {
     return (record.targets ?? [])
       .map((t) => t.sessionId)
       .filter(Boolean) as string[];
   }, [record.targets]);
 
-  const { data: broadcastCounts, isLoading } = useSessionBroadCastCount(
-    sessionIds.length > 0 ? sessionIds : [],
-  );
-
-  const isResolvingBroadcast = sessionIds.length > 0 && (isLoading || broadcastCounts === undefined);
-
   const effStatus = useMemo(() => {
     return resolveCommunicationLifecycleStatus({
       channel: record.channel || 'SMS',
       rawStatus: record.status,
-      counts: broadcastCounts?.data,
+      counts: entry?.data ?? undefined,
       hasActiveTargets: (record.targets ?? []).some(
         (t) => t.status === 'SENT' || t.status === 'PROCESSING',
       ),
@@ -138,9 +132,9 @@ export function CommunicationRowStatusCell({
       ),
       hasSession: sessionIds.length > 0,
     });
-  }, [record.channel, record.status, broadcastCounts?.data, record.targets, sessionIds.length]);
+  }, [record.channel, record.status, entry?.data, record.targets, sessionIds.length]);
 
-  return <CommunicationStatusBadge status={effStatus} isLoading={isResolvingBroadcast} />;
+  return <CommunicationStatusBadge status={effStatus} isLoading={false} />;
 }
 
 export function CommunicationRowDeliveryRateCell({
@@ -149,21 +143,12 @@ export function CommunicationRowDeliveryRateCell({
   record: CommunicationRecord;
 }) {
   const formatDigits = useLabelDigits();
-  const sessionIds = useMemo(() => {
-    return (record.targets ?? [])
-      .map((t) => t.sessionId)
-      .filter(Boolean) as string[];
-  }, [record.targets]);
-
-  const { data: broadcastCounts, isLoading } = useSessionBroadCastCount(
-    sessionIds.length > 0 ? sessionIds : [],
-  );
-
-  const isResolvingBroadcast = sessionIds.length > 0 && (isLoading || broadcastCounts === undefined);
+  const countsMap = useContext(BroadcastCountsContext);
+  const entry = countsMap.get(record.id);
 
   const { delivered, total, percent } = useMemo(() => {
-    if (sessionIds.length > 0 && broadcastCounts?.data) {
-      const counts = broadcastCounts.data;
+    if (entry?.data) {
+      const counts = entry.data;
       const d = counts.SUCCESS ?? 0;
       const f = counts.FAIL ?? 0;
       const p = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
@@ -177,19 +162,7 @@ export function CommunicationRowDeliveryRateCell({
     const tot = record.recipients;
     const pct = tot > 0 ? Math.round((d / tot) * 100) : 0;
     return { delivered: d, total: tot, percent: pct };
-  }, [sessionIds, broadcastCounts?.data, record.delivered, record.recipients]);
-
-  if (isResolvingBroadcast) {
-    return (
-      <div className="space-y-1.5 w-full max-w-[150px]">
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-3 w-8" />
-          <Skeleton className="h-3 w-10" />
-        </div>
-        <Skeleton className="h-1.5 w-full rounded-full" />
-      </div>
-    );
-  }
+  }, [entry?.data, record.delivered, record.recipients]);
 
   return (
     <div className="space-y-1 w-full max-w-[150px]">

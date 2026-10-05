@@ -67,6 +67,12 @@ const STATUS_FILTER_OPTIONS = [
   'CANCELLED',
 ];
 
+type BroadcastCountsMap = Map<string, { data: any; isLoading: boolean }>;
+
+export const BroadcastCountsContext = React.createContext<BroadcastCountsMap>(
+  new Map(),
+);
+
 function useResolvedCommunicationStatuses(records: CommunicationRecord[]) {
   const { newCommunicationService } = useNewCommunicationQuery();
 
@@ -94,7 +100,26 @@ function useResolvedCommunicationStatuses(records: CommunicationRecord[]) {
     [results],
   );
 
-  return React.useMemo(() => {
+  const isBroadcastLoading = results.some(
+    (r, i) => recordSessionIds[i].length > 0 && r.isLoading,
+  );
+
+  const countsMap = React.useMemo(() => {
+    const map: BroadcastCountsMap = new Map();
+    records.forEach((record, index) => {
+      const sessionIds = recordSessionIds[index] ?? [];
+      if (sessionIds.length > 0) {
+        map.set(record.id, {
+          data: results[index]?.data?.data ?? undefined,
+          isLoading: results[index]?.isLoading ?? true,
+        });
+      }
+    });
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [records, recordSessionIds, stableDataKey]);
+
+  const resolvedStatuses = React.useMemo(() => {
     const resolvedById = new Map<string, string>();
     records.forEach((record, index) => {
       const sessionIds = recordSessionIds[index] ?? [];
@@ -119,6 +144,8 @@ function useResolvedCommunicationStatuses(records: CommunicationRecord[]) {
     return resolvedById;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [records, recordSessionIds, stableDataKey]);
+
+  return { resolvedStatuses, countsMap, isBroadcastLoading };
 }
 
 export function CommunicationsTable({
@@ -144,7 +171,7 @@ export function CommunicationsTable({
 }: TableProps) {
   const t = useTranslations('AA_PROJECT');
   const columns = useCommunicationsTableColumns();
-  const resolvedStatuses = useResolvedCommunicationStatuses(records);
+  const { resolvedStatuses, countsMap, isBroadcastLoading } = useResolvedCommunicationStatuses(records);
 
   const isFiltering = Boolean(
     channelFilter || statusFilter || dateRange?.from || dateRange?.to,
@@ -236,13 +263,13 @@ export function CommunicationsTable({
   });
 
   return (
-    <div className="bg-card border rounded p-4 space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2 flex-1">
+    <BroadcastCountsContext.Provider value={countsMap}>
+      <div className="bg-card border rounded p-4 space-y-4">
+        <div className="flex items-center gap-2">
           <SearchInput
             name="COMMUNICATIONS"
             placeholder={t("SEARCH_COMMUNICATIONS")}
-            className="w-full sm:w-64"
+            className="w-full"
             value={search}
             onSearch={(e) => onSearchChange(e?.target?.value || '')}
           />
@@ -261,7 +288,7 @@ export function CommunicationsTable({
               )
             }
             value={channelFilter || 'ALL'}
-            className="w-36"
+            className="w-36 shrink-0"
           />
           <SelectComponent
             name={t("STATUS")}
@@ -279,7 +306,7 @@ export function CommunicationsTable({
             }}
             onChange={(val) => onStatusFilterChange(val === 'ALL' ? '' : val)}
             value={statusFilter || 'ALL'}
-            className="w-40"
+            className="w-40 shrink-0"
           />
           <DateRangePicker
             key={datePickerKey}
@@ -287,49 +314,46 @@ export function CommunicationsTable({
             type="range"
             handleDateChange={onDateRangeChange}
             handleClearDate={() => onDateRangeChange(undefined)}
-            className="h-[36px] text-xs"
+            className="h-[36px] text-xs shrink-0"
           />
-        </div>
-
-        <div className="flex items-center gap-2">
           {showResetFilters && (
             <IconLabelBtn
               Icon={Trash2}
               name={t('CLEAR')}
               handleClick={onResetFilters}
               variant="outline"
-              className="text-red-500 rounded-xl"
+              className="text-red-500 rounded-xl shrink-0"
             />
           )}
           <ToggleColumns table={table} />
         </div>
+
+        <DemoTable
+          table={table}
+          tableHeight="h-[calc(100vh-540px)]"
+          message={t("NO_COMMUNICATIONS_FOUND")}
+          loading={isLoading || isBroadcastLoading}
+        />
+
+        <CustomPagination
+          meta={{
+            total: effectiveMeta.total,
+            currentPage: effectiveMeta.currentPage,
+            lastPage: effectiveMeta.lastPage,
+            perPage: effectiveMeta.perPage,
+            next: null,
+            prev: null,
+          }}
+          handleNextPage={handleNextPage}
+          handlePrevPage={handlePrevPage}
+          setPagination={setPagination}
+          handlePageSizeChange={setPerPage}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={effectiveMeta.total}
+          isShowTotalCount={true}
+        />
       </div>
-
-      <DemoTable
-        table={table}
-        tableHeight="h-[calc(100vh-540px)]"
-        message={t("NO_COMMUNICATIONS_FOUND")}
-        loading={isLoading}
-      />
-
-      <CustomPagination
-        meta={{
-          total: effectiveMeta.total,
-          currentPage: effectiveMeta.currentPage,
-          lastPage: effectiveMeta.lastPage,
-          perPage: effectiveMeta.perPage,
-          next: null,
-          prev: null,
-        }}
-        handleNextPage={handleNextPage}
-        handlePrevPage={handlePrevPage}
-        setPagination={setPagination}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={effectiveMeta.total}
-        isShowTotalCount={true}
-      />
-    </div>
+    </BroadcastCountsContext.Provider>
   );
 }

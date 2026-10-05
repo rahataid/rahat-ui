@@ -420,11 +420,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         </div>
 
         <div
-          className={`mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${
-            payout?.extras?.group_gap || payout?.type === 'VENDOR'
+          className={`mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${payout?.extras?.group_gap || payout?.type === 'VENDOR'
               ? 'xl:grid-cols-6 lg:grid-cols-3'
               : 'xl:grid-cols-5 lg:grid-cols-3'
-          } gap-3 items-stretch`}
+            } gap-3 items-stretch`}
         >
           {payoutStats?.map((item) => (
             <DataCard
@@ -486,7 +485,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <div className="flex gap-2">
               <SearchInput
                 className="w-full flex-[4]"
-                name={tv('SEARCH_BENEFICIARY_WALLET')}
+                name="search"
+                placeholder={tv('SEARCH_BENEFICIARY_WALLET')}
                 onSearch={(e) => handleSearch(e, 'search')}
                 value={filters?.search || ''}
               />

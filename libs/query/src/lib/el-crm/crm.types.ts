@@ -109,9 +109,8 @@ export interface SmsConversion extends SmsConversionCounts {
 }
 
 /** One month of SMS-attributed conversion, bucketed by month messaged. */
-export interface SmsConversionByMonthEntry {
+export interface SmsConversionByMonthEntry extends SmsConversionCounts {
   month: string;
-  messaged: number;
-  converted: number;
-  rate: number;
+  /** Same cohort rules as SmsConversion.byCategory, within the month. */
+  byCategory?: Record<SmsConversionCategory, SmsConversionCounts>;
 }

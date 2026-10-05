@@ -6,7 +6,7 @@ import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { LandmarkIcon, Loader2, Phone, Plus, Users } from 'lucide-react';
 import SearchInput from '../../projects/components/search.input';
-import AddButton from '../../projects/components/add.btn';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -26,24 +26,31 @@ import {
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = React.useState<string>('');
   const t = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const [selectedGroup, setSelectedGroup] =
     React.useState<ListBeneficiaryGroup>([]);
-  const { setFilters, filters } = usePagination();
+  const { filters, setFilters } = usePagination();
   const [limit, setLimit] = React.useState(20);
   const [visibleLimit, setVisibleLimit] = React.useState(20);
   const [allGroups, setAllGroups] = React.useState<any[]>([]);
   const [total, setTotal] = React.useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const debouncedFilters = useDebounce(filters, 500);
+
+  const trimmedFilters = Object.fromEntries(
+    Object.entries(debouncedFilters).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? value.trim() : value,
+    ]),
+  );
 
   const data = useBeneficiaryGroupsList({
     page: 1,
     perPage: limit,
     order: 'desc',
     sort: 'createdAt',
-    ...filters,
+    ...trimmedFilters,
   });
 
   const isLoading =
@@ -81,14 +88,8 @@ function BeneficiaryGroupsView() {
     [allGroups, visibleLimit],
   );
 
-  const filteredGroups = React.useMemo(() => {
-    return visibleGroups.filter((group) =>
-      group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-  }, [visibleGroups, searchTerm]);
-
   const handleSearch = React.useCallback((value: string) => {
-    setSearchTerm(value);
+    setFilters({ ...filters, groupName: value });
   }, []);
 
   const projectModal = useBoolean();
@@ -116,13 +117,13 @@ function BeneficiaryGroupsView() {
             onSearch={(e) => handleSearch(e.target.value)}
           />
           <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
-          <Button
-            variant={'default'}
-            type="button"
-            onClick={() => router.push(`/beneficiary/groups/add`)}
-          >
-            <Plus size={18} className="mr-1" /> {t('CREATE_GROUP')}
-          </Button>
+            <Button
+              variant={'default'}
+              type="button"
+              onClick={() => router.push(`/beneficiary/groups/add`)}
+            >
+              <Plus size={18} className="mr-1" /> {t('CREATE_GROUP')}
+            </Button>
           </GlobalCan>
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
@@ -130,9 +131,9 @@ function BeneficiaryGroupsView() {
             <div className="flex justify-center py-10">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
-          ) : filteredGroups.length > 0 ? (
+          ) : visibleGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
-              {filteredGroups?.map((i: any, index: number) => {
+              {visibleGroups?.map((i: any, index: number) => {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;
 
                 return (
@@ -173,7 +174,10 @@ function BeneficiaryGroupsView() {
                         <div className="flex items-center gap-2">
                           <div className="flex gap-2 items-center text-[#667085]">
                             <Users size={18} strokeWidth={2} />
-                            {formatNum(i?._count?.groupedBeneficiaries || 0)} {t('BENEFICIARIES').toLowerCase()}
+                            {formatNum(
+                              i?._count?.groupedBeneficiaries || 0,
+                            )}{' '}
+                            {t('BENEFICIARIES').toLowerCase()}
                           </div>
                           {i?.groupPurpose && (
                             <Badge className="text-gray-700 font-normal text-xs">
@@ -216,19 +220,19 @@ function BeneficiaryGroupsView() {
                       action={ACTIONS.MANAGE}
                       subject={SUBJECTS.BENEFICIARY}
                     >
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="w-full mx-auto"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAssignModalClick(i);
-                      }}
-                      disabled={!i?._count?.groupedBeneficiaries}
-                    >
-                      <Plus className="mr-1" size={18} strokeWidth={1.5} />
-                      {t('ASSIGN_PROJECT')}
-                    </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="w-full mx-auto"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAssignModalClick(i);
+                        }}
+                        disabled={!i?._count?.groupedBeneficiaries}
+                      >
+                        <Plus className="mr-1" size={18} strokeWidth={1.5} />
+                        {t('ASSIGN_PROJECT')}
+                      </Button>
                     </GlobalCan>
                   </div>
                 );

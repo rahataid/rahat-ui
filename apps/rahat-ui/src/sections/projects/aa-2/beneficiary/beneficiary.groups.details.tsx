@@ -65,6 +65,7 @@ const BeneficiaryGroupsDetails = () => {
   const { mutate: regenerateQr, isPending: isRegeneratingQr } =
     useRegenerateQrPdf(projectId);
   const [isQrOptionsOpen, setIsQrOptionsOpen] = useState(false);
+  const [isExcelOptionsOpen, setIsExcelOptionsOpen] = useState(false);
   // Tracks which action the dialog's confirm button should trigger --
   // the initial generate, or a re-generate of an already-completed QR.
   const [qrDialogMode, setQrDialogMode] = useState<'generate' | 'regenerate'>(
@@ -95,15 +96,28 @@ const BeneficiaryGroupsDetails = () => {
     setIsQrOptionsOpen(true);
   };
 
-  const handleExportExcel = () => {
-    exportExcel(groupId, {
-      onSuccess: (rows) => {
-        exportToExcel(
-          rows ?? [],
-          `beneficiaries-${groupDetails?.name ?? groupId}`,
-        );
+  const handleExportExcel = ({
+    includeOtp,
+    onlyUnphonedBeneficiaries,
+    pdfFields,
+  }: QrOtpConfirmValues) => {
+    if (isExporting) return;
+
+    exportExcel(
+      {
+        groupId,
+        includeOtp,
+        onlyUnphonedBeneficiaries,
+        excelFields: pdfFields,
       },
-    });
+      {
+        onSuccess: (rows) => {
+          const list = Array.isArray(rows) ? rows : [];
+          exportToExcel(list, `beneficiaries-${groupDetails?.name ?? groupId}`);
+          setIsExcelOptionsOpen(false);
+        },
+      },
+    );
   };
 
   const { data: sponsorshipStatus } = useGetSponsorshipStatusForGroup({
@@ -171,7 +185,7 @@ const BeneficiaryGroupsDetails = () => {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={handleExportExcel}
+            onClick={() => setIsExcelOptionsOpen(true)}
             className="cursor-pointer"
             disabled={isExporting}
           >
@@ -206,9 +220,7 @@ const BeneficiaryGroupsDetails = () => {
                     <CloudDownload className="mr-2 h-4 w-4" />
                     {t('DOWNLOAD_QR')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => openQrDialog('regenerate')}
-                  >
+                  <DropdownMenuItem onSelect={() => openQrDialog('regenerate')}>
                     <RefreshCw className="mr-2 h-4 w-4" />
                     {t('REGENERATE_QR')}
                   </DropdownMenuItem>
@@ -226,17 +238,16 @@ const BeneficiaryGroupsDetails = () => {
               {t('GENERATE_QR')}
             </Button>
           )}
-          {sponsorshipStatus?.isStellarChain &&
-               (
-              <Button
-                variant="outline"
-                className="cursor-pointer"
-                disabled={isRetrying}
-                onClick={() => retrySponsorship(groupId)}
-              >
-                {t('RETRY_SPONSORSHIP')}
-              </Button>
-            )}
+          {sponsorshipStatus?.isStellarChain && (
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              disabled={isRetrying}
+              onClick={() => retrySponsorship(groupId)}
+            >
+              {t('RETRY_SPONSORSHIP')}
+            </Button>
+          )}
         </div>
       </div>
       {sponsorshipStatus?.isStellarChain ? (
@@ -299,6 +310,16 @@ const BeneficiaryGroupsDetails = () => {
         onOpenChange={setIsQrOptionsOpen}
         onConfirm={handleGenerateQr}
         isPending={isSubmittingQr}
+      />
+      <QrOtpDialog
+        open={isExcelOptionsOpen}
+        onOpenChange={setIsExcelOptionsOpen}
+        onConfirm={handleExportExcel}
+        isPending={isExporting}
+        title={t('DOWNLOAD_EXCEL')}
+        description={t('EXCEL_EXPORT_OPTIONS_DESCRIPTION')}
+        confirmLabel={t('DOWNLOAD')}
+        pendingLabel={t('GENERATING')}
       />
     </div>
   );

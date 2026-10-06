@@ -91,7 +91,8 @@ export default function PayoutConfirmationDialog({
       setTriggered(true);
       setOpen(false);
     } catch (e: any) {
-      const rawMessage = e?.response?.data?.message || tv('INVALID_PIN_FALLBACK');
+      const rawMessage =
+        e?.response?.data?.message || tv('INVALID_PIN_FALLBACK');
       const errorMessage = resolveBackendErrorMessage(
         tb,
         e?.response?.data?.code,
@@ -111,10 +112,7 @@ export default function PayoutConfirmationDialog({
         {payoutData?.type === 'FSP' &&
           (payoutData?.extras?.paymentProviderName === 'NCHL' ||
             payoutData?.extras?.paymentProviderName === 'Namaste Pay') && (
-            <TooltipWrapper
-              tip={tv('PAYOUT_CANNOT_BE_TRIGGERED')}
-              disable={payoutData?.beneficiaryGroupToken?.isDisbursed}
-            >
+            <TooltipWrapper tip={tv('PAYOUT_CANNOT_BE_TRIGGERED')}>
               <AlertDialogTrigger asChild>
                 <Button
                   className={`bg-blue-600 hover:bg-blue-700 text-white ${
@@ -123,6 +121,7 @@ export default function PayoutConfirmationDialog({
                   disabled={
                     !payoutData?.beneficiaryGroupToken?.isDisbursed ||
                     triggered ||
+                    payoutData?.status === 'COMPLETED' ||
                     submitting
                   }
                 >
@@ -185,7 +184,9 @@ export default function PayoutConfirmationDialog({
           <div className="flex justify-between">
             <span className="font-medium">{tv('TOTAL_TOKENS')}</span>
             <span>
-              {formatNum(payoutData?.beneficiaryGroupToken?.numberOfTokens ?? 0)}
+              {formatNum(
+                payoutData?.beneficiaryGroupToken?.numberOfTokens ?? 0,
+              )}
             </span>
           </div>
         </div>
@@ -200,7 +201,9 @@ export default function PayoutConfirmationDialog({
           </p>
           <div className="flex items-center gap-3 mt-3">
             <Input
-              placeholder={tv('DIGIT_PIN_PLACEHOLDER', { length: formatDigits(OTP_LENGTH) })}
+              placeholder={tv('DIGIT_PIN_PLACEHOLDER', {
+                length: formatDigits(OTP_LENGTH),
+              })}
               maxLength={OTP_LENGTH}
               inputMode="numeric"
               autoFocus

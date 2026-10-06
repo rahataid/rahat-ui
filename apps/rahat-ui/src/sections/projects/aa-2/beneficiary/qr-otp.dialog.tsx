@@ -29,7 +29,7 @@ const MAX_PDF_FIELDS = 5;
 
 export type QrOtpConfirmValues = {
   includeOtp: boolean;
-  excludeUnphonedBeneficiaries: boolean;
+  onlyUnphonedBeneficiaries: boolean;
   pdfFields: string[];
 };
 
@@ -51,7 +51,7 @@ export function QrOtpDialog({
   const projectUUID = id as UUID;
 
   const [includeOtp, setIncludeOtp] = useState(true);
-  const [excludeUnphonedBeneficiaries, setExcludeUnphonedBeneficiaries] =
+  const [onlyUnphonedBeneficiaries, setOnlyUnphonedBeneficiaries] =
     useState(false);
   const [selectedFields, setSelectedFields] = useState<Option[]>([]);
 
@@ -75,7 +75,7 @@ export function QrOtpDialog({
   useEffect(() => {
     if (open) {
       setIncludeOtp(true);
-      setExcludeUnphonedBeneficiaries(false);
+      setOnlyUnphonedBeneficiaries(false);
       setSelectedFields([]);
     }
   }, [open]);
@@ -89,7 +89,7 @@ export function QrOtpDialog({
     }
     onConfirm({
       includeOtp,
-      excludeUnphonedBeneficiaries,
+      onlyUnphonedBeneficiaries,
       pdfFields: selectedFields.map((option) => option.value),
     });
   };
@@ -120,15 +120,15 @@ export function QrOtpDialog({
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="qr-exclude-unphoned"
-              checked={excludeUnphonedBeneficiaries}
+              id="qr-only-unphoned"
+              checked={onlyUnphonedBeneficiaries}
               disabled={isPending}
               onCheckedChange={(checked) =>
-                setExcludeUnphonedBeneficiaries(checked === true)
+                setOnlyUnphonedBeneficiaries(checked === true)
               }
             />
-            <Label htmlFor="qr-exclude-unphoned">
-              {t('EXCLUDE_UNPHONED_BENEFICIARIES')}
+            <Label htmlFor="qr-only-unphoned">
+              {t('ONLY_UNPHONED_BENEFICIARIES')}
             </Label>
           </div>
 

@@ -1666,6 +1666,8 @@
     "STATION_IS_REQUIRED": "स्टेसन आवश्यक छ",
     "STATION_NAME": "स्टेसनको नाम",
     "STATS_DATA_SYNCED_SUCCESSFULLY": "तथ्याङ्क डाटा सफलतापूर्वक सिंक भयो।",
+    "FAILED_TO_SYNC_STATS_DATA": "तथ्याङ्क डाटा सिंक गर्न असफल भयो।",
+
     "STATUS": "स्थिति",
     "STATUS_IS_REQUIRED": "स्थिति राख्नु आवश्यक छ",
     "STATUS_REQUIRED": "स्थिति राख्नु आवश्यक छ",

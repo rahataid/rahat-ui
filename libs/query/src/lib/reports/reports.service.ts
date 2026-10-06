@@ -1,5 +1,5 @@
 import { useRSQuery } from '@rumsan/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export const useGetDataSource = () => {
@@ -38,5 +38,22 @@ export const useGetStatsCore = () => {
       return res.data.data;
     },
     staleTime: 60 * 60 * 1000, // 1 hour
+  });
+};
+
+export const useSyncCoreStats = () => {
+  const { rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await rumsanService.client.post(
+        `/beneficiaries/stats/refresh`,
+      );
+      return res.data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['coreStats'] });
+    },
   });
 };

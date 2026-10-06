@@ -28,32 +28,39 @@ const STATUS_CONFIG: Record<
   { labelKey: string; defaultLabel: string; variant: StatusVariant }
 > = {
   // Successful States
-  DELIVERED: { labelKey: 'DELIVERED', defaultLabel: 'Delivered', variant: 'success' },
-  SUCCESS: { labelKey: 'DELIVERED', defaultLabel: 'Delivered', variant: 'success' },
-  ANSWERED: { labelKey: 'ANSWERED', defaultLabel: 'Answered', variant: 'success' },
   COMPLETED: { labelKey: 'COMPLETED', defaultLabel: 'Completed', variant: 'success' },
+  DELIVERED: { labelKey: 'COMPLETED', defaultLabel: 'Completed', variant: 'success' },
+  SUCCESS: { labelKey: 'COMPLETED', defaultLabel: 'Completed', variant: 'success' },
+  ANSWERED: { labelKey: 'COMPLETED', defaultLabel: 'Completed', variant: 'success' },
 
   // Dispatched / Sent
-  SENT: { labelKey: 'SENT', defaultLabel: 'Sent', variant: 'info' },
+  SENT: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
 
   // Active / Processing States
-  PROCESSING: { labelKey: 'PROCESSING', defaultLabel: 'Processing', variant: 'processing' },
+  PROCESSING: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
   IN_PROGRESS: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
 
-  // Queued / Scheduled
+  // Queued / Scheduled / New
+  NEW: { labelKey: 'NEW', defaultLabel: 'New', variant: 'info' },
   PENDING: { labelKey: 'PENDING', defaultLabel: 'Pending', variant: 'warning' },
   SCHEDULED: { labelKey: 'SCHEDULED', defaultLabel: 'Scheduled', variant: 'neutral' },
 
   // Failure States
   FAILED: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
   FAIL: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
-  'NO ANSWER': { labelKey: 'NO_ANSWER', defaultLabel: 'No Answer', variant: 'error' },
-  BUSY: { labelKey: 'BUSY', defaultLabel: 'Busy', variant: 'error' },
-  REJECTED: { labelKey: 'REJECTED', defaultLabel: 'Rejected', variant: 'error' },
+  FAILURE: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  'NO ANSWER': { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  NO_ANSWER: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  BUSY: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  REJECTED: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  CONGESTION: { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
+  'NOT FOUND': { labelKey: 'FAILED', defaultLabel: 'Failed', variant: 'error' },
 
   // Cancelled State
   CANCELLED: { labelKey: 'CANCELLED', defaultLabel: 'Cancelled', variant: 'neutral' },
+  CANCELED: { labelKey: 'CANCELLED', defaultLabel: 'Cancelled', variant: 'neutral' },
 };
+
 
 interface CommunicationStatusBadgeProps {
   status: CommunicationStatus;
@@ -75,14 +82,26 @@ export const CommunicationStatusBadge = React.memo(({
   const config = STATUS_CONFIG[normalizedStatus];
   const variantStyle = STATUS_STYLES[config?.variant ?? 'default'];
   
-  let label = config?.defaultLabel || normalizedStatus;
-  try {
-    if (config?.labelKey && typeof t.has === 'function' && t.has(config.labelKey as any)) {
-      label = t(config.labelKey as any);
+  let label = config?.defaultLabel || (
+    normalizedStatus
+      ? normalizedStatus
+          .toLowerCase()
+          .replace(/[_-]+/g, ' ')
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+      : ''
+  );
+
+  if (config?.labelKey) {
+    try {
+      const translated = t(config.labelKey as any);
+      if (translated && !translated.startsWith('AA_PROJECT.')) {
+        label = translated;
+      }
+    } catch {
+      // Keep existing label fallback
     }
-  } catch {
-    label = config?.defaultLabel || normalizedStatus;
   }
+
 
   return (
     <Badge 

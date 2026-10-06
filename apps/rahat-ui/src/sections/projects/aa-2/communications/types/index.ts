@@ -1,10 +1,13 @@
 import { z } from 'zod';
 import { buildBroadcastSchema } from '../schemas/communication.schemas';
 
-export type BroadcastChannel = 'sms' | 'voice' | 'email';
+export type CommunicationChannel = 'sms' | 'voice' | 'email';
+export type BroadcastChannel = CommunicationChannel;
 
-export type BroadcastFormValues = z.infer<
+export type CommunicationFormValues = z.infer<
   ReturnType<typeof buildBroadcastSchema>
 > & {
-  channel: BroadcastChannel;
+  channel: CommunicationChannel;
 };
+export type BroadcastFormValues = CommunicationFormValues;
+

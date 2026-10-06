@@ -215,7 +215,7 @@ export default function useCommunicationsTableColumns() {
               channel={channel}
               className="h-3.5 w-3.5 text-muted-foreground"
             />
-            <span className="text-xs font-medium">{t(channel)}</span>
+            <span className="text-xs font-medium">{t(channel ? channel.toUpperCase() : 'SMS')}</span>
           </div>
         );
       },
@@ -322,7 +322,7 @@ export default function useCommunicationsTableColumns() {
               <span onClick={handleSend}>
                 <TooltipComponent
                   Icon={SendHorizontal}
-                  tip={t('SEND_BROADCAST')}
+                  tip={t('SEND_COMMUNICATION') || 'Send Communication'}
                   iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
                 />
               </span>

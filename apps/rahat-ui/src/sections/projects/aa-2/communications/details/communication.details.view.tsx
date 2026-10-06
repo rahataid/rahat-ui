@@ -15,6 +15,7 @@ import {
   Trash,
   SendHorizontal,
   ArrowRight,
+  Pencil,
 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -149,8 +150,7 @@ export default function CommunicationDetailsView() {
       rawStatus: record?.status || raw?.status,
       counts: broadcastCounts?.data,
       hasActiveTargets:
-        sessionIds.length > 0 ||
-        targets.some((t: any) => t?.status === 'SENT' || t?.status === 'PROCESSING'),
+        targets.some((t: any) => t?.status === 'PROCESSING'),
       hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING'),
       hasSession: sessionIds.length > 0,
       isRetrying: isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending,
@@ -190,7 +190,7 @@ export default function CommunicationDetailsView() {
             disabled={isFetching}
             className="text-primary hover:underline text-sm flex items-center font-medium disabled:opacity-50"
           >
-            <RefreshCcw className="w-4 h-4 mr-2" /> {t('RETRY_BROADCAST')}
+            <RefreshCcw className="w-4 h-4 mr-2" /> {t('RETRY_COMMUNICATION') || 'Retry Communication'}
           </button>
         </div>
       </div>
@@ -235,9 +235,30 @@ export default function CommunicationDetailsView() {
       groupInfo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (target?.groupId && target.groupId.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesStatus =
-      statusFilter === 'ALL' ||
-      target?.status?.toUpperCase() === statusFilter.toUpperCase();
+    let matchesStatus = true;
+    if (statusFilter !== 'ALL') {
+      const rawStatus = (target?.status || '').toUpperCase();
+      if (statusFilter === 'COMPLETED') {
+        matchesStatus =
+          rawStatus === 'COMPLETED' ||
+          rawStatus === 'DELIVERED' ||
+          rawStatus === 'SUCCESS' ||
+          rawStatus === 'SENT' ||
+          rawStatus === 'ANSWERED';
+      } else if (statusFilter === 'FAILED') {
+        matchesStatus = rawStatus === 'FAILED' || rawStatus === 'FAIL';
+      } else if (statusFilter === 'IN_PROGRESS') {
+        matchesStatus = rawStatus === 'IN_PROGRESS' || rawStatus === 'PROCESSING';
+      } else if (statusFilter === 'PENDING') {
+        matchesStatus =
+          rawStatus === 'PENDING' ||
+          rawStatus === 'NEW' ||
+          !rawStatus ||
+          rawStatus === 'SCHEDULED';
+      } else {
+        matchesStatus = rawStatus === statusFilter.toUpperCase();
+      }
+    }
 
     return matchesSearch && matchesStatus;
   });
@@ -254,17 +275,59 @@ export default function CommunicationDetailsView() {
     if (isMutating || isRetrying) return;
     setIsRetrying(true);
     try {
-      if (sessionIds.length > 0) {
-        await Promise.all(
-          sessionIds.map((cuid) =>
+      const retryPromises: Promise<any>[] = [];
+
+      const failedSessionIds = targets
+        .filter(
+          (t: any) =>
+            t?.sessionId &&
+            (t?.status === 'FAILED' || t?.status === 'FAIL'),
+        )
+        .map((t: any) => t.sessionId);
+
+      const candidateSessionIds =
+        failedSessionIds.length > 0
+          ? failedSessionIds
+          : targets
+              .filter((t: any) => {
+                if (!t?.sessionId) return false;
+                const s = (t?.status || '').toUpperCase();
+                return (
+                  s !== 'COMPLETED' &&
+                  s !== 'SUCCESS' &&
+                  s !== 'DELIVERED' &&
+                  s !== 'ANSWERED'
+                );
+              })
+              .map((t: any) => t.sessionId);
+
+      if (candidateSessionIds.length > 0) {
+        retryPromises.push(
+          ...candidateSessionIds.map((cuid: string) =>
             retryFailedSession.mutateAsync({ cuid, includeFailed: true }),
           ),
         );
-      } else {
-        await triggerBroadcast.mutateAsync({
-          projectUUID: projectId as UUID,
-          communicationUUID: commId,
-        });
+      }
+
+      const hasUnsentOrFailedTargets = targets.some(
+        (target: any) =>
+          !target?.sessionId &&
+          (target?.status === 'FAILED' ||
+            target?.status === 'FAIL' ||
+            target?.status === 'PENDING'),
+      );
+
+      if (hasUnsentOrFailedTargets) {
+        retryPromises.push(
+          triggerBroadcast.mutateAsync({
+            projectUUID: projectId as UUID,
+            communicationUUID: commId,
+          }),
+        );
+      }
+
+      if (retryPromises.length > 0) {
+        await Promise.all(retryPromises);
       }
       await refetch();
     } catch (error) {
@@ -306,7 +369,17 @@ export default function CommunicationDetailsView() {
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center flex-wrap gap-2">
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/projects/aa/${projectId}/communications/${commId}/edit`)}
+              className="rounded-sm text-xs h-9 px-3 gap-1.5"
+              disabled={isMutating}
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              {t('EDIT') || 'Edit'}
+            </Button>
+
             <DialogComponent
               buttonIcon={Trash}
               buttonText={t('DELETE')}
@@ -322,9 +395,9 @@ export default function CommunicationDetailsView() {
             {canSend && (
               <DialogComponent
                 buttonIcon={SendHorizontal}
-                buttonText={t('SEND_BROADCAST')}
-                dialogTitle={t('SEND_BROADCAST')}
-                dialogDescription={t('SEND_BROADCAST_CONFIRM')}
+                buttonText={t('SEND_COMMUNICATION') || 'Send Communication'}
+                dialogTitle={t('SEND_COMMUNICATION') || 'Send Communication'}
+                dialogDescription={t('SEND_COMMUNICATION_CONFIRM') || 'Are you sure you want to send this communication?'}
                 confirmButtonText={t('CONFIRM')}
                 handleClick={handleSendConfirm}
                 buttonClassName="rounded-sm text-xs h-9 px-3 gap-1.5"
@@ -337,8 +410,8 @@ export default function CommunicationDetailsView() {
               <DialogComponent
                 buttonIcon={RefreshCcw}
                 buttonText={t('RETRY_FAILED') || 'Retry Failed'}
-                dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
-                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry sending failed messages for this broadcast?'}
+                dialogTitle={t('RETRY_COMMUNICATION') || 'Retry Communication'}
+                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry sending failed messages for this communication?'}
                 confirmButtonText={t('CONFIRM')}
                 handleClick={handleRetryConfirm}
                 buttonClassName="rounded-sm text-xs h-9 px-3 gap-1.5"
@@ -371,32 +444,32 @@ export default function CommunicationDetailsView() {
 
         {/* 4 Summary Stats Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}</h1>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}</h1>
             {isBroadcastResolving ? (
               <Skeleton className="h-7 w-16 mt-2" />
             ) : (
               <p className="text-primary font-semibold text-2xl mt-2">{formatNum(deliveredCount)}</p>
             )}
           </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{t('FAILED_DELIVERED') || 'Failed Delivered'}</h1>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{t('FAILED_DELIVERED') || 'Failed Delivered'}</h1>
             {isBroadcastResolving ? (
               <Skeleton className="h-7 w-16 mt-2" />
             ) : (
               <p className="text-primary font-semibold text-2xl mt-2">{formatNum(failedCount)}</p>
             )}
           </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{tg('SCHEDULED') || 'Scheduled'}</h1>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{tg('SCHEDULED') || 'Scheduled'}</h1>
             {isBroadcastResolving ? (
               <Skeleton className="h-7 w-16 mt-2" />
             ) : (
               <p className="text-primary font-semibold text-2xl mt-2">{formatNum(scheduledCount)}</p>
             )}
           </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-1">{tg('PENDING') || 'Pending'}</h1>
+          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
+            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{tg('PENDING') || 'Pending'}</h1>
             {isBroadcastResolving ? (
               <Skeleton className="h-7 w-16 mt-2" />
             ) : (
@@ -420,11 +493,11 @@ export default function CommunicationDetailsView() {
           <div className="w-full sm:w-48">
             <SelectComponent
               options={[
-                { label: t('ALL_STATUSES') || 'Select Status', value: 'ALL' },
-                { label: t('PENDING'), value: 'PENDING' },
-                { label: t('PROCESSING') || 'Processing', value: 'PROCESSING' },
-                { label: t('SENT') || 'Sent', value: 'SENT' },
-                { label: t('FAILED'), value: 'FAILED' },
+                { label: tg('ALL') || 'All Statuses', value: 'ALL' },
+                { label: t('COMPLETED') || 'Completed', value: 'COMPLETED' },
+                { label: t('FAILED') || 'Failed', value: 'FAILED' },
+                { label: t('IN_PROGRESS') || 'In Progress', value: 'IN_PROGRESS' },
+                { label: tg('PENDING') || 'Pending', value: 'PENDING' },
               ]}
               value={statusFilter}
               onChange={(val) => setStatusFilter(val)}
@@ -449,11 +522,8 @@ export default function CommunicationDetailsView() {
                   raw={raw}
                   refetch={refetch}
                   onViewDetails={() => {
-                    if (target.sessionId) {
-                      router.push(`/projects/aa/${projectId}/communications/${commId}/logs/${target.sessionId}`);
-                    } else {
-                      Swal.fire(t('NO_SESSION_CREATED') || 'No broadcast session was created for this group.', '', 'info');
-                    }
+                    const identifier = target.sessionId || target.uuid || target.groupId;
+                    router.push(`/projects/aa/${projectId}/communications/${commId}/logs/${identifier}`);
                   }}
                 />
               );
@@ -509,12 +579,12 @@ function TargetGroupCardItem({
       channel: record.channel,
       rawStatus: target?.status,
       counts: broadcastCounts?.data,
-      hasActiveTargets: target?.status === 'SENT' || target?.status === 'PROCESSING',
+      hasActiveTargets: target?.status === 'PROCESSING',
       hasPendingTargets: target?.status === 'PENDING',
       hasSession: !!target?.sessionId,
-      isRetrying,
+      isRetrying: (failed > 0 || target?.status === 'FAILED') && isRetrying,
     });
-  }, [target?.status, broadcastCounts?.data, record.channel, isRetrying]);
+  }, [target?.status, broadcastCounts?.data, record.channel, isRetrying, failed]);
 
   const handleRetry = async () => {
     if (isRetrying) return;
@@ -545,7 +615,7 @@ function TargetGroupCardItem({
             <div className="min-w-0">
               <h4 className="font-semibold text-sm text-gray-900 truncate">{groupInfo.name}</h4>
               <p className="text-xs text-gray-500 truncate">
-                {t(record.channel)} • {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY') : t('STAKEHOLDER')} • {groupInfo.name}
+                {t(record.channel ? record.channel.toUpperCase() : 'SMS')} • {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY') : t('STAKEHOLDER')} • {groupInfo.name}
               </p>
             </div>
           </div>
@@ -581,13 +651,13 @@ function TargetGroupCardItem({
           <p>{t('UPDATED_AT') || 'Updated at'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center flex-wrap gap-2 ml-auto">
           {(failed > 0 || target?.status === 'FAILED') && (
             <DialogComponent
               buttonIcon={RefreshCcw}
               buttonText={tg('RETRY') || 'Retry'}
-              dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
-              dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
+              dialogTitle={t('RETRY_COMMUNICATION') || 'Retry Communication'}
+              dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this communication?'}
               confirmButtonText={t('CONFIRM') || 'Confirm'}
               handleClick={handleRetry}
               buttonClassName="h-8 text-xs font-medium px-3.5 gap-1.5 rounded-sm shrink-0 whitespace-nowrap"

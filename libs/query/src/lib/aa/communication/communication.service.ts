@@ -151,6 +151,7 @@ export type CreateBroadcastPayload = {
   subject?: string;
   audioURL?: { mediaURL: string; fileName: string };
   transportId?: string;
+  xrefId?: string;
 };
 
 export const useCreateCommunication = () => {
@@ -207,6 +208,7 @@ export const useListCommunications = (
     title?: string;
     status?: string;
     transportId?: string;
+    xrefId?: string;
   },
 ) => {
   const q = useProjectAction();
@@ -226,6 +228,7 @@ export const useListCommunications = (
             ...(payload?.title ? { title: payload.title } : {}),
             ...(payload?.status ? { status: payload.status } : {}),
             ...(payload?.transportId ? { transportId: payload.transportId } : {}),
+            ...(payload?.xrefId ? { xrefId: payload.xrefId } : uuid ? { xrefId: uuid } : {}),
           },
         },
       });
@@ -257,6 +260,58 @@ export const useGetCommunication = (uuid: UUID, communicationUUID: string) => {
   });
 
   return query;
+};
+
+export const useUpdateCommunication = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+  const q = useProjectAction();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      communicationUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      communicationUUID: string;
+      payload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.communications.update',
+          payload: {
+            uuid: communicationUUID,
+            ...payload,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['ms.communications.getAll'] });
+      qc.invalidateQueries({ queryKey: ['ms.communications.getOne'] });
+      toast.success(t('UPDATED_SUCCESSFULLY') || 'Updated successfully');
+    },
+    onError: (error: any) => {
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
+      q.reset();
+      showToast({
+        type: 'error',
+        title: t('ERROR'),
+        description: errorMessage,
+      });
+    },
+  });
 };
 
 export const useDeleteCommunication = () => {

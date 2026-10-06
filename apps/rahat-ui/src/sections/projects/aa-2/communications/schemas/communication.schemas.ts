@@ -12,7 +12,7 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
   z
     .object({
       title: z.string().min(1, t('BROADCAST_TITLE_REQUIRED')),
-      channel: z.enum(['sms', 'voice', 'email']),
+      channel: z.enum(['sms', 'voice', 'email']).catch('sms'),
       subject: z.string().optional(),
       message: z.string().optional(),
       beneficiaries: z.array(audienceGroupSchema).default([]),
@@ -46,7 +46,7 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
           path: ['message'],
         });
       }
-      if (data.channel !== 'voice' && data.message) {
+      if (data.channel === 'sms' && data.message) {
         const isUni = /[\u0900-\u097F]/.test(data.message);
         const max = isUni ? 350 : 700;
         if (data.message.length > max) {
@@ -65,3 +65,6 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
         });
       }
     });
+
+export const buildCommunicationSchema = buildBroadcastSchema;
+

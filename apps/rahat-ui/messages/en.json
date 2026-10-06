@@ -439,7 +439,7 @@
     "CHOOSE_GROUP_IMPORT_OPTION": "Choose whether to create a new group or add these beneficiaries to an existing group",
     "SELECT_PROJECT": "Select Project",
     "SELECT_THE_PROJECT_TO_BE_ASSIGNED": "Select the project to be assigned",
-    "ASSIGNING_GROUP_PLEASE_WAIT": "Please wait, beneficiary group is being assigned to the project...",
+    "ASSIGNING_GROUP_PLEASE_WAIT": "Beneficiary sync is in process. Please check back in a while.",
     "THERE_ARE_NO_GROUPS_TO_DISPLAY": "There are no groups to display",
     "THIS_ACTION_CANNOT_BE_UNDONE": "This action cannot be undone",
     "TOKEN_DETAILS": "Token Details",

@@ -46,6 +46,8 @@ export const TAGS = {
   GET_APP_VERSIONS: 'get_app_versions',
   NEW_COMMS: {
     LIST_TRANSPORTS: 'new_comms.list_transports',
+    BROADCAST_COUNTS: 'new_comms.broadcast_counts',
+    LIST_SESSION_LOGS: 'new_comms.list_session_logs',
     RETRY_FAILED: 'new_comms.retry_failed',
   },
   COMMS_USAGE: {

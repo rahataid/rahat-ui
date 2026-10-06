@@ -20,9 +20,9 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { UUID } from 'crypto';
-import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'react-toastify';
 
 type ProjectModalType = {
   value: boolean;
@@ -51,22 +51,14 @@ export default function AssignBeneficiaryToProjectModal({
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
-  const [isAssigning, setIsAssigning] = React.useState(false);
-
-  const handleAssignProject = async () => {
+  const handleAssignProject = () => {
     if (!selectedProject) return alert(t('PLEASE_SELECT_A_PROJECT'));
-    setIsAssigning(true);
-    try {
-      await assignBeneficiaryGroup.mutateAsync({
-        projectUUID: selectedProject,
-        beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
-      });
-      projectModal.onFalse();
-    } catch {
-      // error toast handled in useAssignBenGroupToProject onError
-    } finally {
-      setIsAssigning(false);
-    }
+    assignBeneficiaryGroup.mutate({
+      projectUUID: selectedProject,
+      beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
+    });
+    projectModal.onFalse();
+    toast.info(t('ASSIGNING_GROUP_PLEASE_WAIT'));
   };
 
   // React.useEffect(() => {
@@ -76,22 +68,8 @@ export default function AssignBeneficiaryToProjectModal({
   //   }
   // }, [assignBeneficiaryGroup.isSuccess]);
   return (
-    <Dialog
-      open={projectModal.value}
-      onOpenChange={() => {
-        if (isAssigning) return;
-        projectModal.onToggle();
-      }}
-    >
+    <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
       <DialogContent>
-        {isAssigning && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-background/90">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm font-medium text-center px-4">
-              {t('ASSIGNING_GROUP_PLEASE_WAIT')}
-            </p>
-          </div>
-        )}
         <DialogHeader>
           <DialogTitle>{t('ASSIGN_PROJECT')}</DialogTitle>
           <DialogDescription>
@@ -134,7 +112,7 @@ export default function AssignBeneficiaryToProjectModal({
             </Button>
           </DialogClose>
           <Button
-            disabled={isAssigning}
+            disabled={assignBeneficiaryGroup.isPending}
             onClick={handleAssignProject}
             type="button"
             variant="ghost"

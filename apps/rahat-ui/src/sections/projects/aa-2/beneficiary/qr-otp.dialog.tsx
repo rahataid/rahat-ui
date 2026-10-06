@@ -29,7 +29,7 @@ const MAX_PDF_FIELDS = 5;
 
 export type QrOtpConfirmValues = {
   includeOtp: boolean;
-  excludeUnphonedBeneficiaries: boolean;
+  onlyUnphonedBeneficiaries: boolean;
   pdfFields: string[];
 };
 
@@ -38,6 +38,10 @@ export type QrOtpDialogProps = {
   onOpenChange: (open: boolean) => void;
   onConfirm: (values: QrOtpConfirmValues) => void;
   isPending: boolean;
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  pendingLabel?: string;
 };
 
 export function QrOtpDialog({
@@ -45,13 +49,17 @@ export function QrOtpDialog({
   onOpenChange,
   onConfirm,
   isPending,
+  title,
+  description,
+  confirmLabel,
+  pendingLabel,
 }: QrOtpDialogProps) {
   const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
   const projectUUID = id as UUID;
 
   const [includeOtp, setIncludeOtp] = useState(true);
-  const [excludeUnphonedBeneficiaries, setExcludeUnphonedBeneficiaries] =
+  const [onlyUnphonedBeneficiaries, setOnlyUnphonedBeneficiaries] =
     useState(false);
   const [selectedFields, setSelectedFields] = useState<Option[]>([]);
 
@@ -75,7 +83,7 @@ export function QrOtpDialog({
   useEffect(() => {
     if (open) {
       setIncludeOtp(true);
-      setExcludeUnphonedBeneficiaries(false);
+      setOnlyUnphonedBeneficiaries(false);
       setSelectedFields([]);
     }
   }, [open]);
@@ -89,7 +97,7 @@ export function QrOtpDialog({
     }
     onConfirm({
       includeOtp,
-      excludeUnphonedBeneficiaries,
+      onlyUnphonedBeneficiaries,
       pdfFields: selectedFields.map((option) => option.value),
     });
   };
@@ -103,9 +111,9 @@ export function QrOtpDialog({
     >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>{t('QR_PDF_GENERATION_OPTIONS')}</DialogTitle>
+          <DialogTitle>{title ?? t('QR_PDF_GENERATION_OPTIONS')}</DialogTitle>
           <DialogDescription>
-            {t('QR_PDF_GENERATION_OPTIONS_DESCRIPTION')}
+            {description ?? t('QR_PDF_GENERATION_OPTIONS_DESCRIPTION')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-2">
@@ -120,15 +128,15 @@ export function QrOtpDialog({
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="qr-exclude-unphoned"
-              checked={excludeUnphonedBeneficiaries}
+              id="qr-only-unphoned"
+              checked={onlyUnphonedBeneficiaries}
               disabled={isPending}
               onCheckedChange={(checked) =>
-                setExcludeUnphonedBeneficiaries(checked === true)
+                setOnlyUnphonedBeneficiaries(checked === true)
               }
             />
-            <Label htmlFor="qr-exclude-unphoned">
-              {t('EXCLUDE_UNPHONED_BENEFICIARIES')}
+            <Label htmlFor="qr-only-unphoned">
+              {t('ONLY_UNPHONED_BENEFICIARIES')}
             </Label>
           </div>
 
@@ -176,7 +184,9 @@ export function QrOtpDialog({
             className="cursor-pointer"
           >
             {isPending && <Loader2 size={16} className="mr-2 animate-spin" />}
-            {isPending ? t('GENERATING') : t('GENERATE_QR')}
+            {isPending
+              ? pendingLabel ?? t('GENERATING')
+              : confirmLabel ?? t('GENERATE_QR')}
           </Button>
         </DialogFooter>
       </DialogContent>

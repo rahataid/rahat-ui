@@ -10,7 +10,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { UUID } from 'crypto';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { TAGS } from '../../config';
 import { api } from '../../utils/api';
@@ -528,17 +528,21 @@ const uploadBeneficiary = async (
   client: any,
   projectId?: UUID,
   groupName?: string,
+  groupPurpose?: string,
 ) => {
   const formData = new FormData();
   formData.append('file', selectedFile);
   formData.append('doctype', doctype);
   if (projectId) formData.append('projectId', projectId);
   if (groupName?.trim()) formData.append('groupName', groupName.trim());
+  if (groupPurpose?.trim())
+    formData.append('groupPurpose', groupPurpose.trim());
   const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
 
 export const useUploadBeneficiary = () => {
+  console.log('upload called');
   const qc = useQueryClient();
   const tg = useTranslations('GLOBAL');
   const t = useTranslations();
@@ -551,11 +555,13 @@ export const useUploadBeneficiary = () => {
         doctype,
         projectId,
         groupName,
+        groupPurpose,
       }: {
         selectedFile: File;
         doctype: string;
         projectId?: UUID;
         groupName?: string;
+        groupPurpose?: string;
       }) =>
         uploadBeneficiary(
           selectedFile,
@@ -563,6 +569,7 @@ export const useUploadBeneficiary = () => {
           rumsanService.client,
           projectId,
           groupName,
+          groupPurpose,
         ),
       onSuccess: (data) => {
         if (data?.data?.success === false) {
@@ -587,8 +594,112 @@ export const useUploadBeneficiary = () => {
           return;
         }
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroups'] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroup'] });
 
         toast.success(tg('BENEFICIARY_UPLOADED_SUCCESSFULLY'));
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const code = error?.response?.data?.code;
+        const params = error?.response?.data?.params;
+        const rawMessage = error.response?.data?.message || error.message;
+        const message = resolveBeneficiaryErrorMessage(
+          t,
+          code,
+          params,
+          [
+            'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+            'COMMUNICATIONS_CAMPAIGNS',
+          ],
+          rawMessage,
+        );
+        showToast({
+          type: 'error',
+          title: tg('SOMETHING_WENT_WRONG'),
+          description: message,
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+const uploadBeneficiariesToGroup = async (
+  selectedFile: File,
+  doctype: string,
+  client: any,
+  groupUuid: string,
+) => {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('doctype', doctype);
+  const response = await client.post(
+    `/beneficiaries/groups/${groupUuid}/upload`,
+    formData,
+  );
+  return response?.data;
+};
+
+export const useUploadBeneficiariesToGroup = () => {
+  const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations();
+  const locale = useLocale();
+  const { rumsanService, queryClient } = useRSQuery();
+
+  const DEVA_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+  const formatCount = (n: number) =>
+    locale === 'ne'
+      ? String(n).replace(/\d/g, (d) => DEVA_DIGITS[Number(d)])
+      : String(n);
+
+  return useMutation(
+    {
+      mutationFn: ({
+        selectedFile,
+        doctype,
+        groupUuid,
+      }: {
+        selectedFile: File;
+        doctype: string;
+        groupUuid: string;
+      }) =>
+        uploadBeneficiariesToGroup(
+          selectedFile,
+          doctype,
+          rumsanService.client,
+          groupUuid,
+        ),
+      onSuccess: (data) => {
+        if (data?.data?.success === false) {
+          showToast({
+            type: 'error',
+            title: tg('SOMETHING_WENT_WRONG'),
+            description: data?.data?.message || '',
+          });
+          return;
+        }
+        qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroups'] });
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroup'] });
+        const added = data?.data?.addedToGroup ?? data?.addedToGroup ?? 0;
+        const created = data?.data?.created ?? data?.created ?? 0;
+        const updated = data?.data?.updated ?? data?.updated ?? 0;
+        if (!added) {
+          showToast({
+            type: 'error',
+            title: tg('SOMETHING_WENT_WRONG'),
+            description: tg('NO_BENEFICIARIES_ADDED_TO_GROUP'),
+          });
+          return;
+        }
+        toast.success(
+          tg('BENEFICIARIES_IMPORTED_TO_GROUP', {
+            created: formatCount(created),
+            updated: formatCount(updated),
+          }),
+        );
       },
       onError: (error: any) => {
         console.log('error', error);
@@ -950,6 +1061,59 @@ export const useSyncBeneficiaryGroup = () => {
           variables?.errorMessage ||
           tg('ERROR_WHILE_SYNCING_BENEFICIARY_GROUP'),
 
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+const forceInvalidateBeneficiaryGroup = async (uuid: UUID) => {
+  const response = await api.post(
+    `/beneficiaries/groups/${uuid}/force-invalidate`,
+  );
+  return response?.data;
+};
+
+export const useForceInvalidateBeneficiaryGroup = () => {
+  const qc = useQueryClient();
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations();
+
+  return useMutation({
+    mutationFn: (payload: UUID | { uuid: UUID; [key: string]: any }) =>
+      forceInvalidateBeneficiaryGroup(
+        (typeof payload === 'object' ? payload.uuid : payload) as UUID,
+      ),
+    onSuccess: async (_data, variables: any) => {
+      const uuid = variables?.uuid ?? variables;
+      qc.removeQueries({ queryKey: ['BANK_CHECK_STATUS', uuid] });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: [GET_BENEFICIARY_GROUP, uuid] }),
+        qc.invalidateQueries({
+          queryKey: [GET_FAILED_BANK_ACCOUNT_BENEFICIARY, uuid],
+        }),
+      ]);
+      toast.success(
+        variables?.successMessage || tg('GROUP_INVALIDATED_SUCCESSFULLY'),
+      );
+    },
+    onError: (error: any, variables: any) => {
+      const code = error?.response?.data?.code;
+      const params = error?.response?.data?.params;
+      const rawMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = resolveBeneficiaryErrorMessage(
+        t,
+        code,
+        params,
+        [
+          'BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY',
+          'COMMUNICATIONS_CAMPAIGNS',
+        ],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: variables?.errorMessage || tg('ERROR_WHILE_INVALIDATING_GROUP'),
         description: errorMessage,
       });
     },

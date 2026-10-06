@@ -44,7 +44,6 @@ export default function PayoutTransactionList() {
   });
 
   const columns = usePayoutTransactionLogTableColumn();
-
   const tableData = React.useMemo(
     () =>
       payouts?.data?.length
@@ -62,6 +61,7 @@ export default function PayoutTransactionList() {
             status: d?.status ?? 'N/A',
             timeStamp: d?.updatedAt,
             totalSuccessAmount: d?.totalSuccessAmount,
+            extras: d?.extras,
           }))
         : [],
     [payouts],

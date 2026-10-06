@@ -34,7 +34,18 @@ type IProps = {
   isShowTotalCount?: boolean;
 };
 
-const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
+const pageSizes = [
+  '5',
+  '10',
+  '20',
+  '30',
+  '40',
+  '50',
+  '100',
+  '250',
+  '500',
+  '1000',
+];
 
 export function CustomPagination({
   handleNextPage,

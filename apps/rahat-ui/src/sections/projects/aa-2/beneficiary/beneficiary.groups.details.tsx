@@ -77,13 +77,13 @@ const BeneficiaryGroupsDetails = () => {
 
   const handleGenerateQr = ({
     includeOtp,
-    excludeUnphonedBeneficiaries,
+    onlyUnphonedBeneficiaries,
     pdfFields,
   }: QrOtpConfirmValues) => {
     if (isSubmittingQr) return;
     const mutate = qrDialogMode === 'regenerate' ? regenerateQr : generateQr;
     mutate(
-      { groupId, includeOtp, excludeUnphonedBeneficiaries, pdfFields },
+      { groupId, includeOtp, onlyUnphonedBeneficiaries, pdfFields },
       {
         onSuccess: () => setIsQrOptionsOpen(false),
       },

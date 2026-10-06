@@ -132,7 +132,7 @@ export const useRetrySponsorshipForGroup = (projectUuid: UUID) => {
 type GenerateQrPdfArgs = {
   groupId: UUID;
   includeOtp?: boolean;
-  excludeUnphonedBeneficiaries?: boolean;
+  onlyUnphonedBeneficiaries?: boolean;
   pdfFields?: string[];
 };
 
@@ -148,7 +148,7 @@ const useQrPdfMutation = (projectUuid: UUID, action: string) => {
     mutationFn: async ({
       groupId,
       includeOtp = true,
-      excludeUnphonedBeneficiaries = false,
+      onlyUnphonedBeneficiaries = false,
       pdfFields = [],
     }: GenerateQrPdfArgs) => {
       const mutate = await q.mutateAsync({
@@ -158,7 +158,7 @@ const useQrPdfMutation = (projectUuid: UUID, action: string) => {
           payload: {
             groupId,
             includeOtp,
-            excludeUnphonedBeneficiaries,
+            onlyUnphonedBeneficiaries,
             pdfFields,
           },
         },

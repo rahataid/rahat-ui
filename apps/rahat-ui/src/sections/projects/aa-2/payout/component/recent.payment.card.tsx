@@ -86,7 +86,7 @@ export default function RecentPaymentCard({
             <Dot />
             {translateValue(tg, merchentName, {
               fallback: merchentName
-                .toUpperCase()
+                ?.toUpperCase()
                 .replace(/_/g, ' ')
                 .replace(/^./, (char) => char.toUpperCase()),
             })}

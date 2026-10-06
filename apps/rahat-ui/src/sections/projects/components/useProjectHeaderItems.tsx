@@ -59,7 +59,9 @@ export const useProjectHeaderItems = (projectType: string) => {
   });
 
   const handleSelectProject = (target: Project) => {
-    if (!target.uuid || target.uuid === id) return;
+    if (!target.uuid || target.uuid === id || target.status === 'NOT_READY') {
+      return;
+    }
     setPendingProject(target);
     projectSwitchDialog.onTrue();
   };
@@ -77,15 +79,24 @@ export const useProjectHeaderItems = (projectType: string) => {
 
   const handleSwitchProject = (target: Project) => {
     if (!target.uuid || target.uuid === id) return;
+    const projectType = (target.type || '').toLowerCase();
+    const redirectTo =
+      target.extras &&
+      typeof target.extras === 'object' &&
+      'REDIRECT_TO' in target.extras &&
+      typeof target.extras.REDIRECT_TO === 'string'
+        ? target.extras.REDIRECT_TO
+        : undefined;
+    const routeType =
+      projectType === 'aa'
+        ? projectType
+        : (redirectTo || projectType).toLowerCase();
     // Keep the current sub-page (e.g. /stakeholders) when staying in the
     // same project section, otherwise land on the new project's dashboard.
     const segments = currentPath.split('/');
     const rest = segments.slice(4).join('/');
-    const base = `/projects/${(target.type || '').toLowerCase()}/${
-      target.uuid
-    }`;
-    const sameSection =
-      (target.type || '').toLowerCase() === segments[2]?.toLowerCase();
+    const base = `/projects/${routeType}/${target.uuid}`;
+    const sameSection = routeType === segments[2]?.toLowerCase();
     router.push(sameSection && rest ? `${base}/${rest}` : base);
   };
 
@@ -132,12 +143,13 @@ export const useProjectHeaderItems = (projectType: string) => {
               className="h-8 pl-8 text-sm"
             />
           </div>
-          <ScrollArea className="max-h-[300px]">
+          <ScrollArea className="h-[250px] max-h-[var(--radix-dropdown-menu-content-available-height)]">
             {visibleProjects.map((p) => {
               const isCurrent = p.uuid === id;
               return (
                 <DropdownMenuItem
                   key={p.uuid}
+                  disabled={p.status === 'NOT_READY'}
                   // preventDefault skips Radix's default select-close sequence,
                   // whose focus cleanup would otherwise dismiss the confirm
                   // dialog opened synchronously below.

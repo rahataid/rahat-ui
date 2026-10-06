@@ -612,6 +612,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           }
           perPage={pagination?.perPage}
           total={payoutlogs?.response?.meta?.total || 0}
+          pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
         />
         <ConfirmationDialog
           isConfirmationDialogOpen={cancelConfirmDialog.value}

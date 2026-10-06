@@ -30,7 +30,7 @@ import {
   useActiveFieldDefList,
   useBulkGenerateVerificationLink,
   useCommunityGroupListByID,
-  useCommunityGroupListByIDInfinite,
+  useGroupBeneficiariesSearchInfinite,
   useCommunityGroupRemove,
   useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
@@ -39,6 +39,7 @@ import {
   usePurgeGroupedBeneficiary,
   useUploadBulkBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
+import type { GroupBeneficiaryColumnFilter } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
   DropdownMenu,
@@ -136,19 +137,11 @@ export default function GroupDetail({ uuid }: IProps) {
   const [addedColumns, setAddedColumns] = React.useState<Set<string>>(
     new Set(),
   );
-  // Server-side fallback search — used when a column filter's typed text
-  // doesn't match any value already loaded via infinite scroll.
-  const [serverSearchCol, setServerSearchCol] = React.useState<string | null>(
-    null,
-  );
-  const [serverSearchValue, setServerSearchValue] = React.useState('');
-  const serverSearchFilters = React.useMemo(
-    () =>
-      serverSearchCol && serverSearchValue
-        ? { [serverSearchCol]: serverSearchValue }
-        : undefined,
-    [serverSearchCol, serverSearchValue],
-  );
+  // Excel-like column filters. Applied on the server by the search API, so
+  // they cover every beneficiary in the group, not only the loaded rows.
+  const [editFilters, setEditFilters] = React.useState<
+    GroupBeneficiaryColumnFilter[]
+  >([]);
   const {
     data: editInfiniteData,
     isLoading: editPageLoading,
@@ -156,31 +149,20 @@ export default function GroupDetail({ uuid }: IProps) {
     isFetchingNextPage: editPageFetchingNext,
     fetchNextPage: fetchNextEditPage,
     hasNextPage: hasNextEditPage,
-  } = useCommunityGroupListByIDInfinite(
+  } = useGroupBeneficiariesSearchInfinite(
     uuid,
+    { filters: editFilters },
     editSubmitMode,
-    serverSearchFilters,
   );
 
-  // Only the very first load should blank the whole table — a server search
-  // afterward swaps the query key (no cached data for that exact filter) and
-  // would otherwise re-trigger isLoading and hide the open filter popover.
-  const [hasLoadedEditPageOnce, setHasLoadedEditPageOnce] =
-    React.useState(false);
-  useEffect(() => {
-    if (!editSubmitMode) {
-      setHasLoadedEditPageOnce(false);
-    } else if (!editPageLoading) {
-      setHasLoadedEditPageOnce(true);
-    }
-  }, [editSubmitMode, editPageLoading]);
-
+  // Flat beneficiary rows: { uuid, firstName, ..., extras, isDuplicate }
   const editPageRows = React.useMemo(
     () =>
-      editInfiniteData?.pages.flatMap(
-        (p: any) => p?.data?.beneficiariesGroup ?? [],
-      ) ?? [],
+      editInfiniteData?.pages.flatMap((p: any) => p?.data?.rows ?? []) ?? [],
     [editInfiniteData],
+  );
+  const editTotalRows = Number(
+    editInfiniteData?.pages?.[0]?.response?.meta?.total ?? 0,
   );
 
   useEffect(() => {
@@ -194,23 +176,20 @@ export default function GroupDetail({ uuid }: IProps) {
       'uuid',
       'isDuplicate',
     ]);
-    const rows = editPageRows as {
-      beneficiary?: { extras?: Record<string, unknown> } & Record<
-        string,
-        unknown
-      >;
-    }[];
+    const rows = editPageRows as ({
+      extras?: Record<string, unknown> | null;
+    } & Record<string, unknown>)[];
     if (rows.length === 0) return;
 
     // Top-level fields from first row (they're the same shape for all rows)
-    const firstBene = rows[0]?.beneficiary ?? {};
+    const firstBene = rows[0] ?? {};
     const topLevel = Object.keys(firstBene).filter((k) => !SYSTEM_ONLY.has(k));
     const topLevelSet = new Set(['uuid', ...topLevel]);
 
     // Union extras keys across ALL rows — avoids missing a field added mid-page
     const extrasKeys = new Set<string>();
     rows.forEach((bg) => {
-      Object.keys(bg.beneficiary?.extras ?? {}).forEach((k) => {
+      Object.keys(bg.extras ?? {}).forEach((k) => {
         if (!topLevelSet.has(k)) extrasKeys.add(k);
       });
     });
@@ -374,19 +353,14 @@ export default function GroupDetail({ uuid }: IProps) {
     setPresentColumns([]);
     setAvailableColumns([]);
     setAddedColumns(new Set());
-    setServerSearchCol(null);
-    setServerSearchValue('');
-    // Drop the cached infinite-query pages entirely (not just invalidate) so
-    // the next Edit & Submit session starts fresh from page 1 instead of
+    setEditFilters([]);
+    // Drop the cached search pages entirely (not just invalidate) so the next
+    // Edit & Submit session starts fresh from page 1 with the latest data
+    // instead of resuming from whatever page/filter was last viewed.
     queryClient.removeQueries({
-      queryKey: ['list_community_group_by_id', 'infinite', uuid],
+      queryKey: ['list_community_group_by_id', 'search', uuid],
     });
     setEditSubmitMode(true);
-  };
-
-  const handleServerSearch = (col: string, value: string) => {
-    setServerSearchCol(value ? col : null);
-    setServerSearchValue(value);
   };
 
   const handleAddColumn = (colKey: string) => {
@@ -576,7 +550,7 @@ export default function GroupDetail({ uuid }: IProps) {
         presentColumns={presentColumns}
         addedColumns={addedColumns}
         availableColumns={availableColumns}
-        isLoading={editPageLoading && !hasLoadedEditPageOnce}
+        isLoading={editPageLoading}
         hasNextPage={hasNextEditPage}
         isFetchingNextPage={editPageFetchingNext}
         fetchNextPage={fetchNextEditPage}
@@ -590,12 +564,16 @@ export default function GroupDetail({ uuid }: IProps) {
           setPresentColumns([]);
           setAvailableColumns([]);
           setAddedColumns(new Set());
-          setServerSearchCol(null);
-          setServerSearchValue('');
+          setEditFilters([]);
         }}
         isSubmitting={editSubmitSubmitting}
-        onServerSearch={handleServerSearch}
-        isServerSearching={hasLoadedEditPageOnce && editPageFetching}
+        groupUuid={uuid}
+        filters={editFilters}
+        onFiltersChange={setEditFilters}
+        totalRows={editTotalRows}
+        isFiltering={
+          editPageFetching && !editPageLoading && !editPageFetchingNext
+        }
       />
     );
   }

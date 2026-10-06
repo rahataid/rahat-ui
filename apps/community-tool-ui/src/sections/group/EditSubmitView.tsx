@@ -14,9 +14,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { ArrowLeft, Columns, ListFilter, X } from 'lucide-react';
+import { ArrowLeft, Columns, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDebounce } from '../../utils/debounceHooks';
+import type { GroupBeneficiaryColumnFilter } from '@rahat-ui/community-query';
+import ColumnFilterPopover from './ColumnFilterPopover';
 
 const READ_ONLY_FIELDS = new Set([
   'uuid',
@@ -74,8 +75,15 @@ type Props = {
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting?: boolean;
-  onServerSearch: (col: string, value: string) => void;
-  isServerSearching?: boolean;
+  /** Group uuid — used by the column filter's distinct-values lookup. */
+  groupUuid: string;
+  /** Active column filters (applied on the server by the search API). */
+  filters: GroupBeneficiaryColumnFilter[];
+  onFiltersChange: (filters: GroupBeneficiaryColumnFilter[]) => void;
+  /** Total beneficiaries matching the filters (not just loaded rows). */
+  totalRows?: number;
+  /** True while a filter change is being fetched. */
+  isFiltering?: boolean;
 };
 
 export default function EditSubmitView({
@@ -95,8 +103,11 @@ export default function EditSubmitView({
   onSubmit,
   onCancel,
   isSubmitting = false,
-  onServerSearch,
-  isServerSearching = false,
+  groupUuid,
+  filters,
+  onFiltersChange,
+  totalRows = 0,
+  isFiltering = false,
 }: Props) {
   const presentSet = new Set(presentColumns);
   const allColumns = [
@@ -113,13 +124,6 @@ export default function EditSubmitView({
   const [dragFill, setDragFill] = useState<DragFill | null>(null);
   const [dragFillEndIdx, setDragFillEndIdx] = useState<number | null>(null);
   const isDraggingFill = useRef(false);
-
-  // Column value filters (Excel-style checklist, client-side over loaded rows)
-  const [columnValueFilters, setColumnValueFilters] = useState<
-    Map<string, Set<string>>
-  >(new Map());
-  const [filterPopoverCol, setFilterPopoverCol] = useState<string | null>(null);
-  const [filterSearch, setFilterSearch] = useState('');
 
   const allColumnsKey = allColumns.join(',');
 
@@ -169,10 +173,9 @@ export default function EditSubmitView({
     });
   };
 
-  const getRowUuid = (row: BeneficiaryRow): string => {
-    const bene = row.beneficiary as Record<string, unknown> | undefined;
-    return ((bene?.uuid ?? row.uuid) as string | undefined) ?? '';
-  };
+  // Rows are flat beneficiaries from the search API.
+  const getRowUuid = (row: BeneficiaryRow): string =>
+    (row.uuid as string | undefined) ?? '';
 
   const formatCellValue = (raw: unknown): string => {
     const s = String(raw ?? '');
@@ -186,11 +189,10 @@ export default function EditSubmitView({
     if (dirty && Object.prototype.hasOwnProperty.call(dirty, col)) {
       return String(dirty[col] ?? '');
     }
-    const bene = row.beneficiary as Record<string, unknown> | undefined;
     if (TOP_LEVEL_FIELDS.has(col)) {
-      return formatCellValue(bene?.[col]);
+      return formatCellValue(row[col]);
     }
-    const extras = bene?.extras as Record<string, unknown> | undefined;
+    const extras = row.extras as Record<string, unknown> | null | undefined;
     return formatCellValue(extras?.[col]);
   };
 
@@ -200,70 +202,30 @@ export default function EditSubmitView({
     return !!dirty && Object.prototype.hasOwnProperty.call(dirty, col);
   };
 
-  // ── Column value filters (Excel-style checklist) ───────────────────────────
+  // ── Column filters (server-side, via search + distinct APIs) ─────────────
 
   const isColFiltered = (col: string): boolean =>
-    (columnValueFilters.get(col)?.size ?? 0) > 0;
+    filters.some((f) => f.field === col);
 
-  const getUniqueColValues = (col: string): string[] => {
-    const seen = new Set<string>();
-    pageRows.forEach((row) => seen.add(getCellValue(row, col)));
-    return Array.from(seen).sort();
-  };
-
-  const toggleFilterValue = (col: string, value: string) => {
-    setColumnValueFilters((prev) => {
-      const next = new Map(prev);
-      const current = new Set(next.get(col) ?? []);
-      if (current.has(value)) current.delete(value);
-      else current.add(value);
-      next.set(col, current);
-      return next;
-    });
+  const setColumnFilter = (
+    col: string,
+    filter: GroupBeneficiaryColumnFilter | null,
+  ) => {
+    const others = filters.filter((f) => f.field !== col);
+    onFiltersChange(filter ? [...others, filter] : others);
   };
 
   const clearColumnFilter = (col: string) => {
-    setColumnValueFilters((prev) => {
-      const next = new Map(prev);
-      next.delete(col);
-      return next;
-    });
+    if (isColFiltered(col)) setColumnFilter(col, null);
   };
-
-  // If the typed search doesn't match anything already loaded, fall back to
-  // a server-side search for that column so values outside the loaded rows
-  // can still be found (e.g. not yet scrolled into view).
-  const debouncedFilterSearch = useDebounce(filterSearch, 500);
-  const hasLocalMatch =
-    !!filterPopoverCol &&
-    getUniqueColValues(filterPopoverCol).some((v) =>
-      v.toLowerCase().includes(debouncedFilterSearch.toLowerCase()),
-    );
-
-  useEffect(() => {
-    if (!filterPopoverCol) return;
-    if (!debouncedFilterSearch.trim()) {
-      onServerSearch(filterPopoverCol, '');
-      return;
-    }
-    if (hasLocalMatch) return;
-    clearColumnFilter(filterPopoverCol);
-    onServerSearch(filterPopoverCol, debouncedFilterSearch.trim());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterPopoverCol, debouncedFilterSearch, hasLocalMatch]);
 
   const handleRemoveColumn = (col: string) => {
     clearColumnFilter(col);
     onRemoveColumn(col);
   };
 
-  const filteredRows = pageRows.filter((row) => {
-    for (const [col, allowed] of columnValueFilters.entries()) {
-      if (allowed.size === 0) continue;
-      if (!allowed.has(getCellValue(row, col))) return false;
-    }
-    return true;
-  });
+  // Filtering happens on the server, so every loaded row already matches.
+  const filteredRows = pageRows;
 
   // ── Fill-drag handlers ────────────────────────────────────────────────────
 
@@ -458,15 +420,26 @@ export default function EditSubmitView({
       </div>
 
       {/* Filter status bar */}
-      {columnValueFilters.size > 0 && (
+      {filters.length > 0 && (
         <div className="px-4 py-1 text-xs text-muted-foreground border-b flex items-center gap-2 shrink-0">
-          Showing {filteredRows.length} of {pageRows.length} loaded rows
+          {isFiltering
+            ? 'Filtering...'
+            : `${totalRows} matching row${totalRows !== 1 ? 's' : ''}`}
+          <span>
+            · {filters.length} filter{filters.length !== 1 ? 's' : ''} (
+            {filters.map((f) => f.field).join(', ')})
+          </span>
           <button
-            onClick={() => setColumnValueFilters(new Map())}
+            onClick={() => onFiltersChange([])}
             className="text-primary hover:underline"
           >
             Clear all filters
           </button>
+          {dirtyRows.size > 0 && (
+            <span className="ml-auto">
+              Filters match saved values; unsaved edits stay pending.
+            </span>
+          )}
         </div>
       )}
 
@@ -506,97 +479,13 @@ export default function EditSubmitView({
                     <div className="flex items-center gap-1">
                       <span>{col}</span>
                       {!READ_ONLY_FIELDS.has(col) && (
-                        <Popover
-                          open={filterPopoverCol === col}
-                          onOpenChange={(open) => {
-                            if (!open && filterSearch.trim()) {
-                              onServerSearch(col, '');
-                            }
-                            setFilterPopoverCol(open ? col : null);
-                            setFilterSearch('');
-                          }}
-                        >
-                          <PopoverTrigger asChild>
-                            <button
-                              onClick={(e) => e.stopPropagation()}
-                              draggable={false}
-                              className={
-                                isColFiltered(col)
-                                  ? 'text-primary'
-                                  : 'text-muted-foreground opacity-0 group-hover/th:opacity-100'
-                              }
-                              title={`Filter ${col}`}
-                            >
-                              <ListFilter size={11} strokeWidth={2} />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-52 p-2"
-                            align="start"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <div className="flex justify-between items-center mb-1">
-                              <span className="text-xs font-medium truncate">
-                                {col}
-                              </span>
-                              <button
-                                onClick={() => {
-                                  clearColumnFilter(col);
-                                  setFilterSearch('');
-                                  onServerSearch(col, '');
-                                }}
-                                className="text-xs text-muted-foreground hover:text-destructive shrink-0"
-                              >
-                                Clear
-                              </button>
-                            </div>
-                            <input
-                              autoFocus
-                              placeholder="Search..."
-                              value={filterSearch}
-                              onChange={(e) => setFilterSearch(e.target.value)}
-                              className="w-full border rounded px-2 py-1 text-xs mb-2 outline-none"
-                            />
-                            <div className="max-h-48 overflow-y-auto space-y-1">
-                              {filterSearch.trim() &&
-                                !hasLocalMatch &&
-                                filterPopoverCol === col && (
-                                  <div className="text-xs text-muted-foreground px-1 py-1">
-                                    {isServerSearching
-                                      ? 'Searching...'
-                                      : 'No loaded match — searched server'}
-                                  </div>
-                                )}
-                              {getUniqueColValues(col)
-                                .filter((v) =>
-                                  v
-                                    .toLowerCase()
-                                    .includes(filterSearch.toLowerCase()),
-                                )
-                                .map((value) => (
-                                  <label
-                                    key={value}
-                                    className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted px-1 rounded"
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={
-                                        columnValueFilters
-                                          .get(col)
-                                          ?.has(value) ?? false
-                                      }
-                                      onChange={() =>
-                                        toggleFilterValue(col, value)
-                                      }
-                                    />
-                                    <span className="truncate">
-                                      {value || '(empty)'}
-                                    </span>
-                                  </label>
-                                ))}
-                            </div>
-                          </PopoverContent>
-                        </Popover>
+                        <ColumnFilterPopover
+                          groupUuid={groupUuid}
+                          col={col}
+                          filters={filters}
+                          active={isColFiltered(col)}
+                          onApply={setColumnFilter}
+                        />
                       )}
                       {addedColumns.has(col) && (
                         <button
@@ -614,10 +503,7 @@ export default function EditSubmitView({
             <tbody>
               {filteredRows.map((row, rowIdx) => {
                 const rowUuid = getRowUuid(row);
-                const beneData = row.beneficiary as
-                  | Record<string, unknown>
-                  | undefined;
-                const isDuplicate = beneData?.isDuplicate === true;
+                const isDuplicate = row.isDuplicate === true;
                 return (
                   <tr
                     key={rowUuid}
@@ -690,6 +576,13 @@ export default function EditSubmitView({
               })}
             </tbody>
           </table>
+        )}
+        {!isLoading && !isFiltering && pageRows.length === 0 && (
+          <div className="sticky left-0 py-8 text-center text-xs text-muted-foreground">
+            {filters.length > 0
+              ? 'No beneficiaries match the current filters.'
+              : 'No beneficiaries in this group.'}
+          </div>
         )}
         {isFetchingNextPage && (
           <div className="sticky left-0 py-2 text-center text-xs text-muted-foreground">

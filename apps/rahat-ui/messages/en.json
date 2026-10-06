@@ -77,6 +77,11 @@
     "FILTER_BENEFICIARY": "Filter Beneficiary...",
     "NO_DATA_AVAILABLE": "No Data Available",
     "ASSIGN_PROJECT": "Assign Project",
+    "SWITCH_PROJECT": "Switch project",
+    "SWITCH_PROJECT_DESCRIPTION": "You are about to switch from the current project to {projectName}.Do you want to continue?",
+    "NO_MATCHING_PROJECT": "No matching projects",
+    "PROJECTS_NOT_FOUND": "Projects not found",
+    "SEARCH_PROJECT": "Search Projects...",
     "PROJECTS": "Projects",
     "CLOSE": "Close",
     "ASSIGN": "Assign",
@@ -1192,7 +1197,6 @@
     "CHANGE_IMAGE": "Change Image",
     "PLEASE_ENTER_BRAND_NAME": "Please enter brand name",
     "PLEASE_ENTER_BRAND_DESCRIPTION": "Please enter brand description"
-    
   },
   "SETTINGS_TABLE_COLUMNS": {
     "DATATYPE": "DataType",
@@ -2815,6 +2819,14 @@
     "PAYOUT": "PAYOUT",
     "PAYOUT2": "Payout",
     "PAYOUT_CREATED_SUCCESSFULLY": "Payout created successfully.",
+    "MARK_AS_COMPLETED": "Mark as completed",
+    "PAYOUT_CANCELLED": "Payout Cancelled",
+    "PAYOUT_CANCELLED_BY": "Payout was cancelled by {cancelledBy}",
+    "CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED": "Mark as completed can not be done as fund is not disbursed yet.",
+    "MARK_AS_COMPLETED_TOOLTIP": "This payout will be marked as completed.",
+    "PAYOUT_IS_MARKED_COMPLETED": "Payout is marked as completed",
+    "PAYOUT_ALREADY_COMPLETED": "Payout is already completed",
+    "COMPLETE_PAYOUT_ALERT_DESCRIPTION": "Are you sure you want mark this payout as completed ?",
     "PAYOUT_DETAILS": "Payout Details",
     "PAYOUT_METHOD_LABEL": "Payout Method",
     "PAYOUT_NOT_YET_COMPLETED": "Payout Not Yet Completed",
@@ -3841,6 +3853,7 @@
     "DISTRICT": "District",
     "DOWNLOAD_PAYOUT_PDF": "Download Payout PDF",
     "DOWNLOAD_PAYOUT_LOGS": "Download Payout Logs",
+
     "EDIT_FUND_RECORD": "Edit Fund Record",
     "EDIT_GCT_GROUP": "Edit GCT Group",
     "EMAIL_OPTIONAL": "Email (Optional)",
@@ -3879,6 +3892,7 @@
     "LIST_OF_ALL_THE_GROUP_CASH2": "List of all the Group Cash Transfer Records",
     "LIST_OF_ALL_THE_PAYOUT_TRANSACTION": "List of all the payout transaction logs of selected group",
     "LIST_OF_YOUR_PAYOUTS": "List of your payouts",
+
     "MUNICIPALITY": "Municipality",
     "NPR": "NPR",
     "NO_BANK_FOUND": "No bank found.",
@@ -3895,6 +3909,7 @@
     "PAYOUT_OVERVIEW": "Payout Overview",
     "PAYOUT_STATUS": "Payout Status",
     "PAYOUT_TYPE": "Payout Type",
+
     "PAYOUT_TO_BENEFICIARY": "Payout to beneficiary",
     "PENDING_BALANCE": "Pending Balance",
     "PRESS_ENTER_TO_ADD": "Press Enter to add.",

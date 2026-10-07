@@ -102,17 +102,17 @@ export function TargetAudienceSelector({
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-0" align="start">
+            <PopoverContent className="w-[min(400px,calc(100vw-2rem))] p-0" align="start">
               <Command>
                 <CommandInput placeholder={t("SEARCH_BENEFICIARY_GROUP")} />
                 <CommandList>
                   <CommandEmpty>{t("NO_GROUP_FOUND")}</CommandEmpty>
                   <CommandGroup>
                     {beneficiaryGroups.map((option) => (
-                      <CommandItem key={option.id} value={option.name} onSelect={() => toggleBeneficiary(option)}>
-                        <Check className={cn("mr-2 h-4 w-4", selectedBeneficiaries.find((p: any) => p.id === option.id) ? "opacity-100" : "opacity-0")} />
-                        {option.name}
-                        <span className={cn("ml-auto text-xs", option.count === 0 ? "text-amber-600 font-medium" : "text-muted-foreground")}>
+                      <CommandItem key={option.id} value={option.name} onSelect={() => toggleBeneficiary(option)} className="flex items-center min-w-0">
+                        <Check className={cn("mr-2 h-4 w-4 shrink-0", selectedBeneficiaries.find((p: any) => p.id === option.id) ? "opacity-100" : "opacity-0")} />
+                        <span className="truncate flex-1 min-w-0" title={option.name}>{option.name}</span>
+                        <span className={cn("ml-auto text-xs shrink-0 pl-2", option.count === 0 ? "text-amber-600 font-medium" : "text-muted-foreground")}>
                           ({formatDigits(option.count)}{option.count === 0 ? ` - ${t('EMPTY')}` : ''})
                         </span>
                       </CommandItem>
@@ -145,17 +145,17 @@ export function TargetAudienceSelector({
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-0" align="start">
+            <PopoverContent className="w-[min(400px,calc(100vw-2rem))] p-0" align="start">
               <Command>
                 <CommandInput placeholder={t("SEARCH_STAKEHOLDER_GROUP")} />
                 <CommandList>
                   <CommandEmpty>{t("NO_GROUP_FOUND")}</CommandEmpty>
                   <CommandGroup>
                     {stakeholderGroups.map((option) => (
-                      <CommandItem key={option.id} value={option.name} onSelect={() => toggleStakeholder(option)}>
-                        <Check className={cn("mr-2 h-4 w-4", selectedStakeholders.find((p: any) => p.id === option.id) ? "opacity-100" : "opacity-0")} />
-                        {option.name}
-                        <span className={cn("ml-auto text-xs", option.count === 0 ? "text-amber-600 font-medium" : "text-muted-foreground")}>
+                      <CommandItem key={option.id} value={option.name} onSelect={() => toggleStakeholder(option)} className="flex items-center min-w-0">
+                        <Check className={cn("mr-2 h-4 w-4 shrink-0", selectedStakeholders.find((p: any) => p.id === option.id) ? "opacity-100" : "opacity-0")} />
+                        <span className="truncate flex-1 min-w-0" title={option.name}>{option.name}</span>
+                        <span className={cn("ml-auto text-xs shrink-0 pl-2", option.count === 0 ? "text-amber-600 font-medium" : "text-muted-foreground")}>
                           ({formatDigits(option.count)}{option.count === 0 ? ` - ${t('EMPTY')}` : ''})
                         </span>
                       </CommandItem>

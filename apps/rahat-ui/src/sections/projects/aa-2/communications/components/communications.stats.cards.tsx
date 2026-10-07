@@ -25,15 +25,15 @@ export function CommunicationsStatsCards({
   
   const stats = [
     {
-      title: t("TOTAL_BROADCASTS"),
+      title: t("TOTAL_COMMUNICATIONS") || t("TOTAL_BROADCASTS") || 'Total Communications',
       number: formatDigits(total),
-      subtitle: `${formatDigits(delivered)} ${t("DELIVERED")?.toLowerCase() || 'delivered'} · ${formatDigits(failed)} ${t("FAILED")?.toLowerCase() || 'failed'}`,
+      subtitle: `${formatDigits(delivered)} ${t("COMPLETED")?.toLowerCase() || 'completed'} · ${formatDigits(failed)} ${t("FAILED")?.toLowerCase() || 'failed'}`,
       Icon: Radio,
     },
     {
       title: t("DELIVERY_RATE"),
       number: `${formatDigits(rate)}%`,
-      subtitle: `${formatDigits(delivered)} ${t("OF")} ${formatDigits(total)} ${t("DELIVERED")?.toLowerCase() || 'delivered'}`,
+      subtitle: `${formatDigits(delivered)} ${t("OF")} ${formatDigits(total)} ${t("COMPLETED")?.toLowerCase() || 'completed'}`,
       Icon: CheckCircle2,
     },
     {

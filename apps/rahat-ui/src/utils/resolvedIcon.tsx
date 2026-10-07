@@ -104,7 +104,7 @@ export const defaultNavConfig: NavConfigDB = {
     {
       title: 'Communications',
       path: 'communications',
-      icon: 'Megaphone',
+      icon: 'PhoneCall',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
     {

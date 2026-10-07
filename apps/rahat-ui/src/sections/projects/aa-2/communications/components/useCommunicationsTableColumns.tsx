@@ -4,13 +4,13 @@ import { useParams, useRouter } from 'next/navigation';
 
 import React, { useContext, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useLabelDigits, translateValue } from 'apps/rahat-ui/src/utils/i18n';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Eye, SendHorizontal } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { CommunicationTooltip } from './communication-tooltip';
 import {
   aggregateTargetStatus,
   resolveCommunicationLifecycleStatus,
@@ -20,6 +20,7 @@ import { UUID } from 'crypto';
 import { CommunicationStatusBadge } from './communication-status-badge';
 import { CommunicationChannelIcon } from './communication-channel-icon';
 import { BroadcastCountsContext } from './communications.table';
+import { SendCommunicationConfirmDialog } from './send-communication-confirm-dialog';
 
 export type CommunicationRecord = {
   id: string;
@@ -137,7 +138,7 @@ export function CommunicationRowStatusCell({
   return <CommunicationStatusBadge status={effStatus} isLoading={false} />;
 }
 
-export function CommunicationRowDeliveryRateCell({
+export function CommunicationRowDeliveryStatusCell({
   record,
 }: {
   record: CommunicationRecord;
@@ -146,7 +147,7 @@ export function CommunicationRowDeliveryRateCell({
   const countsMap = useContext(BroadcastCountsContext);
   const entry = countsMap.get(record.id);
 
-  const { delivered, total, percent } = useMemo(() => {
+  const { delivered, total } = useMemo(() => {
     if (entry?.data) {
       const counts = entry.data;
       const d = counts.SUCCESS ?? 0;
@@ -154,26 +155,100 @@ export function CommunicationRowDeliveryRateCell({
       const p = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
       const t = counts.TOTAL ?? (d + f + p);
       const tot = t > 0 ? t : record.recipients;
-      const pct = tot > 0 ? Math.round((d / tot) * 100) : 0;
-      return { delivered: d, total: tot, percent: pct };
+      return { delivered: d, total: tot };
     }
 
     const d = record.delivered ?? 0;
     const tot = record.recipients;
-    const pct = tot > 0 ? Math.round((d / tot) * 100) : 0;
-    return { delivered: d, total: tot, percent: pct };
+    return { delivered: d, total: tot };
   }, [entry?.data, record.delivered, record.recipients]);
 
   return (
-    <div className="space-y-1 w-full max-w-[150px]">
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span>{formatDigits(percent)}%</span>
-        <span>
-          {formatDigits(delivered)}/{formatDigits(total)}
+    <span className="text-xs font-medium text-foreground whitespace-nowrap">
+      {formatDigits(delivered)}/{formatDigits(total)}
+    </span>
+  );
+}
+
+export const CommunicationRowDeliveryRateCell = CommunicationRowDeliveryStatusCell;
+
+function CommunicationRowActionsCell({
+  record,
+  projectId,
+  t,
+  router,
+  triggerBroadcast,
+}: {
+  record: CommunicationRecord;
+  projectId: string;
+  t: (key: string) => string;
+  router: any;
+  triggerBroadcast: any;
+}) {
+  const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
+  const commId = record.id;
+  const targets = record.targets ?? [];
+  const hasTriggerableTargets =
+    targets.length > 0 &&
+    targets.every((tr) => tr.status === 'PENDING' || tr.status === 'FAILED');
+  const hasActiveOrSent = targets.some(
+    (tr) => tr.status === 'SENT' || tr.status === 'PROCESSING' || tr.sessionId,
+  );
+  const canSend = hasTriggerableTargets && !hasActiveOrSent;
+
+  const handleConfirmSend = () => {
+    if (triggerBroadcast.isPending) return;
+    triggerBroadcast.mutate(
+      {
+        projectUUID: projectId as UUID,
+        communicationUUID: commId,
+      },
+      {
+        onSettled: () => {
+          setIsConfirmOpen(false);
+        },
+      },
+    );
+  };
+
+  return (
+    <>
+      <div className="flex items-center space-x-2">
+        <span
+          onClick={() =>
+            router.push(`/projects/aa/${projectId}/communications/${commId}`)
+          }
+        >
+          <TooltipComponent
+            Icon={Eye}
+            tip={t('VIEW_DETAILS')}
+            iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
+          />
         </span>
+        {canSend && (
+          <span onClick={() => setIsConfirmOpen(true)}>
+            <TooltipComponent
+              Icon={SendHorizontal}
+              tip={t('SEND_COMMUNICATION') || 'Send Communication'}
+              iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
+            />
+          </span>
+        )}
       </div>
-      <Progress value={percent} className="h-1.5" />
-    </div>
+
+      {canSend && (
+        <SendCommunicationConfirmDialog
+          isOpen={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={handleConfirmSend}
+          isPending={triggerBroadcast.isPending}
+          title={record.title}
+          channel={record.channel}
+          recipientsCount={record.recipients}
+          groupsCount={targets.length}
+        />
+      )}
+    </>
   );
 }
 
@@ -189,16 +264,16 @@ export default function useCommunicationsTableColumns() {
     {
       accessorKey: 'title',
       header: t('COMMUNICATION'),
+      meta: { className: 'min-w-[200px]' },
       cell: ({ row }) => {
-        const item = row.original;
+        const title = (row.getValue('title') as string) || '';
         return (
-          <div className="py-1">
-            <div className="font-medium text-sm text-foreground">
-              {item.title}
-            </div>
-            <div className="text-xs text-muted-foreground line-clamp-1">
-              {item.description}
-            </div>
+          <div className="py-1 min-w-0 pr-2">
+            <CommunicationTooltip content={title}>
+              <span className="block font-medium text-sm text-foreground truncate cursor-default">
+                {title}
+              </span>
+            </CommunicationTooltip>
           </div>
         );
       },
@@ -206,16 +281,16 @@ export default function useCommunicationsTableColumns() {
     {
       accessorKey: 'channel',
       header: t('CHANNEL'),
-      meta: { className: 'w-[120px]' },
+      meta: { className: 'w-[100px]' },
       cell: ({ row }) => {
         const channel = row.getValue('channel') as string;
         return (
           <div className="flex items-center gap-1.5">
             <CommunicationChannelIcon
               channel={channel}
-              className="h-3.5 w-3.5 text-muted-foreground"
+              className="h-3.5 w-3.5 text-muted-foreground shrink-0"
             />
-            <span className="text-xs font-medium">{t(channel)}</span>
+            <span className="text-xs font-medium whitespace-nowrap">{t(channel ? channel.toUpperCase() : 'SMS')}</span>
           </div>
         );
       },
@@ -223,17 +298,18 @@ export default function useCommunicationsTableColumns() {
     {
       accessorKey: 'targetAudience',
       header: t('TARGET_AUDIENCE'),
+      meta: { className: 'w-[200px]' },
       cell: ({ row }) => {
         const aud = row.getValue('targetAudience') as CommunicationRecord['targetAudience'];
         const benCount = aud.beneficiaries?.length || 0;
         const stakeCount = aud.stakeholders?.length || 0;
 
         return (
-          <div className="flex flex-col gap-1 w-full max-w-[200px]">
+          <div className="flex flex-col gap-1 w-full max-w-[190px] min-w-0">
             {benCount > 0 && (
               <Badge
                 variant="secondary"
-                className="text-[10px] px-1.5 py-0 font-medium line-clamp-1 w-max"
+                className="text-[10px] px-1.5 py-0 font-medium truncate max-w-full w-max"
               >
                 {`${formatDigits(benCount)} ${t('BENEFICIARY_GROUPS')}`}
               </Badge>
@@ -241,7 +317,7 @@ export default function useCommunicationsTableColumns() {
             {stakeCount > 0 && (
               <Badge
                 variant="outline"
-                className="text-[10px] px-1.5 py-0 font-medium line-clamp-1 w-max bg-white"
+                className="text-[10px] px-1.5 py-0 font-medium truncate max-w-full w-max bg-white"
               >
                 {`${formatDigits(stakeCount)} ${t('STAKEHOLDER_GROUPS')}`}
               </Badge>
@@ -258,24 +334,27 @@ export default function useCommunicationsTableColumns() {
     {
       accessorKey: 'status',
       header: t('STATUS'),
-      meta: { className: 'w-[130px]' },
+      meta: { className: 'w-[120px]' },
       cell: ({ row }) => <CommunicationRowStatusCell record={row.original} />,
     },
     {
       accessorKey: 'delivered',
-      header: t('DELIVERY_RATE'),
-      meta: { className: 'w-[180px]' },
-      cell: ({ row }) => <CommunicationRowDeliveryRateCell record={row.original} />,
+      header: translateValue(t, 'DELIVERY_STATUS', { fallback: 'Delivery Status' }),
+      meta: { className: 'w-[130px]' },
+      cell: ({ row }) => <CommunicationRowDeliveryStatusCell record={row.original} />,
     },
     {
       accessorKey: 'date',
       header: t('DATE'),
-      meta: { className: 'w-[120px]' },
+      meta: { className: 'w-[180px]' },
       cell: ({ row }) => {
         const dateVal = row.getValue('date') as string;
+        const formatted = dateVal
+          ? formatDate(dateVal, 'MMM d, yyyy, h:mm a') || dateVal
+          : '-';
         return (
-          <span className="text-xs text-muted-foreground">
-            {formatDate(dateVal, 'yyyy-MM-dd') || dateVal}
+          <span className="text-xs text-muted-foreground whitespace-nowrap block">
+            {formatted}
           </span>
         );
       },
@@ -284,52 +363,16 @@ export default function useCommunicationsTableColumns() {
       id: 'actions',
       header: t('ACTION'),
       enableHiding: false,
-      meta: { className: 'w-[100px]' },
-      cell: ({ row }) => {
-        const item = row.original;
-        const commId = item.id;
-        const targets = item.targets ?? [];
-        const hasTriggerableTargets = targets.length > 0 && targets.every(
-          (t) => t.status === 'PENDING' || t.status === 'FAILED',
-        );
-        const hasActiveOrSent = targets.some(
-          (t) => t.status === 'SENT' || t.status === 'PROCESSING' || t.sessionId,
-        );
-        const canSend = hasTriggerableTargets && !hasActiveOrSent;
-
-        const handleSend = () => {
-          if (triggerBroadcast.isPending) return;
-          triggerBroadcast.mutate({
-            projectUUID: projectId as UUID,
-            communicationUUID: commId,
-          });
-        };
-
-        return (
-          <div className="flex items-center space-x-2">
-            <span
-              onClick={() =>
-                router.push(`/projects/aa/${projectId}/communications/${commId}`)
-              }
-            >
-              <TooltipComponent
-                Icon={Eye}
-                tip={t('VIEW_DETAILS')}
-                iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
-              />
-            </span>
-            {canSend && (
-              <span onClick={handleSend}>
-                <TooltipComponent
-                  Icon={SendHorizontal}
-                  tip={t('SEND_BROADCAST')}
-                  iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
-                />
-              </span>
-            )}
-          </div>
-        );
-      },
+      meta: { className: 'w-[80px]' },
+      cell: ({ row }) => (
+        <CommunicationRowActionsCell
+          record={row.original}
+          projectId={projectId as string}
+          t={t}
+          router={router}
+          triggerBroadcast={triggerBroadcast}
+        />
+      ),
     },
   ];
 

@@ -10,7 +10,7 @@ export const CHANNEL_ICONS: Record<string, LucideIcon> = {
 };
 
 interface CommunicationChannelIconProps {
-  channel: string;
+  channel?: string;
   className?: string;
 }
 

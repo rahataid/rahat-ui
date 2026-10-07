@@ -12,12 +12,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { CommunicationsStatsCards } from './components/communications.stats.cards';
 import { CommunicationsChannelRibbon } from './components/communications.channel.ribbon';
 import { CommunicationsTable } from './components/communications.table';
 import { toCommunicationRecord } from './components/useCommunicationsTableColumns';
 import { resolveChannelByTransportId } from './utils/communications.utils';
-import { useListAllTransports, useListCommunications, useSessionBroadCastCount } from '@rahat-ui/query';
+import { useListAllTransports, useListCommunications } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
@@ -52,7 +51,13 @@ export default function CommunicationsView() {
     perPage: 100,
   });
 
-  const items = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data]);
+  const items = useMemo(
+    () =>
+      Array.isArray(data?.data)
+        ? data.data.filter((item: any) => !item?.xrefId || item.xrefId === uuid)
+        : [],
+    [data, uuid],
+  );
   const meta = useMemo(
     () => ({
       total: data?.meta?.total ?? items.length,
@@ -75,8 +80,11 @@ export default function CommunicationsView() {
   );
 
   const statsItems = useMemo(
-    () => (Array.isArray(statsData?.data) ? statsData.data : []),
-    [statsData],
+    () =>
+      Array.isArray(statsData?.data)
+        ? statsData.data.filter((item: any) => !item?.xrefId || item.xrefId === uuid)
+        : [],
+    [statsData, uuid],
   );
   const statsRecords = useMemo(
     () =>
@@ -99,27 +107,6 @@ export default function CommunicationsView() {
     return counts;
   }, [statsRecords]);
 
-  const sessionIds = useMemo(() => {
-    const ids: string[] = [];
-    if (Array.isArray(statsData?.data)) {
-      statsData.data.forEach((item: any) => {
-        if (Array.isArray(item.targets)) {
-          item.targets.forEach((target: any) => {
-            if (target.sessionId) ids.push(target.sessionId);
-          });
-        }
-      });
-    }
-    return [...new Set(ids)];
-  }, [statsData]);
-
-  const { data: broadcastCounts, isLoading: isBroadcastLoading } = useSessionBroadCastCount(sessionIds);
-
-  const isStatsResolving = isLoading || isStatsDataLoading || (sessionIds.length > 0 && (isBroadcastLoading || broadcastCounts === undefined));
-
-  const delivered = broadcastCounts?.data?.SUCCESS ?? 0;
-  const failed = broadcastCounts?.data?.FAIL ?? 0;
-  const statsTotal = broadcastCounts?.data?.TOTAL ?? 0;
 
   const setNextPage = useCallback(() => {
     setPagination((prev) => {
@@ -192,6 +179,7 @@ export default function CommunicationsView() {
 
   const tableProps = useMemo(() => ({
     records,
+    allRecords: statsRecords,
     meta,
     isLoading,
     pagination,
@@ -211,7 +199,7 @@ export default function CommunicationsView() {
     showResetFilters,
     onResetFilters: handleResetFilters,
   }), [
-    records, meta, isLoading, pagination, search, channelFilter,
+    records, statsRecords, meta, isLoading, pagination, search, channelFilter,
     statusFilter, dateRange, datePickerKey, showResetFilters,
     handleSearchChange, handleChannelFilterChange,
     handleStatusFilterChange, handleDateRangeChange,
@@ -236,12 +224,6 @@ export default function CommunicationsView() {
         </div>
       </div>
 
-      <CommunicationsStatsCards
-        total={statsTotal}
-        delivered={delivered}
-        failed={failed}
-        isLoading={isStatsResolving}
-      />
 
       <CommunicationsChannelRibbon
         sms={channelCounts.sms}

@@ -19,9 +19,11 @@ type ColumnMeta = {
 export default function CommsLogsTable({
   table,
   isLoading,
+  noResultMessage,
 }: {
   table: Table<any>;
   isLoading?: boolean;
+  noResultMessage?: string;
 }) {
   const t = useTranslations('AA_PROJECT');
   return (
@@ -88,7 +90,12 @@ export default function CommsLogsTable({
                     {isLoading ? (
                       <SpinnerLoader />
                     ) : (
-                      <NoResult message={t('NO_COMMUNICATIONS_LOGS_AVAILABLE')} />
+                      <NoResult
+                        message={
+                          noResultMessage ||
+                          t('NO_COMMUNICATIONS_LOGS_AVAILABLE')
+                        }
+                      />
                     )}
                   </TableCell>
                 </TableRow>

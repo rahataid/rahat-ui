@@ -5,12 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, Back } from 'apps/rahat-ui/src/common';
-import { useListAllTransports, useBeneficiariesGroups, useStakeholdersGroups, useCreateCommunication, useTriggerCommunicationBroadcast, useUploadFile } from '@rahat-ui/query';
-import { Send, Plus } from 'lucide-react';
+import { useListAllTransports, useBeneficiariesGroups, useStakeholdersGroups, useCreateCommunication, useUploadFile } from '@rahat-ui/query';
+import { Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { FormInput, FormTextarea, FormSelectTrigger } from 'apps/rahat-ui/src/common/form-fields';
 import {
   Select,
@@ -34,7 +32,7 @@ import { resolveTransportByChannel } from '../utils/communications.utils';
 import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
-import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { CommunicationConfirmDialog } from '../components/communication-confirm-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 const toAudienceOptions = (groups: any[], countOf: (g: any) => number): AudienceGroupOption[] =>
@@ -43,13 +41,6 @@ const toAudienceOptions = (groups: any[], countOf: (g: any) => number): Audience
     name: g?.name,
     count: countOf(g),
   })).filter((g) => g.id && g.name);
-
-const SummaryRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className="flex items-start justify-between gap-4 px-3 py-2">
-    <span className="text-muted-foreground shrink-0">{label}</span>
-    <span className="font-medium text-right break-words">{value}</span>
-  </div>
-);
 
 export default function AddCommunicationView() {
   const t = useTranslations('AA_PROJECT');
@@ -60,7 +51,6 @@ export default function AddCommunicationView() {
   const appTransports = useListAllTransports();
   const { form } = useBroadcastForm();
   const createCommunication = useCreateCommunication();
-  const triggerBroadcast = useTriggerCommunicationBroadcast();
   const uploadFile = useUploadFile();
   const confirmDialog = useBoolean();
   const pendingBroadcast = React.useRef<BroadcastFormValues | null>(null);
@@ -103,13 +93,6 @@ export default function AddCommunicationView() {
   const maxChars = isUnicode ? 350 : 700;
   const charsCount = smsInfo?.characterCount ?? message.length;
   const credits = smsInfo?.smsCredits ?? 0;
-  const selectedBeneficiaries = watch('beneficiaries') ?? [];
-  const selectedStakeholders = watch('stakeholders') ?? [];
-  const totalReach = [...selectedBeneficiaries, ...selectedStakeholders].reduce(
-    (sum, g: any) => sum + (g.count || 0),
-    0,
-  );
-
   const isSubmitting = createCommunication.isPending || uploadFile.isPending;
 
   const onSubmit = (data: BroadcastFormValues) => {
@@ -154,6 +137,7 @@ export default function AddCommunicationView() {
           ...(data.channel === 'email' && data.subject ? { subject: data.subject } : {}),
           ...(data.channel === 'voice' && audioURL ? { audioURL } : {}),
           transportId: selectedTransport.cuid,
+          xrefId: uuid,
         },
       });
 
@@ -185,7 +169,7 @@ export default function AddCommunicationView() {
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Card className="shadow-sm">
-              <CardHeader><CardTitle className="text-xl">{t("BROADCAST_DETAILS")}</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-xl">{t("COMMUNICATION_DETAILS")}</CardTitle></CardHeader>
               <CardContent className="space-y-6">
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -194,7 +178,7 @@ export default function AddCommunicationView() {
                     name="title"
                     render={({ field }) => (
                       <FormItem className="space-y-2">
-                        <FormLabel required>{t("BROADCAST_NAME_TITLE")}</FormLabel>
+                        <FormLabel required>{t("COMMUNICATION_TITLE")}</FormLabel>
                         <FormControl><FormInput placeholder={t("BROADCAST_NAME_PLACEHOLDER")} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -268,16 +252,18 @@ export default function AddCommunicationView() {
                         </FormControl>
 
                         {channel === 'sms' && (
-                          <div className="flex justify-between items-start mt-1">
-                            <FormMessage />
-                            <div className="ml-auto flex text-xs text-muted-foreground gap-4 pt-1">
+                          <div className="flex flex-wrap justify-between items-start gap-2 mt-1 min-w-0">
+                            <div className="min-w-0 flex-1">
+                              <FormMessage />
+                            </div>
+                            <div className="ml-auto flex flex-wrap items-center text-xs text-muted-foreground gap-3 pt-1 shrink-0">
                               {credits > 0 && (
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground whitespace-nowrap">
                                   <span className="font-medium text-foreground">{formatDigits(credits)}</span>{' '}
                                   {credits === 1 ? t("SMS_CREDIT") : t("SMS_CREDITS")}
                                 </p>
                               )}
-                              <p className={charsCount > maxChars ? 'text-destructive font-medium' : ''}>
+                              <p className={`whitespace-nowrap ${charsCount > maxChars ? 'text-destructive font-medium' : ''}`}>
                                 {formatDigits(charsCount)} / {formatDigits(maxChars)} {t("CHARACTERS")}
                               </p>
                             </div>
@@ -289,7 +275,7 @@ export default function AddCommunicationView() {
                   />
                 )}
               </CardContent>
-              <CardFooter className="flex justify-end gap-3 border-t p-6">
+              <CardFooter className="flex flex-wrap justify-end gap-3 border-t p-4 sm:p-6">
                 <Button type="button" variant="outline" onClick={() => router.push(`/projects/aa/${projectId}/communications`)}>
                   {t("CANCEL")}
                 </Button>
@@ -303,54 +289,17 @@ export default function AddCommunicationView() {
         </Form>
       </div>
 
-      <ConfirmationDialog
-        isConfirmationDialogOpen={confirmDialog.value}
-        onCancel={confirmDialog.onFalse}
+      <CommunicationConfirmDialog
+        isOpen={confirmDialog.value}
+        onClose={confirmDialog.onFalse}
         onConfirm={handleConfirmCreate}
         dialogTitle={t('CREATE_COMMUNICATION')}
         isPending={isSubmitting}
         confirmLabel={t('CREATE_COMMUNICATION')}
-      >
-        <div className="space-y-3 text-left">
-          <p>{t('CREATE_COMMUNICATION_CONFIRM')}</p>
-          <div className="rounded-md border bg-muted/40 divide-y text-sm">
-            {watch('title') && (
-              <SummaryRow label={t('BROADCAST_NAME_TITLE')} value={watch('title')} />
-            )}
-            <SummaryRow label={t('CHANNEL')} value={t(channel.toUpperCase())} />
-            {channel === 'email' && watch('subject') && (
-              <SummaryRow label={t('EMAIL_SUBJECT')} value={watch('subject')} />
-            )}
-            {selectedBeneficiaries.length > 0 && (
-              <SummaryRow
-                label={t('BENEFICIARY_GROUP')}
-                value={formatDigits(selectedBeneficiaries.length)}
-              />
-            )}
-            {selectedStakeholders.length > 0 && (
-              <SummaryRow
-                label={t('STAKEHOLDER_GROUP')}
-                value={formatDigits(selectedStakeholders.length)}
-              />
-            )}
-            {totalReach > 0 && (
-              <SummaryRow label={t('TOTAL_RECIPIENTS')} value={formatDigits(totalReach)} />
-            )}
-            {channel !== 'voice' && message && (
-              <SummaryRow
-                label={t('MESSAGE_CONTENT')}
-                value={<span className="line-clamp-2 whitespace-pre-wrap">{message}</span>}
-              />
-            )}
-            {channel === 'sms' && credits > 0 && (
-              <SummaryRow
-                label={credits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
-                value={formatDigits(credits)}
-              />
-            )}
-          </div>
-        </div>
-      </ConfirmationDialog>
+        description={t('CREATE_COMMUNICATION_CONFIRM')}
+        values={watch()}
+        credits={credits}
+      />
     </div>
   );
 }

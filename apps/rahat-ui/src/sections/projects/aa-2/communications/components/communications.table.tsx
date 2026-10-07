@@ -7,7 +7,7 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Trash2 } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { DemoTable, CustomPagination, SearchInput } from 'apps/rahat-ui/src/common';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common/icon.label.btn';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
@@ -30,6 +30,7 @@ export type CommunicationDateRange = {
 
 type TableProps = {
   records: CommunicationRecord[];
+  allRecords?: CommunicationRecord[];
   meta: {
     total: number;
     currentPage: number;
@@ -55,10 +56,8 @@ type TableProps = {
   onResetFilters: () => void;
 };
 
-const STATUS_FILTER_OPTIONS = [
+export const STATUS_FILTER_OPTIONS = [
   'ALL',
-  'DELIVERED',
-  'ANSWERED',
   'COMPLETED',
   'IN_PROGRESS',
   'PENDING',
@@ -73,7 +72,7 @@ export const BroadcastCountsContext = React.createContext<BroadcastCountsMap>(
   new Map(),
 );
 
-function useResolvedCommunicationStatuses(records: CommunicationRecord[]) {
+export function useResolvedCommunicationStatuses(records: CommunicationRecord[]) {
   const { newCommunicationService } = useNewCommunicationQuery();
 
   const recordSessionIds = React.useMemo(() => {
@@ -150,6 +149,7 @@ function useResolvedCommunicationStatuses(records: CommunicationRecord[]) {
 
 export function CommunicationsTable({
   records,
+  allRecords,
   meta,
   isLoading,
   pagination,
@@ -171,23 +171,44 @@ export function CommunicationsTable({
 }: TableProps) {
   const t = useTranslations('AA_PROJECT');
   const columns = useCommunicationsTableColumns();
-  const { resolvedStatuses, countsMap, isBroadcastLoading } = useResolvedCommunicationStatuses(records);
 
   const isFiltering = Boolean(
     channelFilter || statusFilter || dateRange?.from || dateRange?.to,
   );
 
-  const filteredData = React.useMemo(() => {
-    let data = records;
+  const baseRecords = React.useMemo(() => {
+    if (isFiltering && allRecords && allRecords.length > 0) {
+      return allRecords;
+    }
+    return records;
+  }, [isFiltering, allRecords, records]);
+
+  const { countsMap, resolvedStatuses, isBroadcastLoading } =
+    useResolvedCommunicationStatuses(baseRecords);
+
+  const allFilteredData = React.useMemo(() => {
+    let data = baseRecords;
 
     if (channelFilter) {
       data = data.filter((record) => record.channel === channelFilter);
     }
 
     if (statusFilter) {
-      data = data.filter(
-        (record) => resolvedStatuses.get(record.id) === statusFilter,
-      );
+      data = data.filter((record) => {
+        const resolved = resolvedStatuses.get(record.id) || record.status;
+        if (statusFilter === 'COMPLETED') {
+          return (
+            resolved === 'COMPLETED' ||
+            resolved === 'DELIVERED' ||
+            resolved === 'SUCCESS' ||
+            resolved === 'ANSWERED'
+          );
+        }
+        if (statusFilter === 'FAILED') {
+          return resolved === 'FAILED' || resolved === 'FAIL';
+        }
+        return resolved === statusFilter;
+      });
     }
 
     if (dateRange?.from || dateRange?.to) {
@@ -219,26 +240,19 @@ export function CommunicationsTable({
     }
 
     return data;
-  }, [records, channelFilter, statusFilter, dateRange, resolvedStatuses]);
+  }, [baseRecords, channelFilter, statusFilter, dateRange, resolvedStatuses]);
 
   const effectiveMeta = React.useMemo(() => {
     if (!isFiltering) return meta;
+    const total = allFilteredData.length;
+    const perPage = pagination.perPage || 10;
     return {
-      total: filteredData.length,
+      total,
       currentPage: pagination.page,
-      lastPage: Math.max(
-        1,
-        Math.ceil(filteredData.length / pagination.perPage),
-      ),
-      perPage: pagination.perPage,
+      lastPage: Math.max(1, Math.ceil(total / perPage)),
+      perPage,
     };
-  }, [
-    isFiltering,
-    filteredData.length,
-    meta,
-    pagination.page,
-    pagination.perPage,
-  ]);
+  }, [isFiltering, allFilteredData.length, meta, pagination.page, pagination.perPage]);
 
   const shouldResetPage = isFiltering && pagination.page > effectiveMeta.lastPage;
   React.useEffect(() => {
@@ -247,16 +261,34 @@ export function CommunicationsTable({
     }
   }, [shouldResetPage, setPagination]);
 
+  const displayedRecords = React.useMemo(() => {
+    if (!isFiltering) return records;
+    const start = (pagination.page - 1) * pagination.perPage;
+    return allFilteredData.slice(start, start + pagination.perPage);
+  }, [isFiltering, records, allFilteredData, pagination.page, pagination.perPage]);
+
   const handleNextPage = () => {
-    if (pagination.page < effectiveMeta.lastPage) setNextPage();
+    if (pagination.page < effectiveMeta.lastPage) {
+      if (isFiltering) {
+        setPagination((prev: any) => ({ ...prev, page: prev.page + 1 }));
+      } else {
+        setNextPage();
+      }
+    }
   };
 
   const handlePrevPage = () => {
-    if (pagination.page > 1) setPrevPage();
+    if (pagination.page > 1) {
+      if (isFiltering) {
+        setPagination((prev: any) => ({ ...prev, page: Math.max(1, prev.page - 1) }));
+      } else {
+        setPrevPage();
+      }
+    }
   };
 
   const table = useReactTable({
-    data: filteredData,
+    data: displayedRecords,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -265,11 +297,11 @@ export function CommunicationsTable({
   return (
     <BroadcastCountsContext.Provider value={countsMap}>
       <div className="bg-card border rounded p-4 space-y-4">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <SearchInput
             name="COMMUNICATIONS"
             placeholder={t("SEARCH_COMMUNICATIONS")}
-            className="w-full"
+            className="min-w-[180px] flex-1"
             value={search}
             onSearch={(e) => onSearchChange(e?.target?.value || '')}
           />
@@ -295,8 +327,6 @@ export function CommunicationsTable({
             options={STATUS_FILTER_OPTIONS}
             labels={{
               ALL: t('ALL'),
-              DELIVERED: t('DELIVERED'),
-              ANSWERED: t('ANSWERED'),
               COMPLETED: t('COMPLETED'),
               IN_PROGRESS: t('IN_PROGRESS'),
               PENDING: t('PENDING'),
@@ -318,11 +348,11 @@ export function CommunicationsTable({
           />
           {showResetFilters && (
             <IconLabelBtn
-              Icon={Trash2}
-              name={t('CLEAR')}
+              Icon={RotateCcw}
+              name={t('RESET')}
               handleClick={onResetFilters}
               variant="outline"
-              className="text-red-500 rounded-xl shrink-0"
+              className="rounded-xl shrink-0"
             />
           )}
           <ToggleColumns table={table} />

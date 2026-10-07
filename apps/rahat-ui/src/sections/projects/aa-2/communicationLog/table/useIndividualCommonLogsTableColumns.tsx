@@ -129,7 +129,7 @@ export default function useIndividualCommonLogsTableColumns(
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() =>
                 router.push(
-                  `/projects/aa/${id}/communication-logs/commsdetails/${row.original.communicationId}@${row.original.uuid}@${row.original.sessionId}?tab=individualLog&subTab=${type}`,
+                  `/projects/aa/${id}/communication-logs/commsdetails/${row.original.communicationId}@${row.original.uuid}@${row.original.sessionId || ''}?tab=individualLog&subTab=${type}`,
                 )
               }
             />

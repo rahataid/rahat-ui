@@ -75,9 +75,18 @@ function BeneficiaryView() {
   useBeneficiaryGroupsList({ ...pagination });
   const debouncedFilters = useDebounce(filters, 500);
 
+  // Trim string filters so leading/trailing spaces never reach the API.
+  // Trimming happens here (not in the input) so typing spaces still works.
+  const trimmedFilters = Object.fromEntries(
+    Object.entries(debouncedFilters).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? value.trim() : value,
+    ]),
+  );
+
   const { data } = useBeneficiaryList({
     ...pagination,
-    ...debouncedFilters,
+    ...trimmedFilters,
   });
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

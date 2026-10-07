@@ -216,18 +216,20 @@ export default function EditCommunicationView() {
                         </FormControl>
 
                         {channel === 'sms' && (
-                          <div className="flex justify-between items-start mt-1">
-                            <FormMessage />
-                            <div className="ml-auto flex text-xs text-muted-foreground gap-4 pt-1">
+                          <div className="flex flex-wrap justify-between items-start gap-2 mt-1 min-w-0">
+                            <div className="min-w-0 flex-1">
+                              <FormMessage />
+                            </div>
+                            <div className="ml-auto flex flex-wrap items-center text-xs text-muted-foreground gap-3 pt-1 shrink-0">
                               {credits > 0 && (
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground whitespace-nowrap">
                                   <span className="font-medium text-foreground">
                                     {formatDigits(credits)}
                                   </span>{' '}
                                   {credits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
                                 </p>
                               )}
-                              <p className={charsCount > maxChars ? 'text-destructive font-medium' : ''}>
+                              <p className={`whitespace-nowrap ${charsCount > maxChars ? 'text-destructive font-medium' : ''}`}>
                                 {formatDigits(charsCount)} / {formatDigits(maxChars)} {t('CHARACTERS')}
                               </p>
                             </div>
@@ -239,7 +241,7 @@ export default function EditCommunicationView() {
                   />
                 )}
               </CardContent>
-              <CardFooter className="flex justify-end gap-3 border-t p-6">
+              <CardFooter className="flex flex-wrap justify-end gap-3 border-t p-4 sm:p-6">
                 <Button
                   type="button"
                   variant="outline"

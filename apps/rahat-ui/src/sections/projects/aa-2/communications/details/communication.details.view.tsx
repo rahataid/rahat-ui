@@ -34,6 +34,7 @@ import {
 import { toCommunicationRecord } from '../components/useCommunicationsTableColumns';
 import { CommunicationStatusBadge } from '../components/communication-status-badge';
 import { CommunicationChannelIcon } from '../components/communication-channel-icon';
+import { SendCommunicationConfirmDialog } from '../components/send-communication-confirm-dialog';
 import {
   resolveChannelByTransportId,
   resolveTargetEffectiveStatus,
@@ -53,6 +54,7 @@ export default function CommunicationDetailsView() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [isSendConfirmOpen, setIsSendConfirmOpen] = useState(false);
 
   const appTransports = useListAllTransports();
   const { data: communication, isLoading, isError, refetch, isFetching } = useGetCommunication(
@@ -393,17 +395,16 @@ export default function CommunicationDetailsView() {
             />
 
             {canSend && (
-              <DialogComponent
-                buttonIcon={SendHorizontal}
-                buttonText={t('SEND_COMMUNICATION') || 'Send Communication'}
-                dialogTitle={t('SEND_COMMUNICATION') || 'Send Communication'}
-                dialogDescription={t('SEND_COMMUNICATION_CONFIRM') || 'Are you sure you want to send this communication?'}
-                confirmButtonText={t('CONFIRM')}
-                handleClick={handleSendConfirm}
-                buttonClassName="rounded-sm text-xs h-9 px-3 gap-1.5"
-                confirmButtonClassName="rounded-sm bg-primary"
+              <Button
                 variant="outline"
-              />
+                size="sm"
+                className="rounded-sm text-xs h-9 px-3 gap-1.5"
+                onClick={() => setIsSendConfirmOpen(true)}
+                disabled={isMutating}
+              >
+                <SendHorizontal className="w-4 h-4 text-primary" />
+                {t('SEND_COMMUNICATION') || 'Send Communication'}
+              </Button>
             )}
 
             {canRetry && (
@@ -435,9 +436,11 @@ export default function CommunicationDetailsView() {
               </span>
               <CommunicationStatusBadge status={effectiveOverallStatus} isLoading={isBroadcastResolving} />
             </div>
-            <div className="pt-1">
+            <div className="pt-1 min-w-0">
               <span className="text-xs text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
-              <h2 className="text-lg font-bold text-gray-900 leading-snug">{record?.title || raw?.title || ''}</h2>
+              <h2 className="text-lg font-bold text-gray-900 leading-snug break-words break-all [overflow-wrap:anywhere]">
+                {record?.title || raw?.title || ''}
+              </h2>
             </div>
           </div>
         </Card>
@@ -531,6 +534,20 @@ export default function CommunicationDetailsView() {
           </div>
         )}
       </Card>
+
+      <SendCommunicationConfirmDialog
+        isOpen={isSendConfirmOpen}
+        onClose={() => setIsSendConfirmOpen(false)}
+        onConfirm={async () => {
+          handleSendConfirm();
+          setIsSendConfirmOpen(false);
+        }}
+        isPending={isMutating}
+        title={record?.title || raw?.title}
+        channel={record?.channel || raw?.channel}
+        recipientsCount={targets.reduce((acc: number, trg: any) => acc + (trg?.group?.count || 0), 0)}
+        groupsCount={targets.length}
+      />
     </div>
   );
 }
@@ -629,7 +646,7 @@ function TargetGroupCardItem({
             <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
           </div>
         ) : messageText ? (
-          <div className="bg-slate-50 p-2.5 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-28 overflow-y-auto font-sans">
+          <div className="bg-slate-50 p-2.5 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-28 overflow-y-auto font-sans break-words break-all [overflow-wrap:anywhere]">
             {messageText}
           </div>
         ) : null}

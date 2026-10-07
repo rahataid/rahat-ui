@@ -2061,6 +2061,7 @@
     "DELIVERED": "डेलिभर भयो",
     "DELIVERY_METRICS": "वितरण मेट्रिक्स",
     "DELIVERY_RATE": "वितरण दर",
+    "DELIVERY_STATUS": "वितरण स्थिति",
     "EDIT_COMMUNICATION": "सञ्चार सम्पादन गर्नुहोस्",
     "EDIT_COMMUNICATION_DESCRIPTION": "सञ्चार विवरण, सन्देश सामग्री, र लक्षित वर्गका मापदण्डहरू अपडेट गर्नुहोस्।",
     "EDIT_COMMUNICATION_CONFIRM": "के तपाईं यो सञ्चार अपडेट गर्न निश्चित हुनुहुन्छ?",

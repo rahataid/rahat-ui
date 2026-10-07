@@ -29,7 +29,7 @@ import {
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
-import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { CommunicationTooltip } from '../components/communication-tooltip';
 import {
   CloudDownload,
   RefreshCcw,
@@ -58,6 +58,7 @@ import {
   resolveCommunicationLifecycleStatus,
 } from '../utils/communications.utils';
 import { CommunicationChannelIcon } from '../components/communication-channel-icon';
+import { SendCommunicationConfirmDialog } from '../components/send-communication-confirm-dialog';
 import { CommunicationStatusBadge } from '../components/communication-status-badge';
 import CommsLogsTable from '../../communicationLog/table/comms.logs.table';
 import useCommsLogsTableColumns from '../../communicationLog/table/useCommsLogsTableColumns';
@@ -373,6 +374,7 @@ export function CommunicationSessionLogsView() {
   const mutateRetry = useSessionRetryFailed();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
   const [isRetrying, setIsRetrying] = useState(false);
+  const [isSendConfirmOpen, setIsSendConfirmOpen] = useState(false);
 
   const effectiveStatus = useMemo(() => {
     return resolveCommunicationLifecycleStatus({
@@ -672,20 +674,14 @@ export function CommunicationSessionLogsView() {
               )}
 
               {canSend && (
-                <DialogComponent
-                  buttonIcon={SendHorizontal}
-                  buttonText={t('SEND_COMMUNICATION') || 'Send Communication'}
-                  dialogTitle={t('SEND_COMMUNICATION') || 'Send Communication'}
-                  dialogDescription={
-                    t('SEND_COMMUNICATION_CONFIRM') ||
-                    'Are you sure you want to send this communication?'
-                  }
-                  confirmButtonText={t('CONFIRM') || 'Confirm'}
-                  handleClick={handleSend}
-                  buttonClassName="gap-1.5 h-8 px-3.5 text-xs bg-primary text-white hover:!bg-primary/90 shrink-0 whitespace-nowrap"
-                  confirmButtonClassName="rounded-sm bg-primary"
-                  variant="default"
-                />
+                <Button
+                  className="gap-1.5 h-8 px-3.5 text-xs bg-primary text-white hover:!bg-primary/90 shrink-0 whitespace-nowrap"
+                  onClick={() => setIsSendConfirmOpen(true)}
+                  disabled={triggerBroadcast.isPending || isRetrying}
+                >
+                  <SendHorizontal className="h-3.5 w-3.5" />
+                  {t('SEND_COMMUNICATION') || 'Send Communication'}
+                </Button>
               )}
             </div>
           </div>
@@ -715,15 +711,15 @@ export function CommunicationSessionLogsView() {
                   <Label className="text-muted-foreground text-xs font-medium">
                     {t('COMMUNICATION_TITLE')}:
                   </Label>
-                  <TooltipWrapper
-                    tip={`${t('COMMUNICATION_TITLE')}: ${
+                  <CommunicationTooltip
+                    content={`${t('COMMUNICATION_TITLE')}: ${
                       rawComm?.title || ''
                     }`}
                   >
-                    <Label className="text-base font-bold text-gray-900 leading-snug break-all">
+                    <Label className="text-base font-bold text-gray-900 leading-snug break-all cursor-default">
                       {rawComm?.title || t('COMMUNICATION')}
                     </Label>
-                  </TooltipWrapper>
+                  </CommunicationTooltip>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {t(channel)}
                     {targetGroup?.groupType
@@ -943,26 +939,26 @@ export function CommunicationSessionLogsView() {
 
                     {/* Communication Title & Subject & Message/Audio */}
                     <div className="space-y-3">
-                      <TooltipWrapper
-                        tip={`${t('COMMUNICATION_TITLE')}: ${
+                      <CommunicationTooltip
+                        content={`${t('COMMUNICATION_TITLE')}: ${
                           rawComm?.title || ''
                         }`}
                       >
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 truncate cursor-default">
                           {rawComm?.title || ''}
                         </p>
-                      </TooltipWrapper>
+                      </CommunicationTooltip>
 
                       {rawComm?.subject && (
-                        <TooltipWrapper
-                          tip={`${t('COMMUNICATION_SUBJECT')}: ${
+                        <CommunicationTooltip
+                          content={`${t('COMMUNICATION_SUBJECT')}: ${
                             rawComm.subject
                           }`}
                         >
-                          <div>
-                            <p className="font-medium">{rawComm.subject}</p>
+                          <div className="truncate cursor-default">
+                            <p className="font-medium truncate">{rawComm.subject}</p>
                           </div>
-                        </TooltipWrapper>
+                        </CommunicationTooltip>
                       )}
 
                       <div>
@@ -1087,6 +1083,19 @@ export function CommunicationSessionLogsView() {
           </CardFooter>
         </Card>
       </div>
+
+      <SendCommunicationConfirmDialog
+        isOpen={isSendConfirmOpen}
+        onClose={() => setIsSendConfirmOpen(false)}
+        onConfirm={async () => {
+          await handleSend();
+          setIsSendConfirmOpen(false);
+        }}
+        isPending={triggerBroadcast.isPending || isRetrying}
+        title={rawComm?.title}
+        channel={rawComm?.channel}
+        recipientsCount={groupInfo?.count ?? targetGroup?.group?.count}
+      />
     </div>
   );
 }

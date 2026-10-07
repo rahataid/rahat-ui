@@ -129,13 +129,16 @@ export function GroupBroadcastLogsDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-6 rounded-md">
         <DialogHeader className="pb-3 border-b border-gray-100">
-          <div className="flex items-center justify-between pr-6">
-            <div>
-              <DialogTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <CommunicationChannelIcon channel={channel} className="h-5 w-5 text-primary" />
-                {groupName || t('TARGET_GROUP')} — {t('MEMBER_LOGS') || 'Member Communication Logs'}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pr-6 min-w-0">
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2 min-w-0 flex-wrap">
+                <CommunicationChannelIcon channel={channel} className="h-5 w-5 text-primary shrink-0" />
+                <span className="truncate max-w-[280px] sm:max-w-[400px] inline-block" title={groupName}>
+                  {groupName || t('TARGET_GROUP')}
+                </span>
+                <span>— {t('MEMBER_LOGS') || 'Member Communication Logs'}</span>
               </DialogTitle>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-wrap items-center gap-2 mt-1">
                 <span className="text-xs text-muted-foreground">
                   {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')} • {t('SESSION_ID')}: {sessionId || tg('N_A')}
                 </span>
@@ -246,7 +249,7 @@ export function GroupBroadcastLogsDialog({
 
                     return (
                       <tr key={row.uuid || row.cuid || idx} className="hover:bg-slate-50/80">
-                        <td className="py-2.5 px-3.5 font-medium text-gray-900">
+                        <td className="py-2.5 px-3.5 font-medium text-gray-900 break-all [overflow-wrap:anywhere]">
                           {formatPhone(row?.address) || row?.address || tg('N_A')}
                         </td>
                         <td className="py-2.5 px-3.5">

@@ -3619,10 +3619,11 @@
     "DELIVERED": "Delivered",
     "DELIVERY_METRICS": "Delivery Metrics",
     "DELIVERY_RATE": "Delivery Rate",
+    "DELIVERY_STATUS": "Delivery Status",
     "EDIT_COMMUNICATION": "Edit Communication",
     "EDIT_COMMUNICATION_DESCRIPTION": "Update communication details, message content, and audience parameters.",
     "EDIT_COMMUNICATION_CONFIRM": "Are you sure you want to update this communication?",
-    "COMMUNICATION_TRIGGERED_NOTICE": "Broadcast Already Triggered",
+    "COMMUNICATION_TRIGGERED_NOTICE": "Communication Already Triggered",
     "TRIGGERED_LOCKED_DESC": "Recipients and delivery channel are locked because messages have already begun delivery. You can update the title and message content.",
     "LOCKED": "Locked",
     "NO_GROUPS_ASSIGNED": "No groups assigned",
@@ -3963,7 +3964,6 @@
     "DISTRICT": "District",
     "DOWNLOAD_PAYOUT_PDF": "Download Payout PDF",
     "DOWNLOAD_PAYOUT_LOGS": "Download Payout Logs",
-
     "EDIT_FUND_RECORD": "Edit Fund Record",
     "EDIT_GCT_GROUP": "Edit GCT Group",
     "EMAIL_OPTIONAL": "Email (Optional)",
@@ -4002,7 +4002,6 @@
     "LIST_OF_ALL_THE_GROUP_CASH2": "List of all the Group Cash Transfer Records",
     "LIST_OF_ALL_THE_PAYOUT_TRANSACTION": "List of all the payout transaction logs of selected group",
     "LIST_OF_YOUR_PAYOUTS": "List of your payouts",
-
     "MUNICIPALITY": "Municipality",
     "NPR": "NPR",
     "NO_BANK_FOUND": "No bank found.",
@@ -4019,7 +4018,6 @@
     "PAYOUT_OVERVIEW": "Payout Overview",
     "PAYOUT_STATUS": "Payout Status",
     "PAYOUT_TYPE": "Payout Type",
-
     "PAYOUT_TO_BENEFICIARY": "Payout to beneficiary",
     "PENDING_BALANCE": "Pending Balance",
     "PRESS_ENTER_TO_ADD": "Press Enter to add.",

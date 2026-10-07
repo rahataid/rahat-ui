@@ -28,6 +28,7 @@ export default function StakeholdersTableFilters({
   const [municipalitySearchText, setMunicipalitySearchText] =
     React.useState('');
   const [supportAreaText, setSupportAreaText] = React.useState('');
+  const [phoneSearchText, setPhoneSearchText] = React.useState('');
   const handleSearch: IHandleSearch = React.useCallback(
     (event, key) => {
       setFilters({ ...filters, [key]: event.target.value });
@@ -37,6 +38,7 @@ export default function StakeholdersTableFilters({
   const fromGroup = window.location.pathname.split('/').includes('groups');
   React.useEffect(() => {
     setStakeholderSearchText(filters?.name ?? '');
+    setPhoneSearchText(filters?.phone ?? '');
     setOrganizationSearchText(filters?.organization ?? '');
     setMunicipalitySearchText(filters?.municipality ?? '');
     setSupportAreaText(filters?.supportArea ?? '');
@@ -50,6 +52,15 @@ export default function StakeholdersTableFilters({
         name={tGlobal('NAME')}
         value={stakeholderSearchText}
         onSearch={(e) => handleSearch(e, 'name')}
+      />
+
+      {/* Search Phone */}
+      <SearchInput
+        className="flex-1 min-w-[120px]"
+        inputClassName="h-[clamp(28px,3vw,36px)]"
+        name={tGlobal('PHONE')}
+        value={phoneSearchText}
+        onSearch={(e) => handleSearch(e, 'phone')}
       />
 
       {/* Search Organization */}

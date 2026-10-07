@@ -139,6 +139,15 @@ const StakeholdersGroupsDetails = () => {
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
+            name={tGlobal('PHONE')}
+            value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
+            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+              table.getColumn('phone')?.setFilterValue(event.target.value)
+            }
+          />
+          <SearchInput
+            className="w-full"
+            inputClassName="h-[clamp(28px,3vw,36px)]"
             name={tGlobal('ORGANIZATION')}
             value={
               (table.getColumn('organization')?.getFilterValue() as string) ??

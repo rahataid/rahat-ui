@@ -12,7 +12,6 @@ import {
 import { UUID } from 'crypto';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect } from 'react';
-import Swal from 'sweetalert2';
 import { TAGS } from '../../config';
 import { api } from '../../utils/api';
 import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';

@@ -28,7 +28,7 @@ import {
   useSyncBeneficiaryGroup,
 } from '@rahat-ui/query';
 import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
@@ -91,6 +91,7 @@ type BenProjectType = {
 
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
+  const params = useSearchParams();
   const t = useTranslations('GLOBAL');
   const formatDigits = useLabelDigits();
   const validateModal = useBoolean();
@@ -100,6 +101,8 @@ export default function GroupDetailView() {
   const editGroupNameModal = useBoolean(false);
   const syncConfirmModal = useBoolean();
   const invalidateConfirmModal = useBoolean();
+
+  const totalBeneficiaries = params.get('totalBeneficiaries');
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
@@ -491,7 +494,7 @@ export default function GroupDetailView() {
         <div className="flex gap-4 items-stretch">
           <InfoCard title={t('TOTAL_BENEFICIARIES')} Icon={UsersRound}>
             <p className="text-2xl font-semibold text-primary">
-              {formatDigits(group?.meta?.total)}
+              {formatDigits(totalBeneficiaries || 0)}
             </p>
           </InfoCard>
           {group?.data?.beneficiaryGroupProject?.length > 0 && (

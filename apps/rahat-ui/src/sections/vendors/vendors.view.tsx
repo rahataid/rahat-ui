@@ -21,6 +21,7 @@ import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useTranslations } from 'next-intl';
 import { ReusableTabs } from '../../components/reusable-tabs';
 import { BarChart3, List } from 'lucide-react';
@@ -29,6 +30,7 @@ import VendorStats from './vendor.stats';
 function VendorsView() {
   const t = useTranslations('VENDORS_LIST');
   const g = useTranslations('GLOBAL');
+  const { activeTab, setActiveTab } = useActiveTab('list');
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
 
@@ -152,7 +154,11 @@ function VendorsView() {
           <h1 className="font-semibold text-2xl text-label">{t('VENDORS')}</h1>
           <p className="text-sub-label">{t('HERE_IS_THE_LIST_OF_ALL')}</p>
         </div>
-        <ReusableTabs defaultValue="list" items={tabItems} />
+        <ReusableTabs
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
+          items={tabItems}
+        />
       </div>
     </>
   );

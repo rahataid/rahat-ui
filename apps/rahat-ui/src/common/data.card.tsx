@@ -109,7 +109,7 @@ export function DataCard({
         </p>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
-        <div className="min-w-0">
+        <div className="min-w-0 w-full">
           {loading ? (
             <TableLoader />
           ) : (
@@ -119,8 +119,11 @@ export function DataCard({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className={`${title === 'Created By' ? 'text-xl ' : 'text-3xl'
-                          } font-semibold text-primary truncate w-52 cursor-pointer`}
+                        className={`${
+                          title === 'Created By' || (typeof number === 'string' && isNaN(Number(number.replace(/[^\d]/g, ''))))
+                            ? 'text-lg sm:text-xl'
+                            : 'text-2xl sm:text-3xl'
+                        } font-semibold text-primary truncate max-w-full cursor-pointer`}
                       >
                         {number}
                       </div>
@@ -132,9 +135,13 @@ export function DataCard({
                 </TooltipProvider>
               ) : (
                 <div
-                  className={`${title === 'Created By' ? 'text-xl' : 'text-3xl'
-                    } font-semibold text-primary ${truncate ? 'truncate w-52' : ''
-                    }`}
+                  className={`${
+                    title === 'Created By' || (typeof number === 'string' && isNaN(Number(number.replace(/[^\d]/g, ''))))
+                      ? 'text-lg sm:text-xl'
+                      : 'text-2xl sm:text-3xl'
+                  } font-semibold text-primary ${
+                    truncate ? 'truncate max-w-full' : ''
+                  }`}
                 >
                   {number}
                 </div>
@@ -147,7 +154,7 @@ export function DataCard({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className="text-xl font-normal text-primary truncate cursor-pointer"
+                        className="text-lg sm:text-xl font-normal text-primary truncate max-w-full cursor-pointer"
                         title={typeof smallNumber === 'string' ? smallNumber : undefined}
                       >
                         {smallNumber}
@@ -160,8 +167,9 @@ export function DataCard({
                 </TooltipProvider>
               ) : (
                 <div
-                  className={`text-xl font-normal text-primary ${truncate ? 'truncate' : ''
-                    }`}
+                  className={`text-lg sm:text-xl font-normal text-primary ${
+                    truncate ? 'truncate max-w-full' : ''
+                  }`}
                   title={typeof smallNumber === 'string' ? smallNumber : undefined}
                 >
                   {smallNumber}

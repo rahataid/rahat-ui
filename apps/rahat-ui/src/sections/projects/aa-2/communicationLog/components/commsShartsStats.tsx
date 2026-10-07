@@ -84,9 +84,9 @@ function CommsPieCard({
           {formatNum(stats.TOTAL)}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex justify-between flex-col xl:flex-row">
-        <div className="flex justify-center xl:justify-start w-full">
-          <div className="w-full max-w-[280px] aspect-square">
+      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 pt-2">
+        <div className="flex justify-center items-center shrink-0 w-full sm:w-[220px]">
+          <div className="w-[180px] sm:w-[200px] aspect-square">
             <DynamicPieChart
               pieData={[
                 { label: t(deliveredKey), value: stats.SUCCESS },
@@ -103,11 +103,11 @@ function CommsPieCard({
           </div>
         </div>
 
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 flex-1 min-w-0 w-full">
           {rows.map(({ label, value }) => (
-            <div key={label} className="flex flex-col flex-wrap bg-white">
-              <p className="text-sm text-gray-600 text-wrap">{label}</p>
-              <p className="text-lg font-semibold text-gray-800">{value}</p>
+            <div key={label} className="flex flex-col min-w-0">
+              <p className="text-xs sm:text-sm text-gray-600 break-words leading-snug">{label}</p>
+              <p className="text-base sm:text-lg font-semibold text-gray-800">{value}</p>
             </div>
           ))}
         </div>
@@ -154,7 +154,7 @@ export default function CommunicationsChartsStats({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full [&>*]:min-w-0">
         {charts.map((chart) => (
           <CommsPieCard key={chart.titleKey} {...chart} />
         ))}

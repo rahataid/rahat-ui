@@ -33,7 +33,6 @@ import { NotificationButton } from 'apps/rahat-ui/src/components/notification-bu
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { LanguageToggle } from 'apps/rahat-ui/src/components/language-toggle';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
-import { translateValue } from 'apps/rahat-ui/src/utils/i18n';
 
 export function ProjectNav({
   component,
@@ -85,11 +84,8 @@ export function ProjectNav({
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
-  const phaseName = activePhase
-    ? translateValue(g, activePhase.name, { fallbackStyle: 'raw', silent: true }) || activePhase.name
-    : '';
   const phaseNotice = activePhase
-    ? t('PHASE_TRIGGERED_NOTICE', { phase: phaseName })
+    ? t('PHASE_TRIGGERED_NOTICE', { phase: activePhase.name })
     : '';
 
   return (

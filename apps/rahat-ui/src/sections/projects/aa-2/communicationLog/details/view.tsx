@@ -164,22 +164,24 @@ const CommunicationDetailsView = () => {
             <Label className="text-muted-foreground mb-2 text-xs">
               {t('ACTIVITY_TITLE')}:
             </Label>
-            <p className="text-base break-all">
-              {activityDetail?.title}
-              <span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-base font-medium break-all">
+                {activityDetail?.title}
+              </span>
+              {activityDetail?.phase?.name && (
                 <Badge className={getPhaseColor(activityDetail?.phase?.name)}>
                   {activityDetail?.phase?.name}
                 </Badge>
-              </span>
-            </p>
+              )}
+            </div>
           </div>
         </div>
 
         {isLoading ? (
           <SpinnerLoader className="w-10 h-10" />
         ) : (
-          <ScrollArea className="h-[calc(100vh-280px)]">
-            <div className="grid  grid-cols-1 lg:grid-cols-2 gap-3">
+          <ScrollArea className="h-[calc(100vh-280px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full [&>*]:min-w-0">
               {activityDetail?.activityCommunication?.map((comm: any) => (
                 <CommunicationDetailCard
                   key={comm.communicationId}

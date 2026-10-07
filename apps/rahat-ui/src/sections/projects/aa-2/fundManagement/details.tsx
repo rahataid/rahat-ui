@@ -81,7 +81,7 @@ export default function FundManagementDetail() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 [&>*]:min-w-0">
         {isLoading
           ? Array.from({ length: 4 }).map((_, index) => (
               <DataCardSkeleton key={index} />

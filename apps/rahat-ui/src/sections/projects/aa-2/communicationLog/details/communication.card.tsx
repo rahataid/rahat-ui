@@ -259,33 +259,33 @@ export function CommunicationDetailCard({
               </TooltipWrapper>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 min-w-0">
               <TooltipWrapper
                 tip={`${t('COMMUNICATION_CHANNEL')}: ${
                   activityCommunication?.transportName
                 }`}
               >
-                <span>
+                <span className="shrink-0">
                   {activityCommunication?.transportName
                     ? tg(activityCommunication.transportName as any)
                     : t('UNKNOWN')}
                 </span>
               </TooltipWrapper>
-              <span>•</span>
+              <span className="shrink-0">•</span>
               <TooltipWrapper
                 tip={`${t('GROUP_TYPE')}: ${activityCommunication?.groupType}`}
               >
-                <span>
+                <span className="shrink-0">
                   {activityCommunication?.groupType
                     ? tg(activityCommunication.groupType as any)
                     : t('UNKNOWN')}
                 </span>
               </TooltipWrapper>
-              <span>•</span>
+              <span className="shrink-0">•</span>
               <TooltipWrapper
                 tip={`${t('GROUP_NAME')}: ${activityCommunication?.groupName}`}
               >
-                <span>{activityCommunication?.groupName}</span>
+                <span className="break-words min-w-0">{activityCommunication?.groupName}</span>
               </TooltipWrapper>
             </div>
           </div>
@@ -343,10 +343,10 @@ export function CommunicationDetailCard({
             </TooltipWrapper>
           )}
 
-        <CardFooter className="pt-4 px-0 pb-0 flex flex-wrap justify-between items-center gap-2">
-          <div className="flex flex-col gap-1">
+        <CardFooter className="pt-4 px-0 pb-0 flex flex-wrap justify-between items-end gap-x-4 gap-y-2">
+          <div className="flex flex-col gap-1 text-sm text-gray-500 min-w-0">
             {activityCommunication?.sessionStatus === 'COMPLETED' && (
-              <p className="text-sm text-gray-500">
+              <p className="break-words">
                 {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
               </p>
             )}
@@ -359,25 +359,27 @@ export function CommunicationDetailCard({
                 null,
               );
               return latestUpdatedAt ? (
-                <p className="text-sm text-gray-500">
+                <p className="break-words">
                   {t('UPDATED_AT')}: {formatDate(latestUpdatedAt)}
                 </p>
               ) : null;
             })()}
           </div>
-          <div className="flex gap-3 ml-auto">
+
+          <div className="flex flex-wrap items-center justify-end gap-2 ml-auto">
             {(count?.data?.data?.FAIL ?? 0) > 0 && (
               <TooltipWrapper tip={tg('RETRY_VOICE_COMMUNICATION')}>
                 <Button
                   variant="outline"
-                  className="gap-2"
+                  size="sm"
+                  className="gap-1.5 h-8 text-xs shrink-0"
                   onClick={handleRetryFailed}
                   disabled={retryFailed.isPending}
                 >
                   {retryFailed.isPending ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <RefreshCcw className="h-4 w-4" />
+                    <RefreshCcw className="h-3.5 w-3.5" />
                   )}
                   {tg('RETRY')}
                 </Button>
@@ -390,39 +392,44 @@ export function CommunicationDetailCard({
             >
               <Button
                 variant="outline"
-                className="gap-2"
+                size="sm"
+                className="gap-1.5 h-8 text-xs shrink-0"
                 onClick={onFailedExports}
                 disabled={hasNoFailedDeliveries}
               >
                 {t('FAILED_EXPORTS')}
-                <CloudDownload className="h-4 w-4" />
+                <CloudDownload className="h-3.5 w-3.5" />
               </Button>
             </TooltipWrapper>
+
             <TooltipWrapper
               tip={t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT')}
               disable={!hasNoLogsForExport}
             >
               <Button
                 variant="outline"
-                className="gap-2"
+                size="sm"
+                className="gap-1.5 h-8 text-xs shrink-0"
                 onClick={onExportAllLogs}
                 disabled={isLoading || hasNoLogsForExport || isExporting}
               >
                 {isExporting ? (
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                  <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
                 ) : (
-                  <CloudDownload className="h-4 w-4" />
+                  <CloudDownload className="h-3.5 w-3.5" />
                 )}
-                {isExporting ? t('EXPORTING') : t('EXPORT_ALL_LOGS')}{' '}
+                {isExporting ? t('EXPORTING') : t('EXPORT_ALL_LOGS')}
               </Button>
             </TooltipWrapper>
+
             <Button
               variant="outline"
-              className="flex-1 gap-2 text-blue-600 border-blue-200"
+              size="sm"
+              className="gap-1.5 h-8 text-xs shrink-0 text-blue-600 border-blue-200"
               onClick={onViewDetails}
             >
               {t('VIEW_DETAILS')}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>
         </CardFooter>

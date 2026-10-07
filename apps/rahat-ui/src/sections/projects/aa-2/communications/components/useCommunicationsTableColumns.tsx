@@ -15,7 +15,11 @@ import {
   aggregateTargetStatus,
   resolveCommunicationLifecycleStatus,
 } from '../utils/communications.utils';
-import { useTriggerCommunicationBroadcast } from '@rahat-ui/query';
+import {
+  useTriggerCommunicationBroadcast,
+  useBeneficiariesGroups,
+  useStakeholdersGroups,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { CommunicationStatusBadge } from './communication-status-badge';
 import { CommunicationChannelIcon } from './communication-channel-icon';
@@ -90,13 +94,24 @@ export const toCommunicationRecord = (
       ? item.message
       : item?.subject ?? '';
 
+  const audienceSum = targets.reduce((acc: number, t: any) => {
+    const directCount =
+      t?.group?.count ??
+      t?.group?._count?.beneficiaries ??
+      t?.group?._count?.stakeholders ??
+      t?.group?.beneficiaries?.length ??
+      t?.group?.stakeholders?.length ??
+      t?.count;
+    return directCount != null && directCount > 0 ? acc + directCount : acc;
+  }, 0);
+
   return {
     id: item.uuid,
     title: item.title,
     description: message,
     channel,
     targetAudience: { beneficiaries, stakeholders },
-    recipients: targets.length,
+    recipients: audienceSum > 0 ? audienceSum : targets.length,
     delivered,
     failed,
     sender: item.createdBy ?? undefined,
@@ -140,12 +155,32 @@ export function CommunicationRowStatusCell({
 
 export function CommunicationRowDeliveryStatusCell({
   record,
+  groupCountMap,
 }: {
   record: CommunicationRecord;
+  groupCountMap?: Map<string, number>;
 }) {
+  const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
   const countsMap = useContext(BroadcastCountsContext);
   const entry = countsMap.get(record.id);
+
+  const totalAudience = useMemo(() => {
+    return (record.targets ?? []).reduce((acc: number, t: any) => {
+      const directCount =
+        t?.group?.count ??
+        t?.group?._count?.beneficiaries ??
+        t?.group?._count?.stakeholders ??
+        t?.group?.beneficiaries?.length ??
+        t?.group?.stakeholders?.length ??
+        t?.count;
+      if (directCount != null && directCount > 0) return acc + directCount;
+      if (groupCountMap && t?.groupId && groupCountMap.has(t.groupId)) {
+        return acc + (groupCountMap.get(t.groupId) ?? 0);
+      }
+      return acc;
+    }, 0);
+  }, [record.targets, groupCountMap]);
 
   const { delivered, total } = useMemo(() => {
     if (entry?.data) {
@@ -153,20 +188,60 @@ export function CommunicationRowDeliveryStatusCell({
       const d = counts.SUCCESS ?? 0;
       const f = counts.FAIL ?? 0;
       const p = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
-      const t = counts.TOTAL ?? (d + f + p);
-      const tot = t > 0 ? t : record.recipients;
+      const sessionTotal = counts.TOTAL ?? (d + f + p);
+      const tot = totalAudience > 0 ? totalAudience : sessionTotal > 0 ? sessionTotal : 0;
       return { delivered: d, total: tot };
     }
 
-    const d = record.delivered ?? 0;
-    const tot = record.recipients;
-    return { delivered: d, total: tot };
-  }, [entry?.data, record.delivered, record.recipients]);
+    const deliveredCount = (record.targets ?? []).reduce((acc: number, t: any) => {
+      if (
+        t?.status === 'COMPLETED' ||
+        t?.status === 'SUCCESS' ||
+        t?.status === 'DELIVERED'
+      ) {
+        const directCount =
+          t?.group?.count ??
+          t?.group?._count?.beneficiaries ??
+          t?.group?._count?.stakeholders ??
+          t?.group?.beneficiaries?.length ??
+          t?.group?.stakeholders?.length ??
+          t?.count ??
+          (groupCountMap && t?.groupId ? groupCountMap.get(t.groupId) : 0) ??
+          0;
+        return acc + directCount;
+      }
+      return acc;
+    }, 0);
+
+    const tot = totalAudience > 0 ? totalAudience : record.recipients;
+    return { delivered: deliveredCount, total: tot };
+  }, [entry?.data, totalAudience, record.targets, record.recipients, groupCountMap]);
+
+  const groupsCount = (record.targets ?? []).length;
+  const tooltipContent = (
+    <div className="flex flex-col gap-0.5 text-xs">
+      <div className="font-semibold text-foreground">
+        {formatDigits(delivered)} / {formatDigits(total)} {translateValue(t, 'DELIVERED', { fallback: 'Delivered' })}
+      </div>
+      <div className="text-muted-foreground text-[11px]">
+        {formatDigits(total)} {translateValue(t, 'TOTAL_AUDIENCE', { fallback: 'total audience' })}
+        {groupsCount > 0
+          ? ` • ${formatDigits(groupsCount)} ${
+              groupsCount === 1
+                ? translateValue(t, 'GROUP_NAME_LABEL', { fallback: 'group' })
+                : translateValue(t, 'GROUPS_SELECTED', { fallback: 'groups' })
+            }`
+          : ''}
+      </div>
+    </div>
+  );
 
   return (
-    <span className="text-xs font-medium text-foreground whitespace-nowrap">
-      {formatDigits(delivered)}/{formatDigits(total)}
-    </span>
+    <CommunicationTooltip content={tooltipContent}>
+      <span className="text-xs font-medium text-foreground whitespace-nowrap cursor-default">
+        {formatDigits(delivered)}/{formatDigits(total)}
+      </span>
+    </CommunicationTooltip>
   );
 }
 
@@ -178,12 +253,14 @@ function CommunicationRowActionsCell({
   t,
   router,
   triggerBroadcast,
+  groupCountMap,
 }: {
   record: CommunicationRecord;
   projectId: string;
   t: (key: string) => string;
   router: any;
   triggerBroadcast: any;
+  groupCountMap?: Map<string, number>;
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
   const commId = record.id;
@@ -195,6 +272,23 @@ function CommunicationRowActionsCell({
     (tr) => tr.status === 'SENT' || tr.status === 'PROCESSING' || tr.sessionId,
   );
   const canSend = hasTriggerableTargets && !hasActiveOrSent;
+
+  const totalAudience = useMemo(() => {
+    return targets.reduce((acc: number, t: any) => {
+      const directCount =
+        t?.group?.count ??
+        t?.group?._count?.beneficiaries ??
+        t?.group?._count?.stakeholders ??
+        t?.group?.beneficiaries?.length ??
+        t?.group?.stakeholders?.length ??
+        t?.count;
+      if (directCount != null && directCount > 0) return acc + directCount;
+      if (groupCountMap && t?.groupId && groupCountMap.has(t.groupId)) {
+        return acc + (groupCountMap.get(t.groupId) ?? 0);
+      }
+      return acc;
+    }, 0);
+  }, [targets, groupCountMap]);
 
   const handleConfirmSend = () => {
     if (triggerBroadcast.isPending) return;
@@ -244,7 +338,7 @@ function CommunicationRowActionsCell({
           isPending={triggerBroadcast.isPending}
           title={record.title}
           channel={record.channel}
-          recipientsCount={record.recipients}
+          recipientsCount={totalAudience > 0 ? totalAudience : record.recipients}
           groupsCount={targets.length}
         />
       )}
@@ -259,6 +353,50 @@ export default function useCommunicationsTableColumns() {
   const router = useRouter();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
   const formatDigits = useLabelDigits();
+
+  const { data: beneficiaryGroupsData } = useBeneficiariesGroups(
+    (projectId as UUID) || '',
+    { page: 1, perPage: 100 },
+  );
+  const { data: stakeholderGroupsData } = useStakeholdersGroups(
+    (projectId as UUID) || '',
+    { page: 1, perPage: 100 },
+  );
+
+  const groupCountMap = useMemo(() => {
+    const map = new Map<string, number>();
+    const bList = Array.isArray((beneficiaryGroupsData as any)?.data)
+      ? (beneficiaryGroupsData as any).data
+      : Array.isArray(beneficiaryGroupsData)
+      ? beneficiaryGroupsData
+      : [];
+    bList.forEach((g: any) => {
+      const count =
+        g?._count?.beneficiaries ??
+        g?.groupedBeneficiaries?.length ??
+        g?.beneficiaries?.length ??
+        g?.count ??
+        0;
+      if (g?.uuid) map.set(g.uuid, count);
+      if (g?.id) map.set(g.id, count);
+    });
+
+    const sList = Array.isArray((stakeholderGroupsData as any)?.data)
+      ? (stakeholderGroupsData as any).data
+      : Array.isArray(stakeholderGroupsData)
+      ? stakeholderGroupsData
+      : [];
+    sList.forEach((g: any) => {
+      const count =
+        g?._count?.stakeholders ??
+        g?.stakeholders?.length ??
+        g?.count ??
+        0;
+      if (g?.uuid) map.set(g.uuid, count);
+      if (g?.id) map.set(g.id, count);
+    });
+    return map;
+  }, [beneficiaryGroupsData, stakeholderGroupsData]);
 
   const columns: ColumnDef<CommunicationRecord>[] = [
     {
@@ -341,7 +479,12 @@ export default function useCommunicationsTableColumns() {
       accessorKey: 'delivered',
       header: translateValue(t, 'DELIVERY_STATUS', { fallback: 'Delivery Status' }),
       meta: { className: 'w-[130px]' },
-      cell: ({ row }) => <CommunicationRowDeliveryStatusCell record={row.original} />,
+      cell: ({ row }) => (
+        <CommunicationRowDeliveryStatusCell
+          record={row.original}
+          groupCountMap={groupCountMap}
+        />
+      ),
     },
     {
       accessorKey: 'date',
@@ -371,6 +514,7 @@ export default function useCommunicationsTableColumns() {
           t={t}
           router={router}
           triggerBroadcast={triggerBroadcast}
+          groupCountMap={groupCountMap}
         />
       ),
     },

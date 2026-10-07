@@ -102,7 +102,8 @@ export type TargetAggregateStatus =
   | 'FAILED'
   | 'PENDING'
   | 'SENT'
-  | 'COMPLETED';
+  | 'COMPLETED'
+  | 'NOT_STARTED';
 
 /**
  * Union for UI Badges (using string & {} to preserve autocomplete while allowing dynamic strings)
@@ -158,7 +159,7 @@ export const resolveCommunicationLifecycleStatus = ({
     }
 
     if (success === 0 && fail === 0) {
-      if ((counts.PENDING ?? 0) > 0) return 'PENDING';
+      if ((counts.PENDING ?? 0) > 0) return 'IN_PROGRESS';
       if ((counts.SCHEDULED ?? 0) > 0) return 'SCHEDULED';
     }
 
@@ -173,7 +174,7 @@ export const resolveCommunicationLifecycleStatus = ({
 
   if (isRetrying) return 'IN_PROGRESS';
   if (hasActiveTargets) return 'IN_PROGRESS';
-  if (hasPendingTargets && !hasSession) return 'PENDING';
+  if (hasPendingTargets && !hasSession) return 'NOT_STARTED';
 
   const normalized = (rawStatus || '').toUpperCase();
   const DIRECT_STATUS_MAP: Record<string, string> = {
@@ -183,7 +184,9 @@ export const resolveCommunicationLifecycleStatus = ({
     SENT: 'IN_PROGRESS',
     PROCESSING: 'IN_PROGRESS',
     IN_PROGRESS: 'IN_PROGRESS',
-    PENDING: 'PENDING',
+    PENDING: hasSession ? 'IN_PROGRESS' : 'NOT_STARTED',
+    NOT_STARTED: 'NOT_STARTED',
+    'NOT STARTED': 'NOT_STARTED',
     SCHEDULED: 'SCHEDULED',
     DELIVERED: 'COMPLETED',
     SUCCESS: 'COMPLETED',
@@ -191,7 +194,7 @@ export const resolveCommunicationLifecycleStatus = ({
     COMPLETED: 'COMPLETED',
   };
 
-  return DIRECT_STATUS_MAP[normalized] || normalized || 'PENDING';
+  return DIRECT_STATUS_MAP[normalized] || normalized || 'NOT_STARTED';
 };
 
 export const resolveTargetEffectiveStatus = (
@@ -205,7 +208,7 @@ export const resolveTargetEffectiveStatus = (
     rawStatus,
     counts,
     hasActiveTargets: normalized === 'SENT' || normalized === 'PROCESSING' || normalized === 'IN_PROGRESS',
-    hasPendingTargets: normalized === 'PENDING',
+    hasPendingTargets: normalized === 'PENDING' || normalized === 'NOT_STARTED',
     hasSession: !!counts,
   });
 };
@@ -218,7 +221,7 @@ export const aggregateTargetStatus = (
   const list = toArray<{ status?: string; sessionId?: string | null }>(
     targets,
   );
-  if (!list || list.length === 0) return 'PENDING';
+  if (!list || list.length === 0) return 'NOT_STARTED';
 
   let hasFailed = false;
   let hasPending = false;
@@ -233,7 +236,7 @@ export const aggregateTargetStatus = (
       hasFailed = true;
     } else if (eff === 'IN_PROGRESS' || eff === 'PROCESSING') {
       hasActive = true;
-    } else if (eff === 'PENDING' || eff === 'SCHEDULED') {
+    } else if (eff === 'PENDING' || eff === 'SCHEDULED' || eff === 'NOT_STARTED') {
       hasPending = true;
     } else if (eff === 'DELIVERED' || eff === 'SUCCESS' || eff === 'COMPLETED' || eff === 'ANSWERED') {
       hasSuccess = true;
@@ -241,11 +244,11 @@ export const aggregateTargetStatus = (
   }
 
   if (hasActive || ((hasSuccess || hasFailed) && hasPending)) return 'IN_PROGRESS';
-  if (hasPending && !hasSuccess && !hasFailed) return 'PENDING';
+  if (hasPending && !hasSuccess && !hasFailed) return 'NOT_STARTED';
   if (hasFailed) return 'FAILED';
   if (hasSuccess) return 'COMPLETED';
 
-  return 'PENDING';
+  return 'NOT_STARTED';
 };
 
 export const resolveBroadcastLogStatus = (

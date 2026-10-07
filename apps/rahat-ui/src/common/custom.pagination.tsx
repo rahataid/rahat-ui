@@ -35,7 +35,7 @@ type IProps = {
   pageSizes?: string[];
 };
 
-const pageSizes = [
+const defaultPageSizes = [
   '5',
   '10',
   '20',

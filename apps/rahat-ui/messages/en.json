@@ -1224,7 +1224,10 @@
     "NO_PROJECT_FOUND": "No project found",
     "PROJECT_ALREADY_ASSIGNED": "Project Already Assigned",
     "SHOW_LESS": "Show less",
-    "MORE": "more"
+    "MORE": "more",
+    "TOTAL_VENDORS": "Total vendors",
+    "STATS": "Stats",
+    "LIST": "List"
   },
   "VENDORS_DETAIL": {
     "VENDOR_DETAILS": "Vendor details",
@@ -3382,6 +3385,7 @@
     "TOTAL_TOKEN_SUPPLY": "Total Token Supply",
     "TOTAL_TRIGGERS": "Total Triggers",
     "TOTAL_VENDORS": "Total Vendors",
+    "STATS": "Stats",
     "TRACK_ALL_STAKEHOLDER_GROUPS_IN_THE": "Track all stakeholder groups in the project",
     "TRACK_ALL_THE_ACTIVITIES_REPORTS_HERE": "Track all the activities reports here",
     "TRACK_ALL_THE_ACTIVITY_BASED_LOGS": "Track all the activity based logs here",

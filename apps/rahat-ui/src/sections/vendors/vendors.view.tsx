@@ -116,7 +116,7 @@ function VendorsView() {
   const tabItems = [
     {
       value: 'list',
-      label: 'List',
+      label: t('LIST'),
       icon: <List size={14} />,
       content: (
         <>
@@ -141,7 +141,7 @@ function VendorsView() {
     },
     {
       value: 'stats',
-      label: 'Stats',
+      label: t('STATS'),
       icon: <BarChart3 size={14} />,
       content: <VendorStats />,
     },

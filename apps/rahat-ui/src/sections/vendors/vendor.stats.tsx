@@ -18,6 +18,8 @@ const genderColorsMap: Record<string, string> = {
 
 export default function VendorStats() {
   const g = useTranslations('GLOBAL');
+  const t = useTranslations('AA_PROJECT');
+
   const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   const { data: vendorStats, isLoading } = useGetVendorStats();
 
@@ -38,14 +40,14 @@ export default function VendorStats() {
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <DataCard
-          title="Total vendors"
+          title={t('TOTAL_VENDORS')}
           number={formatNum(totalCounts)}
           Icon={UsersRound}
           loading={isLoading}
           className="w-full rounded-sm"
         />
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[200px] sm:min-h-[300px] lg:col-span-2">
-          <h1 className="text-sm font-medium">Gender distribution</h1>
+          <h1 className="text-sm font-medium">{t('GENDER_DISTRIBUTION')}</h1>
           <div className="w-full flex-1 flex justify-center p-4 pt-0 items-center">
             <DynamicPieChart
               pieData={genderData}

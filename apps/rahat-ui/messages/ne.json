@@ -1825,6 +1825,7 @@
     "TOTAL_TOKEN_SUPPLY": "टोकनको उपलब्ध संख्या",
     "TOTAL_TRIGGERS": "कुल ट्रिगरहरू",
     "TOTAL_VENDORS": "कुल विक्रेताहरू",
+    "STATS": "तथ्याङ्क",
     "TRACK_ALL_STAKEHOLDER_GROUPS_IN_THE": "परियोजनाका सबै सरोकारवाला समूहहरू ट्र्याक गर्नुहोस्",
     "TRACK_ALL_THE_ACTIVITIES_REPORTS_HERE": "यहाँ सबै गतिविधि अभिलेखहरुको ट्र्याक गर्नुहोस्",
     "TRACK_ALL_THE_ACTIVITY_BASED_LOGS": "यहाँ सबै गतिविधिको आधारमा विवरण लगहरू ट्र्याक गर्नुहोस्",
@@ -4242,7 +4243,9 @@
     "SELECT_PROJECT_NAME": "परियोजनाको नाम छान्नुहोस्",
     "SHOW_LESS": "कम देखाउनुहोस्",
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "यस समयमा प्रदर्शन गर्न कुनै विक्रेताहरू छैनन्",
-    "VENDORS": "विक्रेताहरू"
+    "VENDORS": "विक्रेताहरू",
+    "STATS": "तथ्याङ्क",
+    "LIST": "सूची"
   },
   "VENDORS_REDEMPTION_TABLE": {
     "REDEMPTION_STATUS": "मुक्ति स्थिति",

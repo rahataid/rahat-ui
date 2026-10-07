@@ -26,13 +26,12 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
+import { useForm } from 'react-hook-form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+  Form,
+  FormField,
+} from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   Table,
   TableBody,
@@ -137,6 +136,16 @@ export default function ImportStakeholder() {
   const [groupName, setGroupName] = useState('');
   const [selectedGroupUuid, setSelectedGroupUuid] = useState('');
   const [groupError, setGroupError] = useState('');
+
+  const groupForm = useForm<{ groupUuid: string }>({
+    defaultValues: { groupUuid: '' },
+  });
+
+  const resetExistingGroupSelection = useCallback(() => {
+    groupForm.reset({ groupUuid: '' });
+    setSelectedGroupUuid('');
+    setGroupError('');
+  }, [groupForm]);
 
   // Validation State goes here
   const [isValidating, setIsValidating] = useState(false);
@@ -659,7 +668,7 @@ export default function ImportStakeholder() {
         showGroupForm.onFalse();
         showExistingGroupForm.onFalse();
         setGroupName('');
-        setSelectedGroupUuid('');
+        resetExistingGroupSelection();
 
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['stakeholders'] }),
@@ -702,6 +711,7 @@ export default function ImportStakeholder() {
       showGroupModal,
       showGroupForm,
       showExistingGroupForm,
+      resetExistingGroupSelection,
       router,
     ],
   );
@@ -1045,8 +1055,7 @@ export default function ImportStakeholder() {
             showGroupForm.onFalse();
             showExistingGroupForm.onFalse();
             setGroupName('');
-            setSelectedGroupUuid('');
-            setGroupError('');
+            resetExistingGroupSelection();
           }
         }}
       >
@@ -1228,33 +1237,37 @@ export default function ImportStakeholder() {
                   {tg('STAKEHOLDER_GROUP')}{' '}
                   <span className="text-red-500">*</span>
                 </label>
-                <Select
-                  value={selectedGroupUuid}
-                  onValueChange={(value) => {
-                    setSelectedGroupUuid(value);
-                    setGroupError('');
-                  }}
-                  disabled={
-                    uploadStakeholders.isPending || existingGroups.length === 0
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={
-                        existingGroups.length === 0
-                          ? t('NO_GROUPS_FOUND')
-                          : tg('SELECT_GROUP')
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {existingGroups.map((group) => (
-                      <SelectItem key={group.uuid} value={group.uuid}>
-                        {group.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Form {...groupForm}>
+                  <FormField
+                    control={groupForm.control}
+                    name="groupUuid"
+                    render={({ field }) => (
+                      <DropdownSearch
+                        selectedLabel={
+                          existingGroups.find((g) => g.uuid === field.value)
+                            ?.name
+                        }
+                        placeholder={tg('SELECT_GROUP')}
+                        searchPlaceholder={tg('SEARCH_GROUP')}
+                        emptyMessage={t('NO_GROUPS_FOUND')}
+                        disabled={
+                          uploadStakeholders.isPending ||
+                          existingGroups.length === 0
+                        }
+                        options={existingGroups.map((group) => ({
+                          label: group.name,
+                          value: group.uuid,
+                          data: group,
+                        }))}
+                        onSelect={(data: Record<string, any>) => {
+                          field.onChange(data.uuid);
+                          setSelectedGroupUuid(data.uuid);
+                          setGroupError('');
+                        }}
+                      />
+                    )}
+                  />
+                </Form>
                 {groupError && (
                   <p className="text-red-500 text-xs mt-1">{groupError}</p>
                 )}
@@ -1267,8 +1280,7 @@ export default function ImportStakeholder() {
                   disabled={uploadStakeholders.isPending}
                   onClick={() => {
                     showExistingGroupForm.onFalse();
-                    setSelectedGroupUuid('');
-                    setGroupError('');
+                    resetExistingGroupSelection();
                   }}
                 >
                   {t('BACK')}

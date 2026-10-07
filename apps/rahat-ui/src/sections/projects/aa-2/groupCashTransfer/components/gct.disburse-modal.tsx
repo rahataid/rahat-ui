@@ -311,7 +311,7 @@ export function DisburseButton({
               onClick={onClick}
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              {t('DISBURSING')}
+              {t('DISBURSE')}
             </Button>
           </span>
         </TooltipTrigger>

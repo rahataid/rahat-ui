@@ -1,13 +1,15 @@
 import * as React from 'react';
 import Map, {
   GeolocateControl,
+  Layer,
+  LayerProps,
+  MapLayerMouseEvent,
   MapRef,
-  Marker,
   NavigationControl,
   Popup,
+  Source,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Dot } from 'lucide-react';
 import * as turf from '@turf/turf';
 import { useTranslations } from 'next-intl';
 import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
@@ -45,6 +47,59 @@ function MarkerDetails({
   );
 }
 
+// ponytail: one GeoJSON source + WebGL layers instead of a DOM <Marker> per beneficiary (100k DOM nodes hang the page); clustering keeps it light.
+const CLUSTER_LAYER = 'clusters';
+const POINT_LAYER = 'unclustered-point';
+
+const clusterLayer: LayerProps = {
+  id: CLUSTER_LAYER,
+  type: 'circle',
+  source: 'beneficiaries',
+  filter: ['has', 'point_count'],
+  paint: {
+    'circle-color': [
+      'step',
+      ['get', 'point_count'],
+      '#51bbd6',
+      100,
+      '#f1c40f',
+      1000,
+      '#f28cb1',
+    ],
+    'circle-radius': ['step', ['get', 'point_count'], 14, 100, 18, 1000, 24],
+  },
+};
+
+const clusterCountLayer: LayerProps = {
+  id: 'cluster-count',
+  type: 'symbol',
+  source: 'beneficiaries',
+  filter: ['has', 'point_count'],
+  layout: {
+    'text-field': ['get', 'point_count_abbreviated'],
+    'text-size': 11,
+  },
+};
+
+const pointLayer: LayerProps = {
+  id: POINT_LAYER,
+  type: 'circle',
+  source: 'beneficiaries',
+  filter: ['!', ['has', 'point_count']],
+  paint: {
+    'circle-color': ['get', 'color'],
+    'circle-radius': 5,
+    'circle-stroke-width': 1,
+    'circle-stroke-color': '#fff',
+  },
+};
+
+const colorFor = (km: number) => {
+  if (km <= 50) return '#B80505';
+  if (km <= 200) return '#f1c40f';
+  return '#0C9B46';
+};
+
 export default function MapView({
   mapLocation,
 }: {
@@ -56,38 +111,57 @@ export default function MapView({
     null,
   );
 
-  const mappedCoordinate: IBENEF[] =
-    mapLocation?.flatMap((item) => ({
-      name: item.name,
-      latitude: item?.latitude,
-      longitude: item?.longitude,
-      type: MARKER_TYPE?.BENEFICIARY,
-    })) || [];
+  const first = mapLocation?.[0];
 
-  const DEFAULT_LAT = mappedCoordinate[0]?.latitude;
-  const DEFAULT_LNG = mappedCoordinate[0]?.longitude;
+  // computed once per data change, not per render
+  const geojson = React.useMemo(() => {
+    const origin = first ? turf.point([first.longitude, first.latitude]) : null;
+    return {
+      type: 'FeatureCollection' as const,
+      features: (mapLocation ?? []).map((d) => {
+        const km = origin
+          ? Number(
+              (
+                turf.distance(turf.point([d.longitude, d.latitude]), origin, {
+                  units: 'kilometers',
+                }) * 100
+              ).toFixed(2),
+            )
+          : 0;
+        return {
+          type: 'Feature' as const,
+          properties: { name: d.name, color: colorFor(km) },
+          geometry: {
+            type: 'Point' as const,
+            coordinates: [d.longitude, d.latitude],
+          },
+        };
+      }),
+    };
+  }, [mapLocation, first]);
 
-  const KARNALI_RIVER_LAT = mappedCoordinate[0]?.latitude;
-  const KARNALI_RIVER_LNG = mappedCoordinate[0]?.longitude;
-  const zoomToSelectedLoc = (e: React.SyntheticEvent, benef: IBENEF) => {
-    e.stopPropagation();
-    setSelectedMarker(benef);
-    mapRef?.current?.flyTo({
-      center: [benef.longitude, benef.latitude],
-      zoom: 10,
+  const handleClick = (e: MapLayerMouseEvent) => {
+    const feature = e.features?.[0];
+    if (!feature) return setSelectedMarker(null);
+    const [longitude, latitude] = (feature.geometry as any).coordinates;
+    if (feature.layer.id === CLUSTER_LAYER) {
+      const source = mapRef.current?.getSource('beneficiaries') as any;
+      source?.getClusterExpansionZoom(
+        feature.properties?.cluster_id,
+        (err: unknown, zoom: number) => {
+          if (err) return;
+          mapRef.current?.easeTo({ center: [longitude, latitude], zoom });
+        },
+      );
+      return;
+    }
+    setSelectedMarker({
+      name: feature.properties?.name,
+      latitude,
+      longitude,
+      type: MARKER_TYPE.BENEFICIARY,
     });
-  };
-
-  const renderMarkerColor = (d: IBENEF) => {
-    const source = turf.point([d.longitude, d.latitude]);
-    const destination = turf.point([KARNALI_RIVER_LNG, KARNALI_RIVER_LAT]);
-    const distance = turf.distance(source, destination, {
-      units: 'kilometers',
-    });
-    const fixedDistance = Number((distance * 100).toFixed(2));
-    if (fixedDistance <= 50) return '#B80505';
-    if (fixedDistance > 50 && fixedDistance <= 200) return '#f1c40f';
-    return '#0C9B46';
+    mapRef.current?.flyTo({ center: [longitude, latitude], zoom: 10 });
   };
 
   return (
@@ -95,13 +169,20 @@ export default function MapView({
       <Map
         ref={mapRef}
         initialViewState={{
-          longitude: DEFAULT_LNG,
-          latitude: DEFAULT_LAT,
+          longitude: first?.longitude,
+          latitude: first?.latitude,
           zoom: 10,
         }}
         style={{ width: '100%', height: '100%', borderRadius: '10px' }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={communityMapboxBasicConfig.mapboxAccessToken}
+        interactiveLayerIds={[CLUSTER_LAYER, POINT_LAYER]}
+        onClick={handleClick}
+        // ponytail: small tile cache + no antialias/fade to keep GPU/memory use low
+        maxTileCacheSize={20}
+        antialias={false}
+        fadeDuration={0}
+        reuseMaps
       >
         <NavigationControl position="bottom-right" />
         <GeolocateControl position="bottom-right" />
@@ -109,34 +190,24 @@ export default function MapView({
           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
           <div>{tg('BENEFICIARY')}</div>
         </div>
+        <Source
+          id="beneficiaries"
+          type="geojson"
+          data={geojson}
+          cluster
+          clusterMaxZoom={14}
+          clusterRadius={50}
+        >
+          <Layer {...clusterLayer} />
+          <Layer {...clusterCountLayer} />
+          <Layer {...pointLayer} />
+        </Source>
         {selectedMarker ? (
           <MarkerDetails
             selectedMarker={selectedMarker}
             closeSelectedMarker={() => setSelectedMarker(null)}
           />
         ) : null}
-        {mappedCoordinate.map((item, index) => (
-          <Marker
-            key={index}
-            longitude={item.longitude}
-            latitude={item.latitude}
-          >
-            <button
-              type="button"
-              className="cursor-pointer"
-              onClick={(e) => zoomToSelectedLoc(e, item)}
-            >
-              {item.type === MARKER_TYPE.BENEFICIARY && (
-                <Dot
-                  fill={renderMarkerColor(item)}
-                  size={10}
-                  color={renderMarkerColor(item)}
-                  className=' className=" bg-blue-600 rounded-full border border-white shadow-md"'
-                />
-              )}
-            </button>
-          </Marker>
-        ))}
       </Map>
     </div>
   );

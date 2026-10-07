@@ -52,7 +52,7 @@ const SettingFieldDefinitionLayout: FC<SettingFieldDefinitionLayoutProps> = ({
       <Tabs defaultValue="grid">
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-max border"
+          className="h-[calc(100vh-66px)] border"
         >
           <ResizablePanel
             defaultSize={20}

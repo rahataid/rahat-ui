@@ -22,6 +22,7 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { UUID } from 'crypto';
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'react-toastify';
 
 type ProjectModalType = {
   value: boolean;
@@ -50,13 +51,14 @@ export default function AssignBeneficiaryToProjectModal({
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
-  const handleAssignProject = async () => {
+  const handleAssignProject = () => {
     if (!selectedProject) return alert(t('PLEASE_SELECT_A_PROJECT'));
-    await assignBeneficiaryGroup.mutateAsync({
+    assignBeneficiaryGroup.mutate({
       projectUUID: selectedProject,
       beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
     });
     projectModal.onFalse();
+    toast.info(t('ASSIGNING_GROUP_PLEASE_WAIT'));
   };
 
   // React.useEffect(() => {

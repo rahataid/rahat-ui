@@ -3,6 +3,7 @@ export const TAGS = {
   GET_ALL_USER: 'get_all_user',
   GET_USER: 'get_user',
   GET_ALL_PROJECTS: 'get_all_projects',
+  GET_SITE_INFO: 'get_site_info',
   GET_ALL_ROLES: 'get_all_roles',
   GET_ROLE: 'get_role',
   GET_ALL_CAMPAIGNS: 'get_all_campaign',
@@ -40,8 +41,13 @@ export const TAGS = {
   GET_IMPORT: 'get_import',
   GET_IMPORT_FILE: 'get_import_file',
   START_IMPORT: 'start_import',
+  GET_CORE_HEALTH: 'get_core_health',
+  GET_PROJECT_HEALTH: 'get_project_health',
+  GET_APP_VERSIONS: 'get_app_versions',
   NEW_COMMS: {
     LIST_TRANSPORTS: 'new_comms.list_transports',
+    BROADCAST_COUNTS: 'new_comms.broadcast_counts',
+    LIST_SESSION_LOGS: 'new_comms.list_session_logs',
     RETRY_FAILED: 'new_comms.retry_failed',
   },
   COMMS_USAGE: {
@@ -73,6 +79,7 @@ export const PROJECT_SETTINGS_KEYS = {
   PROJECT_NAV_CONFIG: 'PROJECT_NAV_CONFIG',
   PAYOUT_TYPE_CONFIG: 'PAYOUT_TYPE_CONFIG',
   CHAIN_SETTINGS: 'CHAIN_SETTINGS',
+  DASHNBOARD_TAB_CONFIG: 'DASHBOARD_TAB_CONFIG',
 };
 
 export const MS_TRIGGERS_KEYS = {
@@ -135,6 +142,9 @@ export const SUBJECTS = {
 export const APP = {
   JWT_BEARER: 'JWT',
 };
+
+/** Project-action command for the per-project health check; mirrors MS_ACTIONS.HEALTH.CHECK, which the pinned @rahataid/sdk predates. */
+export const HEALTH_CHECK_ACTION = 'health.getcheck';
 
 export const MS_CAM_ACTIONS = {
   CAMBODIA: {

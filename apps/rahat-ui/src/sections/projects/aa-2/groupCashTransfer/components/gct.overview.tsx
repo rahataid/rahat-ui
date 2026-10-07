@@ -62,12 +62,12 @@ export default function GctOverview({
       subtitle: t('TOTAL_FUNDS_TRANSFERRED_TO_GROUPS'),
       show: totalDisbursed !== 0,
     },
-    {
-      title: t('REMAINING_BALANCE'),
-      value: formatNum(treasuryBalance),
-      subtitle: t('TOTAL_BALANCE_REMAINING_IN_TREASURY'),
-      show: treasuryBalance !== 0,
-    },
+    // {
+    //   title: t('REMAINING_BALANCE'),
+    //   value: formatNum(treasuryBalance),
+    //   subtitle: t('TOTAL_BALANCE_REMAINING_IN_TREASURY'),
+    //   show: treasuryBalance !== 0,
+    // },
     {
       title: t('TOTAL_FUNDS_ASSIGNED'),
       value: formatNum(totalAllocated),

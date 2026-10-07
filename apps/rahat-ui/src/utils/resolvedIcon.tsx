@@ -55,6 +55,7 @@ export const defaultNavConfig: NavConfigDB = {
       title: 'Stakeholders',
       path: 'stakeholders',
       icon: 'CircleUserRound',
+      subject: SUBJECTS.STAKEHOLDER,
     },
     {
       title: 'Forecast Data',
@@ -65,11 +66,13 @@ export const defaultNavConfig: NavConfigDB = {
       title: 'Activities',
       path: 'activities',
       icon: 'SquareActivity',
+      subject: SUBJECTS.ACTIVITY,
     },
     {
       title: 'Trigger Statements',
       path: 'trigger-statements',
       icon: 'CloudAlert',
+      subject: SUBJECTS.TRIGGER,
     },
     {
       title: 'Inkind Management',
@@ -96,6 +99,13 @@ export const defaultNavConfig: NavConfigDB = {
       title: 'Group Cash Transfer',
       path: 'group-cash-transfer',
       icon: 'Banknote',
+      subject: SUBJECTS.GROUP_CASH_TRANSFER,
+    },
+    {
+      title: 'Communications',
+      path: 'communications',
+      icon: 'PhoneCall',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
     {
       title: 'Communication Logs',
@@ -110,6 +120,12 @@ export const defaultNavConfig: NavConfigDB = {
       icon: 'Coins',
       roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
       subject: SUBJECTS.GRIEVANCE,
+    },
+    {
+      icon: 'Store',
+      path: 'vendors',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+      title: 'Vendors',
     },
     {
       title: 'IVR',

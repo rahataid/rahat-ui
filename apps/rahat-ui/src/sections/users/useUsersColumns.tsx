@@ -15,11 +15,14 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import UsersDetailSplitView from './users.detail.split.view';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export const useUserTableColumns = () => {
   const tg = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const formatPhone = usePhoneFormat();
 
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
@@ -52,6 +55,24 @@ export const useUserTableColumns = () => {
       accessorKey: 'email',
       header: tg('EMAIL'),
       cell: ({ row }) => <div>{row.getValue('email') ?? tg('N_A')}</div>,
+    },
+    {
+      accessorKey: 'gender',
+      header: tg('GENDER'),
+      cell: ({ row }) => (
+        <div>
+          {translateValue(tg, row.getValue('gender') as string, {
+            fallbackStyle: 'raw',
+          }) || tg('N_A')}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'phone',
+      header: tg('PHONE'),
+      cell: ({ row }) => (
+        <div>{formatPhone(row.getValue('phone') as string) || tg('N_A')}</div>
+      ),
     },
     {
       accessorKey: 'wallet',

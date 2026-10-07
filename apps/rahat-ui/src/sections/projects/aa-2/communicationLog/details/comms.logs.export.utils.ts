@@ -161,3 +161,30 @@ export async function downloadLogsCsv(
   XLSX.utils.book_append_sheet(workbook, sheet, meta.transportName);
   XLSX.writeFile(workbook, `${fileName}.xlsx`);
 }
+
+export function exportCommunicationGroups(
+  targets: any[],
+  getGroupDetails: (groupId: string, groupType: string, groupObj?: any) => { name: string; count: number },
+  communicationTitle?: string,
+): void {
+  if (!targets || !targets.length) return;
+
+  const exportData = targets.map((target) => {
+    const info = getGroupDetails(target.groupId, target.groupType, target.group);
+    return {
+      'Group Name': info.name,
+      'Group Type': target.groupType || 'N/A',
+      'Audience Count': info.count,
+      'Session ID': target.sessionId || 'N/A',
+      Status: target.status || 'N/A',
+      'Updated Date': target.updatedAt ? new Date(target.updatedAt).toLocaleString() : 'N/A',
+    };
+  });
+
+  const workbook = XLSX.utils.book_new();
+  const sheet = XLSX.utils.json_to_sheet(exportData);
+  XLSX.utils.book_append_sheet(workbook, sheet, 'Audience Groups');
+
+  const fileName = `${communicationTitle || 'communication'}_audience_groups_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  XLSX.writeFile(workbook, fileName);
+}

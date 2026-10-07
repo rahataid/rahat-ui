@@ -3,6 +3,7 @@ export * from '@tanstack/react-query-devtools';
 export * from './lib/beneficiary';
 export * from './lib/communication';
 export * from './lib/projects';
+export * from './lib/site-info';
 export { useAuthInitialization } from './auth/auth.init';
 export { default as useErrorStore } from './utils/error-store';
 export * from './utils/use-pagination';
@@ -17,12 +18,14 @@ export * from './lib/auth-apps';
 export * from './lib/el-kenya';
 export * from './lib/el-cambodia';
 export * from './lib/comms';
+export * from './lib/version';
 
 // export * from './lib/aa/trigger-statements';
 // export * from './lib/aa/activities';
 
 export * from './lib/imports';
 export * from './lib/c2c';
+export * from './lib/health';
 
 export * from './config';
 export * from './lib/cva';

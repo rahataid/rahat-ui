@@ -58,6 +58,7 @@
     "PHONE_NUMBER": "Phone Number",
     "EMAIL_ADDRESS": "Email Address",
     "PHONE": "Phone",
+    "CHANNEL": "Channel",
     "PHONE_TYPE": "Phone Type",
     "PROJECTS_INVOLVED": "Projects Involved",
     "NO_PROJECTS_INVOLVED": "No projects involved",

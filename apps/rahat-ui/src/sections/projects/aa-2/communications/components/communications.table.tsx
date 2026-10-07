@@ -314,7 +314,7 @@ export function CommunicationsTable({
             onSearch={(e) => onSearchChange(e?.target?.value || '')}
           />
           <SelectComponent
-            name={t("CHANNEL")}
+            name={t('CHANNEL')}
             options={['ALL', 'SMS', 'VOICE', 'EMAIL']}
             labels={{
               ALL: t('ALL'),
@@ -327,11 +327,11 @@ export function CommunicationsTable({
                 val === 'ALL' ? '' : (val as 'SMS' | 'VOICE' | 'EMAIL'),
               )
             }
-            value={channelFilter || 'ALL'}
-            className="w-36 shrink-0"
+            value={channelFilter || ''}
+            className="w-44 shrink-0"
           />
           <SelectComponent
-            name={t("STATUS")}
+            name={t('STATUS')}
             options={STATUS_FILTER_OPTIONS}
             labels={{
               ALL: t('ALL'),
@@ -343,8 +343,8 @@ export function CommunicationsTable({
               CANCELLED: t('CANCELLED'),
             }}
             onChange={(val) => onStatusFilterChange(val === 'ALL' ? '' : val)}
-            value={statusFilter || 'ALL'}
-            className="w-40 shrink-0"
+            value={statusFilter || ''}
+            className="w-44 shrink-0"
           />
           <DateRangePicker
             key={datePickerKey}

@@ -104,7 +104,7 @@ export default function VendorsTable({
     <div className="border rounded shadow p-3">
       <div className="flex items-center mb-2 space-x-2">
         <Input
-          placeholder={t('SEARCH_VENDORS')}
+          placeholder={t('SEARCH_VENDORS_BY_NAME')}
           value={vendorNameFilter}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)

@@ -1217,6 +1217,8 @@
     "VENDORS": "Vendors",
     "HERE_IS_THE_LIST_OF_ALL": "Here is the list of all the vendorss",
     "SEARCH_VENDORS": "Search Vendors",
+    "SEARCH_VENDORS_BY_NAME": "Search by vendor name...",
+    "SELECT_STATUS": "Select Status",
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "There are no vendors to display at the moment",
     "SELECT_A_PROJECT_TO_ASSIGN_THE": "Select a project to assign the selected vendor",
     "PROJECT": "Project",

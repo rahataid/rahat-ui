@@ -4239,6 +4239,8 @@
     "PROJECT": "परियोजना",
     "PROJECT_ALREADY_ASSIGNED": "परियोजना पहिले नै तोकिएको छ",
     "SEARCH_VENDORS": "विक्रेताहरू खोज्नुहोस्",
+    "SEARCH_VENDORS_BY_NAME": "नामद्वारा विक्रेताहरू खोज्नुहोस्...",
+    "SELECT_STATUS": "स्थिति चयन गर्नुहोस्",
     "SELECT_A_PROJECT_TO_ASSIGN_THE": "चयन गरिएको विक्रेता नियुक्त गर्न परियोजना चयन गर्नुहोस्",
     "SELECT_PROJECT_NAME": "परियोजनाको नाम छान्नुहोस्",
     "SHOW_LESS": "कम देखाउनुहोस्",

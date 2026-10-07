@@ -24,26 +24,50 @@ const toArray = <T>(value: unknown): T[] | undefined => {
 
 export const resolveTransportByChannel = (
   transports: Transport[] | undefined,
-  channel: BroadcastChannel,
-): Transport | undefined =>
-  toArray<Transport>(transports)?.find((transport) =>
-    CHANNEL_TRANSPORT_ALIASES[channel].includes(
-      normalizeTransportName(transport?.name),
-    ),
+  channel?: BroadcastChannel | string | null,
+): Transport | undefined => {
+  if (!channel) return undefined;
+  const key = String(channel).toLowerCase() as BroadcastChannel;
+  const aliases = CHANNEL_TRANSPORT_ALIASES[key];
+  if (!aliases) return undefined;
+
+  return toArray<Transport>(transports)?.find((transport) =>
+    aliases.includes(normalizeTransportName(transport?.name)),
   );
+};
 
 export const resolveChannelByTransportId = (
   transports: Transport[] | undefined,
   transportId?: string | null,
-  audioURL?: { mediaURL?: string } | string | null,
+  audioURL?: { mediaURL?: string; url?: string } | string | null,
 ): 'SMS' | 'VOICE' | 'EMAIL' => {
-  const name = toArray<Transport>(transports)
-    ?.find((transport) => transport?.cuid === transportId)
-    ?.name?.toUpperCase();
-  if (name === 'VOICE') return 'VOICE';
-  if (name === 'EMAIL' || name === 'SMTP') return 'EMAIL';
-  if (name === 'SMS') return 'SMS';
-  if (typeof audioURL === 'object' && audioURL?.mediaURL) return 'VOICE';
+  const hasAudio =
+    !!audioURL &&
+    (typeof audioURL === 'string'
+      ? audioURL.trim().length > 0
+      : typeof audioURL === 'object' &&
+        (!!(audioURL as { mediaURL?: string })?.mediaURL ||
+          !!(audioURL as { url?: string })?.url ||
+          Object.keys(audioURL).length > 0));
+
+  if (hasAudio) return 'VOICE';
+
+  const transport = toArray<Transport>(transports)?.find(
+    (item) => item?.cuid === transportId,
+  );
+  const name = transport?.name?.toUpperCase() || '';
+  const type = String((transport as { type?: string })?.type || '').toUpperCase();
+
+  if (name.includes('VOICE') || type.includes('VOICE')) return 'VOICE';
+  if (
+    name.includes('EMAIL') ||
+    name.includes('SMTP') ||
+    type.includes('EMAIL') ||
+    type.includes('SMTP')
+  )
+    return 'EMAIL';
+  if (name.includes('SMS') || type.includes('SMS')) return 'SMS';
+
   return 'SMS';
 };
 
@@ -90,7 +114,7 @@ export type CommunicationStatus =
   | 'SUCCESS'
   | 'SCHEDULED'
   | 'FAIL'
-  | (string & {});
+  | (string & Record<never, never>);
 
 export type BroadcastCounts = {
   SUCCESS?: number;
@@ -120,26 +144,34 @@ export const resolveCommunicationLifecycleStatus = ({
   hasSession = false,
   isRetrying = false,
 }: CommunicationLifecycleInput): string => {
-  if (isRetrying) return 'IN_PROGRESS';
-
-  const isVoice = (channel || '').toUpperCase() === 'VOICE';
-  const successBadge = isVoice ? 'ANSWERED' : 'DELIVERED';
-
   if (counts) {
     const success = counts.SUCCESS ?? 0;
     const fail = counts.FAIL ?? 0;
     const active = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
-    const total = counts.TOTAL ?? (success + fail + active);
 
-    if (active > 0) return 'IN_PROGRESS';
+    if (success > 0 && active === 0 && fail === 0) {
+      return 'COMPLETED';
+    }
 
-    if (total > 0) {
-      if (fail > 0 && success === 0) return 'FAILED';
-      if (success > 0 && fail === 0) return successBadge;
-      if (success > 0 && fail > 0) return 'COMPLETED';
+    if (isRetrying && (fail > 0 || active > 0)) {
+      return 'IN_PROGRESS';
+    }
+
+    if (success === 0 && fail === 0) {
+      if ((counts.PENDING ?? 0) > 0) return 'PENDING';
+      if ((counts.SCHEDULED ?? 0) > 0) return 'SCHEDULED';
+    }
+
+    if (active > 0 && (success > 0 || fail > 0)) {
+      return 'IN_PROGRESS';
+    }
+
+    if (fail > 0 && active === 0) {
+      return 'FAILED';
     }
   }
 
+  if (isRetrying) return 'IN_PROGRESS';
   if (hasActiveTargets) return 'IN_PROGRESS';
   if (hasPendingTargets && !hasSession) return 'PENDING';
 
@@ -152,9 +184,10 @@ export const resolveCommunicationLifecycleStatus = ({
     PROCESSING: 'IN_PROGRESS',
     IN_PROGRESS: 'IN_PROGRESS',
     PENDING: 'PENDING',
-    DELIVERED: successBadge,
-    SUCCESS: successBadge,
-    ANSWERED: 'ANSWERED',
+    SCHEDULED: 'SCHEDULED',
+    DELIVERED: 'COMPLETED',
+    SUCCESS: 'COMPLETED',
+    ANSWERED: 'COMPLETED',
     COMPLETED: 'COMPLETED',
   };
 
@@ -190,6 +223,7 @@ export const aggregateTargetStatus = (
   let hasFailed = false;
   let hasPending = false;
   let hasSuccess = false;
+  let hasActive = false;
 
   for (const target of list) {
     const counts = target.sessionId && countsMap ? countsMap[target.sessionId] : null;
@@ -197,17 +231,19 @@ export const aggregateTargetStatus = (
 
     if (eff === 'FAILED' || eff === 'FAIL' || eff === 'NO ANSWER' || eff === 'BUSY' || eff === 'REJECTED') {
       hasFailed = true;
-    } else if (eff === 'PENDING' || eff === 'IN_PROGRESS' || eff === 'PROCESSING') {
+    } else if (eff === 'IN_PROGRESS' || eff === 'PROCESSING') {
+      hasActive = true;
+    } else if (eff === 'PENDING' || eff === 'SCHEDULED') {
       hasPending = true;
     } else if (eff === 'DELIVERED' || eff === 'SUCCESS' || eff === 'COMPLETED' || eff === 'ANSWERED') {
       hasSuccess = true;
     }
   }
 
-  if (hasPending) return 'IN_PROGRESS';
-  if (hasFailed && !hasSuccess) return 'FAILED';
-  if (hasSuccess && !hasFailed) return channel.toUpperCase() === 'VOICE' ? 'COMPLETED' : 'DELIVERED';
-  if (hasFailed && hasSuccess) return 'COMPLETED';
+  if (hasActive || ((hasSuccess || hasFailed) && hasPending)) return 'IN_PROGRESS';
+  if (hasPending && !hasSuccess && !hasFailed) return 'PENDING';
+  if (hasFailed) return 'FAILED';
+  if (hasSuccess) return 'COMPLETED';
 
   return 'PENDING';
 };
@@ -259,5 +295,8 @@ export const resolveBroadcastLogStatus = (
     durationSec
   };
 };
+
+export const resolveCommunicationLogStatus = resolveBroadcastLogStatus;
+
 
 

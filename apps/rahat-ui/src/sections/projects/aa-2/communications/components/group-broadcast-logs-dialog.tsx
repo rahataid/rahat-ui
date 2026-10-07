@@ -115,7 +115,7 @@ export function GroupBroadcastLogsDialog({
     if (!sessionId || mutateRetry.isPending) return;
     try {
       await mutateRetry.mutateAsync({ cuid: sessionId, includeFailed: true });
-      Swal.fire(t('RETRY_SUCCESSFUL') || 'Retry broadcast triggered successfully', '', 'success');
+      Swal.fire(t('RETRY_SUCCESSFUL') || 'Retry communication triggered successfully', '', 'success');
       refetch();
     } catch (error) {
       console.error('Retry error:', error);
@@ -129,13 +129,16 @@ export function GroupBroadcastLogsDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-6 rounded-md">
         <DialogHeader className="pb-3 border-b border-gray-100">
-          <div className="flex items-center justify-between pr-6">
-            <div>
-              <DialogTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <CommunicationChannelIcon channel={channel} className="h-5 w-5 text-primary" />
-                {groupName || t('TARGET_GROUP')} — {t('MEMBER_LOGS') || 'Member Broadcast Logs'}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pr-6 min-w-0">
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2 min-w-0 flex-wrap">
+                <CommunicationChannelIcon channel={channel} className="h-5 w-5 text-primary shrink-0" />
+                <span className="truncate max-w-[280px] sm:max-w-[400px] inline-block" title={groupName}>
+                  {groupName || t('TARGET_GROUP')}
+                </span>
+                <span>— {t('MEMBER_LOGS') || 'Member Communication Logs'}</span>
               </DialogTitle>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-wrap items-center gap-2 mt-1">
                 <span className="text-xs text-muted-foreground">
                   {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')} • {t('SESSION_ID')}: {sessionId || tg('N_A')}
                 </span>
@@ -146,8 +149,8 @@ export function GroupBroadcastLogsDialog({
               <DialogComponent
                 buttonIcon={RefreshCcw}
                 buttonText={t('RETRY_FAILED') || 'Retry Failed'}
-                dialogTitle={t('RETRY_BROADCAST') || 'Retry Broadcast'}
-                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this broadcast?'}
+                dialogTitle={t('RETRY_COMMUNICATION') || 'Retry Communication'}
+                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this communication?'}
                 confirmButtonText={t('CONFIRM') || 'Confirm'}
                 handleClick={handleRetry}
                 buttonClassName="h-8 gap-1.5 text-xs border-red-300 text-red-600 hover:bg-red-50"
@@ -160,7 +163,7 @@ export function GroupBroadcastLogsDialog({
 
         <div className="flex-1 overflow-y-auto space-y-4 py-2 pr-1">
           {/* 4 Mini Summary Stats Cards */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
               <span className="text-[11px] font-medium text-muted-foreground uppercase">{t('SUCCESSFULLY_DELIVERED') || 'Delivered'}</span>
               <p className="text-xl font-semibold text-emerald-600 mt-0.5">{formatNum(counts.SUCCESS)}</p>
@@ -174,7 +177,7 @@ export function GroupBroadcastLogsDialog({
               <p className="text-xl font-semibold text-amber-600 mt-0.5">{formatNum(counts.PENDING)}</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
-              <span className="text-[11px] font-medium text-muted-foreground uppercase">{t('TOTAL_BROADCASTS') || 'Total'}</span>
+              <span className="text-[11px] font-medium text-muted-foreground uppercase">{t('TOTAL_COMMUNICATIONS') || t('TOTAL_BROADCASTS') || 'Total Communications'}</span>
               <p className="text-xl font-semibold text-primary mt-0.5">{formatNum(counts.TOTAL)}</p>
             </div>
           </div>
@@ -209,7 +212,7 @@ export function GroupBroadcastLogsDialog({
             </div>
           </div>
 
-          {/* Broadcast Logs Table */}
+          {/* Communication Logs Table */}
           <div className="overflow-x-auto border border-gray-200 rounded-sm">
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 border-b border-gray-200 text-gray-600 font-semibold uppercase">
@@ -237,7 +240,7 @@ export function GroupBroadcastLogsDialog({
                 ) : logsList.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-muted-foreground italic">
-                      {t('NO_LOGS_FOUND') || 'No member broadcast logs found.'}
+                      {t('NO_LOGS_FOUND') || 'No member communication logs found.'}
                     </td>
                   </tr>
                 ) : (
@@ -246,7 +249,7 @@ export function GroupBroadcastLogsDialog({
 
                     return (
                       <tr key={row.uuid || row.cuid || idx} className="hover:bg-slate-50/80">
-                        <td className="py-2.5 px-3.5 font-medium text-gray-900">
+                        <td className="py-2.5 px-3.5 font-medium text-gray-900 break-all [overflow-wrap:anywhere]">
                           {formatPhone(row?.address) || row?.address || tg('N_A')}
                         </td>
                         <td className="py-2.5 px-3.5">
@@ -316,3 +319,6 @@ export function GroupBroadcastLogsDialog({
     </Dialog>
   );
 }
+
+export const GroupCommunicationLogsDialog = GroupBroadcastLogsDialog;
+

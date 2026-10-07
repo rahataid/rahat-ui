@@ -26,12 +26,16 @@ export const useListAllTransports = () => {
   const { newCommunicationService } = useNewCommunicationQuery();
 
   const query = useQuery({
-    queryFn: () => newCommunicationService.transport.list(),
+    queryFn: () => newCommunicationService?.transport?.list(),
     queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS],
     staleTime: 6 * 60 * 60 * 1000, // 6 hours
+    enabled: !!newCommunicationService,
   });
 
-  return normalizeTransportList(query?.data?.data);
+  return (
+    normalizeTransportList(query?.data?.data) ||
+    normalizeTransportList(query?.data)
+  );
 };
 
 export const useListSessionLogs = (sessionId: string, payload: any) => {
@@ -85,25 +89,30 @@ export const useSessionRetryFailed = () => {
         queryKey: [TAGS.NEW_COMMS.BROADCAST_COUNTS],
       });
 
-      // 3. Optimistically update broadcast counts so status INSTANTLY transitions to IN_PROGRESS
-      rootQueryClient.setQueriesData(
-        { queryKey: [TAGS.NEW_COMMS.BROADCAST_COUNTS] },
-        (old: any) => {
-          if (!old?.data) return old;
-          const currentFail = old.data.FAIL ?? 0;
-          const currentPending = old.data.PENDING ?? 0;
-          const currentScheduled = old.data.SCHEDULED ?? 0;
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              PENDING: currentPending + (currentFail > 0 ? currentFail : 1),
-              SCHEDULED: currentScheduled,
-              FAIL: 0,
-            },
-          };
-        },
-      );
+      // 3. Optimistically update broadcast counts ONLY for queries containing this retried session with actual failures
+      const matchingQueries = rootQueryClient.getQueriesData({
+        queryKey: [TAGS.NEW_COMMS.BROADCAST_COUNTS],
+      });
+
+      matchingQueries.forEach(([queryKey, oldData]: [any, any]) => {
+        if (!oldData?.data) return;
+        const querySessions = Array.isArray(queryKey?.[1]) ? queryKey[1] : [];
+        const matchesSession = !sessionId || querySessions.includes(sessionId);
+        if (!matchesSession) return;
+
+        const currentFail = oldData.data.FAIL ?? 0;
+        if (currentFail <= 0) return;
+
+        rootQueryClient.setQueryData(queryKey, {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            PENDING: (oldData.data.PENDING ?? 0) + currentFail,
+            SCHEDULED: oldData.data.SCHEDULED ?? 0,
+            FAIL: 0,
+          },
+        });
+      });
 
       return { previousCounts };
     },

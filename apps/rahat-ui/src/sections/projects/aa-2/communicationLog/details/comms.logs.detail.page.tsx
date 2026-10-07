@@ -74,15 +74,21 @@ export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
   const router = useRouter();
 
-  const [communicationId, activityId, sessionId] = (
+  const [communicationId, activityId, rawSessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');
+
+  const sessionId = useMemo(() => {
+    return rawSessionId && rawSessionId !== 'undefined' && rawSessionId !== 'null'
+      ? rawSessionId
+      : '';
+  }, [rawSessionId]);
 
   const commsSettings = useSettingsStore((state) => state.commsSettings);
 
   const downloadUrl = useMemo(
     () =>
-      commsSettings?.URL
+      commsSettings?.URL && sessionId
         ? `${
             commsSettings.URL
           }/broadcasts/download?sessionId=${encodeURIComponent(sessionId)}`
@@ -163,11 +169,12 @@ export default function CommsLogsDetailPage() {
     null,
   );
 
-  const count = useSessionBroadCastCount([sessionId]);
+  const count = useSessionBroadCastCount(sessionId ? [sessionId] : []);
 
   const mutateRetry = useSessionRetryFailed();
 
   const retryFailed = async () => {
+    if (!sessionId) return;
     try {
       const res = await mutateRetry.mutateAsync({
         cuid: sessionId,
@@ -280,13 +287,14 @@ export default function CommsLogsDetailPage() {
   }, [from, projectID, activityId, tab, subTab, backFrom]);
 
   const hasNoLogsForExport =
-    !isLoading &&
-    !isLoadingActivity &&
-    !isLoadingSessionLogs &&
-    !isSessionLogsError &&
-    (logsMeta?.total ?? 0) === 0;
+    !sessionId ||
+    (!isLoading &&
+      !isLoadingActivity &&
+      !isLoadingSessionLogs &&
+      !isSessionLogsError &&
+      (logsMeta?.total ?? 0) === 0);
 
-  const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
+  const hasNoFailedDeliveries = !sessionId || (count?.data?.data?.FAIL ?? 0) === 0;
 
   return (
     <div className="p-4">

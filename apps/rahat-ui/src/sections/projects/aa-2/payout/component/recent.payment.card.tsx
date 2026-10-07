@@ -85,10 +85,13 @@ export default function RecentPaymentCard({
             )}
             <Dot />
             {translateValue(tg, merchentName, {
-              fallback: merchentName
-                ?.toUpperCase()
-                .replace(/_/g, ' ')
-                .replace(/^./, (char) => char.toUpperCase()),
+              fallback:
+                typeof merchentName === 'string'
+                  ? merchentName
+                      .toUpperCase()
+                      .replace(/_/g, ' ')
+                      .replace(/^./, (char) => char.toUpperCase())
+                  : String(merchentName ?? ''),
             })}
           </div>
           <div className="text-sm text-muted-foreground">

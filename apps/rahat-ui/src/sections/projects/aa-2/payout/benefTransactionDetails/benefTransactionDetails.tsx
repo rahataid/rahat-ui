@@ -127,7 +127,7 @@ export default function BeneficiaryTransactionLogDetails() {
           title={tv('ACTUAL_BUDGET')}
           Icon={Coins}
           smallNumber={`${t('RS')} ${formatNum(
-            data?.data?.amount * ONE_TOKEN_VALUE,
+            (data?.data?.amount ?? 0) * ONE_TOKEN_VALUE,
           )}`}
           className="h-24 w-full rounded-sm pt-1"
         />
@@ -140,7 +140,7 @@ export default function BeneficiaryTransactionLogDetails() {
           )}`}
           className="h-24 w-full rounded-sm pt-1"
         />
-        {data?.data?.status.endsWith('COMPLETED') && (
+        {data?.data?.status?.endsWith('COMPLETED') && (
           <>
             <DataCard
               title={tv('PAYOUT_TYPE')}
@@ -160,10 +160,15 @@ export default function BeneficiaryTransactionLogDetails() {
               badge={true}
               smallNumber={
                 data?.data?.payout?.type === 'FSP'
-                  ? data?.data?.payout?.extras?.paymentProviderName
-                      .split('_')
-                      .join(' ')
-                  : data?.data?.payout?.mode
+                  ? typeof data?.data?.payout?.extras?.paymentProviderName ===
+                    'string'
+                    ? data.data.payout.extras.paymentProviderName
+                        .split('_')
+                        .join(' ')
+                    : data?.data?.payout?.extras?.paymentProviderName ??
+                      data?.data?.payout?.mode ??
+                      tg('N_A')
+                  : data?.data?.payout?.mode ?? tg('N_A')
               }
               className="h-24 w-full rounded-sm"
             />

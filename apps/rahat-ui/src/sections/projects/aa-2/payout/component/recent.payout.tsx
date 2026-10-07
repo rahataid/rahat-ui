@@ -33,7 +33,9 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 actions={item?.type === 'VENDOR' ? 'CVA' : item?.type}
                 merchentName={
                   item?.type === 'FSP'
-                    ? item?.extras?.paymentProviderName?.split('_').join(' ')
+                    ? typeof item?.extras?.paymentProviderName === 'string'
+                      ? item.extras.paymentProviderName.split('_').join(' ')
+                      : item?.extras?.paymentProviderName ?? item?.mode
                     : item?.mode
                 }
                 beneficiariesCount={

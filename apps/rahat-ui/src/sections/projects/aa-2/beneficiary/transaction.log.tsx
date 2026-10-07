@@ -105,10 +105,13 @@ const TransactionLogs = () => {
         value: txn?.txHash,
       });
 
+      const providerName = txn?.extras?.paymentProviderName;
       const subtitleParts = [
         txn?.payoutType === 'VENDOR' ? 'CVA' : txn?.payoutType,
         txn?.payoutType === 'FSP'
-          ? txn?.extras?.paymentProviderName?.split('_').join(' ')
+          ? typeof providerName === 'string'
+            ? providerName.split('_').join(' ')
+            : providerName ?? txn?.mode
           : txn?.mode,
         txn?.mode === 'OFFLINE' && txn?.vendorName ? txn.vendorName : null,
       ].filter(Boolean);

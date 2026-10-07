@@ -27,6 +27,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
   Table,
   TableBody,
   TableCell,
@@ -126,7 +133,9 @@ export default function ImportStakeholder() {
   // Modal State goes here
   const showGroupModal = useBoolean();
   const showGroupForm = useBoolean();
+  const showExistingGroupForm = useBoolean();
   const [groupName, setGroupName] = useState('');
+  const [selectedGroupUuid, setSelectedGroupUuid] = useState('');
   const [groupError, setGroupError] = useState('');
 
   // Validation State goes here
@@ -612,7 +621,11 @@ export default function ImportStakeholder() {
 
   // Actual upload handler for uploading after validation is complete along with group name
   const handleActualUpload = useCallback(
-    async (isGroupCreate: boolean, groupNameValue?: string) => {
+    async (
+      isGroupCreate: boolean,
+      groupNameValue?: string,
+      groupUuidValue?: string,
+    ) => {
       if (!selectedFile) return;
 
       const extension = selectedFile.name
@@ -628,6 +641,7 @@ export default function ImportStakeholder() {
           projectId: id,
           isGroupCreate,
           groupName: groupNameValue,
+          groupUuid: groupUuidValue,
         });
 
         const successCount = response?.data?.successCount ?? 0;
@@ -643,7 +657,9 @@ export default function ImportStakeholder() {
         resetValidationState();
         showGroupModal.onFalse();
         showGroupForm.onFalse();
+        showExistingGroupForm.onFalse();
         setGroupName('');
+        setSelectedGroupUuid('');
 
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['stakeholders'] }),
@@ -652,7 +668,7 @@ export default function ImportStakeholder() {
         ]);
 
         const tab =
-          isGroupCreate && groupNameValue
+          (isGroupCreate && groupNameValue) || groupUuidValue
             ? 'stakeholdersGroup'
             : 'stakeholders';
         router.push(`/projects/aa/${id}/stakeholders?tab=${tab}`);
@@ -685,6 +701,7 @@ export default function ImportStakeholder() {
       resetValidationState,
       showGroupModal,
       showGroupForm,
+      showExistingGroupForm,
       router,
     ],
   );
@@ -755,6 +772,14 @@ export default function ImportStakeholder() {
     }
   }, [resetValidationState]);
 
+  const existingGroups: Array<{ uuid: string; name: string }> = useMemo(() => {
+    const raw = (stakeholdersGroupsData as any)?.data;
+    if (Array.isArray(raw)) return raw;
+    if (Array.isArray(stakeholdersGroupsData))
+      return stakeholdersGroupsData as Array<{ uuid: string; name: string }>;
+    return [];
+  }, [stakeholdersGroupsData]);
+
   const handleGroupImport = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
@@ -765,7 +790,6 @@ export default function ImportStakeholder() {
         return;
       }
 
-      const existingGroups = stakeholdersGroupsData?.data ?? [];
       const groupExists = existingGroups.some(
         (group: { name: string }) =>
           group.name.toLowerCase() === trimmedName.toLowerCase(),
@@ -778,7 +802,21 @@ export default function ImportStakeholder() {
 
       await handleActualUpload(true, trimmedName);
     },
-    [groupName, stakeholdersGroupsData, handleActualUpload],
+    [groupName, existingGroups, handleActualUpload],
+  );
+
+  const handleExistingGroupImport = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+
+      if (!selectedGroupUuid) {
+        setGroupError(t('PLEASE_SELECT_GROUP'));
+        return;
+      }
+
+      await handleActualUpload(false, undefined, selectedGroupUuid);
+    },
+    [selectedGroupUuid, handleActualUpload],
   );
 
   const validateButtonText = useMemo(() => {
@@ -1005,13 +1043,15 @@ export default function ImportStakeholder() {
           if (!open && !uploadStakeholders.isPending) {
             showGroupModal.onFalse();
             showGroupForm.onFalse();
+            showExistingGroupForm.onFalse();
             setGroupName('');
+            setSelectedGroupUuid('');
             setGroupError('');
           }
         }}
       >
         <DialogContent className="rounded-sm max-w-md">
-          {!showGroupForm.value ? (
+          {!showGroupForm.value && !showExistingGroupForm.value ? (
             <>
               <DialogHeader>
                 <DialogTitle className="text-center text-primary">
@@ -1046,8 +1086,7 @@ export default function ImportStakeholder() {
                           </span>
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
-                          Name and organize these stakeholders for streamlined
-                          communication and bulk actions.
+                          {t('ORGANIZE_STAKEHOLDERS_DESC')}
                         </p>
                       </div>
                     </div>
@@ -1069,8 +1108,29 @@ export default function ImportStakeholder() {
                           </span>
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
-                          Stakeholders are saved individually. You can group
-                          them anytime from the stakeholder list.
+                          {t('SKIP_GROUPING_DESC')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Add to Existing Group card */}
+                <div className="border border-gray-200 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <Users
+                        size={30}
+                        className="px-1 mt-0.5 text-primary rounded-sm bg-gray-100"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-800">
+                            {tg('STAKEHOLDER_GROUP')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {t('ADD_TO_EXISTING_GROUP_DESC')}
                         </p>
                       </div>
                     </div>
@@ -1088,6 +1148,14 @@ export default function ImportStakeholder() {
                   {uploadStakeholders.isPending ? t('IMPORTING') : t('SKIP')}
                 </Button>
                 <Button
+                  variant="outline"
+                  className="flex-1"
+                  disabled={uploadStakeholders.isPending}
+                  onClick={() => showExistingGroupForm.onTrue()}
+                >
+                  {tg('SELECT_GROUP')}
+                </Button>
+                <Button
                   className="flex-1"
                   disabled={uploadStakeholders.isPending}
                   onClick={() => showGroupForm.onTrue()}
@@ -1096,7 +1164,7 @@ export default function ImportStakeholder() {
                 </Button>
               </div>
             </>
-          ) : (
+          ) : showGroupForm.value ? (
             <form onSubmit={handleGroupImport}>
               <DialogHeader>
                 <DialogTitle>{t('CREATE_STAKEHOLDER_GROUP')}</DialogTitle>
@@ -1133,6 +1201,73 @@ export default function ImportStakeholder() {
                   onClick={() => {
                     showGroupForm.onFalse();
                     setGroupName('');
+                    setGroupError('');
+                  }}
+                >
+                  {t('BACK')}
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 rounded-sm"
+                  disabled={uploadStakeholders.isPending}
+                >
+                  {uploadStakeholders.isPending
+                    ? t('IMPORTING')
+                    : t('IMPORT_WITH_GROUP')}
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleExistingGroupImport}>
+              <DialogHeader>
+                <DialogTitle>{tg('STAKEHOLDER_GROUP')}</DialogTitle>
+                <DialogDescription>{tg('SELECT_GROUP')}</DialogDescription>
+              </DialogHeader>
+              <div className="mt-4 mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  {tg('STAKEHOLDER_GROUP')}{' '}
+                  <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  value={selectedGroupUuid}
+                  onValueChange={(value) => {
+                    setSelectedGroupUuid(value);
+                    setGroupError('');
+                  }}
+                  disabled={
+                    uploadStakeholders.isPending || existingGroups.length === 0
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={
+                        existingGroups.length === 0
+                          ? t('NO_GROUPS_FOUND')
+                          : tg('SELECT_GROUP')
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {existingGroups.map((group) => (
+                      <SelectItem key={group.uuid} value={group.uuid}>
+                        {group.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {groupError && (
+                  <p className="text-red-500 text-xs mt-1">{groupError}</p>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 rounded-sm"
+                  disabled={uploadStakeholders.isPending}
+                  onClick={() => {
+                    showExistingGroupForm.onFalse();
+                    setSelectedGroupUuid('');
                     setGroupError('');
                   }}
                 >

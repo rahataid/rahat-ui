@@ -139,14 +139,14 @@ function BeneficiaryGroupsView() {
             <div className="grid grid-cols-4 gap-4">
               {visibleGroups?.map((i: any, index: number) => {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;
-
+                const totalBeneficiaries = i?._count?.groupedBeneficiaries;
                 return (
                   <div
                     key={index}
                     className="rounded-sm border shadow p-4 flex flex-col cursor-pointer"
                     onClick={() => {
                       router.push(
-                        `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups`,
+                        `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups&totalBeneficiaries=${totalBeneficiaries}`,
                       );
                     }}
                   >

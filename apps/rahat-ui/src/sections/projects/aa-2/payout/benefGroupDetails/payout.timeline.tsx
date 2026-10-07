@@ -1,14 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useLocale } from 'next-intl';
 import { getPayoutTransactionStatusOptions } from './utils';
 import {
-  buildTimelineSeries,
   countTimelineEvents,
   filterTimelineEvents,
-  niceYCeiling,
   normalizeTimelineEvents,
+  toCategory,
 } from './timeline/timeline.data';
 import type { TimelineDateRange } from './timeline/timeline.types';
 import { EMPTY_LOGS } from './timeline/timeline.utils';
@@ -26,8 +24,6 @@ export default function PayoutTimeline({
   logs = EMPTY_LOGS,
   loading = false,
 }: PayoutTimelineProps) {
-  const locale = useLocale();
-
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [dateRange, setDateRange] = useState<TimelineDateRange | undefined>();
@@ -77,24 +73,24 @@ export default function PayoutTimeline({
     [filteredEvents],
   );
 
-  const {
-    seriesData,
-    activeStatuses,
-    chartStatuses,
-    totalAmount,
-    maxY,
-    minTime,
-    maxTime,
-    xLabelPattern,
-    isLargeDataset,
-    timeWindowText,
-    durationText,
-  } = useMemo(
-    () => buildTimelineSeries(filteredEvents, 'all', locale, isFsp),
-    [filteredEvents, locale, isFsp],
-  );
+  const categoryCounts = useMemo(() => {
+    const counts = { success: 0, inProgress: 0, failed: 0 };
+    filteredEvents.forEach((ev) => {
+      counts[toCategory(ev.status)] += 1;
+    });
+    return counts;
+  }, [filteredEvents]);
 
-  const yCeiling = useMemo(() => niceYCeiling(maxY), [maxY]);
+  const totalAmount = useMemo(() => {
+    return filteredEvents.reduce((sum, ev) => {
+      const isDisbursed = isFsp
+        ? ev.status === 'FIAT_TRANSACTION_COMPLETED' || ev.status === 'COMPLETED'
+        : ev.status === 'COMPLETED' || ev.status === 'PARTIALLY_COMPLETED';
+      return isDisbursed ? sum + ev.amount : sum;
+    }, 0);
+  }, [filteredEvents, isFsp]);
+
+  const isLargeDataset = filteredEvents.length > 500;
 
   const hasActiveFilters = Boolean(
     searchQuery.trim() || effectiveStatusFilter !== 'ALL' || dateRange?.from,
@@ -123,19 +119,13 @@ export default function PayoutTimeline({
       />
 
       <TimelineChartCard
-        seriesData={seriesData}
-        activeStatuses={activeStatuses}
-        chartStatuses={chartStatuses}
+        events={filteredEvents}
         statusCounts={statusCounts}
-        yCeiling={yCeiling}
-        minTime={minTime}
-        maxTime={maxTime}
-        xLabelPattern={xLabelPattern}
+        categoryCounts={categoryCounts}
         totalAmount={totalAmount}
         undatedCount={undatedCount}
         isLargeDataset={isLargeDataset}
-        timeWindowText={timeWindowText}
-        durationText={durationText}
+        isFsp={isFsp}
         loading={loading}
       />
     </div>

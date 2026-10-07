@@ -4,8 +4,12 @@ import {
   resolveStatusKey,
   resolveStatusMeta,
   sortStatusesCanonically,
+  getStatusCategory,
 } from './timeline.status';
 import type {
+  BucketDetail,
+  CategoryCounts,
+  CategoryKey,
   StatusCounts,
   TimelineEvent,
   TimelineFilters,
@@ -23,6 +27,15 @@ import {
 } from './timeline.utils';
 
 type NormalizeResult = { events: TimelineEvent[]; undatedCount: number };
+
+const CATEGORY_MAP: Record<string, CategoryKey> = {
+  completed: 'success',
+  pending: 'inProgress',
+  failed: 'failed',
+};
+
+export const toCategory = (status: string): CategoryKey =>
+  CATEGORY_MAP[getStatusCategory(status)] ?? 'inProgress';
 
 export const normalizeTimelineEvents = (
   logs: any[],
@@ -167,21 +180,34 @@ export const countTimelineEvents = (events: TimelineEvent[]): StatusCounts => {
   };
 };
 
+const CATEGORIES: CategoryKey[] = ['success', 'inProgress', 'failed'];
+
+const emptyDetail = (): BucketDetail => ({
+  success: {},
+  inProgress: {},
+  failed: {},
+});
+
 const EMPTY_SERIES: TimelineSeriesResult = {
   seriesData: {
-    total: [],
-    perStatus: {},
-    exactTimes: {},
+    xLabels: [],
+    perCategory: { success: [], inProgress: [], failed: [] },
+    bucketDetails: [],
+    exactTimes: [],
+    bucketTimestamps: [],
   },
   activeStatuses: [],
   chartStatuses: [],
+  categoryCounts: { success: 0, inProgress: 0, failed: 0 },
   totalAmount: 0,
   totalTransactions: 0,
   maxY: 4,
   minTime: 0,
   maxTime: 0,
+  stepMs: 60_000,
   xLabelPattern: 'hh:mm:ss a',
   isLargeDataset: false,
+  isSparse: false,
   timeWindowText: '',
   durationText: '',
   defaultRange: 'all',
@@ -191,24 +217,6 @@ const SECOND = 1_000;
 const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
-
-const findPeakTimestamp = (events: TimelineEvent[]): number => {
-  if (!events.length) return Date.now();
-  const densityMap = new Map<number, number>();
-  events.forEach((ev) => {
-    const key = Math.floor(ev.timestamp / MINUTE) * MINUTE;
-    densityMap.set(key, (densityMap.get(key) || 0) + 1);
-  });
-  let maxCount = -1;
-  let peakTime = events[events.length - 1].timestamp;
-  densityMap.forEach((count, time) => {
-    if (count > maxCount) {
-      maxCount = count;
-      peakTime = time;
-    }
-  });
-  return peakTime;
-};
 
 export const buildTimelineSeries = (
   filteredEvents: TimelineEvent[],
@@ -232,57 +240,37 @@ export const buildTimelineSeries = (
   });
 
   const activeStatuses = sortStatusesCanonically(Array.from(statusSet));
-
   const chartStatuses = [...activeStatuses].sort(
     (a, b) => (statusTotalMap[b] || 0) - (statusTotalMap[a] || 0),
   );
 
   let totalDisbursed = 0;
+  const categoryCounts: CategoryCounts = { success: 0, inProgress: 0, failed: 0 };
+
   ascEvents.forEach((ev) => {
     const isDisbursed = isFsp
       ? ev.status === 'FIAT_TRANSACTION_COMPLETED' || ev.status === 'COMPLETED'
       : ev.status === 'COMPLETED' || ev.status === 'PARTIALLY_COMPLETED';
-
-    if (isDisbursed) {
-      totalDisbursed += ev.amount;
-    }
+    if (isDisbursed) totalDisbursed += ev.amount;
+    categoryCounts[toCategory(ev.status)] += 1;
   });
 
-  const peakTime = findPeakTimestamp(ascEvents);
-
-  let windowStart = dataMinT;
-  let windowEnd = dataMaxT;
-
-  if (rangeType === '10m') {
-    const duration = 10 * MINUTE;
-    windowStart = Math.max(dataMinT - MINUTE, peakTime - duration / 2);
-    windowEnd = windowStart + duration;
-  } else if (rangeType === '30m') {
-    const duration = 30 * MINUTE;
-    windowStart = Math.max(dataMinT - 2 * MINUTE, peakTime - duration / 2);
-    windowEnd = windowStart + duration;
-  } else if (rangeType === '1h') {
-    const duration = 1 * HOUR;
-    windowStart = Math.max(dataMinT - 5 * MINUTE, peakTime - duration / 2);
-    windowEnd = windowStart + duration;
-  } else if (rangeType === '6h') {
-    const duration = 6 * HOUR;
-    windowStart = Math.max(dataMinT - 15 * MINUTE, peakTime - duration / 2);
-    windowEnd = windowStart + duration;
-  } else if (rangeType === '24h') {
-    const duration = 24 * HOUR;
-    windowStart = dataMinT - 30 * MINUTE;
-    windowEnd = windowStart + duration;
-  } else {
-    const pad = Math.max(MINUTE, Math.floor(dataSpanMs * 0.05));
-    windowStart = dataMinT - pad;
-    windowEnd = dataMaxT + pad;
-  }
-
+  const pad = Math.max(MINUTE, Math.floor(dataSpanMs * 0.05));
+  const windowStart = dataMinT - pad;
+  const windowEnd = dataMaxT + pad;
   const activeSpanMs = Math.max(MINUTE, windowEnd - windowStart);
 
-  let stepMs = MINUTE;
-  if (activeSpanMs <= 2 * MINUTE) {
+  const MAX_BUCKETS = 80;
+
+  const uniqueSeconds = new Set(
+    ascEvents.map((ev) => Math.floor(ev.timestamp / SECOND) * SECOND),
+  );
+  const useExactSeconds = uniqueSeconds.size <= MAX_BUCKETS;
+
+  let stepMs: number;
+  if (useExactSeconds) {
+    stepMs = SECOND;
+  } else if (activeSpanMs <= 2 * MINUTE) {
     stepMs = 5 * SECOND;
   } else if (activeSpanMs <= 15 * MINUTE) {
     stepMs = MINUTE;
@@ -296,20 +284,27 @@ export const buildTimelineSeries = (
     stepMs = 1 * HOUR;
   } else if (activeSpanMs <= 7 * DAY) {
     stepMs = 3 * HOUR;
-  } else {
+  } else if (activeSpanMs <= 90 * DAY) {
     stepMs = 1 * DAY;
+  } else if (activeSpanMs <= 365 * DAY) {
+    stepMs = 7 * DAY;
+  } else {
+    stepMs = 30 * DAY;
   }
 
-  while (activeSpanMs / stepMs > 45) {
-    stepMs *= 2;
-  }
-  while (activeSpanMs / stepMs < 10 && stepMs > 5 * SECOND) {
-    stepMs = Math.max(5 * SECOND, Math.floor(stepMs / 2));
+  if (!useExactSeconds) {
+    while (activeSpanMs / stepMs > MAX_BUCKETS) {
+      stepMs *= 2;
+    }
+    const minStep = activeSpanMs <= 60 * SECOND ? SECOND : 5 * SECOND;
+    while (activeSpanMs / stepMs < 8 && stepMs > minStep) {
+      stepMs = Math.max(minStep, Math.floor(stepMs / 2));
+    }
   }
 
   type BucketData = {
-    total: number;
-    counts: Record<string, number>;
+    catCounts: Record<CategoryKey, number>;
+    detail: BucketDetail;
     exactTimestamps: number[];
   };
 
@@ -319,71 +314,87 @@ export const buildTimelineSeries = (
     const bKey = Math.floor(ev.timestamp / stepMs) * stepMs;
     let b = bucketMap.get(bKey);
     if (!b) {
-      b = { total: 0, counts: {}, exactTimestamps: [] };
+      b = {
+        catCounts: { success: 0, inProgress: 0, failed: 0 },
+        detail: emptyDetail(),
+        exactTimestamps: [],
+      };
       bucketMap.set(bKey, b);
     }
-    b.total += 1;
-    b.counts[ev.status] = (b.counts[ev.status] || 0) + 1;
+    const cat = toCategory(ev.status);
+    b.catCounts[cat] += 1;
+    b.detail[cat][ev.status] = (b.detail[cat][ev.status] || 0) + 1;
     b.exactTimestamps.push(ev.timestamp);
   });
 
-  const firstBucket = Math.floor(windowStart / stepMs) * stepMs;
-  const lastBucket = Math.ceil(windowEnd / stepMs) * stepMs;
+  const sortedBucketKeys = Array.from(bucketMap.keys()).sort((a, b) => a - b);
 
-  const totalSeries: [number, number][] = [];
-  const perStatusSeries: Record<string, [number, number][]> = {};
-  const exactTimes: Record<number, string> = {};
-
-  activeStatuses.forEach((s) => {
-    perStatusSeries[s] = [];
-  });
-
+  const xLabels: string[] = [];
+  const perCategory: Record<CategoryKey, number[]> = {
+    success: [],
+    inProgress: [],
+    failed: [],
+  };
+  const bucketDetailsArr: BucketDetail[] = [];
+  const exactTimesArr: string[] = [];
+  const bucketTimestamps: number[] = [];
   let maxY = 0;
 
-  for (let t = firstBucket; t <= lastBucket; t += stepMs) {
-    const b = bucketMap.get(t);
-    const count = b?.total || 0;
-    totalSeries.push([t, count]);
+  const isSameDay = isSameLocalDay(dataMinT, dataMaxT);
 
-    if (count > maxY) maxY = count;
+  const xLabelPattern =
+    useExactSeconds || activeSpanMs <= 15 * MINUTE
+      ? 'hh:mm:ss a'
+      : isSameDay
+        ? 'hh:mm a'
+        : activeSpanMs <= 7 * DAY
+          ? 'MMM d, hh:mm a'
+          : 'MMM d, yyyy';
 
-    activeStatuses.forEach((s) => {
-      const sCount = b?.counts[s] || 0;
-      perStatusSeries[s].push([t, sCount]);
+  for (const t of sortedBucketKeys) {
+    const b = bucketMap.get(t)!;
+    const total = b.catCounts.success + b.catCounts.inProgress + b.catCounts.failed;
+    if (total === 0) continue;
+
+    if (total > maxY) maxY = total;
+
+    xLabels.push(formatChartDate(t, xLabelPattern, locale));
+    bucketTimestamps.push(t);
+
+    CATEGORIES.forEach((cat) => {
+      perCategory[cat].push(b.catCounts[cat] || 0);
     });
 
-    if (b && b.exactTimestamps.length > 0) {
+    bucketDetailsArr.push(b.detail);
+
+    if (b.exactTimestamps.length > 0) {
       const firstTs = b.exactTimestamps[0];
       const lastTs = b.exactTimestamps[b.exactTimestamps.length - 1];
       if (firstTs === lastTs || lastTs - firstTs < 1000) {
-        exactTimes[t] = formatChartDate(firstTs, 'PPp', locale);
+        exactTimesArr.push(formatChartDate(firstTs, 'PPp', locale));
       } else {
         const startStr = formatChartDate(firstTs, 'hh:mm:ss a', locale);
         const endStr = formatChartDate(lastTs, 'hh:mm:ss a', locale);
-        const dateStr = formatChartDate(firstTs, 'MMM d, yyyy', locale);
-        exactTimes[t] = `${dateStr} • ${startStr} – ${endStr}`;
+        const startDateStr = formatChartDate(firstTs, 'MMM d, yyyy', locale);
+        if (isSameLocalDay(firstTs, lastTs)) {
+          exactTimesArr.push(`${startDateStr} • ${startStr} – ${endStr}`);
+        } else {
+          const endDateStr = formatChartDate(lastTs, 'MMM d, yyyy', locale);
+          exactTimesArr.push(`${startDateStr}, ${startStr} – ${endDateStr}, ${endStr}`);
+        }
       }
     } else {
-      exactTimes[t] = formatChartDate(t, 'PPp', locale);
+      exactTimesArr.push(formatChartDate(t, 'PPp', locale));
     }
   }
 
   let defaultRange: TimelineRangeType = 'all';
-  if (dataSpanMs <= 15 * MINUTE) {
-    defaultRange = '10m';
-  } else if (dataSpanMs <= 45 * MINUTE) {
-    defaultRange = '30m';
-  } else if (dataSpanMs <= 2 * HOUR) {
-    defaultRange = '1h';
-  } else if (dataSpanMs <= 8 * HOUR) {
-    defaultRange = '6h';
-  } else if (dataSpanMs <= 24 * HOUR) {
-    defaultRange = '24h';
-  } else {
-    defaultRange = 'all';
-  }
+  if (dataSpanMs <= 15 * MINUTE) defaultRange = '10m';
+  else if (dataSpanMs <= 45 * MINUTE) defaultRange = '30m';
+  else if (dataSpanMs <= 2 * HOUR) defaultRange = '1h';
+  else if (dataSpanMs <= 8 * HOUR) defaultRange = '6h';
+  else if (dataSpanMs <= 24 * HOUR) defaultRange = '24h';
 
-  const isSameDay = isSameLocalDay(dataMinT, dataMaxT);
   const startDateStr = formatChartDate(dataMinT, 'MMM d, yyyy', locale);
   const startTimeStr = formatChartDate(dataMinT, 'hh:mm:ss a', locale);
   const endDateStr = formatChartDate(dataMaxT, 'MMM d, yyyy', locale);
@@ -395,30 +406,26 @@ export const buildTimelineSeries = (
 
   const durationText = formatDuration(dataMinT, dataMaxT);
 
-  const xLabelPattern =
-    activeSpanMs <= 15 * MINUTE
-      ? 'hh:mm:ss a'
-      : isSameDay
-        ? 'hh:mm a'
-        : activeSpanMs <= 7 * DAY
-          ? 'MMM d, hh:mm a'
-          : 'MMM d, yyyy';
-
   return {
     seriesData: {
-      total: totalSeries,
-      perStatus: perStatusSeries,
-      exactTimes,
+      xLabels,
+      perCategory,
+      bucketDetails: bucketDetailsArr,
+      exactTimes: exactTimesArr,
+      bucketTimestamps,
     },
     activeStatuses,
     chartStatuses,
+    categoryCounts,
     totalAmount: totalDisbursed,
     totalTransactions: filteredEvents.length,
     maxY,
-    minTime: firstBucket,
-    maxTime: lastBucket,
+    minTime: dataMinT,
+    maxTime: dataMaxT,
+    stepMs,
     xLabelPattern,
     isLargeDataset: filteredEvents.length > 500,
+    isSparse: false,
     timeWindowText,
     durationText,
     defaultRange,

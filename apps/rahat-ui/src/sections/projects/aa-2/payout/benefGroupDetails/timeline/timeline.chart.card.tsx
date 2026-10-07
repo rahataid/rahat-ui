@@ -1,67 +1,85 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useLocale, useTranslations } from 'next-intl';
 import { NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
-import { buildTimelineChartOptions } from './timeline.chart.options';
-import { getStatusColor, getStatusLabel } from './timeline.status';
+import {
+  buildTimelineChartOptions,
+  CATEGORY_META,
+} from './timeline.chart.options';
+import { buildTimelineSeries, niceYCeiling } from './timeline.data';
 import type {
-  SeriesData,
+  CategoryCounts,
+  CategoryKey,
   StatusCounts,
   TimelineChartLabels,
+  TimelineEvent,
 } from './timeline.types';
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
+const CATS: CategoryKey[] = ['success', 'inProgress', 'failed'];
+
+type ZoomState = { min: number; max: number };
+
 type TimelineChartCardProps = {
-  seriesData: SeriesData;
-  activeStatuses: string[];
-  chartStatuses?: string[];
+  events: TimelineEvent[];
   statusCounts: StatusCounts;
-  yCeiling: number;
-  minTime: number;
-  maxTime: number;
-  xLabelPattern: string;
+  categoryCounts: CategoryCounts;
   totalAmount: number;
   undatedCount: number;
   isLargeDataset: boolean;
-  timeWindowText: string;
-  durationText: string;
+  isFsp: boolean;
   loading: boolean;
 };
 
 export default function TimelineChartCard({
-  seriesData,
-  activeStatuses,
-  chartStatuses,
+  events,
   statusCounts,
-  yCeiling,
-  minTime,
-  maxTime,
-  xLabelPattern,
+  categoryCounts,
   totalAmount,
   undatedCount,
   isLargeDataset,
-  timeWindowText,
-  durationText,
+  isFsp,
   loading,
 }: TimelineChartCardProps) {
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
   const tg = useTranslations('GLOBAL');
   const locale = useLocale();
   const formatNum = useNumberFormat();
-
   const formatNumRef = useRef(formatNum);
   formatNumRef.current = formatNum;
 
-  const renderStatuses = useMemo(() => {
-    return chartStatuses && chartStatuses.length > 0
-      ? chartStatuses
-      : activeStatuses;
-  }, [chartStatuses, activeStatuses]);
+  const [zoomStack, setZoomStack] = useState<ZoomState[]>([]);
+  const currentZoom = zoomStack.length > 0 ? zoomStack[zoomStack.length - 1] : null;
+
+  const prevEventsRef = useRef(events);
+  useEffect(() => {
+    if (prevEventsRef.current !== events) {
+      prevEventsRef.current = events;
+      setZoomStack([]);
+    }
+  }, [events]);
+
+  const seriesRef = useRef<ReturnType<typeof buildTimelineSeries> | null>(null);
+
+  const zoomedEvents = useMemo(() => {
+    if (!currentZoom) return events;
+    return events.filter(
+      (ev) => ev.timestamp >= currentZoom.min && ev.timestamp <= currentZoom.max,
+    );
+  }, [events, currentZoom]);
+
+  const series = useMemo(() => {
+    const result = buildTimelineSeries(zoomedEvents, 'all', locale, isFsp);
+    seriesRef.current = result;
+    return result;
+  }, [zoomedEvents, locale, isFsp]);
+
+  const yCeiling = useMemo(() => niceYCeiling(series.maxY), [series.maxY]);
 
   const labels = useMemo<TimelineChartLabels>(
     () => ({
@@ -89,45 +107,75 @@ export default function TimelineChartCard({
     [tg, tv, locale],
   );
 
+  const handleZoomed = useCallback(
+    (_chart: any, opts: { xaxis: { min: number; max: number } }) => {
+      if (!opts?.xaxis || opts.xaxis.min == null || opts.xaxis.max == null) return;
+
+      const s = seriesRef.current;
+      if (!s) return;
+
+      const timestamps = s.seriesData.bucketTimestamps;
+      if (!timestamps.length) return;
+
+      const minIdx = Math.max(0, Math.floor(opts.xaxis.min) - 1);
+      const maxIdx = Math.min(timestamps.length - 1, Math.ceil(opts.xaxis.max) - 1);
+
+      const tMin = timestamps[minIdx];
+      const tMax = timestamps[maxIdx];
+
+      if (tMin == null || tMax == null || tMin > tMax) return;
+
+      const stepMs = s.stepMs || 60_000;
+      setZoomStack((prev) => {
+        const nextMin = tMin;
+        const nextMax = tMax + stepMs;
+        if (
+          prev.length > 0 &&
+          prev[prev.length - 1].min === nextMin &&
+          prev[prev.length - 1].max === nextMax
+        ) {
+          return prev;
+        }
+        return [...prev, { min: nextMin, max: nextMax }];
+      });
+    },
+    [],
+  );
+
+  const handleResetZoom = useCallback(() => {
+    setZoomStack([]);
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setZoomStack((prev) => (prev.length > 0 ? prev.slice(0, -1) : prev));
+  }, []);
+
   const chartOptions = useMemo(
     () =>
       buildTimelineChartOptions({
-        minTime,
-        maxTime,
-        xLabelPattern,
         yCeiling,
         locale,
         isLargeDataset,
         labels,
         formatNumRef,
-        activeStatuses: renderStatuses,
-        seriesData,
+        seriesData: series.seriesData,
+        onZoomed: handleZoomed,
+        onResetZoom: handleResetZoom,
       }),
-    [
-      minTime,
-      maxTime,
-      xLabelPattern,
-      yCeiling,
-      locale,
-      isLargeDataset,
-      labels,
-      formatNumRef,
-      renderStatuses,
-      seriesData,
-    ],
+    [yCeiling, locale, isLargeDataset, labels, series.seriesData, handleZoomed, handleResetZoom],
   );
 
-  const chartSeries = useMemo(() => {
-    return [
-      { name: labels.allTransactions, data: seriesData.total },
-      ...renderStatuses.map((s) => ({
-        name: getStatusLabel(s),
-        data: seriesData.perStatus[s] || [],
+  const chartSeries = useMemo(
+    () =>
+      CATS.map((cat) => ({
+        name: CATEGORY_META[cat].label,
+        data: series.seriesData.perCategory[cat] || [],
       })),
-    ];
-  }, [seriesData, labels.allTransactions, renderStatuses]);
+    [series.seriesData],
+  );
 
-  const hasData = seriesData.total.length > 0;
+  const hasData = series.seriesData.xLabels.length > 0;
+  const isZoomed = zoomStack.length > 0;
 
   return (
     <div className="rounded-sm border border-gray-100 bg-white p-3 space-y-2">
@@ -139,7 +187,6 @@ export default function TimelineChartCard({
           <p className="text-xs text-muted-foreground mt-0.5">
             {labels.subtitle}
           </p>
-
           <div className="flex flex-wrap items-center gap-2 mt-1.5">
             {totalAmount > 0 && (
               <div className="text-xs whitespace-nowrap bg-emerald-50 text-emerald-800 border border-emerald-100 px-2 py-0.5 rounded-sm">
@@ -149,8 +196,33 @@ export default function TimelineChartCard({
                 </strong>
               </div>
             )}
+            {isZoomed && (
+              <div className="text-xs whitespace-nowrap bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-sm">
+                {locale === 'ne'
+                  ? `${formatNum(events.length)} मध्ये ${formatNum(zoomedEvents.length)} कारोबारहरू देखाइएको`
+                  : `Showing ${formatNum(zoomedEvents.length)} of ${formatNum(events.length)} transactions`}
+              </div>
+            )}
           </div>
         </div>
+        {isZoomed && (
+          <div className="flex items-center gap-1.5">
+            {zoomStack.length > 1 && (
+              <button
+                onClick={handleZoomOut}
+                className="text-xs text-slate-600 hover:text-slate-800 font-medium px-2 py-1 border border-slate-200 rounded hover:bg-slate-50 transition-colors"
+              >
+                {labels.zoomOut}
+              </button>
+            )}
+            <button
+              onClick={handleResetZoom}
+              className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+            >
+              {labels.reset}
+            </button>
+          </div>
+        )}
       </div>
 
       {undatedCount > 0 && (
@@ -169,9 +241,10 @@ export default function TimelineChartCard({
         </div>
       ) : (
         <ApexChart
+          key={isZoomed ? `zoom-${zoomStack.length}-${currentZoom!.min}` : 'full'}
           options={chartOptions}
           series={chartSeries}
-          type="area"
+          type="bar"
           height={340}
         />
       )}
@@ -179,24 +252,29 @@ export default function TimelineChartCard({
       {hasData && (
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 border-t border-slate-100 text-xs font-medium text-slate-700">
           <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full inline-block bg-blue-600" />
+            <span className="w-2.5 h-2.5 rounded-full inline-block bg-slate-400" />
             <span>{labels.allTransactions}</span>
             <span className="text-slate-400 font-normal">
               ({formatNum(statusCounts.total)})
             </span>
           </span>
-          {activeStatuses.map((s) => (
-            <span key={s} className="flex items-center gap-2">
-              <span
-                className="w-2.5 h-2.5 rounded-full inline-block"
-                style={{ backgroundColor: getStatusColor(s) }}
-              />
-              <span>{getStatusLabel(s)}</span>
-              <span className="text-slate-400 font-normal">
-                ({formatNum(statusCounts.perStatus[s] || 0)})
+          {CATS.map((cat) => {
+            const count = categoryCounts[cat];
+            if (count === 0) return null;
+            const meta = CATEGORY_META[cat];
+            return (
+              <span key={cat} className="flex items-center gap-2">
+                <span
+                  className="w-2.5 h-2.5 rounded inline-block"
+                  style={{ backgroundColor: meta.color }}
+                />
+                <span>{meta.label}</span>
+                <span className="text-slate-400 font-normal">
+                  ({formatNum(count)})
+                </span>
               </span>
-            </span>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

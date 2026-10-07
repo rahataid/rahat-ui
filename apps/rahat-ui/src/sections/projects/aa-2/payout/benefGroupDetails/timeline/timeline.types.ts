@@ -23,15 +23,29 @@ export type TimelineBucket = {
   exactTimeDisplay?: string;
 };
 
+export type CategoryKey = 'success' | 'inProgress' | 'failed';
+
+export type BucketDetail = {
+  [cat in CategoryKey]: Record<string, number>;
+};
+
 export type SeriesData = {
-  total: [number, number][];
-  perStatus: Record<string, [number, number][]>;
-  exactTimes?: Record<number, string>;
+  xLabels: string[];
+  perCategory: Record<CategoryKey, number[]>;
+  bucketDetails: BucketDetail[];
+  exactTimes: string[];
+  bucketTimestamps: number[];
 };
 
 export type StatusCounts = {
   total: number;
   perStatus: Record<string, number>;
+};
+
+export type CategoryCounts = {
+  success: number;
+  inProgress: number;
+  failed: number;
 };
 
 export type TimelineDateRange = DateRange;
@@ -46,13 +60,16 @@ export type TimelineSeriesResult = {
   seriesData: SeriesData;
   activeStatuses: string[];
   chartStatuses: string[];
+  categoryCounts: CategoryCounts;
   totalAmount: number;
   totalTransactions: number;
   maxY: number;
   minTime: number;
   maxTime: number;
+  stepMs: number;
   xLabelPattern: string;
   isLargeDataset: boolean;
+  isSparse: boolean;
   timeWindowText: string;
   durationText: string;
   defaultRange: TimelineRangeType;

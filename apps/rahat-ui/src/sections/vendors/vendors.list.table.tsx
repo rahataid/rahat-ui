@@ -55,6 +55,10 @@ export type IVendor = {
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
   walletAddress: `0x${string}`;
+  phone: string;
+  gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
+  projectArea?: string;
+  registeredApps?: string[];
 };
 
 type ProjectModalType = {
@@ -62,6 +66,9 @@ type ProjectModalType = {
   onToggle: () => void;
 };
 
+type ColumnMeta = {
+  className?: string;
+};
 type IProps = {
   table: Table<IVendor>;
   selectedProject: UUID | undefined;
@@ -172,7 +179,16 @@ export default function VendorsTable({
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
-                          <TableHead key={header.id}>
+                          <TableHead
+                            key={header.id}
+                            className={
+                              (
+                                header.column.columnDef.meta as
+                                  | ColumnMeta
+                                  | undefined
+                              )?.className
+                            }
+                          >
                             {header.isPlaceholder
                               ? null
                               : flexRender(
@@ -192,7 +208,16 @@ export default function VendorsTable({
                       data-state={row.getIsSelected() && 'selected'}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell
+                          key={cell.id}
+                          className={
+                            (
+                              cell.column.columnDef.meta as
+                                | ColumnMeta
+                                | undefined
+                            )?.className
+                          }
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
@@ -209,7 +234,9 @@ export default function VendorsTable({
           <div className="w-full h-[calc(100vh-290px)]">
             <div className="flex flex-col items-center justify-center">
               <Image src="/noData.png" height={250} width={250} alt="no data" />
-              <p className="text-medium text-base mb-1">{g('NO_DATA_AVAILABLE')}</p>
+              <p className="text-medium text-base mb-1">
+                {g('NO_DATA_AVAILABLE')}
+              </p>
               <p className="text-sm mb-4 text-gray-500">
                 {t('THERE_ARE_NO_VENDORS_TO_DISPLAY')}
               </p>
@@ -223,9 +250,7 @@ export default function VendorsTable({
           <DialogHeader>
             <DialogTitle>{g('ASSIGN_PROJECT')}</DialogTitle>
             <DialogDescription>
-              {!selectedProject && (
-                <p>{t('SELECT_A_PROJECT_TO_ASSIGN_THE')}</p>
-              )}
+              {!selectedProject && <p>{t('SELECT_A_PROJECT_TO_ASSIGN_THE')}</p>}
             </DialogDescription>
           </DialogHeader>
           <div>

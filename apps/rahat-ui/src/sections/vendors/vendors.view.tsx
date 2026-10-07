@@ -22,12 +22,14 @@ import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { useTranslations } from 'next-intl';
+import { ReusableTabs } from '../../components/reusable-tabs';
+import { BarChart3, List } from 'lucide-react';
+import VendorStats from './vendor.stats';
 
 function VendorsView() {
   const t = useTranslations('VENDORS_LIST');
   const g = useTranslations('GLOBAL');
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
-   
     usePagination();
 
   const projectModal = useBoolean();
@@ -37,8 +39,8 @@ function VendorsView() {
   );
 
   const statusFilter =
-    (columnFilters.find((filter) => filter.id === 'status')
-      ?.value as string) || '';
+    (columnFilters.find((filter) => filter.id === 'status')?.value as string) ||
+    '';
   const projectFilter =
     (columnFilters.find((filter) => filter.id === 'projectName')
       ?.value as string) || '';
@@ -90,7 +92,6 @@ function VendorsView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
     data: vendorData?.data || [],
     manualPagination: true,
@@ -109,6 +110,41 @@ function VendorsView() {
       rowSelection,
     },
   });
+
+  const tabItems = [
+    {
+      value: 'list',
+      label: 'List',
+      icon: <List size={14} />,
+      content: (
+        <>
+          <VendorsTable
+            table={table}
+            selectedProject={selectedProject}
+            setSelectedProject={setSelectedProject}
+            handleAssignProject={handleAssignProject}
+            projectModal={projectModal}
+            selectedRow={selectedRow}
+          />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePageSizeChange={setPerPage}
+            handlePrevPage={setPrevPage}
+            meta={vendorData?.response?.meta || {}}
+            perPage={pagination.perPage}
+          />
+        </>
+      ),
+    },
+    {
+      value: 'stats',
+      label: 'Stats',
+      icon: <BarChart3 size={14} />,
+      content: <VendorStats />,
+    },
+  ];
+
   return (
     <>
       <div className="p-4">
@@ -116,23 +152,8 @@ function VendorsView() {
           <h1 className="font-semibold text-2xl text-label">{t('VENDORS')}</h1>
           <p className="text-sub-label">{t('HERE_IS_THE_LIST_OF_ALL')}</p>
         </div>
-        <VendorsTable
-          table={table}
-          selectedProject={selectedProject}
-          setSelectedProject={setSelectedProject}
-          handleAssignProject={handleAssignProject}
-          projectModal={projectModal}
-          selectedRow={selectedRow}
-        />
+        <ReusableTabs defaultValue="list" items={tabItems} />
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePageSizeChange={setPerPage}
-        handlePrevPage={setPrevPage}
-        meta={vendorData?.response?.meta || {}}
-        perPage={pagination.perPage}
-      />
     </>
   );
 }

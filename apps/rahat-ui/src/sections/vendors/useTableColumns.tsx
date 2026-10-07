@@ -15,6 +15,7 @@ import {
   ACTIONS,
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
+import { TruncatedCell } from '../projects/aa-2/stakeholders/component/TruncatedCell';
 
 const ProjectNameCell = ({
   projects,
@@ -80,13 +81,17 @@ export const useTableColumns = (handleAssignClick: any) => {
           className="cursor-pointer capitalize"
           onClick={() => openSplitDetailView(row.original)}
         >
-          {row.getValue('name')}
+          <TruncatedCell
+            text={row.getValue('name') ?? g('N_A')}
+            truncateByWidth
+          />
         </div>
       ),
     },
     {
       accessorKey: 'status',
       header: g('STATUS'),
+      meta: { className: 'w-[10%]' },
       filterFn: (row, _columnId, filterValue) => {
         if (!filterValue) return true;
         const status = row.getValue('status') as string;
@@ -106,6 +111,7 @@ export const useTableColumns = (handleAssignClick: any) => {
     {
       accessorKey: 'projectName',
       header: g('PROJECT_NAME'),
+      meta: { className: 'w-[15%]' },
       filterFn: (row, _columnId, filterValue) => {
         if (!filterValue) return true;
         const projects = row.getValue('projectName');
@@ -119,11 +125,52 @@ export const useTableColumns = (handleAssignClick: any) => {
         />
       ),
     },
+    {
+      header: 'Project Area',
+      accessorKey: 'projectArea',
+      meta: { className: 'w-[13%]' },
+      cell: ({ row }) => (
+        <span>
+          <TruncatedCell
+            text={row.original.projectArea?.toUpperCase() ?? g('N_A')}
+            truncateByWidth
+          />
+        </span>
+      ),
+    },
+    {
+      header: g('GENDER'),
+      accessorKey: 'gender',
+      meta: { className: 'w-[10%]' },
 
+      cell: ({ row }) => <span>{row.original.gender ?? g('UNKNOWN')}</span>,
+    },
+    {
+      header: g('EMAIL'),
+      accessorKey: 'email',
+      meta: { className: 'w-[13%]' },
+
+      cell: ({ row }) => (
+        <span>
+          <TruncatedCell
+            text={row.getValue('email') ?? g('N_A')}
+            truncateByWidth
+          />
+        </span>
+      ),
+    },
+    {
+      header: g('PHONE_NUMBER'),
+      accessorKey: 'phone',
+      meta: { className: 'w-[13%]' },
+      cell: ({ row }) => <span>{row.original.phone ?? g('N_A')}</span>,
+    },
     {
       header: g('ACTIONS'),
       id: 'actions',
       enableHiding: false,
+      meta: { className: 'w-[8%]' },
+
       cell: ({ row }) => {
         return (
           <div className="flex space-x-3 items-center">
@@ -133,11 +180,11 @@ export const useTableColumns = (handleAssignClick: any) => {
               tip={g('VIEW')}
             />
             <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
-            <TooltipComponent
-              handleOnClick={() => handleAssign(row.original)}
-              Icon={FolderPlus}
-              tip={g('ASSIGN_PROJECT')}
-            />
+              <TooltipComponent
+                handleOnClick={() => handleAssign(row.original)}
+                Icon={FolderPlus}
+                tip={g('ASSIGN_PROJECT')}
+              />
             </GlobalCan>
           </div>
         );

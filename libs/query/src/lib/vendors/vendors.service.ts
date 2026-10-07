@@ -53,6 +53,8 @@ export const useVendorList = (
             name: d.User?.name,
             phone: d.User?.phone,
             gender: d.User?.gender,
+            projectArea: d.User?.extras?.projectArea,
+            registeredApps: d.User?.extras?.registeredApps || [],
             createdAt: d.User?.createdAt,
           })),
         };
@@ -144,7 +146,9 @@ export const useUpdateVendor = () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: variables?.successMessage || t('GLOBAL.VENDOR_UPDATED_SUCCESSFULLY' as never),
+        title:
+          variables?.successMessage ||
+          t('GLOBAL.VENDOR_UPDATED_SUCCESSFULLY' as never),
         icon: 'success',
       });
     },
@@ -159,7 +163,9 @@ export const useUpdateVendor = () => {
         error?.response?.data?.message || t('GLOBAL.ERROR' as never),
       );
       toast.fire({
-        title: variables?.errorMessage || t('GLOBAL.ERROR_WHILE_UPDATING_VENDOR' as never),
+        title:
+          variables?.errorMessage ||
+          t('GLOBAL.ERROR_WHILE_UPDATING_VENDOR' as never),
         icon: 'error',
         text: errorMessage,
       });
@@ -203,7 +209,9 @@ export const useRemoveVendor = () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: variables?.successMessage || t('GLOBAL.VENDOR_REMOVED_SUCCESSFULLY' as never),
+        title:
+          variables?.successMessage ||
+          t('GLOBAL.VENDOR_REMOVED_SUCCESSFULLY' as never),
         icon: 'success',
       });
     },
@@ -218,7 +226,9 @@ export const useRemoveVendor = () => {
         error?.response?.data?.message || t('GLOBAL.ERROR' as never),
       );
       toast.fire({
-        title: variables?.errorMessage || t('GLOBAL.ERROR_WHILE_REMOVING_VENDOR' as never),
+        title:
+          variables?.errorMessage ||
+          t('GLOBAL.ERROR_WHILE_REMOVING_VENDOR' as never),
         icon: 'error',
         text: errorMessage,
       });

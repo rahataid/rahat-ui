@@ -60,7 +60,7 @@ export const STATUS_FILTER_OPTIONS = [
   'ALL',
   'COMPLETED',
   'IN_PROGRESS',
-  'PENDING',
+  'NOT_STARTED',
   'SCHEDULED',
   'FAILED',
   'CANCELLED',
@@ -207,6 +207,14 @@ export function CommunicationsTable({
         if (statusFilter === 'FAILED') {
           return resolved === 'FAILED' || resolved === 'FAIL';
         }
+        if (statusFilter === 'NOT_STARTED' || statusFilter === 'PENDING') {
+          return (
+            resolved === 'NOT_STARTED' ||
+            resolved === 'NOT STARTED' ||
+            resolved === 'PENDING' ||
+            resolved === 'NEW'
+          );
+        }
         return resolved === statusFilter;
       });
     }
@@ -329,7 +337,7 @@ export function CommunicationsTable({
               ALL: t('ALL'),
               COMPLETED: t('COMPLETED'),
               IN_PROGRESS: t('IN_PROGRESS'),
-              PENDING: t('PENDING'),
+              NOT_STARTED: t('NOT_STARTED') || 'Not Started',
               SCHEDULED: t('SCHEDULED'),
               FAILED: t('FAILED'),
               CANCELLED: t('CANCELLED'),
@@ -360,7 +368,7 @@ export function CommunicationsTable({
 
         <DemoTable
           table={table}
-          tableHeight="h-[calc(100vh-540px)]"
+          tableHeight="h-[calc(100vh-320px)]"
           message={t("NO_COMMUNICATIONS_FOUND")}
           loading={isLoading || isBroadcastLoading}
         />

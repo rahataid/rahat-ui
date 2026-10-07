@@ -50,7 +50,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
           {
             accessorKey: 'duration',
             header: t('DURATION'),
-            cell: ({ row }) => (
+            cell: ({ row }: { row: any }) => (
               <div>
                 {row?.original?.disposition?.cdr?.billableseconds != null ? formatNum(row?.original?.disposition?.cdr?.billableseconds) : tg('N_A')}
               </div>
@@ -140,6 +140,9 @@ function renderBadgeBg(status: string) {
   }
   if (status === BroadcastStatus.PENDING) {
     return 'bg-yellow-200';
+  }
+  if (status === 'SCHEDULED') {
+    return 'bg-blue-100 text-blue-800';
   }
   return 'bg-gray-200';
 }

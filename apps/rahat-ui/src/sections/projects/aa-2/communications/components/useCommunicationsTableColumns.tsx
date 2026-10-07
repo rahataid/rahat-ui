@@ -457,7 +457,7 @@ export default function useCommunicationsTableColumns() {
                 variant="outline"
                 className="text-[10px] px-1.5 py-0 font-medium truncate max-w-full w-max bg-white"
               >
-                {`${formatDigits(stakeCount)} ${t('STAKEHOLDER_GROUPS')}`}
+                {`${formatDigits(stakeCount)} ${t('STAKEHOLDER_GROUPS').replace(/[:ः]$/, '')}`}
               </Badge>
             )}
             {benCount === 0 && stakeCount === 0 && (

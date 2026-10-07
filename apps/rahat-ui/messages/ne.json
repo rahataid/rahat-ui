@@ -1651,7 +1651,7 @@
     "STAKEHOLDER_CONFLICT_DESCRIPTION": "यो सरोकारवाला हाल {count} सरोकारवाला समूहसँग जोडिएको छ जुन गतिविधिहरूमा तोकिएको छ। सरोकारवाला मेटाउन यसलाई ती सबैबाट हटाउनुहोस्।",
     "STAKEHOLDER_DETAILS": "सरोकारवालाको विवरण",
     "STAKEHOLDER_GROUP": "सरोकारवाला समूह",
-    "STAKEHOLDER_GROUPS": "सरोकारवाला समूहहरूः",
+    "STAKEHOLDER_GROUPS": "सरोकारवाला समूहहरू",
     "STAKEHOLDER_GROUP_NAME": "सरोकारवाला समूहको नाम",
     "STAKEHOLDER_REMOVED_SUCCESSFULLY": "सरोकारवाला सफलतापूर्वक हटाइयो",
     "STAKEHOLDER_UPDATED_SUCCESSFULLY": "सरोकारवाला सफलतापूर्वक अद्यावधिक भयो",

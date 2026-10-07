@@ -3209,7 +3209,7 @@
     "STAKEHOLDER_ADDED_SUCCESSFULLY": "Stakeholder added successfully",
     "STAKEHOLDER_CONFLICT_DESCRIPTION": "This stakeholder is currently linked to {count} {count, plural, one {stakeholder group} other {stakeholder groups}} which are assigned to activities. Remove it from all of them to delete the stakeholder.",
     "STAKEHOLDER_DETAILS": "Stakeholders Details",
-    "STAKEHOLDER_GROUPS": "Stakeholder Groups:",
+    "STAKEHOLDER_GROUPS": "Stakeholder Groups",
     "STAKEHOLDER_GROUP_NAME": "Stakeholder Group Name",
     "STAKEHOLDER_REMOVED_SUCCESSFULLY": "Stakeholder removed successfully",
     "STAKEHOLDER_UPDATED_SUCCESSFULLY": "Stakeholder updated successfully",

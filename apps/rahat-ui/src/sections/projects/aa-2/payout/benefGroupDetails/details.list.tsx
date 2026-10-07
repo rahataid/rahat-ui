@@ -1,6 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import {
+  useCompletePayout,
   useGetPayoutLogs,
   usePagination,
   usePayoutExportLogs,
@@ -37,6 +38,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import {
   ChevronDown,
+  CircleCheckBig,
   CloudDownload,
   CloudUpload,
   Landmark,
@@ -56,6 +58,8 @@ import {
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
 import { Can } from 'apps/rahat-ui/src/components/can';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -70,6 +74,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
+  const cancelConfirmDialog = useBoolean(false);
+
   const router = useRouter();
   const {
     pagination,
@@ -99,6 +105,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
+  const cancelPayout = useCompletePayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
   const { data: exportPayoutLogs } = usePayoutExportLogs({
     projectUUID: projectId,
@@ -147,7 +154,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     anchor.remove();
     URL.revokeObjectURL(url);
   };
-
+  const handleCompletePayout = () => {
+    cancelPayout.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        uuid: payoutId,
+      },
+    });
+    cancelConfirmDialog.onFalse();
+  };
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -241,6 +256,12 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
+
+  const cancelDialog = () => {
+    cancelConfirmDialog.onFalse();
+  };
+  const text = t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED');
+
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -276,6 +297,32 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           </div>
           {
             <div className="flex gap-2">
+              <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+                <TooltipWrapper
+                  tip={`${
+                    payout?.status === 'COMPLETED'
+                      ? t('PAYOUT_ALREADY_COMPLETED')
+                      : !payout?.beneficiaryGroupToken?.isDisbursed
+                      ? t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED')
+                      : t('MARK_AS_COMPLETED_TOOLTIP')
+                  }`}
+                >
+                  <Button
+                    className={`gap-2 text-sm `}
+                    onClick={() => cancelConfirmDialog.onTrue()}
+                    disabled={
+                      cancelPayout.isPending ||
+                      payout?.status === 'COMPLETED' ||
+                      !payout?.beneficiaryGroupToken?.isDisbursed
+                    }
+                    variant={'default'}
+                  >
+                    <CircleCheckBig className={'w-4 h-4'} />
+                    {t('MARK_AS_COMPLETED')}
+                  </Button>
+                </TooltipWrapper>
+              </Can>
+
               <PayoutConfirmationDialog
                 projectId={projectId}
                 onConfirm={handleTriggerPayout}
@@ -288,7 +335,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                       payout?.hasFailedPayoutRequests === false && 'hidden'
                     }`}
                     onClick={handleTriggerPayoutFailed}
-                    disabled={triggerForPayoutFailed.isPending}
+                    disabled={
+                      triggerForPayoutFailed.isPending ||
+                      payout?.status === 'COMPLETED'
+                    }
                   >
                     <RotateCcw
                       className={`${
@@ -316,7 +366,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                               payout?.status === 'COMPLETED' && 'hidden'
                             } `}
                             disabled={
-                              !payout?.beneficiaryGroupToken?.isDisbursed
+                              !payout?.beneficiaryGroupToken?.isDisbursed ||
+                              payout?.status === 'COMPLETED'
                             }
                             variant={'outline'}
                           >
@@ -561,6 +612,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           }
           perPage={pagination?.perPage}
           total={payoutlogs?.response?.meta?.total || 0}
+          pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
+        />
+        <ConfirmationDialog
+          isConfirmationDialogOpen={cancelConfirmDialog.value}
+          onCancel={cancelDialog}
+          onConfirm={handleCompletePayout}
+          dialogTitle={t('MARK_AS_COMPLETED')}
+          dialogMessage={t('COMPLETE_PAYOUT_ALERT_DESCRIPTION')}
         />
       </div>
     </div>

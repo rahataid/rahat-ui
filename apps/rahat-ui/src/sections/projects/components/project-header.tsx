@@ -15,7 +15,10 @@ import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Can } from 'apps/rahat-ui/src/components/can';
-import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
@@ -29,8 +32,8 @@ import { UUID } from 'crypto';
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { LanguageToggle } from 'apps/rahat-ui/src/components/language-toggle';
-import { CircleAlert } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n';
 
 export function ProjectNav({
   component,
@@ -66,7 +69,10 @@ export function ProjectNav({
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
     const projectPin = localStorage.getItem('PROJECT_PIN');
-    const { preserveFormData, restoreFormData } = require('apps/rahat-ui/src/utils/formStorage');
+    const {
+      preserveFormData,
+      restoreFormData,
+    } = require('apps/rahat-ui/src/utils/formStorage');
     const formData = preserveFormData();
     clearUser();
     clearAuth();
@@ -76,9 +82,15 @@ export function ProjectNav({
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
     toast.success(t('LOGGED_OUT_SUCCESSFULLY'));
-    // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
+
+  const phaseName = activePhase
+    ? translateValue(g, activePhase.name, { fallbackStyle: 'raw', silent: true }) || activePhase.name
+    : '';
+  const phaseNotice = activePhase
+    ? t('PHASE_TRIGGERED_NOTICE', { phase: phaseName })
+    : '';
 
   return (
     <div className="sticky top-0 z-10 h-14 w-full flex items-center pl-4 pr-6 py-2 bg-card border-b">
@@ -88,10 +100,10 @@ export function ProjectNav({
         {isAAProject && !isLoading && activePhase && (
           <TooltipWrapper
             className="min-w-0"
-            tip={`${activePhase.name} phase has been triggered`}
+            tip={phaseNotice}
           >
             <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-500 min-w-0">
-              <span className="truncate">{activePhase.name} phase has been triggered</span>
+              <span className="truncate">{phaseNotice}</span>
             </div>
           </TooltipWrapper>
         )}

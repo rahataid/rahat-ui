@@ -39,11 +39,15 @@ export const useNavItems = () => {
         const defaultMatch = defaultNavConfig.navsettings.find(
           (d) => d.path === item.path,
         );
+        const iconName =
+          item.path === 'communications' && item.icon === 'Megaphone'
+            ? 'PhoneCall'
+            : item.icon;
         return {
           ...item,
           subject: item.subject ?? defaultMatch?.subject,
           roles: item.roles?.map((r) => AARoles[r as keyof typeof AARoles]),
-          icon: resolveIcon(item.icon),
+          icon: resolveIcon(iconName),
         };
       })
     : defaultNavConfig.navsettings.map((item) => ({

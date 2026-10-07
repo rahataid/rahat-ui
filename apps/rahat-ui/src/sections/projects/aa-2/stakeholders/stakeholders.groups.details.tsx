@@ -25,7 +25,11 @@ import { RefreshCw } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
@@ -110,10 +114,7 @@ const StakeholdersGroupsDetails = () => {
           path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
         <div className="flex gap-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.DELETE} subject={SUBJECTS.STAKEHOLDER}>
             <DeleteButton
               name={t('STAKEHOLDER')}
               handleContinueClick={handleDeleteClick}
@@ -121,7 +122,7 @@ const StakeholdersGroupsDetails = () => {
               label={t('DELETE_GROUP')}
               disabled={isDeleting}
             />
-          </RoleAuth>
+          </Can>
         </div>
       </div>
       <div className="p-3 md:p-2 rounded-sm border flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -175,10 +176,7 @@ const StakeholdersGroupsDetails = () => {
             }
           />
 
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.STAKEHOLDER}>
             <Button
               variant="default"
               type="button"
@@ -191,7 +189,7 @@ const StakeholdersGroupsDetails = () => {
             >
               <RefreshCw size={18} className="mr-1" /> {t('UPDATE_STAKEHOLDER_GROUP')}
             </Button>
-          </RoleAuth>
+          </Can>
         </div>
 
         <DemoTable

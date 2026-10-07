@@ -36,6 +36,7 @@ interface ITableColumnProps {
   vendor: {
     name: string;
   };
+  approvedBy: string;
   tokenAmount: number;
   transactionHash: string;
 }
@@ -266,7 +267,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
         <TruncatedCell
           text={
             row.original?.redemptionStatus === 'APPROVED'
-              ? user?.data?.name || tg('N_A')
+              ? row.original?.approvedBy || tg('N_A')
               : tg('N_A')
           }
           maxLength={15}

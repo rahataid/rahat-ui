@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { ChevronsLeftRight, LogOut } from 'lucide-react';
 
 import {
   Sidebar,
@@ -25,18 +25,14 @@ type ProjectNavViewProps = {
 
 function SidebarToggle() {
   const t = useTranslations('AA_PROJECT');
-  const { toggleSidebar, open } = useSidebar();
+  const { toggleSidebar } = useSidebar();
   return (
     <button
       onClick={toggleSidebar}
-      className="absolute top-4 -right-3 z-30 bg-background border border-sidebar-border text-sidebar-foreground hover:text-sidebar-accent-foreground rounded-full p-1 transition-colors shadow-sm"
+      className="absolute top-4 -right-3 z-30 bg-background border border-sidebar-border text-sidebar-foreground hover:text-sidebar-accent-foreground rounded-sm  p-1 transition-colors shadow-sm"
       aria-label={t('TOGGLE_SIDEBAR')}
     >
-      {open ? (
-        <ChevronLeft className="size-[clamp(12px,1.2vw,16px)]" />
-      ) : (
-        <ChevronRight className="size-[clamp(12px,1.2vw,16px)]" />
-      )}
+      <ChevronsLeftRight className="size-[clamp(10px,1.2vw,14px)]" />
     </button>
   );
 }
@@ -47,6 +43,9 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
   return (
     <Sidebar
       collapsible="icon"
+      // Lift the sidebar (and its protruding toggle) above the sticky
+      // project header (z-10) so the toggle is never painted over.
+      className="z-30"
       style={
         {
           '--sidebar-width': 'clamp(11rem, 15vw, 16rem)',

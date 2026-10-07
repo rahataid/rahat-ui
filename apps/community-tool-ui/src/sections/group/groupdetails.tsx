@@ -39,7 +39,7 @@ import {
   usePurgeGroupedBeneficiary,
   useUploadBulkBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
-import type { GroupBeneficiaryColumnFilter } from '@rahat-ui/community-query';
+import type { GroupBeneficiaryColumnFilter } from '@rahataid/community-tool-sdk/groups';
 import { usePagination } from '@rahat-ui/query';
 import {
   DropdownMenu,

@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { useGroupBeneficiaryDistinctValues } from '@rahat-ui/community-query';
-import type { GroupBeneficiaryColumnFilter } from '@rahat-ui/community-query';
+import type { GroupBeneficiaryColumnFilter } from '@rahataid/community-tool-sdk/groups';
 import { useDebounce } from '@rahat-ui/query';
 import { ListFilter } from 'lucide-react';
 import { useEffect, useState } from 'react';

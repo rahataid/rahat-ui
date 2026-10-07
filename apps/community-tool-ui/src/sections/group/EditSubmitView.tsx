@@ -16,7 +16,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ArrowLeft, Columns, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { GroupBeneficiaryColumnFilter } from '@rahat-ui/community-query';
+import type { GroupBeneficiaryColumnFilter } from '@rahataid/community-tool-sdk/groups';
 import ColumnFilterPopover from './ColumnFilterPopover';
 
 const READ_ONLY_FIELDS = new Set([

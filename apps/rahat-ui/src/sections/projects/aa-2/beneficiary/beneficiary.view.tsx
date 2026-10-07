@@ -36,6 +36,7 @@ import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import BeneficiaryTable from './beneficiary.table';
+import CvaProjectGuard from './cva-project.guard';
 function BeneficiaryView() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
@@ -82,12 +83,14 @@ function BeneficiaryView() {
           </TabsTrigger>
         </TabsList>
 
-        <Button
-          variant="outline"
-          onClick={() => router.push(`/projects/aa/${id}/beneficiary/import`)}
-        >
-          <CloudDownload className="mr-1" /> {tg('IMPORT_BENEFICIARIES')}
-        </Button>
+        <CvaProjectGuard>
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/projects/aa/${id}/beneficiary/import`)}
+          >
+            <CloudDownload className="mr-1" /> {tg('IMPORT_BENEFICIARIES')}
+          </Button>
+        </CvaProjectGuard>
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">

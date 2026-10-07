@@ -86,8 +86,8 @@ export default function ActivitiesDetailView() {
   }
 
   return (
-    <div className="h-[calc(100vh-65px)] p-4">
-      <div className="flex gap-2 justify-between">
+    <div className="h-[calc(100vh-65px)] overflow-y-auto p-4">
+      <div className="flex flex-wrap gap-2 justify-between">
         <div className="flex flex-col gap-2">
           <Back path={activitiesListPath} />
           <Heading
@@ -151,8 +151,8 @@ export default function ActivitiesDetailView() {
         )}
       </div>
       {activityDetail ? (
-        <div className="grid lg:grid-cols-2 gap-3 w-full">
-          <div className="flex flex-col gap-2 w-full">
+        <div className="grid lg:grid-cols-2 gap-3 w-full [&>*]:min-w-0">
+          <div className="flex flex-col gap-2 w-full min-w-0">
             <ActivityDetailCards
               activityDetail={activityDetail}
               loading={isLoading}

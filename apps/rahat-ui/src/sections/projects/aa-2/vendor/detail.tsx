@@ -129,7 +129,7 @@ export default function Detail() {
         description={t('VENDOR_DETAIL_DESC', { name: vendor?.name })}
       />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="border bg-secondary rounded">
+        <TabsList className="border bg-secondary rounded max-w-full overflow-x-auto">
           {visibleTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
@@ -142,7 +142,7 @@ export default function Detail() {
         </TabsList>
 
         <TabsContent value="vendorOverview">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 mb-4 [&>*]:min-w-0">
             <ProfileCard data={vendor} />
             <OverviewCard
               data={data?.data}

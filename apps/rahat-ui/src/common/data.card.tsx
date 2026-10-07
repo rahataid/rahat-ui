@@ -109,32 +109,38 @@ export function DataCard({
         </p>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
-        <div>
+        <div className="min-w-0 w-full">
           {loading ? (
             <TableLoader />
           ) : (
             <>
               {number && number?.length > 6 && truncate ? (
-                <TooltipProvider>
+                <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
                         className={`${
-                          title === 'Created By' ? 'text-xl ' : 'text-3xl'
-                        } font-semibold text-primary truncate w-52`}
+                          title === 'Created By' || (typeof number === 'string' && isNaN(Number(number.replace(/[^\d]/g, ''))))
+                            ? 'text-lg sm:text-xl'
+                            : 'text-2xl sm:text-3xl'
+                        } font-semibold text-primary truncate max-w-full cursor-pointer`}
                       >
                         {number}
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent>{number}</TooltipContent>
+                    <TooltipContent side="top">
+                      <p className="text-xs font-medium">{number}</p>
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               ) : (
                 <div
                   className={`${
-                    title === 'Created By' ? 'text-xl' : 'text-3xl'
+                    title === 'Created By' || (typeof number === 'string' && isNaN(Number(number.replace(/[^\d]/g, ''))))
+                      ? 'text-lg sm:text-xl'
+                      : 'text-2xl sm:text-3xl'
                   } font-semibold text-primary ${
-                    truncate ? 'truncate w-52' : ''
+                    truncate ? 'truncate max-w-full' : ''
                   }`}
                 >
                   {number}
@@ -143,8 +149,29 @@ export function DataCard({
 
               {badge ? (
                 <Badge>{smallNumber}</Badge>
+              ) : smallNumber && smallNumber?.length > 6 && truncate ? (
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className="text-lg sm:text-xl font-normal text-primary truncate max-w-full cursor-pointer"
+                        title={typeof smallNumber === 'string' ? smallNumber : undefined}
+                      >
+                        {smallNumber}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      <p className="text-xs font-medium">{smallNumber}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ) : (
-                <div className="text-xl font-normal text-primary">
+                <div
+                  className={`text-lg sm:text-xl font-normal text-primary ${
+                    truncate ? 'truncate max-w-full' : ''
+                  }`}
+                  title={typeof smallNumber === 'string' ? smallNumber : undefined}
+                >
                   {smallNumber}
                 </div>
               )}

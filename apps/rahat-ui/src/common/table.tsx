@@ -18,6 +18,7 @@ type IProps = {
   message?: string;
   height?: string;
   fixedLayout?: boolean;
+  minColumnWidth?: number;
 };
 
 type ColumnMeta = {
@@ -31,16 +32,21 @@ export function DemoTable({
   message,
   height = '340px',
   fixedLayout = true,
+  minColumnWidth = 120,
 }: IProps) {
   const hasRows = table.getRowModel().rows.length > 0;
   const containerClass = tableHeight ?? `h-[max(280px,calc(100vh-${height}))]`;
 
   const visibleColumns = table.getVisibleLeafColumns();
 
+  // Floors the table width so narrow viewports scroll the wrapper instead of clipping columns.
+  const minTableWidth = visibleColumns.length * minColumnWidth;
+
   return (
-    <div className={`overflow-auto ${containerClass}`}>
+    <div className={`overflow-auto max-w-full ${containerClass}`}>
       <TableComponent
         className={`w-full ${fixedLayout ? 'table-fixed' : 'table-auto'}`}
+        style={minTableWidth ? { minWidth: `${minTableWidth}px` } : undefined}
       >
         <TableHeader className="sticky top-0 z-10 border-b [&_th]:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (

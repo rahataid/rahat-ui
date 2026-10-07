@@ -132,6 +132,7 @@ export default function CommonLogsTable<T>({
           table={table}
           tableHeight="h-[calc(100vh-340px)]"
           loading={isLoading}
+          minColumnWidth={135}
         />
         <CustomPagination
           meta={

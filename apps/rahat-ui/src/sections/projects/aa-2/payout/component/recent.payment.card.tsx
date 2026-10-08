@@ -37,13 +37,6 @@ export default function RecentPaymentCard({
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
-  // TEMP-DEBUG: remove before merge
-  console.log('[PAYOUT-DEBUG] recent.payment.card', {
-    actions,
-    merchentName,
-    merchentNameType: typeof merchentName,
-    status,
-  });
   return (
     <div
       className={`flex items-center justify-between p-1  bg-white ${
@@ -92,13 +85,10 @@ export default function RecentPaymentCard({
             )}
             <Dot />
             {translateValue(tg, merchentName, {
-              fallback:
-                typeof merchentName === 'string'
-                  ? merchentName
-                      .toUpperCase()
-                      .replace(/_/g, ' ')
-                      .replace(/^./, (char) => char.toUpperCase())
-                  : String(merchentName ?? ''),
+              fallback: merchentName
+                ?.toUpperCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char) => char.toUpperCase()),
             })}
           </div>
           <div className="text-sm text-muted-foreground">

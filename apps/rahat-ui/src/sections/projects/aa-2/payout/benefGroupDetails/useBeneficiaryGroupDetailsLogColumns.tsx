@@ -202,14 +202,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: tv('TRANSACTION_TYPE'),
       cell: ({ row }) => {
         const type = row?.original?.transactionType ?? 'unknown';
-        // TEMP-DEBUG: remove before merge
-        console.log('[PAYOUT-DEBUG] payout-log row', {
-          uuid: row?.original?.uuid,
-          status: row?.original?.status,
-          statusType: typeof row?.original?.status,
-          transactionType: row?.original?.transactionType,
-          transactionTypeType: typeof row?.original?.transactionType,
-        });
         const prettified = type
           .toLowerCase()
           .split('_')

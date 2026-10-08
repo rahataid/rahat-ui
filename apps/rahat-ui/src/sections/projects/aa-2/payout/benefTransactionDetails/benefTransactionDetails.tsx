@@ -90,16 +90,6 @@ export default function BeneficiaryTransactionLogDetails() {
   if (payoutLogsLoading) {
     return <TableLoader />;
   }
-  // TEMP-DEBUG: remove before merge
-  console.log('[PAYOUT-DEBUG] benefTransactionDetails', {
-    uuid,
-    status,
-    statusType: typeof status,
-    transactionType,
-    payoutType: data?.data?.payout?.type,
-    providerName: data?.data?.payout?.extras?.paymentProviderName,
-    providerNameType: typeof data?.data?.payout?.extras?.paymentProviderName,
-  });
   const handleRedirect = () => {
     router.push(
       `/beneficiary/${data?.data?.Beneficiary?.uuid}?projectId=${id}&groupId=${
@@ -137,7 +127,7 @@ export default function BeneficiaryTransactionLogDetails() {
           title={tv('ACTUAL_BUDGET')}
           Icon={Coins}
           smallNumber={`${t('RS')} ${formatNum(
-            (data?.data?.amount ?? 0) * ONE_TOKEN_VALUE,
+            data?.data?.amount * ONE_TOKEN_VALUE,
           )}`}
           className="h-24 w-full rounded-sm pt-1"
         />
@@ -150,7 +140,7 @@ export default function BeneficiaryTransactionLogDetails() {
           )}`}
           className="h-24 w-full rounded-sm pt-1"
         />
-        {data?.data?.status?.endsWith('COMPLETED') && (
+        {data?.data?.status.endsWith('COMPLETED') && (
           <>
             <DataCard
               title={tv('PAYOUT_TYPE')}
@@ -170,15 +160,10 @@ export default function BeneficiaryTransactionLogDetails() {
               badge={true}
               smallNumber={
                 data?.data?.payout?.type === 'FSP'
-                  ? typeof data?.data?.payout?.extras?.paymentProviderName ===
-                    'string'
-                    ? data.data.payout.extras.paymentProviderName
-                        .split('_')
-                        .join(' ')
-                    : data?.data?.payout?.extras?.paymentProviderName ??
-                      data?.data?.payout?.mode ??
-                      tg('N_A')
-                  : data?.data?.payout?.mode ?? tg('N_A')
+                  ? data?.data?.payout?.extras?.paymentProviderName
+                      .split('_')
+                      .join(' ')
+                  : data?.data?.payout?.mode
               }
               className="h-24 w-full rounded-sm"
             />

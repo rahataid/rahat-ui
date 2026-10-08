@@ -22,18 +22,8 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
 
       <div className="h-[calc(100vh-400px)] overflow-y-scroll overflow-x-hidden scrollbar-hidden">
         {payouts?.length ? (
-          payouts?.map((item, index) => {
-            // TEMP-DEBUG: remove before merge
-            console.log('[PAYOUT-DEBUG] recent.payout row', {
-              uuid: item?.uuid,
-              type: item?.type,
-              mode: item?.mode,
-              status: item?.status,
-              providerName: item?.extras?.paymentProviderName,
-              providerNameType: typeof item?.extras?.paymentProviderName,
-            });
-            return (
-              <div key={item.id}>
+          payouts?.map((item, index) => (
+            <div key={item.id}>
               <RecentPaymentCard
                 status={item.status}
                 vendorName={item?.extras?.vendorName}
@@ -43,9 +33,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 actions={item?.type === 'VENDOR' ? 'CVA' : item?.type}
                 merchentName={
                   item?.type === 'FSP'
-                    ? typeof item?.extras?.paymentProviderName === 'string'
-                      ? item.extras.paymentProviderName.split('_').join(' ')
-                      : item?.extras?.paymentProviderName ?? item?.mode
+                    ? item?.extras?.paymentProviderName?.split('_').join(' ')
                     : item?.mode
                 }
                 beneficiariesCount={
@@ -63,8 +51,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 <Separator className="mt-2 mb-2" />
               )}
             </div>
-            );
-          })
+          ))
         ) : (
           <NoResult message={t('NO_PAYOUT_AVAILABLE')} />
         )}

@@ -259,6 +259,7 @@ export const getExplorerUrl = ({
   target: ExplorerTarget;
   value?: string;
 }): string | null => {
+  // Only strings are valid explorer inputs; reject non-strings (e.g. numeric
   if (!chainSettings || typeof value !== 'string' || !value) return null;
 
   if (chainSettings.type === 'evm') {

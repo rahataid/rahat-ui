@@ -1,6 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { Users } from 'lucide-react';
+import { Wrench } from 'lucide-react';
 import DynamicPieChart from '../projects/components/dynamicPieChart';
 import { DataCard } from 'apps/rahat-ui/src/common';
 import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
@@ -38,8 +39,20 @@ export default function UserStats() {
   const genderColors = GENDER_ORDER.map((key) => genderColorsMap[key]);
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <div className="flex min-h-[320px] items-center justify-center rounded-md border bg-card px-6 py-12 text-center">
+      <div className="flex max-w-md flex-col items-center">
+        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+          <Wrench aria-hidden="true" className="h-7 w-7" />
+        </div>
+        <h2 className="text-xl font-semibold text-foreground">
+          Page Under Maintenance
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          This page is temporarily unavailable while we prepare the user
+          statistics service.
+        </p>
+      </div>
+      {/* <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <DataCard
           title={g('TOTAL_USERS')}
           number={formatNum(totalCounts)}
@@ -56,7 +69,7 @@ export default function UserStats() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

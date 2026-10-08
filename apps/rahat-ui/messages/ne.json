@@ -3712,7 +3712,11 @@
     "CHECKING": "जाँच गर्दै...",
     "RUN_HEALTH_CHECK": "स्वास्थ्य जाँच चलाउनुहोस्",
     "HEALTH_CHECK_SUCCESS": "स्वास्थ्य जाँच सम्पन्न भयो: {total} मध्ये {healthy} सेवाहरू स्वस्थ छन्",
-    "HEALTH_CHECK_FAILED": "स्वास्थ्य जाँच असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।"
+    "HEALTH_CHECK_FAILED": "स्वास्थ्य जाँच असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।",
+    "STATS": "तथ्याङ्क",
+    "LIST": "सूची",
+    "GENDER_DISTRIBUTION": "लैङ्गिक वितरण",
+    "TOTAL_USERS": "कुल प्रयोगकर्ताहरू"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",

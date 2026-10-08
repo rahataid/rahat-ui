@@ -595,7 +595,11 @@
     "CHECKING": "Checking...",
     "RUN_HEALTH_CHECK": "Run Health Check",
     "HEALTH_CHECK_SUCCESS": "Health check completed: {healthy} of {total} services healthy",
-    "HEALTH_CHECK_FAILED": "Health check failed. Please try again."
+    "HEALTH_CHECK_FAILED": "Health check failed. Please try again.",
+    "STATS": "Stats",
+    "LIST": "List",
+    "GENDER_DISTRIBUTION": "Gender Distribution",
+    "TOTAL_USERS": "Total Users"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",

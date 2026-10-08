@@ -15,13 +15,18 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useUserTableColumns } from './useUsersColumns';
 import { useUserList, useUserStore } from '@rumsan/react-query';
 import CoreBtnComponent from '../../components/core.btn';
-import { UserCog } from 'lucide-react';
+import { BarChart3, List, UserCog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { ReusableTabs } from '../../components/reusable-tabs';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import UserStats from './user.stats';
 
 export default function UserView() {
   const t = useTranslations('USERS_LIST');
+  const g = useTranslations('GLOBAL');
   const router = useRouter();
+  const { activeTab, setActiveTab } = useActiveTab('list');
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
@@ -53,6 +58,34 @@ export default function UserView() {
     },
   });
 
+  const tabItems = [
+    {
+      value: 'list',
+      label: g('LIST'),
+      icon: <List size={14} />,
+      content: (
+        <>
+          <UsersTable table={table} />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            meta={users?.response?.meta || { total: 0, currentPage: 0 }}
+            perPage={pagination.perPage}
+            total={users?.response?.meta?.lastPage || 0}
+          />
+        </>
+      ),
+    },
+    {
+      value: 'stats',
+      label: g('STATS'),
+      icon: <BarChart3 size={14} />,
+      content: <UserStats />,
+    },
+  ];
+
   return (
     <>
       <div className="p-4">
@@ -73,17 +106,12 @@ export default function UserView() {
             />
           )}
         </div>
-        <UsersTable table={table} />
+        <ReusableTabs
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
+          items={tabItems}
+        />
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={users?.response?.meta || { total: 0, currentPage: 0 }}
-        perPage={pagination.perPage}
-        total={users?.response?.meta?.lastPage || 0}
-      />
     </>
   );
 }

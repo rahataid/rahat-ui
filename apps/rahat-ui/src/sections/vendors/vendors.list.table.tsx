@@ -169,6 +169,7 @@ export default function VendorsTable({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      
       <div>
         {table.getRowModel().rows?.length ? (
           <>

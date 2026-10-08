@@ -127,6 +127,7 @@ function VendorsView() {
             handleAssignProject={handleAssignProject}
             projectModal={projectModal}
             selectedRow={selectedRow}
+            total={vendorData?.response?.meta?.total ?? 0}
           />
           <CustomPagination
             currentPage={pagination.page}

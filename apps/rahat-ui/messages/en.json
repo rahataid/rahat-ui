@@ -1233,7 +1233,8 @@
     "MORE": "more",
     "TOTAL_VENDORS": "Total vendors",
     "STATS": "Stats",
-    "LIST": "List"
+    "LIST": "List",
+    "RESULTS_FOUND": "{total} results found"
   },
   "VENDORS_DETAIL": {
     "VENDOR_DETAILS": "Vendor details",

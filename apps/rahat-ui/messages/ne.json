@@ -3716,7 +3716,8 @@
     "STATS": "तथ्याङ्क",
     "LIST": "सूची",
     "GENDER_DISTRIBUTION": "लैङ्गिक वितरण",
-    "TOTAL_USERS": "कुल प्रयोगकर्ताहरू"
+    "TOTAL_USERS": "कुल प्रयोगकर्ताहरू",
+    "RESULTS_FOUND": "{total} परिणामहरू फेला पर्यो"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -4251,7 +4252,8 @@
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "यस समयमा प्रदर्शन गर्न कुनै विक्रेताहरू छैनन्",
     "VENDORS": "विक्रेताहरू",
     "STATS": "तथ्याङ्क",
-    "LIST": "सूची"
+    "LIST": "सूची",
+    "RESULTS_FOUND": "{total} परिणामहरू फेला पर्यो"
   },
   "VENDORS_REDEMPTION_TABLE": {
     "REDEMPTION_STATUS": "मुक्ति स्थिति",

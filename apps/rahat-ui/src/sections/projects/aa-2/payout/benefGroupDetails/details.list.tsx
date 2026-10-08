@@ -7,6 +7,7 @@ import {
   usePayoutExportLogs,
   usePayoutExportPdfFile,
   useSinglePayout,
+  useTriggerForOnePayoutFailed,
   useTriggerForPayoutFailed,
   useTriggerPayout,
 } from '@rahat-ui/query';
@@ -46,6 +47,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import OtpConfirmDialog from './otpConfirmDialog';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
@@ -104,9 +106,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   );
 
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
+  const triggerForOnePayoutFailed = useTriggerForOnePayoutFailed();
   const triggerPayout = useTriggerPayout();
   const cancelPayout = useCompletePayout();
-  const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
+  const retryOtpDialog = useBoolean(false);
+  const [retryMode, setRetryMode] = React.useState<'bulk' | 'single'>('bulk');
+  const [singleRetryUuid, setSingleRetryUuid] = React.useState<UUID | null>(
+    null,
+  );
+  const columns = useBeneficiaryGroupDetailsLogColumns(
+    payout?.type,
+    (uuid: UUID) => {
+      setSingleRetryUuid(uuid);
+      setRetryMode('single');
+      retryOtpDialog.onTrue();
+    },
+  );
   const { data: exportPayoutLogs } = usePayoutExportLogs({
     projectUUID: projectId,
     payoutUUID: payoutId,
@@ -186,14 +201,34 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     });
   };
 
-  const handleTriggerPayoutFailed = React.useCallback(async () => {
-    triggerForPayoutFailed.mutateAsync({
-      projectUUID: projectId,
-      payload: {
-        payoutUUID: payoutId,
-      },
-    });
-  }, [triggerForPayoutFailed]);
+  const handleConfirmRetryOtp = React.useCallback(
+    async (otp: string) => {
+      if (retryMode === 'single' && singleRetryUuid) {
+        return triggerForOnePayoutFailed.mutateAsync({
+          projectUUID: projectId,
+          payload: {
+            beneficiaryRedeemUuid: singleRetryUuid,
+            otp,
+          },
+        });
+      }
+      return triggerForPayoutFailed.mutateAsync({
+        projectUUID: projectId,
+        payload: {
+          payoutUUID: payoutId,
+          otp,
+        },
+      });
+    },
+    [
+      retryMode,
+      singleRetryUuid,
+      triggerForOnePayoutFailed,
+      triggerForPayoutFailed,
+      projectId,
+      payoutId,
+    ],
+  );
 
   const handleTriggerPayout = React.useCallback(
     async (otp: string) => {
@@ -328,13 +363,54 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 onConfirm={handleTriggerPayout}
                 payoutData={payout}
               />
+              <OtpConfirmDialog
+                projectId={projectId}
+                open={retryOtpDialog.value}
+                onOpenChange={(open) =>
+                  open ? retryOtpDialog.onTrue() : retryOtpDialog.onFalse()
+                }
+                title={
+                  retryMode === 'single'
+                    ? tg('RETRY')
+                    : tv('RETRY_FAILED_REQUESTS')
+                }
+                description={tv('PLEASE_ENTER_DIGIT_PIN', { length: 4 })}
+                summary={
+                  retryMode === 'single' ? (
+                    <div className="flex justify-between gap-2">
+                      <span className="font-medium">
+                        {tv('BENEFICIARY_WALLET_ADDRESS')}
+                      </span>
+                      <span className="truncate max-w-52">
+                        {payoutlogs?.data?.find(
+                          (row: any) => row.uuid === singleRetryUuid,
+                        )?.beneficiaryWalletAddress ?? singleRetryUuid}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="font-medium">
+                        {tv('FAILED_TRANSACTIONS')}
+                      </span>
+                      <span>
+                        {formatNum(payout?.totalFailedPayoutRequests ?? 0)}
+                      </span>
+                    </div>
+                  )
+                }
+                confirmLabel={tg('RETRY')}
+                onConfirm={handleConfirmRetryOtp}
+              />
               {payout?.type === 'FSP' && (
                 <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
                   <Button
                     className={`gap-2 text-sm ${
                       payout?.hasFailedPayoutRequests === false && 'hidden'
                     }`}
-                    onClick={handleTriggerPayoutFailed}
+                    onClick={() => {
+                      setRetryMode('bulk');
+                      retryOtpDialog.onTrue();
+                    }}
                     disabled={
                       triggerForPayoutFailed.isPending ||
                       payout?.status === 'COMPLETED'

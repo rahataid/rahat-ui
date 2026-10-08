@@ -27,6 +27,8 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import OtpConfirmDialog from '../benefGroupDetails/otpConfirmDialog';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
@@ -48,20 +50,25 @@ export default function BeneficiaryTransactionLogDetails() {
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
+  const retryOtpDialog = useBoolean(false);
 
   const { data, isLoading: payoutLogsLoading } = useGetPayoutLog(id as UUID, {
     uuid,
   });
   const { status, transactionType, amount } = data?.data || {};
 
-  const handleTriggerSinglePayoutFailed = useCallback(async () => {
-    triggerForPayoutFailed.mutateAsync({
-      projectUUID: id as UUID,
-      payload: {
-        beneficiaryRedeemUuid: uuid as string,
-      },
-    });
-  }, [triggerForPayoutFailed]);
+  const handleTriggerSinglePayoutFailed = useCallback(
+    async (otp: string) => {
+      return triggerForPayoutFailed.mutateAsync({
+        projectUUID: id as UUID,
+        payload: {
+          beneficiaryRedeemUuid: uuid as string,
+          otp,
+        },
+      });
+    },
+    [triggerForPayoutFailed, id, uuid],
+  );
 
   let totalSuccessAmount = 0;
   let totalFailedAmount = 0;
@@ -110,15 +117,38 @@ export default function BeneficiaryTransactionLogDetails() {
         />
         {data?.data?.payout?.type === 'FSP' && (
           <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
-            <Button
-              className={`gap-2 text-sm ${
-                !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
-              }`}
-              onClick={handleTriggerSinglePayoutFailed}
-            >
-              <RotateCcw className="w-4 h-4" />
-              {tg('RETRY')}
-            </Button>
+            <>
+              <Button
+                className={`gap-2 text-sm ${
+                  !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
+                }`}
+                onClick={retryOtpDialog.onTrue}
+              >
+                <RotateCcw className="w-4 h-4" />
+                {tg('RETRY')}
+              </Button>
+              <OtpConfirmDialog
+                projectId={id as UUID}
+                open={retryOtpDialog.value}
+                onOpenChange={(open) =>
+                  open ? retryOtpDialog.onTrue() : retryOtpDialog.onFalse()
+                }
+                title={tg('RETRY')}
+                description={tv('PLEASE_ENTER_DIGIT_PIN', { length: 4 })}
+                summary={
+                  <div className="flex justify-between gap-2">
+                    <span className="font-medium">
+                      {tv('BENEFICIARY_WALLET_ADDRESS')}
+                    </span>
+                    <span className="truncate max-w-52">
+                      {data?.data?.beneficiaryWalletAddress}
+                    </span>
+                  </div>
+                }
+                confirmLabel={tg('RETRY')}
+                onConfirm={handleTriggerSinglePayoutFailed}
+              />
+            </>
           </Can>
         )}
       </div>

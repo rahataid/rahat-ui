@@ -2247,7 +2247,12 @@
     "EXISTING_STAKEHOLDER_WILL_BE_UPDATED": "Existing stakeholder will be updated",
     "EXIT_PROJECT": "Exit Project",
     "EXPIRED": "EXPIRED",
+    "EXPORT": "Export",
     "EXPORT_ALL_LOGS": "Export All Logs",
+    "EXPORT_COMMUNICATION_LOGS": "Export Communication Logs",
+    "EXPORT_COMMUNICATION_LOGS_CONFIRM": "Are you sure you want to export all communication logs for this group?",
+    "EXPORT_FAILED_COMMUNICATION_LOGS": "Export Failed Communication Logs",
+    "EXPORT_FAILED_COMMUNICATION_LOGS_CONFIRM": "Are you sure you want to export failed communication logs for this group?",
     "EXPORTING": "Exporting...",
     "EXPORT_IVR_FLOW": "Export IVR Flow",
     "EXPORT_IVR_FLOW_DESCRIPTION": "Download your IVR flow as JSON, copy a link, or send to a webhook.",
@@ -3707,7 +3712,9 @@
     "CANCELLED": "Cancelled",
     "ALL_STATUSES": "All Statuses",
     "TOTAL_COUNT": "Total Count",
-    "PAGE": "Page"
+    "PAGE": "Page",
+    "PREVIOUS_PAGE": "Previous page",
+    "NEXT_PAGE": "Next page"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",

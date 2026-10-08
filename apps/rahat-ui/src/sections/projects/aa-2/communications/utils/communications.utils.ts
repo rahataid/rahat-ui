@@ -1,5 +1,7 @@
 import { Transport } from '@rumsan/connect/src/types';
 import { normalizeTransportName } from 'apps/rahat-ui/src/utils/string';
+import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import { BroadcastChannel } from '../types';
 
 export const CHANNEL_TO_TRANSPORT_NAME: Record<BroadcastChannel, string> = {
@@ -303,6 +305,219 @@ export const resolveBroadcastLogStatus = (
 };
 
 export const resolveCommunicationLogStatus = resolveBroadcastLogStatus;
+
+export type ExportLogsOptions = {
+  title?: string;
+  groupName?: string;
+  groupType?: string;
+  channel?: 'SMS' | 'VOICE' | 'EMAIL' | string;
+  onlyFailed?: boolean;
+  message?: string;
+  subject?: string;
+  sessionStartedAt?: string;
+  sessionEndedAt?: string;
+  formatDate?: (date: any) => string;
+  naLabel?: string;
+};
+
+export const exportCommunicationLogs = async (
+  logs: any[],
+  options: ExportLogsOptions = {},
+): Promise<boolean> => {
+  if (!Array.isArray(logs) || logs.length === 0) return false;
+
+  const {
+    title = 'communication',
+    groupName = 'group',
+    groupType = 'N/A',
+    channel = 'SMS',
+    onlyFailed = false,
+    message,
+    subject,
+    sessionStartedAt,
+    sessionEndedAt,
+    formatDate,
+    naLabel = 'N/A',
+  } = options;
+
+  const transport = (channel || 'SMS').toUpperCase();
+
+  let targetRows = logs;
+  if (onlyFailed) {
+    targetRows = logs.filter((log: any) => {
+      const rawStatus = (log?.status || '').toUpperCase();
+      const logStatus = resolveBroadcastLogStatus(log, transport);
+      return rawStatus === 'FAIL' || rawStatus === 'FAILED' || logStatus.isFail;
+    });
+    if (targetRows.length === 0) return false;
+  }
+
+  const formatDateFn = (dateStr: any) => {
+    if (!dateStr) return '';
+    if (formatDate) {
+      try {
+        return formatDate(dateStr);
+      } catch {
+        return formatDateFull(String(dateStr));
+      }
+    }
+    return formatDateFull(String(dateStr));
+  };
+
+  const formattedRows = targetRows.map((log: any) => {
+    const logStatus = resolveBroadcastLogStatus(log, transport);
+    const rawDisp =
+      typeof log.disposition?.disposition === 'string'
+        ? log.disposition.disposition
+        : log.disposition?.error ||
+          (typeof log.disposition === 'string' ? log.disposition : '');
+
+    const durationVal =
+      logStatus.durationSec != null
+        ? String(logStatus.durationSec)
+        : log.duration != null
+        ? String(log.duration)
+        : '';
+
+    const addressVal =
+      log.address || log.phone || log.email || log.name || '';
+
+    if (transport === 'VOICE') {
+      return {
+        'Group Name': groupName || naLabel,
+        'Group Type': groupType || naLabel,
+        'Communication Type': transport,
+        'Communication Title': title || '',
+        'Audience Number': addressVal,
+        Status: logStatus.displayStatus || log.status || '',
+        Disposition: rawDisp || (logStatus.failReason || ''),
+        Duration: durationVal,
+        Attempts: log.attempts ?? 1,
+        'Max Attempts': log.maxAttempts ?? '',
+        'Is Complete': log.isComplete != null ? String(log.isComplete) : '',
+        'Triggered Date': (log.createdAt || log.updatedAt)
+          ? formatDateFn(log.createdAt || log.updatedAt)
+          : '',
+        'Created Date': log.createdAt ? formatDateFn(log.createdAt) : '',
+        'Updated Date': log.updatedAt ? formatDateFn(log.updatedAt) : '',
+        'Session Start Date': sessionStartedAt
+          ? formatDateFn(sessionStartedAt)
+          : '',
+        'Session End Date': sessionEndedAt ? formatDateFn(sessionEndedAt) : '',
+        'Last Attempt': log.lastAttempt
+          ? formatDateFn(log.lastAttempt)
+          : '',
+      };
+    }
+
+    if (transport === 'EMAIL') {
+      return {
+        'Group Name': groupName || naLabel,
+        'Group Type': groupType || naLabel,
+        'Communication Type': transport,
+        'Communication Title': title || '',
+        Subject: subject ?? '',
+        Message: message ?? '',
+        'Audience Email': addressVal,
+        Status: logStatus.displayStatus || log.status || '',
+        Attempts: log.attempts ?? 1,
+        'Max Attempts': log.maxAttempts ?? '',
+        'Is Complete': log.isComplete != null ? String(log.isComplete) : '',
+        'Triggered Date': (log.createdAt || log.updatedAt)
+          ? formatDateFn(log.createdAt || log.updatedAt)
+          : '',
+        'Created Date': log.createdAt ? formatDateFn(log.createdAt) : '',
+        'Updated Date': log.updatedAt ? formatDateFn(log.updatedAt) : '',
+        'Last Attempt': log.lastAttempt
+          ? formatDateFn(log.lastAttempt)
+          : '',
+      };
+    }
+
+    // Default: SMS
+    return {
+      'Group Name': groupName || naLabel,
+      'Group Type': groupType || naLabel,
+      'Communication Type': transport,
+      'Communication Title': title || '',
+      Message: message ?? '',
+      'Audience Number': addressVal,
+      Status: logStatus.displayStatus || log.status || '',
+      Attempts: log.attempts ?? 1,
+      'Max Attempts': log.maxAttempts ?? '',
+      'Is Complete': log.isComplete != null ? String(log.isComplete) : '',
+      'Triggered Date': (log.createdAt || log.updatedAt)
+        ? formatDateFn(log.createdAt || log.updatedAt)
+        : '',
+      'Created Date': log.createdAt ? formatDateFn(log.createdAt) : '',
+      'Updated Date': log.updatedAt ? formatDateFn(log.updatedAt) : '',
+      'Last Attempt': log.lastAttempt
+        ? formatDateFn(log.lastAttempt)
+        : '',
+    };
+  });
+
+  const cleanTitle = (title || 'communication').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const cleanGroup = (groupName || 'group').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const typeSuffix = onlyFailed ? 'failed_deliveries' : 'logs';
+  const fileName = `${cleanTitle}_${cleanGroup}_${typeSuffix}_${new Date().toISOString().slice(0, 10)}`;
+
+  await exportToExcel(formattedRows, fileName);
+  return true;
+};
+
+export type ExportTargetSummaryOptions = {
+  title?: string;
+  formatDate?: (date: any) => string;
+  getGroupDetails?: (id: string, type: string, obj?: any) => { name: string; count: number };
+  channel?: string;
+};
+
+export const exportCommunicationTargetSummary = async (
+  targets: any[],
+  options: ExportTargetSummaryOptions = {},
+): Promise<boolean> => {
+  if (!Array.isArray(targets) || targets.length === 0) return false;
+
+  const { title = 'communication', formatDate, getGroupDetails, channel = 'SMS' } = options;
+
+  const formatDateFn = (dateStr: any) => {
+    if (!dateStr) return 'N/A';
+    if (formatDate) {
+      try {
+        return formatDate(dateStr);
+      } catch {
+        return formatDateFull(String(dateStr));
+      }
+    }
+    return formatDateFull(String(dateStr));
+  };
+
+  const formattedRows = targets.map((target: any) => {
+    const groupInfo = getGroupDetails
+      ? getGroupDetails(target?.groupId, target?.groupType, target?.group)
+      : { name: target?.group?.name || target?.groupId || 'N/A', count: target?.group?.count ?? 0 };
+
+    return {
+      'Group Name': groupInfo.name,
+      'Group Type': target?.groupType || 'BENEFICIARY',
+      'Audience Count': groupInfo.count,
+      'Communication Title': title,
+      'Communication Type': channel,
+      'Session ID': target?.sessionId || 'N/A',
+      Status: target?.status || 'PENDING',
+      'Updated Date': target?.updatedAt
+        ? formatDateFn(target.updatedAt)
+        : 'N/A',
+    };
+  });
+
+  const cleanTitle = (title || 'communication').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const fileName = `${cleanTitle}_audience_groups_${new Date().toISOString().slice(0, 10)}`;
+
+  await exportToExcel(formattedRows, fileName);
+  return true;
+};
 
 
 

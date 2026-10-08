@@ -686,7 +686,12 @@
     "EXISTING_STAKEHOLDER_WILL_BE_UPDATED": "भइरहेको सरोकारवालाहरुको जानकारीहरु अपडेट हुनेछ",
     "EXIT_PROJECT": "परियोजनाबाट बाहिर निस्कनुहोस्",
     "EXPIRED": "म्याद सकिएको",
+    "EXPORT": "निर्यात गर्नुहोस्",
     "EXPORT_ALL_LOGS": "सबै लगहरू निर्यात गर्नुहोस्",
+    "EXPORT_COMMUNICATION_LOGS": "सञ्चार लगहरू निर्यात गर्नुहोस्",
+    "EXPORT_COMMUNICATION_LOGS_CONFIRM": "के तपाईं यस समूहका सबै सञ्चार लगहरू निर्यात गर्न निश्चित हुनुहुन्छ?",
+    "EXPORT_FAILED_COMMUNICATION_LOGS": "असफल सञ्चार लगहरू निर्यात गर्नुहोस्",
+    "EXPORT_FAILED_COMMUNICATION_LOGS_CONFIRM": "के तपाईं यस समूहका असफल सञ्चार लगहरू निर्यात गर्न निश्चित हुनुहुन्छ?",
     "EXPORTING": "निर्यात गर्दै...",
     "EXPORT_IVR_FLOW": "आइभिआर प्रवाह निर्यात गर्नुहोस्",
     "EXPORT_IVR_FLOW_DESCRIPTION": "आफ्नो आइभिआर प्रवाह JSON को रूपमा डाउनलोड गर्नुहोस्, लिङ्क कपी गर्नुहोस्, वा वेबहुकमा पठाउनुहोस्।",
@@ -2148,7 +2153,9 @@
     "CANCELLED": "रद्द गरियो",
     "ALL_STATUSES": "सबै स्थितिहरू",
     "TOTAL_COUNT": "कुल गणना",
-    "PAGE": "पृष्ठ"
+    "PAGE": "पृष्ठ",
+    "PREVIOUS_PAGE": "अघिल्लो पृष्ठ",
+    "NEXT_PAGE": "पछिल्लो पृष्ठ"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खातावालाको नाम",
@@ -2492,7 +2499,9 @@
     "PLEASE_ENTER_DIGIT_PIN": "कृपया {length} अंकको पिन प्रविष्ट गर्नुहोस्।",
     "INVALID_PIN_FALLBACK": "अमान्य पिन।",
     "VERIFYING": "प्रमाणित गर्दै…",
-    "TRIGGERING": "सुरु गर्दै…"
+    "TRIGGERING": "सुरु गर्दै…",
+    "PREVIOUS_PAGE": "अघिल्लो पृष्ठ",
+    "NEXT_PAGE": "पछिल्लो पृष्ठ"
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "ACTIVE_OWNERS": "सक्रियअधिकार प्राप्त व्यक्तिहरु",

@@ -19,7 +19,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2, Trash2, X } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 
 import { useProjectList } from '@rahat-ui/query';
 import {
@@ -31,11 +31,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -48,6 +46,11 @@ import { SearchInput } from '../../common';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { useTranslations } from 'next-intl';
 import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
+import {
+  VendorFilterTags,
+  VendorProjectFilter,
+  VendorStatusFilter,
+} from './vendors.table.filters';
 
 export type IVendor = {
   id: string;
@@ -142,51 +145,19 @@ export default function VendorsTable({
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
         />
-        {/* Status Filter */}
-        <Select
-          value=""
-          onValueChange={(event) =>
-            table
-              .getColumn('status')
-              ?.setFilterValue(event === 'All' ? '' : event)
+        {/* Status Filter Section */}
+        <VendorStatusFilter
+          onChange={(value) => table.getColumn('status')?.setFilterValue(value)}
+        />
+        {/* Project Filter Section */}
+        <VendorProjectFilter
+          projectNames={projectNames}
+          onChange={(value) =>
+            table.getColumn('projectName')?.setFilterValue(value)
           }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t('SELECT_STATUS')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="All">{g('ALL')}</SelectItem>
-              <SelectItem value="Assigned">{g('ASSIGNED')}</SelectItem>
-              <SelectItem value="Pending">{g('PENDING')}</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        />
 
-        {/* Project filter */}
-        <Select
-          value=""
-          onValueChange={(event) =>
-            table
-              .getColumn('projectName')
-              ?.setFilterValue(event === 'All' ? '' : event)
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={g('SELECT_PROJECT')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="All">{g('ALL')}</SelectItem>
-              {projectNames.map((projectName) => (
-                <SelectItem key={projectName} value={projectName}>
-                  {projectName}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-
+        {/* Column Hide and Reveal */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
@@ -214,42 +185,11 @@ export default function VendorsTable({
         </DropdownMenu>
       </div>
 
-      {activeFilters.length > 0 && (
-        <div className="flex min-h-12 items-center gap-4 border-t py-2">
-          <p className="min-w-max text-primary">
-            {t('RESULTS_FOUND', {
-              total,
-            })}
-          </p>
-          <div className="flex min-w-0 flex-1 items-center gap-3 overflow-x-auto">
-            {activeFilters.map((filter) => (
-              <div
-                key={filter.key}
-                className="flex min-w-max items-center gap-2 text-sm"
-              >
-                <span>{filter.label}:</span>
-                <button
-                  type="button"
-                  onClick={filter.clear}
-                  aria-label={`${g('CLEAR')} ${filter.label}`}
-                  className="flex items-center gap-2 rounded-xl bg-gray-200 px-3 py-2 text-xs text-slate-700"
-                >
-                  {filter.value}
-                  <X className="h-4 w-4 text-red-600" />
-                </button>
-              </div>
-            ))}
-          </div>
-          <Button
-            variant="outline"
-            className="min-w-max rounded-xl text-red-500"
-            onClick={() => table.resetColumnFilters()}
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            {g('CLEAR')}
-          </Button>
-        </div>
-      )}
+      <VendorFilterTags
+        filters={activeFilters}
+        total={total}
+        onClearAll={() => table.resetColumnFilters()}
+      />
       <div>
         {table.getRowModel().rows?.length ? (
           <>

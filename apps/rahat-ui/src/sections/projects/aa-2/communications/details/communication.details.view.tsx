@@ -138,19 +138,8 @@ export default function CommunicationDetailsView() {
 
   const deliveredCount = rawBroadcastCounts?.SUCCESS ?? 0;
   const scheduledCount = rawBroadcastCounts?.SCHEDULED ?? 0;
-  const failedCount = (rawBroadcastCounts?.FAIL ?? 0) + failedTargetsAudienceCount;
-
-  const pendingTargetsWithoutSession = targets
-    .filter(
-      (t: any) =>
-        !t.sessionId && (t?.status === 'PENDING' || t?.status === 'PROCESSING'),
-    )
-    .reduce((sum: number, target: any) => {
-      const info = getGroupDetails(target.groupId, target.groupType, target.group);
-      return sum + (info.count || 0);
-    }, 0);
-
-  const pendingCountBroadcast = (rawBroadcastCounts?.PENDING ?? 0) + pendingTargetsWithoutSession;
+  const failedCount = rawBroadcastCounts?.FAIL ?? 0;
+  const pendingCountBroadcast = rawBroadcastCounts?.PENDING ?? 0;
 
   const record = useMemo(() => {
     if (!raw) return null;
@@ -164,10 +153,10 @@ export default function CommunicationDetailsView() {
     return resolveCommunicationLifecycleStatus({
       channel: record?.channel || raw?.channel || 'SMS',
       rawStatus: record?.status || raw?.status,
-      counts: broadcastCounts?.data,
+      counts: sessionIds.length > 0 ? rawBroadcastCounts : undefined,
       hasActiveTargets:
         targets.some((t: any) => t?.status === 'PROCESSING'),
-      hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING'),
+      hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING' || !t?.status),
       hasSession: sessionIds.length > 0,
       isRetrying: isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending,
     });
@@ -176,7 +165,7 @@ export default function CommunicationDetailsView() {
     raw?.channel,
     record?.status,
     raw?.status,
-    broadcastCounts?.data,
+    rawBroadcastCounts,
     sessionIds.length,
     targets,
     isRetrying,
@@ -649,8 +638,13 @@ function TargetGroupCardItem({
 
   const isTargetResolving = !!target?.sessionId && (isGroupBroadcastLoading || broadcastCounts === undefined);
 
-  const delivered = broadcastCounts?.data?.SUCCESS ?? 0;
-  const failed = broadcastCounts?.data?.FAIL ?? 0;
+  const rawGroupCounts =
+    (broadcastCounts as any)?.data?.data ??
+    (broadcastCounts as any)?.data ??
+    broadcastCounts;
+
+  const delivered = rawGroupCounts?.SUCCESS ?? 0;
+  const failed = rawGroupCounts?.FAIL ?? 0;
   const audioURL = typeof raw?.audioURL === 'object' ? raw.audioURL : null;
   const messageText =
     typeof raw?.message === 'string' && raw.message.trim()
@@ -663,13 +657,13 @@ function TargetGroupCardItem({
     return resolveCommunicationLifecycleStatus({
       channel: record.channel,
       rawStatus: target?.status,
-      counts: broadcastCounts?.data,
+      counts: target?.sessionId ? rawGroupCounts : undefined,
       hasActiveTargets: target?.status === 'PROCESSING',
-      hasPendingTargets: target?.status === 'PENDING',
+      hasPendingTargets: target?.status === 'PENDING' || !target?.status,
       hasSession: !!target?.sessionId,
       isRetrying: (failed > 0 || target?.status === 'FAILED') && isRetrying,
     });
-  }, [target?.status, broadcastCounts?.data, record.channel, isRetrying, failed]);
+  }, [target?.status, target?.sessionId, rawGroupCounts, record.channel, isRetrying, failed]);
 
   const handleRetry = async () => {
     if (isRetrying) return;
@@ -732,7 +726,9 @@ function TargetGroupCardItem({
       {/* Footer Section: Timestamps on Left + Buttons on Right */}
       <div className="pt-2.5 border-t border-gray-100 flex flex-wrap items-end justify-between gap-2">
         <div className="text-[11px] text-gray-500 space-y-0.5">
-          <p>{t('COMPLETED_AT') || 'Completed At'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+          {(effectiveTargetStatus === 'COMPLETED' || target?.status === 'COMPLETED') && (
+            <p>{t('COMPLETED_AT') || 'Completed At'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+          )}
           <p>{t('UPDATED_AT') || 'Updated at'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
         </div>
 

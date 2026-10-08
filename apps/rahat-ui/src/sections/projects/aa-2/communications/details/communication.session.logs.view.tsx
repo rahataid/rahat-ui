@@ -12,13 +12,11 @@ import {
 } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Tabs,
@@ -26,7 +24,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
 import { CommunicationTooltip } from '../components/communication-tooltip';
@@ -69,22 +66,7 @@ import CommsLogsTable from '../../communicationLog/table/comms.logs.table';
 import useCommsLogsTableColumns from '../../communicationLog/table/useCommsLogsTableColumns';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { toast } from 'react-toastify';
 import { UUID } from 'crypto';
-
-function renderBadgeBg(status?: string) {
-  const s = status?.toUpperCase();
-  if (s === 'FAIL' || s === 'FAILED') {
-    return 'bg-red-100 text-red-700 hover:bg-red-100';
-  }
-  if (s === 'SUCCESS' || s === 'COMPLETED' || s === 'SENT') {
-    return 'bg-green-100 text-green-700 hover:bg-green-100';
-  }
-  if (s === 'PENDING' || s === 'PROCESSING') {
-    return 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100';
-  }
-  return 'bg-gray-100 text-gray-700 hover:bg-gray-100';
-}
 
 export function CommunicationSessionLogsView() {
   const tGlobal = useTranslations('GLOBAL');
@@ -253,7 +235,6 @@ export function CommunicationSessionLogsView() {
 
   const {
     data: singleBeneficiaryGroupData,
-    isLoading: isLoadingBeneficiaryGroup,
   } = useSingleBeneficiaryGroup(
     projectId as UUID,
     (isBeneficiaryGroup && targetGroupId ? targetGroupId : '') as UUID,
@@ -261,15 +242,10 @@ export function CommunicationSessionLogsView() {
 
   const {
     data: singleStakeholderGroupData,
-    isLoading: isLoadingStakeholderGroup,
   } = useSingleStakeholdersGroup(
     projectId as UUID,
     (isStakeholderGroup && targetGroupId ? targetGroupId : '') as UUID,
   );
-
-  const isLoadingAudience =
-    (isBeneficiaryGroup && isLoadingBeneficiaryGroup) ||
-    (isStakeholderGroup && isLoadingStakeholderGroup);
 
   const groupFromList = useMemo(() => {
     const groupsData: any = isBeneficiaryGroup
@@ -359,26 +335,14 @@ export function CommunicationSessionLogsView() {
         TOTAL: rawCounts.TOTAL ?? 0,
       };
     }
-    const isPending =
-      !targetGroup?.status ||
-      targetGroup?.status === 'PENDING' ||
-      targetGroup?.status === 'PROCESSING';
-    const isFailed = targetGroup?.status === 'FAILED';
-    const totalAudience = groupInfo.count || audienceList.length || 0;
     return {
       SUCCESS: 0,
-      FAIL: isFailed ? totalAudience : 0,
-      PENDING: isPending ? totalAudience : 0,
+      FAIL: 0,
+      PENDING: 0,
       SCHEDULED: 0,
-      TOTAL: totalAudience,
+      TOTAL: 0,
     };
-  }, [
-    actualSessionId,
-    broadcastCounts,
-    targetGroup?.status,
-    groupInfo.count,
-    audienceList.length,
-  ]);
+  }, [actualSessionId, broadcastCounts]);
 
   const mutateRetry = useSessionRetryFailed();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
@@ -389,10 +353,10 @@ export function CommunicationSessionLogsView() {
     return resolveCommunicationLifecycleStatus({
       channel,
       rawStatus: targetGroup?.status,
-      counts,
+      counts: actualSessionId ? counts : undefined,
       hasActiveTargets: targetGroup?.status === 'PROCESSING',
       hasPendingTargets:
-        targetGroup?.status === 'PENDING' || !targetGroup?.status,
+        targetGroup?.status === 'PENDING' || !targetGroup?.status || !actualSessionId,
       hasSession: !!actualSessionId,
       isRetrying:
         mutateRetry.isPending || triggerBroadcast.isPending || isRetrying,
@@ -408,14 +372,25 @@ export function CommunicationSessionLogsView() {
   ]);
 
   const logsList = useMemo(() => {
+    if (!actualSessionId) return [];
     const raw =
       (sessionLogsData as any)?.data ??
       (sessionLogsData as any)?.httpReponse?.data?.data ??
       [];
     return Array.isArray(raw) ? raw : [];
-  }, [sessionLogsData]);
+  }, [actualSessionId, sessionLogsData]);
 
   const logsMeta = useMemo(() => {
+    if (!actualSessionId) {
+      return {
+        total: 0,
+        currentPage: 1,
+        lastPage: 1,
+        perPage: 10,
+        next: null,
+        prev: null,
+      };
+    }
     return (
       (sessionLogsData as any)?.meta ??
       (sessionLogsData as any)?.httpReponse?.data?.meta ?? {
@@ -427,96 +402,13 @@ export function CommunicationSessionLogsView() {
         prev: null,
       }
     );
-  }, [sessionLogsData, logsList.length]);
-
-  const audienceAsLogRows = useMemo(() => {
-    const rawStatus = targetGroup?.status || 'PENDING';
-    const mappedStatus =
-      rawStatus === 'SENT' || rawStatus === 'PROCESSING'
-        ? 'PENDING'
-        : rawStatus;
-
-    return audienceList.map((item: any) => ({
-      address: item.address,
-      name: item.name,
-      status: mappedStatus,
-      attempts: 0,
-      disposition: targetGroup?.error
-        ? { disposition: targetGroup.error }
-        : null,
-      updatedAt: targetGroup?.updatedAt || rawComm?.updatedAt,
-    }));
-  }, [
-    audienceList,
-    targetGroup?.status,
-    targetGroup?.error,
-    targetGroup?.updatedAt,
-    rawComm?.updatedAt,
-  ]);
-
-  const filteredAudienceLogRows = useMemo(() => {
-    const search = (cleanFilters.address || '').trim().toLowerCase();
-    const status = cleanFilters.status;
-
-    return audienceAsLogRows.filter((row: any) => {
-      const matchSearch =
-        !search ||
-        (row.address && String(row.address).toLowerCase().includes(search)) ||
-        (row.name && String(row.name).toLowerCase().includes(search));
-
-      const matchStatus =
-        !status ||
-        status === 'ALL' ||
-        String(row.status).toUpperCase() === status.toUpperCase();
-
-      return matchSearch && matchStatus;
-    });
-  }, [audienceAsLogRows, cleanFilters.address, cleanFilters.status]);
-
-  const displayData = useMemo(() => {
-    if (actualSessionId && logsList.length > 0) return logsList;
-    if (!actualSessionId && filteredAudienceLogRows.length > 0) {
-      const start = (pagination.page - 1) * pagination.perPage;
-      return filteredAudienceLogRows.slice(start, start + pagination.perPage);
-    }
-    return logsList;
-  }, [
-    actualSessionId,
-    logsList,
-    filteredAudienceLogRows,
-    pagination.page,
-    pagination.perPage,
-  ]);
-
-  const effectiveMeta = useMemo(() => {
-    if (actualSessionId && logsList.length > 0) return logsMeta;
-    if (!actualSessionId) {
-      const total = filteredAudienceLogRows.length;
-      const lastPage = Math.max(1, Math.ceil(total / pagination.perPage));
-      return {
-        total,
-        currentPage: pagination.page,
-        lastPage,
-        perPage: pagination.perPage,
-        next: pagination.page < lastPage ? pagination.page + 1 : null,
-        prev: pagination.page > 1 ? pagination.page - 1 : null,
-      };
-    }
-    return logsMeta;
-  }, [
-    actualSessionId,
-    logsList.length,
-    logsMeta,
-    filteredAudienceLogRows.length,
-    pagination.page,
-    pagination.perPage,
-  ]);
+  }, [actualSessionId, sessionLogsData, logsList.length]);
 
   const columns = useCommsLogsTableColumns(channel);
 
   const table = useReactTable({
     manualPagination: true,
-    data: displayData,
+    data: logsList,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -783,13 +675,15 @@ export function CommunicationSessionLogsView() {
                 )}
 
                 <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground pt-1.5 border-t border-gray-100">
-                  <span>
-                    {t('STARTED_AT')}:{' '}
-                    {formatDate(
-                      targetGroup?.createdAt || rawComm?.createdAt,
-                      'MMMM d, yyyy, h:mm:ss a',
-                    )}
-                  </span>
+                  {actualSessionId && (targetGroup?.createdAt || rawComm?.createdAt) && (
+                    <span>
+                      {t('STARTED_AT')}:{' '}
+                      {formatDate(
+                        targetGroup?.createdAt || rawComm?.createdAt,
+                        'MMMM d, yyyy, h:mm:ss a',
+                      )}
+                    </span>
+                  )}
                   {(effectiveStatus === 'COMPLETED' || effectiveStatus === 'FAILED') && (
                     <span>
                       {t('ENDED_AT')}:{' '}
@@ -941,7 +835,9 @@ export function CommunicationSessionLogsView() {
                         {t('TRIGGERED_DATE')}
                       </p>
                       <p className="font-medium">
-                        {formatDate(targetGroup?.updatedAt || rawComm?.updatedAt)}
+                        {actualSessionId && (targetGroup?.updatedAt || rawComm?.updatedAt)
+                          ? formatDate(targetGroup?.updatedAt || rawComm?.updatedAt)
+                          : tg('N_A')}
                       </p>
                     </div>
 
@@ -955,7 +851,7 @@ export function CommunicationSessionLogsView() {
                       </p>
                     </div>
 
-                    {(targetGroup?.createdAt || rawComm?.createdAt) && (
+                    {actualSessionId && (targetGroup?.createdAt || rawComm?.createdAt) && (
                       <div>
                         <p className="text-sm text-gray-500">
                           {t('STARTED_AT')}
@@ -977,7 +873,7 @@ export function CommunicationSessionLogsView() {
                       </div>
                     )}
 
-                    {/* VOICE Status */}
+                    {/* Channel Status */}
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 flex items-center justify-center">
@@ -1043,7 +939,7 @@ export function CommunicationSessionLogsView() {
                   </TabsContent>
 
                   <TabsContent value="logs" className="p-2 m-0 space-y-3">
-                    {targetGroup ? (
+                    {actualSessionId && targetGroup ? (
                       <Card className="rounded-sm shadow-sm">
                         <CardContent className="p-4 space-y-2">
                           <div className="flex items-center justify-between">
@@ -1122,21 +1018,19 @@ export function CommunicationSessionLogsView() {
           <CardContent className="px-3 pt-0 pb-1">
             <CommsLogsTable
               table={table}
-              isLoading={
-                isLoadingLogs || (!actualSessionId && isLoadingAudience)
-              }
+              isLoading={isLoadingLogs}
             />
           </CardContent>
 
           <CardFooter className="justify-end px-3 py-2 border-t border-gray-100">
             <CustomPagination
-              meta={effectiveMeta}
+              meta={logsMeta}
               handleNextPage={setNextPage}
               handlePrevPage={setPrevPage}
               handlePageSizeChange={setPerPage}
               currentPage={pagination.page}
               perPage={pagination.perPage}
-              total={effectiveMeta?.lastPage || 0}
+              total={logsMeta?.lastPage || 0}
             />
           </CardFooter>
         </Card>

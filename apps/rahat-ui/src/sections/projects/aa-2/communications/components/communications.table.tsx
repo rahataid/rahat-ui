@@ -123,7 +123,9 @@ export function useResolvedCommunicationStatuses(records: CommunicationRecord[])
     records.forEach((record, index) => {
       const sessionIds = recordSessionIds[index] ?? [];
       const counts =
-        sessionIds.length > 0 ? results[index]?.data?.data : undefined;
+        sessionIds.length > 0
+          ? results[index]?.data?.data ?? results[index]?.data
+          : undefined;
       resolvedById.set(
         record.id,
         resolveCommunicationLifecycleStatus({
@@ -131,10 +133,10 @@ export function useResolvedCommunicationStatuses(records: CommunicationRecord[])
           rawStatus: record.status,
           counts,
           hasActiveTargets: (record.targets ?? []).some(
-            (target) => target.status === 'SENT' || target.status === 'PROCESSING',
+            (target) => target.status === 'PROCESSING',
           ),
           hasPendingTargets: (record.targets ?? []).some(
-            (target) => target.status === 'PENDING',
+            (target) => target.status === 'PENDING' || !target.status,
           ),
           hasSession: sessionIds.length > 0,
         }),

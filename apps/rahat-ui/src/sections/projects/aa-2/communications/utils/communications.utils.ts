@@ -145,34 +145,34 @@ export const resolveCommunicationLifecycleStatus = ({
   hasSession = false,
   isRetrying = false,
 }: CommunicationLifecycleInput): string => {
-  if (counts) {
-    const success = counts.SUCCESS ?? 0;
-    const fail = counts.FAIL ?? 0;
-    const active = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
+  if (isRetrying) return 'IN_PROGRESS';
 
-    if (success > 0 && active === 0 && fail === 0) {
-      return 'COMPLETED';
+  if (counts && hasSession) {
+    const success = Number(counts.SUCCESS ?? 0);
+    const fail = Number(counts.FAIL ?? 0);
+    const pending = Number(counts.PENDING ?? 0);
+    const scheduled = Number(counts.SCHEDULED ?? 0);
+    const active = pending + scheduled;
+
+    if (active > 0) {
+      if (pending > 0 || success > 0 || fail > 0) {
+        return 'IN_PROGRESS';
+      }
+      if (scheduled > 0) {
+        return 'SCHEDULED';
+      }
     }
 
-    if (isRetrying && (fail > 0 || active > 0)) {
-      return 'IN_PROGRESS';
-    }
-
-    if (success === 0 && fail === 0) {
-      if ((counts.PENDING ?? 0) > 0) return 'IN_PROGRESS';
-      if ((counts.SCHEDULED ?? 0) > 0) return 'SCHEDULED';
-    }
-
-    if (active > 0 && (success > 0 || fail > 0)) {
-      return 'IN_PROGRESS';
-    }
-
-    if (fail > 0 && active === 0) {
-      return 'FAILED';
+    if (active === 0) {
+      if (fail > 0) {
+        return 'FAILED';
+      }
+      if (success > 0) {
+        return 'COMPLETED';
+      }
     }
   }
 
-  if (isRetrying) return 'IN_PROGRESS';
   if (hasActiveTargets) return 'IN_PROGRESS';
   if (hasPendingTargets && !hasSession) return 'NOT_STARTED';
 
@@ -181,12 +181,14 @@ export const resolveCommunicationLifecycleStatus = ({
     FAILED: 'FAILED',
     FAIL: 'FAILED',
     CANCELLED: 'CANCELLED',
-    SENT: 'IN_PROGRESS',
+    CANCELED: 'CANCELLED',
+    SENT: hasSession ? 'IN_PROGRESS' : 'NOT_STARTED',
     PROCESSING: 'IN_PROGRESS',
     IN_PROGRESS: 'IN_PROGRESS',
     PENDING: hasSession ? 'IN_PROGRESS' : 'NOT_STARTED',
     NOT_STARTED: 'NOT_STARTED',
     'NOT STARTED': 'NOT_STARTED',
+    NEW: 'NOT_STARTED',
     SCHEDULED: 'SCHEDULED',
     DELIVERED: 'COMPLETED',
     SUCCESS: 'COMPLETED',
@@ -201,15 +203,16 @@ export const resolveTargetEffectiveStatus = (
   rawStatus?: string | null,
   counts?: BroadcastCounts | null,
   channel = 'SMS',
+  hasSession = false,
 ): string => {
   const normalized = (rawStatus || '').toUpperCase();
   return resolveCommunicationLifecycleStatus({
     channel,
     rawStatus,
     counts,
-    hasActiveTargets: normalized === 'SENT' || normalized === 'PROCESSING' || normalized === 'IN_PROGRESS',
-    hasPendingTargets: normalized === 'PENDING' || normalized === 'NOT_STARTED',
-    hasSession: !!counts,
+    hasActiveTargets: normalized === 'PROCESSING',
+    hasPendingTargets: normalized === 'PENDING' || normalized === 'NOT_STARTED' || normalized === 'NEW',
+    hasSession: hasSession || (!!counts && (Number(counts.SUCCESS ?? 0) + Number(counts.FAIL ?? 0) + Number(counts.PENDING ?? 0) + Number(counts.SCHEDULED ?? 0) > 0)),
   });
 };
 
@@ -230,7 +233,7 @@ export const aggregateTargetStatus = (
 
   for (const target of list) {
     const counts = target.sessionId && countsMap ? countsMap[target.sessionId] : null;
-    const eff = resolveTargetEffectiveStatus(target.status, counts, channel);
+    const eff = resolveTargetEffectiveStatus(target.status, counts, channel, !!target.sessionId);
 
     if (eff === 'FAILED' || eff === 'FAIL' || eff === 'NO ANSWER' || eff === 'BUSY' || eff === 'REJECTED') {
       hasFailed = true;

@@ -6,11 +6,13 @@ import { useRouter, usePathname } from 'next/navigation';
 interface UseUnsavedChangesOptions {
   hasUnsavedChanges: boolean;
   onConfirm?: () => void;
+  onDiscard?: () => void;
 }
 
 export function useUnsavedChanges({
   hasUnsavedChanges,
   onConfirm,
+  onDiscard,
 }: UseUnsavedChangesOptions) {
   const router = useRouter();
   const pathname = usePathname();
@@ -114,14 +116,11 @@ export function useUnsavedChanges({
     };
   }, [hasUnsavedChanges]);
 
-  const handleConfirmLeave = useCallback(() => {
+  const navigatePending = useCallback(() => {
     const path = pendingPath.current;
     const action = pendingAction.current;
 
-    // Call onConfirm first (to save data)
-    onConfirm?.();
-
-    // Then close dialog and navigate
+    // Close dialog and clear pending navigation
     setShowDialog(false);
     pendingPath.current = null;
     pendingAction.current = null;
@@ -132,7 +131,19 @@ export function useUnsavedChanges({
     } else if (action === 'push' && path) {
       originalPushRef.current(path);
     }
-  }, [onConfirm]);
+  }, []);
+
+  const handleConfirmLeave = useCallback(() => {
+    // Call onConfirm first (to save data), then navigate
+    onConfirm?.();
+    navigatePending();
+  }, [onConfirm, navigatePending]);
+
+  const handleDiscardLeave = useCallback(() => {
+    // Skip saving (optionally discard via onDiscard), then navigate
+    onDiscard?.();
+    navigatePending();
+  }, [onDiscard, navigatePending]);
 
   const handleCancelLeave = useCallback(() => {
     setShowDialog(false);
@@ -144,6 +155,7 @@ export function useUnsavedChanges({
     showDialog,
     handleConfirmLeave,
     handleCancelLeave,
+    handleDiscardLeave,
     pendingPath: pendingPath.current,
   };
 }

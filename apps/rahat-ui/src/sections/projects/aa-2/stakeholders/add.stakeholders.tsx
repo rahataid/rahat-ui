@@ -157,13 +157,20 @@ export default function AddStakeholders() {
     ((hasInteracted.current && form.formState.isDirty) ||
       unsavedSupportAreaInput.trim() !== '');
 
-  const { showDialog, handleConfirmLeave, handleCancelLeave } =
-    useUnsavedChanges({
-      hasUnsavedChanges,
-      onConfirm: () => {
-        saveCurrentForm();
-      },
-    });
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveCurrentForm();
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
+  });
   // Handle Enter key in the support area TagInput
   const handleSupportAreaKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -465,20 +472,22 @@ export default function AddStakeholders() {
         open={showDialog}
         onConfirm={handleConfirmLeave}
         onCancel={handleCancelLeave}
-        title="Unsaved Changes"
-        description="You have unsaved changes. Your entered data will be saved and you can continue where you left off when you return."
-        cancelText="No, stay here"
-        confirmText="Yes, save and leave"
+        onDiscard={handleDiscardLeave}
+        title={tg('UNSAVED_TITLE')}
+        description={tg('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tg('CANCEL_TEXT')}
+        discardText={tg('DISCARD_TEXT')}
+        confirmText={tg('CONFIRM_TEXT')}
       />
 
       <UnsavedChangesDialog
         open={showClearDialog}
         onConfirm={handleClearForm}
         onCancel={() => setShowClearDialog(false)}
-        title="Clear Form"
-        description="Are you sure you want to clear the form? All entered data will be lost and any saved progress will be removed."
-        cancelText="No, keep it"
-        confirmText="Yes, clear all"
+        title={tg('CLEAR_FORM')}
+        description={tg('FORM_CLEAR_ALERT')}
+        cancelText={tg('KEEP_IT')}
+        confirmText={tg('CLEAR_ALL')}
       />
     </div>
   );

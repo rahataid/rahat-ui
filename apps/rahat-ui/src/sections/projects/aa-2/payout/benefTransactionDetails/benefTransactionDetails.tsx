@@ -90,6 +90,16 @@ export default function BeneficiaryTransactionLogDetails() {
   if (payoutLogsLoading) {
     return <TableLoader />;
   }
+  // TEMP-DEBUG: remove before merge
+  console.log('[PAYOUT-DEBUG] benefTransactionDetails', {
+    uuid,
+    status,
+    statusType: typeof status,
+    transactionType,
+    payoutType: data?.data?.payout?.type,
+    providerName: data?.data?.payout?.extras?.paymentProviderName,
+    providerNameType: typeof data?.data?.payout?.extras?.paymentProviderName,
+  });
   const handleRedirect = () => {
     router.push(
       `/beneficiary/${data?.data?.Beneficiary?.uuid}?projectId=${id}&groupId=${

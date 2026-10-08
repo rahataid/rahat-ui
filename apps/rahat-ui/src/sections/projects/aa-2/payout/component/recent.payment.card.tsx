@@ -37,6 +37,13 @@ export default function RecentPaymentCard({
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
+  // TEMP-DEBUG: remove before merge
+  console.log('[PAYOUT-DEBUG] recent.payment.card', {
+    actions,
+    merchentName,
+    merchentNameType: typeof merchentName,
+    status,
+  });
   return (
     <div
       className={`flex items-center justify-between p-1  bg-white ${

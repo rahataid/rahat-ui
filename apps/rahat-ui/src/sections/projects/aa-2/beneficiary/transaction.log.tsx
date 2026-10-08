@@ -106,6 +106,14 @@ const TransactionLogs = () => {
       });
 
       const providerName = txn?.extras?.paymentProviderName;
+      // TEMP-DEBUG: remove before merge
+      console.log('[PAYOUT-DEBUG] transaction.log row', {
+        uuid: txn?.uuid,
+        payoutType: txn?.payoutType,
+        mode: txn?.mode,
+        providerName,
+        providerNameType: typeof providerName,
+      });
       const subtitleParts = [
         txn?.payoutType === 'VENDOR' ? 'CVA' : txn?.payoutType,
         txn?.payoutType === 'FSP'

@@ -78,12 +78,12 @@ export default function UserView() {
         </>
       ),
     },
-    {
-      value: 'stats',
-      label: g('STATS'),
-      icon: <BarChart3 size={14} />,
-      content: <UserStats />,
-    },
+    // {
+    //   value: 'stats',
+    //   label: g('STATS'),
+    //   icon: <BarChart3 size={14} />,
+    //   content: <UserStats />,
+    // },
   ];
 
   return (

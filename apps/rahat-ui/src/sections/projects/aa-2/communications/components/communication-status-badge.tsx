@@ -40,7 +40,9 @@ const STATUS_CONFIG: Record<
   PROCESSING: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
   IN_PROGRESS: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
 
-  // Queued / Scheduled / New
+  // Queued / Scheduled / New / Not Started
+  NOT_STARTED: { labelKey: 'NOT_STARTED', defaultLabel: 'Not Started', variant: 'neutral' },
+  'NOT STARTED': { labelKey: 'NOT_STARTED', defaultLabel: 'Not Started', variant: 'neutral' },
   NEW: { labelKey: 'NEW', defaultLabel: 'New', variant: 'info' },
   PENDING: { labelKey: 'PENDING', defaultLabel: 'Pending', variant: 'warning' },
   SCHEDULED: { labelKey: 'SCHEDULED', defaultLabel: 'Scheduled', variant: 'neutral' },

@@ -26,18 +26,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/components/dialog';
-import { Download, Share } from 'lucide-react';
+import { Share } from 'lucide-react';
 import { useUploadBeneficiary } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
-
-const SAMPLE_BENEFICIARY_HEADERS = [
-  'Name*',
-  'Phone Number',
-  'Gender',
-  'Age',
-  'Government ID',
-  'Location'
-];
+import DownloadBeneficiarySampleDialog from 'apps/rahat-ui/src/common/download.beneficiary.sample.dialog';
+import { BENEFICIARY_SAMPLE_TEMPLATES } from '../../../constants/beneficiary.sample.templates';
 
 import { useTranslations } from 'next-intl';
 
@@ -126,28 +119,6 @@ export default function ExcelUploader() {
     await handleUpload(trimmedName);
   };
 
-  const handleDownloadSample = () => {
-    const worksheet = XLSX.utils.aoa_to_sheet([SAMPLE_BENEFICIARY_HEADERS]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
-
-    const firstRowStyle = {
-      font: { bold: true },
-      alignment: { horizontal: 'center' },
-    };
-
-    SAMPLE_BENEFICIARY_HEADERS.forEach((_, index) => {
-      const cellRef = XLSX.utils.encode_cell({ r: 0, c: index });
-      if (!worksheet[cellRef]) {
-        worksheet[cellRef] = { t: 's', v: '' };
-      }
-      worksheet[cellRef].s = firstRowStyle;
-    });
-
-    XLSX.writeFile(workbook, 'beneficiary_sample.xlsx');
-  };
-
-
   return (
     <>
       <div className="p-4  h-[calc(100vh-115px)]">
@@ -160,15 +131,10 @@ export default function ExcelUploader() {
             />
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="gap-2 shrink-0"
-            onClick={handleDownloadSample}
-          >
-            <Download size={16} />
-            {t('DOWNLOAD_SAMPLE')}
-          </Button>
+          <DownloadBeneficiarySampleDialog
+            templates={BENEFICIARY_SAMPLE_TEMPLATES}
+            sheetName="Beneficiaries"
+          />
         </div>
 
         <div className="rounded-lg p-4 border bg-card">

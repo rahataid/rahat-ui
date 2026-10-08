@@ -15,7 +15,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
@@ -30,14 +30,18 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
+import { CloudDownload } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import BeneficiaryTable from './beneficiary.table';
+import CvaProjectGuard from './cva-project.guard';
 function BeneficiaryView() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const { id } = useParams();
+  const router = useRouter();
   const uuid = id as UUID;
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
 
@@ -45,7 +49,9 @@ function BeneficiaryView() {
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">
         <div>
-          <h1 className="font-bold text-2xl text-label pl-4">{tg('BENEFICIARY')}</h1>
+          <h1 className="font-bold text-2xl text-label pl-4">
+            {tg('BENEFICIARY')}
+          </h1>
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
@@ -77,12 +83,14 @@ function BeneficiaryView() {
           </TabsTrigger>
         </TabsList>
 
-        {/* <Button
-          variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
-        >
-          <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button> */}
+        <CvaProjectGuard>
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/projects/aa/${id}/beneficiary/import`)}
+          >
+            <CloudDownload className="mr-1" /> {tg('IMPORT_BENEFICIARIES')}
+          </Button>
+        </CvaProjectGuard>
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">

@@ -42,6 +42,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useActiveTab } from '../../utils/useActivetab';
 import { useTranslations } from 'next-intl';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { useDebounce } from '../../utils/useDebouncehooks';
 
@@ -70,9 +75,18 @@ function BeneficiaryView() {
   useBeneficiaryGroupsList({ ...pagination });
   const debouncedFilters = useDebounce(filters, 500);
 
+  // Trim string filters so leading/trailing spaces never reach the API.
+  // Trimming happens here (not in the input) so typing spaces still works.
+  const trimmedFilters = Object.fromEntries(
+    Object.entries(debouncedFilters).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? value.trim() : value,
+    ]),
+  );
+
   const { data } = useBeneficiaryList({
     ...pagination,
-    ...debouncedFilters,
+    ...trimmedFilters,
   });
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -208,6 +222,7 @@ function BeneficiaryView() {
             {t('BENEFICIARY_GROUPS')}
           </TabsTrigger>
         </TabsList>
+        <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="space-x-2">
             <Button variant="outline">
@@ -233,6 +248,7 @@ function BeneficiaryView() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </GlobalCan>
       </div>
       <TabsContent value="beneficiary">
         <div className="p-4">

@@ -3035,6 +3035,7 @@
     "RESET": "Reset",
     "RESOLVED": "Resolved",
     "RESPONSE_TIME": "Response Time",
+    "INITIAL_DOWN_TIME": " Initial Down Time",
     "RESPONSIBILITY": "Responsibility",
     "RESPONSIBLE_STATION": "Responsible Station",
     "RESULTS_FOUND": "{total} results found",

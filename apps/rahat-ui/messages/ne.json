@@ -1476,6 +1476,7 @@
     "RESET": "रिसेट गर्नुहोस्",
     "RESOLVED": "समाधान गरियो",
     "RESPONSE_TIME": "प्रतिक्रिया दिन लाग्ने समय",
+    "INITIAL_DOWN_TIME": "प्रारम्भिक सर्भर अवरुद्ध अवधि",
     "RESPONSIBILITY": "जिम्मेवारी",
     "RESPONSIBLE_STATION": "सम्बन्धित स्टेशन",
     "RESULTS_FOUND": "{total} परिणामहरू फेला पर्यो",
@@ -1670,7 +1671,6 @@
     "STATION_NAME": "स्टेसनको नाम",
     "STATS_DATA_SYNCED_SUCCESSFULLY": "तथ्याङ्क डाटा सफलतापूर्वक सिंक भयो।",
     "FAILED_TO_SYNC_STATS_DATA": "तथ्याङ्क डाटा सिंक गर्न असफल भयो।",
-
     "STATUS": "स्थिति",
     "STATUS_IS_REQUIRED": "स्थिति राख्नु आवश्यक छ",
     "STATUS_REQUIRED": "स्थिति राख्नु आवश्यक छ",
@@ -2853,7 +2853,6 @@
     "BENEFICIARY_GROUPS": "लाभग्राही समूहहरू",
     "BENEFICIARY_SELECTED": "लाभग्राही छनोट",
     "BULK_ASSIGN_PROJECT": "परियोजना धेरैलाइ एकै पटकमा तोकिएको",
-
     "CREATE_BENEFICIARY": "लाभग्राही सिर्जना गर्नुहोस्",
     "ENTER_GROUP_NAME_TO_BE_CREATED": "लाभग्राहीहरूका लागि सिर्जना गरिने समूहको नाम प्रविष्ट गर्नुहोस्।",
     "ENTER_GROUP_NAME_TO_BE_CREATED2": "लाभग्राहीका लागि सिर्जना गरिने समूहको नाम प्रविष्ट गर्नुहोस्।",

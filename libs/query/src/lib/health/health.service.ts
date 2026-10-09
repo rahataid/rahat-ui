@@ -5,7 +5,6 @@ import { HEALTH_CHECK_ACTION, TAGS } from '../../config';
 import { useProjectAction } from '../projects/projects.service';
 import { UUID } from 'crypto';
 
-
 export interface CoreServiceStatus {
   status: 'up' | 'down';
   message?: string;
@@ -13,6 +12,7 @@ export interface CoreServiceStatus {
   last_checked?: string;
   notes?: string | Record<string, any>;
   link?: string;
+  down_time?: string;
 }
 
 export interface CoreHealthStatus {
@@ -29,7 +29,8 @@ export const useCoreHealth = (): UseQueryResult<CoreHealthStatus, Error> => {
     {
       queryKey: [TAGS.GET_CORE_HEALTH],
       // Global interceptor wraps responses in { success, data } — unwrap one extra level.
-      queryFn: async () => (await rumsanService.client.get('/health')).data.data,
+      queryFn: async () =>
+        (await rumsanService.client.get('/health')).data.data,
       refetchInterval: 60_000,
       // Backend caches health for 60s, so refetching sooner returns identical data.
       staleTime: 60_000,

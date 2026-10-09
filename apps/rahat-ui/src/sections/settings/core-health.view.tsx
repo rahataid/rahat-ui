@@ -41,6 +41,7 @@ export default function CoreHealthView() {
         lastChecked: service?.last_checked,
         responseTime: service?.latency,
         message: service?.message,
+        down_time: service?.down_time
       })),
     [data, labelFor],
   );

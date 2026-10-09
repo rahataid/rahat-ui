@@ -607,7 +607,6 @@ export default function ComposeScheduleView() {
 
   // Data hooks
   const transport = useListElCrmTransport(projectUUID);
-  const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
   const campaignList = useListElCrmCampaign(projectUUID, {
     page: 1,
     perPage: 1000,
@@ -726,6 +725,13 @@ export default function ComposeScheduleView() {
     perPage: 1,
   });
 
+  const recipientReachableEstimate = useCustomers(projectUUID, {
+    ...filtersForCount,
+    hasPhone: 'true',
+    page: 1,
+    perPage: 1,
+  });
+
   const beneficiaryFiltersForCount = useMemo(() => {
     const f: Record<string, string> = {};
     // Consumer count endpoint matches a single name string (contains).
@@ -742,8 +748,19 @@ export default function ComposeScheduleView() {
     perPage: 1,
   });
 
+  const consumerReachableEstimate = useConsumers(projectUUID, {
+    ...beneficiaryFiltersForCount,
+    hasPhone: 'true',
+    page: 1,
+    perPage: 1,
+  });
+
   const audienceEstimate =
     selectedGroup === 'BENEFICIARY' ? consumerEstimate : recipientEstimate;
+  const reachableEstimate =
+    selectedGroup === 'BENEFICIARY'
+      ? consumerReachableEstimate
+      : recipientReachableEstimate;
   const audienceNoun =
     selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
@@ -804,6 +821,12 @@ export default function ComposeScheduleView() {
   };
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
+  // Only fetch templates belonging to the selected WhatsApp transport
+  const templates = useListElCrmTemplate(
+    projectUUID,
+    { status: 'APPROVED', transportId: selectedTransportId },
+    { enabled: !!isWhatsApp && !!selectedTransportId },
+  );
   const isPlasgate = isPlasgateChannel(selectedTransportName);
   const plasgateSmsInfo = useMemo(
     () => (isPlasgate ? getPlasgateSmsInfo(messageContent) : null),
@@ -1574,17 +1597,36 @@ export default function ComposeScheduleView() {
                                   <Users className="h-4 w-4" />
                                   <span>
                                     Estimated recipients:{' '}
-                                    {audienceEstimate.isLoading ? (
+                                    {audienceEstimate.isLoading ||
+                                    reachableEstimate.isLoading ? (
                                       <span className="italic">
                                         calculating…
                                       </span>
                                     ) : (
-                                      <>
-                                        <strong className="text-foreground">
-                                          {audienceEstimate.meta?.total ?? 0}
-                                        </strong>{' '}
-                                        {audienceNoun}
-                                      </>
+                                      (() => {
+                                        const matched =
+                                          audienceEstimate.meta?.total ?? 0;
+                                        const reachable =
+                                          reachableEstimate.meta?.total ?? 0;
+                                        return (
+                                          <>
+                                            <strong className="text-foreground">
+                                              {matched}
+                                            </strong>{' '}
+                                            {audienceNoun} matched,{' '}
+                                            <strong
+                                              className={
+                                                reachable < matched
+                                                  ? 'text-amber-600'
+                                                  : 'text-foreground'
+                                              }
+                                            >
+                                              {reachable}
+                                            </strong>{' '}
+                                            reachable
+                                          </>
+                                        );
+                                      })()
                                     )}
                                   </span>
                                 </div>
@@ -2297,9 +2339,11 @@ export default function ComposeScheduleView() {
                       Estimated recipients
                     </p>
                     <p className="font-medium">
-                      {audienceEstimate.isLoading
+                      {audienceEstimate.isLoading || reachableEstimate.isLoading
                         ? 'Calculating...'
-                        : audienceEstimate.meta?.total ?? 0}
+                        : `${audienceEstimate.meta?.total ?? 0} matched, ${
+                            reachableEstimate.meta?.total ?? 0
+                          } reachable`}
                     </p>
                   </div>
                 )}

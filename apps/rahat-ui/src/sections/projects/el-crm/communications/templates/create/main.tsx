@@ -151,6 +151,14 @@ export default function CreateTemplateView() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedMediaItem[]>([]);
   const uploadedFilesRef = useRef<UploadedMediaItem[]>([]);
   const transport = useListElCrmTransport(projectUUID);
+  // Templates are only supported on WhatsApp channels
+  const whatsappTransports = useMemo(
+    () =>
+      (transport.data ?? []).filter((ch: any) =>
+        ch?.name?.toLowerCase().includes('whatsapp'),
+      ),
+    [transport.data],
+  );
   const createTemplate = useCreateTemplate(projectUUID);
   const uploadFile = useUploadFile();
 
@@ -302,13 +310,13 @@ export default function CreateTemplateView() {
   const watchedBody = watch('body');
 
   const selectedTransportName = useMemo(() => {
-    if (!watchedTransport || !transport.data) return '';
+    if (!watchedTransport) return '';
     return (
-      transport.data
+      whatsappTransports
         .find((ch: any) => ch.cuid.toString() === watchedTransport)
         ?.name?.toUpperCase() ?? ''
     );
-  }, [watchedTransport, transport.data]);
+  }, [watchedTransport, whatsappTransports]);
 
   const currentStep = useMemo(() => {
     if (!watchedTransport) return 1;
@@ -370,9 +378,13 @@ export default function CreateTemplateView() {
                           <p className="ml-10 text-sm text-muted-foreground">
                             Loading channels…
                           </p>
+                        ) : whatsappTransports.length === 0 ? (
+                          <p className="ml-10 text-sm text-muted-foreground">
+                            No WhatsApp channel is configured for this project.
+                          </p>
                         ) : (
                           <div className="grid grid-cols-3 gap-3 ml-10">
-                            {transport.data?.map((ch: any) => (
+                            {whatsappTransports.map((ch: any) => (
                               <button
                                 key={ch.cuid}
                                 type="button"

@@ -410,11 +410,16 @@ export const useSyncTemplate = (projectUUID: UUID) => {
   });
 };
 
-export const useListElCrmTemplate = (projectUUID: UUID, payload?: any) => {
+export const useListElCrmTemplate = (
+  projectUUID: UUID,
+  payload?: any,
+  options?: { enabled?: boolean },
+) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: [queryKeys.elCrmListTemplate, projectUUID],
+    queryKey: [queryKeys.elCrmListTemplate, projectUUID, payload],
+    enabled: options?.enabled,
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,

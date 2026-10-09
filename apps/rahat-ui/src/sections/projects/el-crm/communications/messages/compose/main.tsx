@@ -213,7 +213,6 @@ export default function ComposeMessageView() {
 
   // Data hooks
   const transport = useListElCrmTransport(projectUUID);
-  const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
   const sendExcel = useSendElCrmCampaignExcel(projectUUID);
 
@@ -322,6 +321,12 @@ export default function ComposeMessageView() {
     selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
   const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
+  // Only fetch templates belonging to the selected WhatsApp transport
+  const templates = useListElCrmTemplate(
+    projectUUID,
+    { status: 'APPROVED', transportId: selectedTransportId },
+    { enabled: !!isWhatsApp && !!selectedTransportId },
+  );
   const isPlasgate = isPlasgateChannel(selectedTransportName);
   const plasgateSmsInfo = useMemo(
     () => (isPlasgate ? getPlasgateSmsInfo(messageContent) : null),

@@ -330,3 +330,16 @@ export const useDeleteRole = () => {
   );
   return query;
 };
+
+export const useGetUserStats = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const query = useQuery(
+    {
+      queryKey: ['get_user_stats'],
+      queryFn: () => rumsanService.client.get('users/stats'),
+      staleTime: 10 * 60 * 1000, // 10 min
+    },
+    queryClient,
+  );
+  return query;
+};

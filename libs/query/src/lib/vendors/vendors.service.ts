@@ -143,7 +143,9 @@ export const useUpdateVendor = () => {
     mutationFn: ({ uuid, payload }: { uuid: UUID; payload: any }) =>
       updateVendor(uuid, payload),
     onSuccess: (_data, variables: any) => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
+      qc.invalidateQueries({
+        queryKey: [TAGS.GET_VENDORS],
+      });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
         title:
@@ -206,7 +208,9 @@ export const useRemoveVendor = () => {
       projectId?: UUID;
     }) => removeVendor({ vendorId, projectId }),
     onSuccess: (_data, variables: any) => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
+      qc.invalidateQueries({
+        queryKey: [TAGS.GET_VENDORS],
+      });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
         title:

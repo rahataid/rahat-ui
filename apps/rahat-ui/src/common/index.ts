@@ -27,3 +27,4 @@ export * from './form-fields';
 export * from './system-health-banner';
 export * from './system-health-banner-skeleton';
 export * from './health-status';
+export * from './gender.stats';

@@ -23,6 +23,7 @@ export interface HealthRow {
   lastChecked?: string;
   responseTime?: string;
   message?: unknown;
+  down_time?: string;
 }
 
 /** Backend sends a plain string for some failures and a serialised error object for others. */
@@ -70,8 +71,8 @@ export function useHealthLabels() {
       status === 'HEALTHY'
         ? ta('HEALTHY')
         : status === 'UNHEALTHY'
-          ? ta('UNHEALTHY')
-          : tg('NA'),
+        ? ta('UNHEALTHY')
+        : tg('NA'),
     [ta, tg],
   );
 
@@ -140,7 +141,7 @@ export function useHealthColumns(): ColumnDef<HealthRow>[] {
       accessorKey: 'lastChecked',
       cell: ({ row }) => (
         <span className="font-mono text-sm text-muted-foreground">
-          {formatDate(row.original.lastChecked) || '-'}
+          {formatDate(row.original.lastChecked) || 'N/A'}
         </span>
       ),
     },
@@ -151,7 +152,19 @@ export function useHealthColumns(): ColumnDef<HealthRow>[] {
         <span className="font-mono text-sm">
           {row.original.responseTime
             ? formatDigits(withUnitSpace(row.original.responseTime))
-            : '-'}
+            : 'N/A'}
+        </span>
+      ),
+    },
+
+    {
+      header: ta('INITIAL_DOWN_TIME'),
+      accessorKey: 'downTime',
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">
+          {row.original?.down_time
+            ? formatDate(row.original?.down_time)
+            : 'N/A'}
         </span>
       ),
     },

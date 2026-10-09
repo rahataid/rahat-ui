@@ -6,7 +6,7 @@ import {
   NoResult,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Pencil, RefreshCcw, Trash } from 'lucide-react';
+import { Link, Pencil, RefreshCcw, Trash } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DocumentList } from '../components/documentCard';
@@ -132,6 +132,37 @@ export default function ActivitiesDetailView() {
               </Can>
             </div>
             <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
+              {activityDetail?.triggersCallback?.length > 0 ? (
+                <TooltipWrapper tip={t('MANAGE_LINKED_TRIGGERS')}>
+                  <IconLabelBtn
+                    variant="outline"
+                    Icon={Link}
+                    handleClick={() =>
+                      router.push(
+                        `/projects/aa/${projectId}/trigger-callbacks/manage?activityId=${activityDetail?.uuid}`,
+                      )
+                    }
+                    name={t('MANAGE_LINKED_TRIGGERS')}
+                    className="rounded-sm w-full "
+                  />
+                </TooltipWrapper>
+              ) : (
+                <TooltipWrapper tip={t('LINK_TRIGGER')}>
+                  <IconLabelBtn
+                    variant="outline"
+                    Icon={Link}
+                    handleClick={() =>
+                      router.push(
+                        `/projects/aa/${projectId}/trigger-callbacks/add?activityId=${activityDetail?.uuid}`,
+                      )
+                    }
+                    name={t('LINK_TRIGGER')}
+                    className="rounded-sm w-full "
+                  />
+                </TooltipWrapper>
+              )}
+            </Can>
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper tip={t('UPDATE_ACTIVITY_STATUS')}>
                 <IconLabelBtn
                   Icon={RefreshCcw}
@@ -164,6 +195,7 @@ export default function ActivitiesDetailView() {
           </div>
           <CommunicationList
             activityCommunication={activityDetail?.activityCommunication}
+            triggersCallback={activityDetail?.triggersCallback}
             loading={isLoading}
           />
         </div>

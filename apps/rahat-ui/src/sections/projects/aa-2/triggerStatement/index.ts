@@ -7,3 +7,6 @@ export { default as AAConfigureThreshold } from './manage.threshold';
 export { default as AAPhaseAddView } from './phases/add.phase.view';
 export { default as AAPhaseEditView } from './phases/edit.phase.view';
 export { default as AAExtendedLogicConfigView } from './phases/extended-logic.config.view';
+export { default as AAAddTriggerCallbackView } from './add.trigger.callback.view';
+export { default as AAManageTriggerCallbackView } from './manage.trigger.callback.view';
+export { default as AAManageTriggerActivityCallbackView } from './manage.trigger.activity.callback.view';

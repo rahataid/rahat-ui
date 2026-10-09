@@ -11,6 +11,7 @@ import {
   FORECAST_QUERY_KEYS,
   PHASE_QUERY_KEYS,
 } from './trigger-statements.constants';
+import { ACTIVITY_QUERY_KEYS } from '../activities/activities.constants';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 import { toast } from 'react-toastify';
@@ -353,6 +354,114 @@ export const useDeleteTriggerStatement = () => {
       showToast({
         type: 'error',
         title: t('ERROR_WHILE_REMOVING_TRIGGER_STATEMENT'),
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export type CreateTriggerCallbackPayload = {
+  triggerId: string;
+  type: string;
+  config: Record<string, any>;
+  xref?: string;
+  name?: string;
+};
+
+export const useCreateTriggerCallbacks = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+  const q = useProjectAction();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      triggerCallbacksPayload,
+    }: {
+      projectUUID: UUID;
+      triggerCallbacksPayload: CreateTriggerCallbackPayload[];
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.triggers.callbacks.add',
+          payload: {
+            triggerCallbackConfig: triggerCallbacksPayload,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY] });
+      toast.success(t('TRIGGER_CALLBACK_LINKED_SUCCESSFULLY'));
+    },
+    onError: (error: any) => {
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
+      q.reset();
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_LINKING_TRIGGER_CALLBACK'),
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useDeleteTriggerCallback = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+  const q = useProjectAction();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      triggerCallbackUuid,
+    }: {
+      projectUUID: UUID;
+      triggerCallbackUuid: string;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.triggers.callbacks.remove',
+          payload: {
+            uuid: triggerCallbackUuid,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
+      qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY] });
+      toast.success(t('TRIGGER_CALLBACK_REMOVED_SUCCESSFULLY'));
+    },
+    onError: (error: any) => {
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
+      q.reset();
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_REMOVING_TRIGGER_CALLBACK'),
         description: errorMessage,
       });
     },
@@ -830,6 +939,7 @@ export const useSingleTriggerStatement = (
   uuid: UUID,
   triggerId: string | string[] | number,
   version?: boolean,
+  enabled: boolean = true,
 ) => {
   const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
@@ -844,6 +954,7 @@ export const useSingleTriggerStatement = (
       };
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
+    enabled: enabled && !!triggerId,
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({

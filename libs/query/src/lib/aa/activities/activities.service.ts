@@ -131,6 +131,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     completedAt: d?.completedAt,
     activityDocuments: d?.activityDocuments || null,
     activityCommunication: d?.activityCommunication || null,
+    hasTriggerCallback: d?.hasTriggerCallback,
     createdAt: d?.createdAt,
     notes: d?.notes,
     timeDifference: d?.differenceInTriggerAndActivityCompletion,
@@ -189,12 +190,14 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
 export const useSingleActivity = (
   uuid: UUID,
   activityId: string | string[],
+  enabled: boolean = true,
 ) => {
   const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
 
   const query = useQuery({
     queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY, uuid, activityId],
+    enabled: enabled && !!activityId,
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({

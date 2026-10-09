@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { CheckCircle, Clock, NotepadText, UserCircle } from 'lucide-react';
+import { CheckCircle, Clock, Link, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
@@ -172,6 +172,34 @@ export default function ActivityDetailCards({
               </div>
             </TooltipWrapper>
           )}
+
+          {(() => {
+            const activityWideTriggers = (
+              activityDetail?.triggersCallback || []
+            ).filter(
+              (cb: any) => (cb?.config?.communicationIds?.length || 0) === 0,
+            );
+            if (activityWideTriggers.length === 0) return null;
+            return (
+              <div className="flex items-start text-gray-500 text-sm mt-2 gap-2">
+                <Link className="w-4 h-4 mr-1 ml-1 flex-shrink-0 mt-0.5" />
+                <div className="flex flex-wrap gap-2">
+                  {activityWideTriggers.map((cb: any) => (
+                    <TooltipWrapper
+                      key={cb.trigger.uuid}
+                      tip={`${t('TRIGGER')}: ${cb.trigger.title}`}
+                    >
+                      <span className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+                        {cb.trigger.title?.length > 15
+                          ? `${cb.trigger.title.substring(0, 15)}...`
+                          : cb.trigger.title}
+                      </span>
+                    </TooltipWrapper>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </>
       )}
     </div>

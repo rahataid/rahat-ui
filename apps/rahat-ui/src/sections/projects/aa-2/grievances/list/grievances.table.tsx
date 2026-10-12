@@ -213,7 +213,8 @@ function GrievancesTable() {
             </button>
           </div>
         )}
-        <div className="flex items-center gap-2">
+        {/* Wraps the selects onto a second row rather than squeezing them when width runs out. */}
+        <div className="flex flex-wrap items-center gap-2">
           <SearchInput
             className="flex-1"
             name={t('TITLE')}
@@ -224,7 +225,7 @@ function GrievancesTable() {
             value={filters?.status || 'all'}
             onValueChange={(value) => handleFilterChange('status', value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] shrink-0">
               <SelectValue placeholder={tg('STATUS')} />
             </SelectTrigger>
             <SelectContent>
@@ -240,7 +241,7 @@ function GrievancesTable() {
             value={filters?.type || 'all'}
             onValueChange={(value) => handleFilterChange('type', value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] shrink-0">
               <SelectValue placeholder={t('GRIEVANCE_TYPE')} />
             </SelectTrigger>
             <SelectContent>
@@ -256,7 +257,7 @@ function GrievancesTable() {
             value={filters?.priority || 'all'}
             onValueChange={(value) => handleFilterChange('priority', value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] shrink-0">
               <SelectValue placeholder={t('PRIORITY')} />
             </SelectTrigger>
             <SelectContent>

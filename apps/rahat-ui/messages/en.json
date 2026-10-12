@@ -1482,7 +1482,8 @@
     "LOGOUT": "Logout",
     "RAHAT": "Rahat",
     "PROJECT_PIN": "Project Pin",
-    "TRIGGER_PIN_PHASE": "Trigger Pin Phase"
+    "TRIGGER_PIN_PHASE": "Trigger Pin Phase",
+    "PHASE_TRIGGERED_NOTICE": "{phase} phase has been triggered"
   },
   "THEME_TOGGLE": {
     "TOGGLE_THEME": "Toggle theme",

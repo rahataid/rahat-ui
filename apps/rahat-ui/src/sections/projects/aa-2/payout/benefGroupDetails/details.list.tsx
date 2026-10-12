@@ -448,7 +448,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               key={item.label}
               title={item.label}
-              className="rounded-sm h-[80px] pt-10 pb-8"
+              className="rounded-sm min-h-[88px] justify-between"
               infoIcon={item.infoIcon}
               infoTooltip={item.infoToolTip}
               badge={item.badge}
@@ -462,17 +462,17 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               infoIcon={true}
               infoTooltip={tv('VENDOR_TOOLTIP')}
               smallNumber={payout?.extras?.vendorName}
-              className="rounded-sm h-[80px] pt-10 pb-8"
+              className="rounded-sm min-h-[88px] justify-between"
               badge
             />
           )}
         </div>
 
         <div
-          className={`grid ${
-            payout?.groupGap  || payout?.type === 'VENDOR'
-              ? 'lg:grid-cols-5'
-              : 'lg:grid-cols-4'
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${
+            payout?.groupGap || payout?.extras?.group_gap || payout?.type === 'VENDOR'
+              ? 'xl:grid-cols-5'
+              : 'xl:grid-cols-4'
           } gap-4 pt-2`}
         >
           <DataCard
@@ -481,36 +481,36 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
                 ?.beneficiaries ?? 0,
             )}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}
           />
           <DataCard
             title={tv('SUCCESSFUL_TRANSACTIONS')}
             smallNumber={formatNum(payout?.totalSuccessRequests ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
             title={tv('FAILED_TRANSACTIONS')}
             smallNumber={formatNum(payout?.totalFailedPayoutRequests ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('FAILED_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
             title={tv('PAYOUT_GAP')}
             smallNumber={formatNum(payout?.payoutGap ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
+            className="rounded-sm min-h-[88px] justify-between"
             infoIcon={true}
             infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
           />
-          {payout?.groupGap && (
+          {Boolean(payout?.groupGap || payout?.extras?.group_gap) && (
             <DataCard
               title={tv('GROUP_GAP')}
-              smallNumber={formatNum(payout?.groupGap ?? 0)}
-              className="rounded-sm h-[80px] pt-10 pb-8 "
+              smallNumber={formatNum(payout?.groupGap ?? payout?.extras?.group_gap ?? 0)}
+              className="rounded-sm min-h-[88px] justify-between"
               infoIcon={true}
               infoTooltip={tv('GROUP_GAP_TOOLTIP')}
             />
@@ -519,7 +519,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               title={tv('TOTAL_SKIP_OTP')}
               smallNumber={formatNum(payout?.totalSkipOtp ?? 0)}
-              className="rounded-sm h-[80px] pt-10 pb-8 "
+              className="rounded-sm min-h-[88px] justify-between"
               infoIcon={true}
               infoTooltip={tv('TOTAL_SKIP_OTP_TOOLTIP')}
             />
@@ -528,9 +528,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       </div>
 
       <div className="rounded-sm border border-gray-100 space-y-2 p-2 mt-2">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <SearchInput
-            className="w-full flex-[4]"
+            className="w-full flex-[4] min-w-0"
             name={tv('SEARCH_BENEFICIARY_WALLET')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
@@ -558,7 +558,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   })
                 }
                 value={filters?.transactionType || ''}
-                className="flex-[1]"
+                className="flex-[1] min-w-0"
               />
             )}
 
@@ -588,7 +588,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               })
             }
             value={filters?.transactionStatus || ''}
-            className="flex-[1]"
+            className="flex-[1] min-w-0"
           />
         </div>
         {/* offset =navbar + back + heading + 2 stat rows + filters + pagination; retune if header changes */}

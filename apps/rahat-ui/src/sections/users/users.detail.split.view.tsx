@@ -123,11 +123,12 @@ export default function UsersDetailSplitView({
           </TabsList>
         </div>
         <TabsContent value="general">
-          <ScrollArea className="h-[calc(100vh-340px)]">
+          {/* Radix's viewport wrapper is display:table (shrink-to-fit) so it outgrows the panel; block bounds it so long values wrap. */}
+          <ScrollArea className="h-[calc(100vh-340px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
             <div className="p-4 flex flex-col space-y-4">
               <h1 className="font-medium">{t('GENERAL_DETAILS')}</h1>
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 shrink-0">
                   <Wallet size={20} strokeWidth={1.5} />
                   <p>{tg('WALLET_ADDRESS')}</p>
                 </div>
@@ -152,21 +153,21 @@ export default function UsersDetailSplitView({
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 shrink-0">
                   <Phone size={20} strokeWidth={1.5} />
                   <p>{tg('PHONE_NUMBER')}</p>
                 </div>
-                <p className="text-muted-foreground text-base">
+                <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
                   {formatPhone(userDetail?.phone) || '-'}
                 </p>
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 shrink-0">
                   <Mail size={20} strokeWidth={1.5} />
                   <p>{tg('EMAIL_ADDRESS')}</p>
                 </div>
-                <p className="text-muted-foreground text-base">
+                <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
                   {userDetail?.email || '-'}
                 </p>
               </div>

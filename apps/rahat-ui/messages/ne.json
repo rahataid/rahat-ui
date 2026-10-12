@@ -1652,7 +1652,7 @@
     "STAKEHOLDER_CONFLICT_DESCRIPTION": "यो सरोकारवाला हाल {count} सरोकारवाला समूहसँग जोडिएको छ जुन गतिविधिहरूमा तोकिएको छ। सरोकारवाला मेटाउन यसलाई ती सबैबाट हटाउनुहोस्।",
     "STAKEHOLDER_DETAILS": "सरोकारवालाको विवरण",
     "STAKEHOLDER_GROUP": "सरोकारवाला समूह",
-    "STAKEHOLDER_GROUPS": "सरोकारवाला समूहहरूः",
+    "STAKEHOLDER_GROUPS": "सरोकारवाला समूहहरू",
     "STAKEHOLDER_GROUP_NAME": "सरोकारवाला समूहको नाम",
     "STAKEHOLDER_REMOVED_SUCCESSFULLY": "सरोकारवाला सफलतापूर्वक हटाइयो",
     "STAKEHOLDER_UPDATED_SUCCESSFULLY": "सरोकारवाला सफलतापूर्वक अद्यावधिक भयो",
@@ -1691,7 +1691,7 @@
     "SUB_TYPE": "उप-प्रकार",
     "SUCCESS": "सफल भयो!",
     "SUCCESSFULLY_ACTIVATED_TRIGGER_YOU_CAN_VIEW_DETAILS_OF_THIS": "ट्रिगर सफलतापूर्वक सक्रिय भयो। तपाईं यसको विवरण ट्रिगर विवरण पृष्ठबाट हेर्न सक्नुहुन्छ।",
-    "SUCCESSFULLY_DELIVERED": "सफलतापूर्वक वितरण गरियो",
+    "SUCCESSFULLY_DELIVERED": "वितरण सफल भयो",
     "SUCCESSFULLY_DELIVERED_AVC": "एभीसी सफलतापूर्वक वितरण गरियो।",
     "SUCCESSFULLY_DELIVERED_SMS": "एसएमएस सफलतापूर्वक पठाइयो",
     "SUCCESSFUL_MESSAGE_DELIVERED": "सन्देश सफलतापूर्वक पठाइयो",
@@ -3995,7 +3995,8 @@
     "PROFILE": "व्यक्तिगत विवरण",
     "USAGE": "प्रयोग",
     "PROJECT_PIN": "परियोजना पिन",
-    "TRIGGER_PIN_PHASE": "ट्रिगर पिन चरण"
+    "TRIGGER_PIN_PHASE": "ट्रिगर पिन चरण",
+    "PHASE_TRIGGERED_NOTICE": "{phase} चरण सक्रिय गरिएको छ"
   },
   "TRANSACTIONS": {
     "COPY_PAYMENT_TXHASH": "भुक्तानी Txhash प्रतिलिपि गर्नुहोस्",

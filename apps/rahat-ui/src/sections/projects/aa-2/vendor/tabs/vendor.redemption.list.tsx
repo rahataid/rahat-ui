@@ -95,9 +95,9 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
 
   return (
     <div className="rounded border bg-card p-4">
-      <div className="flex justify-between space-x-2 mb-2">
+      <div className="flex flex-wrap gap-2 justify-between mb-2">
         <SearchInput
-          className="w-full flex-[4]"
+          className="w-full flex-[4] min-w-0"
           name={tGlobal('NAME')}
           onSearch={(e) => handleSearch(e, 'name')}
           value={filters?.name || ''}
@@ -122,7 +122,7 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
               ? 'REQUESTED'
               : filters?.status || ''
           }
-          className="flex-[1]"
+          className="flex-[1] min-w-0"
         />
       </div>
       <DemoTable

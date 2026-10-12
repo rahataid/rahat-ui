@@ -120,13 +120,14 @@ export default function TriggerStatementView() {
 
       <div className="flex gap-1 flex-1 overflow-hidden mt-4">
         {/* Left section – phase cards in a 2-column grid, scrollable */}
-        <ScrollArea className="flex-1 ">
+        {/* min-w-0 stops the phase grid from pushing the fixed-width triggers panel out of view. */}
+        <ScrollArea className="flex-1 min-w-0">
           {sortedPhases.length === 0 ? (
             <div className="flex h-full min-h-[400px] items-center justify-center">
               <NoResult message={t('NO_PHASES_AVAILABLE_SHORT')} />
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4 pr-2">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pr-2">
               {sortedPhases.map((d) => (
                 <TriggersPhaseCard
                   key={d.id}

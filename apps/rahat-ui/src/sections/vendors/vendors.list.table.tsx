@@ -42,7 +42,6 @@ import { UUID } from 'crypto';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import TooltipWrapper from '../../components/tooltip.wrapper';
-import { SearchInput } from '../../common';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { useTranslations } from 'next-intl';
 import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';

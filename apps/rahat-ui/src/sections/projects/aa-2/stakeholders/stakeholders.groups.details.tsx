@@ -7,6 +7,7 @@ import {
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -46,6 +47,7 @@ const StakeholdersGroupsDetails = () => {
   const groupId = params.groupId as UUID;
   const t = useTranslations('AA_PROJECT');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [conflictActivities, setConflictActivities] = useState<string[]>([]);
   const conflictDialogOpen = useBoolean();
 
@@ -77,10 +79,12 @@ const StakeholdersGroupsDetails = () => {
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onColumnFiltersChange: setColumnFilters,
     // onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
+      columnFilters,
       // rowSelection: selectedListItems,
     },
   });
@@ -222,7 +226,8 @@ const StakeholdersGroupsDetails = () => {
               }
               className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             >
-              <RefreshCw size={18} className="mr-1" /> {t('UPDATE_STAKEHOLDER_GROUP')}
+              <RefreshCw size={18} className="mr-1" />{' '}
+              {t('UPDATE_STAKEHOLDER_GROUP')}
             </Button>
           </Can>
         </div>
@@ -235,7 +240,8 @@ const StakeholdersGroupsDetails = () => {
 
         <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
           <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
-            {t('TOTAL_STAKEHOLDERS')} : {formatNum(groupDetails?.stakeholders?.length ?? 0)}
+            {t('TOTAL_STAKEHOLDERS')} :{' '}
+            {formatNum(groupDetails?.stakeholders?.length ?? 0)}
           </p>
           <ClientSidePagination table={table} />
         </div>

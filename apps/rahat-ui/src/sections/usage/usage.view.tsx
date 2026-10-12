@@ -66,6 +66,10 @@ export default function UsageView() {
       label: t('USAGE'),
       content: (
         <div className="space-y-6 max-w-full min-w-0">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">{t('USAGE')}</h2>
+          </div>
+
           <Card className="max-w-full min-w-0 overflow-hidden">
             <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 space-y-0 pb-4">
               <CardTitle className="text-lg font-semibold shrink-0">
@@ -111,7 +115,14 @@ export default function UsageView() {
     {
       value: 'communicationLogs',
       label: t('COMMUNICATION_OVERVIEW'),
-      content: <CommunicationOverviewView />,
+      content: (
+        <div className="space-y-6 max-w-full min-w-0">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">{t('COMMUNICATION_OVERVIEW')}</h2>
+          </div>
+          <CommunicationOverviewView />
+        </div>
+      ),
     },
   ];
 

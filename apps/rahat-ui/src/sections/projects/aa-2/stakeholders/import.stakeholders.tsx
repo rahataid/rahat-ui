@@ -1102,28 +1102,6 @@ export default function ImportStakeholder() {
                   </div>
                 </div>
 
-                {/* Skip for Now card */}
-                <div className="border border-gray-200 rounded-sm overflow-hidden">
-                  <div className="w-full text-left p-4 transition-colors">
-                    <div className="flex items-start gap-3">
-                      <X
-                        size={30}
-                        className="px-1 mt-0.5 text-primary rounded-sm bg-gray-100"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-gray-800">
-                            {t('SKIP_FOR_NOW')}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-600 mt-1">
-                          {t('SKIP_GROUPING_DESC')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Add to Existing Group card */}
                 <div className="border border-gray-200 rounded-sm overflow-hidden">
                   <div className="w-full text-left p-4 transition-colors">
@@ -1140,6 +1118,28 @@ export default function ImportStakeholder() {
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
                           {t('ADD_TO_EXISTING_GROUP_DESC')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Skip for Now card */}
+                <div className="border border-gray-200 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <X
+                        size={30}
+                        className="px-1 mt-0.5 text-primary rounded-sm bg-gray-100"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-800">
+                            {t('SKIP_FOR_NOW')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {t('SKIP_GROUPING_DESC')}
                         </p>
                       </div>
                     </div>

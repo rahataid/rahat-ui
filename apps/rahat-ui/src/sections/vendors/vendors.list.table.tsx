@@ -51,6 +51,7 @@ import {
   VendorProjectFilter,
   VendorStatusFilter,
 } from './vendors.table.filters';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export type IVendor = {
   id: string;
@@ -135,13 +136,13 @@ export default function VendorsTable({
 
   return (
     <div className="border rounded shadow p-3">
-      <div className="grid grid-cols-1 gap-3 mb-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_minmax(180px,1fr)_minmax(220px,1fr)_auto]">
-        <SearchInput
+      <div className="flex items-center mb-2 space-x-2">
+        <Input
           className="w-full"
           name={t('VENDORS')}
           placeholder={t('SEARCH_VENDORS_BY_NAME')}
           value={vendorNameFilter}
-          onSearch={(event) =>
+          onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
         />

@@ -131,7 +131,7 @@ export const CommunicationTopKpis = React.memo(
             number={formatNum(overall.totalCommunications)}
             Icon={Radio}
             loading={isLoading}
-            subtitle={t('MESSAGES_SENT')}
+            subtitle={t('TOTAL_COMMUNICATIONS')}
           />
         </div>
 

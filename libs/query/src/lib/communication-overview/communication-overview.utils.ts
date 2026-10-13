@@ -55,14 +55,12 @@ export function resolveTransportInfo(
   }
 
   const msg = comm['message'];
+  const audioURL = comm['audioURL'];
   const hasAudio =
-    Boolean(comm['audioURL']) ||
-    (typeof comm['audioURL'] === 'object' &&
-      comm['audioURL'] !== null &&
-      Object.keys(comm['audioURL']).length > 0) ||
+    (typeof audioURL === 'object' && audioURL !== null && Object.keys(audioURL).length > 0) ||
+    (typeof audioURL === 'string' && audioURL.length > 0) ||
     (typeof msg === 'object' && msg !== null) ||
-    (typeof msg === 'string' &&
-      (/\.(mp3|wav|ogg|m4a)/i.test(msg) || msg.includes('/audio/')));
+    (typeof msg === 'string' && (/\.(mp3|wav|ogg|m4a)/i.test(msg) || msg.includes('/audio/')));
 
   const hasSubject =
     typeof comm['subject'] === 'string' && comm['subject'].trim().length > 0;
@@ -85,17 +83,13 @@ export function resolveTransportInfo(
     (comm['type'] as string) ||
     '';
 
-  const CANONICAL_CHANNELS = new Set(['SMS', 'VOICE', 'EMAIL', 'WHATSAPP']);
   let channel: 'SMS' | 'VOICE' | 'EMAIL' | 'WHATSAPP' = 'SMS';
   if (hasAudio) {
     channel = 'VOICE';
   } else if (hasSubject) {
     channel = 'EMAIL';
   } else if (rawCandidate) {
-    const classified = classifyTransportString(rawCandidate);
-    if (CANONICAL_CHANNELS.has(classified)) {
-      channel = classified as typeof channel;
-    }
+    channel = classifyTransportString(rawCandidate) as typeof channel;
   }
 
   const trimmed = rawCandidate ? String(rawCandidate).trim() : '';
@@ -104,13 +98,6 @@ export function resolveTransportInfo(
     : DEFAULT_TRANSPORT_NAMES[channel];
 
   return { channel, transportName };
-}
-
-export function resolveTransportChannel(
-  comm: Record<string, unknown>,
-  transports?: TransportEntry[],
-): string {
-  return resolveTransportInfo(comm, transports).channel;
 }
 
 export function emptyGroupStats(): GroupDeliveryStats {
@@ -571,68 +558,188 @@ export function transformActivitiesToCommunicationRows(
   return rows;
 }
 
+const COMM_TARGET_STATUS_MAP: Record<string, 'COMPLETED' | 'FAILED' | 'IN_PROGRESS'> = {
+  SENT: 'IN_PROGRESS',
+  FAILED: 'FAILED',
+  CANCELLED: 'FAILED',
+  PENDING: 'IN_PROGRESS',
+  PROCESSING: 'IN_PROGRESS',
+};
+
+function resolveCommTargetStatus(raw?: string): 'COMPLETED' | 'FAILED' | 'IN_PROGRESS' {
+  return COMM_TARGET_STATUS_MAP[(raw || '').toUpperCase()] ?? 'IN_PROGRESS';
+}
+
+export function transformCommunicationsToCommunicationRows(
+  communications: Record<string, unknown>[],
+  proj: TargetProject,
+  transports?: TransportEntry[],
+): CommunicationActivityItem[] {
+  const rows: CommunicationActivityItem[] = [];
+
+  for (const comm of communications) {
+    const commUuid = String(comm['uuid'] || '');
+    const title = String(comm['title'] || 'Communication');
+    const date = String(comm['createdAt'] || new Date().toISOString());
+    const message = comm['message'] as string | undefined;
+    const subject = comm['subject'] as string | undefined;
+    const { channel, transportName } = resolveTransportInfo(comm as Record<string, unknown>, transports);
+    const targets = Array.isArray(comm['targets']) ? comm['targets'] as Record<string, unknown>[] : [];
+
+    if (!targets.length) {
+      rows.push({
+        id: `comm-${commUuid}`,
+        date,
+        projectId: proj.uuid,
+        projectName: proj.name,
+        title,
+        channel,
+        transportName,
+        groupName: 'General',
+        recipientType: 'BENEFICIARY',
+        status: 'IN_PROGRESS',
+        delivered: 0,
+        failed: 0,
+        pending: 1,
+        total: 1,
+        communicationId: commUuid,
+        subject: subject?.trim() || undefined,
+        message,
+      });
+      continue;
+    }
+
+    for (const target of targets) {
+      const targetUuid = String(target['uuid'] || '');
+      const groupType = String(target['groupType'] || 'BENEFICIARY').toUpperCase();
+      const recipientType = groupType.startsWith('STAKEHOLDER') ? 'STAKEHOLDER' : 'BENEFICIARY';
+      const status = resolveCommTargetStatus(String(target['status'] || ''));
+      const sessionId = (target['sessionId'] as string) || undefined;
+      const error = (target['error'] as string) || undefined;
+
+      rows.push({
+        id: `comm-${commUuid}-${targetUuid}`,
+        date,
+        projectId: proj.uuid,
+        projectName: proj.name,
+        title,
+        channel,
+        transportName,
+        groupName: recipientType === 'BENEFICIARY' ? 'Beneficiaries' : 'Stakeholders',
+        recipientType,
+        status,
+        delivered: status === 'COMPLETED' ? 1 : 0,
+        failed: status === 'FAILED' ? 1 : 0,
+        pending: status === 'IN_PROGRESS' ? 1 : 0,
+        total: 1,
+        sessionId,
+        communicationId: commUuid,
+        subject: subject?.trim() || undefined,
+        message,
+        failReason: error,
+      });
+    }
+  }
+
+  return rows;
+}
+
+type BroadcastCounts = {
+  SUCCESS?: number;
+  FAIL?: number;
+  PENDING?: number;
+  SCHEDULED?: number;
+  TOTAL?: number;
+};
+
+export function resolveCommRowsFromAggregate(
+  rows: CommunicationActivityItem[],
+  aggregate: BroadcastCounts,
+): void {
+  const total = aggregate.TOTAL || 0;
+  if (!total) return;
+
+  const success = aggregate.SUCCESS || 0;
+  const fail = aggregate.FAIL || 0;
+  const pending = (aggregate.PENDING || 0) + (aggregate.SCHEDULED || 0);
+
+  let successBudget = success;
+  let failBudget = fail;
+
+  for (const row of rows) {
+    if (!row.id.startsWith('comm-') || row.status !== 'IN_PROGRESS') continue;
+
+    if (failBudget > 0) {
+      row.status = 'FAILED';
+      row.failed = 1;
+      row.delivered = 0;
+      row.pending = 0;
+      failBudget--;
+    } else if (successBudget > 0) {
+      row.status = 'COMPLETED';
+      row.delivered = 1;
+      row.failed = 0;
+      row.pending = 0;
+      successBudget--;
+    }
+  }
+}
+
 export function filterCommunicationActivities(
   activities: CommunicationActivityItem[],
   params?: CommunicationLogsFilterParams,
 ): CommunicationActivityItem[] {
-  if (!activities.length) return EMPTY_ACTIVITIES;
-  let result = activities;
+  if (!activities.length || !params) return activities.length ? activities : EMPTY_ACTIVITIES;
 
-  if (params?.status && params.status !== 'all') {
-    const st = params.status.toUpperCase();
-    if (st === 'IN_PROGRESS' || st === 'PENDING') {
-      result = result.filter((r) => r.status === 'IN_PROGRESS' || r.status === 'PENDING');
-    } else {
-      result = result.filter((r) => r.status === st);
+  const statusFilter = params.status && params.status !== 'all' ? params.status.toUpperCase() : '';
+  const isPendingFilter = statusFilter === 'IN_PROGRESS' || statusFilter === 'PENDING';
+  const channelFilter = params.channel && params.channel !== 'all' ? classifyTransportString(params.channel) : '';
+  const recipientFilter = params.recipient && params.recipient !== 'all' ? params.recipient.toUpperCase() : '';
+  const phaseFilter = params.phase && params.phase !== 'all' ? params.phase.toUpperCase() : '';
+  const fromTime = params.from ? new Date(`${params.from}T00:00:00`).getTime() : NaN;
+  const toTime = params.to ? new Date(`${params.to}T23:59:59.999`).getTime() : NaN;
+  const searchQuery = params.search?.toLowerCase().trim() || '';
+
+  const hasAnyFilter = statusFilter || channelFilter || recipientFilter || phaseFilter
+    || !isNaN(fromTime) || !isNaN(toTime) || searchQuery;
+
+  if (!hasAnyFilter) return activities;
+
+  return activities.filter((r) => {
+    if (statusFilter) {
+      if (isPendingFilter) {
+        if (r.status !== 'IN_PROGRESS' && r.status !== 'PENDING') return false;
+      } else if (r.status !== statusFilter) return false;
     }
-  }
-  if (params?.channel && params.channel !== 'all') {
-    const target = classifyTransportString(params.channel);
-    result = result.filter(
-      (r) => classifyTransportString(r.channel) === target,
-    );
-  }
-  if (params?.recipient && params.recipient !== 'all') {
-    const rc = params.recipient.toUpperCase();
-    result = result.filter((r) => (r.recipientType || '').toUpperCase() === rc);
-  }
-  if (params?.phase && params.phase !== 'all') {
-    const ph = params.phase.toUpperCase();
-    result = result.filter((r) => r.phase?.toUpperCase() === ph);
-  }
-  if (params?.from) {
-    const fromTime = new Date(`${params.from}T00:00:00`).getTime();
+
+    if (channelFilter && classifyTransportString(r.channel) !== channelFilter) return false;
+
+    if (recipientFilter && (r.recipientType || '').toUpperCase() !== recipientFilter) return false;
+
+    if (phaseFilter && r.phase?.toUpperCase() !== phaseFilter) return false;
+
     if (!isNaN(fromTime)) {
-      result = result.filter((r) => {
-        const itemTime = new Date(r.date).getTime();
-        return isNaN(itemTime) || itemTime >= fromTime;
-      });
+      const t = new Date(r.date).getTime();
+      if (!isNaN(t) && t < fromTime) return false;
     }
-  }
-  if (params?.to) {
-    const toTime = new Date(`${params.to}T23:59:59.999`).getTime();
-    if (!isNaN(toTime)) {
-      result = result.filter((r) => {
-        const itemTime = new Date(r.date).getTime();
-        return isNaN(itemTime) || itemTime <= toTime;
-      });
-    }
-  }
-  if (params?.search) {
-    const q = params.search.toLowerCase().trim();
-    if (q) {
-      result = result.filter(
-        (r) =>
-          r.title.toLowerCase().includes(q) ||
-          r.projectName?.toLowerCase().includes(q) ||
-          r.groupName?.toLowerCase().includes(q) ||
-          r.channel.toLowerCase().includes(q) ||
-          (r.transportName && r.transportName.toLowerCase().includes(q)) ||
-          r.phase?.toLowerCase().includes(q) ||
-          r.recipientType.toLowerCase().includes(q),
-      );
-    }
-  }
 
-  return result;
+    if (!isNaN(toTime)) {
+      const t = new Date(r.date).getTime();
+      if (!isNaN(t) && t > toTime) return false;
+    }
+
+    if (searchQuery) {
+      const match =
+        r.title.toLowerCase().includes(searchQuery) ||
+        r.projectName?.toLowerCase().includes(searchQuery) ||
+        r.groupName?.toLowerCase().includes(searchQuery) ||
+        r.channel.toLowerCase().includes(searchQuery) ||
+        (r.transportName && r.transportName.toLowerCase().includes(searchQuery)) ||
+        r.phase?.toLowerCase().includes(searchQuery) ||
+        r.recipientType.toLowerCase().includes(searchQuery);
+      if (!match) return false;
+    }
+
+    return true;
+  });
 }

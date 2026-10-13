@@ -1111,6 +1111,7 @@
     "COMMUNICATION_USAGE": "Communication Usage",
     "TOTAL_BROADCASTS": "Total Broadcasts",
     "MESSAGES_SENT": "Messages sent",
+    "TOTAL_COMMUNICATIONS": "Total communications",
     "SUCCESS_RATE": "Success Rate",
     "DELIVERED": "delivered",
     "DELIVERY_FAILURES": "Delivery failures",

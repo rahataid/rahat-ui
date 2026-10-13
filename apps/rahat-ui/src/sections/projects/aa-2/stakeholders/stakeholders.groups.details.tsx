@@ -23,6 +23,12 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { CloudDownload, RefreshCw } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
@@ -61,6 +67,7 @@ const StakeholdersGroupsDetails = () => {
 
   const handleExport = () => {
     if (isExporting) return;
+    if (!groupDetails?.stakeholders?.length) return;
     exportGroup(groupId, {
       onSuccess: (rows) => {
         const list = Array.isArray(rows) ? rows : [];
@@ -114,6 +121,8 @@ const StakeholdersGroupsDetails = () => {
     }
   };
 
+  const hasStakeholders = !!groupDetails?.stakeholders?.length;
+
   return (
     <div className="p-4 flex flex-col h-[calc(100vh-65px)] overflow-hidden">
       {isDeleting && (
@@ -137,16 +146,39 @@ const StakeholdersGroupsDetails = () => {
         />
         <div className="flex gap-2">
           <Can action={ACTIONS.READ} subject={SUBJECTS.STAKEHOLDER}>
-            <Button
-              variant="outline"
-              type="button"
-              onClick={handleExport}
-              disabled={isExporting || isLoading}
-              className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-            >
-              <CloudDownload size={18} className="mr-1" />{' '}
-              {isExporting ? t('GENERATING') : t('DOWNLOAD_EXCEL')}
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className={
+                      hasStakeholders
+                        ? 'inline-flex'
+                        : 'inline-flex cursor-not-allowed'
+                    }
+                  >
+                    <Button
+                      variant="outline"
+                      type="button"
+                      onClick={handleExport}
+                      disabled={isExporting || isLoading || !hasStakeholders}
+                      className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
+                    >
+                      <CloudDownload size={18} className="mr-1" />{' '}
+                      {isExporting
+                        ? t('GENERATING')
+                        : t('DOWNLOAD_STAKEHOLDERS')}
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                {!hasStakeholders && !isLoading && (
+                  <TooltipContent className="bg-secondary">
+                    <p className="text-xs font-medium">
+                      {t('NO_STAKEHOLDERS_TO_DOWNLOAD')}
+                    </p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </Can>
           <Can action={ACTIONS.DELETE} subject={SUBJECTS.STAKEHOLDER}>
             <DeleteButton

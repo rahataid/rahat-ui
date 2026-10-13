@@ -1,6 +1,6 @@
 'use client';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, FilterFn } from '@tanstack/react-table';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -19,7 +19,6 @@ import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakehol
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
-import { whitespaceInsensitiveFilter } from 'apps/rahat-ui/src/utils/table.filters';
 
 const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   const [showAll, setShowAll] = React.useState(false);
@@ -45,13 +44,18 @@ const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
           }}
           className="text-[clamp(8px,0.6vw,10px)] text-primary hover:underline whitespace-nowrap"
         >
-          {showAll
-            ? t('SHOW_LESS')
-            : `+${formatNum(supportArea.length - 1)} ${t('MORE')}`}
+          {showAll ? t('SHOW_LESS') : `+${formatNum(supportArea.length - 1)} ${t('MORE')}`}
         </button>
       )}
     </div>
   );
+};
+const supportAreaFilter: FilterFn<any> = (row, columnId, filterValue) => {
+  const search = String(filterValue ?? '').trim().toLowerCase();
+  if (!search) return true;
+  const value = row.getValue(columnId);
+  const text = Array.isArray(value) ? value.join(' ') : String(value ?? '');
+  return text.toLowerCase().includes(search);
 };
 
 export const useProjectStakeholdersTableColumns = (
@@ -86,7 +90,6 @@ export const useProjectStakeholdersTableColumns = (
     {
       accessorKey: 'name',
       header: tg('NAME'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('name')}
@@ -98,18 +101,13 @@ export const useProjectStakeholdersTableColumns = (
     {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
-        <TruncatedCell
-          text={formatPhone(row.getValue('phone'))}
-          maxLength={14}
-        />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
       header: tg('EMAIL'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={10} />
       ),
@@ -117,7 +115,6 @@ export const useProjectStakeholdersTableColumns = (
     {
       accessorKey: 'designation',
       header: t('DESIGNATION'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
@@ -125,7 +122,6 @@ export const useProjectStakeholdersTableColumns = (
     {
       accessorKey: 'organization',
       header: t('ORGANIZATION'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
@@ -133,7 +129,6 @@ export const useProjectStakeholdersTableColumns = (
     {
       accessorKey: 'supportArea',
       header: t('SUPPORT_AREA'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
@@ -143,7 +138,6 @@ export const useProjectStakeholdersTableColumns = (
       accessorKey: 'municipality',
       header: t('MUNICIPALITY'),
       meta: { className: 'hidden xl:table-cell' },
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
       ),
@@ -220,7 +214,6 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'name',
       header: tg('NAME'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('name')} maxLength={10} />
       ),
@@ -228,18 +221,13 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
-        <TruncatedCell
-          text={formatPhone(row.getValue('phone'))}
-          maxLength={14}
-        />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
       header: tg('EMAIL'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={10} />
       ),
@@ -247,7 +235,6 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'designation',
       header: t('DESIGNATION'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={14} />
       ),
@@ -256,7 +243,6 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'organization',
       header: t('ORGANIZATION'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
@@ -264,7 +250,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'supportArea',
       header: t('SUPPORT_AREA'),
-      filterFn: whitespaceInsensitiveFilter,
+      filterFn: supportAreaFilter,
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
@@ -273,7 +259,6 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       accessorKey: 'municipality',
       header: t('MUNICIPALITY'),
       meta: { className: 'hidden xl:table-cell' },
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
       ),
@@ -340,7 +325,6 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'name',
       header: tg('NAME'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('name')} maxLength={10} />
       ),
@@ -348,19 +332,14 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'phone',
       header: tg('PHONE_NUMBER'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
-        <TruncatedCell
-          text={formatPhone(row.getValue('phone'))}
-          maxLength={14}
-        />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
       header: tg('EMAIL'),
       meta: { className: 'hidden xl:table-cell' },
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={14} />
       ),
@@ -368,7 +347,6 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'designation',
       header: t('DESIGNATION'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
@@ -377,7 +355,6 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'organization',
       header: t('ORGANIZATION'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
@@ -385,7 +362,6 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'supportArea',
       header: t('SUPPORT_AREA'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
@@ -394,7 +370,6 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'municipality',
       header: t('MUNICIPALITY'),
-      filterFn: whitespaceInsensitiveFilter,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={14} />
       ),

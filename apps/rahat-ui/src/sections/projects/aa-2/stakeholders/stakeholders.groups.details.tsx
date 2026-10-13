@@ -7,7 +7,6 @@ import {
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
-  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -47,7 +46,6 @@ const StakeholdersGroupsDetails = () => {
   const groupId = params.groupId as UUID;
   const t = useTranslations('AA_PROJECT');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [conflictActivities, setConflictActivities] = useState<string[]>([]);
   const conflictDialogOpen = useBoolean();
 
@@ -79,15 +77,24 @@ const StakeholdersGroupsDetails = () => {
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onColumnFiltersChange: setColumnFilters,
     // onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
-      columnFilters,
       // rowSelection: selectedListItems,
     },
   });
+
+  // Raw input text per column (keeps spaces while typing). The table
+  // filter receives the trimmed value so a trailing space like
+  // 'bina sharma ' still matches 'Bina Sharma'.
+  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
+  const handleColumnSearch =
+    (columnId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = event.target.value;
+      setSearchValues((prev) => ({ ...prev, [columnId]: raw }));
+      table.getColumn(columnId)?.setFilterValue(raw.trim());
+    };
 
   const handleDeleteClick = async () => {
     const response = await deleteGroup({
@@ -161,58 +168,36 @@ const StakeholdersGroupsDetails = () => {
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
             name={tGlobal('STAKEHOLDER_NAME')}
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
+            value={searchValues.name ?? ''}
+            onSearch={handleColumnSearch('name')}
           />
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
             name={tGlobal('PHONE')}
-            value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('phone')?.setFilterValue(event.target.value)
-            }
+            value={searchValues.phone ?? ''}
+            onSearch={handleColumnSearch('phone')}
           />
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
             name={tGlobal('ORGANIZATION')}
-            value={
-              (table.getColumn('organization')?.getFilterValue() as string) ??
-              ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table
-                .getColumn('organization')
-                ?.setFilterValue(event.target.value)
-            }
+            value={searchValues.organization ?? ''}
+            onSearch={handleColumnSearch('organization')}
           />
           <SearchInput
             className="w-full hidden xl:block "
             name={tGlobal('MUNICIPALITY')}
-            value={
-              (table.getColumn('municipality')?.getFilterValue() as string) ??
-              ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table
-                .getColumn('municipality')
-                ?.setFilterValue(event.target.value)
-            }
+            value={searchValues.municipality ?? ''}
+            onSearch={handleColumnSearch('municipality')}
           />
 
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
             name={tGlobal('SUPPORT_AREA')}
-            value={
-              (table.getColumn('supportArea')?.getFilterValue() as string) ?? ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('supportArea')?.setFilterValue(event.target.value)
-            }
+            value={searchValues.supportArea ?? ''}
+            onSearch={handleColumnSearch('supportArea')}
           />
 
           <Can action={ACTIONS.UPDATE} subject={SUBJECTS.STAKEHOLDER}>
@@ -226,8 +211,7 @@ const StakeholdersGroupsDetails = () => {
               }
               className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             >
-              <RefreshCw size={18} className="mr-1" />{' '}
-              {t('UPDATE_STAKEHOLDER_GROUP')}
+              <RefreshCw size={18} className="mr-1" /> {t('UPDATE_STAKEHOLDER_GROUP')}
             </Button>
           </Can>
         </div>
@@ -240,8 +224,7 @@ const StakeholdersGroupsDetails = () => {
 
         <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
           <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
-            {t('TOTAL_STAKEHOLDERS')} :{' '}
-            {formatNum(groupDetails?.stakeholders?.length ?? 0)}
+            {t('TOTAL_STAKEHOLDERS')} : {formatNum(groupDetails?.stakeholders?.length ?? 0)}
           </p>
           <ClientSidePagination table={table} />
         </div>

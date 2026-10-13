@@ -85,9 +85,6 @@ const StakeholdersGroupsDetails = () => {
     },
   });
 
-  // Raw input text per column (keeps spaces while typing). The table
-  // filter receives the trimmed value so a trailing space like
-  // 'bina sharma ' still matches 'Bina Sharma'.
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const handleColumnSearch =
     (columnId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,7 +208,8 @@ const StakeholdersGroupsDetails = () => {
               }
               className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             >
-              <RefreshCw size={18} className="mr-1" /> {t('UPDATE_STAKEHOLDER_GROUP')}
+              <RefreshCw size={18} className="mr-1" />{' '}
+              {t('UPDATE_STAKEHOLDER_GROUP')}
             </Button>
           </Can>
         </div>
@@ -224,7 +222,8 @@ const StakeholdersGroupsDetails = () => {
 
         <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
           <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
-            {t('TOTAL_STAKEHOLDERS')} : {formatNum(groupDetails?.stakeholders?.length ?? 0)}
+            {t('TOTAL_STAKEHOLDERS')} :{' '}
+            {formatNum(groupDetails?.stakeholders?.length ?? 0)}
           </p>
           <ClientSidePagination table={table} />
         </div>

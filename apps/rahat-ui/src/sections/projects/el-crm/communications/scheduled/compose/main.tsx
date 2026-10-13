@@ -418,7 +418,7 @@ const emptyCondition = (): RuleConditionRow => ({
   groupNo: 0,
 });
 
-// Timezones limited to Indonesia, Cambodia, Bangladesh, and India
+// Timezones limited to Indonesia, Cambodia, Bangladesh, India, and Zambia
 const ALLOWED_TIMEZONES = [
   // India
   'Asia/Kolkata',
@@ -430,6 +430,8 @@ const ALLOWED_TIMEZONES = [
   'Asia/Jakarta',
   'Asia/Makassar',
   'Asia/Jayapura',
+  // Zambia
+  'Africa/Lusaka',
 ];
 
 const getTimeZoneOffsetMs = (date: Date, timeZone: string) => {

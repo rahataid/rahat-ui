@@ -14,6 +14,7 @@ import { api } from '../../utils/api';
 // Constants for actions
 const CREATE_CAMPAIGN = 'elProject.campaign.create';
 const UPDATE_CAMPAIGN = 'elProject.campaign.update';
+const DELETE_CAMPAIGN = 'elProject.campaign.delete';
 const CREATE_AUDIENCE = 'elProject.campaign.create_audience';
 const CREATE_BULK_AUDIENCE = 'elProject.campaign.create_bulk_audience';
 const GET_ALL_CAMPAIGN = 'elProject.campaign.get';
@@ -264,6 +265,52 @@ export const useGetElCrmCampaign = (projectUUID: UUID, uuid: string) => {
         },
       });
       return res.data;
+    },
+  });
+};
+
+export const useDeleteElCrmCampaign = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async (uuid: string) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: DELETE_CAMPAIGN,
+          payload: { uuid },
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Message deleted successfully',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmCampaignList],
+      });
+    },
+    onError: (error: any) => {
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message;
+      toast.fire({
+        title:
+          typeof apiMessage === 'string' && apiMessage.length > 0
+            ? apiMessage
+            : 'Error while deleting message.',
+        icon: 'error',
+      });
     },
   });
 };

@@ -152,22 +152,22 @@ export default function VendorsDetailSplitView({
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
           <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.VENDOR}>
-          <DeleteButton
-            className={`border-none p-0 shadow-none ${
-              isVendorAssigned ? 'hidden' : ''
-            }`}
-            name="vendor"
-            handleContinueClick={deleteVendor}
-          />
+            <DeleteButton
+              className={`border-none p-0 shadow-none ${
+                isVendorAssigned ? 'hidden' : ''
+              }`}
+              name="vendor"
+              handleContinueClick={deleteVendor}
+            />
           </GlobalCan>
 
           {vendorsDetail?.projectName === 'N/A' && (
             <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
-            <TooltipComponent
-              handleOnClick={assignVoucher}
-              Icon={FolderPlus}
-              tip={t('SELECT_A_PROJECT_TO_ASSIGN')}
-            />
+              <TooltipComponent
+                handleOnClick={assignVoucher}
+                Icon={FolderPlus}
+                tip={t('SELECT_A_PROJECT_TO_ASSIGN')}
+              />
             </GlobalCan>
           )}
           <TooltipComponent
@@ -192,23 +192,27 @@ export default function VendorsDetailSplitView({
             width={80}
           />
           <div>
-            <h1 className="mb-2 text-xl font-semibold">{vendorsDetail?.name}</h1>
+            <h1 className="mb-2 text-xl font-semibold">
+              {vendorsDetail?.name}
+            </h1>
             <div className="flex flex-wrap items-center gap-2">
               <Badge>
-                {translateValue(g, vendorsDetail?.status, { fallbackStyle: 'raw' }) ||
-                  g('N_A')}
+                {translateValue(g, vendorsDetail?.status, {
+                  fallbackStyle: 'raw',
+                }) || g('N_A')}
               </Badge>
               <span className="rounded-full border bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
-                {translateValue(g, vendorsDetail?.gender, { fallbackStyle: 'raw' }) ||
-                  g('N_A')}
+                {translateValue(g, vendorsDetail?.gender, {
+                  fallbackStyle: 'raw',
+                }) || g('N_A')}
               </span>
             </div>
           </div>
         </div>
       </div>
       <ScrollArea className="h-[calc(100vh-240px)]">
-        <div className="flex flex-col gap-4 p-4">
-          <section className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="flex flex-col gap-4 p-4 ">
+          <section className="rounded-sm border bg-card p-4 shadow-sm">
             <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">
               {g('GENERAL')}
             </h2>
@@ -245,7 +249,9 @@ export default function VendorsDetailSplitView({
                       >
                         {showAllProjects
                           ? t('SHOW_LESS')
-                          : `+${vendorsDetail.projectName.length - 2} ${g('MORE')}`}
+                          : `+${vendorsDetail.projectName.length - 2} ${g(
+                              'MORE',
+                            )}`}
                       </Badge>
                     )}
                   </div>
@@ -272,9 +278,7 @@ export default function VendorsDetailSplitView({
                   {vendorsDetail?.walletAddress && (
                     <button
                       type="button"
-                      onClick={() =>
-                        clickToCopy(vendorsDetail.walletAddress)
-                      }
+                      onClick={() => clickToCopy(vendorsDetail.walletAddress)}
                       className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
                       aria-label={g('WALLET_ADDRESS')}
                     >
@@ -340,7 +344,9 @@ export default function VendorsDetailSplitView({
             <DialogTitle>{g('ASSIGN_PROJECT')}</DialogTitle>
             <DialogDescription>
               {!selectedProject && (
-                <p className="text-orange-500">{t('SELECT_A_PROJECT_TO_ASSIGN')}</p>
+                <p className="text-orange-500">
+                  {t('SELECT_A_PROJECT_TO_ASSIGN')}
+                </p>
               )}
             </DialogDescription>
           </DialogHeader>

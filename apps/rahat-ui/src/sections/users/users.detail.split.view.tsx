@@ -96,8 +96,9 @@ export default function UsersDetailSplitView({
             <div className="flex flex-wrap items-center gap-2">
               <Badge>{userDetail?.extras?.status ?? tg('N_A')}</Badge>
               <span className="rounded-full border bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
-                {translateValue(tg, userDetail?.gender, { fallbackStyle: 'raw' }) ||
-                  tg('N_A')}
+                {translateValue(tg, userDetail?.gender, {
+                  fallbackStyle: 'raw',
+                }) || tg('N_A')}
               </span>
             </div>
           </div>
@@ -125,7 +126,7 @@ export default function UsersDetailSplitView({
         <TabsContent value="general">
           <ScrollArea className="h-[calc(100vh-340px)]">
             <div className="flex flex-col gap-4 p-4">
-              <section className="rounded-lg border bg-card p-4 shadow-sm">
+              <section className="rounded-sm border bg-card p-4 shadow-sm">
                 <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">
                   {t('GENERAL_DETAILS')}
                 </h2>

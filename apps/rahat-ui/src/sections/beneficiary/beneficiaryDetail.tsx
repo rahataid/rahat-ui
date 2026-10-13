@@ -74,7 +74,6 @@ export default function BeneficiaryDetail({
   const fromTab = searchParams.get('fromTab');
   const isAssignedToProject = searchParams.get('isAssignedToProject');
   const isGroupValidForAA = searchParams.get('isGroupValidForAA');
-
   return (
     <>
       <AssignToProjectModal
@@ -169,7 +168,7 @@ export default function BeneficiaryDetail({
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-240px)]">
+      <ScrollArea className="h-[calc(100vh-240px)] p-4 ">
         <div className="p-4 flex flex-col space-y-4">
           <h1 className="font-medium">{g('GENERAL')}</h1>
 
@@ -287,7 +286,7 @@ export default function BeneficiaryDetail({
         )}
 
         {beneficiaryDetail?.bankAccount && (
-          <div className="p-4 flex flex-col space-y-4 ml-2">
+          <div className="p-4 flex flex-col space-y-4 ml-2 border-2 bg-muted rounded-sm ">
             <h1 className="font-medium">Validated Bank Details</h1>
             <div className="flex justify-between items-center">
               <p>Bank Name</p>

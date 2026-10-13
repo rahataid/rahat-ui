@@ -31,6 +31,11 @@ export interface ListBeneficiary {
   updatedAt: Date;
   piiData?: TPIIData;
   BeneficiaryProject?: any;
+  bankAccount?: {
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+  };
 }
 
 export interface ListBeneficiaryGroup {

@@ -63,36 +63,44 @@ export default function BeneficiaryDetail() {
             handleClick={() => {}}
           /> */}
           <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
-          <CoreBtnComponent
-            name={g('EDIT')}
-            Icon={Pencil}
-            handleClick={() => {
-              router.push(`/beneficiary/${id}/edit`);
-            }}
-          />
+            <CoreBtnComponent
+              name={g('EDIT')}
+              Icon={Pencil}
+              handleClick={() => {
+                router.push(`/beneficiary/${id}/edit`);
+              }}
+            />
           </GlobalCan>
           <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.BENEFICIARY}>
-          <CoreBtnComponent
-            className="bg-red-100 text-red-600"
-            name={g('DELETE')}
-            Icon={Trash2}
-            handleClick={() => {}}
-          />
+            <CoreBtnComponent
+              className="bg-red-100 text-red-600"
+              name={g('DELETE')}
+              Icon={Trash2}
+              handleClick={() => {}}
+            />
           </GlobalCan>
         </div>
       </div>
       <h1 className="font-medium mb-3">{g('GENERAL')}</h1>
       <div className="p-5 rounded-sm shadow border grid grid-cols-4 gap-5">
         <div>
-          <h1 className="text-md text-muted-foreground">{g('BENEFICIARY_NAME')}</h1>
-          <p className="font-medium">{beneficiary?.piiData?.name || g('N_A')}</p>
+          <h1 className="text-md text-muted-foreground">
+            {g('BENEFICIARY_NAME')}
+          </h1>
+          <p className="font-medium">
+            {beneficiary?.piiData?.name || g('N_A')}
+          </p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('GENDER')}</h1>
-          <p className="font-medium">{formatEnumValue(beneficiary?.gender) ?? g('N_A')}</p>
+          <p className="font-medium">
+            {formatEnumValue(beneficiary?.gender) ?? g('N_A')}
+          </p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">{g('ESTIMATED_AGE')}</h1>
+          <h1 className="text-md text-muted-foreground">
+            {g('ESTIMATED_AGE')}
+          </h1>
           <p className="font-medium">{beneficiary?.age ?? g('N_A')}</p>
         </div>
 
@@ -107,8 +115,12 @@ export default function BeneficiaryDetail() {
           </p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">{g('EMAIL_ADDRESS')}</h1>
-          <p className="font-medium">{beneficiary?.piiData?.email ?? g('N_A')}</p>
+          <h1 className="text-md text-muted-foreground">
+            {g('EMAIL_ADDRESS')}
+          </h1>
+          <p className="font-medium">
+            {beneficiary?.piiData?.email ?? g('N_A')}
+          </p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{g('PHONE_STATUS')}</h1>
@@ -116,11 +128,17 @@ export default function BeneficiaryDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">{t('BANK_STATUS')}</h1>
-          <Badge>{formatEnumValue(beneficiary?.bankedStatus) ?? g('N_A')}</Badge>
+          <Badge>
+            {formatEnumValue(beneficiary?.bankedStatus) ?? g('N_A')}
+          </Badge>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">{g('INTERNET_STATUS')}</h1>
-          <Badge>{formatEnumValue(beneficiary?.internetStatus) ?? g('N_A')}</Badge>
+          <h1 className="text-md text-muted-foreground">
+            {g('INTERNET_STATUS')}
+          </h1>
+          <Badge>
+            {formatEnumValue(beneficiary?.internetStatus) ?? g('N_A')}
+          </Badge>
         </div>
 
         {/* <div>
@@ -129,7 +147,9 @@ export default function BeneficiaryDetail() {
         </div> */}
 
         <div>
-          <h1 className="text-md text-muted-foreground">{g('WALLET_ADDRESS')}</h1>
+          <h1 className="text-md text-muted-foreground">
+            {g('WALLET_ADDRESS')}
+          </h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => clickToCopy(beneficiary?.walletAddress as string)}
@@ -169,7 +189,7 @@ export default function BeneficiaryDetail() {
       </div>
 
       {beneficiary?.bankAccount && (
-        <div className="mt-3 space-y-3">
+        <div className="mt-3 space-y-3 border-2">
           <h1 className="font-medium">Validated Bank Details</h1>
           <div className="p-5 rounded-sm shadow border grid grid-cols-4 gap-5">
             <div>

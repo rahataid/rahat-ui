@@ -56,15 +56,11 @@ export default function CommunicationOverviewView() {
     isLoading: isLoadingActivities,
   } = useCommunicationOverviewActivities(queryParams);
 
-  const statsBaseActivities = useMemo(() => {
+  const overviewStats = useMemo(() => {
     const { status: _status, ...filtersWithoutStatus } = queryParams;
-    return filterCommunicationActivities(allActivities, filtersWithoutStatus);
+    const base = filterCommunicationActivities(allActivities, filtersWithoutStatus);
+    return computeStatsFromActivities(base);
   }, [allActivities, queryParams]);
-
-  const overviewStats = useMemo(
-    () => computeStatsFromActivities(statsBaseActivities),
-    [statsBaseActivities],
-  );
 
   const handleFilterChange = useCallback(
     (newFilters: CommunicationOverviewFilterState) => setFilters(newFilters),

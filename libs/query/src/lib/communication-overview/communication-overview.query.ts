@@ -10,131 +10,23 @@ import { useProjectList } from '../projects';
 import {
   CommunicationActivityItem,
   CommunicationLogsFilterParams,
-  CommunicationOverviewData,
-  GroupTransportStats,
   TransportEntry,
 } from './communication-overview.types';
 import {
   buildTargetProjects,
   classifyTransportString,
-  computeOverviewStats,
-  computeStatsFromActivities,
   EMPTY_ACTIVITIES,
   EMPTY_PROJECTS,
   filterCommunicationActivities,
-  mergeTransportStats,
   resolveCommRowsFromAggregate,
   STALE_5MIN,
   transformActivitiesToCommunicationRows,
   transformCommunicationsToCommunicationRows,
-  unwrapGroupStats,
 } from './communication-overview.utils';
 
 export * from './communication-overview.types';
 export * from './communication-overview.utils';
 
-export const useCommunicationOverviewStats = (
-  params?: CommunicationLogsFilterParams,
-  fallbackActivities?: CommunicationActivityItem[],
-) => {
-  const fallbackStats = useMemo(
-    () => (fallbackActivities ? computeStatsFromActivities(fallbackActivities) : undefined),
-    [fallbackActivities],
-  );
-
-  const { queryClient, rumsanService } = useRSQuery();
-  const projectClient = getProjectClient(rumsanService.client);
-  const { data: projectsData, isLoading: isLoadingProjects } = useProjectList();
-  const projectList = projectsData?.data ?? EMPTY_PROJECTS;
-
-  const queryPayload = useMemo(
-    () =>
-      JSON.stringify({
-        project: params?.project,
-        from: params?.from,
-        to: params?.to,
-        phase: params?.phase,
-        channel: params?.channel,
-        recipient: params?.recipient,
-        projectsCount: projectList.length,
-      }),
-    [
-      params?.project,
-      params?.from,
-      params?.to,
-      params?.phase,
-      params?.channel,
-      params?.recipient,
-      projectList.length,
-    ],
-  );
-
-  const query = useQuery<CommunicationOverviewData, Error>(
-    {
-      queryKey: [TAGS.COMMUNICATION_OVERVIEW.GET_OVERVIEW_STATS, queryPayload],
-      enabled: !isLoadingProjects && projectList.length > 0,
-      queryFn: async () => {
-        const targets = buildTargetProjects(projectList, params?.project);
-        if (!targets.length) return computeOverviewStats({}, params);
-
-        let aggregated: GroupTransportStats = {
-          beneficiary: {},
-          stakeholder: {},
-        };
-
-        const results = await Promise.allSettled(
-          targets.map(async (proj) => {
-            try {
-              const res = await projectClient.projectActions({
-                uuid: proj.uuid as UUID,
-                data: {
-                  action: 'ms.triggers.getTransportSessionStatsByGroup',
-                  payload: {
-                    ...(params?.from && {
-                      startDate:
-                        typeof params.from === 'string'
-                          ? params.from
-                          : new Date(params.from).toISOString(),
-                    }),
-                    ...(params?.to && {
-                      endDate:
-                        typeof params.to === 'string'
-                          ? params.to
-                          : new Date(params.to).toISOString(),
-                    }),
-                    ...(params?.phase && { filters: { phase: params.phase } }),
-                  },
-                },
-              });
-
-              return unwrapGroupStats(res);
-            } catch {
-              return null;
-            }
-          }),
-        );
-
-        for (const r of results) {
-          if (r.status === 'fulfilled' && r.value) {
-            aggregated = mergeTransportStats(aggregated, r.value);
-          }
-        }
-
-        return computeOverviewStats(aggregated, params);
-      },
-      staleTime: STALE_5MIN,
-    },
-    queryClient,
-  );
-
-  return useMemo(() => {
-    if (query.data) return query;
-    if (fallbackStats && !query.isLoading) {
-      return { ...query, data: fallbackStats };
-    }
-    return query;
-  }, [query, fallbackStats]);
-};
 
 export const useCommunicationOverviewActivities = (
   params?: CommunicationLogsFilterParams,

@@ -285,26 +285,36 @@ export default function BeneficiaryDetail({
           </div>
         )}
 
+        {/* Bank account details section */}
         {beneficiaryDetail?.bankAccount && (
-          <div className="p-4 flex flex-col space-y-4 ml-2 border-2 bg-muted rounded-sm ">
-            <h1 className="font-medium">Validated Bank Details</h1>
-            <div className="flex justify-between items-center">
-              <p>Bank Name</p>
-              <p className="text-muted-foreground text-base">
-                {beneficiaryDetail.bankAccount.bankName || '-'}
-              </p>
+          <div className="ml-2 rounded-md border border-primary/30 border-l-4 border-l-primary bg-primary/5 p-4 shadow-sm rounded-sm">
+            <div className="flex items-center gap-3 border-b pb-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Landmark size={18} strokeWidth={1.75} aria-hidden="true" />
+              </span>
+              <h2 className="text-base font-semibold">
+                Validated Bank Details
+              </h2>
             </div>
-            <div className="flex justify-between items-center">
-              <p>Account Name</p>
-              <p className="text-muted-foreground text-base">
-                {beneficiaryDetail.bankAccount.accountName || '-'}
-              </p>
-            </div>
-            <div className="flex justify-between items-center">
-              <p>Account Number</p>
-              <p className="text-muted-foreground text-base">
-                {beneficiaryDetail.bankAccount.accountNumber || '-'}
-              </p>
+            <div className="divide-y divide-border/70">
+              <div className="flex items-start justify-between gap-4 py-3">
+                <p className="text-sm font-medium ">Bank Name</p>
+                <p className="break-all text-right text-base font-medium text-muted-foreground">
+                  {beneficiaryDetail.bankAccount.bankName || '-'}
+                </p>
+              </div>
+              <div className="flex items-start justify-between gap-4 py-3">
+                <p className="text-sm font-medium ">Account Name</p>
+                <p className="break-all text-right text-base font-medium text-muted-foreground">
+                  {beneficiaryDetail.bankAccount.accountName || '-'}
+                </p>
+              </div>
+              <div className="flex items-start justify-between gap-4 pt-3">
+                <p className="text-sm font-medium ">Account Number</p>
+                <p className="break-all text-right text-base font-semibold tabular-nums text-muted-foreground">
+                  {beneficiaryDetail.bankAccount.accountNumber || '-'}
+                </p>
+              </div>
             </div>
           </div>
         )}

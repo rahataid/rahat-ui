@@ -10,7 +10,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { DataCard, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import { CommunicationOverviewData } from '@rahat-ui/query';
+import { CommunicationOverviewData, classifyTransportString } from '@rahat-ui/query';
 import {
   PieChart,
   ChartColumnStacked,
@@ -22,6 +22,13 @@ import {
   Clock,
   Users,
 } from 'lucide-react';
+
+const CHANNEL_LABEL_KEYS: Record<string, string> = {
+  VOICE: 'VOICE',
+  EMAIL: 'EMAIL',
+  SMS: 'SMS',
+  WHATSAPP: 'WHATSAPP',
+};
 
 export type CommunicationOverviewStatsProps = {
   data?: CommunicationOverviewData;
@@ -42,6 +49,43 @@ const FAILED_COLOR = '#DC2626';
 const PENDING_COLOR = '#F59E0B';
 
 const FALLBACK_COLORS = ['#8B5CF6', '#EC4899', '#06B6D4', '#F97316'];
+
+function buildDonutOptions(
+  formatNum: (v: number | string) => string,
+  totalLabel: string,
+  total: number,
+) {
+  return {
+    dataLabels: {
+      enabled: true,
+      formatter: (val: number | string) =>
+        `${formatNum(Number(val).toFixed(1))}%`,
+    },
+    tooltip: {
+      fillSeriesColor: true,
+      y: {
+        formatter: (val: number) => formatNum(val),
+        title: { formatter: (seriesName: string) => `${seriesName}` },
+      },
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '70%',
+          labels: {
+            show: true,
+            value: { formatter: (val: number | string) => formatNum(val) },
+            total: {
+              show: true,
+              label: totalLabel,
+              formatter: () => formatNum(total),
+            },
+          },
+        },
+      },
+    },
+  };
+}
 
 function getChannelColor(channel: string, index: number) {
   return (
@@ -211,98 +255,37 @@ export const CommunicationBreakdowns = React.memo(
     const recipientTotal = benTotal + stkTotal;
     const totalLabel = g('TOTAL') || 'TOTAL';
 
-    const channelKeys = React.useMemo(
-      () => Object.keys(channelWise).sort(),
-      [channelWise],
-    );
-
-    const channelSeriesData = React.useMemo(
-      () => channelKeys.map((k) => channelWise[k]?.total || 0),
-      [channelKeys, channelWise],
-    );
-
-    const channelSuccessData = React.useMemo(
-      () => channelKeys.map((k) => channelWise[k]?.successful || 0),
-      [channelKeys, channelWise],
-    );
-
-    const channelFailData = React.useMemo(
-      () => channelKeys.map((k) => channelWise[k]?.failed || 0),
-      [channelKeys, channelWise],
-    );
-
-    const channelPendingData = React.useMemo(
-      () => channelKeys.map((k) => channelWise[k]?.pending || 0),
-      [channelKeys, channelWise],
-    );
-
-    const channelTotal = React.useMemo(
-      () => channelSeriesData.reduce((sum, v) => sum + v, 0),
-      [channelSeriesData],
-    );
+    const { channelKeys, channelSeriesData, channelSuccessData, channelFailData, channelPendingData, channelTotal } = React.useMemo(() => {
+      const keys = Object.keys(channelWise).sort();
+      const series = keys.map((k) => channelWise[k]?.total || 0);
+      return {
+        channelKeys: keys,
+        channelSeriesData: series,
+        channelSuccessData: keys.map((k) => channelWise[k]?.successful || 0),
+        channelFailData: keys.map((k) => channelWise[k]?.failed || 0),
+        channelPendingData: keys.map((k) => channelWise[k]?.pending || 0),
+        channelTotal: series.reduce((sum, v) => sum + v, 0),
+      };
+    }, [channelWise]);
 
     const getChannelLabel = React.useCallback(
       (k: string) => {
-        switch (k.toUpperCase()) {
-          case 'VOICE':
-            return t('VOICE');
-          case 'EMAIL':
-            return t('EMAIL');
-          case 'WHATSAPP':
-            return t('WHATSAPP');
-          case 'SMS':
-            return t('SMS');
-          default:
-            return k;
-        }
+        const canonical = classifyTransportString(k);
+        const key = CHANNEL_LABEL_KEYS[canonical];
+        return key ? t(key) : k;
       },
       [t],
     );
 
-    // Donut chart for channels matching UsageByTransport pattern with width="100%"
-    const channelPieData = React.useMemo(() => {
-      return {
-        series: channelKeys.map((k, idx) => ({
-          label: getChannelLabel(k),
-          value: channelSeriesData[idx] || 0,
-        })),
-        colors: channelKeys.map((k, idx) => getChannelColor(k, idx)),
-        options: {
-          dataLabels: {
-            enabled: true,
-            formatter: (val: number | string) =>
-              `${formatNum(Number(val).toFixed(1))}%`,
-          },
-          tooltip: {
-            fillSeriesColor: true,
-            y: {
-              formatter: (val: number) => formatNum(val),
-              title: { formatter: (seriesName: string) => `${seriesName}` },
-            },
-          },
-          plotOptions: {
-            pie: {
-              donut: {
-                size: '70%',
-                labels: {
-                  show: true,
-                  value: {
-                    formatter: (val: number | string) => formatNum(val),
-                  },
-                  total: {
-                    show: true,
-                    label: totalLabel,
-                    formatter: () => formatNum(channelTotal),
-                  },
-                },
-              },
-            },
-          },
-        },
-      };
-    }, [channelKeys, channelSeriesData, channelTotal, formatNum, getChannelLabel, totalLabel]);
+    const channelPieData = React.useMemo(() => ({
+      series: channelKeys.map((k, idx) => ({
+        label: getChannelLabel(k),
+        value: channelSeriesData[idx] || 0,
+      })),
+      colors: channelKeys.map((k, idx) => getChannelColor(k, idx)),
+      options: buildDonutOptions(formatNum, totalLabel, channelTotal),
+    }), [channelKeys, channelSeriesData, channelTotal, formatNum, getChannelLabel, totalLabel]);
 
-    // Stacked bar chart for channels matching UsageByTransport pattern
     const barSeries = React.useMemo(() => {
       const hasPending = channelPendingData.some((v) => v > 0);
       return [
@@ -333,48 +316,14 @@ export const CommunicationBreakdowns = React.memo(
       };
     }, [formatNum]);
 
-    // Audience donut chart matching UsageByTransport pattern with width="100%"
-    const audiencePieData = React.useMemo(() => {
-      return {
-        series: [
-          { label: t('BENEFICIARIES'), value: benTotal },
-          { label: t('STAKEHOLDERS'), value: stkTotal },
-        ],
-        colors: ['#4A90E2', '#8B5CF6'],
-        options: {
-          dataLabels: {
-            enabled: true,
-            formatter: (val: number | string) =>
-              `${formatNum(Number(val).toFixed(1))}%`,
-          },
-          tooltip: {
-            fillSeriesColor: true,
-            y: {
-              formatter: (val: number) => formatNum(val),
-              title: { formatter: (seriesName: string) => `${seriesName}` },
-            },
-          },
-          plotOptions: {
-            pie: {
-              donut: {
-                size: '70%',
-                labels: {
-                  show: true,
-                  value: {
-                    formatter: (val: number | string) => formatNum(val),
-                  },
-                  total: {
-                    show: true,
-                    label: totalLabel,
-                    formatter: () => formatNum(recipientTotal),
-                  },
-                },
-              },
-            },
-          },
-        },
-      };
-    }, [benTotal, stkTotal, recipientTotal, formatNum, t, totalLabel]);
+    const audiencePieData = React.useMemo(() => ({
+      series: [
+        { label: t('BENEFICIARIES'), value: benTotal },
+        { label: t('STAKEHOLDERS'), value: stkTotal },
+      ],
+      colors: ['#4A90E2', '#8B5CF6'],
+      options: buildDonutOptions(formatNum, totalLabel, recipientTotal),
+    }), [benTotal, stkTotal, recipientTotal, formatNum, t, totalLabel]);
 
     const benSuccessRate =
       benTotal > 0
@@ -398,7 +347,7 @@ export const CommunicationBreakdowns = React.memo(
 
     return (
       <div className="space-y-6 w-full max-w-full">
-        {/* Section 1: Usage by Transport (Matching Usage tab layout) */}
+        {/* Usage by Transport */}
         <div className="space-y-4 w-full max-w-full">
           <h3 className="text-lg font-semibold">{t('USAGE_BY_TRANSPORT')}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-full">
@@ -460,7 +409,7 @@ export const CommunicationBreakdowns = React.memo(
           </div>
         </div>
 
-        {/* Section 2: Audience Breakdown */}
+        {/* Audience Breakdown */}
         <div className="space-y-4 w-full max-w-full">
           <h3 className="text-lg font-semibold">{t('AUDIENCE_BREAKDOWN')}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-full">

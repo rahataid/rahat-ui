@@ -5,8 +5,10 @@ import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import {
   useProjectList,
+  useListAllTransports,
   CommunicationActivityItem,
   Project,
+  classifyTransportString,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -46,33 +48,66 @@ const CommunicationOverviewFilters = React.memo(
   }: CommunicationOverviewFiltersProps) {
     const t = useTranslations('USAGE');
     const { data: projects } = useProjectList();
+    const appTransports = useListAllTransports();
 
-    const channelOptions = useMemo(
-      () => [
+    const channelOptions = useMemo(() => {
+      const CHANNEL_LABEL_KEYS: Record<string, string> = {
+        VOICE: 'VOICE_IVR',
+        EMAIL: 'EMAIL',
+        SMS: 'SMS',
+        WHATSAPP: 'WHATSAPP',
+      };
+
+      const getChannelLabel = (raw: string) => {
+        const canonical = classifyTransportString(raw);
+        const key = CHANNEL_LABEL_KEYS[canonical];
+        return key ? t(key) : raw;
+      };
+
+      const seen = new Set<string>();
+      const options: { label: string; value: string }[] = [
         { label: t('ALL_CHANNELS'), value: 'all' },
-        { label: t('VOICE_IVR'), value: 'VOICE' },
-        { label: t('SMS'), value: 'SMS' },
-        { label: t('EMAIL'), value: 'EMAIL' },
-        { label: t('WHATSAPP'), value: 'WHATSAPP' },
-      ],
-      [t],
-    );
+      ];
+
+      const addChannel = (rawName: string) => {
+        const trimmed = rawName.trim();
+        if (!trimmed) return;
+        const canonical = classifyTransportString(trimmed);
+        if (seen.has(canonical)) return;
+        seen.add(canonical);
+        options.push({ label: getChannelLabel(trimmed), value: canonical });
+      };
+
+      if (Array.isArray(appTransports)) {
+        appTransports.forEach((transport) => {
+          if (transport) addChannel(transport.name || transport.type || '');
+        });
+      }
+
+      if (Array.isArray(activities)) {
+        activities.forEach((act) => {
+          addChannel(act.transportName || act.channel || '');
+        });
+      }
+
+      if (options.length === 1) {
+        return [
+          { label: t('ALL_CHANNELS'), value: 'all' },
+          ...Object.entries(CHANNEL_LABEL_KEYS).map(([value, key]) => ({
+            label: t(key),
+            value,
+          })),
+        ];
+      }
+
+      return options;
+    }, [appTransports, activities, t]);
 
     const recipientOptions = useMemo(
       () => [
         { label: t('ALL_RECIPIENTS'), value: 'all' },
         { label: t('BENEFICIARY'), value: 'BENEFICIARY' },
         { label: t('STAKEHOLDER'), value: 'STAKEHOLDER' },
-      ],
-      [t],
-    );
-
-    const statusOptions = useMemo(
-      () => [
-        { label: t('ALL_STATUSES'), value: 'all' },
-        { label: t('COMPLETED'), value: 'COMPLETED' },
-        { label: t('FAILED'), value: 'FAILED' },
-        { label: t('PENDING_IN_PROGRESS'), value: 'IN_PROGRESS' },
       ],
       [t],
     );
@@ -85,9 +120,19 @@ const CommunicationOverviewFilters = React.memo(
 
     const availablePhases = useMemo(() => {
       const list = activities || [];
-      const relevant = filters.project
-        ? list.filter((a) => a.projectId === filters.project)
-        : list;
+      let relevant = list;
+      if (filters.project) {
+        relevant = relevant.filter((a) => a.projectId === filters.project);
+      }
+      if (filters.recipient && filters.recipient !== 'all') {
+        const rc = filters.recipient.toUpperCase();
+        relevant = relevant.filter((a) => (a.recipientType || '').toUpperCase() === rc);
+      }
+      if (filters.channel && filters.channel !== 'all') {
+        relevant = relevant.filter((a) =>
+          classifyTransportString(a.channel) === classifyTransportString(filters.channel!),
+        );
+      }
 
       const unique = Array.from(
         new Set(
@@ -98,33 +143,16 @@ const CommunicationOverviewFilters = React.memo(
                 typeof p === 'string' && p.length > 0 && p !== 'N/A' && p.trim() !== '',
             ),
         ),
-      );
-
-      const getPhaseLabel = (p: string) => {
-        const upper = p.toUpperCase();
-        if (upper === 'PREPAREDNESS') return t('PHASE_PREPAREDNESS');
-        if (upper === 'ACTIVATION') return t('PHASE_ACTIVATION');
-        if (upper === 'RESTORATION') return t('PHASE_RESTORATION');
-        return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
-      };
-
-      if (unique.length > 0) {
-        return [
-          { label: t('ALL_PHASES'), value: 'all' },
-          ...unique.map((p) => ({
-            label: getPhaseLabel(p),
-            value: p,
-          })),
-        ];
-      }
+      ).sort();
 
       return [
         { label: t('ALL_PHASES'), value: 'all' },
-        { label: t('PHASE_PREPAREDNESS'), value: 'PREPAREDNESS' },
-        { label: t('PHASE_ACTIVATION'), value: 'ACTIVATION' },
-        { label: t('PHASE_RESTORATION'), value: 'RESTORATION' },
+        ...unique.map((p) => ({
+          label: p,
+          value: p,
+        })),
       ];
-    }, [activities, filters.project, t]);
+    }, [activities, filters.project, filters.recipient, filters.channel, t]);
 
     const handleProjectChange = useCallback(
       (val: string) => {
@@ -172,6 +200,7 @@ const CommunicationOverviewFilters = React.memo(
         onFilterChange({
           ...filters,
           recipient: val === 'all' ? undefined : val,
+          phase: undefined,
         });
       },
       [filters, onFilterChange],
@@ -182,16 +211,6 @@ const CommunicationOverviewFilters = React.memo(
         onFilterChange({
           ...filters,
           phase: val === 'all' ? undefined : val,
-        });
-      },
-      [filters, onFilterChange],
-    );
-
-    const handleStatusChange = useCallback(
-      (val: string) => {
-        onFilterChange({
-          ...filters,
-          status: val === 'all' ? undefined : val,
         });
       },
       [filters, onFilterChange],
@@ -213,9 +232,16 @@ const CommunicationOverviewFilters = React.memo(
         filters.toDate ||
         filters.channel ||
         filters.recipient ||
-        filters.phase ||
-        filters.status,
+        filters.phase,
     );
+
+    const selectedChannelValue = useMemo(() => {
+      if (!filters.channel || filters.channel === 'all') return 'all';
+      const match = channelOptions.find(
+        (opt) => opt.value.toUpperCase() === filters.channel?.toUpperCase(),
+      );
+      return match ? match.value : filters.channel;
+    }, [filters.channel, channelOptions]);
 
     return (
       <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full">
@@ -271,7 +297,7 @@ const CommunicationOverviewFilters = React.memo(
 
         <div className="flex-1 min-w-[130px]">
           <Select
-            value={filters.channel ?? 'all'}
+            value={selectedChannelValue}
             onValueChange={handleChannelChange}
           >
             <SelectTrigger className="w-full h-9 text-xs sm:text-sm">
@@ -315,24 +341,6 @@ const CommunicationOverviewFilters = React.memo(
             </SelectTrigger>
             <SelectContent>
               {availablePhases.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex-1 min-w-[130px]">
-          <Select
-            value={filters.status ?? 'all'}
-            onValueChange={handleStatusChange}
-          >
-            <SelectTrigger className="w-full h-9 text-xs sm:text-sm">
-              <SelectValue placeholder={t('ALL_STATUSES')} />
-            </SelectTrigger>
-            <SelectContent>
-              {statusOptions.map((item) => (
                 <SelectItem key={item.value} value={item.value}>
                   {item.label}
                 </SelectItem>

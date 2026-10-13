@@ -85,6 +85,7 @@ export function resolveTransportInfo(
     (comm['type'] as string) ||
     '';
 
+  const CANONICAL_CHANNELS = new Set(['SMS', 'VOICE', 'EMAIL', 'WHATSAPP']);
   let channel: 'SMS' | 'VOICE' | 'EMAIL' | 'WHATSAPP' = 'SMS';
   if (hasAudio) {
     channel = 'VOICE';
@@ -92,13 +93,8 @@ export function resolveTransportInfo(
     channel = 'EMAIL';
   } else if (rawCandidate) {
     const classified = classifyTransportString(rawCandidate);
-    if (
-      classified === 'VOICE' ||
-      classified === 'EMAIL' ||
-      classified === 'WHATSAPP' ||
-      classified === 'SMS'
-    ) {
-      channel = classified;
+    if (CANONICAL_CHANNELS.has(classified)) {
+      channel = classified as typeof channel;
     }
   }
 
@@ -221,10 +217,7 @@ export function computeOverviewStats(
   }
 
   for (const g of RECIPIENT_GROUPS) applySuccessRate(recipientWise[g]);
-  for (const ch of Object.keys(channelWise)) {
-    const chStats = channelWise[ch];
-    if (chStats) applySuccessRate(chStats);
-  }
+  for (const ch of Object.values(channelWise)) applySuccessRate(ch);
 
   const groups =
     !normRecipient || normRecipient === 'ALL'
@@ -352,10 +345,7 @@ export function computeStatsFromActivities(
   }
 
   for (const g of RECIPIENT_GROUPS) applySuccessRate(recipientWise[g]);
-  for (const ch of Object.keys(channelWise)) {
-    const chStats = channelWise[ch];
-    if (chStats) applySuccessRate(chStats);
-  }
+  for (const ch of Object.values(channelWise)) applySuccessRate(ch);
 
   const total = activities.length;
 
@@ -386,6 +376,37 @@ export function buildTargetProjects(
       name: projectList.find((p) => p.uuid === selectedProject)?.name || selectedProject,
     },
   ];
+}
+
+function normalizeRecipientType(raw: string): 'BENEFICIARY' | 'STAKEHOLDER' {
+  return raw.toUpperCase().startsWith('STAKEHOLDER') ? 'STAKEHOLDER' : 'BENEFICIARY';
+}
+
+function extractPhase(act: Record<string, unknown>): string {
+  const phase = act['phase'];
+  if (phase && typeof phase === 'object') {
+    return String((phase as Record<string, unknown>)['name'] || 'N/A');
+  }
+  return String(phase || 'N/A');
+}
+
+function extractSessionId(...sources: Record<string, unknown>[]): string {
+  for (const src of sources) {
+    for (const key of ['sessionId', 'session_id', 'cuid']) {
+      const val = src[key];
+      if (typeof val === 'string' && val.trim() && val !== 'undefined' && val !== 'null') {
+        return val.trim();
+      }
+    }
+    const details = src['sessionDetails'] as Record<string, unknown> | undefined;
+    if (details) {
+      const detailId = details['cuid'] || details['id'];
+      if (typeof detailId === 'string' && detailId.trim() && detailId !== 'undefined') {
+        return detailId.trim();
+      }
+    }
+  }
+  return '';
 }
 
 function extractErrorMessage(...candidates: unknown[]): string | undefined {
@@ -423,13 +444,7 @@ export function transformActivitiesToCommunicationRows(
     if (comms.length === 0) {
       const actStatus = normalizeSessionStatus(String(act['status'] || 'PENDING'));
       const { channel, transportName } = resolveTransportInfo(act, transports);
-      const sessionCandidate = String(
-        act['sessionId'] || act['session_id'] || act['cuid'] || '',
-      ).trim();
-      const sId =
-        sessionCandidate && sessionCandidate !== 'undefined' && sessionCandidate !== 'null'
-          ? sessionCandidate
-          : '';
+      const sId = extractSessionId(act);
       const actId = String(act['uuid'] || act['id'] || '').trim();
 
       rows.push({
@@ -441,8 +456,10 @@ export function transformActivitiesToCommunicationRows(
         channel,
         transportName,
         groupName: 'General',
-        recipientType: 'BENEFICIARY',
-        phase: String((act['phase'] as Record<string, unknown>)?.['name'] || act['phase'] || 'N/A'),
+        recipientType: normalizeRecipientType(
+          String(act['groupType'] || act['recipientType'] || 'BENEFICIARY'),
+        ),
+        phase: extractPhase(act),
         status: actStatus,
         delivered: actStatus === 'COMPLETED' ? 1 : 0,
         failed: actStatus === 'FAILED' ? 1 : 0,
@@ -462,13 +479,9 @@ export function transformActivitiesToCommunicationRows(
     for (let idx = 0; idx < comms.length; idx++) {
       const c = comms[idx] as Record<string, unknown>;
       const { channel, transportName } = resolveTransportInfo(c, transports);
-      const groupType = String(
-        c['groupType'] ||
-        c['recipientType'] ||
-        act['groupType'] ||
-        act['recipientType'] ||
-        'BENEFICIARY',
-      ).toUpperCase();
+      const groupType = normalizeRecipientType(
+        String(c['groupType'] || c['recipientType'] || act['groupType'] || act['recipientType'] || 'BENEFICIARY'),
+      );
 
       const hasExplicitFailure =
         Boolean(c['isFailed']) ||
@@ -493,11 +506,7 @@ export function transformActivitiesToCommunicationRows(
       const status = hasExplicitFailure ? 'FAILED' : normalizeSessionStatus(String(rawStatus));
 
       const msg = c['message'];
-      const actPhase = act['phase'];
-      const phaseName =
-        actPhase && typeof actPhase === 'object'
-          ? String((actPhase as Record<string, unknown>)['name'] || 'N/A')
-          : String(actPhase || 'N/A');
+      const phaseName = extractPhase(act);
 
       const failReason = extractErrorMessage(
         c['failReason'],
@@ -518,20 +527,7 @@ export function transformActivitiesToCommunicationRows(
         totalRecipients - deliveredRecipients - failedRecipients,
       );
 
-      const sessionCandidate = String(
-        c['sessionId'] ||
-        c['session_id'] ||
-        (c['sessionDetails'] as Record<string, unknown>)?.['cuid'] ||
-        (c['sessionDetails'] as Record<string, unknown>)?.['id'] ||
-        c['cuid'] ||
-        act['sessionId'] ||
-        act['session_id'] ||
-        '',
-      ).trim();
-      const sId =
-        sessionCandidate && sessionCandidate !== 'undefined' && sessionCandidate !== 'null'
-          ? sessionCandidate
-          : '';
+      const sId = extractSessionId(c, act);
 
       const commId = String(c['communicationId'] || c['id'] || '').trim();
       const actId = String(act['uuid'] || act['id'] || '').trim();
@@ -592,20 +588,13 @@ export function filterCommunicationActivities(
   }
   if (params?.channel && params.channel !== 'all') {
     const target = classifyTransportString(params.channel);
-    result = result.filter((r) => {
-      const rowChannel = classifyTransportString(r.channel);
-      const rowTransport = r.transportName ? classifyTransportString(r.transportName) : '';
-      return (
-        rowChannel === target ||
-        rowTransport === target ||
-        (r.channel && r.channel.toUpperCase() === params.channel?.toUpperCase()) ||
-        (r.transportName && r.transportName.toUpperCase() === params.channel?.toUpperCase())
-      );
-    });
+    result = result.filter(
+      (r) => classifyTransportString(r.channel) === target,
+    );
   }
   if (params?.recipient && params.recipient !== 'all') {
     const rc = params.recipient.toUpperCase();
-    result = result.filter((r) => r.recipientType === rc);
+    result = result.filter((r) => (r.recipientType || '').toUpperCase() === rc);
   }
   if (params?.phase && params.phase !== 'all') {
     const ph = params.phase.toUpperCase();

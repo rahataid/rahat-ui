@@ -10,8 +10,9 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
-  useCommunicationOverviewStats,
   useCommunicationOverviewActivities,
+  computeStatsFromActivities,
+  filterCommunicationActivities,
 } from '@rahat-ui/query';
 import CommunicationOverviewFilters, {
   CommunicationOverviewFilterState,
@@ -46,34 +47,7 @@ export default function CommunicationOverviewView() {
       phase: filters.phase,
       status: filters.status,
     }),
-    [
-      filters.project,
-      fromStr,
-      toStr,
-      filters.channel,
-      filters.recipient,
-      filters.phase,
-      filters.status,
-    ],
-  );
-
-  const statsParams = useMemo(
-    () => ({
-      project: filters.project,
-      from: fromStr,
-      to: toStr,
-      channel: filters.channel,
-      recipient: filters.recipient,
-      phase: filters.phase,
-    }),
-    [
-      filters.project,
-      fromStr,
-      toStr,
-      filters.channel,
-      filters.recipient,
-      filters.phase,
-    ],
+    [filters.project, fromStr, toStr, filters.channel, filters.recipient, filters.phase, filters.status],
   );
 
   const {
@@ -82,21 +56,22 @@ export default function CommunicationOverviewView() {
     isLoading: isLoadingActivities,
   } = useCommunicationOverviewActivities(queryParams);
 
-  const {
-    data: overviewStats,
-    isLoading: isLoadingStats,
-  } = useCommunicationOverviewStats(statsParams);
+  const statsBaseActivities = useMemo(() => {
+    const { status: _status, ...filtersWithoutStatus } = queryParams;
+    return filterCommunicationActivities(allActivities, filtersWithoutStatus);
+  }, [allActivities, queryParams]);
+
+  const overviewStats = useMemo(
+    () => computeStatsFromActivities(statsBaseActivities),
+    [statsBaseActivities],
+  );
 
   const handleFilterChange = useCallback(
-    (newFilters: CommunicationOverviewFilterState) => {
-      setFilters(newFilters);
-    },
+    (newFilters: CommunicationOverviewFilterState) => setFilters(newFilters),
     [],
   );
 
-  const handleResetFilters = useCallback(() => {
-    setFilters({});
-  }, []);
+  const handleResetFilters = useCallback(() => setFilters({}), []);
 
   const handleSelectStatus = useCallback((status?: string) => {
     setFilters((prev) => ({
@@ -124,14 +99,14 @@ export default function CommunicationOverviewView() {
         <CardContent className="space-y-6 w-full max-w-full min-w-0 overflow-hidden">
           <CommunicationTopKpis
             data={overviewStats}
-            isLoading={isLoadingStats}
+            isLoading={isLoadingActivities}
             activeStatus={filters.status}
             onSelectStatus={handleSelectStatus}
           />
 
           <CommunicationBreakdowns
             data={overviewStats}
-            isLoading={isLoadingStats}
+            isLoading={isLoadingActivities}
             activeStatus={filters.status}
             onSelectStatus={handleSelectStatus}
           />

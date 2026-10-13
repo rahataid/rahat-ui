@@ -162,35 +162,56 @@ export const useCommunicationOverviewActivities = (
 
         const rows: CommunicationActivityItem[] = [];
 
+        const PER_PAGE = 100;
+
         await Promise.allSettled(
           targets.map(async (proj) => {
             try {
-              const res = await projectClient.projectActions({
-                uuid: proj.uuid as UUID,
-                data: {
-                  action: 'ms.activities.getHavingComms',
-                  payload: { perPage: 100, page: 1 },
-                },
-              });
+              let page = 1;
+              let lastPage = 1;
 
-              const data = res as Record<string, unknown>;
-              const responseObj = data?.[('response')] as Record<string, unknown> | undefined;
-              const dataObj = data?.[('data')] as Record<string, unknown> | undefined;
-              const activities = (
-                responseObj?.[('data')] ??
-                dataObj?.[('data')] ??
-                data?.[('data')] ??
-                []
-              ) as Record<string, unknown>[];
+              while (page <= lastPage) {
+                const res = await projectClient.projectActions({
+                  uuid: proj.uuid as UUID,
+                  data: {
+                    action: 'ms.activities.getHavingComms',
+                    payload: { perPage: PER_PAGE, page },
+                  },
+                });
 
-              if (Array.isArray(activities)) {
-                rows.push(
-                  ...transformActivitiesToCommunicationRows(
-                    activities,
-                    proj,
-                    appTransports as TransportEntry[],
-                  ),
-                );
+                const data = res as Record<string, unknown>;
+                const responseObj = data?.[('response')] as Record<string, unknown> | undefined;
+                const dataObj = data?.[('data')] as Record<string, unknown> | undefined;
+
+                const meta = (
+                  responseObj?.[('meta')] ??
+                  dataObj?.[('meta')] ??
+                  data?.[('meta')]
+                ) as Record<string, unknown> | undefined;
+
+                if (meta?.['lastPage']) {
+                  lastPage = Number(meta['lastPage']);
+                }
+
+                const activities = (
+                  responseObj?.[('data')] ??
+                  dataObj?.[('data')] ??
+                  data?.[('data')] ??
+                  []
+                ) as Record<string, unknown>[];
+
+                if (Array.isArray(activities) && activities.length > 0) {
+                  rows.push(
+                    ...transformActivitiesToCommunicationRows(
+                      activities,
+                      proj,
+                      appTransports as TransportEntry[],
+                    ),
+                  );
+                  page++;
+                } else {
+                  break;
+                }
               }
             } catch {
               // graceful per-project fallback

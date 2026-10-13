@@ -595,7 +595,11 @@
     "CHECKING": "Checking...",
     "RUN_HEALTH_CHECK": "Run Health Check",
     "HEALTH_CHECK_SUCCESS": "Health check completed: {healthy} of {total} services healthy",
-    "HEALTH_CHECK_FAILED": "Health check failed. Please try again."
+    "HEALTH_CHECK_FAILED": "Health check failed. Please try again.",
+    "STATS": "Stats",
+    "LIST": "List",
+    "GENDER_DISTRIBUTION": "Gender Distribution",
+    "TOTAL_USERS": "Total Users"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -1217,6 +1221,8 @@
     "VENDORS": "Vendors",
     "HERE_IS_THE_LIST_OF_ALL": "Here is the list of all the vendorss",
     "SEARCH_VENDORS": "Search Vendors",
+    "SEARCH_VENDORS_BY_NAME": "Search by vendor name...",
+    "SELECT_STATUS": "Select Status",
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "There are no vendors to display at the moment",
     "SELECT_A_PROJECT_TO_ASSIGN_THE": "Select a project to assign the selected vendor",
     "PROJECT": "Project",
@@ -1224,7 +1230,11 @@
     "NO_PROJECT_FOUND": "No project found",
     "PROJECT_ALREADY_ASSIGNED": "Project Already Assigned",
     "SHOW_LESS": "Show less",
-    "MORE": "more"
+    "MORE": "more",
+    "TOTAL_VENDORS": "Total vendors",
+    "STATS": "Stats",
+    "LIST": "List",
+    "RESULTS_FOUND": "{total} results found"
   },
   "VENDORS_DETAIL": {
     "VENDOR_DETAILS": "Vendor details",
@@ -3382,6 +3392,7 @@
     "TOTAL_TOKEN_SUPPLY": "Total Token Supply",
     "TOTAL_TRIGGERS": "Total Triggers",
     "TOTAL_VENDORS": "Total Vendors",
+    "STATS": "Stats",
     "TRACK_ALL_STAKEHOLDER_GROUPS_IN_THE": "Track all stakeholder groups in the project",
     "TRACK_ALL_THE_ACTIVITIES_REPORTS_HERE": "Track all the activities reports here",
     "TRACK_ALL_THE_ACTIVITY_BASED_LOGS": "Track all the activity based logs here",

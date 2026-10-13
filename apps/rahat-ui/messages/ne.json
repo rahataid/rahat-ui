@@ -1825,6 +1825,7 @@
     "TOTAL_TOKEN_SUPPLY": "टोकनको उपलब्ध संख्या",
     "TOTAL_TRIGGERS": "कुल ट्रिगरहरू",
     "TOTAL_VENDORS": "कुल विक्रेताहरू",
+    "STATS": "तथ्याङ्क",
     "TRACK_ALL_STAKEHOLDER_GROUPS_IN_THE": "परियोजनाका सबै सरोकारवाला समूहहरू ट्र्याक गर्नुहोस्",
     "TRACK_ALL_THE_ACTIVITIES_REPORTS_HERE": "यहाँ सबै गतिविधि अभिलेखहरुको ट्र्याक गर्नुहोस्",
     "TRACK_ALL_THE_ACTIVITY_BASED_LOGS": "यहाँ सबै गतिविधिको आधारमा विवरण लगहरू ट्र्याक गर्नुहोस्",
@@ -3711,7 +3712,12 @@
     "CHECKING": "जाँच गर्दै...",
     "RUN_HEALTH_CHECK": "स्वास्थ्य जाँच चलाउनुहोस्",
     "HEALTH_CHECK_SUCCESS": "स्वास्थ्य जाँच सम्पन्न भयो: {total} मध्ये {healthy} सेवाहरू स्वस्थ छन्",
-    "HEALTH_CHECK_FAILED": "स्वास्थ्य जाँच असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।"
+    "HEALTH_CHECK_FAILED": "स्वास्थ्य जाँच असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।",
+    "STATS": "तथ्याङ्क",
+    "LIST": "सूची",
+    "GENDER_DISTRIBUTION": "लैङ्गिक वितरण",
+    "TOTAL_USERS": "कुल प्रयोगकर्ताहरू",
+    "RESULTS_FOUND": "{total} परिणामहरू फेला पर्यो"
   },
   "IMPORT_BENEFICIARY_DETAIL": {
     "BENEFICIARIES_TO_IMPORT": "आयात गर्न लाभग्राहीहरू",
@@ -4238,11 +4244,16 @@
     "PROJECT": "परियोजना",
     "PROJECT_ALREADY_ASSIGNED": "परियोजना पहिले नै तोकिएको छ",
     "SEARCH_VENDORS": "विक्रेताहरू खोज्नुहोस्",
+    "SEARCH_VENDORS_BY_NAME": "नामद्वारा विक्रेताहरू खोज्नुहोस्...",
+    "SELECT_STATUS": "स्थिति चयन गर्नुहोस्",
     "SELECT_A_PROJECT_TO_ASSIGN_THE": "चयन गरिएको विक्रेता नियुक्त गर्न परियोजना चयन गर्नुहोस्",
     "SELECT_PROJECT_NAME": "परियोजनाको नाम छान्नुहोस्",
     "SHOW_LESS": "कम देखाउनुहोस्",
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "यस समयमा प्रदर्शन गर्न कुनै विक्रेताहरू छैनन्",
-    "VENDORS": "विक्रेताहरू"
+    "VENDORS": "विक्रेताहरू",
+    "STATS": "तथ्याङ्क",
+    "LIST": "सूची",
+    "RESULTS_FOUND": "{total} परिणामहरू फेला पर्यो"
   },
   "VENDORS_REDEMPTION_TABLE": {
     "REDEMPTION_STATUS": "मुक्ति स्थिति",

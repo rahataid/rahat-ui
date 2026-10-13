@@ -172,9 +172,18 @@ export const intlDateFormat = (dateStr?: string, locale: string = 'en') => {
   const numberingSystem =
     locale === 'ne' ? ({ numberingSystem: 'deva' } as const) : {};
 
-  const dayOptions: Intl.DateTimeFormatOptions = { day: '2-digit', ...numberingSystem };
-  const monthOptions: Intl.DateTimeFormatOptions = { month: 'long', ...numberingSystem };
-  const yearOptions: Intl.DateTimeFormatOptions = { year: 'numeric', ...numberingSystem };
+  const dayOptions: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    ...numberingSystem,
+  };
+  const monthOptions: Intl.DateTimeFormatOptions = {
+    month: 'long',
+    ...numberingSystem,
+  };
+  const yearOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    ...numberingSystem,
+  };
   const timeOptions: Intl.DateTimeFormatOptions = {
     hour: '2-digit',
     minute: '2-digit',
@@ -187,7 +196,11 @@ export const intlDateFormat = (dateStr?: string, locale: string = 'en') => {
   const monthFormatter = new Intl.DateTimeFormat(localeTag, monthOptions);
   const month =
     locale === 'ne'
-      ? localizeNepaliParts(date, monthOptions, monthFormatter.formatToParts(date))
+      ? localizeNepaliParts(
+          date,
+          monthOptions,
+          monthFormatter.formatToParts(date),
+        )
       : monthFormatter.format(date);
   const year = new Intl.DateTimeFormat(localeTag, yearOptions).format(date);
   const time = new Intl.DateTimeFormat(localeTag, timeOptions).format(date);
@@ -246,7 +259,8 @@ export const getExplorerUrl = ({
   target: ExplorerTarget;
   value?: string;
 }): string | null => {
-  if (!chainSettings || !value) return null;
+  // Only strings are valid explorer inputs; reject non-strings (e.g. numeric
+  if (!chainSettings || typeof value !== 'string' || !value) return null;
 
   if (chainSettings.type === 'evm') {
     const evmPathMap: Record<ExplorerTarget, string> = {

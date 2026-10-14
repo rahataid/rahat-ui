@@ -1,60 +1,260 @@
-name: ALL DEV CI/CD
+# name: ALL DEV CI/CD
+
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       apps_to_build:
+#         description: 'Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all.'
+#         required: false
+#         default: ''
+#         type: string
+#       tag_suffix:
+#         description: 'Tag suffix (e.g., aa-dev)'
+#         required: true
+#         default: 'aa-dev'
+#         type: string
+#       vault_secret_path:
+#         description: 'Vault secret path'
+#         required: true
+#         type: choice
+#         options:
+#           # Dev folder
+#           - '[DEV] github/data/rahat/rahat-ui/dev/aa/dev'
+#           - '[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa'
+#           - '[DEV] github/data/rahat/rahat-ui/dev/aa/stellar'
+#           - '[DEV] github/data/rahat/rahat-ui/dev/aa/unicef'
+#           - '[DEV] github/data/rahat/rahat-ui/dev/el/crm'
+#           - '[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink'
+#           - '[DEV] github/data/rahat/rahat-ui/demo/aa/stellar'
+
+#           # Training
+#           - '[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn'
+#           - '[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs'
+
+#           # Demo folder
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/nrcs"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/testload"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
+#           - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026"
+
+#           # Main folder
+#           - '[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa'
+#           - '[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm'
+#           - '[MAIN] github/data/rahat/rahat-ui/main/aa/mcn'
+#           - '[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge'
+#           - '[MAIN] github/data/rahat/rahat-ui/prod/aa/demo'
+
+#       vault_secret_key:
+#         description: 'Key within the Vault secret that holds the env (e.g., rahat-ui)'
+#         required: true
+#         default: 'rahat-ui'
+#         type: string
+
+# env:
+#   CI: false
+#   REGISTRY: docker.io
+#   IMAGE_NAMESPACE: esatya
+
+# jobs:
+#   setup:
+#     name: Setup Build Matrix
+#     runs-on: ubuntu-latest
+#     outputs:
+#       matrix: ${{ steps.set-matrix.outputs.matrix }}
+#     steps:
+#       - name: Generate build matrix
+#         id: set-matrix
+#         run: |
+#           APPS="${{ inputs.apps_to_build }}"
+#           if [ -z "$APPS" ]; then
+#             APPS="rahat-ui,community-tool-ui"
+#           fi
+#           JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
+#           echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
+
+#   build:
+#     name: Build & Push - ${{ matrix.app }}
+#     runs-on: ubuntu-latest
+#     needs: setup
+#     strategy:
+#       fail-fast: false
+#       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+#     permissions:
+#       contents: read
+#       packages: write
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Extract version dynamically
+#         id: extract_version
+#         run: |
+#           KEY="${{ matrix.app }}-version"
+#           VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+
+#           echo "VERSION=$VERSION" >> $GITHUB_ENV
+#           echo "version=$VERSION" >> $GITHUB_OUTPUT
+#       # -----------------------------
+#       # Strip prefix from Vault secret path
+#       # -----------------------------
+#       - name: Strip prefix from Vault path
+#         id: vault-path
+#         run: |
+#           RAW_PATH="${{ inputs.vault_secret_path }}"
+#           CLEAN_PATH="${RAW_PATH#*] }"
+#           echo "VAULT_PATH=${CLEAN_PATH}" >> $GITHUB_OUTPUT
+
+#       # -----------------------------
+#       # Vault Secret Import
+#       # -----------------------------
+#       - name: Import Secrets from Vault
+#         id: vault
+#         uses: hashicorp/vault-action@v2.4.0
+#         with:
+#           url: ${{ secrets.VAULT_URL }}
+#           token: ${{ secrets.VAULT_TOKEN }}
+#           secrets: |
+#             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+#             github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
+#             ${{ steps.vault-path.outputs.VAULT_PATH }} ${{ inputs.vault_secret_key }} | ENV ;
+
+#       # -----------------------------
+#       # Environment Injection
+#       # -----------------------------
+#       - name: Create environment file
+#         run: |
+#           if [ -z "$ENV" ]; then
+#             echo "ERROR: Vault secret is empty!"
+#             exit 1
+#           fi
+#           tee ./.env <<< "$ENV"
+
+#       # -----------------------------
+#       # Node + PNPM Setup
+#       # -----------------------------
+#       # - name: Enable pnpm via Corepack
+#       #   run: corepack enable && corepack prepare pnpm@8.14.1 --activate
+
+#       # - name: Setup Node.js
+#       #   uses: actions/setup-node@v4
+#       #   with:
+#       #     node-version: 20.10.0
+#       #     cache: "pnpm"
+
+#       # - name: Install dependencies
+#       #   run: pnpm install --frozen-lockfile
+
+#       # - name: Build application
+#       #   run: pnpm build:all
+
+#       # -----------------------------
+#       # Docker Setup
+#       # -----------------------------
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
+
+#       - name: Login to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ env.DOCKERHUB_USERNAME }}
+#           password: ${{ env.DOCKERHUB_TOKEN }}
+
+#       - name: Extract Git metadata
+#         id: meta
+#         run: |
+#           echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+#           echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+
+#       # -----------------------------
+#       # Docker Build & Push
+#       # -----------------------------
+#       - name: Build and Push Docker Image
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: .
+#           file: Dockerfile.${{ matrix.app }}
+#           push: true
+#           # cache-from: type=gha
+#           # cache-to: type=gha,mode=max
+#           tags: |
+#             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
+#             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
+#           build-args: |
+#             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
+
+#       - name: Send Slack Alert on Failure
+#         if: failure()
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           SLACK_COLOR: '#ff0000'
+#           SLACK_TITLE: 'Build Failed — ${{ matrix.app }}'
+#           SLACK_MESSAGE: |
+#             *App:* `${{ matrix.app }}`
+#             *Tag:* `${{ inputs.tag_suffix }}`
+#             *Branch:* `${{ github.ref_name }}`
+#             *Actor:* `${{ github.actor }}`
+#             *Vault path:* `${{ steps.vault-path.outputs.VAULT_PATH }}`
+
+#             :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
+#           SLACK_FOOTER: ''
+
+name: 'ALL DEV CI/CD · UI Build & Push'
+run-name: "🚀 ${{ inputs.environment }} · ${{ inputs.custom_branch || github.ref_name }} · @${{ github.actor }}"
 
 on:
   workflow_dispatch:
     inputs:
-      apps_to_build:
-        description: 'Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all.'
-        required: false
-        default: ''
-        type: string
-      tag_suffix:
-        description: 'Tag suffix (e.g., aa-dev)'
-        required: true
-        default: 'aa-dev'
-        type: string
-      vault_secret_path:
-        description: 'Vault secret path'
+      environment:
+        description: 'Environment to deploy  (env | Docker tag | purpose)'
         required: true
         type: choice
         options:
-          # Dev folder
-          - '[DEV] github/data/rahat/rahat-ui/dev/aa/dev'
-          - '[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa'
-          - '[DEV] github/data/rahat/rahat-ui/dev/aa/stellar'
-          - '[DEV] github/data/rahat/rahat-ui/dev/aa/unicef'
-          - '[DEV] github/data/rahat/rahat-ui/dev/el/crm'
-          - '[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink'
-          - '[DEV] github/data/rahat/rahat-ui/demo/aa/stellar'
+          - 'dev-aa | Tag: aa-dev | AA Development'
+          - 'dev-qa | Tag: aa-dev-qa | AA QA Development'
+          - 'dev-stellar | Tag: aa-dev-stellar | AA Stellar Development'
+          - 'dev-unicef | Tag: aa-dev-unicef | UNICEF Development'
+          - 'dev-crm | Tag: dev-crm | CRM Development'
+          - 'dev-aidlink | Tag: dev-aidlink | AidLink Development'
+          - 'demo-stellar | Tag: aa-demo-stellar | AA Stellar Demo'
+          - 'train-mcn | Tag: mcn-training | MCN Training'
+          - 'train-nrcs | Tag: nrcs-training | NRCS Training'
+          - 'demo-mcn | Tag: demo-mcn | MCN Demo'
+          - 'demo-nrcs | Tag: demo-nrcs | NRCS Demo'
+          - 'demo-redcross | Tag: demo-redcross | Red Cross Demo'
+          - 'test-load | Tag: test-load | Load Testing'
+          - 'demo-unicef | Tag: demo-unicef | UNICEF Demo'
+          - 'demo-aidlink | Tag: demo-aidlink | AidLink Demo'
+          - 'demo-xcapita | Tag: demo-xcapita | C2C Xcapita Demo'
+          - 'dry-run-pin | Tag: dry-run-pin | DRY RUN PIN'
+          - 'demo-gsma | Tag: demo-gsma | GSMA Demo'
+          - 'mcn-demo-2026 | Tag: mcn-demo-2026 | MCN Demo 2026'
+          - 'main-geruwa | Tag: main-geruwa | Geruwa Main'
+          - 'main-geruwarm | Tag: main-geruwarm | Geruwa RM Main'
+          - 'main-mcn | Tag: aa-mcn-main | AA MCN Main'
+          - 'main-cam-ken | Tag: main-cam-ken | Cam-Ken Merge Main'
+          - 'prod-aa-demo | Tag: aa-demo-v2 | AA Demo v2 (prod folder)'
 
-          # Training
-          - '[TRAIN] github/data/rahat/rahat-ui/traning/aa/mcn'
-          - '[TRAIN] github/data/rahat/rahat-ui/traning/aa/nrcs'
-
-          # Demo folder
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/nrcs"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/testload"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/dry-run-pin"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/gsma"
-          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn-2026"
-
-          # Main folder
-          - '[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa'
-          - '[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm'
-          - '[MAIN] github/data/rahat/rahat-ui/main/aa/mcn'
-          - '[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge'
-          - '[MAIN] github/data/rahat/rahat-ui/prod/aa/demo'
-
-      vault_secret_key:
-        description: 'Key within the Vault secret that holds the env (e.g., rahat-ui)'
-        required: true
-        default: 'rahat-ui'
+      custom_branch:
+        description: 'Branch, tag or full commit SHA to build (leave empty to build the "Use workflow from" branch)'
+        required: false
         type: string
+
+      apps_to_build:
+        description: 'Apps to build, comma-separated (e.g. rahat-ui,community-tool-ui). Leave empty for the environment defaults.'
+        required: false
+        type: string
+
+concurrency:
+  group: ui-deploy-${{ inputs.environment }}
+  cancel-in-progress: true
 
 env:
   CI: false
@@ -62,26 +262,207 @@ env:
   IMAGE_NAMESPACE: esatya
 
 jobs:
+  # -----------------------------
+  # Resolve environment config
+  # -----------------------------
+  resolve-config:
+    name: Resolve Environment Config
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.config.outputs.env_name }}
+      tag_suffix: ${{ steps.config.outputs.tag_suffix }}
+      vault_path: ${{ steps.config.outputs.vault_path }}
+      vault_key: ${{ steps.config.outputs.vault_key }}
+      apps_to_build: ${{ steps.config.outputs.apps_to_build }}
+      apps_overridden: ${{ steps.config.outputs.apps_overridden }}
+      env_config: ${{ steps.config.outputs.env_config }}
+      target_ref: ${{ steps.target.outputs.ref }}
+      target_sha: ${{ steps.target.outputs.sha }}
+    steps:
+      - name: Checkout environment config
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/UI-CICD.environments.json
+          sparse-checkout-cone-mode: false
+
+      # Workflow file and env config come from the "Use workflow from" branch;
+      # the code that gets built comes from `custom_branch` (if set).
+      - name: Resolve branch to build
+        id: target
+        env:
+          TARGET_REF: ${{ inputs.custom_branch || github.ref_name }}
+        run: |
+          set -euo pipefail
+          REF=$(printf '%s' "$TARGET_REF" | xargs)
+          if ! git fetch --quiet --depth=1 --no-tags origin "$REF"; then
+            echo "::error::Could not find branch, tag or commit '$REF'. Use a full 40-character SHA for commits."
+            exit 1
+          fi
+          SHA=$(git rev-parse FETCH_HEAD)
+          echo "Building $REF @ $SHA"
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve config from manual input
+        id: config
+        env:
+          SELECTED: ${{ inputs.environment }}
+          APPS_OVERRIDE: ${{ inputs.apps_to_build }}
+        run: |
+          set -euo pipefail
+          FILE=.github/UI-CICD.environments.json
+
+          # Dropdown options look like "demo-redcross | Tag: demo-redcross | Red Cross Demo"
+          ENV=$(printf '%s' "$SELECTED" | cut -d'|' -f1 | xargs)
+
+          if ! jq -e --arg e "$ENV" '.environments | has($e)' "$FILE" >/dev/null; then
+            echo "::error::Unknown environment: '$ENV' (from '$SELECTED')"
+            exit 1
+          fi
+
+          # Merge per-environment values over the file defaults
+          CFG=$(jq -c --arg e "$ENV" '
+            .defaults as $d | .environments[$e] | {
+              description,
+              tag,
+              vault_path,
+              vault_key: (.vault_key // $d.vault_key),
+              apps:      (.apps      // $d.apps),
+              urls:      (.urls      // {}),
+              notes:     (.notes     // [])
+            }' "$FILE")
+
+          TAG=$(jq -r '.tag' <<<"$CFG")
+          VAULT_PATH=$(jq -r '.vault_path' <<<"$CFG")
+          VAULT_KEY=$(jq -r '.vault_key' <<<"$CFG")
+          APPS=$(jq -r '.apps' <<<"$CFG")
+
+          # Guard: the Tag shown in the dropdown label must match the JSON config
+          LABEL_TAG=$(printf '%s' "$SELECTED" | sed -n 's/.*Tag:[[:space:]]*\([^|[:space:]]*\).*/\1/p')
+          if [ -n "$LABEL_TAG" ] && [ "$LABEL_TAG" != "$TAG" ]; then
+            echo "::error::Dropdown label says Tag '$LABEL_TAG' but UI-CICD.environments.json for '$ENV' uses '$TAG'. Update the dropdown or the JSON and commit."
+            exit 1
+          fi
+
+          OVERRIDDEN=false
+          if [ -n "$APPS_OVERRIDE" ]; then
+            APPS=$(printf '%s' "$APPS_OVERRIDE" | tr -d '[:space:]')
+            OVERRIDDEN=true
+          fi
+
+          echo "Environment : $ENV"
+          echo "Docker tag  : $TAG"
+          echo "Vault path  : $VAULT_PATH (key: $VAULT_KEY)"
+          echo "Apps        : $APPS (override: $OVERRIDDEN)"
+
+          {
+            echo "env_name=$ENV"
+            echo "tag_suffix=$TAG"
+            echo "vault_path=$VAULT_PATH"
+            echo "vault_key=$VAULT_KEY"
+            echo "apps_to_build=$APPS"
+            echo "apps_overridden=$OVERRIDDEN"
+            echo "env_config=$CFG"
+          } >> "$GITHUB_OUTPUT"
+
+  # -----------------------------
+  # Deployment Preview (runs before any build)
+  # -----------------------------
+  preview:
+    name: Deployment Preview
+    runs-on: ubuntu-latest
+    needs: resolve-config
+    steps:
+      - name: Show what will be built and pushed
+        env:
+          ENV_NAME: ${{ needs.resolve-config.outputs.env_name }}
+          TAG: ${{ needs.resolve-config.outputs.tag_suffix }}
+          APPS: ${{ needs.resolve-config.outputs.apps_to_build }}
+          APPS_OVERRIDDEN: ${{ needs.resolve-config.outputs.apps_overridden }}
+          CFG: ${{ needs.resolve-config.outputs.env_config }}
+          VAULT_PATH: ${{ needs.resolve-config.outputs.vault_path }}
+          VAULT_KEY: ${{ needs.resolve-config.outputs.vault_key }}
+          TARGET_REF: ${{ needs.resolve-config.outputs.target_ref }}
+          TARGET_SHA: ${{ needs.resolve-config.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+
+          SHORT_SHA="${TARGET_SHA::7}"
+          RUN_TAG="${TAG}-${SHORT_SHA}-${GITHUB_RUN_NUMBER}"
+          DESCRIPTION=$(jq -r '.description' <<<"$CFG")
+
+          {
+            echo "## 🚀 Deployment Preview: \`$ENV_NAME\`"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| **Environment** | \`$ENV_NAME\` |"
+            echo "| **Description** | $DESCRIPTION |"
+            echo "| **Docker tag** | \`$TAG\` |"
+            echo "| **Run-specific tag** | \`$RUN_TAG\` |"
+            echo "| **Branch being built** | \`$TARGET_REF\` |"
+            echo "| **Commit** | [\`$SHORT_SHA\`]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$TARGET_SHA) |"
+            echo "| **Workflow file from** | \`$GITHUB_REF_NAME\` |"
+            echo "| **Triggered by** | @$GITHUB_ACTOR |"
+            echo "| **Vault secret** | \`$VAULT_PATH\` → key \`$VAULT_KEY\` (contents not shown) |"
+            echo "| **Apps** | \`$APPS\`$( [ "$APPS_OVERRIDDEN" = "true" ] && echo ' _(manual override)_' ) |"
+            echo ""
+            echo "### 🐳 Images to be pushed"
+            echo ""
+            echo "| App | Image | Run-specific image |"
+            echo "|---|---|---|"
+            IFS=',' read -ra APP_LIST <<<"$APPS"
+            for app in "${APP_LIST[@]}"; do
+              IMAGE="$IMAGE_NAMESPACE/$app"
+              echo "| $app | \`$IMAGE:$TAG\` | \`$IMAGE:$RUN_TAG\` |"
+            done
+            echo ""
+            echo "### 🌐 Deployment URLs"
+            echo ""
+            if [ "$(jq '.urls | length' <<<"$CFG")" -gt 0 ]; then
+              jq -r '.urls | to_entries[] | "- **\(.key):** <\(.value)>"' <<<"$CFG"
+            else
+              echo "_No deployment URLs configured for this environment. Add them to \`.github/UI-CICD.environments.json\`._"
+            fi
+            echo ""
+            NOTES=$(jq -r '.notes[]?' <<<"$CFG")
+            if [ -n "$NOTES" ] || [ "$APPS_OVERRIDDEN" = "true" ]; then
+              echo "### ⚠️ Notes"
+              echo ""
+              [ -n "$NOTES" ] && printf '%s\n' "$NOTES" | sed 's/^/> ⚠️ /'
+              [ "$APPS_OVERRIDDEN" = "true" ] && echo "> ⚠️ Default apps were overridden by the \`apps_to_build\` input."
+              echo ""
+            fi
+          } > preview.md
+
+          cat preview.md
+          cat preview.md >> "$GITHUB_STEP_SUMMARY"
+
+  # -----------------------------
+  # Build Matrix Setup
+  # -----------------------------
   setup:
     name: Setup Build Matrix
     runs-on: ubuntu-latest
+    needs: [resolve-config, preview]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Generate build matrix
+      - name: Generate matrix
         id: set-matrix
+        env:
+          APPS: ${{ needs.resolve-config.outputs.apps_to_build }}
         run: |
-          APPS="${{ inputs.apps_to_build }}"
-          if [ -z "$APPS" ]; then
-            APPS="rahat-ui,community-tool-ui"
-          fi
-          JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
-          echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
+          MATRIX=$(printf '%s' "$APPS" | jq -cR 'split(",") | map(select(length > 0)) | {app: .}')
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
 
+  # -----------------------------
+  # Build & Push
+  # -----------------------------
   build:
     name: Build & Push - ${{ matrix.app }}
     runs-on: ubuntu-latest
-    needs: setup
+    needs: [resolve-config, setup]
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
@@ -92,24 +473,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve-config.outputs.target_sha }}
 
       - name: Extract version dynamically
         id: extract_version
+        env:
+          APP: ${{ matrix.app }}
         run: |
-          KEY="${{ matrix.app }}-version"
-          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
-
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      # -----------------------------
-      # Strip prefix from Vault secret path
-      # -----------------------------
-      - name: Strip prefix from Vault path
-        id: vault-path
-        run: |
-          RAW_PATH="${{ inputs.vault_secret_path }}"
-          CLEAN_PATH="${RAW_PATH#*] }"
-          echo "VAULT_PATH=${CLEAN_PATH}" >> $GITHUB_OUTPUT
+          VERSION=$(jq -r --arg k "${APP}-version" '.[$k]' package.json)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       # -----------------------------
       # Vault Secret Import
@@ -123,36 +497,18 @@ jobs:
           secrets: |
             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
             github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
-            ${{ steps.vault-path.outputs.VAULT_PATH }} ${{ inputs.vault_secret_key }} | ENV ;
+            ${{ needs.resolve-config.outputs.vault_path }} ${{ needs.resolve-config.outputs.vault_key }} | ENV ;
 
       # -----------------------------
       # Environment Injection
       # -----------------------------
       - name: Create environment file
         run: |
-          if [ -z "$ENV" ]; then
-            echo "ERROR: Vault secret is empty!"
+          if [ -z "${ENV:-}" ]; then
+            echo "::error::Vault secret is empty!"
             exit 1
           fi
-          tee ./.env <<< "$ENV"
-
-      # -----------------------------
-      # Node + PNPM Setup
-      # -----------------------------
-      # - name: Enable pnpm via Corepack
-      #   run: corepack enable && corepack prepare pnpm@8.14.1 --activate
-
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 20.10.0
-      #     cache: "pnpm"
-
-      # - name: Install dependencies
-      #   run: pnpm install --frozen-lockfile
-
-      # - name: Build application
-      #   run: pnpm build:all
+          printf '%s\n' "$ENV" > ./.env
 
       # -----------------------------
       # Docker Setup
@@ -169,8 +525,9 @@ jobs:
       - name: Extract Git metadata
         id: meta
         run: |
-          echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-          echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+          SHA="${{ needs.resolve-config.outputs.target_sha }}"
+          echo "short_sha=${SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "run_number=${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
       # -----------------------------
       # Docker Build & Push
@@ -184,8 +541,8 @@ jobs:
           # cache-from: type=gha
           # cache-to: type=gha,mode=max
           tags: |
-            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
-            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.resolve-config.outputs.tag_suffix }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ needs.resolve-config.outputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
           build-args: |
             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
 
@@ -198,10 +555,11 @@ jobs:
           SLACK_TITLE: 'Build Failed — ${{ matrix.app }}'
           SLACK_MESSAGE: |
             *App:* `${{ matrix.app }}`
-            *Tag:* `${{ inputs.tag_suffix }}`
-            *Branch:* `${{ github.ref_name }}`
+            *Environment:* `${{ needs.resolve-config.outputs.env_name }}`
+            *Tag:* `${{ needs.resolve-config.outputs.tag_suffix }}`
+            *Branch built:* `${{ needs.resolve-config.outputs.target_ref }}`
             *Actor:* `${{ github.actor }}`
-            *Vault path:* `${{ steps.vault-path.outputs.VAULT_PATH }}`
+            *Vault path:* `${{ needs.resolve-config.outputs.vault_path }}`
 
             :point_right: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>
           SLACK_FOOTER: ''

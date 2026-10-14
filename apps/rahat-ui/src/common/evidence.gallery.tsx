@@ -11,6 +11,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { FilePreview } from './file.preview';
 
 export type EvidenceItem = { mediaUrl: string; filename?: string };
@@ -28,9 +34,7 @@ export function toEvidenceItems(info?: {
 }
 
 const isImage = (i: EvidenceItem) =>
-  /\.(jpe?g|png|gif|webp|svg)$/i.test(
-    (i.filename || i.mediaUrl).split('?')[0],
-  );
+  /\.(jpe?g|png|gif|webp|svg)$/i.test((i.filename || i.mediaUrl).split('?')[0]);
 
 function Slide({ item }: { item: EvidenceItem }) {
   const name = item.filename || item.mediaUrl.split('/').pop() || 'file';
@@ -62,30 +66,34 @@ export function EvidenceGallery({ items }: { items: EvidenceItem[] }) {
   if (!items.length) return null;
   if (items.length === 1)
     return (
-      <FilePreview
-        url={items[0].mediaUrl}
-        fileName={items[0].filename ?? ''}
-      />
+      <FilePreview url={items[0].mediaUrl} fileName={items[0].filename ?? ''} />
     );
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <button type="button" className="relative w-10 h-10">
-          {isImage(items[0]) ? (
-            <img
-              src={items[0].mediaUrl}
-              alt={items[0].filename}
-              className="w-10 h-10 object-cover rounded"
-            />
-          ) : (
-            <span className="flex w-10 h-10 items-center justify-center rounded bg-secondary" />
-          )}
-          <span className="absolute -bottom-1 -right-1 rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground">
-            +{items.length - 1}
-          </span>
-        </button>
-      </DialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <button type="button" className="relative w-10 h-10">
+                {isImage(items[0]) ? (
+                  <img
+                    src={items[0].mediaUrl}
+                    alt={items[0].filename}
+                    className="w-10 h-10 object-cover rounded"
+                  />
+                ) : (
+                  <span className="flex w-10 h-10 items-center justify-center rounded bg-secondary" />
+                )}
+                <span className="absolute -bottom-1 -right-1 rounded-full bg-primary px-1.5 text-[10px] text-white">
+                  +{items.length - 1}
+                </span>
+              </button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Click to show all images</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DialogContent className="max-w-4xl">
         <DialogTitle>Evidence ({items.length})</DialogTitle>
         <Carousel className="mx-10">

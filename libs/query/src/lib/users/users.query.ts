@@ -240,7 +240,7 @@ export const useRolePermissions = (name: string) => {
   return query;
 };
 
-export const useAssignRoleInProject = () => {
+export const useAssignRoleInProjects = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);
 
@@ -257,7 +257,22 @@ export const useAssignRoleInProject = () => {
     queryClient,
   );
 };
-
+export const useBulkProjectAssign = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const userClient = getUserClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: ['assign_role_in_project'],
+      mutationFn: ({ uuid, data }: { uuid: UUID; data: any }) =>
+        userClient.bulkAssignRolesToUser(uuid, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['get_user_roles'] });
+        queryClient.invalidateQueries({ queryKey: ['get_user_active_roles'] });
+      },
+    },
+    queryClient,
+  );
+};
 export const useListActiveRoles = (uuid?: UUID): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);

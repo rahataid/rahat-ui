@@ -44,7 +44,10 @@ import {
   useAddManager,
 } from '../../hooks/el/contracts/el-contracts';
 import { Role, User } from '@rumsan/sdk/types';
-import { useUserAssignRole } from './use.user.add.project.role';
+import {
+  useAssigToMultipleProjects,
+  useUserAssignRole,
+} from './use.user.add.project.role';
 import { useUserActiveRoles } from './use.user.active.roles';
 
 type IProps = {
@@ -60,13 +63,12 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
 
   const { data: roleList } = useRoleList({ page: 1, perPage: 100 });
   const { data: projectList } = useProjectList();
-  const { data: activeRoles } = useUserActiveRoles(
-    userDetails?.uuid as UUID,
-  );
+  const { data: activeRoles } = useUserActiveRoles(userDetails?.uuid as UUID);
 
   const addManager = useAddManager();
   const addAdmin = useAddAdmin();
   const assignRole = useUserAssignRole();
+  const newAssignRole = useAssigToMultipleProjects();
 
   const FormSchema = z.object({
     roles: z.array(z.string()).length(1, { message: t('PLEASE_SELECT_ROLE') }),
@@ -211,7 +213,9 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder={t('PLEASE_SELECT_ROLE')} />
+                              <SelectValue
+                                placeholder={t('PLEASE_SELECT_ROLE')}
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 import { useRoleList } from '@rumsan/react-query';
 import { useProjectList } from '@rahat-ui/query';
@@ -36,7 +37,6 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { UUID } from 'crypto';
-import Swal from 'sweetalert2';
 import { useSettingsStore } from '@rahat-ui/query';
 import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import {
@@ -48,7 +48,8 @@ import {
   useAssigToMultipleProjects,
   useUserAssignRole,
 } from './use.user.add.project.role';
-import { useUserActiveRoles } from './use.user.active.roles';
+import { ActiveUserRole, useUserActiveRoles } from './use.user.active.roles';
+import { toast } from 'react-toastify';
 
 type IProps = {
   userDetails: User;
@@ -72,47 +73,54 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
 
   const FormSchema = z.object({
     roles: z.array(z.string()).length(1, { message: t('PLEASE_SELECT_ROLE') }),
-    project: z.string().optional(),
+    projects: z.array(z.string()),
   });
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       roles: [],
-      project: '',
+      projects: [],
     },
   });
 
   const isRoleAlreadyAssigned = (roleName: string, xrefId: string | null) => {
     return (activeRoles?.data || []).some(
-      (activeRole) =>
+      (activeRole: ActiveUserRole) =>
         activeRole.Role?.name === roleName &&
         (activeRole.xrefId || null) === (xrefId || null),
     );
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const roleName = data.roles[0];
-    const xrefId = data.project || null;
+    const selectedProjects: string[] = data.projects;
 
-    if (isRoleAlreadyAssigned(roleName, xrefId)) {
-      return Swal.fire(
-        'Role Already Assigned',
-        xrefId
-          ? 'This role is already assigned to the user for the selected project.'
-          : 'This role is already assigned to the user.',
-        'error',
-      );
+    if (
+      selectedProjects.length === 0 &&
+      isRoleAlreadyAssigned(roleName, null)
+    ) {
+      return toast.error(t('ROLE_ALREADY_ASSIGNED'));
     }
 
     try {
-      if (data.project) {
-        await assignRole.mutateAsync({
+      if (selectedProjects.length > 0) {
+        const alreadyAssignedProject = selectedProjects.some((projectId) =>
+          isRoleAlreadyAssigned(roleName, projectId),
+        );
+        if (alreadyAssignedProject) {
+          return toast.error(t('ROLE_ALREADY_ASSIGNED'));
+        }
+
+        await newAssignRole.mutateAsync({
           uuid: userDetails?.uuid as UUID,
-          xrefId: data.project,
-          name: data.roles[0],
+          data: {
+            roles: selectedProjects.map((xrefId) => ({
+              name: roleName,
+              xrefId,
+            })),
+          },
         });
-        Swal.fire('Role Assigned Successfully', '', 'success');
         form.reset();
         setOpen(false);
       } else if (roleSync === true) {
@@ -126,7 +134,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
           setOpen(false);
         } else if (data.roles.includes('Admin')) {
           await addAdmin.mutateAsync({
-            data: data,
+            data: userDetails,
             walletAddress: userDetails?.wallet as `0x${string}`,
             contractAddress: contractSettings as `0x${string}`,
           });
@@ -137,7 +145,6 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
             uuid: userDetails?.uuid as UUID,
             name: data.roles[0],
           });
-          Swal.fire(t('ROLE_ASSIGNED_SUCCESSFULLY'), '', 'success');
           form.reset();
           setOpen(false);
         }
@@ -146,7 +153,6 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
           uuid: userDetails?.uuid as UUID,
           name: data.roles[0],
         });
-        Swal.fire(t('ROLE_ASSIGNED_SUCCESSFULLY'), '', 'success');
         form.reset();
         setOpen(false);
       }
@@ -175,7 +181,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
         ['USERS'],
         rawMessage,
       );
-      Swal.fire(t('ERROR_ASSIGNING_ROLE'), errorMessage, 'error');
+      return toast.error(errorMessage || t('ERROR_ASSIGNING_ROLE'));
     }
   };
 
@@ -236,34 +242,47 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                 />
                 <FormField
                   control={form.control}
-                  name="project"
+                  name="projects"
                   render={({ field }) => {
                     return (
                       <FormItem>
                         <FormLabel>{t('PROJECT_OPTIONAL')}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={tg('SELECT_PROJECT')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectGroup>
-                              {Array.isArray(projectList?.data) &&
-                                projectList.data.map((project) => (
-                                  <SelectItem
-                                    value={project.uuid as string}
-                                    key={project.uuid}
+                        <div className="max-h-48 space-y-2 overflow-y-auto rounded-md border p-3">
+                          {Array.isArray(projectList?.data) &&
+                            projectList.data.map((project) => {
+                              const projectId = project.uuid as string;
+                              const checked = field.value.includes(projectId);
+
+                              return (
+                                <div
+                                  className="flex items-center gap-2"
+                                  key={project.uuid}
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      id={projectId}
+                                      checked={checked}
+                                      onCheckedChange={(isChecked) =>
+                                        field.onChange(
+                                          isChecked === true
+                                            ? [...field.value, projectId]
+                                            : field.value.filter(
+                                                (id) => id !== projectId,
+                                              ),
+                                        )
+                                      }
+                                    />
+                                  </FormControl>
+                                  <FormLabel
+                                    htmlFor={projectId}
+                                    className="mb-0 font-normal"
                                   >
                                     {project.name}
-                                  </SelectItem>
-                                ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
+                                  </FormLabel>
+                                </div>
+                              );
+                            })}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     );
@@ -286,6 +305,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                   type="submit"
                   disabled={
                     assignRole.isPending ||
+                    newAssignRole.isPending ||
                     addManager.isPending ||
                     addAdmin.isPending
                   }

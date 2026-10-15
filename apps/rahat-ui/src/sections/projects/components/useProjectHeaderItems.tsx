@@ -143,7 +143,7 @@ export const useProjectHeaderItems = (projectType: string) => {
               className="h-8 pl-8 text-sm"
             />
           </div>
-          <ScrollArea className="h-[250px] max-h-[var(--radix-dropdown-menu-content-available-height)]">
+          <ScrollArea className="h-[150px] max-h-[var(--radix-dropdown-menu-content-available-height)]">
             {visibleProjects.map((p) => {
               const isCurrent = p.uuid === id;
               return (

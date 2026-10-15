@@ -260,6 +260,16 @@ export const getExplorerUrl = ({
   value?: string;
 }): string | null => {
   // Only strings are valid explorer inputs; reject non-strings (e.g. numeric
+  // TEMP-DEBUG: trace payout-detail crash on deployed env
+  // eslint-disable-next-line no-console
+  console.log('[getExplorerUrl] input:', {
+    target,
+    value,
+    valueType: typeof value,
+    settingsType: (chainSettings as any)?.type,
+    explorerurl: (chainSettings as any)?.explorerurl,
+    explorerurlType: typeof (chainSettings as any)?.explorerurl,
+  });
   if (!chainSettings || typeof value !== 'string' || !value) return null;
 
   if (chainSettings.type === 'evm') {
@@ -270,6 +280,8 @@ export const getExplorerUrl = ({
     };
 
     // Remove trailing slash and any existing path segments (like /tx/, /address/, etc.)
+    // eslint-disable-next-line no-console
+    console.log('[getExplorerUrl] evm branch, explorerurl:', (chainSettings as any)?.explorerurl);
     let baseUrl = chainSettings.explorerurl.replace(/\/$/, '');
     baseUrl = baseUrl.replace(/\/(tx|token|address)$/, '');
 
@@ -277,6 +289,8 @@ export const getExplorerUrl = ({
   }
 
   if (chainSettings.type === 'stellar') {
+    // eslint-disable-next-line no-console
+    console.log('[getExplorerUrl] stellar branch, value:', value);
     const network =
       (chainSettings.network ?? chainSettings.name) === 'mainnet'
         ? 'public'

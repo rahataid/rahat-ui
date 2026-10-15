@@ -88,7 +88,7 @@ function StakeholdersView() {
     setPagination(prevPagination);
   }, [showStoredPagination]);
 
-  const { data: stakeholdersData } = useStakeholders(projectId, {
+  const { data: stakeholdersData, isLoading } = useStakeholders(projectId, {
     ...pagination,
     ...debounceSearch,
   });
@@ -229,6 +229,7 @@ function StakeholdersView() {
                 table={table}
                 message={t('NO_STAKEHOLDERS_AVAILABLE')}
                 tableHeight="h-[max(50vh,calc(90vh-230px))]"
+                loading={isLoading && !stakeholders.length}
               />
 
               <CustomPagination

@@ -22,10 +22,7 @@ import {
 } from '@rahat-ui/shadcn/components/dialog';
 import { ListPlus, Repeat2, Share, Users, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import {
-  Form,
-  FormField,
-} from '@rahat-ui/shadcn/src/components/ui/form';
+import { Form, FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import {
   useBeneficiariesGroups,
@@ -396,6 +393,7 @@ export default function AAImportBeneficiary() {
       </div>
       <Dialog
         open={showGroupDialog}
+        modal={false}
         onOpenChange={(open) => {
           if (!open) closeGroupDialog();
         }}
@@ -411,8 +409,7 @@ export default function AAImportBeneficiary() {
                   {tg('DO_YOU_WANT_TO_CREATE_A_GROUP_OR_SKIP')}
                   {recordCount > 0 && (
                     <span className="block mt-1 font-medium text-foreground">
-                      {formatNum(recordCount)}{' '}
-                      {tg('ROW_S_SELECTED')}
+                      {formatNum(recordCount)} {tg('ROW_S_SELECTED')}
                     </span>
                   )}
                 </DialogDescription>
@@ -637,8 +634,9 @@ export default function AAImportBeneficiary() {
                     render={({ field }) => (
                       <DropdownSearch
                         selectedLabel={
-                          existingGroups.find((g: any) => g.uuid === field.value)
-                            ?.name
+                          existingGroups.find(
+                            (g: any) => g.uuid === field.value,
+                          )?.name
                         }
                         placeholder={tg('SELECT_BENEFICIARY_GROUP')}
                         searchPlaceholder={tg('SEARCH_GROUP')}

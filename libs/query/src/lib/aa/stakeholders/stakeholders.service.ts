@@ -297,12 +297,14 @@ export const useUploadStakeholders = () => {
       projectId,
       isGroupCreate,
       groupName,
+      groupUuid,
     }: {
       selectedFile: File;
       doctype: string;
       projectId?: UUID;
       isGroupCreate?: boolean;
       groupName?: string;
+      groupUuid?: string;
     }) => {
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -313,6 +315,7 @@ export const useUploadStakeholders = () => {
         JSON.stringify({
           isGroupCreate: isGroupCreate || false,
           ...(groupName && { groupName }),
+          ...(groupUuid && { groupUuid }),
         }),
       );
 

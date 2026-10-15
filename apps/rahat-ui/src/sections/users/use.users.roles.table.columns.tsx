@@ -9,21 +9,25 @@ import Swal from 'sweetalert2';
 import React from 'react';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { ActiveUserRole } from './use.user.active.roles';
+import { useRemoveRoleInProject } from './use.user.add.project.role';
 
 type IProps = {
   loggedUserRoles: string[];
   userUUID: UUID;
   projectNameByUuid: Record<string, string>;
+  handleDelete: (roleName: string) => void;
 };
 
 export const useUsersRolesTableColumns = ({
   loggedUserRoles,
   userUUID,
   projectNameByUuid,
+  handleDelete,
 }: IProps) => {
   const t = useTranslations('USERS_DETAIL');
   const tg = useTranslations('GLOBAL');
   const removeUserRole = useUserRolesRemove();
+  const removeRoleInProject = useRemoveRoleInProject();
 
   const deleteUserRole = async (roles: string[]) => {
     if (
@@ -33,11 +37,7 @@ export const useUsersRolesTableColumns = ({
       await removeUserRole.mutateAsync({ uuid: userUUID, roles: roles });
       Swal.fire(t('ROLE_REMOVED_SUCCESSFULLY'), '', 'success');
     } else {
-      return Swal.fire(
-        t('YOU_DO_NOT_HAVE_PERMISSION_TO'),
-        '',
-        'warning',
-      );
+      return Swal.fire(t('YOU_DO_NOT_HAVE_PERMISSION_TO'), '', 'warning');
     }
   };
 
@@ -65,7 +65,7 @@ export const useUsersRolesTableColumns = ({
         return (
           <div className="flex justify-end">
             <Trash2
-              onClick={() => deleteUserRole([row.original?.Role?.name])}
+              onClick={() => handleDelete(row.original.Role.name)}
               size={20}
               strokeWidth={1.5}
               className="cursor-pointer"
@@ -76,5 +76,9 @@ export const useUsersRolesTableColumns = ({
     },
   ];
 
-  return columns;
+  return {
+    columns,
+    deleteUserRole,
+    isDeleting: removeUserRole.isPending,
+  };
 };

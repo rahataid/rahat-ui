@@ -4137,7 +4137,9 @@
     "USER_DELETED_SUCCESSFULLY": "प्रयोगकर्ता सफलतापूर्वक मेटियो",
     "USER_DETAILS": "प्रयोगकर्ता विवरण",
     "USER_ROLES": "प्रयोगकर्ता भूमिकाहरू",
-    "YOU_DO_NOT_HAVE_PERMISSION_TO": "तपाईंसँग भूमिका हटाउने अनुमति छैन"
+    "YOU_DO_NOT_HAVE_PERMISSION_TO": "तपाईंसँग भूमिका हटाउने अनुमति छैन",
+    "DELETE_ROLE": "भूमिका हटाउनुहोस्",
+    "DELTE_ROLE_COMFIRMATION": "के तपाईं यो भूमिका हटाउन चाहनुहुन्छ भन्ने कुरामा निश्चित हुनुहुन्छ ?"
   },
   "USERS_EDIT": {
     "EDIT_USER": "प्रयोगकर्ता सम्पादन गर्नुहोस्",

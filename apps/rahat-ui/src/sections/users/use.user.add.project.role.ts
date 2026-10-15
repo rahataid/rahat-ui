@@ -1,5 +1,9 @@
 import { UUID } from 'crypto';
-import { useAssignRoleInProjects, useBulkProjectAssign } from '@rahat-ui/query';
+import {
+  useAssignRoleInProjects,
+  useBulkProjectAssign,
+  useDeleteRoleAssociatedWithProject,
+} from '@rahat-ui/query';
 import { AssignRole } from '@rumsan/sdk/types';
 import { toast } from 'react-toastify';
 
@@ -38,5 +42,12 @@ export const useAssigToMultipleProjects = () => {
       uuid: UUID;
       data: { roles: Pick<AssignRole, 'name' | 'xrefId'>[] };
     }) => mutateAsync(payload),
+  };
+};
+export const useRemoveRoleInProject = () => {
+  const { mutateAsync } = useDeleteRoleAssociatedWithProject();
+  return {
+    mutateAsync: (payload: { uuid: UUID; xrefId: UUID; name: string }) =>
+      mutateAsync(payload),
   };
 };

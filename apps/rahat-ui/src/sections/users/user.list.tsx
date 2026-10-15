@@ -14,7 +14,6 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { User } from '@rumsan/sdk/types';
 import { Table, flexRender } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
-import AddButton from '../projects/components/add.btn';
 import ViewColumns from '../projects/components/view.columns';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';

@@ -6,10 +6,13 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DataCard,
-  FilePreview,
   HeaderWithBack,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
+import {
+  EvidenceGallery,
+  toEvidenceItems,
+} from 'apps/rahat-ui/src/common/evidence.gallery';
 import { intlFormatDate } from 'apps/rahat-ui/src/utils';
 import {
   isPayoutTransactionFailed,
@@ -220,12 +223,9 @@ export default function BeneficiaryTransactionLogDetails() {
               </>
             )}
 
-            {data?.data?.info?.mediaUrl && (
+            {toEvidenceItems(data?.data?.info).length > 0 && (
               <InfoItem label={tg('PROOF_OF_PAYMENT')}>
-                <FilePreview
-                  url={data.data.info.mediaUrl}
-                  fileName={data.data.info.fileName}
-                />
+                <EvidenceGallery items={toEvidenceItems(data?.data?.info)} />
               </InfoItem>
             )}
 

@@ -88,7 +88,7 @@ function StakeholdersView() {
     setPagination(prevPagination);
   }, [showStoredPagination]);
 
-  const { data: stakeholdersData } = useStakeholders(projectId, {
+  const { data: stakeholdersData, isLoading } = useStakeholders(projectId, {
     ...pagination,
     ...debounceSearch,
   });
@@ -190,6 +190,13 @@ function StakeholdersView() {
                   value={filters?.name || ''}
                 />
                 <SearchInput
+                  className="flex-1 min-w-[120px]"
+                  inputClassName="h-[clamp(28px,3vw,36px)]"
+                  name={tg('PHONE')}
+                  onSearch={(e) => handleSearch(e, 'phone')}
+                  value={filters?.phone || ''}
+                />
+                <SearchInput
                   className="hidden xl:block flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
                   name={tg('MUNICIPALITY')}
@@ -222,6 +229,7 @@ function StakeholdersView() {
                 table={table}
                 message={t('NO_STAKEHOLDERS_AVAILABLE')}
                 tableHeight="h-[max(50vh,calc(90vh-230px))]"
+                loading={isLoading && !stakeholders.length}
               />
 
               <CustomPagination

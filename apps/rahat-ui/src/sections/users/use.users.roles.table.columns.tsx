@@ -5,17 +5,16 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
 import { useUserRolesRemove } from '@rumsan/react-query';
 import { UUID } from 'crypto';
-import Swal from 'sweetalert2';
 import React from 'react';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { ActiveUserRole } from './use.user.active.roles';
-import { useRemoveRoleInProject } from './use.user.add.project.role';
+import { toast } from 'react-toastify';
 
 type IProps = {
   loggedUserRoles: string[];
   userUUID: UUID;
   projectNameByUuid: Record<string, string>;
-  handleDelete: (roleName: string) => void;
+  handleDelete: (roleName: string, xrefId?: string | null) => void;
 };
 
 export const useUsersRolesTableColumns = ({
@@ -27,17 +26,20 @@ export const useUsersRolesTableColumns = ({
   const t = useTranslations('USERS_DETAIL');
   const tg = useTranslations('GLOBAL');
   const removeUserRole = useUserRolesRemove();
-  const removeRoleInProject = useRemoveRoleInProject();
 
-  const deleteUserRole = async (roles: string[]) => {
+  const deleteUserRole = async (roles: string[], xrefId?: string | null) => {
     if (
       loggedUserRoles.includes('Admin') ||
       loggedUserRoles.includes('Manager')
     ) {
-      await removeUserRole.mutateAsync({ uuid: userUUID, roles: roles });
-      Swal.fire(t('ROLE_REMOVED_SUCCESSFULLY'), '', 'success');
+      await removeUserRole.mutateAsync({
+        uuid: userUUID,
+        roles,
+        ...(xrefId ? { xrefId } : {}),
+      });
+      toast.success(t('ROLE_REMOVED_SUCCESSFULLY'));
     } else {
-      return Swal.fire(t('YOU_DO_NOT_HAVE_PERMISSION_TO'), '', 'warning');
+      return toast.error(t('YOU_DO_NOT_HAVE_PERMISSION_TO'));
     }
   };
 
@@ -62,10 +64,13 @@ export const useUsersRolesTableColumns = ({
       header: () => <div className="flex justify-end">{tg('ACTION')}</div>,
       enableHiding: false,
       cell: ({ row }) => {
+        console.log('xrefId:', row.original?.xrefId);
         return (
           <div className="flex justify-end">
             <Trash2
-              onClick={() => handleDelete(row.original.Role.name)}
+              onClick={() =>
+                handleDelete(row.original.Role.name, row.original?.xrefId)
+              }
               size={20}
               strokeWidth={1.5}
               className="cursor-pointer"

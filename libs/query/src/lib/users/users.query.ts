@@ -286,34 +286,6 @@ export const useBulkProjectAssign = () => {
   );
 };
 
-export const useDeleteRoleAssociatedWithProject = () => {
-  const { queryClient, rumsanService } = useRSQuery();
-  const userClient = getUserClient(rumsanService.client);
-  const t = useTranslations('USERS_DETAIL');
-  return useMutation(
-    {
-      mutationKey: ['assign_role_in_project'],
-      mutationFn: ({
-        uuid,
-        xrefId,
-        name,
-      }: {
-        uuid: UUID;
-        xrefId: string;
-        name: string;
-      }) => userClient.removeRoleInProject(uuid, xrefId, name),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['get_user_roles'] });
-        queryClient.invalidateQueries({ queryKey: ['get_user_active_roles'] });
-        toast.success(t('ROLE_REMOVED_SUCCESSFULLY'));
-      },
-      onError: () => {
-        toast.error(t('ERROR_REMOVING_ROLE'));
-      },
-    },
-    queryClient,
-  );
-};
 export const useListActiveRoles = (uuid?: UUID): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);

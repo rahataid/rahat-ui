@@ -22,7 +22,10 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
   const deleteRoleConfirmDialog = useBoolean(false);
-  const [roleToDelete, setRoleToDelete] = useState<string | null>(null);
+  const [roleToDelete, setRoleToDelete] = useState<{
+    name: string;
+    xrefId?: string | null;
+  } | null>(null);
 
   const { data: roleList, isLoading } = useUserActiveRoles(
     userDetail?.uuid as UUID,
@@ -39,14 +42,15 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
     return map;
   }, [projectList]);
 
-  const handleDelete = (roleName: string) => {
-    setRoleToDelete(roleName);
+  const handleDelete = (roleName: string, xrefId?: string | null) => {
+    setRoleToDelete({ name: roleName, xrefId });
     deleteRoleConfirmDialog.onTrue();
   };
 
   const deleteConfirmation = async () => {
     if (!roleToDelete) return;
-    await deleteUserRole([roleToDelete]);
+
+    await deleteUserRole([roleToDelete.name], roleToDelete.xrefId);
     setRoleToDelete(null);
     deleteRoleConfirmDialog.onFalse();
   };

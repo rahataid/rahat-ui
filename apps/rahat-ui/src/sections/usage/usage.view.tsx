@@ -11,16 +11,29 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import {
   useCommsUsage,
   useCommsUsageByXref,
   useCommsCredits,
   useCommsCreditsByXref,
+  useCommsUsageBackfill,
 } from '@rahat-ui/query';
 
 import { ReusableTabs } from '../../components/reusable-tabs';
 import { useActiveTab } from '../../utils/useActivetab';
 import LogStreamView from '../logs/log-stream.view';
 import CommunicationOverviewView from '../communication-overview/communication-overview.view';
+import { IconLabelBtn } from '../../common';
+import { RefreshCcw } from 'lucide-react';
 
 import UsageFilters from './usage-filters';
 import UsageOverviewCards from './usage-overview-cards';
@@ -32,7 +45,9 @@ type DateRangeQuery = { from?: string; to?: string };
 
 export default function UsageView() {
   const t = useTranslations('USAGE');
+  const tg = useTranslations('GLOBAL');
   const { activeTab, setActiveTab } = useActiveTab('usage');
+  const [showSyncConfirm, setShowSyncConfirm] = useState(false);
   const [usageXref, setUsageXref] = useState<string | null>(null);
   const [usageDateRange, setUsageDateRange] = useState<DateRangeQuery>({});
   const [creditXref, setCreditXref] = useState<string | null>(null);
@@ -56,6 +71,9 @@ export default function UsageView() {
     ? creditsByXrefLoading
     : creditsLoading;
 
+  const { mutateAsync: backfillUsage, isPending: isBackfilling } =
+    useCommsUsageBackfill();
+
   const totals = activeUsage?.data?.totals;
   const byTransport = activeUsage?.data?.byTransport;
   const credits = activeCredits?.data;
@@ -68,6 +86,16 @@ export default function UsageView() {
         <div className="space-y-6 max-w-full min-w-0">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">{t('USAGE')}</h2>
+            <SystemUserAuth hasContent={false}>
+              <IconLabelBtn
+                name={isBackfilling ? t('SYNCING') : t('SYNC_STATS')}
+                Icon={RefreshCcw}
+                variant="outline"
+                disabled={isBackfilling}
+                handleClick={() => setShowSyncConfirm(true)}
+                className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+              />
+            </SystemUserAuth>
           </div>
 
           <Card className="max-w-full min-w-0 overflow-hidden">
@@ -127,14 +155,39 @@ export default function UsageView() {
   ];
 
   return (
-    <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-full">
-      <div className="p-4 sm:p-6 space-y-6 max-w-full min-w-0 overflow-x-hidden">
-        <ReusableTabs
-          defaultValue={activeTab}
-          onValueChange={setActiveTab}
-          items={tabItems}
-        />
-      </div>
-    </ScrollArea>
+    <>
+      <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-full">
+        <div className="p-4 sm:p-6 space-y-6 max-w-full min-w-0 overflow-x-hidden">
+          <ReusableTabs
+            defaultValue={activeTab}
+            onValueChange={setActiveTab}
+            items={tabItems}
+          />
+        </div>
+      </ScrollArea>
+
+      <AlertDialog
+        open={showSyncConfirm}
+        onOpenChange={setShowSyncConfirm}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('SYNC_STATS_QUESTION')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('SYNC_STATS_DESCRIPTION')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tg('CANCEL')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => backfillUsage()}
+              disabled={isBackfilling}
+            >
+              {isBackfilling ? t('SYNCING') : tg('CONFIRM')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

@@ -190,6 +190,13 @@ function StakeholdersView() {
                   value={filters?.name || ''}
                 />
                 <SearchInput
+                  className="flex-1 min-w-[120px]"
+                  inputClassName="h-[clamp(28px,3vw,36px)]"
+                  name={tg('PHONE')}
+                  onSearch={(e) => handleSearch(e, 'phone')}
+                  value={filters?.phone || ''}
+                />
+                <SearchInput
                   className="hidden xl:block flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
                   name={tg('MUNICIPALITY')}

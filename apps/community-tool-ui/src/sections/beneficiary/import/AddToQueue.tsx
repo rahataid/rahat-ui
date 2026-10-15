@@ -56,6 +56,7 @@ interface IProps {
   onRevalidate: () => void;
   uniqueFields?: string;
   hasPendingEdits?: boolean;
+  duplicateCount?: number;
 }
 
 export default function AddToQueue({
@@ -71,6 +72,7 @@ export default function AddToQueue({
   onRevalidate,
   uniqueFields,
   hasPendingEdits,
+  duplicateCount = 0,
 }: IProps) {
   const uniqueFieldSet = new Set(
     (uniqueFields ?? '')
@@ -132,7 +134,7 @@ export default function AddToQueue({
     return item[key];
   }
 
-  const hasDuplicates = localData.some((item: any) => item.isDuplicate);
+  const hasDuplicates = duplicateCount > 0;
 
   const enableDisableImportButton = () => {
     if (loading) return true;

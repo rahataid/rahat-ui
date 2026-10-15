@@ -123,6 +123,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setValidBenef,
     hasUUID,
     setHasUUID,
+    duplicateCount,
+    setDuplicateCount,
     fieldSuggestions,
     setFieldSuggestions,
   } = useBeneficiaryImportStore();
@@ -395,33 +397,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleImportNowClick = async (groupName: string | null) => {
-    // If we have processedData (came through validate screen), use it directly
-    // so any inline edits the user made are preserved in the payload.
-    if (processedData.length) {
-      const cleanedData = (processedData as any[]).map(
-        ({ isDuplicate, ...rest }) => rest,
-      );
-      const sourcePayload = {
-        action: IMPORT_ACTION.IMPORT,
-        name: importSource,
-        importId,
-        groupName,
-        fieldMapping: { data: cleanedData, sourceTargetMappings: mappings },
-      };
-      return createImportSource(sourcePayload);
-    }
-    // Fallback: no validated data yet — process from raw (shouldn't normally happen
-    // since Import button is only reachable after validation).
-    if (validBenef.length) {
-      const sourcePayload = {
-        action: IMPORT_ACTION.IMPORT,
-        name: importSource,
-        importId,
-        groupName,
-        fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
-      };
-      return createImportSource(sourcePayload);
-    }
     return validateOrImport(IMPORT_ACTION.IMPORT, groupName);
   };
 
@@ -553,8 +528,9 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         });
       }
 
-      const { result, invalidFields, hasUUID } = res?.data;
+      const { result, invalidFields, hasUUID, summary } = res?.data;
       setHasUUID(hasUUID);
+      setDuplicateCount(summary?.duplicateCount ?? 0);
 
       const normalized = normalizeInvalidFields(invalidFields);
       setProcessedData(result);
@@ -573,6 +549,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
     setInvalidFields([]);
+    setDuplicateCount(0);
   };
 
   const resetStates = () => {
@@ -584,6 +561,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setRawData([]);
     setMappings([]);
     setInvalidFields([]);
+    setDuplicateCount(0);
   };
 
   const handleBackClick = () => {
@@ -610,14 +588,29 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleExportInvalidClick = async () => {
+    // Capture uuids before splitValidAndInvalid runs — it deletes `uuid`
+    // off invalid rows in place, so this must be read first.
+    const previewedUuids = new Set(
+      (processedData as any[]).map((row: any) => row.uuid),
+    );
+
     const { invalidData, validData } = splitValidAndInvalid(
       processedData as [],
       invalidFields as [],
     );
 
+    // invalidFields covers the FULL dataset, but processedData/invalidData
+    // here is only the previewed rows being exported right now. Only drop
+    // the error entries that belonged to those exported rows — entries for
+    // rows outside the preview are still unresolved and must stay, so the
+    // Import button correctly remains disabled until they're actually fixed.
+    const remainingInvalidFields = (invalidFields as any[]).filter(
+      (err: any) => !previewedUuids.has(err.uuid),
+    );
+
     setValidBenef(validData);
     setProcessedData(validData);
-    setInvalidFields([]);
+    setInvalidFields(remainingInvalidFields);
     const transformed = transformExportKeys(invalidData);
     if (transformed.length) exportDataToExcel(transformed);
     if (!validData.length) {
@@ -762,6 +755,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
               onRevalidate={handleRevalidate}
               uniqueFields={selectedUniqueFields.join(',')}
               hasPendingEdits={hasPendingEdits}
+              duplicateCount={duplicateCount}
             />
           </div>
         )}

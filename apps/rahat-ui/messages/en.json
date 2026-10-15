@@ -1323,7 +1323,7 @@
     "USERS_ROLES": "Users Roles",
     "GENERAL_DETAILS": "General Details",
     "DELETE_ROLE": "Delete Role",
-    "DELTE_ROLE_COMFIRMATION": "Are you sure ,you want to delete this role?",
+    "DELTE_ROLE_COMFIRMATION": "Are you sure, you want to delete this role?",
     "ERROR_REMOVING_ROLE": "Error Removing Role"
   },
   "USERS_ADD_ROLE": {

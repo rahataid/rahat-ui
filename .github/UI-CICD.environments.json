@@ -6,21 +6,21 @@
   "environments": {
     "dev-aa": {
       "description": "AA Development",
-      "tag": "aa-dev",
+      "tag": "dev",
       "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev",
       "urls": {},
       "notes": []
     },
     "dev-qa": {
       "description": "AA QA Development",
-      "tag": "aa-dev-qa",
+      "tag": "dev-qa",
       "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev-qa",
       "urls": {},
       "notes": []
     },
     "dev-stellar": {
       "description": "AA Stellar Development",
-      "tag": "aa-dev-stellar",
+      "tag": "aa-stellar",
       "vault_path": "github/data/rahat/rahat-ui/dev/aa/stellar",
       "urls": {},
       "notes": []

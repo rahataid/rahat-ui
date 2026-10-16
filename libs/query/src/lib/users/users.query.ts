@@ -6,6 +6,7 @@ import { UUID } from 'crypto';
 import { AssignRole, ListRole, User } from '@rumsan/sdk/types';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
+import { toast } from 'react-toastify';
 
 // export const useRoleList = (): any => {
 //   const { queryClient, rumsanService } = useRSQuery();
@@ -240,9 +241,10 @@ export const useRolePermissions = (name: string) => {
   return query;
 };
 
-export const useAssignRoleInProject = () => {
+export const useAssignRoleInProjects = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);
+  const t = useTranslations('USERS_DETAIL');
 
   return useMutation(
     {
@@ -252,6 +254,32 @@ export const useAssignRoleInProject = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['get_user_roles'] });
         queryClient.invalidateQueries({ queryKey: ['get_user_active_roles'] });
+        toast.success(t('ROLE_ASSIGNED_SUCCESSFULLY'));
+      },
+      onError: () => {
+        toast.error(t('ERROR_ASSIGNING_ROLE'));
+      },
+    },
+    queryClient,
+  );
+};
+export const useBulkProjectAssign = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const userClient = getUserClient(rumsanService.client);
+  const t = useTranslations('USERS_DETAIL');
+
+  return useMutation(
+    {
+      mutationKey: ['assign_role_in_project'],
+      mutationFn: ({ uuid, data }: { uuid: UUID; data: any }) =>
+        userClient.bulkAssignRolesToUser(uuid, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['get_user_roles'] });
+        queryClient.invalidateQueries({ queryKey: ['get_user_active_roles'] });
+        toast.success(t('ROLE_ASSIGNED_SUCCESSFULLY'));
+      },
+      onError: () => {
+        toast.error(t('ERROR_ASSIGNING_ROLE'));
       },
     },
     queryClient,

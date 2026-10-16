@@ -3,9 +3,10 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ScrollText } from 'lucide-react';
+import { RefreshCcw, ScrollText } from 'lucide-react';
 import { SystemUserAuth } from '@rahat-ui/auth';
 import CoreBtnComponent from '../../components/core.btn';
+import { IconLabelBtn } from '../../common';
 import { paths } from '../../routes/paths';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -15,10 +16,21 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import {
   useCommsUsage,
   useCommsUsageByXref,
   useCommsCredits,
   useCommsCreditsByXref,
+  useCommsUsageBackfill,
 } from '@rahat-ui/query';
 import UsageFilters from './usage-filters';
 import UsageOverviewCards from './usage-overview-cards';
@@ -30,7 +42,9 @@ type DateRangeQuery = { from?: string; to?: string };
 
 export default function UsageView() {
   const t = useTranslations('USAGE');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
+  const [showSyncConfirm, setShowSyncConfirm] = useState(false);
   const [usageXref, setUsageXref] = useState<string | null>(null);
   const [usageDateRange, setUsageDateRange] = useState<DateRangeQuery>({});
   const [creditXref, setCreditXref] = useState<string | null>(null);
@@ -54,21 +68,35 @@ export default function UsageView() {
     ? creditsByXrefLoading
     : creditsLoading;
 
+  const { mutateAsync: backfillUsage, isPending: isBackfilling } =
+    useCommsUsageBackfill();
+
   const totals = activeUsage?.data?.totals;
   const byTransport = activeUsage?.data?.byTransport;
   const credits = activeCredits?.data;
 
   return (
-    <ScrollArea className="h-[calc(100vh-80px)]">
+    <>
+      <ScrollArea className="h-[calc(100vh-80px)]">
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">{t('USAGE')}</h2>
           <SystemUserAuth hasContent={false}>
-            <CoreBtnComponent
-              Icon={ScrollText}
-              name={t('LOG_STREAM')}
-              handleClick={() => router.push(paths.logs.root)}
-            />
+            <div className="flex items-center gap-2">
+              <IconLabelBtn
+                name={isBackfilling ? t('SYNCING') : t('SYNC_STATS')}
+                Icon={RefreshCcw}
+                variant="outline"
+                disabled={isBackfilling}
+                handleClick={() => setShowSyncConfirm(true)}
+                className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+              />
+              <CoreBtnComponent
+                Icon={ScrollText}
+                name={t('LOG_STREAM')}
+                handleClick={() => router.push(paths.logs.root)}
+              />
+            </div>
           </SystemUserAuth>
         </div>
 
@@ -104,5 +132,29 @@ export default function UsageView() {
         />
       </div>
     </ScrollArea>
+
+    <AlertDialog
+      open={showSyncConfirm}
+      onOpenChange={setShowSyncConfirm}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('SYNC_STATS_QUESTION')}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t('SYNC_STATS_DESCRIPTION')}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{tg('CANCEL')}</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => backfillUsage()}
+            disabled={isBackfilling}
+          >
+            {isBackfilling ? t('SYNCING') : tg('CONFIRM')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </>
   );
 }

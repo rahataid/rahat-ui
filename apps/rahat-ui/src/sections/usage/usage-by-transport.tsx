@@ -123,15 +123,17 @@ export default function UsageByTransport({
               {t('DISTRIBUTION_BY_TRANSPORT')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center">
-            <PieChart
-              custom
-              type="donut"
-              chart={pieData}
-              height={300}
-              width={400}
-              donutSize="70%"
-            />
+          <CardContent className="flex justify-center max-w-full overflow-hidden">
+            <div className="w-full max-w-[400px] flex justify-center">
+              <PieChart
+                custom
+                type="donut"
+                chart={pieData}
+                height={300}
+                width="100%"
+                donutSize="70%"
+              />
+            </div>
           </CardContent>
         </Card>
 

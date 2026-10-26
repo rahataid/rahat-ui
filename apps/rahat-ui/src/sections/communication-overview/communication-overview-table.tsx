@@ -241,23 +241,21 @@ export const CommunicationOverviewTable = React.memo(
 
     return (
       <Card className="bg-card border rounded-lg shadow-sm w-full max-w-full min-w-0 overflow-hidden">
-        <CardHeader className="p-4 border-b flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 shrink-0">
+        <CardHeader className="p-4 border-b space-y-3">
+          <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
             <CardTitle className="text-sm font-semibold text-foreground whitespace-nowrap">
               {t('COMMUNICATION_ACTIVITIES')} ({formatNum(filteredData.length)})
             </CardTitle>
           </div>
 
-          <div className="flex-1 flex items-center justify-end w-full min-w-0 max-w-sm">
-            <SearchInput
-              className="w-full"
-              name="search-activities"
-              placeholder={t('SEARCH_ACTIVITIES_PLACEHOLDER')}
-              value={searchTerm}
-              onSearch={handleSearchChange}
-            />
-          </div>
+          <SearchInput
+            className="w-full"
+            name="search-activities"
+            placeholder={t('SEARCH_ACTIVITIES_PLACEHOLDER')}
+            value={searchTerm}
+            onSearch={handleSearchChange}
+          />
         </CardHeader>
 
         <CardContent className="p-0 w-full max-w-full min-w-0 overflow-hidden">

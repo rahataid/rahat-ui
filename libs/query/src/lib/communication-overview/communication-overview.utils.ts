@@ -19,19 +19,7 @@ export const EMPTY_PROJECTS: Project[] = [];
 export const RECIPIENT_GROUPS = ['beneficiary', 'stakeholder'] as const;
 export const STALE_5MIN = 5 * 60 * 1000;
 
-const VOICE_PATTERN = /VOICE|IVR|AUDIO|CALL|AWAAZ|TELEPHONY|PHONE/i;
-const EMAIL_PATTERN = /EMAIL|SMTP|MAIL|SENDGRID/i;
-const WHATSAPP_PATTERN = /WHATSAPP|^WA$/i;
-const SMS_PATTERN = /SMS|SPARROW|TWILIO|API|SES|ECHO|TEXT/i;
-
-const DEFAULT_TRANSPORT_NAMES: Record<CommunicationChannel, string> = {
-  VOICE: 'IVR',
-  EMAIL: 'Email',
-  WHATSAPP: 'WhatsApp',
-  SMS: 'SMS',
-};
-
-const CANONICAL_NAMES: Record<string, string> = {
+const CHANNEL_DISPLAY_NAMES: Record<CommunicationChannel, string> = {
   VOICE: 'Voice',
   EMAIL: 'Email',
   WHATSAPP: 'WhatsApp',
@@ -40,11 +28,13 @@ const CANONICAL_NAMES: Record<string, string> = {
 
 export function classifyTransportString(raw?: string | null): CommunicationChannel {
   if (!raw) return 'SMS';
-  const str = String(raw).trim();
-  if (VOICE_PATTERN.test(str)) return 'VOICE';
-  if (EMAIL_PATTERN.test(str)) return 'EMAIL';
-  if (WHATSAPP_PATTERN.test(str)) return 'WHATSAPP';
-  if (SMS_PATTERN.test(str)) return 'SMS';
+  const val = String(raw).trim().toUpperCase();
+
+  if (val === 'VOICE' || val.includes('VOICE') || val === 'IVR') return 'VOICE';
+  if (val === 'EMAIL' || val.includes('EMAIL') || val === 'SMTP') return 'EMAIL';
+  if (val === 'WHATSAPP' || val === 'WA') return 'WHATSAPP';
+  if (val === 'SMS' || val.includes('SMS') || val === 'API') return 'SMS';
+
   return 'SMS';
 }
 
@@ -83,12 +73,28 @@ export function resolveTransportInfo(
       ? transports.find((t) => t?.cuid === tid || t?.id === tid)
       : undefined;
 
+  if (matchedTransport) {
+    const rawType = (matchedTransport.name || matchedTransport.type || '').trim();
+    const channel = rawType ? classifyTransportString(rawType) : 'SMS';
+    const transportName =
+      matchedTransport.name?.trim() ||
+      CHANNEL_DISPLAY_NAMES[channel] ||
+      'SMS';
+    return { channel, transportName };
+  }
+
+  if (hasAudioPayload(comm)) {
+    return { channel: 'VOICE', transportName: CHANNEL_DISPLAY_NAMES['VOICE'] };
+  }
+
+  if (hasSubjectPayload(comm)) {
+    return { channel: 'EMAIL', transportName: CHANNEL_DISPLAY_NAMES['EMAIL'] };
+  }
+
   const sessionDetails = comm['sessionDetails'] as Record<string, unknown> | undefined;
   const sessionTransport = sessionDetails?.['Transport'] as Record<string, unknown> | undefined;
 
   const rawCandidate =
-    (matchedTransport?.name as string) ||
-    (matchedTransport?.type as string) ||
     (sessionTransport?.['name'] as string) ||
     (sessionTransport?.['type'] as string) ||
     (comm['transportName'] as string) ||
@@ -96,19 +102,8 @@ export function resolveTransportInfo(
     (comm['type'] as string) ||
     '';
 
-  let channel: CommunicationChannel = 'SMS';
-  if (rawCandidate) {
-    channel = classifyTransportString(rawCandidate);
-  } else if (hasAudioPayload(comm)) {
-    channel = 'VOICE';
-  } else if (hasSubjectPayload(comm)) {
-    channel = 'EMAIL';
-  }
-
-  const trimmed = rawCandidate ? String(rawCandidate).trim() : '';
-  const transportName = trimmed
-    ? (CANONICAL_NAMES[trimmed.toUpperCase()] ?? trimmed)
-    : DEFAULT_TRANSPORT_NAMES[channel];
+  const channel = rawCandidate ? classifyTransportString(rawCandidate) : 'SMS';
+  const transportName = rawCandidate.trim() || CHANNEL_DISPLAY_NAMES[channel];
 
   return { channel, transportName };
 }

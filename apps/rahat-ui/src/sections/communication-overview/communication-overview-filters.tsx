@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import {
   useProjectList,
-  useListAllTransports,
   CommunicationActivityItem,
   Project,
   classifyTransportString,
@@ -48,60 +47,16 @@ const CommunicationOverviewFilters = React.memo(
   }: CommunicationOverviewFiltersProps) {
     const t = useTranslations('USAGE');
     const { data: projects } = useProjectList();
-    const appTransports = useListAllTransports();
 
-    const channelOptions = useMemo(() => {
-      const CHANNEL_LABEL_KEYS: Record<string, string> = {
-        VOICE: 'VOICE_IVR',
-        EMAIL: 'EMAIL',
-        SMS: 'SMS',
-        WHATSAPP: 'WHATSAPP',
-      };
-
-      const getChannelLabel = (raw: string) => {
-        const canonical = classifyTransportString(raw);
-        const key = CHANNEL_LABEL_KEYS[canonical];
-        return key ? t(key) : raw;
-      };
-
-      const seen = new Set<string>();
-      const options: { label: string; value: string }[] = [
+    const channelOptions = useMemo(
+      () => [
         { label: t('ALL_CHANNELS'), value: 'all' },
-      ];
-
-      const addChannel = (rawName: string) => {
-        const trimmed = rawName.trim();
-        if (!trimmed) return;
-        const canonical = classifyTransportString(trimmed);
-        if (seen.has(canonical)) return;
-        seen.add(canonical);
-        options.push({ label: getChannelLabel(trimmed), value: canonical });
-      };
-
-      if (Array.isArray(appTransports)) {
-        appTransports.forEach((transport) => {
-          if (transport) addChannel(transport.name || transport.type || '');
-        });
-      }
-
-      if (Array.isArray(activities)) {
-        activities.forEach((act) => {
-          addChannel(act.transportName || act.channel || '');
-        });
-      }
-
-      if (options.length === 1) {
-        return [
-          { label: t('ALL_CHANNELS'), value: 'all' },
-          ...Object.entries(CHANNEL_LABEL_KEYS).map(([value, key]) => ({
-            label: t(key),
-            value,
-          })),
-        ];
-      }
-
-      return options;
-    }, [appTransports, activities, t]);
+        { label: t('SMS'), value: 'SMS' },
+        { label: t('VOICE_IVR'), value: 'VOICE' },
+        { label: t('EMAIL'), value: 'EMAIL' },
+      ],
+      [t],
+    );
 
     const recipientOptions = useMemo(
       () => [

@@ -1,5 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
+import NextLink from 'next/link';
+import { useParams } from 'next/navigation';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Clock, Link, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
@@ -19,6 +21,7 @@ export default function ActivityDetailCards({
 }: ActivityDetailCardsProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const { id: projectId } = useParams();
   const formatDate = useDateFormat();
   const formatDigits = useLabelDigits();
 
@@ -189,11 +192,14 @@ export default function ActivityDetailCards({
                       key={cb.trigger.uuid}
                       tip={`${t('TRIGGER')}: ${cb.trigger.title}`}
                     >
-                      <span className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+                      <NextLink
+                        href={`/projects/aa/${projectId}/trigger-statements/${cb.trigger.uuid}`}
+                        className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-1 rounded-sm hover:bg-blue-200"
+                      >
                         {cb.trigger.title?.length > 15
                           ? `${cb.trigger.title.substring(0, 15)}...`
                           : cb.trigger.title}
-                      </span>
+                      </NextLink>
                     </TooltipWrapper>
                   ))}
                 </div>

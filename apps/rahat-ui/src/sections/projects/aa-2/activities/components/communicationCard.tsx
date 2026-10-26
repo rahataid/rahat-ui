@@ -31,6 +31,7 @@ import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
+import NextLink from 'next/link';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 interface BaseCommunication {
@@ -272,11 +273,14 @@ export function CommunicationCard({
                   key={cb.trigger.uuid}
                   tip={`${t('TRIGGER')}: ${cb.trigger.title}`}
                 >
-                  <span className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-0.5 rounded-sm cursor-pointer">
+                  <NextLink
+                    href={`/projects/aa/${projectId}/trigger-statements/${cb.trigger.uuid}`}
+                    className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-0.5 rounded-sm hover:bg-blue-200"
+                  >
                     {cb.trigger.title?.length > 15
                       ? `${cb.trigger.title.substring(0, 15)}...`
                       : cb.trigger.title}
-                  </span>
+                  </NextLink>
                 </TooltipWrapper>
               ))}
             </div>

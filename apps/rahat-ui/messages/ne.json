@@ -2056,7 +2056,21 @@
     "widow": "विधवा",
     "HEALTH": "स्वास्थ्य",
     "PROJECT_HEALTH": "परियोजनाको स्वास्थ्य",
-    "PROJECT_HEALTH_DESCRIPTION": "परियोजनाका निर्भरता र सेवाहरूको स्थिति अनुगमन गर्नुहोस्"
+    "PROJECT_HEALTH_DESCRIPTION": "परियोजनाका निर्भरता र सेवाहरूको स्थिति अनुगमन गर्नुहोस्",
+    "SELECTED_COUNT": "{count} छानिएको",
+    "PRESELECTED_HINT": "तपाईं आउनुभएको पृष्ठबाट पहिले नै छानिएको।",
+    "COMMUNICATIONS_SELECTED": "{total} मध्ये {selected} सञ्चार",
+    "COMMUNICATIONS_COUNT": "{count, plural, =0 {कुनै सञ्चार छैन} other {# सञ्चार}}",
+    "LINKS_TO_CREATE": "{count, plural, other {# लिंक बनाइनेछ}}",
+    "LINK_SUMMARY": "{triggers, plural, other {# ट्रिगर}} × {activities, plural, other {# क्रियाकलाप}}",
+    "LINK_SELECTION_HINT": "जारी राख्न कम्तीमा एउटा ट्रिगर र एउटा क्रियाकलाप छान्नुहोस्।",
+    "LINKING": "लिंक गर्दै...",
+    "CREATE_LINKS": "{count, plural, =0 {लिंक बनाउनुहोस्} other {# लिंक बनाउनुहोस्}}",
+    "LINKED_TRIGGERS_COUNT": "{count, plural, =0 {कुनै लिंक गरिएको ट्रिगर छैन} other {# लिंक गरिएका ट्रिगर}}",
+    "NO_TRIGGER_LINKED_HINT": "ट्रिगर सक्रिय हुँदा यो क्रियाकलापका सञ्चारहरू स्वतः पठाउन ट्रिगर लिंक गर्नुहोस्।",
+    "REMOVE_SELECTION": "{title} हटाउनुहोस्",
+    "LINKED_ACTIVITIES_COUNT": "{count, plural, =0 {कुनै लिंक गरिएको क्रियाकलाप छैन} other {# लिंक गरिएका क्रियाकलाप}}",
+    "NO_ACTIVITY_LINKED_HINT": "यो ट्रिगर सक्रिय हुँदा सञ्चारहरू स्वतः पठाउन क्रियाकलाप लिंक गर्नुहोस्।"
   },
   "AA_PROJECT_WITH_CASH_TRACKER": {
     "ACCOUNT_HOLDER_NAME": "खातावालाको नाम",

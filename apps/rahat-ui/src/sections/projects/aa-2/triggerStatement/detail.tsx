@@ -1,5 +1,10 @@
 import Link from 'next/link';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
 import { UUID } from 'crypto';
 
 import {
@@ -51,6 +56,7 @@ export default function TriggerStatementDetail() {
   const id = params?.id as UUID;
   const triggerID = Number(params?.triggerID);
   const searchparams = useSearchParams();
+  const pathname = usePathname();
   const type = searchparams?.get('type');
   const version = searchparams.get('version') === 'true' ? true : false;
   const triggerIdKey = version
@@ -244,11 +250,22 @@ export default function TriggerStatementDetail() {
                     key={activity.uuid}
                     tip={`${t('ACTIVITY')}: ${activity.title}`}
                   >
-                    <span className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+                    <Link
+                      href={`/projects/aa/${id}/activities/${
+                        activity.uuid
+                      }?returnTo=${encodeURIComponent(
+                        `${pathname}${
+                          searchparams?.toString()
+                            ? `?${searchparams.toString()}`
+                            : ''
+                        }`,
+                      )}`}
+                      className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-1 rounded-sm hover:bg-blue-200"
+                    >
                       {activity.title?.length > 30
                         ? `${activity.title.substring(0, 30)}...`
                         : activity.title}
-                    </span>
+                    </Link>
                   </TooltipWrapper>
                 ))}
               </div>

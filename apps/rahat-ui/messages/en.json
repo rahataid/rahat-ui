@@ -3609,7 +3609,21 @@
     "widow": "Widow",
     "HEALTH": "Health",
     "PROJECT_HEALTH": "Project Health",
-    "PROJECT_HEALTH_DESCRIPTION": "Monitor project dependencies and service status"
+    "PROJECT_HEALTH_DESCRIPTION": "Monitor project dependencies and service status",
+    "SELECTED_COUNT": "{count} selected",
+    "PRESELECTED_HINT": "Pre-selected from the page you came from.",
+    "COMMUNICATIONS_SELECTED": "{selected} of {total} communications",
+    "COMMUNICATIONS_COUNT": "{count, plural, =0 {No communications} one {# communication} other {# communications}}",
+    "LINKS_TO_CREATE": "{count, plural, one {# link will be created} other {# links will be created}}",
+    "LINK_SUMMARY": "{triggers, plural, one {# trigger} other {# triggers}} × {activities, plural, one {# activity} other {# activities}}",
+    "LINK_SELECTION_HINT": "Select at least one trigger and one activity to continue.",
+    "LINKING": "Linking...",
+    "CREATE_LINKS": "{count, plural, =0 {Create links} one {Create link} other {Create # links}}",
+    "LINKED_TRIGGERS_COUNT": "{count, plural, =0 {No linked triggers} one {# linked trigger} other {# linked triggers}}",
+    "NO_TRIGGER_LINKED_HINT": "Link a trigger so this activity's communications are sent automatically when the trigger fires.",
+    "REMOVE_SELECTION": "Remove {title}",
+    "LINKED_ACTIVITIES_COUNT": "{count, plural, =0 {No linked activities} one {# linked activity} other {# linked activities}}",
+    "NO_ACTIVITY_LINKED_HINT": "Link an activity so its communications are sent automatically when this trigger fires."
   },
   "AA_PROJECT_WITH_GNOSIS": {
     "N1_TOKEN_VALUE": "1 Token Value",

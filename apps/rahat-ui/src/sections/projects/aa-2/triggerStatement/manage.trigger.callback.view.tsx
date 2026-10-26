@@ -6,11 +6,16 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useDeleteTriggerCallback, useSingleActivity } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Back, Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { Link2, Trash2, Zap } from 'lucide-react';
-import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Link2 } from 'lucide-react';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  LinkedCallbackRow,
+  LinkedContextHeader,
+  LinkedEmptyState,
+  LinkedListSkeleton,
+} from './components/linked.callback.parts';
 
 export default function ManageTriggerCallbackView() {
   const t = useTranslations('AA_PROJECT');
@@ -51,10 +56,15 @@ export default function ManageTriggerCallbackView() {
       (comm: any) => comm.communicationId === communicationId,
     )?.communicationTitle || communicationId;
 
+  const goToLinkTrigger = () =>
+    router.push(
+      `/projects/aa/${projectId}/trigger-callbacks/add?activityId=${activityId}`,
+    );
+
   return (
     <div className="p-4">
       <Back />
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Heading
           title={t('MANAGE_LINKED_TRIGGERS')}
           description={t('VIEW_AND_REMOVE_LINKED_TRIGGERS')}
@@ -62,94 +72,82 @@ export default function ManageTriggerCallbackView() {
         <Button
           type="button"
           className="gap-2 flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white"
-          onClick={() =>
-            router.push(
-              `/projects/aa/${projectId}/trigger-callbacks/add?activityId=${activityId}`,
-            )
-          }
+          onClick={goToLinkTrigger}
         >
           <Link2 className="w-4 h-4" />
           {t('LINK_TRIGGER')}
         </Button>
       </div>
 
-      <div className="flex items-center gap-2 mt-4 mb-3">
-        <Zap className="w-4 h-4 text-green-500 rotate-90" />
-        <p className="font-medium text-sm">
-          {activity?.title || t('ACTIVITY')}
-        </p>
-        {triggersCallback.length > 0 && (
-          <Badge className="bg-blue-100 text-blue-700">
-            {triggersCallback.length}
-          </Badge>
-        )}
-      </div>
+      <div className="mt-4 rounded-sm border bg-white shadow">
+        <LinkedContextHeader
+          kind="activity"
+          title={activity?.title || t('ACTIVITY')}
+          meta={[activity?.phase?.name, activity?.category?.name].filter(
+            Boolean,
+          )}
+          countLabel={t('LINKED_TRIGGERS_COUNT', {
+            count: triggersCallback.length,
+          })}
+          isLoading={isLoading}
+        />
 
-      <div className="rounded-xl border bg-white">
         {isLoading ? (
-          <div className="flex justify-center py-8">
-            <SpinnerLoader />
-          </div>
+          <LinkedListSkeleton />
         ) : triggersCallback.length === 0 ? (
-          <NoResult message={t('NO_TRIGGER_LINKED_TO_ACTIVITY')} />
+          <LinkedEmptyState
+            kind="trigger"
+            message={t('NO_TRIGGER_LINKED_TO_ACTIVITY')}
+            hint={t('NO_TRIGGER_LINKED_HINT')}
+            actionLabel={t('LINK_TRIGGER')}
+            onAction={goToLinkTrigger}
+          />
         ) : (
-          <div className="flex flex-col divide-y">
+          <ul className="flex flex-col divide-y">
             {triggersCallback.map((cb: any) => {
+              const trigger = cb.trigger;
               const communicationIds: string[] =
                 cb?.config?.communicationIds || [];
-              const isActivityWide = communicationIds.length === 0;
 
               return (
-                <div
+                <LinkedCallbackRow
                   key={cb.uuid}
-                  className="flex items-center gap-3 px-4 py-3"
-                >
-                  <Zap className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <TooltipWrapper
-                      tip={`${t('TRIGGER')}: ${cb.trigger?.title}`}
-                    >
-                      <p className="text-sm font-medium truncate">
-                        {cb.trigger?.title}
-                      </p>
-                    </TooltipWrapper>
-                    <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                      {isActivityWide ? (
-                        <Badge className="bg-gray-100 text-gray-600 text-xs font-normal">
-                          {t('ALL_COMMUNICATIONS')}
-                        </Badge>
-                      ) : (
-                        communicationIds.map((commId) => (
-                          <Badge
-                            key={commId}
-                            className="bg-blue-50 text-blue-700 text-xs font-normal"
-                          >
-                            {getCommunicationTitle(commId)}
-                          </Badge>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                  <TooltipWrapper tip={t('REMOVE_LINKED_TRIGGER')}>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="text-red-500 border-red-200 hover:bg-red-50 flex-shrink-0"
-                      onClick={() =>
-                        setPendingDelete({
-                          uuid: cb.uuid,
-                          triggerTitle: cb.trigger?.title,
-                        })
-                      }
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </TooltipWrapper>
-                </div>
+                  kind="trigger"
+                  title={trigger?.title}
+                  tooltip={`${t('TRIGGER')}: ${trigger?.title}`}
+                  href={
+                    trigger?.uuid
+                      ? `/projects/aa/${projectId}/trigger-statements/${trigger.uuid}`
+                      : undefined
+                  }
+                  status={
+                    trigger?.isTriggered && (
+                      <Badge className="bg-green-100 text-green-700 text-[11px] font-normal hover:bg-green-100 flex-shrink-0">
+                        {t('TRIGGERED')}
+                      </Badge>
+                    )
+                  }
+                  meta={[trigger?.phase?.name, trigger?.source].filter(
+                    Boolean,
+                  )}
+                  communicationTitles={communicationIds.map(
+                    getCommunicationTitle,
+                  )}
+                  removeLabel={t('REMOVE_LINKED_TRIGGER')}
+                  isRemoving={
+                    deleteTriggerCallback.isPending &&
+                    pendingDelete?.uuid === cb.uuid
+                  }
+                  onRemove={() =>
+                    setPendingDelete({
+                      uuid: cb.uuid,
+                      triggerTitle: trigger?.title,
+                    })
+                  }
+                />
               );
             })}
-          </div>
+          </ul>
         )}
       </div>
 

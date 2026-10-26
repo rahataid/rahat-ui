@@ -306,6 +306,7 @@
     "ACTIVE": "Active",
     "INACTIVE": "Inactive",
     "DRAFT": "Draft",
+    "UNREACHABLE": "Unreachable",
     "ARCHIVED": "Archived",
     "CREATING": "Creating...",
     "NO_FILE_CHOSEN": "No file chosen",

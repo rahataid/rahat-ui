@@ -34,15 +34,19 @@ const ENV_STYLES: Record<string, string> = {
     'border-blue-300 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-400',
   stage:
     'border-blue-300 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-400',
+  unreachable:
+    'border-red-300 bg-red-100 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400',
 };
 const DEFAULT_ENV_STYLE =
   'border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400';
 
-const formatEnvLabel = (env: string) => {
+const formatEnvLabel = (env?: string | null, fallback = 'Unreachable') => {
+  if (!env) return fallback;
   const lower = env.toLowerCase();
   if (lower === 'production') return 'Production';
   if (lower === 'staging') return 'Staging';
   if (lower === 'development') return 'Development';
+  if (lower === 'unreachable') return fallback;
   return env;
 };
 
@@ -105,9 +109,9 @@ export default function ProjectHealthView() {
         failed || !checked.length
           ? tg('HEALTH_CHECK_FAILED')
           : tg('HEALTH_CHECK_SUCCESS', {
-              healthy: formatDigits(healthy),
-              total: formatDigits(checked.length),
-            }),
+            healthy: formatDigits(healthy),
+            total: formatDigits(checked.length),
+          }),
     });
   };
 
@@ -119,22 +123,24 @@ export default function ProjectHealthView() {
           description={ta('PROJECT_HEALTH_DESCRIPTION')}
         />
         <div className="flex items-center gap-4">
-          {envData?.env && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                {tg('ENVIRONMENT')}:
-              </span>
-              <Badge
-                variant="outline"
-                className={cn(
-                  'px-3 py-1 text-xs font-semibold',
-                  ENV_STYLES[envData.env.toLowerCase()] ?? DEFAULT_ENV_STYLE,
-                )}
-              >
-                {formatEnvLabel(envData.env)}
-              </Badge>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {tg('ENVIRONMENT')}:
+            </span>
+            <Badge
+              variant="outline"
+              className={cn(
+                'px-3 py-1 text-xs font-semibold',
+                envData?.env && envData.env.toLowerCase() !== 'unreachable'
+                  ? (ENV_STYLES[envData.env.toLowerCase()] ?? DEFAULT_ENV_STYLE)
+                  : ENV_STYLES.unreachable,
+              )}
+            >
+              {envData?.env && envData.env.toLowerCase() !== 'unreachable'
+                ? formatEnvLabel(envData.env)
+                : (tg('UNREACHABLE') || 'Unreachable')}
+            </Badge>
+          </div>
           <IconLabelBtn
             Icon={RefreshCw}
             handleClick={handleRunCheck}

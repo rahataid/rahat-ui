@@ -3189,6 +3189,7 @@
     "BANKED": "बैंक खाता भएको",
     "BANKING_STATUS": "बैंक खाताको स्थिति",
     "BANKED_STATUS": "बैंक खाताको स्थिति",
+    "UNREACHABLE": "पहुँच नभएको",
     "BENEFICIARIES": "लाभग्राहीहरू",
     "BENEFICIARY": "लाभग्राही",
     "BENEFICIARY_GROUP": "लाभग्राहीको समूह",

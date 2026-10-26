@@ -13,7 +13,7 @@
     },
     "dev-v2": {
       "description": "AA Development V2",
-      "tag": "dev",
+      "tag": "dev-v2",
       "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev-v2",
       "urls": {},
       "notes": []

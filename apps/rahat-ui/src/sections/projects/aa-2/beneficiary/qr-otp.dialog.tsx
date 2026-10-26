@@ -38,6 +38,10 @@ export type QrOtpDialogProps = {
   onOpenChange: (open: boolean) => void;
   onConfirm: (values: QrOtpConfirmValues) => void;
   isPending: boolean;
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  pendingLabel?: string;
 };
 
 export function QrOtpDialog({
@@ -45,6 +49,10 @@ export function QrOtpDialog({
   onOpenChange,
   onConfirm,
   isPending,
+  title,
+  description,
+  confirmLabel,
+  pendingLabel,
 }: QrOtpDialogProps) {
   const t = useTranslations('AA_PROJECT');
   const { id } = useParams();
@@ -103,9 +111,9 @@ export function QrOtpDialog({
     >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>{t('QR_PDF_GENERATION_OPTIONS')}</DialogTitle>
+          <DialogTitle>{title ?? t('QR_PDF_GENERATION_OPTIONS')}</DialogTitle>
           <DialogDescription>
-            {t('QR_PDF_GENERATION_OPTIONS_DESCRIPTION')}
+            {description ?? t('QR_PDF_GENERATION_OPTIONS_DESCRIPTION')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-2">
@@ -176,7 +184,9 @@ export function QrOtpDialog({
             className="cursor-pointer"
           >
             {isPending && <Loader2 size={16} className="mr-2 animate-spin" />}
-            {isPending ? t('GENERATING') : t('GENERATE_QR')}
+            {isPending
+              ? pendingLabel ?? t('GENERATING')
+              : confirmLabel ?? t('GENERATE_QR')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,11 +1,13 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import {
+  useCompletePayout,
   useGetPayoutLogs,
   usePagination,
   usePayoutExportLogs,
   usePayoutExportPdfFile,
   useSinglePayout,
+  useTriggerForOnePayoutFailed,
   useTriggerForPayoutFailed,
   useTriggerPayout,
 } from '@rahat-ui/query';
@@ -37,6 +39,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import {
   ChevronDown,
+  CircleCheckBig,
   CloudDownload,
   CloudUpload,
   Landmark,
@@ -44,6 +47,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import OtpConfirmDialog from './otpConfirmDialog';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
@@ -56,6 +60,8 @@ import {
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
 import { Can } from 'apps/rahat-ui/src/components/can';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
@@ -70,6 +76,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
+  const cancelConfirmDialog = useBoolean(false);
+
   const router = useRouter();
   const {
     pagination,
@@ -98,8 +106,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   );
 
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
+  const triggerForOnePayoutFailed = useTriggerForOnePayoutFailed();
   const triggerPayout = useTriggerPayout();
-  const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
+  const cancelPayout = useCompletePayout();
+  const retryOtpDialog = useBoolean(false);
+  const [retryMode, setRetryMode] = React.useState<'bulk' | 'single'>('bulk');
+  const [singleRetryUuid, setSingleRetryUuid] = React.useState<UUID | null>(
+    null,
+  );
+  const columns = useBeneficiaryGroupDetailsLogColumns(
+    payout?.type,
+    (uuid: UUID) => {
+      setSingleRetryUuid(uuid);
+      setRetryMode('single');
+      retryOtpDialog.onTrue();
+    },
+  );
   const { data: exportPayoutLogs } = usePayoutExportLogs({
     projectUUID: projectId,
     payoutUUID: payoutId,
@@ -147,7 +169,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     anchor.remove();
     URL.revokeObjectURL(url);
   };
-
+  const handleCompletePayout = () => {
+    cancelPayout.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        uuid: payoutId,
+      },
+    });
+    cancelConfirmDialog.onFalse();
+  };
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -171,14 +201,34 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     });
   };
 
-  const handleTriggerPayoutFailed = React.useCallback(async () => {
-    triggerForPayoutFailed.mutateAsync({
-      projectUUID: projectId,
-      payload: {
-        payoutUUID: payoutId,
-      },
-    });
-  }, [triggerForPayoutFailed]);
+  const handleConfirmRetryOtp = React.useCallback(
+    async (otp: string) => {
+      if (retryMode === 'single' && singleRetryUuid) {
+        return triggerForOnePayoutFailed.mutateAsync({
+          projectUUID: projectId,
+          payload: {
+            beneficiaryRedeemUuid: singleRetryUuid,
+            otp,
+          },
+        });
+      }
+      return triggerForPayoutFailed.mutateAsync({
+        projectUUID: projectId,
+        payload: {
+          payoutUUID: payoutId,
+          otp,
+        },
+      });
+    },
+    [
+      retryMode,
+      singleRetryUuid,
+      triggerForOnePayoutFailed,
+      triggerForPayoutFailed,
+      projectId,
+      payoutId,
+    ],
+  );
 
   const handleTriggerPayout = React.useCallback(
     async (otp: string) => {
@@ -241,6 +291,12 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
+
+  const cancelDialog = () => {
+    cancelConfirmDialog.onFalse();
+  };
+  const text = t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED');
+
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -276,10 +332,74 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           </div>
           {
             <div className="flex gap-2">
+              <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+                <TooltipWrapper
+                  tip={`${
+                    payout?.status === 'COMPLETED'
+                      ? t('PAYOUT_ALREADY_COMPLETED')
+                      : !payout?.beneficiaryGroupToken?.isDisbursed
+                      ? t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED')
+                      : t('MARK_AS_COMPLETED_TOOLTIP')
+                  }`}
+                >
+                  <Button
+                    className={`gap-2 text-sm `}
+                    onClick={() => cancelConfirmDialog.onTrue()}
+                    disabled={
+                      cancelPayout.isPending ||
+                      payout?.status === 'COMPLETED' ||
+                      !payout?.beneficiaryGroupToken?.isDisbursed
+                    }
+                    variant={'default'}
+                  >
+                    <CircleCheckBig className={'w-4 h-4'} />
+                    {t('MARK_AS_COMPLETED')}
+                  </Button>
+                </TooltipWrapper>
+              </Can>
+
               <PayoutConfirmationDialog
                 projectId={projectId}
                 onConfirm={handleTriggerPayout}
                 payoutData={payout}
+              />
+              <OtpConfirmDialog
+                projectId={projectId}
+                open={retryOtpDialog.value}
+                onOpenChange={(open) =>
+                  open ? retryOtpDialog.onTrue() : retryOtpDialog.onFalse()
+                }
+                title={
+                  retryMode === 'single'
+                    ? tg('RETRY')
+                    : tv('RETRY_FAILED_REQUESTS')
+                }
+                description={tv('PLEASE_ENTER_DIGIT_PIN', { length: 4 })}
+                summary={
+                  retryMode === 'single' ? (
+                    <div className="flex justify-between gap-2">
+                      <span className="font-medium">
+                        {tv('BENEFICIARY_WALLET_ADDRESS')}
+                      </span>
+                      <span className="truncate max-w-52">
+                        {payoutlogs?.data?.find(
+                          (row: any) => row.uuid === singleRetryUuid,
+                        )?.beneficiaryWalletAddress ?? singleRetryUuid}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="font-medium">
+                        {tv('FAILED_TRANSACTIONS')}
+                      </span>
+                      <span>
+                        {formatNum(payout?.totalFailedPayoutRequests ?? 0)}
+                      </span>
+                    </div>
+                  )
+                }
+                confirmLabel={tg('RETRY')}
+                onConfirm={handleConfirmRetryOtp}
               />
               {payout?.type === 'FSP' && (
                 <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
@@ -287,8 +407,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                     className={`gap-2 text-sm ${
                       payout?.hasFailedPayoutRequests === false && 'hidden'
                     }`}
-                    onClick={handleTriggerPayoutFailed}
-                    disabled={triggerForPayoutFailed.isPending}
+                    onClick={() => {
+                      setRetryMode('bulk');
+                      retryOtpDialog.onTrue();
+                    }}
+                    disabled={
+                      triggerForPayoutFailed.isPending ||
+                      payout?.status === 'COMPLETED'
+                    }
                   >
                     <RotateCcw
                       className={`${
@@ -316,7 +442,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                               payout?.status === 'COMPLETED' && 'hidden'
                             } `}
                             disabled={
-                              !payout?.beneficiaryGroupToken?.isDisbursed
+                              !payout?.beneficiaryGroupToken?.isDisbursed ||
+                              payout?.status === 'COMPLETED'
                             }
                             variant={'outline'}
                           >
@@ -561,6 +688,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           }
           perPage={pagination?.perPage}
           total={payoutlogs?.response?.meta?.total || 0}
+          pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
+        />
+        <ConfirmationDialog
+          isConfirmationDialogOpen={cancelConfirmDialog.value}
+          onCancel={cancelDialog}
+          onConfirm={handleCompletePayout}
+          dialogTitle={t('MARK_AS_COMPLETED')}
+          dialogMessage={t('COMPLETE_PAYOUT_ALERT_DESCRIPTION')}
         />
       </div>
     </div>

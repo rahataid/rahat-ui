@@ -32,9 +32,10 @@ type IProps = {
   setPagination?: (pagination: any) => void;
   showChevrons?: boolean;
   isShowTotalCount?: boolean;
+  pageSizes?: string[];
 };
 
-const pageSizes = [
+const defaultPageSizes = [
   '5',
   '10',
   '20',
@@ -60,6 +61,7 @@ export function CustomPagination({
   setPagination,
   showChevrons,
   isShowTotalCount = true,
+  pageSizes = defaultPageSizes,
 }: IProps) {
   const t = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();

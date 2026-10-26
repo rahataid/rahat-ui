@@ -9,14 +9,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { CheckIcon, Eye, RotateCcwIcon, TriangleAlertIcon } from 'lucide-react';
+import { Eye, RotateCcwIcon, TriangleAlertIcon } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
-  useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
-import { useCallback, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -73,6 +71,7 @@ type BeneficiaryGroupDetailsLogRow = {
 
 export default function useBeneficiaryGroupDetailsLogColumns(
   payoutType: string,
+  onSingleRetry?: (uuid: UUID) => void,
 ) {
   const t = useTranslations('AA_PROJECT');
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
@@ -81,30 +80,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const formatNum = useNumberFormat();
   const { id, detailID } = useParams();
   const router = useRouter();
-  const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
-  const [pendingUuid, setPendingUuid] = useState<UUID | null>(null);
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
-  const handleTriggerSinglePayoutFailed = useCallback(
-    async (uuid: UUID) => {
-      setPendingUuid(uuid); // Start tracking this row
-      try {
-        await triggerForPayoutFailed.mutateAsync({
-          projectUUID: id as UUID,
-          payload: {
-            beneficiaryRedeemUuid: uuid,
-          },
-        });
-        setPendingUuid(null); // Clear after it's done
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [triggerForPayoutFailed, id],
-  );
 
   const handleEyeClick = (uuid: UUID) => {
     router.push(
@@ -335,23 +315,16 @@ export default function useBeneficiaryGroupDetailsLogColumns(
             {row.original?.isCompleted === false &&
               payoutType === 'FSP' &&
               !editableStatuses.includes(row.original.status) &&
-              (pendingUuid === row.original.uuid ? (
-                <CheckIcon
-                  className="w-6 h-6 xl:w-4 xl:h-4 text-green-500"
-                  strokeWidth={2.5}
-                />
-              ) : (
+              onSingleRetry && (
                 <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
                   <TooltipComponent
                     Icon={RotateCcwIcon}
                     tip={tg('UPDATE')}
                     iconStyle="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
-                    handleOnClick={() =>
-                      handleTriggerSinglePayoutFailed(row.original.uuid)
-                    }
+                    handleOnClick={() => onSingleRetry(row.original.uuid)}
                   />
                 </Can>
-              ))}
+              )}
 
             <TooltipComponent
               Icon={Eye}

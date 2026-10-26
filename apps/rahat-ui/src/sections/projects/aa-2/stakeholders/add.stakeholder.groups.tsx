@@ -92,7 +92,10 @@ const UpdateOrAddStakeholdersGroup = () => {
   } = usePagination();
 
   const debounceSearch = useDebounce(filters, 500);
-  useStakeholders(projectId, { ...pagination, ...debounceSearch });
+  const { isLoading } = useStakeholders(projectId, {
+    ...pagination,
+    ...debounceSearch,
+  });
 
   useStakeholdersGroups(projectId, {
     sort: 'createdAt',
@@ -320,6 +323,7 @@ const UpdateOrAddStakeholdersGroup = () => {
               table={table}
               tableHeight="h-[max(50vh,calc(90vh-230px))]"
               fixedLayout={false}
+              loading={isLoading && !stakeholders.length}
             />
 
             {stakeholdersError && (

@@ -10,6 +10,7 @@ export interface PayoutTransaction {
   totalSkipOtp?: number;
   isPayoutTriggered: boolean;
   isCompleted: boolean;
+  status: string;
   beneficiaryGroupToken?: {
     title: string;
     status: string;

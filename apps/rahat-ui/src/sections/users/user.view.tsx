@@ -10,23 +10,32 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import UsersTable from './user.list';
-import { usePagination } from '@rahat-ui/query';
+import { useGetUserStats, usePagination } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { GenderStats } from 'apps/rahat-ui/src/common';
 import { useUserTableColumns } from './useUsersColumns';
 import { useUserList, useUserStore } from '@rumsan/react-query';
 import CoreBtnComponent from '../../components/core.btn';
-import { UserCog } from 'lucide-react';
+import { BarChart3, List, UserCog, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { ReusableTabs } from '../../components/reusable-tabs';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 export default function UserView() {
   const t = useTranslations('USERS_LIST');
+  const g = useTranslations('GLOBAL');
   const router = useRouter();
+  const { activeTab, setActiveTab } = useActiveTab('list');
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useUserTableColumns();
   const { data: users, isSuccess } = useUserList(pagination);
+  const { data: userStats, isPending: isUserStatsPending } = useGetUserStats();
+  const genderCounts: Record<string, number> =
+    userStats?.data?.data?.genderStats ?? {};
+  const totalUserCount = userStats?.data?.data?.totalCounts ?? 0;
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -53,37 +62,64 @@ export default function UserView() {
     },
   });
 
+  const tabItems = [
+    {
+      value: 'list',
+      label: g('LIST'),
+      icon: <List size={14} />,
+      content: (
+        <>
+          <UsersTable table={table} />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            meta={users?.response?.meta || { total: 0, currentPage: 0 }}
+            perPage={pagination.perPage}
+            total={users?.response?.meta?.lastPage || 0}
+          />
+        </>
+      ),
+    },
+    {
+      value: 'stats',
+      label: g('STATS'),
+      icon: <BarChart3 size={14} />,
+      content: (
+        <GenderStats
+          totalLabel={g('TOTAL_USERS')}
+          distributionLabel={g('GENDER_DISTRIBUTION')}
+          totalCount={totalUserCount}
+          genderCounts={genderCounts}
+          Icon={Users}
+          isLoading={isUserStatsPending}
+        />
+      ),
+    },
+  ];
+
   return (
-    <>
-      <div className="p-4">
-        <div className="flex justify-between items-center space-x-8 mb-4">
-          <div>
-            <h1 className="font-semibold text-[28px]">{t('USERS')}</h1>
-            <p className="text-muted-foreground text-base">
-              {t('HERE_IS_THE_LIST_OF_ALL')}
-            </p>
-          </div>
-          {(loggedUserRoles?.includes('Admin') ||
-            loggedUserRoles?.includes('Manager')) && (
-            <CoreBtnComponent
-              className="hover:text-primary"
-              Icon={UserCog}
-              name={t('MANAGE_ROLES')}
-              handleClick={() => router.push('/users/roles')}
-            />
-          )}
+    <div className="pl-4 mt-2">
+      <div className="flex justify-between items-center space-x-8">
+        <div>
+          <h1 className="font-semibold text-2xl text-label ">{t('USERS')}</h1>
         </div>
-        <UsersTable table={table} />
+        {(loggedUserRoles?.includes('Admin') ||
+          loggedUserRoles?.includes('Manager')) && (
+          <CoreBtnComponent
+            className="hover:text-primary"
+            Icon={UserCog}
+            name={t('MANAGE_ROLES')}
+            handleClick={() => router.push('/users/roles')}
+          />
+        )}
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={users?.response?.meta || { total: 0, currentPage: 0 }}
-        perPage={pagination.perPage}
-        total={users?.response?.meta?.lastPage || 0}
+      <ReusableTabs
+        defaultValue={activeTab}
+        onValueChange={setActiveTab}
+        items={tabItems}
       />
-    </>
+    </div>
   );
 }

@@ -54,6 +54,7 @@ export default function ProjectHealthView() {
         lastChecked: service?.last_checked,
         responseTime: service?.latency,
         message: service?.message,
+        down_time: service?.down_time
       })),
     [projectHealth, labelFor],
   );

@@ -269,7 +269,6 @@ export const getExplorerUrl = ({
       tx: 'tx',
     };
 
-    // Remove trailing slash and any existing path segments (like /tx/, /address/, etc.)
     let baseUrl = chainSettings.explorerurl.replace(/\/$/, '');
     baseUrl = baseUrl.replace(/\/(tx|token|address)$/, '');
 

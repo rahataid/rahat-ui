@@ -217,9 +217,9 @@ on:
         required: true
         type: choice
         options:
-          - 'dev-aa | Tag: aa-dev | AA Development'
-          - 'dev-qa | Tag: aa-dev-qa | AA QA Development'
-          - 'dev-stellar | Tag: aa-dev-stellar | AA Stellar Development'
+          - 'dev-aa | Tag: dev | AA Development'
+          - 'dev-qa | Tag: dev-qa | AA QA Development'
+          - 'dev-stellar | Tag: aa-stellar | AA Stellar Development'
           - 'dev-unicef | Tag: aa-dev-unicef | UNICEF Development'
           - 'dev-crm | Tag: dev-crm | CRM Development'
           - 'dev-aidlink | Tag: dev-aidlink | AidLink Development'

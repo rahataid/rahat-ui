@@ -32,6 +32,8 @@ export type TransportDeliveryCounts = {
   TOTAL_PRICE?: number;
 };
 
+export type BroadcastCounts = TransportDeliveryCounts;
+
 export type GroupTransportStats = {
   beneficiary?: Record<string, TransportDeliveryCounts>;
   stakeholder?: Record<string, TransportDeliveryCounts>;
@@ -60,18 +62,21 @@ export type CommunicationOverviewData = {
   rawGroupStats: Record<string, unknown>;
 };
 
+export type DeliveryStatus = 'COMPLETED' | 'FAILED' | 'IN_PROGRESS';
+export type CommunicationChannel = 'SMS' | 'VOICE' | 'EMAIL' | 'WHATSAPP';
+
 export type CommunicationActivityItem = {
   id: string;
   date: string;
   projectId?: string;
   projectName?: string;
   title: string;
-  channel: string;
+  channel: CommunicationChannel | string;
   transportName?: string;
   groupName?: string;
   recipientType: string;
   phase?: string;
-  status: string;
+  status: DeliveryStatus;
   delivered: number;
   total: number;
   failed?: number;
@@ -85,7 +90,7 @@ export type CommunicationActivityItem = {
 };
 
 export type ResolvedTransportInfo = {
-  channel: 'SMS' | 'VOICE' | 'EMAIL' | 'WHATSAPP';
+  channel: CommunicationChannel;
   transportName: string;
 };
 

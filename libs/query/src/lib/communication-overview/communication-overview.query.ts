@@ -18,7 +18,7 @@ import {
   EMPTY_ACTIVITIES,
   EMPTY_PROJECTS,
   filterCommunicationActivities,
-  resolveCommRowsFromAggregate,
+  resolveCommRowsWithBroadcastCounts,
   STALE_5MIN,
   transformActivitiesToCommunicationRows,
   transformCommunicationsToCommunicationRows,
@@ -27,6 +27,49 @@ import {
 export * from './communication-overview.types';
 export * from './communication-overview.utils';
 
+type ProjectClient = ReturnType<typeof getProjectClient>;
+
+async function fetchPaginatedProjectAction<T>(
+  client: ProjectClient,
+  uuid: UUID,
+  action: string,
+  basePayload: Record<string, unknown> = {},
+  perPage = 100,
+): Promise<T[]> {
+  const allItems: T[] = [];
+  let page = 1;
+  let lastPage = 1;
+
+  while (page <= lastPage) {
+    const res = (await client.projectActions({
+      uuid,
+      data: {
+        action,
+        payload: { ...basePayload, perPage, page },
+      },
+    })) as Record<string, unknown>;
+
+    const responseObj = res?.['response'] as Record<string, unknown> | undefined;
+    const dataObj = res?.['data'] as Record<string, unknown> | undefined;
+
+    const meta = (responseObj?.['meta'] ?? dataObj?.['meta'] ?? res?.['meta']) as
+      | Record<string, unknown>
+      | undefined;
+
+    if (meta?.['lastPage']) {
+      lastPage = Number(meta['lastPage']);
+    }
+
+    const items = (responseObj?.['data'] ?? dataObj?.['data'] ?? res?.['data'] ?? []) as T[];
+
+    if (!Array.isArray(items) || items.length === 0) break;
+
+    allItems.push(...items);
+    page++;
+  }
+
+  return allItems;
+}
 
 export const useCommunicationOverviewActivities = (
   params?: CommunicationLogsFilterParams,
@@ -39,12 +82,18 @@ export const useCommunicationOverviewActivities = (
 
   const projectList = projectsData?.data ?? EMPTY_PROJECTS;
 
-  const backendRecipient = params?.recipient && params.recipient !== 'all' ? params.recipient.toUpperCase() : undefined;
+  const backendRecipient =
+    params?.recipient && params.recipient !== 'all'
+      ? params.recipient.toUpperCase()
+      : undefined;
 
   const backendTransportId = useMemo(() => {
-    if (!params?.channel || params.channel === 'all' || !Array.isArray(appTransports)) return undefined;
+    if (!params?.channel || params.channel === 'all' || !Array.isArray(appTransports))
+      return undefined;
     const targetChannel = classifyTransportString(params.channel);
-    const match = appTransports.find((t) => t && classifyTransportString(t.name || t.type || '') === targetChannel);
+    const match = appTransports.find(
+      (t) => t && classifyTransportString(t.name || t.type || '') === targetChannel,
+    );
     return match?.cuid || undefined;
   }, [params?.channel, appTransports]);
 
@@ -52,12 +101,16 @@ export const useCommunicationOverviewActivities = (
     () => [
       TAGS.COMMUNICATION_OVERVIEW.LIST_COMMUNICATION_ACTIVITIES,
       params?.project || 'all',
-      projectList.length,
-      appTransports?.length ?? 0,
+      Boolean(newCommunicationService),
       backendRecipient || 'all',
       backendTransportId || 'all',
     ],
-    [params?.project, projectList.length, appTransports?.length, backendRecipient, backendTransportId],
+    [
+      params?.project,
+      Boolean(newCommunicationService),
+      backendRecipient,
+      backendTransportId,
+    ],
   );
 
   const query = useQuery<CommunicationActivityItem[], Error>(
@@ -70,142 +123,75 @@ export const useCommunicationOverviewActivities = (
 
         const rows: CommunicationActivityItem[] = [];
         const commRows: CommunicationActivityItem[] = [];
-        const PER_PAGE = 100;
 
         await Promise.allSettled(
           targets.map(async (proj) => {
+            const projUuid = proj.uuid as UUID;
             await Promise.allSettled([
+              // 1. Fetch Anticipatory Action / Activity-based communications
               (async () => {
-                let page = 1;
-                let lastPage = 1;
-
-                while (page <= lastPage) {
-                  const res = await projectClient.projectActions({
-                    uuid: proj.uuid as UUID,
-                    data: {
-                      action: 'ms.activities.getHavingComms',
-                      payload: { perPage: PER_PAGE, page },
-                    },
-                  });
-
-                  const data = res as Record<string, unknown>;
-                  const responseObj = data?.['response'] as Record<string, unknown> | undefined;
-                  const dataObj = data?.['data'] as Record<string, unknown> | undefined;
-
-                  const meta = (
-                    responseObj?.['meta'] ??
-                    dataObj?.['meta'] ??
-                    data?.['meta']
-                  ) as Record<string, unknown> | undefined;
-
-                  if (meta?.['lastPage']) {
-                    lastPage = Number(meta['lastPage']);
-                  }
-
-                  const activities = (
-                    responseObj?.['data'] ??
-                    dataObj?.['data'] ??
-                    data?.['data'] ??
-                    []
-                  ) as Record<string, unknown>[];
-
-                  if (Array.isArray(activities) && activities.length > 0) {
-                    rows.push(
-                      ...transformActivitiesToCommunicationRows(
-                        activities,
-                        proj,
-                        appTransports as TransportEntry[],
-                      ),
-                    );
-                    page++;
-                  } else {
-                    break;
-                  }
+                const activities = await fetchPaginatedProjectAction<Record<string, unknown>>(
+                  projectClient,
+                  projUuid,
+                  'ms.activities.getHavingComms',
+                );
+                if (activities.length > 0) {
+                  rows.push(
+                    ...transformActivitiesToCommunicationRows(
+                      activities,
+                      proj,
+                      appTransports as TransportEntry[],
+                    ),
+                  );
                 }
               })(),
 
+              // 2. Fetch Multi-Group Communication Campaigns
               (async () => {
-                let page = 1;
-                let lastPage = 1;
-
-                while (page <= lastPage) {
-                  const res = await projectClient.projectActions({
-                    uuid: proj.uuid as UUID,
-                    data: {
-                      action: 'ms.communications.getAll',
-                      payload: {
-                        perPage: PER_PAGE,
-                        page,
-                        xrefId: proj.uuid,
-                        ...(backendRecipient && { groupType: backendRecipient }),
-                        ...(backendTransportId && { transportId: backendTransportId }),
-                      },
-                    },
-                  });
-
-                  const data = res as Record<string, unknown>;
-                  const responseObj = data?.['response'] as Record<string, unknown> | undefined;
-                  const dataObj = data?.['data'] as Record<string, unknown> | undefined;
-
-                  const meta = (
-                    responseObj?.['meta'] ??
-                    dataObj?.['meta'] ??
-                    data?.['meta']
-                  ) as Record<string, unknown> | undefined;
-
-                  if (meta?.['lastPage']) {
-                    lastPage = Number(meta['lastPage']);
-                  }
-
-                  const communications = (
-                    responseObj?.['data'] ??
-                    dataObj?.['data'] ??
-                    data?.['data'] ??
-                    []
-                  ) as Record<string, unknown>[];
-
-                  if (Array.isArray(communications) && communications.length > 0) {
-                    commRows.push(
-                      ...transformCommunicationsToCommunicationRows(
-                        communications,
-                        proj,
-                        appTransports as TransportEntry[],
-                      ),
-                    );
-                    page++;
-                  } else {
-                    break;
-                  }
+                const communications = await fetchPaginatedProjectAction<Record<string, unknown>>(
+                  projectClient,
+                  projUuid,
+                  'ms.communications.getAll',
+                  {
+                    xrefId: proj.uuid,
+                    ...(backendRecipient && { groupType: backendRecipient }),
+                    ...(backendTransportId && { transportId: backendTransportId }),
+                  },
+                );
+                if (communications.length > 0) {
+                  commRows.push(
+                    ...transformCommunicationsToCommunicationRows(
+                      communications,
+                      proj,
+                      appTransports as TransportEntry[],
+                    ),
+                  );
                 }
               })(),
             ]);
           }),
         );
 
-        if (commRows.length) {
-          const sessionIds = newCommunicationService?.session
-            ? [...new Set(commRows.map((r) => r.sessionId).filter(Boolean) as string[])]
-            : [];
+        // Deduplicate communications created through activities
+        const seenCommIds = new Set(commRows.map((c) => c.communicationId).filter(Boolean));
+        const seenSessionIds = new Set(commRows.map((c) => c.sessionId).filter(Boolean));
 
-          if (sessionIds.length) {
-            try {
-              const res = await newCommunicationService.session.broadcastCount({
-                sessions: sessionIds,
-              });
-              const aggregate = res?.data as Record<string, any> | undefined;
-              if (aggregate && aggregate['TOTAL'] !== undefined) {
-                resolveCommRowsFromAggregate(commRows, aggregate);
-              }
-            } catch { /* graceful fallback to dispatch status */ }
-          }
+        const dedupedActivities = rows.filter(
+          (act) =>
+            (!act.communicationId || !seenCommIds.has(act.communicationId)) &&
+            (!act.sessionId || !seenSessionIds.has(act.sessionId)),
+        );
 
-          rows.push(...commRows);
-        }
+        const allRows = [...dedupedActivities, ...commRows];
 
-        rows.sort(
+        // Hydrate rows with verified microservice delivery stats
+        await resolveCommRowsWithBroadcastCounts(allRows, newCommunicationService);
+
+        allRows.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
-        return rows;
+
+        return allRows;
       },
       staleTime: STALE_5MIN,
     },

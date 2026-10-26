@@ -154,63 +154,16 @@ const CommunicationOverviewFilters = React.memo(
       ];
     }, [activities, filters.project, filters.recipient, filters.channel, t]);
 
-    const handleProjectChange = useCallback(
-      (val: string) => {
+    const updateFilter = useCallback(
+      <K extends keyof CommunicationOverviewFilterState>(
+        key: K,
+        value: CommunicationOverviewFilterState[K],
+        extra?: Partial<CommunicationOverviewFilterState>,
+      ) => {
         onFilterChange({
           ...filters,
-          project: val === 'all' ? undefined : val,
-          phase: undefined,
-        });
-      },
-      [filters, onFilterChange],
-    );
-
-    const handleFromDateChange = useCallback(
-      (date: Date | undefined) => {
-        onFilterChange({
-          ...filters,
-          fromDate: date,
-        });
-      },
-      [filters, onFilterChange],
-    );
-
-    const handleToDateChange = useCallback(
-      (date: Date | undefined) => {
-        onFilterChange({
-          ...filters,
-          toDate: date,
-        });
-      },
-      [filters, onFilterChange],
-    );
-
-    const handleChannelChange = useCallback(
-      (val: string) => {
-        onFilterChange({
-          ...filters,
-          channel: val === 'all' ? undefined : val,
-        });
-      },
-      [filters, onFilterChange],
-    );
-
-    const handleRecipientChange = useCallback(
-      (val: string) => {
-        onFilterChange({
-          ...filters,
-          recipient: val === 'all' ? undefined : val,
-          phase: undefined,
-        });
-      },
-      [filters, onFilterChange],
-    );
-
-    const handlePhaseChange = useCallback(
-      (val: string) => {
-        onFilterChange({
-          ...filters,
-          phase: val === 'all' ? undefined : val,
+          [key]: value === 'all' ? undefined : value,
+          ...extra,
         });
       },
       [filters, onFilterChange],
@@ -244,11 +197,11 @@ const CommunicationOverviewFilters = React.memo(
     }, [filters.channel, channelOptions]);
 
     return (
-      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full">
-        <div className="flex-1 min-w-[160px]">
+      <div className="flex flex-wrap items-center xl:justify-end gap-2 sm:gap-2.5 max-w-full min-w-0">
+        <div className="w-[150px] sm:w-[170px] shrink-0">
           <Select
             value={filters.project ?? 'all'}
-            onValueChange={handleProjectChange}
+            onValueChange={(val) => updateFilter('project', val, { phase: undefined })}
           >
             <SelectTrigger className="w-full h-9 text-xs sm:text-sm">
               <SelectValue placeholder={t('ALL_PROJECTS')} />
@@ -264,23 +217,23 @@ const CommunicationOverviewFilters = React.memo(
           </Select>
         </div>
 
-        <div className="flex-[1.4] min-w-[270px] flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           <DatePicker
             placeholder={t('FROM')}
             type="from"
-            handleDateChange={handleFromDateChange}
+            handleDateChange={(date?: Date) => updateFilter('fromDate', date)}
             selectedDate={filters.fromDate}
             maxDate={filters.toDate}
-            className="w-full flex-1 h-9 text-xs sm:text-sm"
+            className="w-[125px] sm:w-[135px] h-9 text-xs sm:text-sm"
           />
           <span className="text-muted-foreground text-xs sm:text-sm shrink-0">{t('TO')}</span>
           <DatePicker
             placeholder={t('TO')}
             type="to"
-            handleDateChange={handleToDateChange}
+            handleDateChange={(date?: Date) => updateFilter('toDate', date)}
             selectedDate={filters.toDate}
             minDate={filters.fromDate}
-            className="w-full flex-1 h-9 text-xs sm:text-sm"
+            className="w-[125px] sm:w-[135px] h-9 text-xs sm:text-sm"
           />
           {hasDateSelected && (
             <Button
@@ -295,10 +248,10 @@ const CommunicationOverviewFilters = React.memo(
           )}
         </div>
 
-        <div className="flex-1 min-w-[130px]">
+        <div className="w-[135px] sm:w-[150px] shrink-0">
           <Select
             value={selectedChannelValue}
-            onValueChange={handleChannelChange}
+            onValueChange={(val) => updateFilter('channel', val)}
           >
             <SelectTrigger className="w-full h-9 text-xs sm:text-sm">
               <SelectValue placeholder={t('ALL_CHANNELS')} />
@@ -313,10 +266,10 @@ const CommunicationOverviewFilters = React.memo(
           </Select>
         </div>
 
-        <div className="flex-1 min-w-[130px]">
+        <div className="w-[130px] sm:w-[140px] shrink-0">
           <Select
             value={filters.recipient ?? 'all'}
-            onValueChange={handleRecipientChange}
+            onValueChange={(val) => updateFilter('recipient', val, { phase: undefined })}
           >
             <SelectTrigger className="w-full h-9 text-xs sm:text-sm">
               <SelectValue placeholder={t('ALL_RECIPIENTS')} />
@@ -331,10 +284,10 @@ const CommunicationOverviewFilters = React.memo(
           </Select>
         </div>
 
-        <div className="flex-1 min-w-[130px]">
+        <div className="w-[120px] sm:w-[130px] shrink-0">
           <Select
             value={filters.phase ?? 'all'}
-            onValueChange={handlePhaseChange}
+            onValueChange={(val) => updateFilter('phase', val)}
           >
             <SelectTrigger className="w-full h-9 text-xs sm:text-sm">
               <SelectValue placeholder={t('ALL_PHASES')} />
@@ -354,7 +307,7 @@ const CommunicationOverviewFilters = React.memo(
             variant="outline"
             size="sm"
             onClick={onReset}
-            className="h-9 px-2.5 text-xs sm:text-sm text-muted-foreground hover:text-foreground shrink-0 gap-1.5"
+            className="h-9 px-3 text-xs sm:text-sm text-muted-foreground hover:text-foreground shrink-0 gap-1.5"
             title={t('RESET_ALL_FILTERS')}
           >
             <X className="h-4 w-4" />

@@ -77,14 +77,12 @@ export default function CommunicationOverviewView() {
   }, []);
 
   return (
-    <div className="space-y-6 w-full max-w-full min-w-0">
+    <div className="space-y-6 w-full max-w-full min-w-0 overflow-hidden">
       <Card className="w-full max-w-full min-w-0 overflow-hidden">
-        <CardHeader className="flex flex-col gap-3 space-y-0 pb-4 w-full max-w-full min-w-0">
-          <div className="flex items-center justify-between gap-4">
-            <CardTitle className="text-lg font-semibold shrink-0">
-              {t('COMMUNICATION_OVERVIEW')}
-            </CardTitle>
-          </div>
+        <CardHeader className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 space-y-0 pb-4 w-full max-w-full min-w-0">
+          <CardTitle className="text-lg font-semibold shrink-0">
+            {t('COMMUNICATION_USAGE')}
+          </CardTitle>
           <CommunicationOverviewFilters
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -106,13 +104,13 @@ export default function CommunicationOverviewView() {
             activeStatus={filters.status}
             onSelectStatus={handleSelectStatus}
           />
-
-          <CommunicationOverviewTable
-            activities={activities}
-            isLoading={isLoadingActivities}
-          />
         </CardContent>
       </Card>
+
+      <CommunicationOverviewTable
+        activities={activities}
+        isLoading={isLoadingActivities}
+      />
     </div>
   );
 }

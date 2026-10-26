@@ -46,16 +46,18 @@ export const CommunicationOverviewTable = React.memo(
     const filteredData = useMemo(() => {
       if (!searchTerm.trim()) return activities;
       const q = searchTerm.toLowerCase();
-      return activities.filter(
-        (item) =>
-          item.title?.toLowerCase().includes(q) ||
-          item.projectName?.toLowerCase().includes(q) ||
-          item.channel?.toLowerCase().includes(q) ||
-          item.transportName?.toLowerCase().includes(q) ||
-          item.recipientType?.toLowerCase().includes(q) ||
-          item.phase?.toLowerCase().includes(q) ||
-          item.status?.toLowerCase().includes(q) ||
-          item.failReason?.toLowerCase().includes(q),
+      return activities.filter((item) =>
+        [
+          item.title,
+          item.projectName,
+          item.channel,
+          item.transportName,
+          item.recipientType,
+          item.groupName,
+          item.phase,
+          item.status,
+          item.failReason,
+        ].some((field) => field && field.toLowerCase().includes(q)),
       );
     }, [activities, searchTerm]);
 
@@ -107,6 +109,14 @@ export const CommunicationOverviewTable = React.memo(
               >
                 {row.original.title}
               </span>
+              {row.original.groupName && row.original.groupName !== 'General' && (
+                <span
+                  className="block text-[11px] text-muted-foreground truncate cursor-default"
+                  title={row.original.groupName}
+                >
+                  {row.original.groupName}
+                </span>
+              )}
             </div>
           ),
         },
@@ -230,7 +240,7 @@ export const CommunicationOverviewTable = React.memo(
     });
 
     return (
-      <Card className="bg-card border rounded-lg shadow-sm">
+      <Card className="bg-card border rounded-lg shadow-sm w-full max-w-full min-w-0 overflow-hidden">
         <CardHeader className="p-4 border-b flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2 shrink-0">
             <Calendar className="w-4 h-4 text-primary" />
@@ -250,13 +260,13 @@ export const CommunicationOverviewTable = React.memo(
           </div>
         </CardHeader>
 
-        <CardContent className="p-0 max-w-full overflow-hidden">
-          <div className="w-full max-w-full overflow-x-auto [&_table]:min-w-[1000px]">
+        <CardContent className="p-0 w-full max-w-full min-w-0 overflow-hidden">
+          <div className="w-full max-w-full min-w-0 overflow-x-auto">
             <DemoTable
               table={table}
               loading={isLoading}
               message={t('NO_ACTIVITIES_FOUND')}
-              fixedLayout={true}
+              fixedLayout={false}
             />
           </div>
 

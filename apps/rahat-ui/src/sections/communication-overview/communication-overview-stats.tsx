@@ -118,7 +118,7 @@ export const CommunicationTopKpis = React.memo(
     );
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full max-w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-full">
         <div
           onClick={() => onSelectStatus?.(undefined)}
           className={`cursor-pointer transition-all rounded-lg ${
@@ -131,7 +131,7 @@ export const CommunicationTopKpis = React.memo(
             number={formatNum(overall.totalCommunications)}
             Icon={Radio}
             loading={isLoading}
-            subtitle={t('TOTAL_COMMUNICATIONS')}
+            subtitle={t('ALL_PROJECTS')}
           />
         </div>
 
@@ -145,11 +145,11 @@ export const CommunicationTopKpis = React.memo(
           title={t('FILTER_COMPLETED_COMMUNICATIONS')}
         >
           <DataCard
-            title={t('SUCCESSFUL')}
-            number={formatNum(overall.successful)}
+            title={t('SUCCESS_RATE')}
+            number={`${formatNum(overall.successRate)}%`}
             Icon={CheckCircle}
             loading={isLoading}
-            subtitle={`${formatNum(overall.successRate)}% ${t('DELIVERED')}`}
+            subtitle={`${formatNum(overall.successful)} ${t('DELIVERED')}`}
             iconStyle="text-green-600 bg-green-100"
           />
         </div>
@@ -183,26 +183,11 @@ export const CommunicationTopKpis = React.memo(
           title={t('FILTER_PENDING_COMMUNICATIONS')}
         >
           <DataCard
-            title={t('PENDING_IN_PROGRESS')}
-            number={formatNum(overall.pending)}
-            Icon={Clock}
-            loading={isLoading}
-            subtitle={t('AWAITING_COMPLETION')}
-            iconStyle="text-amber-600 bg-amber-100"
-          />
-        </div>
-
-        <div
-          onClick={() => onSelectStatus?.(undefined)}
-          className="cursor-pointer transition-all rounded-lg hover:opacity-90"
-          title={t('TOTAL_BENEFICIARIES_AND_STAKEHOLDERS')}
-        >
-          <DataCard
             title={t('TOTAL_RECIPIENTS')}
             number={formatNum(overall.totalRecipients)}
             Icon={Users}
             loading={isLoading}
-            subtitle={t('BENEFICIARIES_AND_STAKEHOLDERS')}
+            subtitle={`${formatNum(overall.pending)} ${t('PENDING')}`}
             iconStyle="text-blue-600 bg-blue-100"
           />
         </div>
@@ -212,6 +197,80 @@ export const CommunicationTopKpis = React.memo(
 );
 
 CommunicationTopKpis.displayName = 'CommunicationTopKpis';
+
+type AudienceProgressRowProps = {
+  label: string;
+  total: number;
+  delivered: number;
+  failed: number;
+  pending: number;
+  successRate: number;
+  failRate: number;
+  pendingRate: number;
+  formatNum: (v: number | string) => string;
+  t: (key: string) => string;
+  borderTop?: boolean;
+};
+
+const AudienceProgressRow = React.memo(function AudienceProgressRow({
+  label,
+  total,
+  delivered,
+  failed,
+  pending,
+  successRate,
+  failRate,
+  pendingRate,
+  formatNum,
+  t,
+  borderTop = false,
+}: AudienceProgressRowProps) {
+  return (
+    <div className={`space-y-2 ${borderTop ? 'pt-2 border-t' : ''}`}>
+      <div className="flex items-center justify-between text-xs font-semibold">
+        <span className="text-foreground">{label}</span>
+        <span className="text-muted-foreground">
+          {formatNum(delivered)} / {formatNum(total)} {t('DELIVERED')} ({successRate}%)
+        </span>
+      </div>
+
+      <div className="w-full h-3 rounded-full bg-secondary flex overflow-hidden">
+        <div
+          style={{ width: `${successRate}%` }}
+          className="bg-green-600 h-full transition-all"
+          title={`${t('DELIVERED')}: ${successRate}%`}
+        />
+        <div
+          style={{ width: `${failRate}%` }}
+          className="bg-red-600 h-full transition-all"
+          title={`${t('FAILED')}: ${failRate}%`}
+        />
+        <div
+          style={{ width: `${pendingRate}%` }}
+          className="bg-amber-500 h-full transition-all"
+          title={`${t('PENDING')}: ${pendingRate}%`}
+        />
+      </div>
+
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
+        <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
+          <span className="w-2 h-2 rounded-full bg-green-600" />
+          {t('DELIVERED')}: {formatNum(delivered)}
+        </span>
+        <span className="flex items-center gap-1.5 text-red-700 dark:text-red-400">
+          <span className="w-2 h-2 rounded-full bg-red-600" />
+          {t('FAILED')}: {formatNum(failed)}
+        </span>
+        {pending > 0 && (
+          <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            {t('PENDING')}: {formatNum(pending)}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+});
 
 export const CommunicationBreakdowns = React.memo(
   function CommunicationBreakdowns({
@@ -346,18 +405,18 @@ export const CommunicationBreakdowns = React.memo(
     const stkPendingRate = Math.max(0, 100 - stkSuccessRate - stkFailRate);
 
     return (
-      <div className="space-y-6 w-full max-w-full">
+      <div className="space-y-6 w-full max-w-full min-w-0">
         {/* Usage by Transport */}
-        <div className="space-y-4 w-full max-w-full">
+        <div className="space-y-4 w-full max-w-full min-w-0">
           <h3 className="text-lg font-semibold">{t('USAGE_BY_TRANSPORT')}</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-full">
-            <Card className="max-w-full overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-full min-w-0">
+            <Card className="w-full max-w-full min-w-0 overflow-hidden">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {t('DISTRIBUTION_BY_TRANSPORT')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex justify-center max-w-full overflow-hidden">
+              <CardContent className="flex justify-center w-full max-w-full min-w-0 overflow-hidden">
                 {isLoading ? (
                   <TableLoader />
                 ) : channelTotal === 0 ? (
@@ -366,7 +425,7 @@ export const CommunicationBreakdowns = React.memo(
                     message={t('NO_CHANNEL_COMMS_RECORDED')}
                   />
                 ) : (
-                  <div className="w-full max-w-[380px] flex justify-center">
+                  <div className="w-full max-w-[380px] flex justify-center min-w-0 overflow-hidden">
                     <PieChart
                       custom
                       type="donut"
@@ -380,13 +439,13 @@ export const CommunicationBreakdowns = React.memo(
               </CardContent>
             </Card>
 
-            <Card className="max-w-full overflow-hidden">
+            <Card className="w-full max-w-full min-w-0 overflow-hidden">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {t('SUCCESS_VS_FAILURE_BY_TRANSPORT')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="max-w-full overflow-hidden">
+              <CardContent className="w-full max-w-full min-w-0 overflow-hidden">
                 {isLoading ? (
                   <TableLoader />
                 ) : channelKeys.length === 0 ? (
@@ -410,10 +469,10 @@ export const CommunicationBreakdowns = React.memo(
         </div>
 
         {/* Audience Breakdown */}
-        <div className="space-y-4 w-full max-w-full">
+        <div className="space-y-4 w-full max-w-full min-w-0">
           <h3 className="text-lg font-semibold">{t('AUDIENCE_BREAKDOWN')}</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-full">
-            <Card className="max-w-full overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-full min-w-0">
+            <Card className="w-full max-w-full min-w-0 overflow-hidden">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {t('TARGET_AUDIENCE_DISTRIBUTION')}
@@ -458,95 +517,31 @@ export const CommunicationBreakdowns = React.memo(
                   />
                 ) : (
                   <>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="text-foreground">{t('BENEFICIARIES')}</span>
-                        <span className="text-muted-foreground">
-                          {formatNum(recipientWise.beneficiary.successful)} /{' '}
-                          {formatNum(benTotal)} {t('DELIVERED')} ({benSuccessRate}%)
-                        </span>
-                      </div>
-
-                      <div className="w-full h-3 rounded-full bg-secondary flex overflow-hidden">
-                        <div
-                          style={{ width: `${benSuccessRate}%` }}
-                          className="bg-green-600 h-full transition-all"
-                          title={`${t('DELIVERED')}: ${benSuccessRate}%`}
-                        />
-                        <div
-                          style={{ width: `${benFailRate}%` }}
-                          className="bg-red-600 h-full transition-all"
-                          title={`${t('FAILED')}: ${benFailRate}%`}
-                        />
-                        <div
-                          style={{ width: `${benPendingRate}%` }}
-                          className="bg-amber-500 h-full transition-all"
-                          title={`${t('PENDING')}: ${benPendingRate}%`}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
-                        <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
-                          <span className="w-2 h-2 rounded-full bg-green-600" />
-                          {t('DELIVERED')}: {formatNum(recipientWise.beneficiary.successful)}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-red-700 dark:text-red-400">
-                          <span className="w-2 h-2 rounded-full bg-red-600" />
-                          {t('FAILED')}: {formatNum(recipientWise.beneficiary.failed)}
-                        </span>
-                        {recipientWise.beneficiary.pending > 0 && (
-                          <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
-                            <span className="w-2 h-2 rounded-full bg-amber-500" />
-                            {t('PENDING')}: {formatNum(recipientWise.beneficiary.pending)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 pt-2 border-t">
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="text-foreground">{t('STAKEHOLDERS')}</span>
-                        <span className="text-muted-foreground">
-                          {formatNum(recipientWise.stakeholder.successful)} /{' '}
-                          {formatNum(stkTotal)} {t('DELIVERED')} ({stkSuccessRate}%)
-                        </span>
-                      </div>
-
-                      <div className="w-full h-3 rounded-full bg-secondary flex overflow-hidden">
-                        <div
-                          style={{ width: `${stkSuccessRate}%` }}
-                          className="bg-green-600 h-full transition-all"
-                          title={`${t('DELIVERED')}: ${stkSuccessRate}%`}
-                        />
-                        <div
-                          style={{ width: `${stkFailRate}%` }}
-                          className="bg-red-600 h-full transition-all"
-                          title={`${t('FAILED')}: ${stkFailRate}%`}
-                        />
-                        <div
-                          style={{ width: `${stkPendingRate}%` }}
-                          className="bg-amber-500 h-full transition-all"
-                          title={`${t('PENDING')}: ${stkPendingRate}%`}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
-                        <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
-                          <span className="w-2 h-2 rounded-full bg-green-600" />
-                          {t('DELIVERED')}: {formatNum(recipientWise.stakeholder.successful)}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-red-700 dark:text-red-400">
-                          <span className="w-2 h-2 rounded-full bg-red-600" />
-                          {t('FAILED')}: {formatNum(recipientWise.stakeholder.failed)}
-                        </span>
-                        {recipientWise.stakeholder.pending > 0 && (
-                          <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
-                            <span className="w-2 h-2 rounded-full bg-amber-500" />
-                            {t('PENDING')}: {formatNum(recipientWise.stakeholder.pending)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                    <AudienceProgressRow
+                      label={t('BENEFICIARIES')}
+                      total={benTotal}
+                      delivered={recipientWise.beneficiary.successful}
+                      failed={recipientWise.beneficiary.failed}
+                      pending={recipientWise.beneficiary.pending}
+                      successRate={benSuccessRate}
+                      failRate={benFailRate}
+                      pendingRate={benPendingRate}
+                      formatNum={formatNum}
+                      t={t}
+                    />
+                    <AudienceProgressRow
+                      label={t('STAKEHOLDERS')}
+                      total={stkTotal}
+                      delivered={recipientWise.stakeholder.successful}
+                      failed={recipientWise.stakeholder.failed}
+                      pending={recipientWise.stakeholder.pending}
+                      successRate={stkSuccessRate}
+                      failRate={stkFailRate}
+                      pendingRate={stkPendingRate}
+                      formatNum={formatNum}
+                      t={t}
+                      borderTop
+                    />
                   </>
                 )}
               </CardContent>

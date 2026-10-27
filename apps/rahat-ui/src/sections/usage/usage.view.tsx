@@ -3,11 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RefreshCcw, ScrollText } from 'lucide-react';
+import { RefreshCcw, RefreshCw, ScrollText } from 'lucide-react';
 import { SystemUserAuth } from '@rahat-ui/auth';
 import CoreBtnComponent from '../../components/core.btn';
 import { IconLabelBtn } from '../../common';
 import { paths } from '../../routes/paths';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Card,
@@ -50,6 +51,7 @@ export default function UsageView() {
   const t = useTranslations('USAGE');
   const tg = useTranslations('GLOBAL');
   const router = useRouter();
+  const formatDate = useDateFormat();
   const { activeTab, setActiveTab } = useActiveTab('usage');
   const [showSyncConfirm, setShowSyncConfirm] = useState(false);
   const [usageXref, setUsageXref] = useState<string | null>(null);
@@ -79,6 +81,7 @@ export default function UsageView() {
     useCommsUsageBackfill();
 
   const totals = activeUsage?.data?.totals;
+  const lastUpdatedAt = activeUsage?.data?.lastUpdatedAt;
   const byTransport = activeUsage?.data?.byTransport;
   const credits = activeCredits?.data;
 
@@ -111,9 +114,22 @@ export default function UsageView() {
 
           <Card className="max-w-full min-w-0 overflow-hidden">
             <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 space-y-0 pb-4">
-              <CardTitle className="text-lg font-semibold shrink-0">
-                {t('COMMUNICATION_USAGE')}
-              </CardTitle>
+              <div>
+                <CardTitle className="text-lg font-semibold shrink-0">
+                  {t('COMMUNICATION_USAGE')}
+                </CardTitle>
+                {lastUpdatedAt && (
+                  <div className="flex items-center gap-1 text-xs text-green-500 mt-1 whitespace-nowrap">
+                    <RefreshCw
+                      size={12}
+                      className={isBackfilling ? 'animate-spin' : undefined}
+                    />
+                    <span>
+                      {tg('LAST_SYNCED_AT')} {formatDate(lastUpdatedAt)}
+                    </span>
+                  </div>
+                )}
+              </div>
               <UsageFilters
                 selectedXref={usageXref}
                 onXrefChange={setUsageXref}
@@ -121,6 +137,7 @@ export default function UsageView() {
                 onDateClear={() => setUsageDateRange({})}
               />
             </CardHeader>
+
             <CardContent className="space-y-6 max-w-full min-w-0 overflow-hidden">
               <UsageOverviewCards totals={totals} loading={activeUsageLoading} />
               <UsageByTransport byTransport={byTransport} />

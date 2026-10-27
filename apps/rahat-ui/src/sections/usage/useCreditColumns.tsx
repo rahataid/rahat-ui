@@ -27,31 +27,52 @@ export function useCreditColumns() {
         const date = row.getValue('date') as string;
         return formatDate(date, 'MMM dd, yyyy');
       },
+      footer: () => g('TOTAL'),
     },
     {
       accessorKey: 'transportName',
       header: g('TRANSPORT'),
       cell: ({ row }) => translateValue(g, row.getValue('transportName')),
+      footer: () => null,
     },
     {
       accessorKey: 'transportType',
       header: g('TYPE'),
       cell: ({ row }) => translateValue(g, row.getValue('transportType')),
+      footer: () => null,
     },
     {
       accessorKey: 'credits',
       header: t('CREDITS'),
       cell: ({ row }) => formatNum(row.getValue('credits')),
+      footer: ({ table }) => {
+        const total = table
+          .getFilteredRowModel()
+          .rows.reduce((sum, row) => sum + (row.original.credits || 0), 0);
+        return formatNum(total);
+      },
     },
     {
       accessorKey: 'sessions',
       header: t('SESSIONS'),
       cell: ({ row }) => formatNum(row.getValue('sessions')),
+      footer: ({ table }) => {
+        const total = table
+          .getFilteredRowModel()
+          .rows.reduce((sum, row) => sum + (row.original.sessions || 0), 0);
+        return formatNum(total);
+      },
     },
     {
       accessorKey: 'broadcasts',
       header: t('BROADCASTS'),
       cell: ({ row }) => formatNum(row.getValue('broadcasts')),
+      footer: ({ table }) => {
+        const total = table
+          .getFilteredRowModel()
+          .rows.reduce((sum, row) => sum + (row.original.broadcasts || 0), 0);
+        return formatNum(total);
+      },
     },
   ];
 

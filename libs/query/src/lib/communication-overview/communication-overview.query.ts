@@ -4,7 +4,6 @@ import { useRSQuery } from '@rumsan/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { TAGS } from '../../config';
-import { useNewCommunicationQuery } from '../new-comms/new-comms.provider';
 import { useListAllTransports } from '../new-comms/new-comms.query';
 import { useProjectList } from '../projects';
 import {
@@ -18,7 +17,6 @@ import {
   EMPTY_ACTIVITIES,
   EMPTY_PROJECTS,
   filterCommunicationActivities,
-  resolveCommRowsWithBroadcastCounts,
   STALE_5MIN,
   transformActivitiesToCommunicationRows,
   transformCommunicationsToCommunicationRows,
@@ -78,38 +76,44 @@ export const useCommunicationOverviewActivities = (
   const projectClient = getProjectClient(rumsanService.client);
   const { data: projectsData, isLoading: isLoadingProjects } = useProjectList();
   const appTransports = useListAllTransports();
-  const { newCommunicationService } = useNewCommunicationQuery();
-
   const projectList = projectsData?.data ?? EMPTY_PROJECTS;
 
-  const backendRecipient =
-    params?.recipient && params.recipient !== 'all'
+  const backendRecipient = useMemo(() => {
+    return params?.recipient && params.recipient !== 'all'
       ? params.recipient.toUpperCase()
       : undefined;
+  }, [params?.recipient]);
 
   const backendTransportId = useMemo(() => {
-    if (!params?.channel || params.channel === 'all' || !Array.isArray(appTransports))
-      return undefined;
+    if (!params?.channel || params.channel === 'all' || !Array.isArray(appTransports)) return undefined;
     const targetChannel = classifyTransportString(params.channel);
     const match = appTransports.find(
       (t) => t && classifyTransportString(t.name || t.type || '') === targetChannel,
     );
-    return match?.cuid || undefined;
+    return match?.cuid || match?.id || undefined;
   }, [params?.channel, appTransports]);
+
+  const backendPhase = useMemo(() => {
+    return params?.phase && params.phase !== 'all' ? params.phase : undefined;
+  }, [params?.phase]);
 
   const baseQueryKey = useMemo(
     () => [
       TAGS.COMMUNICATION_OVERVIEW.LIST_COMMUNICATION_ACTIVITIES,
       params?.project || 'all',
-      Boolean(newCommunicationService),
       backendRecipient || 'all',
       backendTransportId || 'all',
+      params?.from || 'all',
+      params?.to || 'all',
+      backendPhase || 'all',
     ],
     [
       params?.project,
-      Boolean(newCommunicationService),
       backendRecipient,
       backendTransportId,
+      params?.from,
+      params?.to,
+      backendPhase,
     ],
   );
 
@@ -121,58 +125,113 @@ export const useCommunicationOverviewActivities = (
         const targets = buildTargetProjects(projectList, params?.project);
         if (!targets.length) return [];
 
-        const rows: CommunicationActivityItem[] = [];
-        const commRows: CommunicationActivityItem[] = [];
+        let rows: CommunicationActivityItem[] = [];
+        let commRows: CommunicationActivityItem[] = [];
 
-        await Promise.allSettled(
-          targets.map(async (proj) => {
-            const projUuid = proj.uuid as UUID;
-            await Promise.allSettled([
-              // 1. Fetch Anticipatory Action / Activity-based communications
-              (async () => {
-                const activities = await fetchPaginatedProjectAction<Record<string, unknown>>(
-                  projectClient,
-                  projUuid,
-                  'ms.activities.getHavingComms',
+        for (const proj of targets) {
+          const projUuid = proj.uuid as UUID;
+          await Promise.allSettled([
+            // 1. Fetch Anticipatory Action / Activity-based communications
+            (async () => {
+              const activities = await fetchPaginatedProjectAction<Record<string, unknown>>(
+                projectClient,
+                projUuid,
+                'ms.activities.getHavingComms',
+                {
+                  ...(params?.from && { startDate: params.from }),
+                  ...(params?.to && { endDate: params.to }),
+                  ...(backendPhase && {
+                    filters: {
+                      phase: backendPhase,
+                    },
+                  }),
+                },
+              );
+              if (activities.length > 0) {
+                rows.push(
+                  ...transformActivitiesToCommunicationRows(
+                    activities,
+                    proj,
+                    appTransports as TransportEntry[],
+                  ),
                 );
-                if (activities.length > 0) {
-                  rows.push(
-                    ...transformActivitiesToCommunicationRows(
-                      activities,
-                      proj,
-                      appTransports as TransportEntry[],
-                    ),
-                  );
-                }
-              })(),
+              }
+            })(),
 
-              // 2. Fetch Multi-Group Communication Campaigns
-              (async () => {
-                const communications = await fetchPaginatedProjectAction<Record<string, unknown>>(
-                  projectClient,
-                  projUuid,
-                  'ms.communications.getAll',
-                  {
-                    xrefId: proj.uuid,
-                    ...(backendRecipient && { groupType: backendRecipient }),
-                    ...(backendTransportId && { transportId: backendTransportId }),
-                  },
+            // 2. Fetch Multi-Group Communication Campaigns
+            (async () => {
+              const communications = await fetchPaginatedProjectAction<Record<string, unknown>>(
+                projectClient,
+                projUuid,
+                'ms.communications.getAll',
+                {
+                  xrefId: proj.uuid,
+                  ...(params?.from && { startDate: params.from }),
+                  ...(params?.to && { endDate: params.to }),
+                  ...(backendRecipient && { groupType: backendRecipient }),
+                  ...(backendTransportId && { transportId: backendTransportId }),
+                },
+              );
+              if (communications.length > 0) {
+                commRows.push(
+                  ...transformCommunicationsToCommunicationRows(
+                    communications,
+                    proj,
+                    appTransports as TransportEntry[],
+                  ),
                 );
-                if (communications.length > 0) {
-                  commRows.push(
-                    ...transformCommunicationsToCommunicationRows(
-                      communications,
-                      proj,
-                      appTransports as TransportEntry[],
-                    ),
-                  );
-                }
-              })(),
-            ]);
-          }),
-        );
+              }
+            })(),
+          ]);
+        }
 
-        // Deduplicate communications created through activities
+        // Deduplicate communications created through activities, preserving phase info
+        const phaseByCommId = new Map<string, string>();
+        const phaseBySessionId = new Map<string, string>();
+        for (const act of rows) {
+          if (act.phase && act.phase.toUpperCase() !== 'N/A') {
+            if (act.communicationId) phaseByCommId.set(act.communicationId, act.phase);
+            if (act.sessionId) phaseBySessionId.set(act.sessionId, act.phase);
+          }
+        }
+        for (const comm of commRows) {
+          if (!comm.phase || comm.phase.toUpperCase() === 'N/A') {
+            const preservedPhase =
+              (comm.communicationId ? phaseByCommId.get(comm.communicationId) : undefined) ||
+              (comm.sessionId ? phaseBySessionId.get(comm.sessionId) : undefined);
+            if (preservedPhase) {
+              comm.phase = preservedPhase;
+            }
+          }
+        }
+
+        if (backendPhase) {
+          commRows = commRows.filter(
+            (c) =>
+              c.phase &&
+              c.phase.toUpperCase() !== 'N/A' &&
+              c.phase.toLowerCase() === backendPhase.toLowerCase(),
+          );
+        }
+
+        if (backendRecipient) {
+          rows = rows.filter(
+            (r) =>
+              typeof r.recipientType === 'string' &&
+              r.recipientType.toUpperCase().includes(backendRecipient),
+          );
+        }
+
+        if (params?.channel && params.channel !== 'all') {
+          const targetChannel = classifyTransportString(params.channel);
+          rows = rows.filter(
+            (r) => classifyTransportString(r.channel) === targetChannel,
+          );
+          commRows = commRows.filter(
+            (c) => classifyTransportString(c.channel) === targetChannel,
+          );
+        }
+
         const seenCommIds = new Set(commRows.map((c) => c.communicationId).filter(Boolean));
         const seenSessionIds = new Set(commRows.map((c) => c.sessionId).filter(Boolean));
 
@@ -183,9 +242,6 @@ export const useCommunicationOverviewActivities = (
         );
 
         const allRows = [...dedupedActivities, ...commRows];
-
-        // Hydrate rows with verified microservice delivery stats
-        await resolveCommRowsWithBroadcastCounts(allRows, newCommunicationService);
 
         allRows.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),

@@ -16,6 +16,7 @@ import { CommunicationActivityItem, classifyTransportString } from '@rahat-ui/qu
 import { CommunicationStatusBadge } from '../projects/aa-2/communications/components/communication-status-badge';
 import { CommunicationChannelIcon } from '../projects/aa-2/communications/components/communication-channel-icon';
 import { CommunicationTooltip } from '../projects/aa-2/communications/components/communication-tooltip';
+import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { Calendar, AlertTriangle } from 'lucide-react';
 
 const CHANNEL_T_KEYS: Record<string, string> = {
@@ -90,6 +91,13 @@ export const CommunicationOverviewTable = React.memo(
       setCurrentPage((p) => Math.max(p - 1, 1));
     }, []);
 
+    const handleSetPagination = React.useCallback((updater: any) => {
+      setCurrentPage((prev) => {
+        const nextVal = typeof updater === 'function' ? updater({ page: prev }) : updater;
+        return typeof nextVal?.page === 'number' ? nextVal.page : prev;
+      });
+    }, []);
+
     const handlePageSizeChange = React.useCallback((size: string | number) => {
       setPerPage(Number(size));
       setCurrentPage(1);
@@ -109,14 +117,6 @@ export const CommunicationOverviewTable = React.memo(
               >
                 {row.original.title}
               </span>
-              {row.original.groupName && row.original.groupName !== 'General' && (
-                <span
-                  className="block text-[11px] text-muted-foreground truncate cursor-default"
-                  title={row.original.groupName}
-                >
-                  {row.original.groupName}
-                </span>
-              )}
             </div>
           ),
         },
@@ -173,16 +173,39 @@ export const CommunicationOverviewTable = React.memo(
         {
           accessorKey: 'recipientType',
           header: t('TARGET_AUDIENCE'),
-          meta: { className: 'w-[130px]' },
+          meta: { className: 'w-[140px]' },
           cell: ({ row }) => {
-            const isBen = row.original.recipientType === 'BENEFICIARY';
+            const rawType = (row.original.recipientType || '').toUpperCase();
+            const hasBen = rawType.includes('BENEFICIARY');
+            const hasStk = rawType.includes('STAKEHOLDER');
+
             return (
-              <Badge
-                variant={isBen ? 'secondary' : 'outline'}
-                className="text-[10px] font-medium px-2 py-0.5 rounded"
-              >
-                {isBen ? t('BENEFICIARY') : t('STAKEHOLDER')}
-              </Badge>
+              <div className="flex flex-wrap items-center gap-1">
+                {hasBen && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] font-medium px-2 py-0.5 rounded"
+                  >
+                    {t('BENEFICIARY')}
+                  </Badge>
+                )}
+                {hasStk && (
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] font-medium px-2 py-0.5 rounded"
+                  >
+                    {t('STAKEHOLDER')}
+                  </Badge>
+                )}
+                {!hasBen && !hasStk && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] font-medium px-2 py-0.5 rounded"
+                  >
+                    {row.original.recipientType}
+                  </Badge>
+                )}
+              </div>
             );
           },
         },
@@ -190,11 +213,27 @@ export const CommunicationOverviewTable = React.memo(
           accessorKey: 'phase',
           header: t('PHASE'),
           meta: { className: 'w-[110px]' },
-          cell: ({ row }) => (
-            <span className="text-xs text-muted-foreground font-medium uppercase">
-              {row.original.phase || 'N/A'}
-            </span>
-          ),
+          cell: ({ row }) => {
+            const phase = row.original.phase;
+            if (!phase || phase.toUpperCase() === 'N/A') {
+              return (
+                <span className="text-xs text-muted-foreground font-medium">
+                  -
+                </span>
+              );
+            }
+            const colorClass = getPhaseColor(phase.toUpperCase());
+            return (
+              <Badge
+                variant="outline"
+                className={`text-[10px] font-medium px-2 py-0.5 rounded uppercase ${
+                  colorClass || 'text-muted-foreground'
+                }`}
+              >
+                {phase}
+              </Badge>
+            );
+          },
         },
         {
           accessorKey: 'date',
@@ -214,7 +253,7 @@ export const CommunicationOverviewTable = React.memo(
           cell: ({ row }) => (
             <div className="space-y-1">
               <CommunicationStatusBadge
-                status={row.original.status || 'COMPLETED'}
+                status={row.original.status || 'NOT_STARTED'}
               />
               {row.original.status === 'FAILED' && row.original.failReason && (
                 <CommunicationTooltip content={row.original.failReason}>
@@ -283,6 +322,7 @@ export const CommunicationOverviewTable = React.memo(
               }}
               handleNextPage={handleNextPage}
               handlePrevPage={handlePrevPage}
+              setPagination={handleSetPagination}
               handlePageSizeChange={handlePageSizeChange}
             />
           </div>

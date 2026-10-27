@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import { DataCard, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { CommunicationOverviewData, classifyTransportString } from '@rahat-ui/query';
@@ -18,8 +19,6 @@ import {
 import {
   Radio,
   CheckCircle,
-  XCircle,
-  Clock,
   Users,
 } from 'lucide-react';
 
@@ -35,6 +34,7 @@ export type CommunicationOverviewStatsProps = {
   isLoading?: boolean;
   activeStatus?: string;
   onSelectStatus?: (status?: string) => void;
+  projectName?: string;
 };
 
 const CHANNEL_COLORS: Record<string, string> = {
@@ -100,6 +100,7 @@ export const CommunicationTopKpis = React.memo(
     isLoading = false,
     activeStatus,
     onSelectStatus,
+    projectName,
   }: CommunicationOverviewStatsProps) {
     const t = useTranslations('USAGE');
     const formatNum = useNumberFormat();
@@ -117,8 +118,23 @@ export const CommunicationTopKpis = React.memo(
       [data?.overall],
     );
 
+    const totalRecipients =
+      overall.totalRecipients > 0
+        ? overall.totalRecipients
+        : overall.successful + overall.failed + overall.pending;
+
+    const deliveryRatio = `${formatNum(overall.successful)}/${formatNum(
+      totalRecipients,
+    )}`;
+
+    const pendingText =
+      overall.pending > 0
+        ? ` · ${formatNum(overall.pending)} ${t('PENDING')?.toLowerCase() || 'pending'}`
+        : '';
+    const subtitleText = `${formatNum(overall.successful)} ${t('DELIVERED') || 'delivered'} · ${formatNum(overall.failed)} ${t('FAILED')?.toLowerCase() || 'failed'}${pendingText}`;
+
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-full">
         <div
           onClick={() => onSelectStatus?.(undefined)}
           className={`cursor-pointer transition-all rounded-lg ${
@@ -131,12 +147,16 @@ export const CommunicationTopKpis = React.memo(
             number={formatNum(overall.totalCommunications)}
             Icon={Radio}
             loading={isLoading}
-            subtitle={t('ALL_PROJECTS')}
+            subtitle={projectName || t('ALL_PROJECTS')}
           />
         </div>
 
         <div
-          onClick={() => onSelectStatus?.('COMPLETED')}
+          onClick={() =>
+            onSelectStatus?.(
+              activeStatus === 'COMPLETED' ? undefined : 'COMPLETED',
+            )
+          }
           className={`cursor-pointer transition-all rounded-lg ${
             activeStatus === 'COMPLETED'
               ? 'ring-2 ring-green-600'
@@ -145,49 +165,38 @@ export const CommunicationTopKpis = React.memo(
           title={t('FILTER_COMPLETED_COMMUNICATIONS')}
         >
           <DataCard
-            title={t('SUCCESS_RATE')}
-            number={`${formatNum(overall.successRate)}%`}
+            title={t('DELIVERY_STATUS') || 'Delivery Status'}
+            number={deliveryRatio}
             Icon={CheckCircle}
             loading={isLoading}
-            subtitle={`${formatNum(overall.successful)} ${t('DELIVERED')}`}
+            subtitle={subtitleText}
             iconStyle="text-green-600 bg-green-100"
           />
         </div>
 
         <div
-          onClick={() => onSelectStatus?.('FAILED')}
-          className={`cursor-pointer transition-all rounded-lg ${
-            activeStatus === 'FAILED'
-              ? 'ring-2 ring-red-600'
-              : 'hover:opacity-90'
-          }`}
-          title={t('FILTER_FAILED_COMMUNICATIONS')}
-        >
-          <DataCard
-            title={t('FAILED')}
-            number={formatNum(overall.failed)}
-            Icon={XCircle}
-            loading={isLoading}
-            subtitle={t('DELIVERY_FAILURES')}
-            iconStyle="text-red-600 bg-red-100"
-          />
-        </div>
-
-        <div
-          onClick={() => onSelectStatus?.('IN_PROGRESS')}
+          onClick={() =>
+            onSelectStatus?.(
+              activeStatus === 'IN_PROGRESS' ? undefined : 'IN_PROGRESS',
+            )
+          }
           className={`cursor-pointer transition-all rounded-lg ${
             activeStatus === 'IN_PROGRESS'
-              ? 'ring-2 ring-amber-600'
+              ? 'ring-2 ring-amber-500'
               : 'hover:opacity-90'
           }`}
           title={t('FILTER_PENDING_COMMUNICATIONS')}
         >
           <DataCard
-            title={t('TOTAL_RECIPIENTS')}
+            title={t('TOTAL_RECIPIENTS') || 'Total Recipients'}
             number={formatNum(overall.totalRecipients)}
             Icon={Users}
             loading={isLoading}
-            subtitle={`${formatNum(overall.pending)} ${t('PENDING')}`}
+            subtitle={
+              overall.pending > 0
+                ? `${formatNum(overall.pending)} ${t('PENDING') || 'Pending'}`
+                : `${formatNum(overall.successful)} ${t('DELIVERED') || 'Delivered'}`
+            }
             iconStyle="text-blue-600 bg-blue-100"
           />
         </div>

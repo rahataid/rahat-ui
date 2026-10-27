@@ -13,6 +13,7 @@ import {
   useCommunicationOverviewActivities,
   computeStatsFromActivities,
   filterCommunicationActivities,
+  useProjectList,
 } from '@rahat-ui/query';
 import CommunicationOverviewFilters, {
   CommunicationOverviewFilterState,
@@ -26,6 +27,15 @@ import CommunicationOverviewTable from './communication-overview-table';
 export default function CommunicationOverviewView() {
   const t = useTranslations('USAGE');
   const [filters, setFilters] = useState<CommunicationOverviewFilterState>({});
+  const { data: projectsData } = useProjectList();
+
+  const activeProjectName = useMemo(() => {
+    if (!filters.project || filters.project === 'all') return undefined;
+    const project = projectsData?.data?.find(
+      (p: any) => p.uuid === filters.project,
+    );
+    return project?.name;
+  }, [filters.project, projectsData?.data]);
 
   const fromStr = useMemo(
     () => (filters.fromDate ? format(filters.fromDate, 'yyyy-MM-dd') : undefined),
@@ -96,6 +106,7 @@ export default function CommunicationOverviewView() {
             isLoading={isLoadingActivities}
             activeStatus={filters.status}
             onSelectStatus={handleSelectStatus}
+            projectName={activeProjectName}
           />
 
           <CommunicationBreakdowns

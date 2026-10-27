@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import {
   useProjectList,
   CommunicationActivityItem,
   Project,
-  classifyTransportString,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -48,6 +47,35 @@ const CommunicationOverviewFilters = React.memo(
     const t = useTranslations('USAGE');
     const { data: projects } = useProjectList();
 
+    const [knownPhasesByProject, setKnownPhasesByProject] = useState<
+      Record<string, string[]>
+    >({});
+
+    useEffect(() => {
+      if (!activities || activities.length === 0) return;
+      setKnownPhasesByProject((prev) => {
+        let changed = false;
+        const next = { ...prev };
+
+        for (const act of activities) {
+          if (!act.phase || act.phase.toUpperCase() === 'N/A' || !act.phase.trim()) continue;
+          const projKey = act.projectId || 'all';
+          const currentList = next[projKey] || [];
+          if (!currentList.includes(act.phase)) {
+            next[projKey] = [...currentList, act.phase].sort();
+            changed = true;
+          }
+          const globalList = next['all'] || [];
+          if (!globalList.includes(act.phase)) {
+            next['all'] = [...globalList, act.phase].sort();
+            changed = true;
+          }
+        }
+
+        return changed ? next : prev;
+      });
+    }, [activities]);
+
     const channelOptions = useMemo(
       () => [
         { label: t('ALL_CHANNELS'), value: 'all' },
@@ -74,30 +102,25 @@ const CommunicationOverviewFilters = React.memo(
     );
 
     const availablePhases = useMemo(() => {
-      const list = activities || [];
-      let relevant = list;
-      if (filters.project) {
-        relevant = relevant.filter((a) => a.projectId === filters.project);
-      }
-      if (filters.recipient && filters.recipient !== 'all') {
-        const rc = filters.recipient.toUpperCase();
-        relevant = relevant.filter((a) => (a.recipientType || '').toUpperCase() === rc);
-      }
-      if (filters.channel && filters.channel !== 'all') {
-        relevant = relevant.filter((a) =>
-          classifyTransportString(a.channel) === classifyTransportString(filters.channel!),
+      const activeProjectKey =
+        filters.project && filters.project !== 'all' ? filters.project : 'all';
+      const rememberedPhases = knownPhasesByProject[activeProjectKey] || [];
+
+      const currentPhases = (activities || [])
+        .filter((a) =>
+          activeProjectKey === 'all' ? true : a.projectId === activeProjectKey,
+        )
+        .map((a) => a.phase)
+        .filter(
+          (p): p is string =>
+            typeof p === 'string' &&
+            p.length > 0 &&
+            p.toUpperCase() !== 'N/A' &&
+            p.trim() !== '',
         );
-      }
 
       const unique = Array.from(
-        new Set(
-          relevant
-            .map((a) => a.phase)
-            .filter(
-              (p): p is string =>
-                typeof p === 'string' && p.length > 0 && p !== 'N/A' && p.trim() !== '',
-            ),
-        ),
+        new Set([...rememberedPhases, ...currentPhases]),
       ).sort();
 
       return [
@@ -107,7 +130,7 @@ const CommunicationOverviewFilters = React.memo(
           value: p,
         })),
       ];
-    }, [activities, filters.project, filters.recipient, filters.channel, t]);
+    }, [activities, filters.project, knownPhasesByProject, t]);
 
     const updateFilter = useCallback(
       <K extends keyof CommunicationOverviewFilterState>(
@@ -224,7 +247,7 @@ const CommunicationOverviewFilters = React.memo(
         <div className="w-[130px] sm:w-[140px] shrink-0">
           <Select
             value={filters.recipient ?? 'all'}
-            onValueChange={(val) => updateFilter('recipient', val, { phase: undefined })}
+            onValueChange={(val) => updateFilter('recipient', val)}
           >
             <SelectTrigger className="w-full h-9 text-xs sm:text-sm">
               <SelectValue placeholder={t('ALL_RECIPIENTS')} />

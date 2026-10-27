@@ -62,7 +62,14 @@ export type CommunicationOverviewData = {
   rawGroupStats: Record<string, unknown>;
 };
 
-export type DeliveryStatus = 'COMPLETED' | 'FAILED' | 'IN_PROGRESS';
+export type DeliveryStatus =
+  | 'COMPLETED'
+  | 'IN_PROGRESS'
+  | 'PENDING'
+  | 'NOT_STARTED'
+  | 'FAILED'
+  | 'CANCELLED'
+  | (string & Record<never, never>);
 export type CommunicationChannel = 'SMS' | 'VOICE' | 'EMAIL' | 'WHATSAPP';
 
 export type CommunicationActivityItem = {
@@ -87,6 +94,10 @@ export type CommunicationActivityItem = {
   subject?: string;
   message?: string;
   failReason?: string;
+  targetBreakdown?: {
+    beneficiary?: { delivered: number; failed: number; pending: number; total: number };
+    stakeholder?: { delivered: number; failed: number; pending: number; total: number };
+  };
 };
 
 export type ResolvedTransportInfo = {

@@ -1,6 +1,5 @@
 import { Project } from '@rahataid/sdk/project/project.types';
 import {
-  BroadcastCounts,
   ChannelWiseStats,
   CommunicationActivityItem,
   CommunicationChannel,
@@ -117,52 +116,75 @@ export function applySuccessRate(stats: GroupDeliveryStats) {
     stats.total > 0 ? Math.round((stats.successful / stats.total) * 100) : 0;
 }
 
-const SUCCESS_STATUSES = new Set([
-  'COMPLETED',
-  'DELIVERED',
-  'SUCCESS',
-  'ANSWERED',
-]);
+export function normalizeCommunicationStatus(raw?: string | null): string {
+  if (!raw) return 'NOT_STARTED';
+  const trimmed = String(raw).trim();
+  if (!trimmed) return 'NOT_STARTED';
 
-const FAILED_STATUSES = new Set([
-  'FAILED',
-  'FAIL',
-  'FAILURE',
-  'NO ANSWER',
-  'NO_ANSWER',
-  'BUSY',
-  'REJECTED',
-  'CONGESTION',
-  'CONGESION',
-  'NOT FOUND',
-  'UNDELIVERED',
-  'ERROR',
-  'ERR',
-  'BOUNCE',
-  'BOUNCED',
-  'CANCELLED',
-  'CANCELED',
-  'UNSUCCESSFUL',
-  'TIMEOUT',
-  'TIMEDOUT',
-  'EXPIRED',
-  'UNREACHABLE',
-  'DROPPED',
-  'BLACKLISTED',
-]);
+  const upper = trimmed.toUpperCase().replace(/\s+/g, '_');
 
-const SUCCESS_STATUS_PATTERN = /COMPLET|DELIVER|SUCCESS|ANSWER/i;
-const FAILED_STATUS_PATTERN =
-  /FAIL|ERROR|BOUNCE|UNDELIV|NO[_ ]ANSWER|BUSY|REJECT|CONGES|DROP|CANCEL|BLACKLIST|TIMEOUT/i;
+  if (upper === 'COMPLETED' || upper === 'SUCCESS' || upper === 'DELIVERED') return 'COMPLETED';
+  if (upper === 'SENT') return 'SENT';
+  if (upper === 'PENDING' || upper === 'QUEUED') return 'PENDING';
+  if (upper === 'NOT_STARTED' || upper === 'NOTSTARTED' || upper === 'NULL') return 'NOT_STARTED';
+  if (upper === 'IN_PROGRESS' || upper === 'WORK_IN_PROGRESS' || upper === 'PROCESSING') return 'IN_PROGRESS';
+  if (upper === 'FAILED' || upper === 'FAIL' || upper === 'FAILURE') return 'FAILED';
+  if (upper === 'CANCELLED' || upper === 'CANCELED') return 'CANCELLED';
+  if (upper === 'SCHEDULED') return 'SCHEDULED';
 
-export function normalizeSessionStatus(
-  raw?: string,
-): 'COMPLETED' | 'FAILED' | 'IN_PROGRESS' {
-  const s = (raw || '').trim().toUpperCase();
-  if (!s) return 'IN_PROGRESS';
-  if (SUCCESS_STATUSES.has(s) || SUCCESS_STATUS_PATTERN.test(s)) return 'COMPLETED';
-  if (FAILED_STATUSES.has(s) || FAILED_STATUS_PATTERN.test(s)) return 'FAILED';
-  return 'IN_PROGRESS';
+  return upper;
+}
+
+export const normalizeSessionStatus = normalizeCommunicationStatus;
+
+function toSafeCount(val: unknown): number {
+  const num = Number(val);
+  return Number.isFinite(num) && num >= 0 ? num : 0;
+}
+
+export function parseRowDeliveryMetrics(
+  status: string,
+  counts: Record<string, unknown> | null | undefined,
+  fallbackAudience: number,
+): { delivered: number; failed: number; pending: number; total: number } {
+  const totalExpected = fallbackAudience > 0 ? fallbackAudience : 1;
+  if (counts && typeof counts === 'object') {
+    const delivered = toSafeCount(counts['SUCCESS'] ?? counts['success']);
+    const failed = toSafeCount(counts['FAIL'] ?? counts['fail']);
+    const recordedPending =
+      toSafeCount(counts['PENDING'] ?? counts['pending']) +
+      toSafeCount(counts['SCHEDULED'] ?? counts['scheduled']);
+    const broadcastTotal = toSafeCount(counts['TOTAL'] ?? counts['total']);
+    const total =
+      broadcastTotal > 0
+        ? broadcastTotal
+        : delivered + failed + recordedPending;
+
+    const pending =
+      total > delivered + failed
+        ? Math.max(recordedPending, total - delivered - failed)
+        : recordedPending;
+
+    const finalTotal = Math.max(total, delivered + failed + pending);
+
+    return {
+      delivered,
+      failed,
+      pending,
+      total: finalTotal,
+    };
+  }
+
+  const delivered = status === 'COMPLETED' || status === 'SENT' ? totalExpected : 0;
+  const failed = status === 'FAILED' ? totalExpected : 0;
+  const pending = Math.max(0, totalExpected - delivered - failed);
+
+  return {
+    delivered,
+    failed,
+    pending,
+    total: totalExpected,
+  };
 }
 
 export function computeStatsFromActivities(
@@ -180,32 +202,56 @@ export function computeStatsFromActivities(
   let totalRecipientsCount = 0;
 
   for (const item of activities) {
-    const isBen = (item.recipientType || '').toUpperCase() === 'BENEFICIARY';
-    const groupKey = isBen ? 'beneficiary' : 'stakeholder';
     const ch = classifyTransportString(item.channel || 'SMS');
 
-    const total = Number(item.total) > 0 ? Number(item.total) : 1;
-    const delivered =
-      typeof item.delivered === 'number'
-        ? item.delivered
-        : item.status === 'COMPLETED'
-          ? total
-          : 0;
-    const failed =
-      typeof item.failed === 'number'
-        ? item.failed
-        : item.status === 'FAILED'
-          ? total
-          : 0;
-    const pending =
-      typeof item.pending === 'number'
-        ? item.pending
-        : Math.max(0, total - delivered - failed);
+    const total = Math.max(0, typeof item.total === 'number' ? item.total : 0);
+    const delivered = Math.min(
+      total,
+      Math.max(
+        0,
+        typeof item.delivered === 'number'
+          ? item.delivered
+          : item.status === 'COMPLETED' || item.status === 'SENT'
+            ? total
+            : 0,
+      ),
+    );
+    const failed = Math.min(
+      total - delivered,
+      Math.max(
+        0,
+        typeof item.failed === 'number'
+          ? item.failed
+          : item.status === 'FAILED'
+            ? total - delivered
+            : 0,
+      ),
+    );
+    const pending = Math.max(0, total - delivered - failed);
 
-    recipientWise[groupKey].total += total;
-    recipientWise[groupKey].successful += delivered;
-    recipientWise[groupKey].failed += failed;
-    recipientWise[groupKey].pending += pending;
+    if (item.targetBreakdown) {
+      if (item.targetBreakdown.beneficiary) {
+        const b = item.targetBreakdown.beneficiary;
+        recipientWise.beneficiary.total += b.total;
+        recipientWise.beneficiary.successful += b.delivered;
+        recipientWise.beneficiary.failed += b.failed;
+        recipientWise.beneficiary.pending += b.pending;
+      }
+      if (item.targetBreakdown.stakeholder) {
+        const s = item.targetBreakdown.stakeholder;
+        recipientWise.stakeholder.total += s.total;
+        recipientWise.stakeholder.successful += s.delivered;
+        recipientWise.stakeholder.failed += s.failed;
+        recipientWise.stakeholder.pending += s.pending;
+      }
+    } else {
+      const isBen = (item.recipientType || '').toUpperCase().includes('BENEFICIARY');
+      const groupKey = isBen ? 'beneficiary' : 'stakeholder';
+      recipientWise[groupKey].total += total;
+      recipientWise[groupKey].successful += delivered;
+      recipientWise[groupKey].failed += failed;
+      recipientWise[groupKey].pending += pending;
+    }
 
     const chStats = channelWise[ch] || emptyGroupStats();
     channelWise[ch] = chStats;
@@ -227,9 +273,7 @@ export function computeStatsFromActivities(
   const overallSuccessRate =
     totalRecipientsCount > 0
       ? Math.round((successfulRecipients / totalRecipientsCount) * 100)
-      : totalComms > 0 && successfulRecipients > 0
-        ? Math.round((successfulRecipients / totalComms) * 100)
-        : 0;
+      : 0;
 
   return {
     overall: {
@@ -237,7 +281,7 @@ export function computeStatsFromActivities(
       successful: successfulRecipients,
       failed: failedRecipients,
       pending: pendingRecipients,
-      totalRecipients: totalRecipientsCount || totalComms,
+      totalRecipients: totalRecipientsCount,
       successRate: overallSuccessRate,
     },
     recipientWise,
@@ -264,17 +308,29 @@ function normalizeRecipientType(raw: string): 'BENEFICIARY' | 'STAKEHOLDER' {
   return raw.toUpperCase().startsWith('STAKEHOLDER') ? 'STAKEHOLDER' : 'BENEFICIARY';
 }
 
-function extractPhase(act: Record<string, unknown>): string {
+export function extractPhase(act?: Record<string, unknown>): string | undefined {
+  if (!act) return undefined;
   const phase = act['phase'];
   if (phase && typeof phase === 'object') {
-    return String((phase as Record<string, unknown>)['name'] || 'N/A');
+    const name = (phase as Record<string, unknown>)['name'];
+    if (typeof name === 'string' && name.trim() && name.trim().toUpperCase() !== 'N/A') {
+      return name.trim();
+    }
   }
-  return String(phase || 'N/A');
+  if (typeof phase === 'string' && phase.trim() && phase.trim().toUpperCase() !== 'N/A') {
+    return phase.trim();
+  }
+  if (typeof act['phaseName'] === 'string' && act['phaseName'].trim() && act['phaseName'].trim().toUpperCase() !== 'N/A') {
+    return act['phaseName'].trim();
+  }
+  return undefined;
 }
 
-export function extractSessionId(...sources: Record<string, unknown>[]): string {
+export function extractSessionId(
+  ...sources: (Record<string, unknown> | null | undefined)[]
+): string {
   for (const src of sources) {
-    if (!src) continue;
+    if (!src || typeof src !== 'object') continue;
     for (const key of ['sessionId', 'session_id', 'cuid']) {
       const val = src[key];
       if (typeof val === 'string' && val.trim() && val !== 'undefined' && val !== 'null') {
@@ -340,56 +396,10 @@ export function extractTargetGroupName(
   return recipientType === 'BENEFICIARY' ? 'Beneficiaries' : 'Stakeholders';
 }
 
-export function resolveTargetCountsAndStatus(
-  rawStatus?: string,
-  counts?: BroadcastCounts | null,
-  expectedAudience = 1,
-): {
-  status: DeliveryStatus;
-  delivered: number;
-  failed: number;
-  pending: number;
-  total: number;
-} {
-  const norm = (rawStatus || '').toUpperCase();
-  const isDbFailed = norm === 'FAILED' || norm === 'CANCELLED' || norm === 'FAIL';
-
-  if (counts && counts.TOTAL !== undefined && counts.TOTAL !== null) {
-    const delivered = counts.SUCCESS ?? 0;
-    const failed = counts.FAIL ?? 0;
-    const pending = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
-    const total =
-      counts.TOTAL > 0 ? counts.TOTAL : Math.max(expectedAudience, delivered + failed + pending, 1);
-
-    const status: DeliveryStatus =
-      pending > 0
-        ? 'IN_PROGRESS'
-        : delivered > 0
-          ? 'COMPLETED'
-          : failed > 0 || isDbFailed
-            ? 'FAILED'
-            : SUCCESS_STATUSES.has(norm)
-              ? 'COMPLETED'
-              : 'IN_PROGRESS';
-
-    return { status, delivered, failed, pending, total };
-  }
-
-  const total = expectedAudience > 0 ? expectedAudience : 1;
-  if (isDbFailed) {
-    return { status: 'FAILED', delivered: 0, failed: total, pending: 0, total };
-  }
-  if (SUCCESS_STATUSES.has(norm)) {
-    return { status: 'COMPLETED', delivered: total, failed: 0, pending: 0, total };
-  }
-  return { status: 'IN_PROGRESS', delivered: 0, failed: 0, pending: total, total };
-}
-
 export function transformActivitiesToCommunicationRows(
   activities: Record<string, unknown>[],
   proj: TargetProject,
   transports?: TransportEntry[],
-  sessionCountsMap?: Map<string, BroadcastCounts>,
 ): CommunicationActivityItem[] {
   const rows: CommunicationActivityItem[] = [];
 
@@ -406,12 +416,17 @@ export function transformActivitiesToCommunicationRows(
         : [];
 
     if (comms.length === 0) {
-      const actStatus = normalizeSessionStatus(String(act['status'] || 'PENDING'));
+      const actStatus = normalizeCommunicationStatus(
+        String(act['commStatus'] || act['status'] || 'NOT_STARTED'),
+      );
       const { channel, transportName } = resolveTransportInfo(act, transports);
       const sId = extractSessionId(act);
       const actId = String(act['uuid'] || act['id'] || '').trim();
-      const counts = sId && sessionCountsMap ? sessionCountsMap.get(sId) : null;
-      const resolved = resolveTargetCountsAndStatus(actStatus, counts, 1);
+      const { delivered, failed, pending, total } = parseRowDeliveryMetrics(
+        actStatus,
+        act['counts'] as Record<string, unknown> | undefined,
+        1,
+      );
 
       rows.push({
         id: actId,
@@ -425,12 +440,12 @@ export function transformActivitiesToCommunicationRows(
         recipientType: normalizeRecipientType(
           String(act['groupType'] || act['recipientType'] || 'BENEFICIARY'),
         ),
-        phase: extractPhase(act),
-        status: resolved.status,
-        delivered: resolved.delivered,
-        failed: resolved.failed,
-        pending: resolved.pending,
-        total: resolved.total,
+        phase: extractPhase(act) || 'N/A',
+        status: actStatus,
+        delivered,
+        failed,
+        pending,
+        total,
         sessionId: sId,
         activityId: actId,
         failReason: extractErrorMessage(
@@ -459,31 +474,28 @@ export function transformActivitiesToCommunicationRows(
         Boolean(c['errorMessage']) ||
         act['status'] === 'FAILED';
 
-      const rawStatus =
-        c['sessionStatus'] ??
-        c['status'] ??
-        c['deliveryStatus'] ??
-        (hasExplicitFailure
-          ? 'FAILED'
-          : act['status'] === 'COMPLETED'
-            ? 'COMPLETED'
-            : 'PENDING');
+      const rawStatus = hasExplicitFailure
+        ? 'FAILED'
+        : String(
+            c['sessionStatus'] ??
+            c['status'] ??
+            c['deliveryStatus'] ??
+            act['commStatus'] ??
+            act['status'] ??
+            'NOT_STARTED',
+          );
 
+      const status = normalizeCommunicationStatus(rawStatus);
       const sId = extractSessionId(c, act);
-      const counts = sId && sessionCountsMap ? sessionCountsMap.get(sId) : null;
-
       const expectedAudience =
         extractTargetAudience(c) ||
         Number(c['totalRecipients'] ?? c['total'] ?? c['recipientCount'] ?? 1);
+      const total = expectedAudience > 0 ? expectedAudience : 1;
 
-      const resolved = resolveTargetCountsAndStatus(
-        hasExplicitFailure ? 'FAILED' : String(rawStatus),
-        counts,
-        expectedAudience,
-      );
-
+      const actId = String(act['uuid'] || act['id'] || '').trim();
+      const commId = String(c['communicationId'] || c['id'] || '').trim();
       const msg = c['message'];
-      const phaseName = extractPhase(act);
+      const phaseName = extractPhase(c) || extractPhase(act) || 'N/A';
 
       const failReason = extractErrorMessage(
         c['failReason'],
@@ -493,19 +505,23 @@ export function transformActivitiesToCommunicationRows(
         act['failReason'],
       );
 
-      const commId = String(c['communicationId'] || c['id'] || '').trim();
-      const actId = String(act['uuid'] || act['id'] || '').trim();
       const subject =
         typeof c['subject'] === 'string' && c['subject'].trim()
           ? c['subject'].trim()
           : undefined;
+
+      const { delivered, failed, pending, total: rowTotal } = parseRowDeliveryMetrics(
+        status,
+        c['counts'] as Record<string, unknown> | undefined,
+        total,
+      );
 
       rows.push({
         id: `${actId}-${sId || commId || idx}`,
         date: String(act['createdAt'] || new Date().toISOString()),
         projectId: proj.uuid,
         projectName: proj.name,
-        title: String(act['title'] || c['groupName'] || 'Communication'),
+        title: String(c['communicationTitle'] || act['title'] || c['groupName'] || 'Communication'),
         channel,
         transportName,
         groupName: String(
@@ -514,11 +530,11 @@ export function transformActivitiesToCommunicationRows(
         ),
         recipientType: groupType,
         phase: phaseName,
-        status: resolved.status,
-        delivered: resolved.delivered,
-        failed: resolved.failed,
-        pending: resolved.pending,
-        total: resolved.total,
+        status,
+        delivered,
+        failed,
+        pending,
+        total: rowTotal,
         sessionId: sId,
         communicationId: commId || undefined,
         activityId: actId,
@@ -539,7 +555,6 @@ export function transformCommunicationsToCommunicationRows(
   communications: Record<string, unknown>[],
   proj: TargetProject,
   transports?: TransportEntry[],
-  sessionCountsMap?: Map<string, BroadcastCounts>,
 ): CommunicationActivityItem[] {
   const rows: CommunicationActivityItem[] = [];
 
@@ -554,10 +569,26 @@ export function transformCommunicationsToCommunicationRows(
 
     if (!targets.length) {
       const sessionId = extractSessionId(comm);
-      const counts = sessionId && sessionCountsMap ? sessionCountsMap.get(sessionId) : null;
-      const { status, delivered, failed, pending, total } = resolveTargetCountsAndStatus(
-        String(comm['status'] || 'IN_PROGRESS'),
-        counts,
+      const hasExplicitFailure =
+        Boolean(comm['isFailed']) ||
+        Boolean(comm['hasFailed']) ||
+        Boolean(comm['error']) ||
+        comm['status'] === 'FAILED';
+
+      const rawStatus = hasExplicitFailure
+        ? 'FAILED'
+        : !sessionId && comm['status'] === 'PENDING'
+          ? 'NOT_STARTED'
+          : String(
+              comm['sessionStatus'] ??
+              comm['status'] ??
+              comm['deliveryStatus'] ??
+              'NOT_STARTED',
+            );
+      const status = normalizeCommunicationStatus(rawStatus);
+      const { delivered, failed, pending, total } = parseRowDeliveryMetrics(
+        status,
+        comm['counts'] as Record<string, unknown> | undefined,
         1,
       );
 
@@ -571,6 +602,7 @@ export function transformCommunicationsToCommunicationRows(
         transportName,
         groupName: 'General',
         recipientType: 'BENEFICIARY',
+        phase: extractPhase(comm as Record<string, unknown>) || 'N/A',
         status,
         delivered,
         failed,
@@ -580,108 +612,143 @@ export function transformCommunicationsToCommunicationRows(
         communicationId: commUuid,
         subject: subject?.trim() || undefined,
         message,
+        failReason: comm['error'] as string | undefined,
       });
       continue;
     }
 
+    // Aggregate multi-group campaign targets into exactly 1 row per communication campaign
+    const groupTypes = new Set<string>();
+    const groupNamesSet = new Set<string>();
+    let totalDelivered = 0;
+    let totalFailed = 0;
+    let totalPending = 0;
+    let totalAudience = 0;
+    let firstSessionId: string | undefined = undefined;
+    let firstError: string | undefined = undefined;
+
+    const targetBreakdown: {
+      beneficiary?: { delivered: number; failed: number; pending: number; total: number };
+      stakeholder?: { delivered: number; failed: number; pending: number; total: number };
+    } = {};
+
     for (const target of targets) {
-      const targetUuid = String(target['uuid'] || '');
       const groupType = String(target['groupType'] || 'BENEFICIARY').toUpperCase();
-      const recipientType = groupType.startsWith('STAKEHOLDER') ? 'STAKEHOLDER' : 'BENEFICIARY';
-      const sessionId = (target['sessionId'] as string) || undefined;
-      const error = (target['error'] as string) || undefined;
+      const isStk = groupType.startsWith('STAKEHOLDER');
+      const normalizedGroup = isStk ? 'STAKEHOLDER' : 'BENEFICIARY';
+      groupTypes.add(normalizedGroup);
 
-      const groupName = extractTargetGroupName(target, recipientType);
+      const targetGroupName = extractTargetGroupName(target, normalizedGroup);
+      if (targetGroupName) groupNamesSet.add(targetGroupName);
+
+      const sId = (target['sessionId'] as string) || undefined;
+      if (sId && !firstSessionId) firstSessionId = sId;
+
+      const err = (target['error'] as string) || undefined;
+      if (err && !firstError) firstError = err;
+
       const expectedAudience = extractTargetAudience(target);
-      const counts = sessionId && sessionCountsMap ? sessionCountsMap.get(sessionId) : null;
+      const targetAudienceCount = expectedAudience > 0 ? expectedAudience : 1;
 
-      const { status, delivered, failed, pending, total } = resolveTargetCountsAndStatus(
-        String(target['status'] || 'IN_PROGRESS'),
-        counts,
-        expectedAudience,
+      const targetHasFailure =
+        Boolean(target['isFailed']) ||
+        Boolean(target['hasFailed']) ||
+        Boolean(err) ||
+        target['status'] === 'FAILED' ||
+        comm['status'] === 'FAILED';
+
+      const rawStatus = targetHasFailure
+        ? 'FAILED'
+        : !sId && (target['status'] === 'PENDING' || comm['status'] === 'PENDING')
+          ? 'NOT_STARTED'
+          : String(
+              target['sessionStatus'] ??
+              target['status'] ??
+              target['deliveryStatus'] ??
+              comm['sessionStatus'] ??
+              comm['status'] ??
+              'NOT_STARTED',
+            );
+
+      const status = normalizeCommunicationStatus(rawStatus);
+      const m = parseRowDeliveryMetrics(
+        status,
+        target['counts'] as Record<string, unknown> | undefined,
+        targetAudienceCount,
       );
 
-      rows.push({
-        id: `comm-${commUuid}-${targetUuid}`,
-        date,
-        projectId: proj.uuid,
-        projectName: proj.name,
-        title,
-        channel,
-        transportName,
-        groupName,
-        recipientType,
-        status,
-        delivered,
-        failed,
-        pending,
-        total,
-        sessionId,
-        communicationId: commUuid,
-        subject: subject?.trim() || undefined,
-        message,
-        failReason: error,
-      });
+      totalDelivered += m.delivered;
+      totalFailed += m.failed;
+      totalPending += m.pending;
+      totalAudience += m.total;
+
+      const breakdownKey = isStk ? 'stakeholder' : 'beneficiary';
+      if (!targetBreakdown[breakdownKey]) {
+        targetBreakdown[breakdownKey] = { delivered: 0, failed: 0, pending: 0, total: 0 };
+      }
+      targetBreakdown[breakdownKey]!.delivered += m.delivered;
+      targetBreakdown[breakdownKey]!.failed += m.failed;
+      targetBreakdown[breakdownKey]!.pending += m.pending;
+      targetBreakdown[breakdownKey]!.total += m.total;
     }
+
+    let aggregatedStatus: DeliveryStatus;
+    if (totalAudience === 0) {
+      aggregatedStatus = normalizeCommunicationStatus(
+        (comm['sessionStatus'] ?? comm['status'] ?? 'NOT_STARTED') as string,
+      );
+    } else if (totalPending > 0) {
+      aggregatedStatus = firstSessionId ? 'IN_PROGRESS' : 'PENDING';
+    } else if (totalDelivered > 0) {
+      aggregatedStatus = 'COMPLETED';
+    } else if (totalFailed > 0) {
+      aggregatedStatus = 'FAILED';
+    } else {
+      aggregatedStatus = normalizeCommunicationStatus(
+        (comm['status'] ?? 'NOT_STARTED') as string,
+      );
+    }
+
+    const recipientType =
+      groupTypes.has('BENEFICIARY') && groupTypes.has('STAKEHOLDER')
+        ? 'BENEFICIARY, STAKEHOLDER'
+        : groupTypes.has('STAKEHOLDER')
+          ? 'STAKEHOLDER'
+          : 'BENEFICIARY';
+
+    const groupName = Array.from(groupNamesSet).join(', ') || 'General';
+
+    const phase =
+      extractPhase(comm as Record<string, unknown>) ||
+      targets.map((t) => extractPhase(t)).find(Boolean) ||
+      'N/A';
+
+    rows.push({
+      id: `comm-${commUuid}`,
+      date,
+      projectId: proj.uuid,
+      projectName: proj.name,
+      title,
+      channel,
+      transportName,
+      groupName,
+      recipientType,
+      phase,
+      status: aggregatedStatus,
+      delivered: totalDelivered,
+      failed: totalFailed,
+      pending: totalPending,
+      total: totalAudience,
+      sessionId: firstSessionId || extractSessionId(comm) || undefined,
+      communicationId: commUuid,
+      subject: subject?.trim() || undefined,
+      message,
+      failReason: firstError || (comm['error'] as string | undefined),
+      targetBreakdown,
+    });
   }
 
   return rows;
-}
-
-
-
-export async function resolveCommRowsWithBroadcastCounts(
-  rows: CommunicationActivityItem[],
-  newCommunicationService?: {
-    session?: {
-      broadcastCount: (args: { sessions: string[] }) => Promise<any>;
-    };
-  },
-): Promise<void> {
-  if (!newCommunicationService?.session || !rows.length) return;
-
-  const sessionIds = Array.from(
-    new Set(rows.map((r) => r.sessionId).filter(Boolean) as string[]),
-  );
-  if (!sessionIds.length) return;
-
-  const sessionCountsMap = new Map<string, BroadcastCounts>();
-  const CHUNK_SIZE = 15;
-
-  for (let i = 0; i < sessionIds.length; i += CHUNK_SIZE) {
-    const chunk = sessionIds.slice(i, i + CHUNK_SIZE);
-    await Promise.allSettled(
-      chunk.map(async (sessionId) => {
-        try {
-          const res = await newCommunicationService.session!.broadcastCount({
-            sessions: [sessionId],
-          });
-          const counts = res?.data as BroadcastCounts | undefined;
-          if (counts) sessionCountsMap.set(sessionId, counts);
-        } catch {
-          // Graceful fallback to existing status
-        }
-      }),
-    );
-  }
-
-  for (const row of rows) {
-    if (!row.sessionId) continue;
-    const counts = sessionCountsMap.get(row.sessionId);
-    if (!counts || counts.TOTAL === undefined) continue;
-
-    const { status, delivered, failed, pending, total } = resolveTargetCountsAndStatus(
-      row.status,
-      counts,
-      row.total || 1,
-    );
-
-    row.status = status;
-    row.delivered = delivered;
-    row.failed = failed;
-    row.pending = pending;
-    row.total = total;
-  }
 }
 
 export function filterCommunicationActivities(
@@ -691,7 +758,6 @@ export function filterCommunicationActivities(
   if (!activities.length || !params) return activities.length ? activities : EMPTY_ACTIVITIES;
 
   const statusFilter = params.status && params.status !== 'all' ? params.status.toUpperCase() : '';
-  const isPendingFilter = statusFilter === 'IN_PROGRESS' || statusFilter === 'PENDING';
   const channelFilter = params.channel && params.channel !== 'all' ? classifyTransportString(params.channel) : '';
   const recipientFilter = params.recipient && params.recipient !== 'all' ? params.recipient.toUpperCase() : '';
   const phaseFilter = params.phase && params.phase !== 'all' ? params.phase.toUpperCase() : '';
@@ -712,16 +778,41 @@ export function filterCommunicationActivities(
 
   return activities.filter((r) => {
     if (statusFilter) {
-      if (isPendingFilter) {
-        if (r.status !== 'IN_PROGRESS') return false;
-      } else if (r.status !== statusFilter) return false;
+      const rowNorm = (r.status || '').toUpperCase();
+      if (statusFilter === 'COMPLETED') {
+        if (
+          rowNorm !== 'COMPLETED' &&
+          rowNorm !== 'SUCCESS' &&
+          rowNorm !== 'DELIVERED' &&
+          rowNorm !== 'SENT'
+        ) {
+          return false;
+        }
+      } else if (statusFilter === 'FAILED') {
+        if (rowNorm !== 'FAILED' && rowNorm !== 'FAIL' && rowNorm !== 'FAILURE') return false;
+      } else if (statusFilter === 'IN_PROGRESS') {
+        if (rowNorm === 'COMPLETED' || rowNorm === 'FAILED' || rowNorm === 'CANCELLED') {
+          return false;
+        }
+      } else if (rowNorm !== statusFilter) {
+        return false;
+      }
     }
 
-    if (channelFilter && classifyTransportString(r.channel) !== channelFilter) return false;
+    if (
+      channelFilter &&
+      r.channel !== channelFilter &&
+      classifyTransportString(r.channel) !== channelFilter
+    ) {
+      return false;
+    }
 
-    if (recipientFilter && (r.recipientType || '').toUpperCase() !== recipientFilter) return false;
+    if (recipientFilter) {
+      const rType = (r.recipientType || '').toUpperCase();
+      if (!rType.includes(recipientFilter)) return false;
+    }
 
-    if (phaseFilter && r.phase?.toUpperCase() !== phaseFilter) return false;
+    if (phaseFilter && (r.phase || '').toUpperCase() !== phaseFilter) return false;
 
     if (!isNaN(fromTime) || !isNaN(toTime)) {
       const t = Date.parse(r.date);

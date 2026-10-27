@@ -4,6 +4,18 @@ The frontend. Next.js (App Router) + Turborepo/Nx-style Nx monorepo (uses Nx, li
 
 **New to this repo?** This file → [coding-patterns.md](./docs/agent/coding-patterns.md) → `rahat-platform`'s `action-dispatch.md` (to understand what a mutation here actually triggers) → whichever other doc matches your area.
 
+## UI / UX tasks
+
+For **any UI task** (new page, section, component, layout change, restyle, dashboard or admin screen, "make it look better"), use the `design-taste-frontend` skill ([Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)) before writing markup or styles. It supplies the art direction and a no-slop house style, and it covers app screens such as dashboards, settings and lists.
+
+Fit it to this repo: build with the existing shadcn/ui components in `libs/shadcn` and the Tailwind setup already in use, and follow the patterns in [coding-patterns.md](./docs/agent/coding-patterns.md). Do not add a new UI library or a one-off visual language to satisfy the skill. Pure logic, data-fetching and type changes with no visual effect don't need it.
+
+If the skill isn't installed in this environment, install it first:
+
+```bash
+npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"
+```
+
 ## How a UI action reaches a backend project
 
 ```

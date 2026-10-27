@@ -39,6 +39,7 @@ import {
   ACTIONS,
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
+import { getManualSources } from './utils';
 
 export default function TriggerStatementDetail() {
   const formatDate = useDateFormat();
@@ -76,6 +77,7 @@ export default function TriggerStatementDetail() {
 
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
+  const manualSources = getManualSources(trigger);
   const txnUrl = getExplorerUrl({
     chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
     target: 'tx',
@@ -204,6 +206,23 @@ export default function TriggerStatementDetail() {
             titleStyle="text-lg/7"
             description={trigger?.description}
           />
+          {source === 'MANUAL' && manualSources.length > 0 && (
+            <div className="flex items-start gap-2 mt-2 text-sm text-gray-500">
+              <span className="flex-shrink-0 mt-0.5">
+                {t('MANUAL_SOURCES_LABEL')}:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {manualSources.map((item, index) => (
+                  <span
+                    key={`${item}-${index}`}
+                    className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-1 rounded-sm"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           <div
             className={`grid ${
               trigger?.isTriggered ? 'grid-cols-8' : 'grid-cols-6'

@@ -21,6 +21,7 @@ import {
   SourceConfig,
   REVERSE_SOURCE_MAPPING,
   GLOFAS_LEGACY_MAPPING,
+  getManualSources,
 } from './utils';
 import {
   buildEditAutomatedFormSchema,
@@ -70,6 +71,7 @@ export default function EditTrigger() {
       isMandatory: false,
       description: '',
       leadTime: '',
+      manualSources: [],
     },
   });
 
@@ -126,7 +128,8 @@ export default function EditTrigger() {
     };
 
     if (!isAutomatedFormData(data)) {
-      return basePayload;
+      // Always send the array so removing every source clears it.
+      return { ...basePayload, manualSources: data.manualSources ?? [] };
     }
 
     return {
@@ -163,6 +166,7 @@ export default function EditTrigger() {
         description: trigger?.description,
         isMandatory: !trigger?.isMandatory,
         leadTime: trigger?.leadTime,
+        manualSources: getManualSources(trigger),
       };
     } else {
       const triggerSource = trigger?.triggerStatement?.source;

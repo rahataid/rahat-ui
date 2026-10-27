@@ -1,5 +1,9 @@
 {
   "AA_PROJECT": {
+    "MANUAL_SOURCES": "स्रोतहरू (वैकल्पिक)",
+    "MANUAL_SOURCES_PLACEHOLDER": "स्रोत टाइप गरी Enter थिच्नुहोस्",
+    "MANUAL_SOURCES_HINT": "थप्न Enter थिच्नुहोस्",
+    "MANUAL_SOURCES_LABEL": "स्रोतहरू",
     "ACCESS_INCLUSION": "पहुँच र समावेशीकरण",
     "ACCESS_TO_EARLY_WARNING_INFORMATION": "पुर्व सूचना सम्बन्धि जानकारीमा पहुँच",
     "ACCESS_TO_INTERNET": "इन्टरनेटमा पहुँच",

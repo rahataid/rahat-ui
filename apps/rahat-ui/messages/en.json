@@ -1579,6 +1579,10 @@
     "STEP_INDEX": "Step {index}"
   },
   "AA_PROJECT": {
+    "MANUAL_SOURCES": "Sources (optional)",
+    "MANUAL_SOURCES_PLACEHOLDER": "Type a source and press Enter",
+    "MANUAL_SOURCES_HINT": "Press Enter to add",
+    "MANUAL_SOURCES_LABEL": "Sources",
     "ACCESS_INCLUSION": "Access & Inclusion",
     "ACCESS_TO_EARLY_WARNING_INFORMATION": "Access To Early Warning Information",
     "ACCESS_TO_INTERNET": "Access to Internet",

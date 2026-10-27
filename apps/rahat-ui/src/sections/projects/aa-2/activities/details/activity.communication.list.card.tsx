@@ -35,13 +35,19 @@ type CommunicationData = {
 
 type CommunicationList = {
   activityCommunication: any[];
+  triggersCallback?: any[];
   loading?: boolean;
 };
 
 export default function CommunicationList({
   activityCommunication,
+  triggersCallback,
   loading,
 }: CommunicationList) {
+  const getLinkedTriggers = (communicationId: string) =>
+    (triggersCallback || []).filter((cb: any) =>
+      (cb?.config?.communicationIds || []).includes(communicationId),
+    );
   // Router goes here
   const router = useRouter();
   const pathname = usePathname();
@@ -132,7 +138,11 @@ export default function CommunicationList({
               <NoResult message={t('NO_COMMUNICATION')} />
             ) : (
               pendingCommunications?.map((comm, index) => (
-                <CommunicationCard key={index} activityCommunication={comm} />
+                <CommunicationCard
+                  key={index}
+                  activityCommunication={comm}
+                  linkedTriggers={getLinkedTriggers(comm.communicationId)}
+                />
               ))
             )}
           </div>
@@ -145,7 +155,11 @@ export default function CommunicationList({
               <NoResult message={t('NO_HISTORY_AVAILABLE')} />
             ) : (
               completedCommunications?.map((comm, index) => (
-                <CommunicationCard key={index} activityCommunication={comm} />
+                <CommunicationCard
+                  key={index}
+                  activityCommunication={comm}
+                  linkedTriggers={getLinkedTriggers(comm.communicationId)}
+                />
               ))
             )}
           </div>

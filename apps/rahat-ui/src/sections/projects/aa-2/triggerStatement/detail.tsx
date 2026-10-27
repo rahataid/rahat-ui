@@ -1,5 +1,10 @@
 import Link from 'next/link';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
 import { UUID } from 'crypto';
 
 import {
@@ -12,6 +17,7 @@ import {
 } from '@rahat-ui/query';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
   Back,
@@ -29,7 +35,7 @@ import {
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { AlertCircleIcon } from 'lucide-react';
+import { AlertCircleIcon, Link as LinkIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
@@ -50,6 +56,7 @@ export default function TriggerStatementDetail() {
   const id = params?.id as UUID;
   const triggerID = Number(params?.triggerID);
   const searchparams = useSearchParams();
+  const pathname = usePathname();
   const type = searchparams?.get('type');
   const version = searchparams.get('version') === 'true' ? true : false;
   const triggerIdKey = version
@@ -191,6 +198,36 @@ export default function TriggerStatementDetail() {
                 />
               )}
           </Can>
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.TRIGGER}>
+            {!version &&
+              (trigger?.callbacks?.length > 0 ? (
+                <Button
+                  variant="outline"
+                  className="rounded flex gap-1 items-center text-sm font-medium"
+                  onClick={() =>
+                    router.push(
+                      `/projects/aa/${id}/trigger-callbacks/manage-activities?triggerId=${trigger?.uuid}`,
+                    )
+                  }
+                >
+                  <LinkIcon className="w-4 h-4" />
+                  {t('MANAGE_LINKED_ACTIVITIES')}
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="rounded flex gap-1 items-center text-sm font-medium"
+                  onClick={() =>
+                    router.push(
+                      `/projects/aa/${id}/trigger-callbacks/add?triggerId=${trigger?.uuid}`,
+                    )
+                  }
+                >
+                  <LinkIcon className="w-4 h-4" />
+                  {t('LINK_ACTIVITY')}
+                </Button>
+              ))}
+          </Can>
         </div>
       </div>
       <div
@@ -204,6 +241,36 @@ export default function TriggerStatementDetail() {
             titleStyle="text-lg/7"
             description={trigger?.description}
           />
+          {trigger?.activities?.length > 0 && (
+            <div className="flex items-start text-gray-500 text-sm mt-2 gap-2">
+              <LinkIcon className="w-4 h-4 mr-1 ml-1 flex-shrink-0 mt-0.5" />
+              <div className="flex flex-wrap gap-2">
+                {trigger.activities.map((activity: any) => (
+                  <TooltipWrapper
+                    key={activity.uuid}
+                    tip={`${t('ACTIVITY')}: ${activity.title}`}
+                  >
+                    <Link
+                      href={`/projects/aa/${id}/activities/${
+                        activity.uuid
+                      }?returnTo=${encodeURIComponent(
+                        `${pathname}${
+                          searchparams?.toString()
+                            ? `?${searchparams.toString()}`
+                            : ''
+                        }`,
+                      )}`}
+                      className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-1 rounded-sm hover:bg-blue-200"
+                    >
+                      {activity.title?.length > 30
+                        ? `${activity.title.substring(0, 30)}...`
+                        : activity.title}
+                    </Link>
+                  </TooltipWrapper>
+                ))}
+              </div>
+            </div>
+          )}
           <div
             className={`grid ${
               trigger?.isTriggered ? 'grid-cols-8' : 'grid-cols-6'

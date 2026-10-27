@@ -4,9 +4,11 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { useRouter } from 'next/navigation';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { Link } from 'lucide-react';
 import { SEP, toLabel, TriggerStatement } from '../utils';
 import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type IProps = {
   projectId: string;
   triggerId: string;
@@ -23,6 +25,7 @@ type IProps = {
   id?: number;
   leadTime?: string;
   triggerStatement: TriggerStatement;
+  hasTriggerCallback?: boolean;
 };
 
 const renderPhaseBadgeColor = (phase: string) => {
@@ -52,6 +55,7 @@ export default function TriggerCard({
   id,
   triggerStatement: tgSt,
   leadTime,
+  hasTriggerCallback,
 }: IProps) {
   const formatDate = useDateFormat();
   const formatNum = useNumberFormat();
@@ -89,6 +93,11 @@ export default function TriggerCard({
           </Badge>
           <Badge className="font-medium">{capitalizeFirstLetter(type)}</Badge>
           {!!version && <Badge className="font-medium">V{version}</Badge>}
+          {hasTriggerCallback && (
+            <TooltipWrapper tip={t('TRIGGER_LINKED')}>
+              <Link className="w-4 h-4 text-blue-500" />
+            </TooltipWrapper>
+          )}
         </div>
         <Badge
           className={`font-medium ${

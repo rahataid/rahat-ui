@@ -25,6 +25,13 @@ const CHANNEL_DISPLAY_NAMES: Record<CommunicationChannel, string> = {
   SMS: 'SMS',
 };
 
+export function capitalizeFirstLetter(str?: string | null): string {
+  if (!str) return '';
+  const trimmed = String(str).trim();
+  if (!trimmed) return '';
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
 export function classifyTransportString(raw?: string | null): CommunicationChannel {
   if (!raw) return 'SMS';
   const val = String(raw).trim().toUpperCase();
@@ -521,7 +528,9 @@ export function transformActivitiesToCommunicationRows(
         date: String(act['createdAt'] || new Date().toISOString()),
         projectId: proj.uuid,
         projectName: proj.name,
-        title: String(c['communicationTitle'] || act['title'] || c['groupName'] || 'Communication'),
+        title: capitalizeFirstLetter(
+          String(c['communicationTitle'] || act['title'] || c['groupName'] || 'Communication'),
+        ),
         channel,
         transportName,
         groupName: String(
@@ -560,7 +569,7 @@ export function transformCommunicationsToCommunicationRows(
 
   for (const comm of communications) {
     const commUuid = String(comm['uuid'] || '');
-    const title = String(comm['title'] || 'Communication');
+    const title = capitalizeFirstLetter(String(comm['title'] || 'Communication'));
     const date = String(comm['createdAt'] || new Date().toISOString());
     const message = comm['message'] as string | undefined;
     const subject = comm['subject'] as string | undefined;
@@ -821,16 +830,23 @@ export function filterCommunicationActivities(
     }
 
     if (searchQuery) {
-      const match = [
-        r.title,
-        r.projectName,
-        r.groupName,
-        r.channel,
-        r.transportName,
-        r.phase,
-        r.recipientType,
-      ].some((field) => field && field.toLowerCase().includes(searchQuery));
-      if (!match) return false;
+      const tokens = searchQuery.split(/\s+/).filter(Boolean);
+      if (tokens.length > 0) {
+        const match = tokens.every((token) =>
+          [
+            r.title,
+            r.projectName,
+            r.groupName,
+            r.channel,
+            r.transportName,
+            r.phase,
+            r.recipientType,
+            r.status,
+            r.failReason,
+          ].some((field) => field && field.toLowerCase().includes(token)),
+        );
+        if (!match) return false;
+      }
     }
 
     return true;

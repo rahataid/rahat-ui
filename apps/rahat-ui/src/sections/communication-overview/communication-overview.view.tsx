@@ -14,6 +14,7 @@ import {
   computeStatsFromActivities,
   filterCommunicationActivities,
   useProjectList,
+  useDebounce,
 } from '@rahat-ui/query';
 import CommunicationOverviewFilters, {
   CommunicationOverviewFilterState,
@@ -27,6 +28,8 @@ import CommunicationOverviewTable from './communication-overview-table';
 export default function CommunicationOverviewView() {
   const t = useTranslations('USAGE');
   const [filters, setFilters] = useState<CommunicationOverviewFilterState>({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 400);
   const { data: projectsData } = useProjectList();
 
   const activeProjectName = useMemo(() => {
@@ -56,8 +59,18 @@ export default function CommunicationOverviewView() {
       recipient: filters.recipient,
       phase: filters.phase,
       status: filters.status,
+      search: debouncedSearchTerm.trim() || undefined,
     }),
-    [filters.project, fromStr, toStr, filters.channel, filters.recipient, filters.phase, filters.status],
+    [
+      filters.project,
+      fromStr,
+      toStr,
+      filters.channel,
+      filters.recipient,
+      filters.phase,
+      filters.status,
+      debouncedSearchTerm,
+    ],
   );
 
   const {
@@ -67,8 +80,8 @@ export default function CommunicationOverviewView() {
   } = useCommunicationOverviewActivities(queryParams);
 
   const overviewStats = useMemo(() => {
-    const { status: _status, ...filtersWithoutStatus } = queryParams;
-    const base = filterCommunicationActivities(allActivities, filtersWithoutStatus);
+    const { status: _status, search: _search, ...filtersWithoutStatusOrSearch } = queryParams;
+    const base = filterCommunicationActivities(allActivities, filtersWithoutStatusOrSearch);
     return computeStatsFromActivities(base);
   }, [allActivities, queryParams]);
 
@@ -77,7 +90,10 @@ export default function CommunicationOverviewView() {
     [],
   );
 
-  const handleResetFilters = useCallback(() => setFilters({}), []);
+  const handleResetFilters = useCallback(() => {
+    setFilters({});
+    setSearchTerm('');
+  }, []);
 
   const handleSelectStatus = useCallback((status?: string) => {
     setFilters((prev) => ({
@@ -121,6 +137,8 @@ export default function CommunicationOverviewView() {
       <CommunicationOverviewTable
         activities={activities}
         isLoading={isLoadingActivities}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
       />
     </div>
   );

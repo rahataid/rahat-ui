@@ -106,6 +106,7 @@ export const useCommunicationOverviewActivities = (
       params?.from || 'all',
       params?.to || 'all',
       backendPhase || 'all',
+      params?.search?.trim() || 'all',
     ],
     [
       params?.project,
@@ -114,6 +115,7 @@ export const useCommunicationOverviewActivities = (
       params?.from,
       params?.to,
       backendPhase,
+      params?.search,
     ],
   );
 
@@ -145,6 +147,10 @@ export const useCommunicationOverviewActivities = (
                       phase: backendPhase,
                     },
                   }),
+                  ...(params?.search?.trim() && {
+                    title: params.search.trim(),
+                    search: params.search.trim(),
+                  }),
                 },
               );
               if (activities.length > 0) {
@@ -170,6 +176,10 @@ export const useCommunicationOverviewActivities = (
                   ...(params?.to && { endDate: params.to }),
                   ...(backendRecipient && { groupType: backendRecipient }),
                   ...(backendTransportId && { transportId: backendTransportId }),
+                  ...(params?.search?.trim() && {
+                    title: params.search.trim(),
+                    search: params.search.trim(),
+                  }),
                 },
               );
               if (communications.length > 0) {

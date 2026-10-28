@@ -7,6 +7,7 @@ import {
   useProjectList,
   CommunicationActivityItem,
   Project,
+  capitalizeFirstLetter,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -126,7 +127,7 @@ const CommunicationOverviewFilters = React.memo(
       return [
         { label: t('ALL_PHASES'), value: 'all' },
         ...unique.map((p) => ({
-          label: p,
+          label: capitalizeFirstLetter(p),
           value: p,
         })),
       ];

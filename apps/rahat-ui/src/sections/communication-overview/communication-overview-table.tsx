@@ -12,7 +12,11 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { DemoTable, SearchInput, CustomPagination } from 'apps/rahat-ui/src/common';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import { CommunicationActivityItem, classifyTransportString } from '@rahat-ui/query';
+import {
+  CommunicationActivityItem,
+  classifyTransportString,
+  capitalizeFirstLetter,
+} from '@rahat-ui/query';
 import { CommunicationStatusBadge } from '../projects/aa-2/communications/components/communication-status-badge';
 import { CommunicationChannelIcon } from '../projects/aa-2/communications/components/communication-channel-icon';
 import { CommunicationTooltip } from '../projects/aa-2/communications/components/communication-tooltip';
@@ -29,36 +33,47 @@ const CHANNEL_T_KEYS: Record<string, string> = {
 type CommunicationOverviewTableProps = {
   activities?: CommunicationActivityItem[];
   isLoading?: boolean;
+  searchTerm?: string;
+  onSearchChange?: (val: string) => void;
 };
 
 export const CommunicationOverviewTable = React.memo(
   function CommunicationOverviewTable({
     activities = [],
     isLoading = false,
+    searchTerm: externalSearchTerm,
+    onSearchChange,
   }: CommunicationOverviewTableProps) {
     const t = useTranslations('USAGE');
     const formatDate = useDateFormat();
     const formatNum = useNumberFormat();
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const [internalSearchTerm, setInternalSearchTerm] = useState('');
+    const searchTerm =
+      externalSearchTerm !== undefined
+        ? externalSearchTerm
+        : internalSearchTerm;
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
 
     const filteredData = useMemo(() => {
-      if (!searchTerm.trim()) return activities;
-      const q = searchTerm.toLowerCase();
+      const q = searchTerm.trim().toLowerCase();
+      if (!q) return activities;
+      const tokens = q.split(/\s+/).filter(Boolean);
       return activities.filter((item) =>
-        [
-          item.title,
-          item.projectName,
-          item.channel,
-          item.transportName,
-          item.recipientType,
-          item.groupName,
-          item.phase,
-          item.status,
-          item.failReason,
-        ].some((field) => field && field.toLowerCase().includes(q)),
+        tokens.every((token) =>
+          [
+            item.title,
+            item.projectName,
+            item.channel,
+            item.transportName,
+            item.recipientType,
+            item.groupName,
+            item.phase,
+            item.status,
+            item.failReason,
+          ].some((field) => field && field.toLowerCase().includes(token)),
+        ),
       );
     }, [activities, searchTerm]);
 
@@ -77,10 +92,15 @@ export const CommunicationOverviewTable = React.memo(
 
     const handleSearchChange = React.useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
+        const val = e.target.value;
+        if (onSearchChange) {
+          onSearchChange(val);
+        } else {
+          setInternalSearchTerm(val);
+        }
         setCurrentPage(1);
       },
-      [],
+      [onSearchChange],
     );
 
     const handleNextPage = React.useCallback(() => {
@@ -108,17 +128,22 @@ export const CommunicationOverviewTable = React.memo(
         {
           accessorKey: 'title',
           header: t('COMMUNICATION'),
-          meta: { className: 'w-[260px]' },
-          cell: ({ row }) => (
-            <div className="py-1 min-w-0 pr-2">
-              <span
-                className="block font-semibold text-xs text-foreground truncate cursor-default"
-                title={row.original.title}
-              >
-                {row.original.title}
-              </span>
-            </div>
-          ),
+          meta: { className: 'w-[240px]' },
+          cell: ({ row }) => {
+            const displayTitle = capitalizeFirstLetter(row.original.title) || '-';
+            return (
+              <div className="py-1 min-w-0 pr-2 max-w-[220px] 2xl:max-w-[260px]">
+                <CommunicationTooltip content={displayTitle}>
+                  <span
+                    className="block font-semibold text-xs text-foreground truncate cursor-default max-w-full"
+                    title={displayTitle}
+                  >
+                    {displayTitle}
+                  </span>
+                </CommunicationTooltip>
+              </div>
+            );
+          },
         },
         {
           accessorKey: 'projectName',
@@ -162,7 +187,7 @@ export const CommunicationOverviewTable = React.memo(
                         className="text-[10px] text-muted-foreground font-medium truncate max-w-[110px]"
                         title={transport}
                       >
-                        {transport}
+                        {capitalizeFirstLetter(transport)}
                       </span>
                     )}
                 </div>
@@ -202,7 +227,7 @@ export const CommunicationOverviewTable = React.memo(
                     variant="secondary"
                     className="text-[10px] font-medium px-2 py-0.5 rounded"
                   >
-                    {row.original.recipientType}
+                    {capitalizeFirstLetter(row.original.recipientType)}
                   </Badge>
                 )}
               </div>
@@ -284,7 +309,7 @@ export const CommunicationOverviewTable = React.memo(
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
             <CardTitle className="text-sm font-semibold text-foreground whitespace-nowrap">
-              {t('COMMUNICATION_ACTIVITIES')} ({formatNum(filteredData.length)})
+              {t('COMMUNICATION_ACTIVITIES')}
             </CardTitle>
           </div>
 

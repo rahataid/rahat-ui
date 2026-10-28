@@ -11,7 +11,11 @@ import {
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import { DataCard, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import { CommunicationOverviewData, classifyTransportString } from '@rahat-ui/query';
+import {
+  CommunicationOverviewData,
+  classifyTransportString,
+  capitalizeFirstLetter,
+} from '@rahat-ui/query';
 import {
   PieChart,
   ChartColumnStacked,
@@ -58,13 +62,26 @@ function buildDonutOptions(
   return {
     dataLabels: {
       enabled: true,
-      formatter: (val: number | string) =>
-        `${formatNum(Number(val).toFixed(1))}%`,
+      formatter: (val: number | string, opts?: any) => {
+        const num =
+          opts?.w?.globals?.series?.[opts?.seriesIndex] ??
+          opts?.w?.config?.series?.[opts?.seriesIndex];
+        if (num === undefined || num === null || num === 0) return '';
+        return formatNum(num);
+      },
     },
     tooltip: {
       fillSeriesColor: true,
       y: {
-        formatter: (val: number) => formatNum(val),
+        formatter: (val: number, opts?: any) => {
+          const sum =
+            opts?.w?.globals?.seriesTotals?.reduce(
+              (a: number, b: number) => a + b,
+              0,
+            ) || total;
+          const pct = sum > 0 ? ((val / sum) * 100).toFixed(1) : '0';
+          return `${formatNum(pct)}%`;
+        },
         title: { formatter: (seriesName: string) => `${seriesName}` },
       },
     },
@@ -74,7 +91,18 @@ function buildDonutOptions(
           size: '70%',
           labels: {
             show: true,
-            value: { formatter: (val: number | string) => formatNum(val) },
+            value: {
+              formatter: (val: number | string, opts?: any) => {
+                const num = Number(val);
+                const sum =
+                  opts?.w?.globals?.seriesTotals?.reduce(
+                    (a: number, b: number) => a + b,
+                    0,
+                  ) || total;
+                const pct = sum > 0 ? ((num / sum) * 100).toFixed(1) : '0';
+                return `${formatNum(pct)}%`;
+              },
+            },
             total: {
               show: true,
               label: totalLabel,
@@ -129,9 +157,9 @@ export const CommunicationTopKpis = React.memo(
 
     const pendingText =
       overall.pending > 0
-        ? ` · ${formatNum(overall.pending)} ${t('PENDING')?.toLowerCase() || 'pending'}`
+        ? ` · ${formatNum(overall.pending)} ${capitalizeFirstLetter(t('PENDING')) || 'Pending'}`
         : '';
-    const subtitleText = `${formatNum(overall.successful)} ${t('DELIVERED') || 'delivered'} · ${formatNum(overall.failed)} ${t('FAILED')?.toLowerCase() || 'failed'}${pendingText}`;
+    const subtitleText = `${formatNum(overall.successful)} ${capitalizeFirstLetter(t('DELIVERED')) || 'Delivered'} · ${formatNum(overall.failed)} ${capitalizeFirstLetter(t('FAILED')) || 'Failed'}${pendingText}`;
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-full">
@@ -234,12 +262,16 @@ const AudienceProgressRow = React.memo(function AudienceProgressRow({
   t,
   borderTop = false,
 }: AudienceProgressRowProps) {
+  const deliveredLabel = capitalizeFirstLetter(t('DELIVERED')) || 'Delivered';
+  const failedLabel = capitalizeFirstLetter(t('FAILED')) || 'Failed';
+  const pendingLabel = capitalizeFirstLetter(t('PENDING')) || 'Pending';
+
   return (
     <div className={`space-y-2 ${borderTop ? 'pt-2 border-t' : ''}`}>
       <div className="flex items-center justify-between text-xs font-semibold">
         <span className="text-foreground">{label}</span>
         <span className="text-muted-foreground">
-          {formatNum(delivered)} / {formatNum(total)} {t('DELIVERED')} ({successRate}%)
+          {formatNum(delivered)} / {formatNum(total)} {deliveredLabel} ({successRate}%)
         </span>
       </div>
 
@@ -247,33 +279,33 @@ const AudienceProgressRow = React.memo(function AudienceProgressRow({
         <div
           style={{ width: `${successRate}%` }}
           className="bg-green-600 h-full transition-all"
-          title={`${t('DELIVERED')}: ${successRate}%`}
+          title={`${deliveredLabel}: ${successRate}%`}
         />
         <div
           style={{ width: `${failRate}%` }}
           className="bg-red-600 h-full transition-all"
-          title={`${t('FAILED')}: ${failRate}%`}
+          title={`${failedLabel}: ${failRate}%`}
         />
         <div
           style={{ width: `${pendingRate}%` }}
           className="bg-amber-500 h-full transition-all"
-          title={`${t('PENDING')}: ${pendingRate}%`}
+          title={`${pendingLabel}: ${pendingRate}%`}
         />
       </div>
 
       <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
         <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
           <span className="w-2 h-2 rounded-full bg-green-600" />
-          {t('DELIVERED')}: {formatNum(delivered)}
+          {deliveredLabel}: {formatNum(delivered)}
         </span>
         <span className="flex items-center gap-1.5 text-red-700 dark:text-red-400">
           <span className="w-2 h-2 rounded-full bg-red-600" />
-          {t('FAILED')}: {formatNum(failed)}
+          {failedLabel}: {formatNum(failed)}
         </span>
         {pending > 0 && (
           <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
             <span className="w-2 h-2 rounded-full bg-amber-500" />
-            {t('PENDING')}: {formatNum(pending)}
+            {pendingLabel}: {formatNum(pending)}
           </span>
         )}
       </div>
@@ -340,7 +372,7 @@ export const CommunicationBreakdowns = React.memo(
       (k: string) => {
         const canonical = classifyTransportString(k);
         const key = CHANNEL_LABEL_KEYS[canonical];
-        return key ? t(key) : k;
+        return key ? t(key) : capitalizeFirstLetter(k);
       },
       [t],
     );
@@ -377,12 +409,15 @@ export const CommunicationBreakdowns = React.memo(
     }, [channelSuccessData, channelFailData, channelPendingData, t]);
 
     const barOptions = React.useMemo(() => {
+      const hasPending = channelPendingData.some((v) => v > 0);
       return {
-        colors: [SUCCESS_COLOR, FAILED_COLOR, PENDING_COLOR],
+        colors: hasPending
+          ? [SUCCESS_COLOR, FAILED_COLOR, PENDING_COLOR]
+          : [SUCCESS_COLOR, FAILED_COLOR],
         yaxis: { labels: { formatter: (val: number) => formatNum(val) } },
         tooltip: { y: { formatter: (val: number) => formatNum(val) } },
       };
-    }, [formatNum]);
+    }, [channelPendingData, formatNum]);
 
     const audiencePieData = React.useMemo(() => ({
       series: [

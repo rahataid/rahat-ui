@@ -37,7 +37,10 @@ import {
   FormInput,
   FormTextarea,
   Heading,
+  UnsavedChangesDialog,
 } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
@@ -91,6 +94,32 @@ export const DurationData = [
   { value: 'days', label: 'Days' },
 ];
 
+type ActivityDraft = {
+  values: any;
+  communicationData: CommunicationData[];
+  commValues?: any;
+};
+
+const EMPTY_ACTIVITY_DRAFT: ActivityDraft = {
+  values: {},
+  communicationData: [],
+};
+
+// Explicit reset target (mirrors useActivityForm defaults) so Clear never
+// depends on implicitly captured defaults.
+const ACTIVITY_DEFAULT_VALUES = {
+  title: '',
+  responsibility: '',
+  responsibleStation: '',
+  phaseId: '',
+  categoryId: '',
+  leadTime: '',
+  description: '',
+  activityDocuments: [],
+  isTemplate: false,
+  isAutomated: false,
+};
+
 export default function AddActivities() {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
@@ -143,15 +172,86 @@ export default function AddActivities() {
           .find((p) => p.uuid === phaseId)
           ?.name.toLowerCase()}`;
 
-  useStakeholdersGroups(projectID as UUID, {
-  });
+  useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {
-    excludeGroupPurpose: GroupPurpose.GENERAL
+    excludeGroupPurpose: GroupPurpose.GENERAL,
   });
   const appTransports = useListAllTransports();
 
   const { FormSchema, form, communicationForm, defaultCommunicationValues } =
     useActivityForm(appTransports);
+
+  const hasInteracted = useRef(false);
+  const isRestored = useRef(false);
+  const isSubmittingRef = useRef(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const { loadSaved, saveData, clearSaved } =
+    useSessionFormStorage<ActivityDraft>({
+      key: 'activity_draft',
+      projectId: projectID as string,
+      defaultValue: EMPTY_ACTIVITY_DRAFT,
+    });
+
+  // Restore saved draft once the project is known
+  useEffect(() => {
+    if (isRestored.current || !projectID) return;
+    const saved = loadSaved();
+    if (saved?.values && Object.keys(saved.values).length > 0) {
+      form.reset(saved.values);
+    }
+    if (saved?.communicationData && saved.communicationData.length > 0) {
+      setCommunicationData(saved.communicationData);
+    }
+    if (saved?.commValues && Object.keys(saved.commValues).length > 0) {
+      communicationForm.reset(saved.commValues);
+    }
+    isRestored.current = true;
+  }, [projectID]);
+
+  const saveCurrentForm = () => {
+    saveData({
+      values: form.getValues(),
+      communicationData,
+      commValues: communicationForm.getValues(),
+    });
+  };
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current &&
+    hasInteracted.current &&
+    (form.formState.isDirty ||
+      communicationData.length > 0 ||
+      communicationForm.formState.isDirty);
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveCurrentForm();
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
+  });
+
+  // Persist the draft when the page is hidden/refreshing so filled values
+  // survive a reload even without going through the leave dialog.
+  const saveCurrentFormRef = useRef(saveCurrentForm);
+  saveCurrentFormRef.current = saveCurrentForm;
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+  hasUnsavedChangesRef.current = hasUnsavedChanges;
+  useEffect(() => {
+    const handlePageHide = () => {
+      if (hasUnsavedChangesRef.current) saveCurrentFormRef.current();
+    };
+    window.addEventListener('pagehide', handlePageHide);
+    return () => window.removeEventListener('pagehide', handlePageHide);
+  }, []);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -250,13 +350,16 @@ export default function AddActivities() {
   );
 
   useEffect(() => {
+    // Wait until the selected phase resolves so a restored draft is never
+    // wiped while the phase list is still loading.
+    if (!selectedPhaseId || !selectedPhase) return;
     if (!selectedPhase?.isAutomatedActivity) {
       form.setValue('isAutomated', false);
     }
     if (!selectedPhase?.isRequiredLeadTime) {
       form.setValue('leadTime', '');
     }
-  }, [selectedPhase, form]);
+  }, [selectedPhaseId, selectedPhase, form]);
 
   useEffect(() => {
     if (phaseId && phases.length > 0) {
@@ -300,6 +403,7 @@ export default function AddActivities() {
   };
 
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
+    isSubmittingRef.current = true;
     const manager =
       users?.data?.find((u) => u?.uuid === data.responsibility) || null;
     const { responsibility, ...rest } = data;
@@ -332,8 +436,10 @@ export default function AddActivities() {
         projectUUID: projectID as UUID,
         activityPayload: payload,
       });
+      clearSaved();
       router.push(activitiesListPath);
     } catch (e) {
+      isSubmittingRef.current = false;
       console.error('Error::', e);
     } finally {
       form.reset();
@@ -371,11 +477,19 @@ export default function AddActivities() {
   };
 
   const resetForm = () => {
-    form.reset();
+    form.reset(ACTIVITY_DEFAULT_VALUES);
     setSelectedTemplateId(null);
-    communicationForm.reset();
+    communicationForm.reset(defaultCommunicationValues);
     addCommunicationOpen.onFalse();
     setCommunicationData([]);
+  };
+
+  const handleClearForm = () => {
+    clearSaved();
+    resetForm();
+    // Dismiss any stale leave dialog so it can't linger over the cleared form.
+    handleCancelLeave();
+    setShowClearDialog(false);
   };
 
   useEffect(() => {
@@ -406,7 +520,9 @@ export default function AddActivities() {
 
     Object.entries(fieldMappings).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        form.setValue(key as keyof typeof fieldMappings, value);
+        form.setValue(key as keyof typeof fieldMappings, value, {
+          shouldDirty: true,
+        });
       }
     });
   };
@@ -418,7 +534,7 @@ export default function AddActivities() {
     )?.uuid;
 
     if (phaseId) {
-      form.setValue('phaseId', phaseId);
+      form.setValue('phaseId', phaseId, { shouldDirty: true });
     }
   };
   const setCategory = (payload: Template) => {
@@ -429,7 +545,7 @@ export default function AddActivities() {
     )?.uuid;
 
     if (categoryUuid) {
-      form.setValue('categoryId', categoryUuid);
+      form.setValue('categoryId', categoryUuid, { shouldDirty: true });
     }
   };
   const setCommunications = (payload: Template) => {
@@ -468,6 +584,7 @@ export default function AddActivities() {
   };
   const handleSelectTemplate = useCallback(
     (payload: Template) => {
+      hasInteracted.current = true;
       setSelectedTemplateId(payload.uuid);
       form.clearErrors();
       setBasicFields(payload);
@@ -479,7 +596,12 @@ export default function AddActivities() {
   );
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleCreateActivities)}>
+      <form
+        onSubmit={form.handleSubmit(handleCreateActivities)}
+        onFocus={() => {
+          hasInteracted.current = true;
+        }}
+      >
         <div className={`flex ${viewTemplateOpen.value ? 'gap-0' : ''}`}>
           <div
             className={`p-4 ${
@@ -499,9 +621,7 @@ export default function AddActivities() {
 
                 <div className="flex justify-end mt-8 ">
                   <div className="flex gap-2  items-center">
-                    <TooltipWrapper
-                      tip={t('VIEW_TEMPLATES_TO_REUSE')}
-                    >
+                    <TooltipWrapper tip={t('VIEW_TEMPLATES_TO_REUSE')}>
                       <LayoutTemplate
                         type="button"
                         onClick={viewTemplateOpen.onTrue}
@@ -512,7 +632,7 @@ export default function AddActivities() {
                       type="button"
                       variant="outline"
                       className="w-36"
-                      onClick={resetForm}
+                      onClick={() => setShowClearDialog(true)}
                     >
                       {tg('CLEAR')}
                     </Button>
@@ -595,7 +715,9 @@ export default function AddActivities() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel required>{t('RESPONSIBLE_STATION')}</FormLabel>
+                          <FormLabel required>
+                            {t('RESPONSIBLE_STATION')}
+                          </FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
@@ -747,9 +869,7 @@ export default function AddActivities() {
                                 className="col-span-3 rounded-r-none"
                                 value={formatDigits(lead)}
                                 onChange={(e) => {
-                                  const newLead = toAsciiDigits(
-                                    e.target.value,
-                                  );
+                                  const newLead = toAsciiDigits(e.target.value);
                                   field.onChange(
                                     newLead ? `${newLead} ${unit}` : ` ${unit}`,
                                   );
@@ -774,7 +894,9 @@ export default function AddActivities() {
                                       key={item.value}
                                       value={item.value}
                                     >
-                                      {item.value === 'hours' ? t('HOURS') : t('DAYS')}
+                                      {item.value === 'hours'
+                                        ? t('HOURS')
+                                        : t('DAYS')}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -824,7 +946,9 @@ export default function AddActivities() {
                               />
                               <p className="text-sm font-medium">
                                 {t('DROP_FILES_TO_UPLOAD')}{' '}
-                                <span className="text-primary">{t('BROWSE')}</span>
+                                <span className="text-primary">
+                                  {t('BROWSE')}
+                                </span>
                               </p>
                             </div>
                             <FormInput
@@ -946,6 +1070,26 @@ export default function AddActivities() {
         onConfirm={confirmTemplateToggle}
         dialogTitle={t('CONFIRM_TEMPLATE')}
         dialogMessage={t('SAVE_AS_TEMPLATE_CONFIRM')}
+      />
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tg('UNSAVED_TITLE')}
+        description={tg('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tg('CANCEL_TEXT')}
+        discardText={tg('DISCARD_TEXT')}
+        confirmText={tg('CONFIRM_TEXT')}
+      />
+      <UnsavedChangesDialog
+        open={showClearDialog}
+        onConfirm={handleClearForm}
+        onCancel={() => setShowClearDialog(false)}
+        title={tg('CLEAR_FORM')}
+        description={tg('FORM_CLEAR_ALERT')}
+        cancelText={tg('KEEP_IT')}
+        confirmText={tg('CLEAR_ALL')}
       />
     </Form>
   );

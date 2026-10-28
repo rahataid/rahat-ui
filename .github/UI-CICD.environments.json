@@ -1,0 +1,183 @@
+{
+  "defaults": {
+    "apps": "rahat-ui,community-tool-ui",
+    "vault_key": "rahat-ui"
+  },
+  "environments": {
+    "dev-aa": {
+      "description": "AA Development",
+      "tag": "dev",
+      "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev",
+      "urls": {},
+      "notes": []
+    },
+    "dev-v2": {
+      "description": "AA Development V2",
+      "tag": "dev-v2",
+      "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev-v2",
+      "urls": {},
+      "notes": []
+    },
+    "dev-qa": {
+      "description": "AA QA Development",
+      "tag": "dev-qa",
+      "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev-qa",
+      "urls": {},
+      "notes": []
+    },
+    "dev-stellar": {
+      "description": "AA Stellar Development",
+      "tag": "aa-stellar",
+      "vault_path": "github/data/rahat/rahat-ui/dev/aa/stellar",
+      "urls": {},
+      "notes": []
+    },
+    "dev-unicef": {
+      "description": "UNICEF Development",
+      "tag": "aa-dev-unicef",
+      "vault_path": "github/data/rahat/rahat-ui/dev/aa/unicef",
+      "urls": {},
+      "notes": []
+    },
+    "dev-crm": {
+      "description": "CRM Development",
+      "tag": "dev-crm",
+      "vault_path": "github/data/rahat/rahat-ui/dev/el/crm",
+      "urls": {},
+      "notes": []
+    },
+    "dev-aidlink": {
+      "description": "AidLink Development",
+      "tag": "dev-aidlink",
+      "vault_path": "github/data/rahat/rahat-ui/dev/unicef/aidlink",
+      "urls": {},
+      "notes": []
+    },
+    "demo-stellar": {
+      "description": "AA Stellar Demo",
+      "tag": "aa-demo-stellar",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/stellar",
+      "urls": {},
+      "notes": []
+    },
+    "train-mcn": {
+      "description": "MCN Training",
+      "tag": "mcn-training",
+      "vault_path": "github/data/rahat/rahat-ui/traning/aa/mcn",
+      "urls": {},
+      "notes": []
+    },
+    "train-nrcs": {
+      "description": "NRCS Training",
+      "tag": "nrcs-training",
+      "vault_path": "github/data/rahat/rahat-ui/traning/aa/nrcs",
+      "urls": {},
+      "notes": []
+    },
+    "demo-mcn": {
+      "description": "MCN Demo",
+      "tag": "demo-mcn",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/mcn",
+      "urls": {},
+      "notes": []
+    },
+    "demo-nrcs": {
+      "description": "NRCS Demo",
+      "tag": "demo-nrcs",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/nrcs",
+      "urls": {},
+      "notes": []
+    },
+    "demo-redcross": {
+      "description": "Red Cross Demo",
+      "tag": "demo-redcross",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/redcross",
+      "urls": {},
+      "notes": []
+    },
+    "test-load": {
+      "description": "Load Testing",
+      "tag": "test-load",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/testload",
+      "urls": {},
+      "notes": []
+    },
+    "demo-unicef": {
+      "description": "UNICEF Demo",
+      "tag": "demo-unicef",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/unicef",
+      "urls": {},
+      "notes": []
+    },
+    "demo-aidlink": {
+      "description": "AidLink Demo",
+      "tag": "demo-aidlink",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aidlink",
+      "urls": {},
+      "notes": []
+    },
+    "demo-xcapita": {
+      "description": "C2C Xcapita Demo",
+      "tag": "demo-xcapita",
+      "vault_path": "github/data/rahat/rahat-ui/demo/c2c/xcapita",
+      "urls": {},
+      "notes": []
+    },
+    "dry-run-pin": {
+      "description": "DRY RUN PIN",
+      "tag": "dry-run-pin",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/dry-run-pin",
+      "urls": {},
+      "notes": []
+    },
+    "demo-gsma": {
+      "description": "GSMA Demo",
+      "tag": "demo-gsma",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/gsma",
+      "urls": {},
+      "notes": []
+    },
+    "mcn-demo-2026": {
+      "description": "MCN Demo 2026",
+      "tag": "mcn-demo-2026",
+      "vault_path": "github/data/rahat/rahat-ui/demo/aa/mcn-2026",
+      "urls": {},
+      "notes": []
+    },
+    "main-geruwa": {
+      "description": "Geruwa Main",
+      "tag": "main-geruwa",
+      "vault_path": "github/data/rahat/rahat-ui/main/aa/geruwa",
+      "urls": {},
+      "notes": []
+    },
+    "main-geruwarm": {
+      "description": "Geruwa RM Main",
+      "tag": "main-geruwarm",
+      "vault_path": "github/data/rahat/rahat-ui/main/aa/geruwarm",
+      "urls": {},
+      "notes": []
+    },
+    "main-mcn": {
+      "description": "AA MCN Main",
+      "tag": "aa-mcn-main",
+      "vault_path": "github/data/rahat/rahat-ui/main/aa/mcn",
+      "urls": {},
+      "notes": []
+    },
+    "main-cam-ken": {
+      "description": "Cam-Ken Merge Main",
+      "tag": "main-cam-ken",
+      "vault_path": "github/data/rahat/rahat-ui/main/cam-ken-merge",
+      "urls": {},
+      "notes": []
+    },
+    "prod-aa-demo": {
+      "description": "AA Demo v2 (prod folder)",
+      "tag": "aa-demo-v2",
+      "vault_path": "github/data/rahat/rahat-ui/prod/aa/demo",
+      "urls": {},
+      "notes": []
+    }
+  }
+}

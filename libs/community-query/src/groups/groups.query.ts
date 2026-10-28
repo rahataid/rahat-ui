@@ -1,9 +1,17 @@
 import { getGroupClient } from '@rahataid/community-tool-sdk/clients';
-import { GroupPurge } from '@rahataid/community-tool-sdk/groups';
+import {
+  GroupBeneficiaryColumnFilter,
+  GroupBeneficiaryFieldType,
+  GroupBeneficiarySearchMeta,
+  GroupBeneficiarySort,
+  GroupPurge,
+} from '@rahataid/community-tool-sdk/groups';
 import { useRSQuery } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
 import {
   UseQueryResult,
+  keepPreviousData,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -91,6 +99,118 @@ export const useCommunityGroupListByID = (
       queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, query, uuid],
       queryFn: () => groupClient.listById(uuid, query),
       enabled,
+    },
+    queryClient,
+  );
+};
+// ---------------------------------------------------------------------------
+// Excel-like filter for Edit & Submit, via the SDK group client:
+
+const GROUP_BENEFICIARY_SEARCH_PER_PAGE = 20;
+
+// Drop filters with no conditions so they don't change the query key.
+const cleanFilters = (filters?: GroupBeneficiaryColumnFilter[]) =>
+  (filters ?? []).filter((f) => f?.field && f.conditions?.length);
+
+/**
+ * Paginated (infinite) list of a group's beneficiaries with Excel-like
+ * filters and sorting. Use in Edit & Submit; pass `filters: []` for the
+ * unfiltered first load.
+ */
+export const useGroupBeneficiariesSearchInfinite = (
+  uuid: string,
+  params: {
+    filters?: GroupBeneficiaryColumnFilter[];
+    sort?: GroupBeneficiarySort;
+    perPage?: number;
+  } = {},
+  enabled = true,
+) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  const perPage = params.perPage ?? GROUP_BENEFICIARY_SEARCH_PER_PAGE;
+  const filters = cleanFilters(params.filters);
+  const sort = params.sort?.field ? params.sort : undefined;
+
+  return useInfiniteQuery(
+    {
+      queryKey: [
+        TAGS.LIST_COMMUNITY_GROUP_BY_ID,
+        'search',
+        uuid,
+        { filters, sort, perPage },
+      ],
+      queryFn: ({ pageParam }) =>
+        groupClient.searchBeneficiaries(uuid, {
+          filters,
+          sort,
+          page: pageParam as number,
+          perPage,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage: any) => {
+        const meta = lastPage?.response?.meta as
+          | GroupBeneficiarySearchMeta
+          | undefined;
+        if (!meta) return undefined;
+        return Number(meta.currentPage) < Number(meta.lastPage)
+          ? Number(meta.currentPage) + 1
+          : undefined;
+      },
+      enabled: !!uuid && enabled,
+
+      refetchOnMount: 'always',
+      placeholderData: keepPreviousData,
+    },
+    queryClient,
+  );
+};
+
+export const useGroupBeneficiaryDistinctValues = (
+  uuid: string,
+  params: {
+    field?: string;
+    type?: GroupBeneficiaryFieldType;
+    search?: string;
+    filters?: GroupBeneficiaryColumnFilter[];
+    limit?: number;
+  },
+  enabled = true,
+) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  const field = params.field ?? '';
+  const search = params.search?.trim() || undefined;
+  const otherFilters = cleanFilters(params.filters).filter(
+    (f) => f.field !== field,
+  );
+
+  return useQuery(
+    {
+      queryKey: [
+        TAGS.LIST_COMMUNITY_GROUP_BY_ID,
+        'distinct',
+        uuid,
+        field,
+        {
+          type: params.type,
+          search,
+          filters: otherFilters,
+          limit: params.limit,
+        },
+      ],
+      queryFn: () =>
+        groupClient.distinctBeneficiaryValues(uuid, {
+          field,
+          type: params.type,
+          search,
+          filters: otherFilters,
+          limit: params.limit,
+        }),
+      select: (res) => res.data,
+      enabled: !!uuid && !!field && enabled,
+      staleTime: 30_000,
+      placeholderData: keepPreviousData,
     },
     queryClient,
   );

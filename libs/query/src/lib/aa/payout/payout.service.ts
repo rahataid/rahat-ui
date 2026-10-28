@@ -267,6 +267,7 @@ export const useTriggerForPayoutFailed = () => {
       projectUUID: UUID;
       payload: {
         payoutUUID: string;
+        otp: string;
       };
     }) => {
       return q.mutateAsync({
@@ -316,6 +317,7 @@ export const useTriggerForOnePayoutFailed = () => {
       projectUUID: UUID;
       payload: {
         beneficiaryRedeemUuid: string;
+        otp: string;
       };
     }) => {
       return q.mutateAsync({

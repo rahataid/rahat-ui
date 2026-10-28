@@ -1,15 +1,16 @@
+'use client';
+
 import { useGetStatsCore } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Heading } from '../../common';
 import BeneficiaryDemographics from './component/beneficiaryDemographics';
 import DashboardSkeleton from './component/dasboardSkeleton';
-import DigitalAccessOverview from './component/accessAndInclusion';
-import SocialProtectionOverview from './component/vulnerableAndSocialProtectionOverview';
 import DisasterImpactAndEarlyWarning from './component/disasterImpactAndEarlyWarning';
 import AccessAndInclusion from './component/accessAndInclusion';
 import VulnerableAndSocialProtectionOverview from './component/vulnerableAndSocialProtectionOverview';
 import CommunicationsAndOutreach from './component/communicationsAndOutreach';
 import { useTranslations } from 'next-intl';
+import SyncStatsButton from './component/syncStats';
 
 const DashboardMain = () => {
   const { data, isLoading } = useGetStatsCore();
@@ -19,8 +20,14 @@ const DashboardMain = () => {
   if (isLoading) return <DashboardSkeleton />;
   return (
     <div className=" p-2">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-4 mx-4">
-        <Heading title={g('DASHBOARD')} description={t('OVERVIEW_OF_YOUR_SYSTEM')} />
+      <div className="flex  justify-between items-center border-b border-borderColor pb-2 mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-4 mx-4">
+          <Heading
+            title={g('DASHBOARD')}
+            description={t('OVERVIEW_OF_YOUR_SYSTEM')}
+          />
+        </div>
+        <SyncStatsButton />
       </div>
 
       <ScrollArea className="p-4 h-[calc(100vh-150px)]">

@@ -195,30 +195,47 @@ export const useGenerateQrPdf = (projectUuid: UUID) =>
 
 export const useRegenerateQrPdf = (projectUuid: UUID) =>
   useQrPdfMutation(projectUuid, 'aaProject.beneficiary.regenerateQrPdf');
+export type ExportBeneficiariesExcelArgs = {
+  groupId: UUID;
+  includeOtp?: boolean;
+  onlyUnphonedBeneficiaries?: boolean;
+  excelFields?: string[];
+};
+
 export const useExportBeneficiariesExcel = (projectUuid: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
 
   return useMutation({
-    mutationFn: async (groupId: UUID) => {
+    mutationFn: async (
+      args: UUID | ExportBeneficiariesExcelArgs,
+    ): Promise<Array<Record<string, any>>> => {
+      const payload: ExportBeneficiariesExcelArgs =
+        typeof args === 'string' ? { groupId: args } : args;
+      const {
+        groupId,
+        includeOtp = true,
+        onlyUnphonedBeneficiaries = false,
+        excelFields = [],
+      } = payload;
       const mutate = await q.mutateAsync({
         uuid: projectUuid,
         data: {
           action: 'aaProject.beneficiary.exportGroupExcel',
           payload: {
-            groupId: groupId,
+            groupId,
+            includeOtp,
+            onlyUnphonedBeneficiaries,
+            excelFields: excelFields,
           },
         },
       });
-      return mutate.data as Array<{
-        name: string;
-        phone: string;
-        address: string;
-        gender: string;
-        otp: string;
-        walletAddress: string;
-      }>;
+      const data = mutate.data as unknown;
+      // Backend returns an array; normalize in case of wrapper shape.
+      if (Array.isArray(data)) return data;
+      if (Array.isArray((data as any)?.data)) return (data as any).data;
+      return [];
     },
     onError: (error: any) => {
       const rawMessage: string =

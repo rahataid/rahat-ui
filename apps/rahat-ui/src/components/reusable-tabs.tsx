@@ -52,13 +52,14 @@ export function ReusableTabs({
           listClassName,
         )}
       >
+        {/* text-xs px-3 py-1.5 flex items-center gap-1.5 */}
         {items.map((item) => (
           <TabsTrigger
             key={item.value}
             value={item.value}
             disabled={item.disabled}
             className={cn(
-              'data-[state=active]:bg-primary data-[state=active]:text-white text-xs px-3 py-1.5 flex items-center gap-1.5',
+              'data-[state=active]:bg-primary data-[state=active]:text-white gap-1 ',
               triggerClassName,
             )}
           >

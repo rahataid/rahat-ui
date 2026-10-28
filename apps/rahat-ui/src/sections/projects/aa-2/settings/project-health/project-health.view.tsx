@@ -7,6 +7,8 @@ import { RefreshCw } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { cn } from '@rahat-ui/shadcn/src';
 import {
   DemoTable,
   HealthRow,
@@ -20,9 +22,33 @@ import {
   useHealthColumns,
   useHealthLabels,
 } from 'apps/rahat-ui/src/common';
-import { useProjectHealthCheck } from '@rahat-ui/query';
+import { useAppVersions, useProjectHealthCheck } from '@rahat-ui/query';
 import { useAlert } from 'apps/rahat-ui/src/components/swal';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+
+const ENV_STYLES: Record<string, string> = {
+  production:
+    'border-green-300 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400',
+  prod: 'border-green-300 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400',
+  staging:
+    'border-blue-300 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-400',
+  stage:
+    'border-blue-300 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-400',
+  unreachable:
+    'border-red-300 bg-red-100 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400',
+};
+const DEFAULT_ENV_STYLE =
+  'border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400';
+
+const formatEnvLabel = (env?: string | null, fallback = 'Unreachable') => {
+  if (!env) return fallback;
+  const lower = env.toLowerCase();
+  if (lower === 'production') return 'Production';
+  if (lower === 'staging') return 'Staging';
+  if (lower === 'development') return 'Development';
+  if (lower === 'unreachable') return fallback;
+  return env;
+};
 
 export default function ProjectHealthView() {
   const tg = useTranslations('GLOBAL');
@@ -30,7 +56,8 @@ export default function ProjectHealthView() {
   const params = useParams();
   const id = params.id as UUID;
 
-  // isFetching (not isLoading) also covers manual refetch, which drives the button feedback.
+  const { data: envData } = useAppVersions(id);
+
   const {
     data: projectHealth,
     isLoading,
@@ -54,6 +81,7 @@ export default function ProjectHealthView() {
         lastChecked: service?.last_checked,
         responseTime: service?.latency,
         message: service?.message,
+        down_time: service?.down_time,
       })),
     [projectHealth, labelFor],
   );
@@ -81,9 +109,9 @@ export default function ProjectHealthView() {
         failed || !checked.length
           ? tg('HEALTH_CHECK_FAILED')
           : tg('HEALTH_CHECK_SUCCESS', {
-              healthy: formatDigits(healthy),
-              total: formatDigits(checked.length),
-            }),
+            healthy: formatDigits(healthy),
+            total: formatDigits(checked.length),
+          }),
     });
   };
 
@@ -94,13 +122,33 @@ export default function ProjectHealthView() {
           title={ta('PROJECT_HEALTH')}
           description={ta('PROJECT_HEALTH_DESCRIPTION')}
         />
-        <IconLabelBtn
-          Icon={RefreshCw}
-          handleClick={handleRunCheck}
-          name={isFetching ? tg('CHECKING') : tg('RUN_HEALTH_CHECK')}
-          className="px-3 py-2"
-          disabled={isFetching}
-        />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {tg('ENVIRONMENT')}:
+            </span>
+            <Badge
+              variant="outline"
+              className={cn(
+                'px-3 py-1 text-xs font-semibold',
+                envData?.env && envData.env.toLowerCase() !== 'unreachable'
+                  ? (ENV_STYLES[envData.env.toLowerCase()] ?? DEFAULT_ENV_STYLE)
+                  : ENV_STYLES.unreachable,
+              )}
+            >
+              {envData?.env && envData.env.toLowerCase() !== 'unreachable'
+                ? formatEnvLabel(envData.env)
+                : (tg('UNREACHABLE') || 'Unreachable')}
+            </Badge>
+          </div>
+          <IconLabelBtn
+            Icon={RefreshCw}
+            handleClick={handleRunCheck}
+            name={isFetching ? tg('CHECKING') : tg('RUN_HEALTH_CHECK')}
+            className="px-3 py-2"
+            disabled={isFetching}
+          />
+        </div>
       </div>
 
       <div className="mb-4">

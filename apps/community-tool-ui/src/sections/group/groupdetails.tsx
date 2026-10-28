@@ -24,11 +24,13 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import React, { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import {
   useActiveFieldDefList,
   useBulkGenerateVerificationLink,
   useCommunityGroupListByID,
+  useGroupBeneficiariesSearchInfinite,
   useCommunityGroupRemove,
   useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
@@ -37,6 +39,7 @@ import {
   usePurgeGroupedBeneficiary,
   useUploadBulkBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
+import type { GroupBeneficiaryColumnFilter } from '@rahataid/community-tool-sdk/groups';
 import { usePagination } from '@rahat-ui/query';
 import {
   DropdownMenu,
@@ -100,6 +103,7 @@ export default function GroupDetail({ uuid }: IProps) {
     resetDeletedSelectedBeneficiaries,
   } = useCommunityGroupStore();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const table = useReactTable({
     manualPagination: true,
@@ -133,56 +137,100 @@ export default function GroupDetail({ uuid }: IProps) {
   const [addedColumns, setAddedColumns] = React.useState<Set<string>>(
     new Set(),
   );
-  const [editPage, setEditPage] = React.useState(1);
-  const [editPerPage, setEditPerPage] = React.useState(20);
+  // Excel-like column filters. Applied on the server by the search API, so
+  // they cover every beneficiary in the group, not only the loaded rows.
+  const [editFilters, setEditFilters] = React.useState<
+    GroupBeneficiaryColumnFilter[]
+  >([]);
+  const {
+    data: editInfiniteData,
+    isLoading: editPageLoading,
+    isFetching: editPageFetching,
+    isFetchingNextPage: editPageFetchingNext,
+    fetchNextPage: fetchNextEditPage,
+    hasNextPage: hasNextEditPage,
+  } = useGroupBeneficiariesSearchInfinite(
+    uuid,
+    { filters: editFilters },
+    editSubmitMode,
+  );
 
-  const { data: editPageData, isLoading: editPageLoading } =
-    useCommunityGroupListByID(
-      uuid,
-      { page: editPage, perPage: editPerPage },
-      editSubmitMode,
-    );
+  // Flat beneficiary rows: { uuid, firstName, ..., extras, isDuplicate }
+  const editPageRows = React.useMemo(
+    () =>
+      editInfiniteData?.pages.flatMap((p: any) => p?.data?.rows ?? []) ?? [],
+    [editInfiniteData],
+  );
+  const editTotalRows = Number(
+    editInfiniteData?.pages?.[0]?.response?.meta?.total ?? 0,
+  );
 
-  // When fresh edit data arrives recompute presentColumns from it so the table
-  // always reflects the latest field structure, not stale cached data.
   useEffect(() => {
-    if (!editSubmitMode || editPageLoading || !editPageData) return;
-    const allowedKeys = new Set<string>(
-      (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
-        fd.name,
-        deHumanizeString(fd.name),
-      ]),
-    );
-    const sampleBg = (editPageData?.data?.beneficiariesGroup ?? []) as {
-      beneficiary?: { extras?: Record<string, unknown> } & Record<
-        string,
-        unknown
-      >;
-    }[];
-    if (sampleBg.length === 0) return;
+    if (!editSubmitMode || editPageLoading || editPageRows.length === 0) return;
+
     const SYSTEM_ONLY = new Set([
       'id',
       'archived',
       'isVerified',
       'extras',
       'uuid',
+      'isDuplicate',
     ]);
-    const firstBene = sampleBg[0]?.beneficiary ?? {};
-    const stableTopLevel = Object.keys(firstBene).filter(
-      (k) => !SYSTEM_ONLY.has(k) && allowedKeys.has(k),
+    const rows = editPageRows as ({
+      extras?: Record<string, unknown> | null;
+    } & Record<string, unknown>)[];
+    if (rows.length === 0) return;
+
+    // Top-level fields from first row (they're the same shape for all rows)
+    const firstBene = rows[0] ?? {};
+    const topLevel = Object.keys(firstBene).filter((k) => !SYSTEM_ONLY.has(k));
+    const topLevelSet = new Set(['uuid', ...topLevel]);
+
+    // Union extras keys across ALL rows — avoids missing a field added mid-page
+    const extrasKeys = new Set<string>();
+    rows.forEach((bg) => {
+      Object.keys(bg.extras ?? {}).forEach((k) => {
+        if (!topLevelSet.has(k)) extrasKeys.add(k);
+      });
+    });
+
+    const freshPresent = ['uuid', ...topLevel, ...Array.from(extrasKeys)];
+
+    if (presentColumns.length > 0) {
+      // Already initialised — merge any new server keys without overwriting order
+      const currentSet = new Set(presentColumns);
+      const newKeys = freshPresent.filter((k) => !currentSet.has(k));
+      if (newKeys.length === 0) return;
+      const merged = [...presentColumns, ...newKeys];
+      const mergedSet = new Set(merged);
+      setPresentColumns(merged);
+      setAddedColumns(
+        (prev) => new Set([...prev].filter((k) => !mergedSet.has(k))),
+      );
+      setAvailableColumns((prev) => prev.filter((k) => !mergedSet.has(k)));
+      return;
+    }
+
+    // First initialisation — also compute availableColumns from field definitions
+    const allowedKeys = new Set<string>(
+      (listFieldDef?.data ?? []).flatMap((fd: { name: string }) => [
+        fd.name,
+        deHumanizeString(fd.name),
+      ]),
     );
-    const stableExtras = Object.keys(firstBene.extras ?? {}).filter((k) =>
-      allowedKeys.has(k),
-    );
-    const stablePresent = ['uuid', ...stableTopLevel, ...stableExtras];
-    const presentSet = new Set(stablePresent);
+    const presentSet = new Set(freshPresent);
     const remaining = [...allowedKeys].filter(
       (k) => k !== 'uuid' && !presentSet.has(k),
     );
-    setPresentColumns(stablePresent);
+    setPresentColumns(freshPresent);
     setAvailableColumns(remaining);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editPageData, editSubmitMode, editPageLoading]);
+  }, [
+    editPageRows,
+    editSubmitMode,
+    editPageLoading,
+    presentColumns,
+    listFieldDef,
+  ]);
 
   // ── Download ───────────────────────────────────────────────────────────────
   const selectables =
@@ -305,10 +353,14 @@ export default function GroupDetail({ uuid }: IProps) {
     setPresentColumns([]);
     setAvailableColumns([]);
     setAddedColumns(new Set());
-    setEditPage(1);
-    setEditPerPage(20);
+    setEditFilters([]);
+    // Drop the cached search pages entirely (not just invalidate) so the next
+    // Edit & Submit session starts fresh from page 1 with the latest data
+    // instead of resuming from whatever page/filter was last viewed.
+    queryClient.removeQueries({
+      queryKey: ['list_community_group_by_id', 'search', uuid],
+    });
     setEditSubmitMode(true);
-    // presentColumns are computed in the useEffect once editPageData arrives
   };
 
   const handleAddColumn = (colKey: string) => {
@@ -493,30 +545,15 @@ export default function GroupDetail({ uuid }: IProps) {
     return (
       <EditSubmitView
         groupName={responseByUUID?.data?.name}
-        pageRows={editPageData?.data?.beneficiariesGroup ?? []}
+        pageRows={editPageRows}
         dirtyRows={dirtyRows}
         presentColumns={presentColumns}
         addedColumns={addedColumns}
         availableColumns={availableColumns}
         isLoading={editPageLoading}
-        page={editPage}
-        perPage={editPerPage}
-        total={editPageData?.response?.meta?.total ?? 0}
-        meta={
-          editPageData?.response?.meta ?? {
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: editPerPage,
-            prev: null,
-            next: null,
-          }
-        }
-        onPageChange={setEditPage}
-        onPerPageChange={(v: string | number) => {
-          setEditPerPage(Number(v));
-          setEditPage(1);
-        }}
+        hasNextPage={hasNextEditPage}
+        isFetchingNextPage={editPageFetchingNext}
+        fetchNextPage={fetchNextEditPage}
         onCellChange={handleCellChange}
         onAddColumn={handleAddColumn}
         onRemoveColumn={handleRemoveColumn}
@@ -527,8 +564,16 @@ export default function GroupDetail({ uuid }: IProps) {
           setPresentColumns([]);
           setAvailableColumns([]);
           setAddedColumns(new Set());
+          setEditFilters([]);
         }}
         isSubmitting={editSubmitSubmitting}
+        groupUuid={uuid}
+        filters={editFilters}
+        onFiltersChange={setEditFilters}
+        totalRows={editTotalRows}
+        isFiltering={
+          editPageFetching && !editPageLoading && !editPageFetchingNext
+        }
       />
     );
   }

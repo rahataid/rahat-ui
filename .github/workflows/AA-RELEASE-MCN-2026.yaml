@@ -12,10 +12,19 @@ env:
   CI: false
 
 jobs:
-  rahat-ui:
-    name: rahat-ui
+  build:
+    name: ${{ matrix.app }}
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: rahat-ui
+            vault_key: rahat-ui
+          - app: community-tool-ui
+            vault_key: community-ui
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +38,88 @@ jobs:
       - name: Extract version dynamically
         id: extract_version
         run: |
-          VERSION=$(jq -r '."rahat-ui-version"' package.json)
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
+            github/data/rahat/rahat-ui/main/aa/mcn-2026 ${{ matrix.vault_key }} | ENV ;
+
+      - name: create environment file
+        run: |
+          tee ./.env <<<"$ENV"
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.10.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: build && push ${{ matrix.app }}
+        id: build-push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.${{ matrix.app }}
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+          tags: |
+            esatya/${{ matrix.app }}:release-v5.0.0-mcn
+            esatya/${{ matrix.app }}:release-v5.0.0-mcn-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+          build-args: |
+            NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
+
+name: AA MCN RELEASE 2026 CI/CD
+on:
+  push:
+    branches:
+      - 'release/v5.1.0.-mcn'
+  pull_request:
+    branches:
+      - 'release/v5.1.0.-mcn'
+  workflow_dispatch:
+
+env:
+  CI: false
+
+jobs:
+  rahat-ui:
+    name: rahat-ui
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+
+      - name: Get short SHA and short Run ID
+        id: vars
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "run_id_short=${GITHUB_RUN_ID:0:3}" >> $GITHUB_OUTPUT
+
+      - name: Extract version dynamically
+        id: extract_version
+        run: |
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Import Secrets
@@ -79,8 +169,8 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:release-v5.1.0-mcn
-            esatya/rahat-ui:release-v5.1.0-mcn-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/rahat-ui:release-v5.0.0-mcn
+            esatya/rahat-ui:release-v5.0.0-mcn-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
           build-args: |
             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
       
@@ -106,7 +196,10 @@ jobs:
       - name: Extract version dynamically
         id: extract_version
         run: |
-          VERSION=$(jq -r '."community-tool-ui-version"' package.json)
+          KEY="${{ matrix.app }}-version"
+          VERSION=$(jq -r --arg k "$KEY" '.[$k]' package.json)
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Import Secrets
@@ -155,8 +248,8 @@ jobs:
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/community-tool-ui:release-v5.1.0-mcn
-            esatya/community-tool-ui:release-v5.1.0-mcn-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/community-tool-ui:release-v5.0.0-mcn
+            esatya/community-tool-ui:release-v5.0.0-mcn-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
           build-args: |
             NEXT_PUBLIC_APP_VERSION=${{ steps.extract_version.outputs.version }}
 

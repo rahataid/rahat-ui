@@ -15,7 +15,10 @@ import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Can } from 'apps/rahat-ui/src/components/can';
-import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
@@ -29,7 +32,6 @@ import { UUID } from 'crypto';
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { LanguageToggle } from 'apps/rahat-ui/src/components/language-toggle';
-import { CircleAlert } from 'lucide-react';
 
 export function ProjectNav({
   component,
@@ -65,7 +67,10 @@ export function ProjectNav({
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
     const projectPin = localStorage.getItem('PROJECT_PIN');
-    const { preserveFormData, restoreFormData } = require('apps/rahat-ui/src/utils/formStorage');
+    const {
+      preserveFormData,
+      restoreFormData,
+    } = require('apps/rahat-ui/src/utils/formStorage');
     const formData = preserveFormData();
     clearUser();
     clearAuth();
@@ -75,7 +80,6 @@ export function ProjectNav({
       localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     if (projectPin) localStorage.setItem('PROJECT_PIN', projectPin);
     toast.success(t('LOGGED_OUT_SUCCESSFULLY'));
-    // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 

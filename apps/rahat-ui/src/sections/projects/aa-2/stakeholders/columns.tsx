@@ -1,6 +1,6 @@
 'use client';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, FilterFn } from '@tanstack/react-table';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -49,6 +49,13 @@ const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
       )}
     </div>
   );
+};
+const supportAreaFilter: FilterFn<any> = (row, columnId, filterValue) => {
+  const search = String(filterValue ?? '').trim().toLowerCase();
+  if (!search) return true;
+  const value = row.getValue(columnId);
+  const text = Array.isArray(value) ? value.join(' ') : String(value ?? '');
+  return text.toLowerCase().includes(search);
 };
 
 export const useProjectStakeholdersTableColumns = (
@@ -243,6 +250,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'supportArea',
       header: t('SUPPORT_AREA'),
+      filterFn: supportAreaFilter,
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),

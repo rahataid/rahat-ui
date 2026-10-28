@@ -102,6 +102,12 @@ export const defaultNavConfig: NavConfigDB = {
       subject: SUBJECTS.GROUP_CASH_TRANSFER,
     },
     {
+      title: 'Communications',
+      path: 'communications',
+      icon: 'PhoneCall',
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
+    },
+    {
       title: 'Communication Logs',
       path: 'communication-logs',
       icon: 'SmartphoneNfc',

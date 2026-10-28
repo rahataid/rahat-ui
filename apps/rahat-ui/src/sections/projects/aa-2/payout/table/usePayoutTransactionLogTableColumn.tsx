@@ -2,8 +2,14 @@ import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Eye } from 'lucide-react';
+import { Eye, TriangleAlertIcon } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
@@ -28,6 +34,7 @@ interface PayoutTransactionLogRow {
   status: string;
   timeStamp: string;
   uuid: string;
+  extras?: any;
 }
 
 export default function usePayoutTransactionLogTableColumn() {
@@ -166,8 +173,40 @@ export default function usePayoutTransactionLogTableColumn() {
       enableHiding: false,
       meta: { className: 'w-[7%]' },
       cell: ({ row }) => {
+        const cancelledBy = row.original?.extras?.cancelledBy;
         return (
           <div className="flex items-center space-x-2">
+            {row.original?.extras?.cancelledBy && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild className="hover:cursor-pointer py-0">
+                    <TriangleAlertIcon
+                      className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
+                      strokeWidth={2.5}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="left"
+                    className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
+                  >
+                    <div className="flex space-x-2 items-center">
+                      <TriangleAlertIcon
+                        size={16}
+                        strokeWidth={1.5}
+                        color="red"
+                      />
+                      <span className="font-semibold text-sm/6">
+                        {t('PAYOUT_CANCELLED')}
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-1 break-words">
+                      {t('PAYOUT_CANCELLED_BY', { cancelledBy }) ||
+                        t('SOMETHING_WENT_WRONG')}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <TooltipComponent
               Icon={Eye}
               tip={tg('VIEW_DETAILS')}

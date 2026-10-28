@@ -110,13 +110,15 @@ export function CommunicationDetailCard({
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case 'PENDING':
-        return 'text-red-400 bg-yellow-100';
+        return 'text-amber-800 bg-amber-100 border border-amber-200';
       case 'COMPLETED':
-        return 'text-green-700 bg-green-200';
+        return 'text-emerald-800 bg-emerald-100 border border-emerald-200';
       case 'FAILED':
-        return 'text-red-700 bg-red-200';
+        return 'text-rose-800 bg-rose-100 border border-rose-200';
+      case 'NEW':
+        return 'text-sky-800 bg-sky-100 border border-sky-200';
       default:
-        return 'bg-gray-200';
+        return 'text-slate-700 bg-slate-100 border border-slate-200';
     }
   };
 
@@ -135,7 +137,7 @@ export function CommunicationDetailCard({
 
   const onViewDetails = () => {
     router.push(
-      `/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId}`,
+      `/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId || ''}`,
     );
   };
 

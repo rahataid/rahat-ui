@@ -1,6 +1,6 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import React from 'react';
-import MapView from '../mapComponent/mapView';
+import MapView from '../mapComponent/lazyMapView';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';

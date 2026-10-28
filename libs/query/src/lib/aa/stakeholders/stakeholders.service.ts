@@ -297,12 +297,14 @@ export const useUploadStakeholders = () => {
       projectId,
       isGroupCreate,
       groupName,
+      groupUuid,
     }: {
       selectedFile: File;
       doctype: string;
       projectId?: UUID;
       isGroupCreate?: boolean;
       groupName?: string;
+      groupUuid?: string;
     }) => {
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -313,6 +315,7 @@ export const useUploadStakeholders = () => {
         JSON.stringify({
           isGroupCreate: isGroupCreate || false,
           ...(groupName && { groupName }),
+          ...(groupUuid && { groupUuid }),
         }),
       );
 
@@ -366,6 +369,50 @@ export const useUploadStakeholders = () => {
           description: message,
         });
       }
+    },
+  });
+};
+
+export type ExportStakeholdersGroupArgs = {
+  groupUuid: string;
+};
+
+export const useExportStakeholdersGroup = (projectUuid: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (
+      args: string | ExportStakeholdersGroupArgs,
+    ): Promise<Array<Record<string, any>>> => {
+      const groupUuid = typeof args === 'string' ? args : args.groupUuid;
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.stakeholders.exportGroup',
+          payload: {
+            groupUuid,
+          },
+        },
+      });
+      const data = mutate.data as unknown;
+      // Backend returns an array; normalize in case of wrapper shape.
+      if (Array.isArray(data)) return data;
+      if (Array.isArray((data as any)?.data)) return (data as any).data;
+      return [];
+    },
+    onError: (error: any) => {
+      const rawMessage: string =
+        error?.response?.data?.message || t('FAILED_TO_EXPORT_EXCEL');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
+      toast.error(errorMessage);
     },
   });
 };

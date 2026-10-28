@@ -1,5 +1,7 @@
 import { Transport } from '@rumsan/connect/src/types';
 import { normalizeTransportName } from 'apps/rahat-ui/src/utils/string';
+import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import { BroadcastChannel } from '../types';
 
 export const CHANNEL_TO_TRANSPORT_NAME: Record<BroadcastChannel, string> = {
@@ -102,7 +104,8 @@ export type TargetAggregateStatus =
   | 'FAILED'
   | 'PENDING'
   | 'SENT'
-  | 'COMPLETED';
+  | 'COMPLETED'
+  | 'NOT_STARTED';
 
 /**
  * Union for UI Badges (using string & {} to preserve autocomplete while allowing dynamic strings)
@@ -144,46 +147,50 @@ export const resolveCommunicationLifecycleStatus = ({
   hasSession = false,
   isRetrying = false,
 }: CommunicationLifecycleInput): string => {
-  if (counts) {
-    const success = counts.SUCCESS ?? 0;
-    const fail = counts.FAIL ?? 0;
-    const active = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
+  if (isRetrying) return 'IN_PROGRESS';
 
-    if (success > 0 && active === 0 && fail === 0) {
-      return 'COMPLETED';
+  if (counts && hasSession) {
+    const success = Number(counts.SUCCESS ?? 0);
+    const fail = Number(counts.FAIL ?? 0);
+    const pending = Number(counts.PENDING ?? 0);
+    const scheduled = Number(counts.SCHEDULED ?? 0);
+    const active = pending + scheduled;
+
+    if (active > 0) {
+      if (pending > 0 || success > 0 || fail > 0) {
+        return 'IN_PROGRESS';
+      }
+      if (scheduled > 0) {
+        return 'SCHEDULED';
+      }
     }
 
-    if (isRetrying && (fail > 0 || active > 0)) {
-      return 'IN_PROGRESS';
-    }
-
-    if (success === 0 && fail === 0) {
-      if ((counts.PENDING ?? 0) > 0) return 'PENDING';
-      if ((counts.SCHEDULED ?? 0) > 0) return 'SCHEDULED';
-    }
-
-    if (active > 0 && (success > 0 || fail > 0)) {
-      return 'IN_PROGRESS';
-    }
-
-    if (fail > 0 && active === 0) {
-      return 'FAILED';
+    if (active === 0) {
+      if (fail > 0) {
+        return 'FAILED';
+      }
+      if (success > 0) {
+        return 'COMPLETED';
+      }
     }
   }
 
-  if (isRetrying) return 'IN_PROGRESS';
   if (hasActiveTargets) return 'IN_PROGRESS';
-  if (hasPendingTargets && !hasSession) return 'PENDING';
+  if (hasPendingTargets && !hasSession) return 'NOT_STARTED';
 
   const normalized = (rawStatus || '').toUpperCase();
   const DIRECT_STATUS_MAP: Record<string, string> = {
     FAILED: 'FAILED',
     FAIL: 'FAILED',
     CANCELLED: 'CANCELLED',
-    SENT: 'IN_PROGRESS',
+    CANCELED: 'CANCELLED',
+    SENT: hasSession ? 'IN_PROGRESS' : 'NOT_STARTED',
     PROCESSING: 'IN_PROGRESS',
     IN_PROGRESS: 'IN_PROGRESS',
-    PENDING: 'PENDING',
+    PENDING: hasSession ? 'IN_PROGRESS' : 'NOT_STARTED',
+    NOT_STARTED: 'NOT_STARTED',
+    'NOT STARTED': 'NOT_STARTED',
+    NEW: 'NOT_STARTED',
     SCHEDULED: 'SCHEDULED',
     DELIVERED: 'COMPLETED',
     SUCCESS: 'COMPLETED',
@@ -191,22 +198,23 @@ export const resolveCommunicationLifecycleStatus = ({
     COMPLETED: 'COMPLETED',
   };
 
-  return DIRECT_STATUS_MAP[normalized] || normalized || 'PENDING';
+  return DIRECT_STATUS_MAP[normalized] || normalized || 'NOT_STARTED';
 };
 
 export const resolveTargetEffectiveStatus = (
   rawStatus?: string | null,
   counts?: BroadcastCounts | null,
   channel = 'SMS',
+  hasSession = false,
 ): string => {
   const normalized = (rawStatus || '').toUpperCase();
   return resolveCommunicationLifecycleStatus({
     channel,
     rawStatus,
     counts,
-    hasActiveTargets: normalized === 'SENT' || normalized === 'PROCESSING' || normalized === 'IN_PROGRESS',
-    hasPendingTargets: normalized === 'PENDING',
-    hasSession: !!counts,
+    hasActiveTargets: normalized === 'PROCESSING',
+    hasPendingTargets: normalized === 'PENDING' || normalized === 'NOT_STARTED' || normalized === 'NEW',
+    hasSession: hasSession || (!!counts && (Number(counts.SUCCESS ?? 0) + Number(counts.FAIL ?? 0) + Number(counts.PENDING ?? 0) + Number(counts.SCHEDULED ?? 0) > 0)),
   });
 };
 
@@ -218,7 +226,7 @@ export const aggregateTargetStatus = (
   const list = toArray<{ status?: string; sessionId?: string | null }>(
     targets,
   );
-  if (!list || list.length === 0) return 'PENDING';
+  if (!list || list.length === 0) return 'NOT_STARTED';
 
   let hasFailed = false;
   let hasPending = false;
@@ -227,13 +235,13 @@ export const aggregateTargetStatus = (
 
   for (const target of list) {
     const counts = target.sessionId && countsMap ? countsMap[target.sessionId] : null;
-    const eff = resolveTargetEffectiveStatus(target.status, counts, channel);
+    const eff = resolveTargetEffectiveStatus(target.status, counts, channel, !!target.sessionId);
 
     if (eff === 'FAILED' || eff === 'FAIL' || eff === 'NO ANSWER' || eff === 'BUSY' || eff === 'REJECTED') {
       hasFailed = true;
     } else if (eff === 'IN_PROGRESS' || eff === 'PROCESSING') {
       hasActive = true;
-    } else if (eff === 'PENDING' || eff === 'SCHEDULED') {
+    } else if (eff === 'PENDING' || eff === 'SCHEDULED' || eff === 'NOT_STARTED') {
       hasPending = true;
     } else if (eff === 'DELIVERED' || eff === 'SUCCESS' || eff === 'COMPLETED' || eff === 'ANSWERED') {
       hasSuccess = true;
@@ -241,11 +249,11 @@ export const aggregateTargetStatus = (
   }
 
   if (hasActive || ((hasSuccess || hasFailed) && hasPending)) return 'IN_PROGRESS';
-  if (hasPending && !hasSuccess && !hasFailed) return 'PENDING';
+  if (hasPending && !hasSuccess && !hasFailed) return 'NOT_STARTED';
   if (hasFailed) return 'FAILED';
   if (hasSuccess) return 'COMPLETED';
 
-  return 'PENDING';
+  return 'NOT_STARTED';
 };
 
 export const resolveBroadcastLogStatus = (
@@ -297,6 +305,219 @@ export const resolveBroadcastLogStatus = (
 };
 
 export const resolveCommunicationLogStatus = resolveBroadcastLogStatus;
+
+export type ExportLogsOptions = {
+  title?: string;
+  groupName?: string;
+  groupType?: string;
+  channel?: 'SMS' | 'VOICE' | 'EMAIL' | string;
+  onlyFailed?: boolean;
+  message?: string;
+  subject?: string;
+  sessionStartedAt?: string;
+  sessionEndedAt?: string;
+  formatDate?: (date: any) => string;
+  naLabel?: string;
+};
+
+export const exportCommunicationLogs = async (
+  logs: any[],
+  options: ExportLogsOptions = {},
+): Promise<boolean> => {
+  if (!Array.isArray(logs) || logs.length === 0) return false;
+
+  const {
+    title = 'communication',
+    groupName = 'group',
+    groupType = 'N/A',
+    channel = 'SMS',
+    onlyFailed = false,
+    message,
+    subject,
+    sessionStartedAt,
+    sessionEndedAt,
+    formatDate,
+    naLabel = 'N/A',
+  } = options;
+
+  const transport = (channel || 'SMS').toUpperCase();
+
+  let targetRows = logs;
+  if (onlyFailed) {
+    targetRows = logs.filter((log: any) => {
+      const rawStatus = (log?.status || '').toUpperCase();
+      const logStatus = resolveBroadcastLogStatus(log, transport);
+      return rawStatus === 'FAIL' || rawStatus === 'FAILED' || logStatus.isFail;
+    });
+    if (targetRows.length === 0) return false;
+  }
+
+  const formatDateFn = (dateStr: any) => {
+    if (!dateStr) return '';
+    if (formatDate) {
+      try {
+        return formatDate(dateStr);
+      } catch {
+        return formatDateFull(String(dateStr));
+      }
+    }
+    return formatDateFull(String(dateStr));
+  };
+
+  const formattedRows = targetRows.map((log: any) => {
+    const logStatus = resolveBroadcastLogStatus(log, transport);
+    const rawDisp =
+      typeof log.disposition?.disposition === 'string'
+        ? log.disposition.disposition
+        : log.disposition?.error ||
+          (typeof log.disposition === 'string' ? log.disposition : '');
+
+    const durationVal =
+      logStatus.durationSec != null
+        ? String(logStatus.durationSec)
+        : log.duration != null
+        ? String(log.duration)
+        : '';
+
+    const addressVal =
+      log.address || log.phone || log.email || log.name || '';
+
+    if (transport === 'VOICE') {
+      return {
+        'Group Name': groupName || naLabel,
+        'Group Type': groupType || naLabel,
+        'Communication Type': transport,
+        'Communication Title': title || '',
+        'Audience Number': addressVal,
+        Status: logStatus.displayStatus || log.status || '',
+        Disposition: rawDisp || (logStatus.failReason || ''),
+        Duration: durationVal,
+        Attempts: log.attempts ?? 1,
+        'Max Attempts': log.maxAttempts ?? '',
+        'Is Complete': log.isComplete != null ? String(log.isComplete) : '',
+        'Triggered Date': (log.createdAt || log.updatedAt)
+          ? formatDateFn(log.createdAt || log.updatedAt)
+          : '',
+        'Created Date': log.createdAt ? formatDateFn(log.createdAt) : '',
+        'Updated Date': log.updatedAt ? formatDateFn(log.updatedAt) : '',
+        'Session Start Date': sessionStartedAt
+          ? formatDateFn(sessionStartedAt)
+          : '',
+        'Session End Date': sessionEndedAt ? formatDateFn(sessionEndedAt) : '',
+        'Last Attempt': log.lastAttempt
+          ? formatDateFn(log.lastAttempt)
+          : '',
+      };
+    }
+
+    if (transport === 'EMAIL') {
+      return {
+        'Group Name': groupName || naLabel,
+        'Group Type': groupType || naLabel,
+        'Communication Type': transport,
+        'Communication Title': title || '',
+        Subject: subject ?? '',
+        Message: message ?? '',
+        'Audience Email': addressVal,
+        Status: logStatus.displayStatus || log.status || '',
+        Attempts: log.attempts ?? 1,
+        'Max Attempts': log.maxAttempts ?? '',
+        'Is Complete': log.isComplete != null ? String(log.isComplete) : '',
+        'Triggered Date': (log.createdAt || log.updatedAt)
+          ? formatDateFn(log.createdAt || log.updatedAt)
+          : '',
+        'Created Date': log.createdAt ? formatDateFn(log.createdAt) : '',
+        'Updated Date': log.updatedAt ? formatDateFn(log.updatedAt) : '',
+        'Last Attempt': log.lastAttempt
+          ? formatDateFn(log.lastAttempt)
+          : '',
+      };
+    }
+
+    // Default: SMS
+    return {
+      'Group Name': groupName || naLabel,
+      'Group Type': groupType || naLabel,
+      'Communication Type': transport,
+      'Communication Title': title || '',
+      Message: message ?? '',
+      'Audience Number': addressVal,
+      Status: logStatus.displayStatus || log.status || '',
+      Attempts: log.attempts ?? 1,
+      'Max Attempts': log.maxAttempts ?? '',
+      'Is Complete': log.isComplete != null ? String(log.isComplete) : '',
+      'Triggered Date': (log.createdAt || log.updatedAt)
+        ? formatDateFn(log.createdAt || log.updatedAt)
+        : '',
+      'Created Date': log.createdAt ? formatDateFn(log.createdAt) : '',
+      'Updated Date': log.updatedAt ? formatDateFn(log.updatedAt) : '',
+      'Last Attempt': log.lastAttempt
+        ? formatDateFn(log.lastAttempt)
+        : '',
+    };
+  });
+
+  const cleanTitle = (title || 'communication').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const cleanGroup = (groupName || 'group').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const typeSuffix = onlyFailed ? 'failed_deliveries' : 'logs';
+  const fileName = `${cleanTitle}_${cleanGroup}_${typeSuffix}_${new Date().toISOString().slice(0, 10)}`;
+
+  await exportToExcel(formattedRows, fileName);
+  return true;
+};
+
+export type ExportTargetSummaryOptions = {
+  title?: string;
+  formatDate?: (date: any) => string;
+  getGroupDetails?: (id: string, type: string, obj?: any) => { name: string; count: number };
+  channel?: string;
+};
+
+export const exportCommunicationTargetSummary = async (
+  targets: any[],
+  options: ExportTargetSummaryOptions = {},
+): Promise<boolean> => {
+  if (!Array.isArray(targets) || targets.length === 0) return false;
+
+  const { title = 'communication', formatDate, getGroupDetails, channel = 'SMS' } = options;
+
+  const formatDateFn = (dateStr: any) => {
+    if (!dateStr) return 'N/A';
+    if (formatDate) {
+      try {
+        return formatDate(dateStr);
+      } catch {
+        return formatDateFull(String(dateStr));
+      }
+    }
+    return formatDateFull(String(dateStr));
+  };
+
+  const formattedRows = targets.map((target: any) => {
+    const groupInfo = getGroupDetails
+      ? getGroupDetails(target?.groupId, target?.groupType, target?.group)
+      : { name: target?.group?.name || target?.groupId || 'N/A', count: target?.group?.count ?? 0 };
+
+    return {
+      'Group Name': groupInfo.name,
+      'Group Type': target?.groupType || 'BENEFICIARY',
+      'Audience Count': groupInfo.count,
+      'Communication Title': title,
+      'Communication Type': channel,
+      'Session ID': target?.sessionId || 'N/A',
+      Status: target?.status || 'PENDING',
+      'Updated Date': target?.updatedAt
+        ? formatDateFn(target.updatedAt)
+        : 'N/A',
+    };
+  });
+
+  const cleanTitle = (title || 'communication').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const fileName = `${cleanTitle}_audience_groups_${new Date().toISOString().slice(0, 10)}`;
+
+  await exportToExcel(formattedRows, fileName);
+  return true;
+};
 
 
 
